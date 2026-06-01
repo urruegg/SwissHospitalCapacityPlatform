@@ -11,3 +11,9 @@ config:
 
   # Documentation reference sections include plain URLs by design.
   MD034: false
+
+  # Heading-level increments and surrounding-blank-line rules are relaxed to
+  # match imported baseline documents in .github/copilot-instructions.md.
+  MD001: false
+  MD022: false
+  MD058: false
