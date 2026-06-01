@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.2.0 |
+| **Version** | 0.3.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 0.1.0 (placeholder baseline document) |
+| **Previous Version** | 0.2.0 (added initial FR/NFR baseline and traceability) |
 
 ## Purpose
 
@@ -154,3 +154,31 @@ Copilot agent contracts used to plan, validate, and govern the solution assets.
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md` | `FR-SOL-001` to `FR-SOL-005`, `NFR-COMP-001`, `NFR-DATA-001`, `NFR-DATA-002` |
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md` | `NFR-PERF-001` to `NFR-PERF-003`, `NFR-AVAIL-001`, `NFR-OPS-001`, `NFR-AUD-001`, `NFR-AI-001`, `NFR-AI-002` |
 | Active GitHub agent contracts and templates | `FR-PLT-001` to `FR-PLT-005`, `FR-UC1-001` to `FR-UC1-008`, `FR-UC2-001` to `FR-UC2-007`, `FR-UC3-001` to `FR-UC3-003`, `NFR-GOV-001`, `NFR-GOV-006`, `NFR-SEC-001` to `NFR-SEC-003`, `NFR-MAINT-001`, `NFR-MAINT-002` |
+
+## MVP Scope (Sprint 1 Baseline)
+
+The Sprint 1 MVP is the smallest reviewable scope that can validate the provider-internal operating model and requirement traceability.
+
+### In MVP
+
+- Requirement baseline ratified for platform, UC1, UC2, UC3, and solution use cases.
+- Explicit traceability from source specs and active agent contracts to requirement IDs.
+- GitHub issue-driven delivery model with Copilot-triggered execution for planning and PR generation.
+
+### Deferred After MVP
+
+- Quantitative targets for latency, throughput, and forecast quality as measured SLOs.
+- Provider-specific implementation details (for example exact FHIR resource profile list and integration endpoint matrix).
+- Full production release gates beyond Sprint 1 planning artefacts.
+
+## Sprint 1 Success Criteria
+
+- PRD can be used as the single requirement reference in PR descriptions and issue execution.
+- Every active requirement family is represented with stable IDs and can be traced to source evidence.
+- Sprint 1 issue and project tracking can reference this document without ambiguity.
+
+## Open Questions For Sprint 2
+
+- Which provider deployment profile is first (USZ-first or LUKS-first) for implementation planning?
+- Which FHIR resources are mandatory in the first implementation slice?
+- What measurable SLO targets should be attached to NFR-PERF and NFR-AVAIL requirements?
