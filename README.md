@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| Version | 1.0.0 |
+| Version | 1.1.0 |
 | Date | 2026-06-01 |
 | Author | Urs Rueegg |
 | Status | Draft |
-| Previous Version | 0.1.0 (title-only placeholder) |
+| Previous Version | 1.0.0 (executive summary and key artefact index baseline) |
 
 ## Executive Summary
 
@@ -45,6 +45,7 @@ Swiss in-country processing guardrails for PHI-sensitive workloads.
 | Security Baseline | Zero Trust pattern and requirement-level validation | [docs/SECURITY.md](docs/SECURITY.md) |
 | Compliance Baseline | Swiss control mappings, evidence model, and release checks | [docs/COMPLIANCE.md](docs/COMPLIANCE.md) |
 | Data Design | Data domains, contracts, retention model, and requirement mapping | [docs/DATA.md](docs/DATA.md) |
+| Business Value Assessment | ROM-based ROI, TCO, value levers, and executive KPI framework | [docs/BVA.md](docs/BVA.md) |
 | Solution Design Draft | MVP implementation view and phased delivery framing | [docs/SD.md](docs/SD.md) |
 | Agent Registry | Operational view of agent responsibilities and side-effect controls | [AGENTS.md](AGENTS.md) |
 | Sprint Trace | Detailed Sprint 02 refinement record and outcomes | [sprints/sprint-02-prd-refine-detailed-reviews.md](sprints/sprint-02-prd-refine-detailed-reviews.md) |
