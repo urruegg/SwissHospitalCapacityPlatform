@@ -1,27 +1,22 @@
-# Lychee link checker config
-# Reduces concurrency to avoid SendError panics seen with v0.23.0.
+## Lychee link checker configuration (compatible with lychee v0.18.1).
 
-max_concurrency = 8
+max_concurrency = 4
 max_retries = 2
 retry_wait_time = 2
 timeout = 20
 
-# Be lenient on transient and rate-limited responses.
+# Be lenient on common transient and rate-limited responses.
 accept = [200, 206, 301, 302, 304, 403, 429]
 
-# Skip checking anchor fragments and mailto/file schemes.
-include_fragments = false
+# Skip mail/file schemes and localhost.
 exclude = [
   "^mailto:",
   "^file:",
   "^https?://localhost",
-  # Phantom URLs parsed from prose like "AI-Powered" (no TLD, no dot in host).
-  "^https?://[A-Za-z0-9-]+/?$",
+  # Phantom URLs lychee extracts from prose like "AI-Powered",
+  # "Patient Flow" (no dot in host => not a real URL).
+  "^https?://[^/.]+/?$",
 ]
-
-# Skip private/loopback addresses commonly referenced in docs.
-exclude_private = true
-exclude_loopback = true
 
 cache = true
 no_progress = true
