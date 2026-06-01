@@ -1,0 +1,78 @@
+<!-- markdownlint-disable MD041 -->
+## Summary
+
+<!-- 1–3 sentences: what changed and why. -->
+
+## Linked Issue / Work Item
+
+<!-- e.g., Closes #123 or ADO Boards work item link -->
+
+## Requirements Implemented
+
+> **Required** by [NFR-GOV-006](../docs/PRD.md#55-governance--compliance-nfr-gov-).
+> List every PRD requirement ID this PR advances. Use `partial:` if the
+> requirement is not fully verified by this PR.
+
+- `FR-...`: `<one-line description>`
+- `NFR-...`: `<one-line description>`
+
+## Sprint Context
+
+- Sprint: `S<N>` — sprint file: `sprints/sprint-<N>-<name>.md`
+- User stories: `S<N>-<n>`, …
+
+## Validation Evidence
+
+<!-- Commands executed + outcomes. Paste tail of relevant output. -->
+- [ ] `npx --yes markdownlint-cli2 "**/*.md" "#node_modules"` (markdown lint)
+- [ ] `lychee docs/**/*.md sprints/*.md .github/*.md AGENTS.md README.md` (link check; same scope as CI)
+- [ ] `az bicep build --file infra/main.bicep` / `az deployment group what-if ...` (if `infra/**` changed — UC1 outputs)
+- [ ] Golden-task replay attached (if `agents/**` or `evals/**` or `.github/copilot/mcp.json` changed)
+
+## Eval Impact
+
+<!-- For prompt, agent-contract, or MCP allow-list changes only. -->
+- Golden tasks affected: …
+- Pass-rate before → after: …
+- Replay log link (issue/PR comment or workflow run): …
+
+## API Impact
+
+<!-- New/changed MCP tool contracts, agent prompts, issue templates, or workflow_dispatch inputs. State "none" if none. -->
+
+## Infrastructure Impact
+
+<!-- Bicep modules added/changed under `infra/` (UC1 outputs); `what-if` summary. State "none" if none — the platform itself has no infra (per ADR-0002). -->
+
+## Security Impact
+
+<!-- New MCP servers added to `.github/copilot/mcp.json`, RBAC implied, secrets, network changes for UC1 outputs. State "none" if none. -->
+
+## Data Impact
+
+<!-- Cosmos DB containers, partition keys, retention, PII — applies only to UC1 outputs that include a customer-side data store; the platform itself stores nothing (per ADR-0002). State "none" if none. -->
+
+## Documentation Updated
+
+- [ ] `docs/PRD.md` (traceability matrix §7 updated if new requirement or scope change)
+- [ ] `docs/<relevant>.md` (architecture, security, data, infra, AI, ALM)
+- [ ] `sprints/sprint-NN-*.md` (acceptance criteria reflected)
+- [ ] `docs/adr/*.md` (if a cross-cutting decision was made)
+- [ ] Runbooks (`docs/runbooks/*.md`) if operational behavior changed
+
+## Residual Risks / Open Questions
+
+<!-- Anything reviewers should look at first. -->
+
+---
+
+### Reviewer Checklist (carried from [.github/copilot-instructions.md §7](../.github/copilot-instructions.md#7-code-review-checklist))
+
+- [ ] CI checks pass (markdown lint, link check, Bicep build/validate where applicable, security scan, golden-task replay where applicable)
+- [ ] Where code exists, coverage ≥ 80 % on changed files; otherwise markdown lint + Bicep validate + golden-task replay satisfy the gate (per ADR-0002)
+- [ ] No hard-coded secrets, subscription IDs, tenant IDs, URLs, or resource names
+- [ ] Any new MCP server added to `.github/copilot/mcp.json` has CODEOWNERS approval and documented purpose + required permissions
+- [ ] Commit messages follow Conventional Commits
+- [ ] Requirements section above is complete and references valid PRD IDs
+- [ ] Traceability matrix in `docs/PRD.md` §7 is consistent
+- [ ] Every edited doc has its **Version** header bumped per [`.github/copilot-instructions.md` §9](../.github/copilot-instructions.md#9-document-versioning)

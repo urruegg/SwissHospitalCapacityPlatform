@@ -1,0 +1,73 @@
+name: "UC2 — Drift scan"
+description: "Trigger the drift-analyzer agent to compare a subscription against its spec."
+title: "[UC2] Drift scan: <subscription-name-or-id>"
+labels: ["uc2", "agent:drift-analyzer", "needs-triage"]
+assignees: ["copilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Triggers the **drift-analyzer** agent (per [AGENTS.md](../../AGENTS.md)).
+        > The agent scans the subscription read-only via `azure-mcp`, diffs
+        > against the spec UC1 owns, and writes a drift report to ADO Wiki.
+        > Remediation PRs are routed through the **spec-parser** agent (UC1),
+        > never opened directly by `drift-analyzer`.
+        >
+        > **Side-effect ceiling**: `write` (ADO Wiki + this issue only — no
+        > Azure mutations).
+
+  - type: input
+    id: target_subscription
+    attributes:
+      label: Target Azure subscription ID
+      description: "GUID of the subscription to scan."
+      placeholder: "00000000-0000-0000-0000-000000000000"
+    validations:
+      required: true
+
+  - type: input
+    id: spec_reference
+    attributes:
+      label: Spec reference (WorkIQ ID or repo path)
+      description: "The spec the live subscription should be compared against."
+      placeholder: "WIQ-2026-0042 or samples/specs/wiq-2026-0042.json"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scan scope
+      options:
+        - "full subscription"
+        - "single resource group"
+        - "tag-filtered"
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: scope_filter
+    attributes:
+      label: Scope filter (RG name or tag expression)
+      description: "Required if scope is 'single resource group' or 'tag-filtered'. Leave blank for full subscription."
+      placeholder: "rg-prod-eu OR tags['env']='prod'"
+    validations:
+      required: false
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: PRD requirements implemented
+      description: "List the `FR-UC2-*` / `NFR-*` IDs from `docs/PRD.md` this run advances."
+      placeholder: "FR-UC2-001, FR-UC2-004"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acks
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: "I confirm this scan is **read-only** against the target subscription."
+          required: true

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://aka.ms/copilot-coding-agent-mcp-schema",
+  "_comment": [
+    "MCP allow-list for the GitHub Copilot coding agent.",
+    "Per ADR-0002 (docs/adr/0002-runtime-is-github-copilot-coding-agent.md),",
+    "only servers listed here are permitted at runtime. Adding a server",
+    "requires a CODEOWNERS-approved PR documenting purpose, required",
+    "permissions, and at least one golden-task that exercises a tool.",
+    "",
+    "Auth is handled outside this file:",
+    "- github-mcp: GitHub Copilot coding-agent identity (built-in).",
+    "- azure-mcp / azure-devops-mcp / workiq-mcp: Workload Identity Federation",
+    "  (OIDC) for autonomous runs; OBO when human-triggered. Federated",
+    "  credentials live on MCP-side service principals (per ADR-0004 once",
+    "  Accepted)."
+  ],
+  "mcpServers": {
+    "github-mcp": {
+      "_purpose": "Read/write this repo (issues, PRs, comments, branches).",
+      "_owners": "@urruegg",
+      "_used_by": ["orchestrator", "spec-parser", "pr-review", "drift-analyzer"],
+      "_side_effect_ceiling": "write",
+      "_required_permissions": [
+        "contents: write",
+        "issues: write",
+        "pull-requests: write"
+      ],
+      "_golden_task": "agents/orchestrator/golden-tasks.md",
+      "type": "builtin",
+      "enabled": true
+    },
+    "azure-mcp": {
+      "_purpose": "Read Azure resources; run what-if; apply UC1-output Bicep against customer subscriptions.",
+      "_owners": "@urruegg",
+      "_used_by": ["spec-parser", "drift-analyzer"],
+      "_side_effect_ceiling": "deploy",
+      "_confirmation_rule": "Deploy/delete require `approved-to-apply` comment per AGENTS.md §4.",
+      "_required_permissions": [
+        "Reader on subscription (drift-analyzer)",
+        "Contributor on target RG (spec-parser, scoped per UC1 output)"
+      ],
+      "_golden_task": "agents/spec-parser/golden-tasks.md",
+      "type": "remote",
+      "enabled": true,
+      "_enabled_in_sprint": "S2 (UC1 happy path)"
+    },
+    "azure-devops-mcp": {
+      "_purpose": "Read PRs; create branches/commits/PRs; post review comments; upsert Wiki pages.",
+      "_owners": "@urruegg",
+      "_used_by": ["spec-parser", "pr-review", "drift-analyzer"],
+      "_side_effect_ceiling": "write",
+      "_required_permissions": [
+        "Repos: Contribute + Pull Request Contribute",
+        "Wiki: Contribute (drift-analyzer)"
+      ],
+      "_golden_task": "agents/spec-parser/golden-tasks.md",
+      "type": "remote",
+      "enabled": true,
+      "_enabled_in_sprint": "S2 (UC1 happy path)"
+    },
+    "workiq-mcp": {
+      "_purpose": "Read landing-zone specs (UC1 input).",
+      "_owners": "@urruegg",
+      "_used_by": ["spec-parser"],
+      "_side_effect_ceiling": "read",
+      "_required_permissions": ["WorkIQ read scope on the configured tenant"],
+      "_golden_task": "agents/spec-parser/golden-tasks.md",
+      "type": "remote",
+      "enabled": true,
+      "_enabled_in_sprint": "S2 (UC1 happy path)"
+    }
+  }
+}

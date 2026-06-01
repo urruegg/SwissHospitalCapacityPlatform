@@ -1,0 +1,115 @@
+name: Eval Goldens
+
+# Structural validator for `agents/<name>/golden-tasks.md` files.
+#
+# This workflow does NOT invoke the GitHub Copilot coding agent — manual
+# replay against the live agent is the acceptance step (per
+# `sprints/sprint-01-orchestrator-mvp.md` §3.1 Runtime Amendment).
+#
+# What it does:
+#   1. Confirms every `agents/<name>/AGENT.md` has a sibling `golden-tasks.md`.
+#   2. Confirms every `golden-tasks.md` has at least one happy-path fixture
+#      and at least one failure-mode fixture (heuristic: at least two H2
+#      sections starting with `Fixture:` and at least one of them mentions
+#      `refusal` or `failure-mode`).
+#   3. Confirms each fixture H2 section contains the five required H3
+#      subsections: Input issue body, Expected MCP tool calls, Expected
+#      PR / comment shape, Forbidden behaviours, Requirements verified.
+#
+# Triggers: PRs touching `agents/**` or this workflow itself, and manual
+# `workflow_dispatch` for replay.
+
+on:
+  pull_request:
+    paths:
+      - "agents/**"
+      - ".github/workflows/eval-goldens.yml"
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: "Agent name (folder under agents/) to validate. Leave blank for all."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eval-goldens-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-fixtures:
+    name: Validate golden-task fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          AGENT_INPUT="${{ github.event.inputs.agent }}"
+          if [[ -n "${AGENT_INPUT}" ]]; then
+            agent_dirs=("agents/${AGENT_INPUT}")
+          else
+            agent_dirs=(agents/*/)
+          fi
+
+          if [[ ${#agent_dirs[@]} -eq 0 ]]; then
+            echo "::notice::No agent folders under agents/ — nothing to validate."
+            exit 0
+          fi
+
+          fail=0
+          for dir in "${agent_dirs[@]}"; do
+            agent="$(basename "${dir%/}")"
+            echo "::group::Agent: ${agent}"
+
+            agent_md="${dir%/}/AGENT.md"
+            goldens_md="${dir%/}/golden-tasks.md"
+
+            if [[ ! -f "${agent_md}" ]]; then
+              echo "::error file=${agent_md}::Missing AGENT.md"
+              fail=1
+              echo "::endgroup::"
+              continue
+            fi
+            if [[ ! -f "${goldens_md}" ]]; then
+              echo "::error file=${goldens_md}::Missing golden-tasks.md"
+              fail=1
+              echo "::endgroup::"
+              continue
+            fi
+
+            fixture_count=$(grep -cE '^## Fixture:' "${goldens_md}" || true)
+            if [[ "${fixture_count}" -lt 2 ]]; then
+              echo "::error file=${goldens_md}::Need >= 2 fixtures (1 happy-path + 1 failure-mode); found ${fixture_count}."
+              fail=1
+            fi
+
+            if ! grep -qE '(refusal|failure-mode)' "${goldens_md}"; then
+              echo "::error file=${goldens_md}::No fixture labelled refusal / failure-mode."
+              fail=1
+            fi
+
+            for section in 'Input issue body' 'Expected MCP tool calls' 'Expected PR / comment shape' 'Forbidden behaviours' 'Requirements verified'; do
+              count=$(grep -cE "^### ${section}" "${goldens_md}" || true)
+              if [[ "${count}" -lt "${fixture_count}" ]]; then
+                echo "::error file=${goldens_md}::Each fixture must have an '### ${section}' subsection. Found ${count} for ${fixture_count} fixture(s)."
+                fail=1
+              fi
+            done
+
+            echo "Agent ${agent}: ${fixture_count} fixture(s) validated."
+            echo "::endgroup::"
+          done
+
+          if [[ "${fail}" -ne 0 ]]; then
+            echo "::error::One or more agents failed golden-task validation."
+            exit 1
+          fi
+          echo "All agent fixtures passed structural validation."

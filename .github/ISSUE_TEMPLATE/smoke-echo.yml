@@ -1,0 +1,57 @@
+name: "Smoke — orchestrator echo"
+description: "Sprint 1 smoke fixture: trigger the orchestrator agent with a trivial echo request."
+title: "[SMOKE] orchestrator echo — <short-tag>"
+labels: ["smoke", "agent:orchestrator"]
+assignees: ["copilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Triggers the **orchestrator** agent (per [AGENTS.md](../../AGENTS.md)).
+        > The agent reads this issue, posts a single triage comment confirming
+        > the echo phrase, and exits. No branch, no PR, no calls to
+        > `azure-mcp`, `azure-devops-mcp`, or `workiq-mcp`.
+        >
+        > Acceptance is defined by the `smoke-echo` fixture in
+        > [`agents/orchestrator/golden-tasks.md`](../../agents/orchestrator/golden-tasks.md).
+
+  - type: input
+    id: echo_phrase
+    attributes:
+      label: Echo phrase
+      description: "A short phrase the orchestrator will echo back in its triage comment."
+      placeholder: "Sprint 1 complete"
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: PRD requirements verified
+      description: "List the `FR-*` / `NFR-*` IDs from `docs/PRD.md` this smoke run verifies."
+      placeholder: "FR-PLT-001, NFR-MAINT-002"
+      value: |
+        FR-PLT-001
+        NFR-MAINT-002
+    validations:
+      required: true
+
+  - type: dropdown
+    id: auto_apply
+    attributes:
+      label: Auto-apply orchestrator plan
+      description: "Include the `auto-apply-orchestrator` phrase so the agent skips the plan-comment wait. Smoke runs default to yes; specialized agents (UC1/UC2/UC3) ignore this field."
+      options:
+        - "yes (auto-apply-orchestrator)"
+        - "no (wait for human comment)"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acks
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: "This is a smoke run only. No production data, no Azure resources, no ADO objects."
+          required: true

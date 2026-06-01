@@ -1,0 +1,73 @@
+name: "UC1 — Build landing-zone subscription"
+description: "Trigger the spec-parser agent to read a WorkIQ spec and assemble a UC1-output Bicep PR."
+title: "[UC1] Build subscription: <short-name>"
+labels: ["uc1", "agent:spec-parser", "needs-triage"]
+assignees: ["copilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Triggers the **spec-parser** agent (per [AGENTS.md](../../AGENTS.md)).
+        > The agent reads the WorkIQ spec via `workiq-mcp`, generates Bicep
+        > parameters, and opens an ADO PR for the customer landing zone.
+        > A `what-if` plan is produced first; a human must comment
+        > `approved-to-apply` before any deploy fires
+        > (per [AGENTS.md §4](../../AGENTS.md#4-confirmation-rule-for-deploy--delete)).
+
+  - type: input
+    id: workiq_spec_id
+    attributes:
+      label: WorkIQ spec ID
+      description: "The WorkIQ identifier for the landing-zone request."
+      placeholder: "e.g., WIQ-2026-0042"
+    validations:
+      required: true
+
+  - type: input
+    id: target_subscription
+    attributes:
+      label: Target Azure subscription ID
+      description: "GUID of the customer subscription the landing zone will be deployed into."
+      placeholder: "00000000-0000-0000-0000-000000000000"
+    validations:
+      required: true
+
+  - type: input
+    id: target_ado_project
+    attributes:
+      label: Target Azure DevOps project URL
+      description: "Full ADO project URL where the IaC PR should be opened."
+      placeholder: "https://dev.azure.com/<org>/<project>"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Stage
+      description: "Plan-only produces a `what-if` and PR; Apply additionally requires `approved-to-apply`."
+      options:
+        - "plan-only (default; recommended for first run)"
+        - "plan-then-await-approval"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: PRD requirements implemented
+      description: "List the `FR-UC1-*` / `NFR-*` IDs from `docs/PRD.md` this run advances."
+      placeholder: "FR-UC1-001, FR-UC1-005"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acks
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: "I confirm this issue requests **read-only WorkIQ access** plus **plan-only Azure access** unless I explicitly approve `approved-to-apply` later."
+          required: true
+        - label: "I am authorised to request a landing zone for the target subscription."
+          required: true

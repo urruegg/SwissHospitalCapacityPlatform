@@ -1,0 +1,63 @@
+name: "UC3 — PR review"
+description: "Trigger the pr-review agent to comment on an Azure DevOps pull request. Usually opened by an ADO Service Hook via `repository_dispatch`."
+title: "[UC3] Review ADO PR: <pr-id>"
+labels: ["uc3", "agent:pr-review", "needs-triage"]
+assignees: ["copilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Triggers the **pr-review** agent (per [AGENTS.md](../../AGENTS.md)).
+        > The agent reads the PR via `azure-devops-mcp` and posts a single,
+        > idempotent review comment marked with
+        > `<!-- agentic-devops:pr-review -->`. Re-runs update the same comment
+        > rather than appending duplicates.
+        >
+        > **Side-effect ceiling**: `write` (ADO comments only).
+        > **Latency target**: < 60 s p95 from PR-created event to comment.
+
+  - type: input
+    id: ado_pr_url
+    attributes:
+      label: Azure DevOps PR URL
+      description: "Full URL to the pull request."
+      placeholder: "https://dev.azure.com/<org>/<project>/_git/<repo>/pullrequest/<id>"
+    validations:
+      required: true
+
+  - type: input
+    id: ado_event_id
+    attributes:
+      label: ADO Service Hook event ID (optional)
+      description: "Populated automatically by the webhook receiver workflow; leave blank for manual runs."
+      placeholder: "auto-populated"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: trigger_source
+    attributes:
+      label: Trigger source
+      options:
+        - "ADO Service Hook (automatic)"
+        - "Manual run"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: PRD requirements implemented
+      description: "List the `FR-UC3-*` / `NFR-*` IDs from `docs/PRD.md` this run advances."
+      placeholder: "FR-UC3-001, FR-UC3-003"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acks
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: "I confirm the pr-review agent only posts comments and never modifies code or PR status."
+          required: true

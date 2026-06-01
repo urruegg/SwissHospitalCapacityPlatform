@@ -1,0 +1,33 @@
+# CODEOWNERS — Agentic DevOps Platform
+#
+# Aligned with .github/copilot-instructions.md §3 (Scope Guards) and
+# docs/adr/0002-runtime-is-github-copilot-coding-agent.md.
+#
+# Every PR that touches a guarded path requires review from at least one
+# code owner. Branch protection on `main` enforces this.
+
+# Default owner — anything not matched below
+*                                       @urruegg
+
+# Governing prose (Markdown, ADRs, sprint plan, requirements)
+/docs/                                  @urruegg
+/sprints/                               @urruegg
+/README.md                              @urruegg
+/AGENTS.md                              @urruegg
+
+# GitHub Copilot coding-agent configuration
+/.github/                               @urruegg
+/.github/copilot-instructions.md        @urruegg
+/.github/copilot/mcp.json               @urruegg
+/.github/CODEOWNERS                     @urruegg
+/.github/PULL_REQUEST_TEMPLATE.md       @urruegg
+/.github/ISSUE_TEMPLATE/                @urruegg
+/.github/workflows/                     @urruegg
+
+# Agent prompts and golden-task fixtures (created from Sprint 1 onward)
+/agents/                                @urruegg
+/evals/                                 @urruegg
+
+# UC1 output Bicep templates (created from Sprint 2 onward)
+/infra/                                 @urruegg
+/samples/                               @urruegg

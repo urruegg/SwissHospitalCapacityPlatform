@@ -1,0 +1,105 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  markdown-lint:
+    name: Markdown lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v18
+        with:
+          globs: |
+            **/*.md
+            #node_modules
+            #.actionlint
+
+  markdown-link-check:
+    name: Markdown link check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Uses lychee (Rust) instead of npm `markdown-link-check`, which is
+      # broken on Node 20 due to a transitive `marked` ESM/CJS conflict
+      # (ERR_REQUIRE_ESM in `markdown-link-extractor`).
+      - name: Link check (lychee)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Lychee options live in lychee.toml at repo root (auto-discovered)
+          # so CI and scripts/preflight.ps1 share one source of truth and
+          # CLI-flag drift between releases (e.g. v0.23 dropped
+          # `--exclude-mail`) cannot recur. Only file globs go here.
+          args: >-
+            docs/**/*.md
+            sprints/*.md
+            .github/*.md
+            AGENTS.md
+            README.md
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  actionlint:
+    name: actionlint (workflows)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        uses: raven-actions/actionlint@v2
+        with:
+          fail-on-error: true
+
+  bicep-build:
+    name: Bicep build (infra/landing-zone)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build all Bicep templates under infra/**
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
+          # azure-cli ships with bicep on ubuntu-latest runners; ensure it's available.
+          if ! az bicep version >/dev/null 2>&1; then
+            az bicep install
+          fi
+          az bicep version
+          found=0
+          for f in infra/**/*.bicep; do
+            [ -f "$f" ] || continue
+            found=1
+            echo "::group::$f"
+            az bicep build --file "$f" --stdout >/dev/null
+            echo "::endgroup::"
+          done
+          for f in infra/**/*.bicepparam; do
+            [ -f "$f" ] || continue
+            found=1
+            echo "::group::$f"
+            az bicep build-params --file "$f" --stdout >/dev/null
+            echo "::endgroup::"
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "::notice::No Bicep files under infra/ — skipping."
+          fi
+
