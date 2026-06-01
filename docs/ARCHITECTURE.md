@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.0 |
+| **Version** | 0.8.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 0.6.0 (added GA-based decision record and MVP scope impact rules) |
+| **Previous Version** | 0.7.0 (added architecture challenge patterns and NFR stress validation) |
 
 ## Purpose
 
@@ -24,7 +24,8 @@ the requirement baseline in docs/PRD.md.
 
 ## Deployment Baseline
 
-data center = switzerland north
+primary region = switzerland north
+secondary region = switzerland west (failover per compliance runbook)
 
 ## Reference Pattern
 
@@ -138,12 +139,12 @@ capabilities and remove preview dependencies from MVP-critical workflows.
 
 | Decision ID | Decision | Status | Effective Scope |
 | ----------- | -------- | ------ | --------------- |
-| `AR-D-001` | Microsoft Fabric remains the core data platform in Switzerland North and Switzerland West with GA workloads only. See `ADR-0007`. | Accepted | MVP and PROD baseline |
-| `AR-D-002` | Fabric IQ Ontology is excluded from MVP critical path because it is preview and has no published GA date. See `ADR-0008`. | Accepted | Deferred to post-MVP feature wave |
-| `AR-D-003` | Copilot inference for PHI-sensitive scenarios must use Azure OpenAI regional deployment modes in Switzerland regions only. See `ADR-0009`. | Accepted | MVP and PROD baseline |
-| `AR-D-004` | Global and Data Zone deployment types are not permitted for PHI-sensitive copilot traffic. See `ADR-0010`. | Accepted | MVP and PROD baseline |
-| `AR-D-005` | Dedicated React web app channel is approved as a GA-safe experience path independent of Microsoft 365 Copilot readiness. See `ADR-0011`. | Accepted | MVP and PROD baseline |
-| `AR-D-006` | Any service or feature that is preview-only is classified as non-production for regulated data unless an explicit exception is approved. See `ADR-0012`. | Accepted | Governance control rule |
+| `AR-D-001` | Microsoft Fabric remains the core data platform in Switzerland North and Switzerland West with GA workloads only. See `ADR-0001`. | Accepted | MVP and PROD baseline |
+| `AR-D-002` | Fabric IQ Ontology is excluded from MVP critical path because it is preview and has no published GA date. See `ADR-0002`. | Accepted | Deferred to post-MVP feature wave |
+| `AR-D-003` | Copilot inference for PHI-sensitive scenarios must use Azure OpenAI Standard or Regional Provisioned deployments in Switzerland regions only. Cross-region failover is disabled by default and requires an approved compliance runbook. See `ADR-0003`. | Accepted | MVP and PROD baseline |
+| `AR-D-004` | Global, Data Zone, and Developer deployment types are not permitted for PHI-sensitive copilot traffic. See `ADR-0004`. | Accepted | MVP and PROD baseline |
+| `AR-D-005` | Dedicated React web app channel is mandatory for MVP as the primary GA-safe experience path. Microsoft 365 Copilot remains optional post-MVP. See `ADR-0005`. | Accepted | MVP and PROD baseline |
+| `AR-D-006` | Any service or feature that is preview-only is classified as non-production for regulated data unless an explicit exception is approved. See `ADR-0006`. | Accepted | Governance control rule |
 
 ### MVP Scope Impact From GA Decisions
 
@@ -151,9 +152,9 @@ capabilities and remove preview dependencies from MVP-critical workflows.
   on Fabric IQ Ontology for MVP release criteria.
 2. Keep copilot grounding and orchestration on GA services with Swiss-region
   deployment constraints.
-3. Use the dedicated React app as the primary fallback channel where Microsoft
-  365 Copilot capabilities are not operationally available.
-4. Preserve a controlled backlog item to onboard Ontology after GA and regional
+3. Use the dedicated React app as the mandatory MVP copilot channel.
+4. Treat Microsoft 365 Copilot as optional post-MVP enablement.
+5. Preserve a controlled backlog item to onboard Ontology after GA and regional
   validation in Switzerland.
 
 ## Architecture Challenge Patterns
@@ -265,8 +266,8 @@ size headroom. They are not final production commitments.
 
 1. Pattern 1 is justified if semantic inconsistency or low explainability is a
   current blocker for FR-CX and NFR-AI outcomes at forecast and discharge scale.
-2. Pattern 2 is justified if Microsoft 365 Copilot readiness is uncertain and
-  peak concurrent usage above 80 users is expected in command-center operations.
+2. Pattern 2 is mandatory in MVP and is justified by provider control,
+  predictable UX governance, and command-center concurrency requirements.
 3. If both patterns are adopted, enforce one shared grounding and audit API
   contract to prevent fragmentation under monthly scale growth.
 4. Before final architecture sign-off, run a load validation plan using the
@@ -287,7 +288,7 @@ For Swiss healthcare scope, architecture acceptance must require:
 | -------------- | --------------------- | -------------- | ------------------------------- |
 | Microsoft Fabric core workloads | Fabric region availability lists Switzerland North and Switzerland West for all workloads | Low to medium (depends on workload-specific exceptions) | Accept as primary data platform, but enforce workload-level checks for every enabled Fabric capability |
 | Fabric IQ Ontology | Fabric region guidance marks Ontology as preview and unavailable in some regions | Medium to high for MVP commitments | Keep ontology as phased feature gate, not mandatory MVP dependency until Switzerland availability is validated |
-| Azure OpenAI and Foundry models | Foundry model region availability supports multiple deployment types; regional availability varies by model | High if Global or Data Zone deployment types are selected | For strict Swiss processing, use Standard/Regional deployments in Switzerland regions only; block Global and Data Zone modes for PHI flows |
+| Azure OpenAI and Foundry models | Foundry model region availability supports multiple deployment types; regional availability varies by model | High if non-regional deployment types are selected | For strict Swiss processing, use Standard or Regional Provisioned deployments in Switzerland regions only; block Global, Data Zone, and Developer modes for PHI flows |
 | FHIR service (Azure Health Data Services) | FHIR service documented as managed PHI-capable platform, but Switzerland GA must be validated against region listings at implementation time | High if regional support is missing | Add a hard deployment gate: no go-live until Switzerland region support is confirmed for target SKU |
 | Governance services (Key Vault, Monitor, Policy, Entra, Purview) | Core governance stack is generally broad in Azure, but feature-level regional variance can exist | Medium | Validate each service and feature in Products-by-Region and service-specific docs; define approved substitutes per control if unavailable |
 
@@ -295,8 +296,9 @@ For Swiss healthcare scope, architecture acceptance must require:
 
 1. PHI-bearing data stores must remain in Switzerland North or Switzerland West.
 2. AI request processing for PHI scenarios must use regional inference only.
-3. Cross-border failover for PHI workloads is not enabled by default; it requires
-  an explicit compliance decision record.
+3. Cross-region failover for PHI workloads, including Switzerland North to
+  Switzerland West failover, is not enabled by default and requires an approved
+  compliance runbook.
 4. Any feature without Switzerland GA support is classified as non-production for
   regulated data until validated.
 
@@ -314,8 +316,8 @@ For Swiss healthcare scope, architecture acceptance must require:
 
 1. Adopt Pattern 1 in phased form:
   minimal viable ontology first, then data-agent capabilities per domain.
-2. Adopt Pattern 2 as an optional channel strategy:
-  dedicated React app when Microsoft 365 Copilot is unavailable,
+2. Adopt Pattern 2 as the mandatory MVP experience strategy:
+  dedicated React app in MVP,
   while preserving the same grounding and governance contracts.
 3. Keep platform-runtime governance unchanged:
   GitHub Copilot coding agent remains the repository control-plane runtime
@@ -327,6 +329,6 @@ For Swiss healthcare scope, architecture acceptance must require:
 - FR-DATA and FR-FC gain stronger semantic consistency through ontology modeling.
 - FR-CX gains a resilient delivery option through the dedicated web channel.
 - FR-GOV and NFR-AI gain improved traceability through ontology-linked evidence.
-- Open decision required:
-    confirm whether the dual-channel experience is mandatory in MVP scope
-    or staged after first provider rollout.
+- Decision closed:
+  React web app is mandatory in MVP scope.
+  Microsoft 365 Copilot integration is optional and staged post-MVP.

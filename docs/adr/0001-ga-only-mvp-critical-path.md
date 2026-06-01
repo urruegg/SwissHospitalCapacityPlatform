@@ -1,4 +1,4 @@
-# ADR-0007: GA-Only Services for MVP Critical Path
+# ADR-0001: GA-Only Services for MVP Critical Path
 
 - Status: Accepted
 - Date: 2026-06-01

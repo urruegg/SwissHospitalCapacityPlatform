@@ -1,4 +1,4 @@
-# ADR-0012: Preview Features Are Non-Production for Regulated Data
+# ADR-0006: Preview Features Are Non-Production for Regulated Data
 
 - Status: Accepted
 - Date: 2026-06-01

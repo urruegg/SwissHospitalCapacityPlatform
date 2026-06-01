@@ -1,4 +1,4 @@
-# ADR-0011: Approve Dedicated React Web App as GA-Safe Copilot Channel
+# ADR-0005: Approve Dedicated React Web App as GA-Safe Copilot Channel
 
 - Status: Accepted
 - Date: 2026-06-01
@@ -13,13 +13,16 @@ Operations teams need a reliable copilot experience channel even when Microsoft
 
 ## Decision
 
-A dedicated React web app is approved as a GA-safe copilot experience channel,
+A dedicated React web app is mandatory as the MVP copilot experience channel,
 provided backend data and AI services follow Swiss residency and governance
 constraints.
 
+Microsoft 365 Copilot integration is optional and may be enabled post-MVP
+without changing the backend grounding and governance contracts.
+
 ## Consequences
 
-- Experience delivery is decoupled from Microsoft 365 Copilot readiness.
+- MVP experience delivery is decoupled from Microsoft 365 Copilot readiness.
 - Additional application security, telemetry, and maintenance controls are
   required.
 - Shared grounding and audit APIs are needed to prevent channel drift.

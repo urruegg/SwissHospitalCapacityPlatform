@@ -1,4 +1,4 @@
-# ADR-0008: Defer Fabric IQ Ontology from MVP
+# ADR-0002: Defer Fabric IQ Ontology from MVP
 
 - Status: Accepted
 - Date: 2026-06-01

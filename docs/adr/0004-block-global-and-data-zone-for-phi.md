@@ -1,4 +1,4 @@
-# ADR-0010: Block Global and Data Zone Inference Modes for PHI Flows
+# ADR-0004: Block Global and Data Zone Inference Modes for PHI Flows
 
 - Status: Accepted
 - Date: 2026-06-01
@@ -14,12 +14,12 @@ residency expectations.
 
 ## Decision
 
-Global and Data Zone inference deployment types are prohibited for
+Global, Data Zone, and Developer deployment types are prohibited for
 PHI-sensitive copilot traffic in MVP and production scope.
 
 ## Consequences
 
-- Architecture and policy must enforce regional-only deployment for PHI paths.
+- Architecture and policy must enforce approved deployment types for PHI paths.
 - Validation gates must detect and block non-compliant deployment modes.
 - Non-PHI workloads may be evaluated separately under explicit governance.
 
