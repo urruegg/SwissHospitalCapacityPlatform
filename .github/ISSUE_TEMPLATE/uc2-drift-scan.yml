@@ -9,11 +9,11 @@ body:
       value: |
         > Triggers the **drift-analyzer** agent (per [AGENTS.md](../../AGENTS.md)).
         > The agent scans the subscription read-only via `azure-mcp`, diffs
-        > against the spec UC1 owns, and writes a drift report to ADO Wiki.
+        > against the repo-managed source artefacts UC1 owns, and writes a drift report to this issue plus a reproducible branch sidecar.
         > Remediation PRs are routed through the **spec-parser** agent (UC1),
         > never opened directly by `drift-analyzer`.
         >
-        > **Side-effect ceiling**: `write` (ADO Wiki + this issue only — no
+        > **Side-effect ceiling**: `write` (GitHub issue + branch artefacts only — no
         > Azure mutations).
 
   - type: input
@@ -28,9 +28,9 @@ body:
   - type: input
     id: spec_reference
     attributes:
-      label: Spec reference (WorkIQ ID or repo path)
-      description: "The spec the live subscription should be compared against."
-      placeholder: "WIQ-2026-0042 or samples/specs/wiq-2026-0042.json"
+      label: Spec reference (repo path)
+      description: "The repo-managed source artefact the live subscription should be compared against."
+      placeholder: "docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md"
     validations:
       required: true
 

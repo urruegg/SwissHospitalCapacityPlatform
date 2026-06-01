@@ -1,5 +1,5 @@
 name: "UC1 — Build landing-zone subscription"
-description: "Trigger the spec-parser agent to read a WorkIQ spec and assemble a UC1-output Bicep PR."
+description: "Trigger the spec-parser agent to read repo-managed markdown sources and assemble a UC1-output GitHub PR."
 title: "[UC1] Build subscription: <short-name>"
 labels: ["uc1", "agent:spec-parser", "needs-triage"]
 assignees: ["copilot"]
@@ -8,18 +8,19 @@ body:
     attributes:
       value: |
         > Triggers the **spec-parser** agent (per [AGENTS.md](../../AGENTS.md)).
-        > The agent reads the WorkIQ spec via `workiq-mcp`, generates Bicep
-        > parameters, and opens an ADO PR for the customer landing zone.
+        > The agent reads the canonical markdown source set from `docs/` and
+        > `docs/specs/`, generates Bicep parameters, and opens a GitHub PR for
+        > the customer landing zone plan.
         > A `what-if` plan is produced first; a human must comment
         > `approved-to-apply` before any deploy fires
         > (per [AGENTS.md §4](../../AGENTS.md#4-confirmation-rule-for-deploy--delete)).
 
-  - type: input
-    id: workiq_spec_id
+  - type: textarea
+    id: spec_sources
     attributes:
-      label: WorkIQ spec ID
-      description: "The WorkIQ identifier for the landing-zone request."
-      placeholder: "e.g., WIQ-2026-0042"
+      label: Source markdown paths
+      description: "List the repo paths under docs/ and docs/specs/ that define the request scope."
+      placeholder: "docs/PRD.md\ndocs/ARCHITECTURE.md\ndocs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md"
     validations:
       required: true
 
@@ -29,15 +30,6 @@ body:
       label: Target Azure subscription ID
       description: "GUID of the customer subscription the landing zone will be deployed into."
       placeholder: "00000000-0000-0000-0000-000000000000"
-    validations:
-      required: true
-
-  - type: input
-    id: target_ado_project
-    attributes:
-      label: Target Azure DevOps project URL
-      description: "Full ADO project URL where the IaC PR should be opened."
-      placeholder: "https://dev.azure.com/<org>/<project>"
     validations:
       required: true
 
@@ -67,7 +59,7 @@ body:
     attributes:
       label: Acknowledgements
       options:
-        - label: "I confirm this issue requests **read-only WorkIQ access** plus **plan-only Azure access** unless I explicitly approve `approved-to-apply` later."
+        - label: "I confirm the canonical source for this run is the repo-managed markdown set under docs/ and docs/specs/."
           required: true
         - label: "I am authorised to request a landing zone for the target subscription."
           required: true

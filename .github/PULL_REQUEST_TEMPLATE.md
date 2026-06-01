@@ -5,7 +5,7 @@
 
 ## Linked Issue / Work Item
 
-<!-- e.g., Closes #123 or ADO Boards work item link -->
+<!-- e.g., Closes #123 -->
 
 ## Requirements Implemented
 

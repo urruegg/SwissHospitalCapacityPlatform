@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-05-18 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial release; aligned with [ADR-0002 Runtime is GitHub Copilot coding agent](docs/adr/0002-runtime-is-github-copilot-coding-agent.md)); 1.1.0 marks `orchestrator` ready (Sprint 1 MVP shipped); 1.2.0 marks `spec-parser` ready (Sprint 2 UC1 happy-path shipped, ADR-0003 Accepted, ADR-0006 added); 1.3.0 marks `drift-analyzer` ready in **minimum-viable** scope (Sprint 5 — `AGENT.md` + 4 golden tasks; nightly scheduler, tracked-subscription registry, runbook, and WorkIQ MCP wiring deferred). Spec source for the MVP is repo-checked-in JSON, not WorkIQ. |
+| **Previous Version** | 1.0.0 (initial release; aligned with [ADR-0002 Runtime is GitHub Copilot coding agent](docs/adr/0002-runtime-is-github-copilot-coding-agent.md)); 1.1.0 marks `orchestrator` ready (Sprint 1 MVP shipped); 1.2.0 marks `spec-parser` ready (Sprint 2 UC1 happy-path shipped, ADR-0003 Accepted, ADR-0006 added); 1.3.0 marks `drift-analyzer` ready in **minimum-viable** scope (Sprint 5 — `AGENT.md` + 4 golden tasks; nightly scheduler and tracked-subscription registry deferred); 1.4.0 aligns active agents to GitHub-native delivery and repo-managed markdown sources under `docs/` and `docs/specs/`. |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -36,9 +36,9 @@
 | Agent | Use Case | Owner | Trigger | MCP Servers | Side-Effect Ceiling | Prompt | Golden Tasks |
 | ------- | ---------- | ------- | --------- | ------------- | -------------------- | -------- | -------------- |
 | `orchestrator` | Cross-cutting | @urruegg | `@copilot` mention on any issue, or issue from [`smoke-echo.yml`](.github/ISSUE_TEMPLATE/smoke-echo.yml) | `github-mcp` | `write` | [`agents/orchestrator/AGENT.md`](agents/orchestrator/AGENT.md) | [`agents/orchestrator/golden-tasks.md`](agents/orchestrator/golden-tasks.md) |
-| `spec-parser` | UC1 — Build Subscription | @urruegg | Issue from [`uc1-build-subscription.yml`](.github/ISSUE_TEMPLATE/uc1-build-subscription.yml) | `github-mcp`, `workiq-mcp`, `azure-mcp`, `azure-devops-mcp` | `deploy` (UC1 outputs only, behind `approved-to-apply`) | [`agents/spec-parser/AGENT.md`](agents/spec-parser/AGENT.md) | [`agents/spec-parser/golden-tasks.md`](agents/spec-parser/golden-tasks.md) |
-| `pr-review` | UC3 — PR Review | @urruegg | ADO Service Hook → `repository_dispatch` → issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp`, `azure-devops-mcp` | `write` (ADO comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
-| `drift-analyzer` | UC2 — Drift Detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only), `azure-devops-mcp` (Wiki only) | `write` (ADO Wiki + GH issue only; `azure-mcp` ceiling downgraded to `read` per [`agents/drift-analyzer/AGENT.md` §2](agents/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents/drift-analyzer/AGENT.md`](agents/drift-analyzer/AGENT.md) | [`agents/drift-analyzer/golden-tasks.md`](agents/drift-analyzer/golden-tasks.md) |
+| `spec-parser` | UC1 — Build Subscription | @urruegg | Issue from [`uc1-build-subscription.yml`](.github/ISSUE_TEMPLATE/uc1-build-subscription.yml) | `github-mcp`, `azure-mcp` | `deploy` (UC1 outputs only, behind `approved-to-apply`) | [`agents/spec-parser/AGENT.md`](agents/spec-parser/AGENT.md) | [`agents/spec-parser/golden-tasks.md`](agents/spec-parser/golden-tasks.md) |
+| `pr-review` | UC3 — PR Review | @urruegg | GitHub pull request or issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp` | `write` (GitHub review comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
+| `drift-analyzer` | UC2 — Drift Detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents/drift-analyzer/AGENT.md` §2](agents/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents/drift-analyzer/AGENT.md`](agents/drift-analyzer/AGENT.md) | [`agents/drift-analyzer/golden-tasks.md`](agents/drift-analyzer/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per
@@ -57,9 +57,8 @@ tool.
 | MCP Server | Identifier | Purpose | Auth Mode |
 | ------------ | ----------- | --------- | ----------- |
 | Azure | `azure-mcp` | Read Azure resources, run `what-if`, push UC1-output Bicep deployments to customer subscriptions | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
-| Azure DevOps | `azure-devops-mcp` | Read PRs, create branches/commits/PRs, post review comments, upsert Wiki pages | OAuth (OBO) for human-triggered; service-principal OIDC for autonomous |
 | GitHub | `github-mcp` | Read/write this repo (issues, PRs, comments, branches) | GitHub Copilot coding-agent identity |
-| WorkIQ | `workiq-mcp` | Read landing-zone specs (UC1 input) | Workload Identity Federation (OIDC) |
+| Repo-managed markdown specs | `github-mcp` | Read canonical source material from `docs/` and `docs/specs/` for planning and review flows | GitHub Copilot coding-agent identity |
 
 ---
 

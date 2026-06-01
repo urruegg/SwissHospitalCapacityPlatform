@@ -10,7 +10,7 @@ body:
         > Triggers the **orchestrator** agent (per [AGENTS.md](../../AGENTS.md)).
         > The agent reads this issue, posts a single triage comment confirming
         > the echo phrase, and exits. No branch, no PR, no calls to
-        > `azure-mcp`, `azure-devops-mcp`, or `workiq-mcp`.
+        > `azure-mcp`.
         >
         > Acceptance is defined by the `smoke-echo` fixture in
         > [`agents/orchestrator/golden-tasks.md`](../../agents/orchestrator/golden-tasks.md).
@@ -53,5 +53,5 @@ body:
     attributes:
       label: Acknowledgements
       options:
-        - label: "This is a smoke run only. No production data, no Azure resources, no ADO objects."
+        - label: "This is a smoke run only. No production data and no Azure mutations."
           required: true

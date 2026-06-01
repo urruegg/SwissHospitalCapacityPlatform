@@ -19,7 +19,7 @@ configured by assets in this repository — `AGENTS.md`, prompt files under
 ISSUE_TEMPLATE/, PR template, golden-task fixtures, and Bicep template
 libraries (UC1 outputs). There is **no bespoke Python service, no Foundry-hosted
 agent, and no platform-runtime Azure infrastructure** in this repo. Agents act
-on Azure / Azure DevOps / Microsoft 365 *targets* via MCP servers.
+on Azure and Microsoft 365 *targets* via MCP servers.
 
 Use these instructions to guide all code, documentation, and review suggestions in
 this repo.
@@ -91,7 +91,7 @@ agent runtime remains GitHub Copilot coding agent + MCP servers.
 | `integrations/` *(planned)* | Workflow / API definitions | Logic Apps, connectors, event flows, and FHIR integration adapters. |
 | `security-governance/` *(planned)* | Policy-as-code / Markdown | Purview mappings, access model definitions, and control evidence. |
 | `pipelines/` *(planned)* | YAML | Delivery workflows spanning docs, infra, data, AI, and app release lanes. |
-| `samples/` *(planned)* | JSON / Markdown | Sample WorkIQ specs, sample ADO PR payloads, sample drift reports — used as fixtures in golden tasks. |
+| `samples/` *(planned)* | JSON / Markdown | Sample source bundles, sample GitHub PR payloads, and sample drift reports — used as fixtures in golden tasks. |
 | `sprints/` *(exists)* | Markdown | Sprint backlogs S0–S6. |
 
 ### Architecture Lanes (mandatory mental model)
@@ -153,14 +153,14 @@ security, or agent behavior.
 - Changes in `docs/**`: every edited doc must follow §9 Document Versioning.
 
 ### Key Technical Decisions
-- **Runtime**: **GitHub Copilot coding agent** (per ADR-0002). No bespoke service, no Foundry-hosted agent. Agents are Markdown + MCP config + GitHub-native triggers (issues, `@copilot` mentions, `workflow_dispatch`, ADO Service Hook → issue, schedule → issue).
+- **Runtime**: **GitHub Copilot coding agent** (per ADR-0002). No bespoke service, no Foundry-hosted agent. Agents are Markdown + MCP config + GitHub-native triggers (issues, `@copilot` mentions, `workflow_dispatch`, and scheduled GitHub workflows when needed).
 - **Model**: Whatever GitHub Copilot uses at runtime. The platform does not select, deploy, or manage a model.
-- **Cloud**: Microsoft Azure for **agent targets only** (UC1's customer landing zones, UC2's scanned subscriptions, UC1's ADO Repos). No multi-cloud abstractions unless explicitly required.
+- **Cloud**: Microsoft Azure for **agent targets only** (UC1's customer landing zones and UC2's scanned subscriptions). Delivery, review, and planning workflows are GitHub-native. No multi-cloud abstractions unless explicitly required.
 - **IaC**: **Bicep** for all UC1 *output artefacts* (the landing-zone templates the Spec Parser Agent assembles). Use Terraform only when multi-cloud or an existing verified module mandates it.
 - **Solution shape**: Multi-layer enterprise AI platform repository (governance + control plane + infra + data + AI + app/integration lanes), aligned to Swiss healthcare operating constraints.
 - **Identity**:
   - **GitHub Copilot coding-agent identity** for everything that happens inside this repo.
-  - **Managed Identity / Workload Identity Federation** for any Azure/ADO MCP call made by the coding agent. OBO when human-triggered.
+  - **Managed Identity / Workload Identity Federation** for any Azure MCP call made by the coding agent. OBO when human-triggered.
   - No connection strings, no long-lived client secrets in code, config, or PR descriptions.
 - **Secrets**: GitHub Actions secrets for CI; Azure Key Vault references *only inside Bicep modules under `infra/` (UC1 outputs)*, never for the platform itself.
 - **Agent memory & traces**: The **repository itself** (issues, PRs, comments, branches, audit log) plus GitHub Copilot coding-agent run history. **No Cosmos DB persistence at the platform-runtime layer.** A Cosmos DB resource may appear *inside* a UC1-generated Bicep template when a customer landing zone requires it — that is an output, not a dependency.
@@ -292,14 +292,14 @@ copilot/agent evals, and app/integration.
 - Follow the **OWASP Top 10**; flag and fix vulnerable patterns on sight.
 - **Authentication**:
   - The agent acts under **GitHub Copilot coding-agent identity** in this repo.
-  - Outbound MCP calls into Azure / Azure DevOps use **Workload Identity Federation** (no long-lived secrets), and **OBO** when a human triggers the agent.
+  - Outbound MCP calls into Azure use **Workload Identity Federation** (no long-lived secrets), and **OBO** when a human triggers the agent.
   - Entra ID is the IdP for human callers of MCP-targeted resources.
 - **Secrets**:
   - Repository-level secrets via **GitHub Actions secrets** + **GitHub OIDC** — never long-lived in code, config, prompts, or PR descriptions.
   - Bicep templates under `infra/` (UC1 outputs) reference **Azure Key Vault** for the *customer's* landing zone; that Key Vault is provisioned by the template, not by this platform.
   - Agents must never echo, log, or commit secrets; agents must redact token-like strings before posting any comment.
 - **MCP allow-list**: Only MCP servers listed in `.github/copilot/mcp.json` are permitted. Adding a server requires a CODEOWNERS-approved PR documenting purpose, required permissions, and a golden-task that exercises a representative tool.
-- **RBAC**: Least privilege on every MCP-side principal (ADO PAT-equivalent scopes, Azure RBAC roles). Prefer built-in roles; scope at the resource or resource group level (never subscription unless required).
+- **RBAC**: Least privilege on every MCP-side principal and Azure role assignment. Prefer built-in roles; scope at the resource or resource group level (never subscription unless required).
 - **Tool inputs**: Validate and sanitise all MCP tool inputs at the prompt level. Treat any value derived from an LLM as untrusted.
 - **Destructive actions**: deploy, delete, drop, force-push, scale-to-zero, and `terraform destroy` require an **explicit, separate human confirmation comment** on the agent's draft PR or issue. Do **not** auto-approve in any prompt or workflow.
 - **Egress**: The platform itself has no egress (no service). UC1 *outputs* must use private endpoints for Key Vault, Cosmos DB, and Storage in production, and CORS allow-lists never `*`.
@@ -424,7 +424,7 @@ Before approving a PR, verify:
 - **Resource tags** (UC1 outputs): `env`, `owner`, `costCenter`, `workload` on every resource.
 - **Git tags**: `vX.Y.Z` — managed by release tooling, never manual.
 - **Agent names**: `kebab-case` matching the folder name (`spec-parser`, `pr-review`, `drift-analyzer`, `orchestrator`).
-- **MCP server identifiers**: `kebab-case` matching the server's published name (`azure-mcp`, `azure-devops-mcp`, `github-mcp`, `workiq-mcp`).
+- **MCP server identifiers**: `kebab-case` matching the server's published name (`azure-mcp`, `github-mcp`).
 - **Issue templates**: `uc<N>-<short>.yml` (e.g., `uc1-build-subscription.yml`).
 
 ---

@@ -9,10 +9,9 @@
     "",
     "Auth is handled outside this file:",
     "- github-mcp: GitHub Copilot coding-agent identity (built-in).",
-    "- azure-mcp / azure-devops-mcp / workiq-mcp: Workload Identity Federation",
-    "  (OIDC) for autonomous runs; OBO when human-triggered. Federated",
-    "  credentials live on MCP-side service principals (per ADR-0004 once",
-    "  Accepted)."
+    "- azure-mcp: Workload Identity Federation (OIDC) for autonomous runs;",
+    "  OBO when human-triggered. Federated credentials live on MCP-side",
+    "  service principals (per ADR-0004 once Accepted)."
   ],
   "mcpServers": {
     "github-mcp": {
@@ -39,31 +38,6 @@
         "Reader on subscription (drift-analyzer)",
         "Contributor on target RG (spec-parser, scoped per UC1 output)"
       ],
-      "_golden_task": "agents/spec-parser/golden-tasks.md",
-      "type": "remote",
-      "enabled": true,
-      "_enabled_in_sprint": "S2 (UC1 happy path)"
-    },
-    "azure-devops-mcp": {
-      "_purpose": "Read PRs; create branches/commits/PRs; post review comments; upsert Wiki pages.",
-      "_owners": "@urruegg",
-      "_used_by": ["spec-parser", "pr-review", "drift-analyzer"],
-      "_side_effect_ceiling": "write",
-      "_required_permissions": [
-        "Repos: Contribute + Pull Request Contribute",
-        "Wiki: Contribute (drift-analyzer)"
-      ],
-      "_golden_task": "agents/spec-parser/golden-tasks.md",
-      "type": "remote",
-      "enabled": true,
-      "_enabled_in_sprint": "S2 (UC1 happy path)"
-    },
-    "workiq-mcp": {
-      "_purpose": "Read landing-zone specs (UC1 input).",
-      "_owners": "@urruegg",
-      "_used_by": ["spec-parser"],
-      "_side_effect_ceiling": "read",
-      "_required_permissions": ["WorkIQ read scope on the configured tenant"],
       "_golden_task": "agents/spec-parser/golden-tasks.md",
       "type": "remote",
       "enabled": true,

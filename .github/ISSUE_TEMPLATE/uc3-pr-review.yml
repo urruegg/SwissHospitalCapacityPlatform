@@ -1,6 +1,6 @@
 name: "UC3 — PR review"
-description: "Trigger the pr-review agent to comment on an Azure DevOps pull request. Usually opened by an ADO Service Hook via `repository_dispatch`."
-title: "[UC3] Review ADO PR: <pr-id>"
+description: "Trigger the pr-review agent to comment on a GitHub pull request."
+title: "[UC3] Review GitHub PR: <pr-id>"
 labels: ["uc3", "agent:pr-review", "needs-triage"]
 assignees: ["copilot"]
 body:
@@ -8,27 +8,27 @@ body:
     attributes:
       value: |
         > Triggers the **pr-review** agent (per [AGENTS.md](../../AGENTS.md)).
-        > The agent reads the PR via `azure-devops-mcp` and posts a single,
+        > The agent reads the PR via GitHub-native context and posts a single,
         > idempotent review comment marked with
         > `<!-- agentic-devops:pr-review -->`. Re-runs update the same comment
         > rather than appending duplicates.
         >
-        > **Side-effect ceiling**: `write` (ADO comments only).
+        > **Side-effect ceiling**: `write` (GitHub comments only).
         > **Latency target**: < 60 s p95 from PR-created event to comment.
 
   - type: input
-    id: ado_pr_url
+    id: github_pr_url
     attributes:
-      label: Azure DevOps PR URL
+      label: GitHub PR URL
       description: "Full URL to the pull request."
-      placeholder: "https://dev.azure.com/<org>/<project>/_git/<repo>/pullrequest/<id>"
+      placeholder: "https://github.com/<owner>/<repo>/pull/<id>"
     validations:
       required: true
 
   - type: input
-    id: ado_event_id
+    id: github_event_id
     attributes:
-      label: ADO Service Hook event ID (optional)
+      label: GitHub event ID (optional)
       description: "Populated automatically by the webhook receiver workflow; leave blank for manual runs."
       placeholder: "auto-populated"
     validations:
@@ -39,7 +39,7 @@ body:
     attributes:
       label: Trigger source
       options:
-        - "ADO Service Hook (automatic)"
+        - "GitHub webhook or workflow (automatic)"
         - "Manual run"
       default: 0
     validations:
