@@ -2,24 +2,331 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.1.0 |
+| **Version** | 0.7.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | N/A |
+| **Previous Version** | 0.6.0 (added GA-based decision record and MVP scope impact rules) |
 
 ## Purpose
 
-Placeholder baseline document.
+This document defines the first architecture draft for the Swiss AI-Powered
+Patient Flow and Hospital Capacity Platform and maps architecture decisions to
+the requirement baseline in docs/PRD.md.
+
+## Architecture Drivers
+
+- Provider-internal deployment model and governance boundary.
+- Real-time operational visibility and 72-hour forecasting.
+- Discharge coordination with external partner endpoints.
+- Grounded operational copilot for bed and capacity management.
+- Swiss compliance, security, and auditable operations.
+
+## Deployment Baseline
+
+data center = switzerland north
+
+## Reference Pattern
+
+The target pattern combines:
+
+- Microsoft Cloud Adoption Framework landing zone principles for governance,
+  identity, and network boundaries.
+- Azure Well-Architected pillars for reliability, security, cost,
+  performance, and operations.
+- A healthcare data and AI pattern with ingest, normalize, curate, predict,
+  assist, and orchestrate phases.
 
 ## Logical Architecture
 
-TBD.
+### Layered View
+
+| Layer | Purpose | Primary Services |
+| ----- | ------- | ---------------- |
+| Source and event | Capture operational healthcare signals | KIS/EHR, ED, ADT, bed-state, staffing feeds |
+| Interoperability and normalization | Normalize and standardize healthcare payloads | Azure Health Data Services, integration adapters |
+| Data platform | Curate, transform, and serve governed data | Microsoft Fabric, OneLake |
+| AI and decision intelligence | Forecasting and discharge scoring | Azure Machine Learning |
+| Copilot and experience | Operational dashboard and conversational assistance | Power BI, Azure OpenAI |
+| Orchestration | Partner workflow execution and callback handling | Azure Logic Apps |
+| Governance and operations | Security, lineage, observability, policy | Entra ID, Key Vault, Purview, Monitor, Policy |
+
+### Component Topology
+
+| Domain | Components |
+| ------ | ---------- |
+| Identity and access | Microsoft Entra ID, managed identity, RBAC |
+| Core platform | Azure Health Data Services, Fabric, Azure Machine Learning, Azure OpenAI, Logic Apps, Power BI |
+| Security and governance | Azure Key Vault, Microsoft Purview, Azure Monitor, Log Analytics, Azure Policy |
+
+### End-to-End Flow
+
+1. Source events are ingested and normalized.
+2. Curated datasets are produced in Fabric and OneLake.
+3. Forecast and discharge models produce scored outputs.
+4. Outputs are served to dashboards and copilot grounding pipelines.
+5. Logic Apps orchestrates outbound and inbound partner coordination.
+6. Partner acknowledgements are written back to governed datasets.
+7. Traceability is preserved from source event to user-facing output and action.
 
 ## Deployment Architecture
 
-TBD.
+### Network and Security Boundaries
+
+- Hub-spoke model with strict workload segmentation.
+- Private connectivity and minimal public exposure for sensitive services.
+- Centralized policy enforcement for encryption, diagnostics, and access.
+
+### Environment Strategy
+
+- DEV, SIT, PROD progression with approval gates.
+- Separate environment configuration for data contracts, model versions,
+  and prompt bundles.
+- Repeatable Infrastructure as Code deployment workflow.
+
+### Identity and Secret Strategy
+
+- Managed identity as default workload authentication.
+- Key Vault for secret and certificate material.
+- Role assignments scoped by environment and workload ownership.
+
+### Observability and Audit Strategy
+
+- Centralized logs, metrics, and alerts for ingestion, model pipelines,
+  copilot responses, and orchestration flows.
+- Auditable chain from source event to model output, response, and partner trigger.
+- Governance evidence artifacts retained for compliance review.
+
+## Requirement Mapping Summary
+
+| Requirement Family | Architectural Coverage |
+| ------------------ | ---------------------- |
+| FR-OM | Single-provider deployment, phased rollout boundary, endpoint-only external partner model |
+| FR-DATA | FHIR normalization, curated datasets, semantic serving, source-to-consumption traceability |
+| FR-FC | 72-hour forecast pipeline, specialty/time segmentation, dashboard and copilot feed |
+| FR-DC | Discharge scoring pipeline, orchestration triggers, acknowledgement capture |
+| FR-CX | Power BI command views and grounded operational copilot |
+| FR-GOV | Auditable delivery, policy controls, access enforcement, provider-local operational control |
+| NFR-COMP and NFR-SEC | Residency-oriented controls, RBAC, secure integration boundaries |
+| NFR-DQ and NFR-PERF | Quality gates on feeds, near-real-time processing and hourly forecast cadence |
+| NFR-REL and NFR-AI | Continuous operations, restartability, advisory copilot and response traceability |
+| NFR-MAINT | Modular architecture lanes and Git-first release model |
 
 ## Decisions
 
-TBD.
+### Accepted In This Draft
+
+1. Single-provider deployment boundary is preserved for each rollout.
+2. External partners are treated as integration endpoints, not platform operators.
+3. Fabric is the primary analytics backbone for curated operational data.
+4. Azure Machine Learning and Azure OpenAI are the primary AI layers.
+5. Logic Apps is the default orchestration mechanism for partner coordination.
+6. Governance controls are architecture-native and not deferred.
+7. Architecture scope is limited to GA-capable services for MVP critical path.
+
+### Open For Review
+
+1. Region resilience strategy for high availability and failover.
+2. Exact FHIR resource profile scope for first implementation increment.
+3. Concrete SLO targets for data freshness, model latency, and copilot response.
+4. Detailed backup and disaster recovery controls by data classification tier.
+
+### GA-Based Decision Record (As Of 2026-06-01)
+
+The following decisions lock the architecture baseline to currently available GA
+capabilities and remove preview dependencies from MVP-critical workflows.
+
+| Decision ID | Decision | Status | Effective Scope |
+| ----------- | -------- | ------ | --------------- |
+| `AR-D-001` | Microsoft Fabric remains the core data platform in Switzerland North and Switzerland West with GA workloads only. See `ADR-0007`. | Accepted | MVP and PROD baseline |
+| `AR-D-002` | Fabric IQ Ontology is excluded from MVP critical path because it is preview and has no published GA date. See `ADR-0008`. | Accepted | Deferred to post-MVP feature wave |
+| `AR-D-003` | Copilot inference for PHI-sensitive scenarios must use Azure OpenAI regional deployment modes in Switzerland regions only. See `ADR-0009`. | Accepted | MVP and PROD baseline |
+| `AR-D-004` | Global and Data Zone deployment types are not permitted for PHI-sensitive copilot traffic. See `ADR-0010`. | Accepted | MVP and PROD baseline |
+| `AR-D-005` | Dedicated React web app channel is approved as a GA-safe experience path independent of Microsoft 365 Copilot readiness. See `ADR-0011`. | Accepted | MVP and PROD baseline |
+| `AR-D-006` | Any service or feature that is preview-only is classified as non-production for regulated data unless an explicit exception is approved. See `ADR-0012`. | Accepted | Governance control rule |
+
+### MVP Scope Impact From GA Decisions
+
+1. Keep semantic modeling on GA Fabric assets and semantic models; do not depend
+  on Fabric IQ Ontology for MVP release criteria.
+2. Keep copilot grounding and orchestration on GA services with Swiss-region
+  deployment constraints.
+3. Use the dedicated React app as the primary fallback channel where Microsoft
+  365 Copilot capabilities are not operationally available.
+4. Preserve a controlled backlog item to onboard Ontology after GA and regional
+  validation in Switzerland.
+
+## Architecture Challenge Patterns
+
+This section challenges the current baseline with two alternative patterns and
+clarifies where they complement or reshape the target architecture.
+
+### Pattern 1: Fabric IQ Ontology Model with Data Agents
+
+#### Pattern 1 Changes
+
+- Add a semantic ontology layer in Microsoft Fabric IQ to formalize entities,
+    relationships, and operational concepts (patient flow, capacity unit,
+    discharge readiness, transfer window, partner constraints).
+- Introduce data agents as controlled reasoning/automation components over the
+    ontology for tasks like anomaly detection, semantic query assistance, and
+    rule-aware recommendation generation.
+
+#### Pattern 1 Architecture Impact
+
+- Data platform layer evolves from curated datasets only to
+  curated datasets plus explicit ontology semantics.
+- AI and decision layer can shift some rule-heavy logic from custom pipeline
+  code to ontology-grounded reasoning.
+- Copilot grounding quality improves through consistent business terms and
+  relationship-aware retrieval.
+
+#### Pattern 1 Benefits
+
+- Reduces semantic drift between dashboard metrics, model features, and
+    copilot responses.
+- Improves explainability by linking outputs to ontology concepts and
+    relationships.
+- Enables more reusable cross-domain logic across care pathways.
+
+#### Pattern 1 Risks and Mitigations
+
+- Risk: Ontology governance overhead and ownership ambiguity.
+  Mitigation: assign data domain owners and publish a semantic change workflow.
+- Risk: Latency overhead from ontology resolution in real-time scenarios.
+  Mitigation: precompute materialized semantic views for operational paths.
+- Risk: Early over-modeling before access patterns stabilize.
+  Mitigation: start with a minimal ontology bounded to FR-FC and FR-DC.
+
+### Pattern 2: Dedicated React Web App for Copilot Experience
+
+#### Pattern 2 Changes
+
+- Add a dedicated React-based operations portal as an alternative experience
+    channel for organizations that do not run Microsoft 365 Copilot.
+- Keep conversational copilot interactions, command views, and action traces in
+    a single provider-controlled web application.
+
+#### Pattern 2 Architecture Impact
+
+- Experience layer becomes dual-channel:
+  Microsoft 365 Copilot (when present) plus dedicated web app fallback.
+- Identity/access integration must include Entra ID app registration,
+  role-aware UI authorization, and session telemetry.
+- Operational governance must include UI-level audit trails for prompt,
+  response, and action confirmation events.
+
+#### Pattern 2 Benefits
+
+- Removes dependency on Microsoft 365 Copilot licensing or rollout maturity.
+- Gives full UX and workflow control for capacity command center scenarios.
+- Supports progressive enhancement and phased migration to Microsoft 365
+    Copilot when ready.
+
+#### Pattern 2 Risks and Mitigations
+
+- Risk: Duplicated experience logic across channels.
+  Mitigation: define shared prompt contracts and shared grounding APIs.
+- Risk: Additional security and maintenance surface in a custom app.
+  Mitigation: enforce Zero Trust controls, managed identity backends,
+  and strict release gates.
+- Risk: Divergence in user behavior data between channels.
+  Mitigation: centralize telemetry schema and evaluation metrics.
+
+### NFR Stress Test Against Assumed Capacity
+
+The following assumptions are used only to challenge architecture fitness and
+size headroom. They are not final production commitments.
+
+#### Assumed Operational Capacity Envelope
+
+| Capacity Signal | Assumption | Notes |
+| --------------- | ---------- | ----- |
+| Operational source events | 180000 per day, 5.4 million per month | Includes ED, ADT, bed-state, discharge, staffing updates |
+| Burst headroom target | 3x average event rate for 10-minute windows | Aligns with NFR-PERF-004 |
+| Forecast cadence | 24 runs per day, 720 runs per month | Hourly 72-hour forecast refresh |
+| Discharge rescoring cadence | 48 scheduled runs per day plus event-triggered deltas | Supports NFR-PERF-003 |
+| Copilot turns | 8000 turns per day, 240000 turns per month | Includes follow-up turns and clarification prompts |
+| Concurrent copilot users | 120 peak concurrent users | Shift overlap and incident surge scenario |
+| Interactive response objective | P95 under 4 seconds for standard grounded responses | Supports NFR-PERF-005 decision-cycle usability |
+
+#### NFR Challenge Matrix
+
+| NFR Group | Stress Scenario | Pattern 1: Fabric IQ Ontology + Data Agents | Pattern 2: Dedicated React Copilot App | Challenge Outcome |
+| --------- | --------------- | -------------------------------------------- | -------------------------------------- | ---------------- |
+| NFR-PERF-001 and NFR-PERF-004 | 180000 events/day with 3x bursts | Semantic layer can improve query quality but may add lookup latency unless semantic views are materialized | Neutral to ingestion throughput; app does not solve backend burst pressure | Backend buffering and stream partitioning remain mandatory regardless of channel |
+| NFR-PERF-005 | 120 concurrent users and 8000 turns/day | Better grounding relevance reduces retry loops and total turn load | Improves UX control and caching strategy for high concurrency | Dual gain if shared grounding API and response caching are implemented |
+| NFR-REL-001 to NFR-REL-003 | Continuous operations during dependency degradation | Ontology dependency can become a new critical path if not deployed with fail-open read strategy | Web app can implement graceful UI fallback patterns and degraded mode messaging | Both patterns must define degraded-mode behavior as a first-class contract |
+| NFR-AI-002 to NFR-AI-004 | High-volume advisory responses with audit traceability | Strong positive fit through ontology-linked evidence and concept-level traceability | Strong positive fit if UI persists prompt, context ID, response ID, and action confirmation | Combined pattern best supports auditable response chains |
+| NFR-SEC-001 to NFR-SEC-004 | 120 concurrent authenticated users across operational roles | Requires strict ontology access policies to avoid semantic overexposure | Requires hardened Entra app model, token lifecycle controls, and role-based UI gates | Security complexity increases with both patterns and must be offset by policy automation |
+| NFR-MAINT-001 and NFR-MAINT-004 | Provider-specific rollout without re-architecture | Ontology offers reusable semantic backbone but needs governance discipline per provider | Web app channel flexibility helps providers without Microsoft 365 Copilot | Patterns are maintainable if shared contracts prevent channel-specific drift |
+
+#### Capacity-Based Decision Guidance
+
+1. Pattern 1 is justified if semantic inconsistency or low explainability is a
+  current blocker for FR-CX and NFR-AI outcomes at forecast and discharge scale.
+2. Pattern 2 is justified if Microsoft 365 Copilot readiness is uncertain and
+  peak concurrent usage above 80 users is expected in command-center operations.
+3. If both patterns are adopted, enforce one shared grounding and audit API
+  contract to prevent fragmentation under monthly scale growth.
+4. Before final architecture sign-off, run a load validation plan using the
+  assumptions above and adjust SLO targets from observed P95/P99 behavior.
+
+### Switzerland GA and Data Residency Challenge
+
+For Swiss healthcare scope, architecture acceptance must require:
+
+- Primary and failover services deployed in Switzerland regions.
+- PHI and AI inference inputs/outputs processed in Switzerland-only scope when
+  required by provider policy and cantonal controls.
+- No dependency on preview-only features for MVP critical path.
+
+#### Service Availability and Residency Gate Matrix
+
+| Service Domain | Switzerland GA Signal | Residency Risk | Architecture Challenge and Rule |
+| -------------- | --------------------- | -------------- | ------------------------------- |
+| Microsoft Fabric core workloads | Fabric region availability lists Switzerland North and Switzerland West for all workloads | Low to medium (depends on workload-specific exceptions) | Accept as primary data platform, but enforce workload-level checks for every enabled Fabric capability |
+| Fabric IQ Ontology | Fabric region guidance marks Ontology as preview and unavailable in some regions | Medium to high for MVP commitments | Keep ontology as phased feature gate, not mandatory MVP dependency until Switzerland availability is validated |
+| Azure OpenAI and Foundry models | Foundry model region availability supports multiple deployment types; regional availability varies by model | High if Global or Data Zone deployment types are selected | For strict Swiss processing, use Standard/Regional deployments in Switzerland regions only; block Global and Data Zone modes for PHI flows |
+| FHIR service (Azure Health Data Services) | FHIR service documented as managed PHI-capable platform, but Switzerland GA must be validated against region listings at implementation time | High if regional support is missing | Add a hard deployment gate: no go-live until Switzerland region support is confirmed for target SKU |
+| Governance services (Key Vault, Monitor, Policy, Entra, Purview) | Core governance stack is generally broad in Azure, but feature-level regional variance can exist | Medium | Validate each service and feature in Products-by-Region and service-specific docs; define approved substitutes per control if unavailable |
+
+#### Mandatory Residency Control Rules
+
+1. PHI-bearing data stores must remain in Switzerland North or Switzerland West.
+2. AI request processing for PHI scenarios must use regional inference only.
+3. Cross-border failover for PHI workloads is not enabled by default; it requires
+  an explicit compliance decision record.
+4. Any feature without Switzerland GA support is classified as non-production for
+  regulated data until validated.
+
+#### Challenge Outcome for Current Baseline
+
+1. Baseline architecture remains viable if services are pinned to Switzerland
+  regions and residency-safe deployment modes.
+2. Pattern 1 (Ontology) remains strategically valuable but must be treated as
+  optional until regional availability is contractually validated.
+3. Pattern 2 (React web app channel) is region-neutral and can strengthen
+  provider control, as long as backend AI and data services obey Swiss region
+  restrictions.
+
+### Recommendation
+
+1. Adopt Pattern 1 in phased form:
+  minimal viable ontology first, then data-agent capabilities per domain.
+2. Adopt Pattern 2 as an optional channel strategy:
+  dedicated React app when Microsoft 365 Copilot is unavailable,
+  while preserving the same grounding and governance contracts.
+3. Keep platform-runtime governance unchanged:
+  GitHub Copilot coding agent remains the repository control-plane runtime
+  per ADR-0002; the React app is an end-user experience surface, not an
+  agent-runtime replacement.
+
+### Requirement and Decision Traceability
+
+- FR-DATA and FR-FC gain stronger semantic consistency through ontology modeling.
+- FR-CX gains a resilient delivery option through the dedicated web channel.
+- FR-GOV and NFR-AI gain improved traceability through ontology-linked evidence.
+- Open decision required:
+    confirm whether the dual-channel experience is mandatory in MVP scope
+    or staged after first provider rollout.
