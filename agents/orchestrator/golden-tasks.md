@@ -8,11 +8,11 @@ last-reviewed: 2026-05-25
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial release; Sprint 1 MVP per [sprint-01-orchestrator-mvp.md §S1-4](../../sprints/sprint-01-orchestrator-mvp.md#4-user-stories--acceptance-criteria)) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.1.0 (orchestrator golden-task baseline) |
 
 > **Purpose**: Acceptance fixtures for the [Orchestrator Agent](AGENT.md).
 > Every PR that modifies `AGENT.md` or the orchestrator's MCP allow-list must

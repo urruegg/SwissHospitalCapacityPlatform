@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (full rewrite from specs baseline) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.1.0 (requirement baseline finalized for implementation planning) |
 
 ## Purpose
 

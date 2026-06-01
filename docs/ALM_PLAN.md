@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.2.0 |
+| **Version** | 0.2.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | 0.1.0 (placeholder baseline) |
+| **Status** | Reviewed |
+| **Previous Version** | 0.2.0 (Git-first ALM baseline with governance gates) |
 
 ## Purpose
 

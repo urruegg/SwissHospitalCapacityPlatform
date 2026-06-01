@@ -2,15 +2,15 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.9.0 |
+| **Version** | 0.9.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | 0.8.0 (added architecture challenge patterns and NFR stress validation) |
+| **Status** | Reviewed |
+| **Previous Version** | 0.9.0 (GA-constrained architecture baseline with capacity challenge) |
 
 ## Purpose
 
-This document defines the first architecture draft for the Swiss AI-Powered
+This document defines the current baseline architecture for the Swiss AI-Powered
 Patient Flow and Hospital Capacity Platform and maps architecture decisions to
 the requirement baseline in docs/PRD.md.
 

@@ -8,11 +8,11 @@ last-reviewed: 2026-06-01
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial release; Sprint 5 minimum-viable scope per [sprint-05-uc2-drift-analyzer.md §S5-7](../../sprints/sprint-05-uc2-drift-analyzer.md#4-user-stories--acceptance-criteria)) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.1.0 (drift analyzer golden-task baseline) |
 
 ## Fixture: solution-contract-drift
 

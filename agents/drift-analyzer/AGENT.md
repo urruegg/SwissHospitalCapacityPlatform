@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.2.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | 1.1.0 (refined to solution-delivery lifecycle); 1.0.0 (initial release; Sprint 5 minimum-viable scope per [sprint-05-uc2-drift-analyzer.md](../../sprints/sprint-05-uc2-drift-analyzer.md). Workflow, tracked-subscription registry, and runbook deferred to a follow-up PR.) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.2.0 (refined to solution-delivery lifecycle) |
 
 > **Runtime**: GitHub Copilot coding agent. This file is the **system prompt**
 > loaded when the Copilot coding agent picks up an issue filed from

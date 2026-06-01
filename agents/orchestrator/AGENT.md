@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.2.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | 1.1.0 (dispatcher aligned to repository-managed markdown sources and GitHub-native delivery); 1.0.0 (initial release; Sprint 1 MVP per [sprint-01-orchestrator-mvp.md](../../sprints/sprint-01-orchestrator-mvp.md) §3.1 Runtime Amendment) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.2.0 (dispatcher aligned to repository-managed markdown sources and GitHub-native delivery) |
 
 > **Runtime**: GitHub Copilot coding agent. This file is the **system prompt**
 > loaded when the Copilot coding agent picks up an issue that mentions

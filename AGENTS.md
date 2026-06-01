@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.5.0 |
+| **Version** | 1.5.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial release; aligned with [ADR-0002 Runtime is GitHub Copilot coding agent](docs/adr/0002-runtime-is-github-copilot-coding-agent.md)); 1.1.0 marks `orchestrator` ready (Sprint 1 MVP shipped); 1.2.0 marks the legacy UC1 parser ready (Sprint 2 happy-path shipped, ADR-0003 Accepted, ADR-0006 added); 1.3.0 marks `drift-analyzer` ready in **minimum-viable** scope (Sprint 5 — `AGENT.md` + 4 golden tasks; nightly scheduler and tracked-subscription registry deferred); 1.4.0 aligns active agents to GitHub-native delivery and repo-managed markdown sources under `docs/` and `docs/specs/`; 1.5.0 adds the solution-delivery specialist agents for PRD, architecture, landing zone, compliance, data, app, and validation workflows. |
+| **Status** | Reviewed |
+| **Previous Version** | 1.5.0 (added the solution-delivery specialist agents for PRD, architecture, landing zone, compliance, data, app, and validation workflows) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn

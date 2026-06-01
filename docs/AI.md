@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.0 |
+| **Version** | 0.4.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | 0.3.0 (added strict PHI in-country controls and Foundry/Fabric IaC coverage) |
+| **Status** | Reviewed |
+| **Previous Version** | 0.4.0 (PHI in-country controls and Foundry/Fabric IaC coverage baseline) |
 
 ## Purpose
 

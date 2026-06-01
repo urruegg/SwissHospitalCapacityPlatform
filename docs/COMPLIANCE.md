@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.0 |
+| **Version** | 0.3.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | 0.2.0 (initial Swiss legal baseline with control and evidence model) |
+| **Status** | Reviewed |
+| **Previous Version** | 0.3.0 (Swiss control and evidence baseline with traceability) |
 
 ## Purpose
 

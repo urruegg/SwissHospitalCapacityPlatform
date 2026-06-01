@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | N/A |
+| **Status** | Reviewed |
+| **Previous Version** | 1.0.0 (initial solution design baseline) |
 
 > **Runtime**: GitHub Copilot coding agent. This agent converts `docs/PRD.md` into `docs/ARCHITECTURE.md` and solution-level design decisions.
 

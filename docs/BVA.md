@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | N/A |
+| **Status** | Reviewed |
+| **Previous Version** | 1.0.0 (initial ROM ROI and TCO baseline) |
 
 ## Purpose
 

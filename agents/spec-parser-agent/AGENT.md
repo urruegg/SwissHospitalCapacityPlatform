@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | N/A |
+| **Status** | Reviewed |
+| **Previous Version** | 1.0.0 (initial spec parser baseline) |
 
 > **Runtime**: GitHub Copilot coding agent. This agent converts the source requirement set in `docs/specs/` into the solution PRD in `docs/PRD.md`.
 

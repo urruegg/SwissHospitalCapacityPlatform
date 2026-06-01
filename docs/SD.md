@@ -2,15 +2,15 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | N/A |
+| **Status** | Reviewed |
+| **Previous Version** | 1.0.0 (initial MVP solution design baseline) |
 
 ## Purpose
 
-This document defines the first draft MVP Solution Design for the Swiss
+This document defines the MVP Solution Design baseline for the Swiss
 Hospital Capacity Platform.
 
 It translates requirements and architecture decisions into an implementable

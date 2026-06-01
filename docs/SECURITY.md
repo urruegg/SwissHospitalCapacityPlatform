@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.0 |
+| **Version** | 0.3.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | 0.2.0 (Zero Trust baseline aligned to Swiss compliance) |
+| **Status** | Reviewed |
+| **Previous Version** | 0.3.0 (Zero Trust baseline aligned to Swiss compliance) |
 
 ## Purpose
 

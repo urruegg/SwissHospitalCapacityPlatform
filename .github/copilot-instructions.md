@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** |  |
+| **Status** | Reviewed |
+| **Previous Version** | 1.0.0 (initial repository-wide copilot baseline) |
 
 This repository hosts a sample **Swiss Hospital Capacity Platform**: a system where AI agents
 plan, execute, and observe hospital capacity management workflows (CI/CD, infrastructure provisioning,
