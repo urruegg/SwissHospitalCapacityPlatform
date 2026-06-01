@@ -423,7 +423,7 @@ Before approving a PR, verify:
   (e.g., `kv-agentic-devops-dev`, `cosmos-agentic-devops-prod`). These names appear in UC1 *output* templates; they are not the platform's own infrastructure.
 - **Resource tags** (UC1 outputs): `env`, `owner`, `costCenter`, `workload` on every resource.
 - **Git tags**: `vX.Y.Z` — managed by release tooling, never manual.
-- **Agent names**: `kebab-case` matching the folder name (`spec-parser`, `pr-review`, `drift-analyzer`, `orchestrator`).
+- **Agent names**: `kebab-case` matching the folder name (`spec-parser-agent`, `solution-design-agent`, `landing-zone-agent`, `compliance-agent`, `data-design-agent`, `app-builder-agent`, `test-verifier-agent`, `pr-review`, `drift-analyzer`, `orchestrator`).
 - **MCP server identifiers**: `kebab-case` matching the server's published name (`azure-mcp`, `github-mcp`).
 - **Issue templates**: `uc<N>-<short>.yml` (e.g., `uc1-build-subscription.yml`).
 

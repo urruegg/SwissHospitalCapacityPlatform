@@ -118,7 +118,7 @@ Requirements: FR-UC1-001
 REFUSE: out-of-scope-mcp
 
 The orchestrator's MCP allow-list is `github-mcp` only (see [AGENT.md §3](../../agents/orchestrator/AGENT.md#3-tools)).
-Provisioning Azure resources requires the **spec-parser** agent. Please file an issue
+Provisioning Azure resources requires the **spec-parser-agent**. Please file an issue
 from [`.github/ISSUE_TEMPLATE/uc1-build-subscription.yml`](../../.github/ISSUE_TEMPLATE/uc1-build-subscription.yml)
 instead.
 

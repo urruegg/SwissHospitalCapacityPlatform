@@ -17,7 +17,7 @@
     "github-mcp": {
       "_purpose": "Read/write this repo (issues, PRs, comments, branches).",
       "_owners": "@urruegg",
-      "_used_by": ["orchestrator", "spec-parser", "pr-review", "drift-analyzer"],
+      "_used_by": ["orchestrator", "spec-parser-agent", "solution-design-agent", "landing-zone-agent", "compliance-agent", "data-design-agent", "app-builder-agent", "test-verifier-agent", "pr-review", "drift-analyzer"],
       "_side_effect_ceiling": "write",
       "_required_permissions": [
         "contents: write",
@@ -31,14 +31,14 @@
     "azure-mcp": {
       "_purpose": "Read Azure resources; run what-if; apply UC1-output Bicep against customer subscriptions.",
       "_owners": "@urruegg",
-      "_used_by": ["spec-parser", "drift-analyzer"],
+      "_used_by": ["landing-zone-agent", "spec-parser-agent", "drift-analyzer"],
       "_side_effect_ceiling": "deploy",
       "_confirmation_rule": "Deploy/delete require `approved-to-apply` comment per AGENTS.md §4.",
       "_required_permissions": [
         "Reader on subscription (drift-analyzer)",
-        "Contributor on target RG (spec-parser, scoped per UC1 output)"
+        "Contributor on target RG (spec-parser-agent, scoped per UC1 output)"
       ],
-      "_golden_task": "agents/spec-parser/golden-tasks.md",
+      "_golden_task": "agents/spec-parser-agent/golden-tasks.md",
       "type": "remote",
       "enabled": true,
       "_enabled_in_sprint": "S2 (UC1 happy path)"

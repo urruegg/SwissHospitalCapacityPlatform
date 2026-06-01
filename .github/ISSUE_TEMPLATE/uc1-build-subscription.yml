@@ -1,13 +1,13 @@
 name: "UC1 — Build landing-zone subscription"
-description: "Trigger the spec-parser agent to read repo-managed markdown sources and assemble a UC1-output GitHub PR."
+description: "Trigger the spec-parser-agent to read repo-managed markdown sources and assemble a UC1-output GitHub PR."
 title: "[UC1] Build subscription: <short-name>"
-labels: ["uc1", "agent:spec-parser", "needs-triage"]
+labels: ["uc1", "agent:spec-parser-agent", "needs-triage"]
 assignees: ["copilot"]
 body:
   - type: markdown
     attributes:
       value: |
-        > Triggers the **spec-parser** agent (per [AGENTS.md](../../AGENTS.md)).
+        > Triggers the **spec-parser-agent** (per [AGENTS.md](../../AGENTS.md)).
         > The agent reads the canonical markdown source set from `docs/` and
         > `docs/specs/`, generates Bicep parameters, and opens a GitHub PR for
         > the customer landing zone plan.

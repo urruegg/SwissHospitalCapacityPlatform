@@ -10,7 +10,7 @@ body:
         > Triggers the **drift-analyzer** agent (per [AGENTS.md](../../AGENTS.md)).
         > The agent scans the subscription read-only via `azure-mcp`, diffs
         > against the repo-managed source artefacts UC1 owns, and writes a drift report to this issue plus a reproducible branch sidecar.
-        > Remediation PRs are routed through the **spec-parser** agent (UC1),
+        > Remediation PRs are routed through the **spec-parser-agent** (UC1),
         > never opened directly by `drift-analyzer`.
         >
         > **Side-effect ceiling**: `write` (GitHub issue + branch artefacts only — no
