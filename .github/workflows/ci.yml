@@ -41,11 +41,15 @@ jobs:
       - name: Link check (lychee)
         uses: lycheeverse/lychee-action@v2
         with:
+          # Pin to a stable lychee release. v0.23.0 panics with
+          # "SendError" on this repo's doc set; v0.18.1 is the last
+          # version known to complete cleanly with our globs.
+          lycheeVersion: v0.18.1
           # Lychee options live in lychee.toml at repo root (auto-discovered)
-          # so CI and scripts/preflight.ps1 share one source of truth and
-          # CLI-flag drift between releases (e.g. v0.23 dropped
-          # `--exclude-mail`) cannot recur. Only file globs go here.
+          # so CI and scripts/preflight.ps1 share one source of truth.
           args: >-
+            --no-progress
+            --max-concurrency 4
             docs/**/*.md
             sprints/*.md
             .github/*.md

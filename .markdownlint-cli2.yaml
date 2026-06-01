@@ -17,3 +17,8 @@ config:
   MD001: false
   MD022: false
   MD058: false
+
+  # Several governance documents use 1-space sub-list indentation and
+  # restart-numbered sub-lists; accepted as baseline house style for now.
+  MD007: false
+  MD029: false
