@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial sprint draft) |
+| **Status** | Completed |
+| **Previous Version** | 1.1.0 (added GitHub Issue + @copilot trigger model) |
 
 ## Sprint Goal
 
@@ -58,6 +58,12 @@ Sprint 1 is executed as a GitHub Issue-driven run. The sprint issue is the track
 - The traceability section points to the source specs used to derive the requirements.
 - GitHub Issue [#3](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/3) is linked to the GitHub Project delivery board.
 - The sprint issue and `@copilot` trigger path are documented as the execution model for the sprint.
+
+## Completion Summary
+
+- Sprint 01 completed with a full PRD rewrite in `docs/PRD.md`.
+- Functional and non-functional requirements were re-established from `docs/specs/` as the canonical source set.
+- The Sprint 01 issue is closed after commit publication and documented completion.
 
 ## Notes
 

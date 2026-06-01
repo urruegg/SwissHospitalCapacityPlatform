@@ -2,183 +2,198 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.0 |
+| **Version** | 1.0.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 0.2.0 (added initial FR/NFR baseline and traceability) |
+| **Previous Version** | 0.3.0 (preliminary baseline, superseded by full rewrite from specs) |
 
 ## Purpose
 
-This product requirements document defines the initial functional and non-functional
-requirements for the Swiss Hospital Capacity Platform scenario represented in this
-repository.
+This product requirements document defines the complete functional and non-functional
+requirements for the Swiss AI-Powered Patient Flow and Hospital Capacity Platform,
+derived from the source specifications in `docs/specs`.
 
-The target solution is a provider-internal AI-powered patient flow and hospital
-capacity platform deployed for one Swiss cantonal hospital provider at a time,
-for example USZ or LUKS. The repository scope also includes the GitHub-native
-Copilot agent contracts used to plan, validate, and govern the solution assets.
+The target product is a provider-internal operational intelligence platform for one
+Swiss cantonal hospital provider deployment at a time.
 
-## Scope
+## Source Scope
 
-### In scope
+### Canonical Inputs
 
-- Single-provider deployment model within one cantonal hospital provider boundary.
-- AI-powered operational support for:
-  - 72-hour emergency demand forecasting.
-  - Discharge readiness and downstream coordination.
-  - Bed and capacity decision support for hospital operations teams.
-- Controlled integration with external partners such as Spitex, rehabilitation,
-  and insurer-linked coordination units.
-- Repo-managed specification sources under `docs/` and `docs/specs/`.
-- GitHub-native issue, PR, and project workflows for Copilot agent execution.
-- Azure-targeted planning and validation for UC1 and UC2 flows.
+- `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md`
+- `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md`
 
-### Out of scope
+### In Scope
 
-- Multi-provider shared tenancy or cantonal shared operations platform.
-- External partner direct platform access.
-- Dynamics 365 Customer Service workflows.
+- Provider-internal deployment model for one provider instance.
+- AI-powered operations support for forecasting, discharge coordination, and bed management.
+- Integration with external ecosystem partners as controlled endpoints.
+- Data, AI, application, integration, governance, and delivery lanes.
+
+### Out Of Scope
+
+- Multi-provider shared tenancy or cross-provider shared governance runtime.
+- External partner direct platform operations access.
+- Dynamics 365 case-management workflows.
 - Full clinician workstation replacement.
-- WorkIQ or Azure DevOps as authoritative specification or workflow systems.
 
 ## Functional Requirements
 
-### Platform Foundation
+### A) Operating Model And Product Scope
 
 | ID | Requirement |
 | -- | ----------- |
-| `FR-PLT-001` | The platform shall provide a GitHub-native orchestrator flow that can accept an issue, classify it, and respond or route it to the correct specialized agent. |
-| `FR-PLT-002` | The platform shall define explicit MCP tool contracts and allow-listed tool usage for every active agent. |
-| `FR-PLT-003` | The platform shall require an explicit `approved-to-apply` confirmation before any deploy-capable agent executes an apply action. |
-| `FR-PLT-004` | The platform shall treat repository-managed markdown under `docs/` and `docs/specs/` as the canonical source set for business and solution scope. |
-| `FR-PLT-005` | The platform shall use GitHub Issues, Pull Requests, and GitHub Project as the operational workflow and planning surface. |
+| `FR-OM-001` | The solution shall be deployed for one hospital provider instance at a time. |
+| `FR-OM-002` | The solution shall support provider-internal governance and data ownership boundaries. |
+| `FR-OM-003` | The solution shall support an implementation sequence for USZ-first or LUKS-first rollout patterns. |
+| `FR-OM-004` | External care entities shall be integrated as endpoints and not as first-class platform operators. |
+| `FR-OM-005` | The product shall support a phased implementation model where capabilities can be enabled incrementally. |
 
-### UC1 Build Subscription
-
-| ID | Requirement |
-| -- | ----------- |
-| `FR-UC1-001` | The spec-parser agent shall create a deployable landing-zone plan for a target Azure subscription from the canonical repo-managed source set. |
-| `FR-UC1-002` | The spec-parser agent shall ingest the requested source bundle from `docs/`, `docs/specs/`, and supporting repo artefacts referenced in the issue. |
-| `FR-UC1-003` | The spec-parser agent shall reject spreadsheet-only or other non-repo source inputs in the current scope. |
-| `FR-UC1-004` | The spec-parser agent shall validate that the referenced source bundle contains sufficient deployable information before generating outputs. |
-| `FR-UC1-005` | The spec-parser agent shall generate deterministic `.bicepparam` outputs for the same source inputs. |
-| `FR-UC1-006` | The spec-parser agent shall run a Bicep build and `what-if` plan before any deployment action. |
-| `FR-UC1-007` | The spec-parser agent shall publish its plan in a GitHub draft PR and link the run back to the triggering issue. |
-| `FR-UC1-008` | The spec-parser agent shall apply the planned deployment only after valid human approval. |
-
-### UC2 Drift Detection
+### B) Data And Interoperability
 
 | ID | Requirement |
 | -- | ----------- |
-| `FR-UC2-001` | The drift-analyzer agent shall compare a single Azure subscription against a canonical repo-managed source reference. |
-| `FR-UC2-002` | The drift-analyzer agent shall execute Azure discovery in read-only mode. |
-| `FR-UC2-003` | The drift-analyzer agent shall persist a deterministic drift report to the issue thread and a reproducible repo sidecar artifact. |
-| `FR-UC2-004` | The drift-analyzer agent shall support full-subscription, single-resource-group, and tag-filtered scan scopes. |
-| `FR-UC2-005` | The drift-analyzer agent shall classify findings by severity and apply the matching issue label. |
-| `FR-UC2-006` | The drift-analyzer agent shall not require a separate platform runtime persistence layer for storing drift results. |
-| `FR-UC2-007` | The drift-analyzer agent shall produce a remediation handoff block that a human can use to initiate UC1 planning. |
+| `FR-DATA-001` | The platform shall ingest provider-internal operational signals, including ED, ADT, bed-state, and discharge-related events. |
+| `FR-DATA-002` | The platform shall support HL7 FHIR-oriented normalization where healthcare interoperability requires it. |
+| `FR-DATA-003` | The platform shall maintain curated datasets that unify operational, planning, and model input data. |
+| `FR-DATA-004` | The platform shall capture partner acknowledgements and status updates from integration flows. |
+| `FR-DATA-005` | The platform shall expose governed semantic models for dashboard and copilot consumption. |
+| `FR-DATA-006` | The platform shall support data ingestion from KIS/EHR, ED systems, bed management systems, and staffing/planning systems. |
+| `FR-DATA-007` | The platform shall support outbound and inbound orchestration with downstream partners via integration workflows. |
+| `FR-DATA-008` | The platform shall keep source-to-consumption traceability for operational and AI-serving datasets. |
 
-### UC3 Pull Request Review
-
-| ID | Requirement |
-| -- | ----------- |
-| `FR-UC3-001` | The PR review flow shall support GitHub pull request review scenarios. |
-| `FR-UC3-002` | The PR review flow shall use GitHub-native PR references and comments rather than Azure DevOps objects. |
-| `FR-UC3-003` | The PR review flow shall be comment-only and shall not mutate code, branch state, or PR status. |
-
-### Solution Use Cases
+### C) Forecasting And Capacity Intelligence
 
 | ID | Requirement |
 | -- | ----------- |
-| `FR-SOL-001` | The solution shall forecast emergency demand over a 72-hour horizon for a single hospital provider, segmented by specialty and time window. |
-| `FR-SOL-002` | The solution shall identify inpatients approaching discharge readiness and support downstream coordination through integration endpoints. |
-| `FR-SOL-003` | The solution shall provide a GenAI-powered bed management copilot for hospital operations teams. |
-| `FR-SOL-004` | The solution shall provide end-to-end operational visibility from admission through discharge, including outbound transitions to post-acute care. |
-| `FR-SOL-005` | The solution shall integrate internal provider systems, external ecosystem endpoints, and reporting/analytics surfaces through a governed data platform. |
+| `FR-FC-001` | The solution shall produce a 72-hour demand forecast for emergency demand and admission pressure. |
+| `FR-FC-002` | Forecast outputs shall be segmented by specialty and time window. |
+| `FR-FC-003` | Forecasting shall use provider-internal arrivals plus downstream capacity signals as model inputs. |
+| `FR-FC-004` | Forecast outputs shall be published to operations-facing dashboards. |
+| `FR-FC-005` | Forecast outputs shall be available as grounding context for the bed management copilot. |
+| `FR-FC-006` | Forecast generation runs shall persist execution timestamps and model run identifiers for auditability. |
+
+### D) Discharge Coordination Intelligence
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-DC-001` | The solution shall identify inpatients approaching discharge readiness. |
+| `FR-DC-002` | The solution shall produce ranked discharge candidates with explanatory factors. |
+| `FR-DC-003` | The solution shall trigger integration-based downstream actions for discharge coordination. |
+| `FR-DC-004` | The solution shall record outbound coordination events and returned partner statuses. |
+| `FR-DC-005` | The solution shall surface discharge blockers to operations users. |
+| `FR-DC-006` | The solution shall make discharge-readiness outputs available to dashboards and copilot interactions. |
+
+### E) Bed Management Copilot And User Experience
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-CX-001` | The solution shall provide a copilot interface for operations teams to query bed and flow status. |
+| `FR-CX-002` | The copilot shall provide grounded answers based on live operational data, forecast outputs, and discharge signals. |
+| `FR-CX-003` | The copilot shall provide bottleneck explanations and recommended operational options. |
+| `FR-CX-004` | The copilot shall present current bed state, predicted pressure windows, and likely same-day discharges. |
+| `FR-CX-005` | Power BI-based operational visibility shall be available for non-conversational usage scenarios. |
+| `FR-CX-006` | Copilot responses shall preserve references to source context and response timestamp metadata. |
+
+### F) Governance, Delivery, And Operations
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-GOV-001` | The solution shall provide auditable traceability between source data, model outputs, user-facing answers, and integration events. |
+| `FR-GOV-002` | The solution shall support access-control enforcement for clinical and operational data surfaces. |
+| `FR-GOV-003` | The delivery model shall support structured promotion across DEV, SIT, and PROD stages. |
+| `FR-GOV-004` | The solution shall produce governance evidence artifacts for compliance reviews. |
+| `FR-GOV-005` | The solution shall support policy-driven integration controls for outbound partner interactions. |
+| `FR-GOV-006` | The solution shall maintain provider-local control over prompts, model configuration, and operational workflows. |
 
 ## Non-Functional Requirements
 
-### Governance And Traceability
+### A) Compliance And Privacy
 
 | ID | Requirement |
 | -- | ----------- |
-| `NFR-GOV-001` | All Copilot-driven changes shall remain traceable to repository-managed specifications and requirement IDs. |
-| `NFR-GOV-006` | Every agent-authored issue response, PR, fixture, and change request shall reference the relevant `FR-*` and `NFR-*` identifiers from this document or explicitly refuse when they are absent. |
+| `NFR-COMP-001` | The solution shall support Swiss DSG compliance for healthcare data handling. |
+| `NFR-COMP-002` | The solution shall support cantonal healthcare governance requirements in deployment and operations controls. |
+| `NFR-COMP-003` | The solution shall support KVG/LAMal-aligned operational governance where applicable to patient flow data usage. |
+| `NFR-COMP-004` | Data residency controls shall support Switzerland or permitted jurisdiction constraints for each dataset class. |
 
-### Security And Access
-
-| ID | Requirement |
-| -- | ----------- |
-| `NFR-SEC-001` | Active agents shall operate only through the MCP servers explicitly allow-listed in `.github/copilot/mcp.json`. |
-| `NFR-SEC-002` | Azure interactions shall use least-privilege access and forbid destructive operations without explicit gated approval. |
-| `NFR-SEC-003` | Secrets, tokens, and secret-like values shall never be echoed into issues, PRs, or committed artefacts. |
-
-### Maintainability And Delivery
+### B) Security And Access Control
 
 | ID | Requirement |
 | -- | ----------- |
-| `NFR-MAINT-001` | Agent contracts shall remain readable and maintainable as markdown-first assets in the repository. |
-| `NFR-MAINT-002` | The active agent runtime shall remain GitHub Copilot coding agent plus repository prompts and MCP configuration, with no bespoke hosted agent service required. |
+| `NFR-SEC-001` | Access shall be least-privilege and role-scoped by user and service identity. |
+| `NFR-SEC-002` | Data access attempts and privilege changes shall be fully auditable. |
+| `NFR-SEC-003` | Integration endpoints shall enforce authenticated and authorized communication patterns. |
+| `NFR-SEC-004` | Secret material shall be managed outside source-controlled artifacts. |
 
-### Compliance And Data Governance
-
-| ID | Requirement |
-| -- | ----------- |
-| `NFR-COMP-001` | The solution shall support compliance with Swiss DSG, cantonal governance constraints, and healthcare interoperability requirements. |
-| `NFR-DATA-001` | The operational deployment model shall remain provider-internal and provider-governed, not a shared multi-provider tenancy. |
-| `NFR-DATA-002` | External care partners shall be treated as integration endpoints rather than first-class platform operators. |
-
-### Operational Performance And Reliability
+### C) Data Quality And Integrity
 
 | ID | Requirement |
 | -- | ----------- |
-| `NFR-PERF-001` | The solution architecture shall support near-real-time ingestion of ED, ADT, bed-state, and discharge-status signals. |
-| `NFR-PERF-002` | Forecast inference shall support an operationally useful refresh cadence, with hourly refresh as the baseline target for the 72-hour forecast. |
-| `NFR-PERF-003` | Discharge-readiness scoring shall support multiple recalculations during the day to reflect changing inpatient conditions. |
-| `NFR-AVAIL-001` | The operational support capabilities shall be designed for continuous service rather than overnight batch-only operation. |
-| `NFR-OPS-001` | The platform shall preserve explicit headroom for burst demand above average throughput. |
+| `NFR-DQ-001` | Critical operational feeds shall include quality checks for completeness and schema validity. |
+| `NFR-DQ-002` | Curated operational datasets shall support lineage from source to serving views. |
+| `NFR-DQ-003` | Data model changes shall preserve backward compatibility or include controlled migration plans. |
+| `NFR-DQ-004` | Integration message failures shall be observable and recoverable without silent data loss. |
 
-### Auditability And Responsible AI
+### D) Performance And Throughput
 
 | ID | Requirement |
 | -- | ----------- |
-| `NFR-AUD-001` | Forecasts, discharge scores, copilot answers, and outbound coordination triggers shall remain auditable to source context and execution time. |
-| `NFR-AI-001` | The copilot layer shall remain advisory, with human operators retaining operational decision authority. |
-| `NFR-AI-002` | The copilot layer shall be grounded in provider operational data and model outputs rather than unsupported free-form generation. |
+| `NFR-PERF-001` | Ingestion shall support near-real-time updates for ED, ADT, bed-state, and discharge status signals. |
+| `NFR-PERF-002` | Forecast inference shall support at least hourly refresh cadence for the 72-hour horizon. |
+| `NFR-PERF-003` | Discharge-readiness scoring shall support multiple recalculations per day. |
+| `NFR-PERF-004` | The platform shall support burst headroom above average event volume. |
+| `NFR-PERF-005` | End-user operational surfaces shall support interactive decision cycles without batch-only dependence. |
 
-## Traceability
+### E) Reliability And Operational Continuity
 
-| Source | Requirements derived |
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-REL-001` | The platform shall support continuous operations and shall not be designed as overnight batch-only service. |
+| `NFR-REL-002` | Critical data and inference pipelines shall provide failure visibility and restartability. |
+| `NFR-REL-003` | Operational dashboards and copilot services shall degrade gracefully when non-critical dependencies fail. |
+| `NFR-REL-004` | Integration workflows shall provide retry and exception-handling behavior for transient endpoint errors. |
+
+### F) Responsible AI And Auditability
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-AI-001` | Copilot outputs shall remain advisory and shall not replace human operational authority. |
+| `NFR-AI-002` | Copilot outputs shall be retrieval-grounded in provider operational context and model outputs. |
+| `NFR-AI-003` | Forecast and discharge model outputs shall be traceable to model version and execution time. |
+| `NFR-AI-004` | User-facing AI responses and coordination triggers shall be auditable to source context. |
+| `NFR-AI-005` | AI-serving behavior shall support provider-local governance and change control. |
+
+### G) Maintainability And Delivery
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-MAINT-001` | The solution shall support modular architecture lanes for data, AI, app, integration, and governance assets. |
+| `NFR-MAINT-002` | Delivery workflows shall be Git-first and support auditable promotion across environments. |
+| `NFR-MAINT-003` | Requirement artifacts shall remain traceable to specification sources and implementation increments. |
+| `NFR-MAINT-004` | Platform configuration shall support provider-specific rollout without full re-architecture. |
+
+## MVP Definition
+
+The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
+
+- Baseline ingestion and semantic visibility for core capacity and discharge signals.
+- Initial 72-hour demand forecasting output in operational views.
+- Initial discharge-readiness scoring and partner coordination triggers.
+- Grounded copilot support for bed management operations.
+- Compliance, security, and audit controls active for pilot scope.
+
+## Traceability Matrix
+
+| Source | Requirement Coverage |
 | ------ | -------------------- |
-| `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md` | `FR-SOL-001` to `FR-SOL-005`, `NFR-COMP-001`, `NFR-DATA-001`, `NFR-DATA-002` |
-| `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md` | `NFR-PERF-001` to `NFR-PERF-003`, `NFR-AVAIL-001`, `NFR-OPS-001`, `NFR-AUD-001`, `NFR-AI-001`, `NFR-AI-002` |
-| Active GitHub agent contracts and templates | `FR-PLT-001` to `FR-PLT-005`, `FR-UC1-001` to `FR-UC1-008`, `FR-UC2-001` to `FR-UC2-007`, `FR-UC3-001` to `FR-UC3-003`, `NFR-GOV-001`, `NFR-GOV-006`, `NFR-SEC-001` to `NFR-SEC-003`, `NFR-MAINT-001`, `NFR-MAINT-002` |
+| `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md` | `FR-OM-001` to `FR-OM-005`, `FR-DATA-001` to `FR-DATA-007`, `FR-FC-001` to `FR-FC-005`, `FR-DC-001` to `FR-DC-005`, `FR-CX-001` to `FR-CX-005`, `NFR-COMP-001` to `NFR-COMP-004`, `NFR-SEC-001` to `NFR-SEC-004` |
+| `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md` | `FR-DATA-008`, `FR-FC-006`, `FR-DC-006`, `FR-CX-006`, `FR-GOV-001` to `FR-GOV-006`, `NFR-DQ-001` to `NFR-DQ-004`, `NFR-PERF-001` to `NFR-PERF-005`, `NFR-REL-001` to `NFR-REL-004`, `NFR-AI-001` to `NFR-AI-005`, `NFR-MAINT-001` to `NFR-MAINT-004` |
 
-## MVP Scope (Sprint 1 Baseline)
+## Assumptions To Validate In Implementation Planning
 
-The Sprint 1 MVP is the smallest reviewable scope that can validate the provider-internal operating model and requirement traceability.
-
-### In MVP
-
-- Requirement baseline ratified for platform, UC1, UC2, UC3, and solution use cases.
-- Explicit traceability from source specs and active agent contracts to requirement IDs.
-- GitHub issue-driven delivery model with Copilot-triggered execution for planning and PR generation.
-
-### Deferred After MVP
-
-- Quantitative targets for latency, throughput, and forecast quality as measured SLOs.
-- Provider-specific implementation details (for example exact FHIR resource profile list and integration endpoint matrix).
-- Full production release gates beyond Sprint 1 planning artefacts.
-
-## Sprint 1 Success Criteria
-
-- PRD can be used as the single requirement reference in PR descriptions and issue execution.
-- Every active requirement family is represented with stable IDs and can be traced to source evidence.
-- Sprint 1 issue and project tracking can reference this document without ambiguity.
-
-## Open Questions For Sprint 2
-
-- Which provider deployment profile is first (USZ-first or LUKS-first) for implementation planning?
-- Which FHIR resources are mandatory in the first implementation slice?
-- What measurable SLO targets should be attached to NFR-PERF and NFR-AVAIL requirements?
+- Provider-specific event-rate baselines and peak distributions.
+- Exact FHIR profile and integration message sets by provider.
+- Jurisdiction-specific residency controls by dataset class.
+- Operational SLO values for data freshness, inference latency, and dashboard response time.
