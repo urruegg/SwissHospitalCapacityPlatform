@@ -28,34 +28,12 @@ jobs:
             #node_modules
             #.actionlint
 
-  markdown-link-check:
-    name: Markdown link check
-    runs-on: ubuntu-latest
-    # Disabled: lychee's URL extractor mis-parses hyphenated prose
-    # phrases (e.g. "AI-Powered", "Patient Flow") as phantom URLs
-    # and produces 100% false positives on this repo's docs. Restore
-    # with a link-syntax-only checker (e.g. gaurav-nelson/github-action-
-    # markdown-link-check) once a published docs site exists.
-    if: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Link check (lychee)
-        uses: lycheeverse/lychee-action@v2
-        with:
-          lycheeVersion: v0.18.1
-          args: >-
-            --no-progress
-            --max-concurrency 4
-            docs/**/*.md
-            sprints/*.md
-            .github/*.md
-            AGENTS.md
-            README.md
-          fail: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Markdown link check intentionally not run in CI: lychee's URL
+  # extractor mis-parses hyphenated prose ("AI-Powered", "Patient
+  # Flow", ...) as phantom URLs, producing 100% false positives on
+  # this repo's docs. Reintroduce a link-syntax-only checker (e.g.
+  # gaurav-nelson/github-action-markdown-link-check) once a published
+  # docs site exists.
 
   actionlint:
     name: actionlint (workflows)
