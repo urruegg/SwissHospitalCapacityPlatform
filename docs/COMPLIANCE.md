@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.2.0 |
+| **Version** | 0.3.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 0.1.0 (placeholder baseline) |
+| **Previous Version** | 0.2.0 (initial Swiss legal baseline with control and evidence model) |
 
 ## Purpose
 
@@ -96,6 +96,40 @@ Material gaps to close:
 - Article-linked DSR operating model.
 - Policy-as-code enforcement for residency and deployment-type rules.
 - Evidence automation for audits and release readiness.
+
+## Microsoft Purview Coverage Evaluation (GA and IaC)
+
+This section defines how Microsoft Purview contributes to the control set
+CH-C01 to CH-C10, based on currently documented GA and automation capability.
+
+### Purview Control Fit
+
+| Control ID | Purview contribution | Delivery model |
+| ----- | ----- | ----- |
+| CH-C01 | Data catalog, classification, lineage, and metadata stewardship support purpose and minimization governance | Hybrid: IaC for account baseline + operational catalog workflows |
+| CH-C03 | Auditability and lineage capabilities support traceability evidence | Hybrid: service provisioning via IaC, evidence workflows operational |
+| CH-C05 | Sensitivity labels and policy frameworks can support transfer and disclosure governance signals | Mostly operational policy configuration |
+| CH-C10 | Compliance and governance solutions support AI-related data governance evidence and oversight context | Mostly operational policy and reporting workflows |
+
+### Purview GA and IaC Boundary
+
+| Capability | Current status for this architecture | Implementation rule |
+| ----- | ----- | ----- |
+| Purview account resource deployment | IaC-ready | Deploy via Bicep/ARM in landing-zone baseline |
+| Account-level identity/network controls | IaC-ready | Enforce in infrastructure lane before workload onboarding |
+| Collections and scan onboarding | Not fully declarative end-to-end in Bicep guidance | Execute through controlled automation runbooks after infra deployment |
+| Ongoing compliance policy configuration and tuning | Operational | Manage through controlled change process and evidence artifacts |
+
+### Compliance Implementation Rule
+
+For this repository, Purview shall be treated as:
+1. A mandatory governance accelerator for metadata, lineage, and evidence
+	controls where workload scope requires it.
+2. A two-lane implementation model:
+	- lane A: IaC for account and baseline security posture,
+	- lane B: operational automation for catalog, scans, and policy lifecycle.
+3. A region-gated control plane where production use for PHI controls requires
+	explicit GA confirmation for the selected region and feature.
 
 ## Evidence Model
 

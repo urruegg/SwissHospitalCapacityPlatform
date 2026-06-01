@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.8.0 |
+| **Version** | 0.9.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 0.7.0 (added architecture challenge patterns and NFR stress validation) |
+| **Previous Version** | 0.8.0 (added architecture challenge patterns and NFR stress validation) |
 
 ## Purpose
 
@@ -311,6 +311,43 @@ For Swiss healthcare scope, architecture acceptance must require:
 3. Pattern 2 (React web app channel) is region-neutral and can strengthen
   provider control, as long as backend AI and data services obey Swiss region
   restrictions.
+
+### Microsoft Purview Evaluation For Compliance Controls
+
+This section assesses how Microsoft Purview can help implement the compliance
+controls in `docs/COMPLIANCE.md`, with explicit GA and IaC boundaries.
+
+#### Purview GA and Residency Position
+
+1. Microsoft Purview account location mapping includes Switzerland North for
+  Swiss tenant mapping scenarios.
+2. Data Map scanner documentation includes Switzerland North in supported
+  scanner regions.
+3. MVP compliance architecture should treat Switzerland North as the Purview
+  primary region and keep PHI-bearing system-of-record data in Switzerland
+  data services as already defined in this architecture.
+
+#### Purview IaC Coverage Assessment
+
+| Purview capability area | GA maturity for production use | IaC automation status | Architecture action |
+| ----------------------- | ------------------------------ | --------------------- | ------------------- |
+| Purview account provisioning (`Microsoft.Purview/accounts`) | High | Full with ARM/Bicep and AVM module | Include in baseline landing-zone templates |
+| Network and identity baseline for Purview account | High | Full at account resource layer | Enforce managed identity and network restrictions in IaC |
+| Collections, source registration, and scan onboarding | Mixed | Partial; not fully covered by Bicep end-to-end in current guidance | Treat as controlled post-provision automation step with auditable runbooks |
+| Data governance catalog, lineage, and classification operations | High | Partial; predominantly API and portal driven | Operationalize through scripted workflows plus evidence capture |
+| Purview data security/compliance features (audit, DLP, eDiscovery, records) | High (feature-dependent licensing) | Partial; primarily policy/configuration workflows | Apply where Microsoft 365 data estate is in scope; keep controls mapped to CH-C IDs |
+
+#### Control Coverage Guidance
+
+1. Use Purview as a governance and evidence plane for CH-C01, CH-C03,
+  CH-C05, and CH-C10 controls.
+2. Do not assume full declarative IaC for all Purview data-plane setup tasks;
+  include an explicit day-2 automation lane after infra deployment.
+3. Keep compliance gates split:
+  - IaC gate for account, identity, network, diagnostics.
+  - Operational gate for collections, scans, classifications, and policy tuning.
+4. Any Purview feature used for regulated PHI controls must be verified as GA
+  for the selected region and workload before production enablement.
 
 ### Recommendation
 
