@@ -1,0 +1,13 @@
+config:
+  # Long requirement and traceability lines are expected in governance docs.
+  MD013: false
+
+  # Repository prose intentionally uses compact list formatting in several
+  # baseline documents.
+  MD032: false
+
+  # Some imported baseline artifacts currently contain tabs.
+  MD010: false
+
+  # Documentation reference sections include plain URLs by design.
+  MD034: false
