@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 0.3.0 (preliminary baseline, superseded by full rewrite from specs) |
+| **Previous Version** | 1.0.0 (full rewrite from specs baseline) |
 
 ## Purpose
 
@@ -117,6 +117,12 @@ Swiss cantonal hospital provider deployment at a time.
 | `NFR-COMP-002` | The solution shall support cantonal healthcare governance requirements in deployment and operations controls. |
 | `NFR-COMP-003` | The solution shall support KVG/LAMal-aligned operational governance where applicable to patient flow data usage. |
 | `NFR-COMP-004` | Data residency controls shall support Switzerland or permitted jurisdiction constraints for each dataset class. |
+| `NFR-COMP-005` | The solution shall maintain a data processing inventory with legal basis and purpose tags for PHI and operational datasets. |
+| `NFR-COMP-006` | The solution shall provide a documented data-subject-rights operating process with accountable ownership and response SLAs. |
+| `NFR-COMP-007` | The solution shall implement policy-enforced default-deny behavior for PHI cross-border transfer and failover activation unless explicitly approved. |
+| `NFR-COMP-008` | The solution shall maintain auditable privacy incident handling and notification decision workflows. |
+| `NFR-COMP-009` | If EPR integration is enabled, the solution shall enforce consent, identity, access, and logging controls aligned to EPDG/EPDV-EDI obligations. |
+| `NFR-COMP-010` | The solution shall maintain compliance evidence artifacts and review cadence mapped to legal obligations and internal controls. |
 
 ### B) Security And Access Control
 
@@ -190,6 +196,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | ------ | -------------------- |
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md` | `FR-OM-001` to `FR-OM-005`, `FR-DATA-001` to `FR-DATA-007`, `FR-FC-001` to `FR-FC-005`, `FR-DC-001` to `FR-DC-005`, `FR-CX-001` to `FR-CX-005`, `NFR-COMP-001` to `NFR-COMP-004`, `NFR-SEC-001` to `NFR-SEC-004` |
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md` | `FR-DATA-008`, `FR-FC-006`, `FR-DC-006`, `FR-CX-006`, `FR-GOV-001` to `FR-GOV-006`, `NFR-DQ-001` to `NFR-DQ-004`, `NFR-PERF-001` to `NFR-PERF-005`, `NFR-REL-001` to `NFR-REL-004`, `NFR-AI-001` to `NFR-AI-005`, `NFR-MAINT-001` to `NFR-MAINT-004` |
+| `docs/COMPLIANCE.md` | `NFR-COMP-005` to `NFR-COMP-010` |
 
 ## Assumptions To Validate In Implementation Planning
 
