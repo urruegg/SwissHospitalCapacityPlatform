@@ -74,6 +74,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ensure Azure CLI is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v az >/dev/null 2>&1; then
+            az version
+            exit 0
+          fi
+          sudo apt-get update
+          sudo apt-get install -y azure-cli
+          az version
+
       - name: Build all Bicep templates under infra/**
         shell: bash
         run: |
