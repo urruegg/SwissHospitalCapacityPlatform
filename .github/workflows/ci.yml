@@ -48,6 +48,7 @@ jobs:
           # Lychee options live in lychee.toml at repo root (auto-discovered)
           # so CI and scripts/preflight.ps1 share one source of truth.
           args: >-
+            --config lychee.toml
             --no-progress
             --max-concurrency 4
             docs/**/*.md
