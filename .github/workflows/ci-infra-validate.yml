@@ -22,14 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Azure login (OIDC)
-        if: vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != ''
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
       - name: Ensure Bicep is available
         shell: bash
         run: |
@@ -62,10 +54,25 @@ jobs:
     environment:
       name: sit
     needs: bicep-build
-    if: vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.AZURE_RESOURCE_GROUP != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate required environment configuration (SIT)
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          BICEP_PARAM_FILE: ${{ vars.BICEP_PARAM_FILE }}
+        run: |
+          set -euo pipefail
+          test -n "$AZURE_CLIENT_ID"
+          test -n "$AZURE_TENANT_ID"
+          test -n "$AZURE_SUBSCRIPTION_ID"
+          test -n "$AZURE_RESOURCE_GROUP"
+          test -n "$BICEP_PARAM_FILE"
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
@@ -89,10 +96,25 @@ jobs:
     environment:
       name: prod
     needs: bicep-build
-    if: vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.AZURE_RESOURCE_GROUP != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate required environment configuration (PROD)
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          BICEP_PARAM_FILE: ${{ vars.BICEP_PARAM_FILE }}
+        run: |
+          set -euo pipefail
+          test -n "$AZURE_CLIENT_ID"
+          test -n "$AZURE_TENANT_ID"
+          test -n "$AZURE_SUBSCRIPTION_ID"
+          test -n "$AZURE_RESOURCE_GROUP"
+          test -n "$BICEP_PARAM_FILE"
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
