@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-06-02 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (initial repository-wide copilot baseline) |
+| **Previous Version** | 1.1.0 (testing strategy alignment and governance refinements) |
 
 This repository hosts a sample **Swiss Hospital Capacity Platform**: a system where AI agents
 plan, execute, and observe hospital capacity management workflows (CI/CD, infrastructure provisioning,
@@ -308,17 +308,20 @@ copilot/agent evals, and app/integration.
 
 ## 5. Testing Strategy
 
-- **Fixture-first**: Every agent change must include or update a **golden-task fixture** under `agents/<name>/golden-tasks.md` (or `evals/<name>/`) that describes input issue body + expected MCP tool calls + expected PR/comment shape + forbidden behaviors.
-- **Coverage target**: Every agent has at least one happy-path fixture and at least one failure-mode fixture before its sprint exits.
+- **Test-first**: Write tests before implementing features or fixing bugs.
+- **Fixture-first for agents**: Every agent change must include or update a **golden-task fixture** under `agents/<name>/golden-tasks.md` (or `evals/<name>/`) that describes input issue body + expected MCP tool calls + expected PR/comment shape + forbidden behaviors.
+- **Coverage target**: 
+  - Agent prompts and orchestration must keep at least one happy-path fixture and one failure-mode fixture per agent before sprint exit.
+  - When executable application code is introduced in this repo, target $\ge 80\%$ coverage for new code and do not decrease overall coverage in PRs.
+- **Backend tests (when backend code exists)**: Prefer xUnit + Moq, follow Arrange-Act-Assert, and mock external dependencies (for example HTTP clients, service interfaces, and loggers) to keep tests deterministic.
+- **Frontend tests (when frontend code exists)**: Prefer Jest for UI/unit tests, focus on hooks and service layers, and mock network/async dependencies (for example `fetch` and query clients).
 - **Bicep validation**: Every `.bicep` file under `infra/` must build cleanly (`az bicep build`) and pass `what-if` in CI when changed.
 - **Markdown lint**: Every Markdown file must pass `markdownlint-cli2` and `markdown-link-check` in CI.
-- **Eval harness**: Optional workflow `eval-goldens.yml` (planned) replays selected fixtures via the Copilot coding agent and asserts the PR/comment shape. There is **no `pytest` harness** in this repo.
-- **All CI checks must pass** before merge. No flaky golden tasks — fix the prompt or pin the fixture.
-- **Lane-specific checks**: If `data-platform/`, `ai-models/`, `copilot/`, `apps/`,
-  or `integrations/` are touched, run the lane checks documented in `docs/TEST.md`
-  and include evidence in PR.
-- **Regulated-change checks**: Any change that impacts PHI/PII handling requires
-  explicit security/compliance review evidence in PR.
+- **Eval harness**: Optional workflow `eval-goldens.yml` (planned) replays selected fixtures via the Copilot coding agent and asserts the PR/comment shape. There is **no `pytest` harness** in this repo today.
+- **CI gate**: All required checks must pass before merge. If a dedicated test workflow exists (for example `ci-test.yml`), it is a mandatory merge gate.
+- **No flaky tests**: If a test is intermittent, fix or remove it; do not bypass quality gates by skipping unstable tests.
+- **Lane-specific checks**: If `data-platform/`, `ai-models/`, `copilot/`, `apps/`, or `integrations/` are touched, run the lane checks documented in `docs/TEST.md` and include evidence in PR.
+- **Regulated-change checks**: Any change that impacts PHI/PII handling requires explicit security/compliance review evidence in PR.
 
 ---
 
@@ -421,6 +424,13 @@ Before approving a PR, verify:
   `integrations/`, `security-governance/`, `pipelines/`.
 - **Bicep resources**: `kebab-case` with environment suffix
   (e.g., `kv-agentic-devops-dev`, `cosmos-agentic-devops-prod`). These names appear in UC1 *output* templates; they are not the platform's own infrastructure.
+- **Azure resource short name**: Use `chhealthpf` in Azure resource names to represent the solution.
+- **Azure environment suffix policy**:
+  - `SIT` resources must end with `-sit`.
+  - `PROD` resources must end with `-prod`.
+  - Shared resources across environments must not have an environment suffix.
+  - `DEV` does not have a mandatory postfix rule in this baseline.
+- **Azure resource pattern**: Prefer `<resource-type>-chhealthpf-<env-suffix>` for environment-scoped resources and `<resource-type>-chhealthpf` for shared resources.
 - **Resource tags** (UC1 outputs): `env`, `owner`, `costCenter`, `workload` on every resource.
 - **Git tags**: `vX.Y.Z` — managed by release tooling, never manual.
 - **Agent names**: `kebab-case` matching the folder name (`spec-parser-agent`, `solution-design-agent`, `landing-zone-agent`, `compliance-agent`, `data-design-agent`, `app-builder-agent`, `test-verifier-agent`, `pr-review`, `drift-analyzer`, `orchestrator`).

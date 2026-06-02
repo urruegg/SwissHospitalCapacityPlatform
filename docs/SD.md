@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (initial MVP solution design baseline) |
+| **Previous Version** | 1.0.1 (initial MVP solution design baseline refinements) |
 
 ## Purpose
 
@@ -72,6 +72,22 @@ This design is derived from and constrained by:
 - Secondary region: Switzerland West (failover gated by compliance runbook)
 - Environments: DEV, SIT, PROD
 - Promotion model: Git-first with environment approval gates
+
+### Azure Resource Naming Standard
+
+- Solution short name: `chhealthpf`.
+- Apply this short name to Azure resource names in all environments.
+- Environment suffix policy:
+   - DEV: no mandatory postfix rule in this baseline (project teams may use `dev` when needed).
+   - SIT: always postfix `sit`.
+   - PROD: always postfix `prod`.
+- Shared resources across environments: no environment postfix.
+- Recommended pattern for non-shared resources: `<resource-type>-chhealthpf-<env-suffix>`.
+
+Examples:
+- SIT Key Vault: `kv-chhealthpf-sit`
+- PROD Key Vault: `kv-chhealthpf-prod`
+- Shared Log Analytics workspace: `log-chhealthpf`
 
 ## Core Component Design
 

@@ -1,0 +1,50 @@
+name: cd-infra-deploy-prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type 'approved-to-apply' to confirm production deployment.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-prod:
+    name: Deploy PROD
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    if: github.event.inputs.confirm == 'approved-to-apply' && secrets.AZURE_CLIENT_ID != '' && vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.AZURE_RESOURCE_GROUP != '' && vars.BICEP_PARAM_FILE != ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: What-if before deploy (PROD)
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group what-if \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters @"${{ vars.BICEP_PARAM_FILE }}"
+
+      - name: Deploy (PROD)
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group create \
+            --name "deploy-prod-${{ github.run_id }}" \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters @"${{ vars.BICEP_PARAM_FILE }}"

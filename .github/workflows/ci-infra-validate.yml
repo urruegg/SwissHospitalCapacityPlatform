@@ -1,0 +1,111 @@
+name: ci-infra-validate
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - '.github/workflows/**'
+      - 'docs/SD.md'
+      - 'docs/ARCHITECTURE.md'
+      - 'docs/INFRASTRUCTURE.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  bicep-build:
+    name: Bicep build and params compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        if: secrets.AZURE_CLIENT_ID != '' && vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Ensure Bicep is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          az bicep version || az bicep install
+
+      - name: Build Bicep templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
+          for f in infra/**/*.bicep; do
+            [ -f "$f" ] || continue
+            az bicep build --file "$f" --stdout >/dev/null
+          done
+
+      - name: Build Bicep parameter files
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
+          for f in infra/**/*.bicepparam; do
+            [ -f "$f" ] || continue
+            az bicep build-params --file "$f" --stdout >/dev/null
+          done
+
+  what-if-sit:
+    name: What-if SIT
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+    needs: bicep-build
+    if: secrets.AZURE_CLIENT_ID != '' && vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.AZURE_RESOURCE_GROUP != ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: What-if (SIT)
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group what-if \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters @"${{ vars.BICEP_PARAM_FILE }}"
+
+  what-if-prod:
+    name: What-if PROD
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    needs: bicep-build
+    if: secrets.AZURE_CLIENT_ID != '' && vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.AZURE_RESOURCE_GROUP != ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: What-if (PROD)
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group what-if \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters @"${{ vars.BICEP_PARAM_FILE }}"
