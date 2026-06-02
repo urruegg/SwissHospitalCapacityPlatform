@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: prod
-    if: github.event.inputs.confirm == 'approved-to-apply' && secrets.AZURE_CLIENT_ID != '' && vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.AZURE_RESOURCE_GROUP != '' && vars.BICEP_PARAM_FILE != ''
+    if: github.event.inputs.confirm == 'approved-to-apply' && vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.AZURE_RESOURCE_GROUP != '' && vars.BICEP_PARAM_FILE != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
