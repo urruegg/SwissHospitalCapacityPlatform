@@ -38,7 +38,7 @@ jobs:
           az deployment group what-if \
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
             --template-file infra/main.bicep \
-            --parameters @"${{ vars.BICEP_PARAM_FILE }}"
+            --parameters "${{ vars.BICEP_PARAM_FILE }}"
 
       - name: Deploy (SIT)
         shell: bash
@@ -48,4 +48,4 @@ jobs:
             --name "deploy-sit-${{ github.run_id }}" \
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
             --template-file infra/main.bicep \
-            --parameters @"${{ vars.BICEP_PARAM_FILE }}"
+            --parameters "${{ vars.BICEP_PARAM_FILE }}"
