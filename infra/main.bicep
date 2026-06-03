@@ -1,5 +1,7 @@
 targetScope = 'resourceGroup'
 
+// No-op change for workflow gate dry-run validation.
+
 @description('Deployment environment name.')
 @allowed([
   'dev'
