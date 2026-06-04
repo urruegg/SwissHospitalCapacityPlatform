@@ -36,6 +36,12 @@ param enableIdentityModule bool = false
 @description('Enable network module deployment scaffold.')
 param enableNetworkModule bool = false
 
+@description('Address prefix for the platform virtual network.')
+param networkVnetAddressPrefix string = '10.60.0.0/16'
+
+@description('Address prefix for the platform application subnet.')
+param networkAppSubnetPrefix string = '10.60.1.0/24'
+
 @description('Enable observability module deployment scaffold.')
 param enableObservabilityModule bool = false
 
@@ -83,6 +89,8 @@ module network './modules/network/main.bicep' = if (enableNetworkModule) {
     location: location
     nameSuffix: resourceSuffix
     tags: tags
+    vnetAddressPrefix: networkVnetAddressPrefix
+    appSubnetPrefix: networkAppSubnetPrefix
   }
 }
 

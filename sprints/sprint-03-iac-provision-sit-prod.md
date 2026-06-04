@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.2.0 (captured first implementation slice status and pending items) |
+| **Previous Version** | 1.3.0 (workflow hardening, module wiring, and baseline infrastructure doc) |
 
 ## Sprint Goal
 
@@ -241,11 +241,20 @@ sprints/
   - `ai-platform/`
   - `integration/`
 
+### Completed in third implementation slice
+
+1. Replaced scaffold placeholders with first concrete resources for:
+  - `identity/`: user-assigned managed identity baseline,
+  - `network/`: virtual network and application subnet baseline,
+  - `observability/`: Application Insights component baseline.
+2. Added safe composition parameters in `infra/main.bicep` for network CIDR control and retained feature-flag module enablement.
+3. Enabled identity, network, and observability modules for `SIT` in `infra/environments/sit.bicepparam`.
+
 ### Pending in next slice
 
 1. Configure repository GitHub Environments (`sit`, `prod`) with required variables and approvals.
 2. Configure federated identity credentials and environment-scoped Azure context values.
-3. Replace newly added module scaffolds with full SD-aligned resource implementations and composition wiring.
+3. Replace remaining module scaffolds (`data-platform`, `ai-platform`, `integration`) with SD-aligned resource implementations and composition wiring.
 4. Execute end-to-end workflow tests against target SIT subscription and resource group.
 
 ## Acceptance Criteria
