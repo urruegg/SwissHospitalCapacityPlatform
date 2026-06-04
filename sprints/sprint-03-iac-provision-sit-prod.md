@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.8.0 |
+| **Version** | 1.9.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.7.0 (deployment workflow provider-registration hardening and sprint tracking update) |
+| **Previous Version** | 1.8.0 (captured phased SIT rollout and provider-registration constraint handling) |
 
 ## Sprint Goal
 
@@ -280,6 +280,48 @@ sprints/
 3. Complete full provider-registration by subscription owner for ManagedIdentity, Network, Storage, CognitiveServices, and ServiceBus.
 4. Re-enable currently phased SIT modules and rerun end-to-end verification with full module set.
 5. Execute explicit change-controlled enablement for PROD modules after SIT verification evidence is approved.
+
+## Subscription Owner Provider Registration Proposal (Starting Point)
+
+Objective: unblock full SIT parity deployment and reduce promotion risk to PROD by standardizing one owner-executed provider bootstrap.
+
+Scope:
+
+- SIT and PROD subscriptions targeted by Sprint 3 workflows.
+- Required namespaces:
+  - Microsoft.OperationalInsights
+  - Microsoft.KeyVault
+  - Microsoft.ManagedIdentity
+  - Microsoft.Network
+  - Microsoft.Insights
+  - Microsoft.Storage
+  - Microsoft.CognitiveServices
+  - Microsoft.ServiceBus
+
+Execution model:
+
+1. Subscription owner runs provider bootstrap once per subscription.
+2. Delivery team reruns SIT deployment with full module set enabled.
+3. Promotion to PROD remains approval-gated and evidence-based.
+
+Operator commands:
+
+```powershell
+./infra/scripts/register-resource-providers.ps1 -SubscriptionId <sit-subscription-id>
+./infra/scripts/register-resource-providers.ps1 -SubscriptionId <prod-subscription-id>
+```
+
+Verification command pattern:
+
+```bash
+az provider show --namespace Microsoft.CognitiveServices --query registrationState -o tsv
+```
+
+Success criteria:
+
+1. All namespaces return `Registered` for both subscriptions.
+2. SIT deployment workflow completes with full module set enabled.
+3. Deployment evidence is attached to PR and sprint artefacts before PROD module enablement.
 
 ## Acceptance Criteria
 
