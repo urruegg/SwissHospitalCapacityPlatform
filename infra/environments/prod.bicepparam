@@ -5,7 +5,7 @@ param solutionShortName = 'chhealthpf'
 param location = 'switzerlandnorth'
 
 param owner = 'platform-team'
-param costCenter = 'tbd'
+param costCenter = 'chhealthpf-prod'
 param workload = 'hospital-capacity'
 
 param logAnalyticsRetentionInDays = 180
