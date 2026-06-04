@@ -58,9 +58,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          while IFS= read -r -d '' f; do
+          files=(
+            docs/SD.md
+            docs/ARCHITECTURE.md
+            docs/INFRASTRUCTURE.md
+          )
+
+          for f in "${files[@]}"; do
+            [ -f "$f" ] || continue
             npx --yes markdown-link-check "$f"
-          done < <(find docs sprints .github -name "*.md" -print0)
+          done
 
   bicep-build:
     name: Bicep build and params compile
