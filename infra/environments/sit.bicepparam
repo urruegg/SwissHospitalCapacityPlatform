@@ -17,5 +17,11 @@ param enableDataPlatformModule = true
 param enableAiPlatformModule = true
 param enableIntegrationModule = true
 
+param enableExperienceHostingModule = false
+param enableApiRuntimeModule = false
+param enableDataFoundationModule = false
+param enableAiMlFoundationModule = false
+param enableIntegrationOrchestrationModule = false
+
 param networkVnetAddressPrefix = '10.60.0.0/16'
 param networkAppSubnetPrefix = '10.60.1.0/24'

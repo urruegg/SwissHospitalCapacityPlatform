@@ -54,6 +54,21 @@ param enableAiPlatformModule bool = false
 @description('Enable integration module deployment scaffold.')
 param enableIntegrationModule bool = false
 
+@description('Enable experience hosting foundation module deployment.')
+param enableExperienceHostingModule bool = false
+
+@description('Enable API runtime foundation module deployment.')
+param enableApiRuntimeModule bool = false
+
+@description('Enable data foundation module deployment.')
+param enableDataFoundationModule bool = false
+
+@description('Enable AI/ML foundation module deployment.')
+param enableAiMlFoundationModule bool = false
+
+@description('Enable integration orchestration foundation module deployment.')
+param enableIntegrationOrchestrationModule bool = false
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -130,6 +145,51 @@ module integration './modules/integration/main.bicep' = if (enableIntegrationMod
   }
 }
 
+module experienceHosting './modules/experience-hosting/main.bicep' = if (enableExperienceHostingModule) {
+  name: 'experience-hosting-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module apiRuntime './modules/api-runtime/main.bicep' = if (enableApiRuntimeModule) {
+  name: 'api-runtime-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFoundationModule) {
+  name: 'data-foundation-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module aiMlFoundation './modules/ai-ml-foundation/main.bicep' = if (enableAiMlFoundationModule) {
+  name: 'ai-ml-foundation-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module integrationOrchestration './modules/integration-orchestration/main.bicep' = if (enableIntegrationOrchestrationModule) {
+  name: 'integration-orchestration-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
 output moduleStatuses object = {
@@ -139,4 +199,9 @@ output moduleStatuses object = {
   dataPlatform: enableDataPlatformModule ? dataPlatform!.outputs.moduleStatus : 'data-platform-disabled'
   aiPlatform: enableAiPlatformModule ? aiPlatform!.outputs.moduleStatus : 'ai-platform-disabled'
   integration: enableIntegrationModule ? integration!.outputs.moduleStatus : 'integration-disabled'
+  experienceHosting: enableExperienceHostingModule ? experienceHosting!.outputs.moduleStatus : 'experience-hosting-disabled'
+  apiRuntime: enableApiRuntimeModule ? apiRuntime!.outputs.moduleStatus : 'api-runtime-disabled'
+  dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
+  aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
+  integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
 }

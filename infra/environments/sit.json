@@ -41,6 +41,21 @@
     "enableIntegrationModule": {
       "value": true
     },
+    "enableExperienceHostingModule": {
+      "value": false
+    },
+    "enableApiRuntimeModule": {
+      "value": false
+    },
+    "enableDataFoundationModule": {
+      "value": false
+    },
+    "enableAiMlFoundationModule": {
+      "value": false
+    },
+    "enableIntegrationOrchestrationModule": {
+      "value": false
+    },
     "networkVnetAddressPrefix": {
       "value": "10.60.0.0/16"
     },

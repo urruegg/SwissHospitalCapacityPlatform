@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
-| **Status** | Planned |
-| **Previous Version** | N/A |
+| **Status** | In Progress |
+| **Previous Version** | 1.0.0 (initial Sprint 4 planning baseline) |
 
 ## Sprint Goal
 
@@ -102,6 +102,35 @@ flowchart LR
 6. Execute SIT deployment and verify resource inventory and policy posture.
 7. Execute approval-gated PROD deployment and verify parity.
 8. Publish evidence links in issue and sprint document, then close sprint issue.
+
+## Implementation Progress (Current)
+
+### Completed in first implementation slice
+
+1. Added new Sprint 4 foundation module scaffolds with concrete baseline resources:
+  - `infra/modules/experience-hosting/main.bicep`
+  - `infra/modules/api-runtime/main.bicep`
+  - `infra/modules/data-foundation/main.bicep`
+  - `infra/modules/ai-ml-foundation/main.bicep`
+  - `infra/modules/integration-orchestration/main.bicep`
+2. Extended root composition in `infra/main.bicep` with new module flags and conditional module wiring.
+3. Added new module parity flags to:
+  - `infra/environments/sit.bicepparam`
+  - `infra/environments/prod.bicepparam`
+4. Extended provider registration coverage in deployment workflows for new resource providers:
+  - `Microsoft.Web`
+  - `Microsoft.ContainerRegistry`
+  - `Microsoft.EventHub`
+  - `Microsoft.MachineLearningServices`
+  - `Microsoft.Logic`
+
+### Pending in next slice
+
+1. Validate Bicep compilation for root and environment parameter files after module additions.
+2. Decide initial enablement strategy for new modules in SIT and PROD (phased or full parity).
+3. Execute SIT what-if and deployment verification for selected enablement set.
+4. Execute approval-gated PROD rollout for selected enablement set.
+5. Capture evidence links and update issue/PR tracking.
 
 ## Acceptance Criteria
 

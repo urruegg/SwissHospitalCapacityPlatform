@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "1800465137083993959"
+      "templateHash": "7653597916248298117"
     }
   },
   "parameters": {
@@ -118,6 +118,41 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable integration module deployment scaffold."
+      }
+    },
+    "enableExperienceHostingModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable experience hosting foundation module deployment."
+      }
+    },
+    "enableApiRuntimeModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable API runtime foundation module deployment."
+      }
+    },
+    "enableDataFoundationModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable data foundation module deployment."
+      }
+    },
+    "enableAiMlFoundationModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable AI/ML foundation module deployment."
+      }
+    },
+    "enableIntegrationOrchestrationModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable integration orchestration foundation module deployment."
       }
     }
   },
@@ -915,6 +950,513 @@
           }
         }
       }
+    },
+    {
+      "condition": "[parameters('enableExperienceHostingModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('experience-hosting-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "4757810480383564384"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. chhealthpf-sit or chhealthpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "appServicePlanSkuName": {
+              "type": "string",
+              "defaultValue": "B1",
+              "metadata": {
+                "description": "App Service plan SKU name."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2023-12-01",
+              "name": "[format('asp-platform-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "[parameters('appServicePlanSkuName')]",
+                "tier": "[if(contains(createArray('B1', 'B2', 'B3'), parameters('appServicePlanSkuName')), 'Basic', 'Standard')]"
+              },
+              "kind": "linux",
+              "properties": {
+                "reserved": true
+              }
+            },
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2023-12-01",
+              "name": "[format('app-platform-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "app,linux",
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', format('asp-platform-{0}', parameters('nameSuffix')))]",
+                "httpsOnly": true,
+                "siteConfig": {
+                  "linuxFxVersion": "NODE|20-lts",
+                  "minTlsVersion": "1.2",
+                  "alwaysOn": false
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', format('asp-platform-{0}', parameters('nameSuffix')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Experience hosting module implementation marker."
+              },
+              "value": "experience-hosting-implemented"
+            },
+            "appServicePlanName": {
+              "type": "string",
+              "metadata": {
+                "description": "App Service plan name."
+              },
+              "value": "[format('asp-platform-{0}', parameters('nameSuffix'))]"
+            },
+            "webAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Command center web app name."
+              },
+              "value": "[format('app-platform-{0}', parameters('nameSuffix'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enableApiRuntimeModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('api-runtime-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "17094941447369240738"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. chhealthpf-sit or chhealthpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "containerRegistrySku": {
+              "type": "string",
+              "defaultValue": "Standard",
+              "allowedValues": [
+                "Basic",
+                "Standard",
+                "Premium"
+              ],
+              "metadata": {
+                "description": "Container registry SKU."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ContainerRegistry/registries",
+              "apiVersion": "2023-07-01",
+              "name": "[toLower(format('cr{0}', uniqueString(resourceGroup().id, parameters('nameSuffix'))))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "[parameters('containerRegistrySku')]"
+              },
+              "properties": {
+                "adminUserEnabled": false,
+                "publicNetworkAccess": "Enabled"
+              }
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('id-api-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "API runtime module implementation marker."
+              },
+              "value": "api-runtime-implemented"
+            },
+            "containerRegistryName": {
+              "type": "string",
+              "metadata": {
+                "description": "Container registry name."
+              },
+              "value": "[toLower(format('cr{0}', uniqueString(resourceGroup().id, parameters('nameSuffix'))))]"
+            },
+            "apiRuntimeIdentityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "API runtime identity resource ID."
+              },
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-api-{0}', parameters('nameSuffix')))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enableDataFoundationModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('data-foundation-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "9912802579089994731"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. chhealthpf-sit or chhealthpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.EventHub/namespaces",
+              "apiVersion": "2022-10-01-preview",
+              "name": "[format('evh-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Standard",
+                "tier": "Standard",
+                "capacity": 1
+              },
+              "properties": {
+                "minimumTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled"
+              }
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Data foundation module implementation marker."
+              },
+              "value": "data-foundation-implemented"
+            },
+            "eventHubNamespaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Event Hub namespace name."
+              },
+              "value": "[format('evh-{0}', parameters('nameSuffix'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enableAiMlFoundationModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('ai-ml-foundation-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "13198929340669433897"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. chhealthpf-sit or chhealthpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.MachineLearningServices/workspaces",
+              "apiVersion": "2023-10-01",
+              "name": "[format('mlw-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+              },
+              "properties": {
+                "publicNetworkAccess": "Enabled",
+                "friendlyName": "[format('mlw-{0}', parameters('nameSuffix'))]"
+              }
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "AI/ML foundation module implementation marker."
+              },
+              "value": "ai-ml-foundation-implemented"
+            },
+            "machineLearningWorkspaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "ML workspace name."
+              },
+              "value": "[format('mlw-{0}', parameters('nameSuffix'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enableIntegrationOrchestrationModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('integration-orchestration-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "1759580037269753889"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. chhealthpf-sit or chhealthpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Logic/workflows",
+              "apiVersion": "2019-05-01",
+              "name": "[format('logic-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "state": "Disabled",
+                "definition": {
+                  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                  "contentVersion": "1.0.0.0",
+                  "parameters": {},
+                  "triggers": {},
+                  "actions": {},
+                  "outputs": {}
+                },
+                "parameters": {}
+              }
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Integration orchestration module implementation marker."
+              },
+              "value": "integration-orchestration-implemented"
+            },
+            "logicWorkflowName": {
+              "type": "string",
+              "metadata": {
+                "description": "Logic App workflow name."
+              },
+              "value": "[format('logic-{0}', parameters('nameSuffix'))]"
+            }
+          }
+        }
+      }
     }
   ],
   "outputs": {
@@ -934,7 +1476,12 @@
         "observability": "[if(parameters('enableObservabilityModule'), reference(resourceId('Microsoft.Resources/deployments', format('observability-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'observability-disabled')]",
         "dataPlatform": "[if(parameters('enableDataPlatformModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-platform-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-platform-disabled')]",
         "aiPlatform": "[if(parameters('enableAiPlatformModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-platform-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-platform-disabled')]",
-        "integration": "[if(parameters('enableIntegrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-disabled')]"
+        "integration": "[if(parameters('enableIntegrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-disabled')]",
+        "experienceHosting": "[if(parameters('enableExperienceHostingModule'), reference(resourceId('Microsoft.Resources/deployments', format('experience-hosting-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'experience-hosting-disabled')]",
+        "apiRuntime": "[if(parameters('enableApiRuntimeModule'), reference(resourceId('Microsoft.Resources/deployments', format('api-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'api-runtime-disabled')]",
+        "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
+        "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
+        "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]"
       }
     }
   }
