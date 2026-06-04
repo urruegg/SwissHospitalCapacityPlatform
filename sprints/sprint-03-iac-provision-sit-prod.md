@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.3.0 (workflow hardening, module wiring, and baseline infrastructure doc) |
+| **Previous Version** | 1.4.0 (implemented SIT core identity/network/observability resources and enablement) |
 
 ## Sprint Goal
 
@@ -250,12 +250,20 @@ sprints/
 2. Added safe composition parameters in `infra/main.bicep` for network CIDR control and retained feature-flag module enablement.
 3. Enabled identity, network, and observability modules for `SIT` in `infra/environments/sit.bicepparam`.
 
+### Completed in fourth implementation slice
+
+1. Replaced remaining module scaffolds with first concrete resources for:
+  - `data-platform/`: storage account baseline with blob service retention policy,
+  - `ai-platform/`: Azure AI Services account baseline,
+  - `integration/`: Service Bus namespace baseline.
+2. Enabled data-platform, ai-platform, and integration modules for `SIT` in `infra/environments/sit.bicepparam`.
+
 ### Pending in next slice
 
 1. Configure repository GitHub Environments (`sit`, `prod`) with required variables and approvals.
 2. Configure federated identity credentials and environment-scoped Azure context values.
-3. Replace remaining module scaffolds (`data-platform`, `ai-platform`, `integration`) with SD-aligned resource implementations and composition wiring.
-4. Execute end-to-end workflow tests against target SIT subscription and resource group.
+3. Execute end-to-end workflow tests against target SIT subscription and resource group.
+4. Decide and apply PROD enablement strategy for newly implemented modules (immediate parity vs phased rollout).
 
 ## Acceptance Criteria
 
