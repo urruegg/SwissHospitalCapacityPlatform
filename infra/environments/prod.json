@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "prod"
+    },
+    "solutionShortName": {
+      "value": "chhealthpf"
+    },
+    "location": {
+      "value": "switzerlandnorth"
+    },
+    "owner": {
+      "value": "platform-team"
+    },
+    "costCenter": {
+      "value": "chhealthpf-prod"
+    },
+    "workload": {
+      "value": "hospital-capacity"
+    },
+    "logAnalyticsRetentionInDays": {
+      "value": 180
+    },
+    "enableIdentityModule": {
+      "value": true
+    },
+    "enableNetworkModule": {
+      "value": true
+    },
+    "enableObservabilityModule": {
+      "value": true
+    },
+    "enableDataPlatformModule": {
+      "value": true
+    },
+    "enableAiPlatformModule": {
+      "value": true
+    },
+    "enableIntegrationModule": {
+      "value": true
+    }
+  }
+}

@@ -10,11 +10,9 @@ param workload = 'hospital-capacity'
 
 param logAnalyticsRetentionInDays = 180
 
-// Phased rollout strategy for PROD: keep newly implemented modules disabled
-// until SIT end-to-end verification and change-approval gates are complete.
-param enableIdentityModule = false
-param enableNetworkModule = false
-param enableObservabilityModule = false
-param enableDataPlatformModule = false
-param enableAiPlatformModule = false
-param enableIntegrationModule = false
+param enableIdentityModule = true
+param enableNetworkModule = true
+param enableObservabilityModule = true
+param enableDataPlatformModule = true
+param enableAiPlatformModule = true
+param enableIntegrationModule = true
