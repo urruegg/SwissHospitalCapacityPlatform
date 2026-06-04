@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.7.0 |
+| **Version** | 1.8.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.6.0 (codified phased PROD module rollout strategy and updated pending controls) |
+| **Previous Version** | 1.7.0 (deployment workflow provider-registration hardening and sprint tracking update) |
 
 ## Sprint Goal
 
@@ -268,12 +268,18 @@ sprints/
 1. Hardened SIT and PROD deployment workflows to register required Azure resource providers before deployment steps.
 2. Added provider registration coverage for namespaces required by current module set (OperationalInsights, KeyVault, ManagedIdentity, Network, Insights, Storage, CognitiveServices, ServiceBus).
 
+### Completed in seventh implementation slice
+
+1. Applied temporary SIT phased enablement for modules requiring subscription-level provider registrations not currently permitted for the deployment identity.
+2. Updated deployment workflows so provider-registration attempts are best-effort and emit warnings when authorization is insufficient, instead of hard-failing pre-deploy.
+
 ### Pending in next slice
 
 1. Configure repository GitHub Environments (`sit`, `prod`) with required variables and approvals.
 2. Configure federated identity credentials and environment-scoped Azure context values.
-3. Execute end-to-end workflow tests against target SIT subscription and resource group.
-4. Execute explicit change-controlled enablement for PROD modules after SIT verification evidence is approved.
+3. Complete full provider-registration by subscription owner for ManagedIdentity, Network, Storage, CognitiveServices, and ServiceBus.
+4. Re-enable currently phased SIT modules and rerun end-to-end verification with full module set.
+5. Execute explicit change-controlled enablement for PROD modules after SIT verification evidence is approved.
 
 ## Acceptance Criteria
 

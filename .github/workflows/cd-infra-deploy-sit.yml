@@ -64,7 +64,9 @@ jobs:
           for p in "${providers[@]}"; do
             state=$(az provider show --namespace "$p" --query registrationState -o tsv || echo "NotRegistered")
             if [ "$state" != "Registered" ]; then
-              az provider register --namespace "$p" --wait
+              if ! az provider register --namespace "$p" --wait; then
+                echo "::warning::Unable to register provider $p. Continuing with current registration state."
+              fi
             fi
           done
 
