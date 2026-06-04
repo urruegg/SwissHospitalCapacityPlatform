@@ -310,7 +310,7 @@ copilot/agent evals, and app/integration.
 
 - **Test-first**: Write tests before implementing features or fixing bugs.
 - **Fixture-first for agents**: Every agent change must include or update a **golden-task fixture** under `agents/<name>/golden-tasks.md` (or `evals/<name>/`) that describes input issue body + expected MCP tool calls + expected PR/comment shape + forbidden behaviors.
-- **Coverage target**: 
+- **Coverage target**:
   - Agent prompts and orchestration must keep at least one happy-path fixture and one failure-mode fixture per agent before sprint exit.
   - When executable application code is introduced in this repo, target $\ge 80\%$ coverage for new code and do not decrease overall coverage in PRs.
 - **Backend tests (when backend code exists)**: Prefer xUnit + Moq, follow Arrange-Act-Assert, and mock external dependencies (for example HTTP clients, service interfaces, and loggers) to keep tests deterministic.

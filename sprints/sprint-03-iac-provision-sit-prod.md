@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-06-02 |
+| **Version** | 1.9.0 |
+| **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.1.0 (added tenant/environment GitHub and Key Vault baseline) |
+| **Previous Version** | 1.8.0 (captured phased SIT rollout and provider-registration constraint handling) |
 
 ## Sprint Goal
 
@@ -224,12 +224,104 @@ sprints/
 3. Implemented OIDC-based Azure login pattern in workflow templates.
 4. Implemented `what-if` gate before SIT and PROD deployment steps.
 
+### Completed in second implementation slice
+
+1. Aligned SIT deployment workflow trigger to run on merge to `main` with `infra/**` path filtering.
+2. Converted PROD deployment workflow to support promotion-event triggering from successful SIT deployment (`workflow_run`) and explicit manual confirmation (`approved-to-apply`).
+3. Extended `ci-infra-validate.yml` to include:
+  - conditional markdown lint and link checks when IaC-governance docs change,
+  - explicit Bicep lint validation,
+  - retained mandatory SIT and PROD `what-if` simulation jobs.
+4. Added the missing baseline infrastructure documentation file `docs/INFRASTRUCTURE.md`.
+5. Scaffolded additional module domains under `infra/modules/`:
+  - `identity/`
+  - `network/`
+  - `observability/`
+  - `data-platform/`
+  - `ai-platform/`
+  - `integration/`
+
+### Completed in third implementation slice
+
+1. Replaced scaffold placeholders with first concrete resources for:
+  - `identity/`: user-assigned managed identity baseline,
+  - `network/`: virtual network and application subnet baseline,
+  - `observability/`: Application Insights component baseline.
+2. Added safe composition parameters in `infra/main.bicep` for network CIDR control and retained feature-flag module enablement.
+3. Enabled identity, network, and observability modules for `SIT` in `infra/environments/sit.bicepparam`.
+
+### Completed in fourth implementation slice
+
+1. Replaced remaining module scaffolds with first concrete resources for:
+  - `data-platform/`: storage account baseline with blob service retention policy,
+  - `ai-platform/`: Azure AI Services account baseline,
+  - `integration/`: Service Bus namespace baseline.
+2. Enabled data-platform, ai-platform, and integration modules for `SIT` in `infra/environments/sit.bicepparam`.
+
+### Completed in fifth implementation slice
+
+1. Configured explicit PROD enablement strategy as **phased rollout** in `infra/environments/prod.bicepparam`.
+2. Set module enablement flags to `false` for PROD until SIT end-to-end validation and production approval gates are completed.
+
+### Completed in sixth implementation slice
+
+1. Hardened SIT and PROD deployment workflows to register required Azure resource providers before deployment steps.
+2. Added provider registration coverage for namespaces required by current module set (OperationalInsights, KeyVault, ManagedIdentity, Network, Insights, Storage, CognitiveServices, ServiceBus).
+
+### Completed in seventh implementation slice
+
+1. Applied temporary SIT phased enablement for modules requiring subscription-level provider registrations not currently permitted for the deployment identity.
+2. Updated deployment workflows so provider-registration attempts are best-effort and emit warnings when authorization is insufficient, instead of hard-failing pre-deploy.
+
 ### Pending in next slice
 
 1. Configure repository GitHub Environments (`sit`, `prod`) with required variables and approvals.
 2. Configure federated identity credentials and environment-scoped Azure context values.
-3. Add additional infra modules for network, identity, observability, integration, and AI foundations.
-4. Execute end-to-end workflow tests against target SIT subscription and resource group.
+3. Complete full provider-registration by subscription owner for ManagedIdentity, Network, Storage, CognitiveServices, and ServiceBus.
+4. Re-enable currently phased SIT modules and rerun end-to-end verification with full module set.
+5. Execute explicit change-controlled enablement for PROD modules after SIT verification evidence is approved.
+
+## Subscription Owner Provider Registration Proposal (Starting Point)
+
+Objective: unblock full SIT parity deployment and reduce promotion risk to PROD by standardizing one owner-executed provider bootstrap.
+
+Scope:
+
+- SIT and PROD subscriptions targeted by Sprint 3 workflows.
+- Required namespaces:
+  - Microsoft.OperationalInsights
+  - Microsoft.KeyVault
+  - Microsoft.ManagedIdentity
+  - Microsoft.Network
+  - Microsoft.Insights
+  - Microsoft.Storage
+  - Microsoft.CognitiveServices
+  - Microsoft.ServiceBus
+
+Execution model:
+
+1. Subscription owner runs provider bootstrap once per subscription.
+2. Delivery team reruns SIT deployment with full module set enabled.
+3. Promotion to PROD remains approval-gated and evidence-based.
+
+Operator commands:
+
+```powershell
+./infra/scripts/register-resource-providers.ps1 -SubscriptionId <sit-subscription-id>
+./infra/scripts/register-resource-providers.ps1 -SubscriptionId <prod-subscription-id>
+```
+
+Verification command pattern:
+
+```bash
+az provider show --namespace Microsoft.CognitiveServices --query registrationState -o tsv
+```
+
+Success criteria:
+
+1. All namespaces return `Registered` for both subscriptions.
+2. SIT deployment workflow completes with full module set enabled.
+3. Deployment evidence is attached to PR and sprint artefacts before PROD module enablement.
 
 ## Acceptance Criteria
 

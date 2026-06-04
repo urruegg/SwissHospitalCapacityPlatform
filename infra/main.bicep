@@ -1,5 +1,7 @@
 targetScope = 'resourceGroup'
 
+// No-op change for workflow gate dry-run validation.
+
 @description('Deployment environment name.')
 @allowed([
   'dev'
@@ -28,6 +30,30 @@ param workload string = 'hospital-capacity'
 @maxValue(730)
 param logAnalyticsRetentionInDays int = 90
 
+@description('Enable identity module deployment scaffold.')
+param enableIdentityModule bool = false
+
+@description('Enable network module deployment scaffold.')
+param enableNetworkModule bool = false
+
+@description('Address prefix for the platform virtual network.')
+param networkVnetAddressPrefix string = '10.60.0.0/16'
+
+@description('Address prefix for the platform application subnet.')
+param networkAppSubnetPrefix string = '10.60.1.0/24'
+
+@description('Enable observability module deployment scaffold.')
+param enableObservabilityModule bool = false
+
+@description('Enable data platform module deployment scaffold.')
+param enableDataPlatformModule bool = false
+
+@description('Enable AI platform module deployment scaffold.')
+param enableAiPlatformModule bool = false
+
+@description('Enable integration module deployment scaffold.')
+param enableIntegrationModule bool = false
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -48,5 +74,69 @@ module platformFoundation './modules/platform-foundation/main.bicep' = {
   }
 }
 
+module identity './modules/identity/main.bicep' = if (enableIdentityModule) {
+  name: 'identity-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module network './modules/network/main.bicep' = if (enableNetworkModule) {
+  name: 'network-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    vnetAddressPrefix: networkVnetAddressPrefix
+    appSubnetPrefix: networkAppSubnetPrefix
+  }
+}
+
+module observability './modules/observability/main.bicep' = if (enableObservabilityModule) {
+  name: 'observability-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module dataPlatform './modules/data-platform/main.bicep' = if (enableDataPlatformModule) {
+  name: 'data-platform-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module aiPlatform './modules/ai-platform/main.bicep' = if (enableAiPlatformModule) {
+  name: 'ai-platform-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
+module integration './modules/integration/main.bicep' = if (enableIntegrationModule) {
+  name: 'integration-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+  }
+}
+
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
+output moduleStatuses object = {
+  identity: enableIdentityModule ? identity!.outputs.moduleStatus : 'identity-disabled'
+  network: enableNetworkModule ? network!.outputs.moduleStatus : 'network-disabled'
+  observability: enableObservabilityModule ? observability!.outputs.moduleStatus : 'observability-disabled'
+  dataPlatform: enableDataPlatformModule ? dataPlatform!.outputs.moduleStatus : 'data-platform-disabled'
+  aiPlatform: enableAiPlatformModule ? aiPlatform!.outputs.moduleStatus : 'ai-platform-disabled'
+  integration: enableIntegrationModule ? integration!.outputs.moduleStatus : 'integration-disabled'
+}

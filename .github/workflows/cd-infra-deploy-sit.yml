@@ -1,8 +1,7 @@
 name: cd-infra-deploy-sit
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+  push:
     branches:
       - main
     paths:
@@ -18,14 +17,11 @@ jobs:
   deploy-sit:
     name: Deploy SIT
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     environment:
       name: sit
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Validate required environment configuration (SIT)
         shell: bash
@@ -49,6 +45,30 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Ensure required resource providers are registered (SIT)
+        shell: bash
+        run: |
+          set -euo pipefail
+          providers=(
+            Microsoft.OperationalInsights
+            Microsoft.KeyVault
+            Microsoft.ManagedIdentity
+            Microsoft.Network
+            Microsoft.Insights
+            Microsoft.Storage
+            Microsoft.CognitiveServices
+            Microsoft.ServiceBus
+          )
+
+          for p in "${providers[@]}"; do
+            state=$(az provider show --namespace "$p" --query registrationState -o tsv || echo "NotRegistered")
+            if [ "$state" != "Registered" ]; then
+              if ! az provider register --namespace "$p" --wait; then
+                echo "::warning::Unable to register provider $p. Continuing with current registration state."
+              fi
+            fi
+          done
 
       - name: What-if before deploy (SIT)
         shell: bash
