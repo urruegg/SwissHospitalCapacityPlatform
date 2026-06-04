@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.9.0 |
+| **Version** | 1.10.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
-| **Status** | In Progress |
-| **Previous Version** | 1.8.0 (captured phased SIT rollout and provider-registration constraint handling) |
+| **Status** | Completed |
+| **Previous Version** | 1.9.0 (added provider registration proposal and phased rollout controls) |
 
 ## Sprint Goal
 
@@ -273,13 +273,42 @@ sprints/
 1. Applied temporary SIT phased enablement for modules requiring subscription-level provider registrations not currently permitted for the deployment identity.
 2. Updated deployment workflows so provider-registration attempts are best-effort and emit warnings when authorization is insufficient, instead of hard-failing pre-deploy.
 
-### Pending in next slice
+### Completed in eighth implementation slice
 
-1. Configure repository GitHub Environments (`sit`, `prod`) with required variables and approvals.
-2. Configure federated identity credentials and environment-scoped Azure context values.
-3. Complete full provider-registration by subscription owner for ManagedIdentity, Network, Storage, CognitiveServices, and ServiceBus.
-4. Re-enable currently phased SIT modules and rerun end-to-end verification with full module set.
-5. Execute explicit change-controlled enablement for PROD modules after SIT verification evidence is approved.
+1. Completed subscription-owner provider registration across required namespaces.
+2. Re-enabled full optional domain module set for `SIT` and validated successful end-to-end deployment.
+3. Executed approval-gated `PROD` promotion and validated successful rollout.
+4. Enabled `PROD` optional domain modules to match `SIT` parity and validated deployment with transient retry handling.
+5. Captured deployment evidence and audit trail in issue and PR comments.
+
+## Sprint 3 Delivery Visualization
+
+```mermaid
+flowchart LR
+  A[CI IaC Validate] --> B[SIT Deploy]
+  B --> C[Provider Registration]
+  C --> D[SIT Full Parity Verified]
+  D --> E[PROD Approval Gate]
+  E --> F[PROD Deploy]
+  F --> G[PROD Domain Parity Verified]
+```
+
+```mermaid
+timeline
+  title Sprint 3 rollout sequence
+  2026-06-02 : IaC and workflow hardening
+  2026-06-03 : SIT and PROD gated flow validation
+  2026-06-04 : Provider registration completed
+  2026-06-04 : SIT parity deployment success
+  2026-06-04 : PROD parity deployment success
+```
+
+## Closure Outcome
+
+1. Tracking issue: [#6](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/6)
+2. SIT full parity evidence: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26942545978
+3. PROD gated deploy evidence: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26949309555
+4. Merge evidence for sprint delivery PR: https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/7
 
 ## Subscription Owner Provider Registration Proposal (Starting Point)
 

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial infrastructure baseline scope) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.1.0 (added provider registration runbook and phased PROD strategy) |
 
 ## Purpose
 
@@ -23,9 +23,9 @@ Define the infrastructure baseline for Sprint 3 SIT and PROD provisioning and pr
 - SIT deployment workflow: .github/workflows/cd-infra-deploy-sit.yml
 - PROD deployment workflow: .github/workflows/cd-infra-deploy-prod.yml
 
-## Next Expansion
+## Implemented Module Domains
 
-Planned module domains:
+Implemented module domains:
 
 - identity
 - network
@@ -33,6 +33,33 @@ Planned module domains:
 - data-platform
 - ai-platform
 - integration
+
+## Implemented Topology Snapshot
+
+```mermaid
+flowchart TD
+  subgraph SIT[Environment: SIT]
+    SITKV[kv-chhealthpf-sit]
+    SITLOG[log-chhealthpf-sit]
+    SITAPPI[appi-chhealthpf-sit]
+    SITID[id-platform-chhealthpf-sit]
+    SITVNET[vnet-platform-chhealthpf-sit]
+    SITST[stdpchhealthpfsit]
+    SITSB[sb-chhealthpf-sit]
+    SITAI[ai-chhealthpf-sit]
+  end
+
+  subgraph PROD[Environment: PROD]
+    PRODKV[kv-chhealthpf-prod]
+    PRODLOG[log-chhealthpf-prod]
+    PRODAPPI[appi-chhealthpf-prod]
+    PRODID[id-platform-chhealthpf-prod]
+    PRODVNET[vnet-platform-chhealthpf-prod]
+    PRODST[stdpchhealthpfprod]
+    PRODSB[sb-chhealthpf-prod]
+    PRODAI[ai-chhealthpf-prod]
+  end
+```
 
 ## Provider Registration Runbook
 
@@ -65,8 +92,8 @@ Expected value: `Registered`.
 
 ## PROD Enablement Strategy
 
-Current strategy is phased rollout:
+Current strategy has progressed from phased rollout to controlled parity enablement:
 
-- Keep optional module flags disabled by default in `infra/environments/prod.bicepparam`.
-- Enable modules in controlled change windows only after SIT verification evidence and approval.
-- Apply module enablement incrementally (identity/network/observability first, then data-platform/ai-platform/integration).
+- Optional module flags are now enabled in `infra/environments/prod.bicepparam`.
+- Deployments remain approval-gated and evidence-first via `workflow_dispatch` with explicit confirmation.
+- Provider registration remains a prerequisite control and is captured in runbook automation.

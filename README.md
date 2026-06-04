@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| Version | 1.3.1 |
-| Date | 2026-06-01 |
+| Version | 1.4.0 |
+| Date | 2026-06-04 |
 | Author | Urs Rueegg |
 | Status | Reviewed |
-| Previous Version | 1.3.0 (added TEST and ALM artefact linkage) |
+| Previous Version | 1.3.1 (reviewed artefact linkage baseline) |
 
 ## Executive Summary
 
@@ -34,6 +34,27 @@ Swiss in-country processing guardrails for PHI-sensitive workloads.
 1. Governance and requirements are documented first.
 2. Agent-based workflows generate and review solution artefacts.
 3. Security, compliance, and test evidence are built into the release path.
+
+## Sprint 3 Implementation Summary
+
+Sprint 3 delivered the infrastructure and promotion baseline from design into
+validated SIT and PROD execution:
+
+1. Implemented six domain infrastructure modules and composed them under `infra/main.bicep`.
+2. Activated CI what-if validation for SIT and PROD through GitHub Actions.
+3. Executed approval-gated SIT to PROD promotion workflow with OIDC authentication.
+4. Completed provider registration controls and deployment runbook automation.
+5. Achieved SIT and PROD domain module parity with deployment evidence.
+
+```mermaid
+flowchart LR
+	Spec[Solution Design Baseline] --> IaC[Modular IaC Implementation]
+	IaC --> CI[CI Validation and What-If]
+	CI --> SIT[SIT Deployment]
+	SIT --> Gate[Approval Gate]
+	Gate --> PROD[PROD Deployment]
+	PROD --> Evidence[Evidence and Traceability]
+```
 
 ## Key Artefacts
 
