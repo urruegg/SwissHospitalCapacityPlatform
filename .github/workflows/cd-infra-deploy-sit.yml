@@ -46,6 +46,28 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Ensure required resource providers are registered (SIT)
+        shell: bash
+        run: |
+          set -euo pipefail
+          providers=(
+            Microsoft.OperationalInsights
+            Microsoft.KeyVault
+            Microsoft.ManagedIdentity
+            Microsoft.Network
+            Microsoft.Insights
+            Microsoft.Storage
+            Microsoft.CognitiveServices
+            Microsoft.ServiceBus
+          )
+
+          for p in "${providers[@]}"; do
+            state=$(az provider show --namespace "$p" --query registrationState -o tsv || echo "NotRegistered")
+            if [ "$state" != "Registered" ]; then
+              az provider register --namespace "$p" --wait
+            fi
+          done
+
       - name: What-if before deploy (SIT)
         shell: bash
         run: |
