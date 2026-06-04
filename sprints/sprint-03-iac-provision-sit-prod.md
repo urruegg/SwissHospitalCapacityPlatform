@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.9.0 |
+| **Version** | 1.10.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
-| **Status** | In Progress |
-| **Previous Version** | 1.8.0 (captured phased SIT rollout and provider-registration constraint handling) |
+| **Status** | Completed |
+| **Previous Version** | 1.9.0 (documented phased SIT rollout and provider registration handling) |
 
 ## Sprint Goal
 
@@ -273,13 +273,19 @@ sprints/
 1. Applied temporary SIT phased enablement for modules requiring subscription-level provider registrations not currently permitted for the deployment identity.
 2. Updated deployment workflows so provider-registration attempts are best-effort and emit warnings when authorization is insufficient, instead of hard-failing pre-deploy.
 
-### Pending in next slice
+### Completed in eighth implementation slice (Sprint closure)
 
-1. Configure repository GitHub Environments (`sit`, `prod`) with required variables and approvals.
-2. Configure federated identity credentials and environment-scoped Azure context values.
-3. Complete full provider-registration by subscription owner for ManagedIdentity, Network, Storage, CognitiveServices, and ServiceBus.
-4. Re-enable currently phased SIT modules and rerun end-to-end verification with full module set.
-5. Execute explicit change-controlled enablement for PROD modules after SIT verification evidence is approved.
+1. Re-enabled full SIT module parity after provider registrations were available and validated successful end-to-end deployment execution.
+2. Executed PROD gated promotion runs and confirmed successful deployment after transient storage operation contention was resolved by rerun.
+3. Verified Azure resource footprints in both `rg-chhealthpf-sit` and `rg-chhealthpf-prod` aligned with Sprint 3 target module set.
+4. Published closure evidence in GitHub issue/PR threads and closed Sprint 3 tracking issue `#6`.
+
+## Closure Evidence
+
+- Sprint 3 closure PR: https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/8
+- SIT full-parity success run: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26942545978
+- PROD gated success run: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26949309555
+- Sprint 3 issue closed: https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/6
 
 ## Subscription Owner Provider Registration Proposal (Starting Point)
 
@@ -340,4 +346,4 @@ Success criteria:
 
 ## Notes
 
-Sprint 3 is the implementation bridge between design baseline (`docs/SD.md`) and repeatable, controlled environment provisioning for SIT and PROD.
+Sprint 3 delivered the implementation bridge between design baseline (`docs/SD.md`) and repeatable, controlled environment provisioning for SIT and PROD. Remaining expansion work is tracked under Sprint 4.
