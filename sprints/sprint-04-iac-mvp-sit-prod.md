@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.0.0 (initial Sprint 4 planning baseline) |
+| **Previous Version** | 1.1.0 (first implementation slice added module scaffolds and wiring) |
 
 ## Sprint Goal
 
@@ -124,13 +124,26 @@ flowchart LR
   - `Microsoft.MachineLearningServices`
   - `Microsoft.Logic`
 
+### Completed in second implementation slice
+
+1. Completed local validation baseline for Sprint 4 module wiring:
+  - `az bicep build --file infra/main.bicep`
+  - `az bicep build-params --file infra/environments/sit.bicepparam`
+  - `az bicep build-params --file infra/environments/prod.bicepparam`
+2. Selected phased domain enablement strategy for new Sprint 4 modules:
+  - enable one new module in `SIT`, verify deployment and inventory,
+  - then promote the same module to `PROD` via approval-gated rollout.
+3. Enabled first Sprint 4 domain module in `SIT`:
+  - `enableExperienceHostingModule = true` in `infra/environments/sit.bicepparam`.
+4. Kept `PROD` Sprint 4 module flags unchanged (`false`) pending SIT evidence and explicit promotion approval.
+
 ### Pending in next slice
 
-1. Validate Bicep compilation for root and environment parameter files after module additions.
-2. Decide initial enablement strategy for new modules in SIT and PROD (phased or full parity).
-3. Execute SIT what-if and deployment verification for selected enablement set.
-4. Execute approval-gated PROD rollout for selected enablement set.
-5. Capture evidence links and update issue/PR tracking.
+1. Execute SIT what-if and deployment verification for the experience-hosting module enablement.
+2. Verify new SIT resources and diagnostics for experience-hosting footprint.
+3. Execute approval-gated PROD rollout for experience-hosting module enablement.
+4. Capture evidence links and update issue/PR tracking.
+5. Repeat the phased cycle for api-runtime, data-foundation, ai-ml-foundation, and integration-orchestration modules.
 
 ## Acceptance Criteria
 
