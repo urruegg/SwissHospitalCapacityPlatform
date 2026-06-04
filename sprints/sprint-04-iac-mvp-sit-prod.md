@@ -30,7 +30,7 @@ This sprint is executed as a GitHub Issue-driven run. The sprint issue is the tr
 - Prior sprint baseline:
   - `sprints/sprint-03-iac-provision-sit-prod.md`
 - Sprint PR tracking:
-  - Planned PR from branch `sprint/04-iac-mvp-sit-prod`
+  - [#10](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/10)
 
 ## Scope
 
