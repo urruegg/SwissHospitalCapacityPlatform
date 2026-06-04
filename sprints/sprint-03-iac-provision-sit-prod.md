@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-06-02 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.1.0 (added tenant/environment GitHub and Key Vault baseline) |
+| **Previous Version** | 1.2.0 (captured first implementation slice status and pending items) |
 
 ## Sprint Goal
 
@@ -224,11 +224,28 @@ sprints/
 3. Implemented OIDC-based Azure login pattern in workflow templates.
 4. Implemented `what-if` gate before SIT and PROD deployment steps.
 
+### Completed in second implementation slice
+
+1. Aligned SIT deployment workflow trigger to run on merge to `main` with `infra/**` path filtering.
+2. Converted PROD deployment workflow to support promotion-event triggering from successful SIT deployment (`workflow_run`) and explicit manual confirmation (`approved-to-apply`).
+3. Extended `ci-infra-validate.yml` to include:
+  - conditional markdown lint and link checks when IaC-governance docs change,
+  - explicit Bicep lint validation,
+  - retained mandatory SIT and PROD `what-if` simulation jobs.
+4. Added the missing baseline infrastructure documentation file `docs/INFRASTRUCTURE.md`.
+5. Scaffolded additional module domains under `infra/modules/`:
+  - `identity/`
+  - `network/`
+  - `observability/`
+  - `data-platform/`
+  - `ai-platform/`
+  - `integration/`
+
 ### Pending in next slice
 
 1. Configure repository GitHub Environments (`sit`, `prod`) with required variables and approvals.
 2. Configure federated identity credentials and environment-scoped Azure context values.
-3. Add additional infra modules for network, identity, observability, integration, and AI foundations.
+3. Replace newly added module scaffolds with full SD-aligned resource implementations and composition wiring.
 4. Execute end-to-end workflow tests against target SIT subscription and resource group.
 
 ## Acceptance Criteria

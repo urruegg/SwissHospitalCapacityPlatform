@@ -1,8 +1,11 @@
 name: cd-infra-deploy-prod
 
 on:
-  pull_request_review:
-    types: [submitted]
+  workflow_run:
+    workflows:
+      - cd-infra-deploy-sit
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       confirm:
@@ -13,8 +16,6 @@ on:
 permissions:
   contents: read
   id-token: write
-  actions: read
-  pull-requests: read
 
 jobs:
   deploy-prod:
@@ -24,39 +25,14 @@ jobs:
       name: prod
     if: >-
       (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'approved-to-apply') ||
-      (github.event_name == 'pull_request_review' &&
-       github.event.review.state == 'approved' &&
-       github.event.pull_request.base.ref == 'main' &&
-       github.event.pull_request.draft == false &&
-       contains(join(github.event.pull_request.labels.*.name, ','), 'promote-prod'))
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'pull_request_review' && github.event.pull_request.head.sha || github.sha }}
-
-      - name: Verify SIT deployment succeeded for PR head
-        if: github.event_name == 'pull_request_review'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const headSha = context.payload.pull_request.head.sha;
-            const workflowFileName = 'cd-infra-deploy-sit.yml';
-
-            const runs = await github.rest.actions.listWorkflowRuns({
-              owner,
-              repo,
-              workflow_id: workflowFileName,
-              head_sha: headSha,
-              per_page: 20
-            });
-
-            const success = runs.data.workflow_runs.some(r => r.conclusion === 'success');
-            if (!success) {
-              core.setFailed(`No successful ${workflowFileName} run found for head SHA ${headSha}.`);
-            }
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Validate required environment configuration (PROD)
         shell: bash
