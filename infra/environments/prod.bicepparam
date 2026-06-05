@@ -17,7 +17,7 @@ param enableDataPlatformModule = true
 param enableAiPlatformModule = true
 param enableIntegrationModule = true
 
-param enableExperienceHostingModule = false
+param enableExperienceHostingModule = true
 param enableApiRuntimeModule = false
 param enableDataFoundationModule = false
 param enableAiMlFoundationModule = false

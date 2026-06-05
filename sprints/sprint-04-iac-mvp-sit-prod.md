@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.1.0 (first implementation slice added module scaffolds and wiring) |
+| **Previous Version** | 1.2.0 (started phased SIT enablement for experience-hosting) |
 
 ## Sprint Goal
 
@@ -137,13 +137,22 @@ flowchart LR
   - `enableExperienceHostingModule = true` in `infra/environments/sit.bicepparam`.
 4. Kept `PROD` Sprint 4 module flags unchanged (`false`) pending SIT evidence and explicit promotion approval.
 
+### Completed in third implementation slice
+
+1. Resolved SIT deployment blocker by completing owner-side subscription provider registration for `Microsoft.Web`.
+2. Re-ran SIT deployment workflow successfully for the same Sprint 4 slice:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26997959531
+3. Verified `SIT` experience-hosting resource footprint in `rg-chhealthpf-sit`:
+  - `asp-platform-chhealthpf-sit` (`Microsoft.Web/serverFarms`)
+  - `app-platform-chhealthpf-sit` (`Microsoft.Web/sites`)
+4. Promoted phased parity change to `PROD` for the same domain by enabling:
+  - `enableExperienceHostingModule = true` in `infra/environments/prod.bicepparam`.
+
 ### Pending in next slice
 
-1. Execute SIT what-if and deployment verification for the experience-hosting module enablement.
-2. Verify new SIT resources and diagnostics for experience-hosting footprint.
-3. Execute approval-gated PROD rollout for experience-hosting module enablement.
-4. Capture evidence links and update issue/PR tracking.
-5. Repeat the phased cycle for api-runtime, data-foundation, ai-ml-foundation, and integration-orchestration modules.
+1. Execute approval-gated PROD rollout for experience-hosting module enablement and verify resource footprint.
+2. Capture evidence links and update issue/PR tracking for completed SIT->PROD slice.
+3. Repeat the phased cycle for api-runtime, data-foundation, ai-ml-foundation, and integration-orchestration modules.
 
 ## Acceptance Criteria
 
