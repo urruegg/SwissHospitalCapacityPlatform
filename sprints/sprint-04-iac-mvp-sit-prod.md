@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.2.0 (started phased SIT enablement for experience-hosting) |
+| **Previous Version** | 1.3.0 (completed experience-hosting SIT success and PROD promotion prep) |
 
 ## Sprint Goal
 
@@ -148,11 +148,30 @@ flowchart LR
 4. Promoted phased parity change to `PROD` for the same domain by enabling:
   - `enableExperienceHostingModule = true` in `infra/environments/prod.bicepparam`.
 
+### Completed in fourth implementation slice
+
+1. Enabled second phased domain in `SIT`:
+  - `enableApiRuntimeModule = true` in `infra/environments/sit.bicepparam`.
+2. Initial SIT deployment failed due missing provider registration for `Microsoft.ContainerRegistry`:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26998834387
+3. Completed owner-side provider registrations for remaining Sprint 4 domains:
+  - `Microsoft.ContainerRegistry`
+  - `Microsoft.EventHub`
+  - `Microsoft.MachineLearningServices`
+  - `Microsoft.Logic`
+4. Re-ran SIT deployment successfully for api-runtime slice:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26999510532
+5. Verified api-runtime SIT footprint in `rg-chhealthpf-sit`:
+  - `id-api-chhealthpf-sit` (`Microsoft.ManagedIdentity/userAssignedIdentities`)
+  - `crxnc4xt4uara6e` (`Microsoft.ContainerRegistry/registries`)
+6. Promoted phased parity change to `PROD` for api-runtime by enabling:
+  - `enableApiRuntimeModule = true` in `infra/environments/prod.bicepparam`.
+
 ### Pending in next slice
 
-1. Execute approval-gated PROD rollout for experience-hosting module enablement and verify resource footprint.
-2. Capture evidence links and update issue/PR tracking for completed SIT->PROD slice.
-3. Repeat the phased cycle for api-runtime, data-foundation, ai-ml-foundation, and integration-orchestration modules.
+1. Execute approval-gated PROD rollout for api-runtime module enablement and verify resource footprint.
+2. Capture evidence links and update issue/PR tracking for completed api-runtime SIT->PROD slice.
+3. Repeat the phased cycle for data-foundation, ai-ml-foundation, and integration-orchestration modules.
 
 ## Acceptance Criteria
 

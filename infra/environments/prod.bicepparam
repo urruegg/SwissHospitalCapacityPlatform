@@ -18,7 +18,7 @@ param enableAiPlatformModule = true
 param enableIntegrationModule = true
 
 param enableExperienceHostingModule = true
-param enableApiRuntimeModule = false
+param enableApiRuntimeModule = true
 param enableDataFoundationModule = false
 param enableAiMlFoundationModule = false
 param enableIntegrationOrchestrationModule = false
