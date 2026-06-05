@@ -42,7 +42,7 @@
       "value": true
     },
     "enableExperienceHostingModule": {
-      "value": false
+      "value": true
     },
     "enableApiRuntimeModule": {
       "value": false
