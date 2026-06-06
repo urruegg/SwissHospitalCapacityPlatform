@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.9.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 0.10.0 |
+| **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.9.0 (GA-constrained architecture baseline with capacity challenge) |
+| **Previous Version** | 0.9.1 (reviewed GA-constrained architecture baseline) |
 
 ## Purpose
 
@@ -71,6 +71,36 @@ The target pattern combines:
 7. Traceability is preserved from source event to user-facing output and action.
 
 ## Deployment Architecture
+
+## Sprint 3 Implementation Overlay
+
+Sprint 3 implemented the landing-zone-aligned infrastructure composition and
+promotion workflow defined in this architecture:
+
+1. Bicep composition under `infra/main.bicep` now orchestrates all six domain modules.
+2. SIT and PROD environment parameterization is active and deployment-validated.
+3. CI and CD workflows enforce what-if gates and approval-controlled promotion.
+4. Provider registration controls are integrated into deployment execution and runbook operations.
+
+```mermaid
+flowchart LR
+    PR[PR Change] --> CI[CI: lint/build/what-if]
+    CI --> SIT[Deploy SIT]
+    SIT --> Gate[Approval Gate]
+    Gate --> PROD[Deploy PROD]
+
+    subgraph Modules[Domain Modules]
+      ID[Identity]
+      NET[Network]
+      OBS[Observability]
+      DATA[Data Platform]
+      AI[AI Platform]
+      INT[Integration]
+    end
+
+    SIT --> Modules
+    PROD --> Modules
+```
 
 ### Network and Security Boundaries
 
