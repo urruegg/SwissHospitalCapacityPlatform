@@ -10,6 +10,7 @@
     "Auth is handled outside this file:",
     "- github-mcp: GitHub Copilot coding-agent identity (built-in).",
     "- azure-mcp: Workload Identity Federation (OIDC) for autonomous runs;",
+    "- work-iq-mcp: Microsoft 365 delegated or application auth with read-only transcript scopes;",
     "  OBO when human-triggered. Federated credentials live on MCP-side",
     "  service principals (per ADR-0004 once Accepted)."
   ],
@@ -17,7 +18,7 @@
     "github-mcp": {
       "_purpose": "Read/write this repo (issues, PRs, comments, branches).",
       "_owners": "@urruegg",
-      "_used_by": ["orchestrator", "spec-parser-agent", "solution-design-agent", "landing-zone-agent", "compliance-agent", "data-design-agent", "app-builder-agent", "test-verifier-agent", "pr-review", "drift-analyzer"],
+      "_used_by": ["orchestrator", "spec-parser-agent", "solution-design-agent", "landing-zone-agent", "compliance-agent", "data-design-agent", "app-builder-agent", "test-verifier-agent", "review-session-agent", "pr-review", "drift-analyzer"],
       "_side_effect_ceiling": "write",
       "_required_permissions": [
         "contents: write",
@@ -42,6 +43,20 @@
       "type": "remote",
       "enabled": true,
       "_enabled_in_sprint": "S2 (UC1 happy path)"
+    },
+    "work-iq-mcp": {
+      "_purpose": "Read Microsoft 365 meeting context and transcript content for review-session analysis.",
+      "_owners": "@urruegg",
+      "_used_by": ["review-session-agent"],
+      "_side_effect_ceiling": "read",
+      "_required_permissions": [
+        "Meeting transcript read scope (least privilege)",
+        "Meeting metadata read scope (least privilege)"
+      ],
+      "_golden_task": "agents/review-session-agent/golden-tasks.md",
+      "type": "remote",
+      "enabled": true,
+      "_enabled_in_sprint": "S4 (review-session transcript intake)"
     }
   }
 }
