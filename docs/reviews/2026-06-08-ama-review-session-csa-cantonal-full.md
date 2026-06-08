@@ -11,11 +11,9 @@
 
 ## Reviewer
 
-- KANTON AARGAU
-- Departement Finanzen und Ressourcen
 - Cantonal IT CSA
 - Solution Architect and Microsoft Technology Advisor
-- Informatik Aargau
+- Canton Aargau
 
 ## 1. Executive Summary
 
