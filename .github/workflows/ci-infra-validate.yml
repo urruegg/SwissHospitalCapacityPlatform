@@ -199,3 +199,57 @@ jobs:
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
             --template-file infra/main.bicep \
             --parameters "${{ vars.BICEP_PARAM_FILE }}"
+
+  deployed-parity-check:
+    name: Deployed parity check (SIT vs PROD)
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+    needs:
+      - what-if-sit
+      - what-if-prod
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Compare deployed resource types
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sit_rg='rg-chhealthpf-sit'
+          prod_rg='rg-chhealthpf-prod'
+
+          sit_types=$(az resource list -g "$sit_rg" --query "[].type" -o tsv | tr '[:upper:]' '[:lower:]' | sort -u)
+          prod_types=$(az resource list -g "$prod_rg" --query "[].type" -o tsv | tr '[:upper:]' '[:lower:]' | sort -u)
+
+          echo 'SIT resource types:'
+          printf '%s\n' "$sit_types"
+          echo 'PROD resource types:'
+          printf '%s\n' "$prod_types"
+
+          sit_only_raw=$(comm -23 <(printf '%s\n' "$sit_types") <(printf '%s\n' "$prod_types") || true)
+          prod_only=$(comm -13 <(printf '%s\n' "$sit_types") <(printf '%s\n' "$prod_types") || true)
+
+          allow_sit_only='microsoft.insights/actiongroups'
+          sit_only=''
+          while IFS= read -r t; do
+            [ -z "$t" ] && continue
+            if [ "$t" != "$allow_sit_only" ]; then
+              sit_only+="$t"$'\n'
+            fi
+          done <<< "$sit_only_raw"
+
+          if [ -n "$sit_only" ] || [ -n "$prod_only" ]; then
+            echo 'Unexpected parity drift detected.'
+            [ -z "$sit_only" ] || { echo 'Unexpected SIT-only types:'; printf '%s\n' "$sit_only"; }
+            [ -z "$prod_only" ] || { echo 'Unexpected PROD-only types:'; printf '%s\n' "$prod_only"; }
+            exit 1
+          fi
+
+          echo "Parity check passed. Allowed SIT-only type: $allow_sit_only"
