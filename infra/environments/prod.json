@@ -45,7 +45,7 @@
       "value": true
     },
     "enableApiRuntimeModule": {
-      "value": false
+      "value": true
     },
     "enableDataFoundationModule": {
       "value": false

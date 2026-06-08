@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.3.0 (completed experience-hosting SIT success and PROD promotion prep) |
+| **Previous Version** | 1.4.0 (completed api-runtime SIT rollout and prepared PROD promotion) |
 
 ## Sprint Goal
 
@@ -167,11 +167,22 @@ flowchart LR
 6. Promoted phased parity change to `PROD` for api-runtime by enabling:
   - `enableApiRuntimeModule = true` in `infra/environments/prod.bicepparam`.
 
+### Completed in fifth implementation slice
+
+1. Executed approval-gated PROD rollout for api-runtime successfully:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26999705849
+2. Verified api-runtime PROD footprint in `rg-chhealthpf-prod`:
+  - `id-api-chhealthpf-prod` (`Microsoft.ManagedIdentity/userAssignedIdentities`)
+  - `crvxmk7kyel3cjg` (`Microsoft.ContainerRegistry/registries`)
+3. Confirmed phased parity status:
+  - experience-hosting and api-runtime are now enabled and validated in both `SIT` and `PROD`.
+
 ### Pending in next slice
 
-1. Execute approval-gated PROD rollout for api-runtime module enablement and verify resource footprint.
-2. Capture evidence links and update issue/PR tracking for completed api-runtime SIT->PROD slice.
-3. Repeat the phased cycle for data-foundation, ai-ml-foundation, and integration-orchestration modules.
+1. Capture evidence links and update issue/PR tracking for completed api-runtime SIT->PROD slice.
+2. Repeat the phased cycle for data-foundation.
+3. Repeat the phased cycle for ai-ml-foundation.
+4. Repeat the phased cycle for integration-orchestration.
 
 ## Acceptance Criteria
 
