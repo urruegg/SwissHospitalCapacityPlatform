@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.6.0 |
+| **Version** | 1.7.0 |
 | **Date** | 2026-06-08 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.5.0 (completed api-runtime SIT rollout and PROD promotion evidence) |
+| **Previous Version** | 1.6.0 (completed data-foundation SIT and PROD rollout evidence) |
 
 ## Sprint Goal
 
@@ -192,11 +192,29 @@ flowchart LR
 6. Confirmed phased parity status:
   - experience-hosting, api-runtime, and data-foundation are now enabled and validated in both `SIT` and `PROD`.
 
+### Completed in seventh implementation slice
+
+1. Enabled `ai-ml-foundation` in `SIT` and executed the first phased deployment attempt:
+  - Failed run: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27119903682
+2. Diagnosed and fixed the ML workspace deployment contract in `infra/modules/ai-ml-foundation/main.bicep`:
+  - Added required dependency references for existing `Key Vault`, `Application Insights`, `Storage Account`, and `Container Registry`.
+3. Re-ran the phased `SIT` deployment successfully after fix-forward:
+  - Successful run: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27120886274
+4. Verified ai-ml `SIT` footprint in `rg-chhealthpf-sit`:
+  - `mlw-chhealthpf-sit` (`Microsoft.MachineLearningServices/workspaces`)
+5. Promoted ai-ml parity change to `PROD` by enabling:
+  - `enableAiMlFoundationModule = true` in `infra/environments/prod.bicepparam`.
+6. Executed approval-gated `PROD` rollout for ai-ml successfully:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27123055394
+7. Verified ai-ml `PROD` footprint in `rg-chhealthpf-prod`:
+  - `mlw-chhealthpf-prod` (`Microsoft.MachineLearningServices/workspaces`)
+8. Confirmed phased parity status:
+  - experience-hosting, api-runtime, data-foundation, and ai-ml-foundation are now enabled and validated in both `SIT` and `PROD`.
+
 ### Pending in next slice
 
-1. Capture issue and PR tracking comments for completed data-foundation SIT->PROD slice.
-2. Repeat the phased cycle for ai-ml-foundation.
-3. Repeat the phased cycle for integration-orchestration.
+1. Capture issue and PR tracking comments for completed ai-ml-foundation SIT->PROD slice.
+2. Repeat the phased cycle for integration-orchestration.
 
 ## Acceptance Criteria
 
