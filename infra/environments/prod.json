@@ -54,7 +54,7 @@
       "value": true
     },
     "enableIntegrationOrchestrationModule": {
-      "value": false
+      "value": true
     }
   }
 }
