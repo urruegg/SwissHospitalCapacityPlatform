@@ -2,12 +2,12 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.2.1 |
 | **Date** | 2026-06-08 |
 | **Author** | Markitdown conversion (normalized by GitHub Copilot) |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (added tooling and execution appendices) |
-| **Transcript Source** | `docs/reviews/raw/AMA Review Session CSA Cantonal.docx` |
+| **Previous Version** | 1.2.0 (removed embedded raw path references) |
+| **Transcript Source** | `AMA Review Session CSA Cantonal.docx` |
 
 ## Reviewer
 
@@ -27,7 +27,7 @@ Overall assessment: architecture direction is promising, but governance, complia
 
 ## 2. Context Overview
 
-The review is grounded in the transcript source `docs/reviews/raw/AMA Review Session CSA Cantonal.docx`, focused on defining a cantonal Azure governance framework across security, compliance, cost, standardization, roles, and controls (for example Azure Policy, Management Groups, budgets, and tagging).
+The review is grounded in the transcript source, focused on defining a cantonal Azure governance framework across security, compliance, cost, standardization, roles, and controls (for example Azure Policy, Management Groups, budgets, and tagging).
 
 The repository baseline reflects governance-first delivery with architecture and testing artefacts present. At the same time, not every artefact was content-validated in the underlying source review. The review therefore differentiates:
 
