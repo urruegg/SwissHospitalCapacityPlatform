@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.0 |
-| **Date** | 2026-06-04 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-06-08 |
 | **Author** | Urs Rueegg |
 | **Status** | In Progress |
-| **Previous Version** | 1.4.0 (completed api-runtime SIT rollout and prepared PROD promotion) |
+| **Previous Version** | 1.5.0 (completed api-runtime SIT rollout and PROD promotion evidence) |
 
 ## Sprint Goal
 
@@ -177,12 +177,26 @@ flowchart LR
 3. Confirmed phased parity status:
   - experience-hosting and api-runtime are now enabled and validated in both `SIT` and `PROD`.
 
+### Completed in sixth implementation slice
+
+1. Completed phased `SIT` rollout for data-foundation successfully:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27119261102
+2. Verified data-foundation `SIT` footprint in `rg-chhealthpf-sit`:
+  - `evh-chhealthpf-sit` (`Microsoft.EventHub/namespaces`)
+3. Promoted data-foundation parity change to `PROD` by enabling:
+  - `enableDataFoundationModule = true` in `infra/environments/prod.bicepparam`.
+4. Executed approval-gated `PROD` rollout for data-foundation successfully:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27119400214
+5. Verified data-foundation `PROD` footprint in `rg-chhealthpf-prod`:
+  - `evh-chhealthpf-prod` (`Microsoft.EventHub/namespaces`)
+6. Confirmed phased parity status:
+  - experience-hosting, api-runtime, and data-foundation are now enabled and validated in both `SIT` and `PROD`.
+
 ### Pending in next slice
 
-1. Capture evidence links and update issue/PR tracking for completed api-runtime SIT->PROD slice.
-2. Repeat the phased cycle for data-foundation.
-3. Repeat the phased cycle for ai-ml-foundation.
-4. Repeat the phased cycle for integration-orchestration.
+1. Capture issue and PR tracking comments for completed data-foundation SIT->PROD slice.
+2. Repeat the phased cycle for ai-ml-foundation.
+3. Repeat the phased cycle for integration-orchestration.
 
 ## Acceptance Criteria
 
