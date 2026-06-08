@@ -22,3 +22,6 @@ param enableApiRuntimeModule = true
 param enableDataFoundationModule = true
 param enableAiMlFoundationModule = true
 param enableIntegrationOrchestrationModule = true
+
+param networkVnetAddressPrefix = '10.60.0.0/16'
+param networkAppSubnetPrefix = '10.60.1.0/24'
