@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-08 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (initial delegation playbook baseline) |
 
 ## Purpose
 
@@ -44,6 +44,7 @@ agent handoff quality, and approval gates.
 | landing-zone-agent | IaC and Azure landing-zone outputs | PRD + architecture + approved infra scope | Infrastructure artifacts and what-if evidence |
 | app-builder-agent | App and integration slices | PRD requirement IDs + architecture decisions | App/integration changes under apps/integrations |
 | test-verifier-agent | Readiness and validation evidence | All changed artefacts + acceptance criteria | Validation matrix and gate evidence in [docs/TEST.md](../docs/TEST.md) |
+| review-session-agent | Evaluate review-session transcripts against repository artefacts | Transcript source under `docs/reviews/raw/` + target artefact set | Dedicated review report under `docs/reviews/` |
 | drift-analyzer | Post-merge drift detection and reporting | Target subscription + reference artefacts | Drift reports and severity-labelled findings |
 
 ## Recommended MVP Delegation Sequence

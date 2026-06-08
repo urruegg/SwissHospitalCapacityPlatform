@@ -16,3 +16,9 @@ param enableObservabilityModule = true
 param enableDataPlatformModule = true
 param enableAiPlatformModule = true
 param enableIntegrationModule = true
+
+param enableExperienceHostingModule = true
+param enableApiRuntimeModule = true
+param enableDataFoundationModule = true
+param enableAiMlFoundationModule = true
+param enableIntegrationOrchestrationModule = true

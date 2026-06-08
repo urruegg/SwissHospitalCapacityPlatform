@@ -6,7 +6,7 @@
 | **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | Completed |
-| **Previous Version** | 1.9.0 (added provider registration proposal and phased rollout controls) |
+| **Previous Version** | 1.9.0 (documented phased SIT rollout and provider registration handling) |
 
 ## Sprint Goal
 
@@ -273,13 +273,12 @@ sprints/
 1. Applied temporary SIT phased enablement for modules requiring subscription-level provider registrations not currently permitted for the deployment identity.
 2. Updated deployment workflows so provider-registration attempts are best-effort and emit warnings when authorization is insufficient, instead of hard-failing pre-deploy.
 
-### Completed in eighth implementation slice
+### Completed in eighth implementation slice (Sprint closure)
 
-1. Completed subscription-owner provider registration across required namespaces.
-2. Re-enabled full optional domain module set for `SIT` and validated successful end-to-end deployment.
-3. Executed approval-gated `PROD` promotion and validated successful rollout.
-4. Enabled `PROD` optional domain modules to match `SIT` parity and validated deployment with transient retry handling.
-5. Captured deployment evidence and audit trail in issue and PR comments.
+1. Re-enabled full SIT module parity after provider registrations were available and validated successful end-to-end deployment execution.
+2. Executed PROD gated promotion runs and confirmed successful deployment after transient storage operation contention was resolved by rerun.
+3. Verified Azure resource footprints in both `rg-chhealthpf-sit` and `rg-chhealthpf-prod` aligned with Sprint 3 target module set.
+4. Published closure evidence in GitHub issue/PR threads and closed Sprint 3 tracking issue `#6`.
 
 ## Sprint 3 Delivery Visualization
 
@@ -303,12 +302,12 @@ timeline
   2026-06-04 : PROD parity deployment success
 ```
 
-## Closure Outcome
+## Closure Evidence
 
-1. Tracking issue: [#6](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/6)
-2. SIT full parity evidence: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26942545978
-3. PROD gated deploy evidence: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26949309555
-4. Merge evidence for sprint delivery PR: https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/7
+- Sprint 3 closure PR: https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/8
+- SIT full-parity success run: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26942545978
+- PROD gated success run: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26949309555
+- Sprint 3 issue closed: https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/6
 
 ## Subscription Owner Provider Registration Proposal (Starting Point)
 
@@ -369,4 +368,4 @@ Success criteria:
 
 ## Notes
 
-Sprint 3 is the implementation bridge between design baseline (`docs/SD.md`) and repeatable, controlled environment provisioning for SIT and PROD.
+Sprint 3 delivered the implementation bridge between design baseline (`docs/SD.md`) and repeatable, controlled environment provisioning for SIT and PROD. Remaining expansion work is tracked under Sprint 4.

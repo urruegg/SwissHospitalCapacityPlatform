@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.5.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.7.0 |
+| **Date** | 2026-06-08 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.5.0 (added the solution-delivery specialist agents for PRD, architecture, landing zone, compliance, data, app, and validation workflows) |
+| **Previous Version** | 1.6.0 (added review-session-agent registry row) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -43,6 +43,7 @@
 | `data-design-agent` | Data model, contracts, and platform design | @urruegg | Issue requesting data model, data platform, or interoperability design | `github-mcp` | `write` | [`agents/data-design-agent/AGENT.md`](agents/data-design-agent/AGENT.md) | [`agents/data-design-agent/golden-tasks.md`](agents/data-design-agent/golden-tasks.md) |
 | `app-builder-agent` | App and integration implementation slices | @urruegg | Issue requesting app or integration implementation from approved architecture | `github-mcp` | `write` | [`agents/app-builder-agent/AGENT.md`](agents/app-builder-agent/AGENT.md) | [`agents/app-builder-agent/golden-tasks.md`](agents/app-builder-agent/golden-tasks.md) |
 | `test-verifier-agent` | Artefact validation across docs, IaC, app, and integration outputs | @urruegg | Issue requesting test plan, validation, or release readiness review | `github-mcp` | `write` | [`agents/test-verifier-agent/AGENT.md`](agents/test-verifier-agent/AGENT.md) | [`agents/test-verifier-agent/golden-tasks.md`](agents/test-verifier-agent/golden-tasks.md) |
+| `review-session-agent` | Review transcript evaluation and outcome reporting against repository artefacts | @urruegg | Issue requesting review-session transcript intake (for example Work IQ Teams Transcript) and evaluation report generation | `github-mcp`, `work-iq-mcp` (read-only) | `write` | [`agents/review-session-agent/AGENT.md`](agents/review-session-agent/AGENT.md) | [`agents/review-session-agent/golden-tasks.md`](agents/review-session-agent/golden-tasks.md) |
 | `pr-review` | UC3 — PR Review | @urruegg | GitHub pull request or issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp` | `write` (GitHub review comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
 | `drift-analyzer` | Solution and Azure drift detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents/drift-analyzer/AGENT.md` §2](agents/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents/drift-analyzer/AGENT.md`](agents/drift-analyzer/AGENT.md) | [`agents/drift-analyzer/golden-tasks.md`](agents/drift-analyzer/golden-tasks.md) |
 
@@ -64,6 +65,7 @@ tool.
 | ------------ | ----------- | --------- | ----------- |
 | Azure | `azure-mcp` | Read Azure resources, run `what-if`, push UC1-output Bicep deployments to customer subscriptions | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
 | GitHub | `github-mcp` | Read/write this repo (issues, PRs, comments, branches) | GitHub Copilot coding-agent identity |
+| Work IQ | `work-iq-mcp` | Read Microsoft 365 meeting context and transcript content for review-session intake | Least-privilege transcript and meeting read scopes |
 | Repo-managed markdown specs | `github-mcp` | Read canonical source material from `docs/` and `docs/specs/` for planning and review flows | GitHub Copilot coding-agent identity |
 
 ---
