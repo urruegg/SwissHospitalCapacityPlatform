@@ -54,7 +54,7 @@
       "value": true
     },
     "enableIntegrationOrchestrationModule": {
-      "value": false
+      "value": true
     },
     "networkVnetAddressPrefix": {
       "value": "10.60.0.0/16"
