@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.7.0 |
+| **Version** | 1.8.0 |
 | **Date** | 2026-06-08 |
 | **Author** | Urs Rueegg |
-| **Status** | In Progress |
-| **Previous Version** | 1.6.0 (completed data-foundation SIT and PROD rollout evidence) |
+| **Status** | Completed |
+| **Previous Version** | 1.7.0 (completed ai-ml-foundation SIT and PROD rollout evidence) |
 
 ## Sprint Goal
 
@@ -211,10 +211,27 @@ flowchart LR
 8. Confirmed phased parity status:
   - experience-hosting, api-runtime, data-foundation, and ai-ml-foundation are now enabled and validated in both `SIT` and `PROD`.
 
+### Completed in eighth implementation slice
+
+1. Enabled `integration-orchestration` in `SIT` and executed phased rollout attempts:
+  - Cancelled run: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27123277067
+  - Failed retry (deployment active lock): https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27123489867
+  - Cancelled retry after prolonged what-if/deploy wait: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27123612937
+2. Diagnosed rollout blocker as nested deployment lock contention (`DeploymentActive`) on `ai-ml-foundation-sit` and cleared the stale active chain before proceeding.
+3. Verified `SIT` integration-orchestration footprint in `rg-chhealthpf-sit`:
+  - `logic-chhealthpf-sit` (`Microsoft.Logic/workflows`) with `provisioningState = Succeeded`.
+4. Promoted `integration-orchestration` parity change to `PROD` by enabling:
+  - `enableIntegrationOrchestrationModule = true` in `infra/environments/prod.bicepparam`.
+5. Executed approval-gated `PROD` rollout successfully:
+  - https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/27123720096
+6. Verified `PROD` integration-orchestration footprint in `rg-chhealthpf-prod`:
+  - `logic-chhealthpf-prod` (`Microsoft.Logic/workflows`) with `provisioningState = Succeeded`.
+7. Confirmed final Sprint 4 parity status:
+  - experience-hosting, api-runtime, data-foundation, ai-ml-foundation, and integration-orchestration are enabled and validated in both `SIT` and `PROD`.
+
 ### Pending in next slice
 
-1. Capture issue and PR tracking comments for completed ai-ml-foundation SIT->PROD slice.
-2. Repeat the phased cycle for integration-orchestration.
+1. None. Sprint 4 delivery scope is complete and evidence is captured in this artefact and linked issue/PR threads.
 
 ## Acceptance Criteria
 
