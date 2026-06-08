@@ -19,6 +19,6 @@ param enableIntegrationModule = true
 
 param enableExperienceHostingModule = true
 param enableApiRuntimeModule = true
-param enableDataFoundationModule = false
+param enableDataFoundationModule = true
 param enableAiMlFoundationModule = false
 param enableIntegrationOrchestrationModule = false
