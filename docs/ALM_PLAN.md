@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.2.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 0.3.0 |
+| **Date** | 2026-06-04 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.2.0 (Git-first ALM baseline with governance gates) |
+| **Previous Version** | 0.2.1 (reviewed Git-first ALM baseline with governance gates) |
 
 ## Purpose
 
@@ -65,6 +65,22 @@ This plan aligns to:
 2. CD primarily means artifact promotion and control progression:
 	DEV to SIT to PROD readiness for customer-targeted outputs (for example IaC packs).
 3. Any deploy/delete side-effect action must follow explicit human approval gates.
+
+### Sprint 3 Delivery Evidence (Implemented)
+
+1. SIT full-parity deployment: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26942545978
+2. PROD approval-gated deployment: https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/26949309555
+3. Sprint tracking issue: https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/6
+
+```mermaid
+flowchart LR
+	A[Issue and Scope] --> B[Branch and PR]
+	B --> C[CI Gates]
+	C --> D[SIT Deploy]
+	D --> E[Manual PROD Approval]
+	E --> F[PROD Deploy]
+	F --> G[Evidence Capture]
+```
 
 ### Workflow Pattern
 

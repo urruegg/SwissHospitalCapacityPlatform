@@ -280,6 +280,28 @@ sprints/
 3. Verified Azure resource footprints in both `rg-chhealthpf-sit` and `rg-chhealthpf-prod` aligned with Sprint 3 target module set.
 4. Published closure evidence in GitHub issue/PR threads and closed Sprint 3 tracking issue `#6`.
 
+## Sprint 3 Delivery Visualization
+
+```mermaid
+flowchart LR
+  A[CI IaC Validate] --> B[SIT Deploy]
+  B --> C[Provider Registration]
+  C --> D[SIT Full Parity Verified]
+  D --> E[PROD Approval Gate]
+  E --> F[PROD Deploy]
+  F --> G[PROD Domain Parity Verified]
+```
+
+```mermaid
+timeline
+  title Sprint 3 rollout sequence
+  2026-06-02 : IaC and workflow hardening
+  2026-06-03 : SIT and PROD gated flow validation
+  2026-06-04 : Provider registration completed
+  2026-06-04 : SIT parity deployment success
+  2026-06-04 : PROD parity deployment success
+```
+
 ## Closure Evidence
 
 - Sprint 3 closure PR: https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/8
