@@ -403,5 +403,3 @@ The session produced a pivotal design decision: **the platform should receive on
 ---
 
 *This document was produced based on the transcript of the AMA Solution Design Review Call (2026-06-09) and the baseline documentation available in the [SwissHospitalCapacityPlatform repository](https://github.com/urruegg/SwissHospitalCapacityPlatform). Participant names have been anonymised: **Solution Owner (SO)**, **Senior Architect Reviewer (SAR)**, **Canton/CSA Reference (CCR)**. Items marked **[Gap]** indicate controls or requirements not yet addressed. Items marked **[Open]** indicate unresolved questions requiring follow-up action.*
-
-**Version:** Draft v1.0 | **Prepared:** 2026-06-09
