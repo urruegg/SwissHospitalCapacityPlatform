@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.1 (Sprint 05 CAF/WAF baseline cross-references) |
+| **Previous Version** | 1.2.0 (Sprint 05 CAF/WAF baseline cross-references) |
 
 ## Purpose
 
@@ -107,6 +107,20 @@ Swiss cantonal hospital provider deployment at a time.
 | `FR-GOV-005` | The solution shall support policy-driven integration controls for outbound partner interactions. |
 | `FR-GOV-006` | The solution shall maintain provider-local control over prompts, model configuration, and operational workflows. |
 
+### G) Onboarding (Minimum-Data And Specialty-Driven Capacity)
+
+Sprint 6 deltas. Onboarding is split into two lanes: a patient lane using only a
+minimum required metadata set, and a hospital-capacity lane driven by
+treatment-specialty metadata. See
+[`sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`](../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-ONB-001` | The platform shall onboard new patients using a minimum required metadata set only. |
+| `FR-ONB-002` | The platform shall onboard hospital capacity using specialty-tagged metadata. |
+| `FR-ONB-003` | The platform shall support provider-specific specialty profiles for capacity planning. |
+| `FR-ONB-004` | The platform shall classify onboarding workflows as deterministic service vs agentic flow using a documented criterion. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -123,6 +137,7 @@ Swiss cantonal hospital provider deployment at a time.
 | `NFR-COMP-008` | The solution shall maintain auditable privacy incident handling and notification decision workflows. |
 | `NFR-COMP-009` | If EPR integration is enabled, the solution shall enforce consent, identity, access, and logging controls aligned to EPDG/EPDV-EDI obligations. |
 | `NFR-COMP-010` | The solution shall maintain compliance evidence artifacts and review cadence mapped to legal obligations and internal controls. |
+| `NFR-COMP-011` | Onboarding data contracts shall enforce minimum-sensitive-data controls and purpose tags (Sprint 6). |
 
 ### B) Security And Access Control
 
@@ -132,6 +147,7 @@ Swiss cantonal hospital provider deployment at a time.
 | `NFR-SEC-002` | Data access attempts and privilege changes shall be fully auditable. |
 | `NFR-SEC-003` | Integration endpoints shall enforce authenticated and authorized communication patterns. |
 | `NFR-SEC-004` | Secret material shall be managed outside source-controlled artifacts. |
+| `NFR-SEC-005` | Onboarding identity and cross-tenant boundaries shall be explicit and auditable (Sprint 6). |
 
 ### C) Data Quality And Integrity
 
@@ -141,6 +157,7 @@ Swiss cantonal hospital provider deployment at a time.
 | `NFR-DQ-002` | Curated operational datasets shall support lineage from source to serving views. |
 | `NFR-DQ-003` | Data model changes shall preserve backward compatibility or include controlled migration plans. |
 | `NFR-DQ-004` | Integration message failures shall be observable and recoverable without silent data loss. |
+| `NFR-DQ-005` | Specialty metadata shall include quality checks and controlled versioning (Sprint 6). |
 
 ### D) Performance And Throughput
 
@@ -160,6 +177,7 @@ Swiss cantonal hospital provider deployment at a time.
 | `NFR-REL-002` | Critical data and inference pipelines shall provide failure visibility and restartability. |
 | `NFR-REL-003` | Operational dashboards and copilot services shall degrade gracefully when non-critical dependencies fail. |
 | `NFR-REL-004` | Integration workflows shall provide retry and exception-handling behavior for transient endpoint errors. |
+| `NFR-REL-005` | Onboarding services shall remain available under defined degraded-mode behavior (Sprint 6). |
 
 ### F) Responsible AI And Auditability
 
@@ -179,6 +197,7 @@ Swiss cantonal hospital provider deployment at a time.
 | `NFR-MAINT-002` | Delivery workflows shall be Git-first and support auditable promotion across environments. |
 | `NFR-MAINT-003` | Requirement artifacts shall remain traceable to specification sources and implementation increments. |
 | `NFR-MAINT-004` | Platform configuration shall support provider-specific rollout without full re-architecture. |
+| `NFR-MAINT-005` | Sprint 6 onboarding and MVP agent services shall be deployable through IaC-first pipelines with reproducible environment bootstrap (Sprint 6). |
 
 ## MVP Definition
 
@@ -197,6 +216,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md` | `FR-OM-001` to `FR-OM-005`, `FR-DATA-001` to `FR-DATA-007`, `FR-FC-001` to `FR-FC-005`, `FR-DC-001` to `FR-DC-005`, `FR-CX-001` to `FR-CX-005`, `NFR-COMP-001` to `NFR-COMP-004`, `NFR-SEC-001` to `NFR-SEC-004` |
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md` | `FR-DATA-008`, `FR-FC-006`, `FR-DC-006`, `FR-CX-006`, `FR-GOV-001` to `FR-GOV-006`, `NFR-DQ-001` to `NFR-DQ-004`, `NFR-PERF-001` to `NFR-PERF-005`, `NFR-REL-001` to `NFR-REL-004`, `NFR-AI-001` to `NFR-AI-005`, `NFR-MAINT-001` to `NFR-MAINT-004` |
 | `docs/COMPLIANCE.md` | `NFR-COMP-005` to `NFR-COMP-010` |
+| `sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md` | `FR-ONB-001` to `FR-ONB-004`, `NFR-COMP-011`, `NFR-SEC-005`, `NFR-DQ-005`, `NFR-REL-005`, `NFR-MAINT-005` |
 
 ## Assumptions To Validate In Implementation Planning
 

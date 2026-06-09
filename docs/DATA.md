@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 0.4.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.0 (data domains, contracts, retention, and requirement traceability baseline) |
+| **Previous Version** | 0.3.1 (data domains, contracts, retention, and requirement traceability baseline) |
 
 ## Purpose
 
@@ -99,6 +99,53 @@ Each contract must define:
 | AI output contract | DC-AI-FORECAST-v1 | Forecast output schema and run metadata |
 | Integration event contract | DC-INT-DISCHARGE-v1 | Outbound/inbound partner workflow event payloads |
 | Copilot grounding contract | DC-GRD-CONTEXT-v1 | Grounding context and citation metadata format |
+| Patient onboarding contract | DC-ONB-PATIENT-v1 | Minimum-data, pseudonymous patient onboarding metadata (Sprint 6) |
+| Specialty-capacity onboarding contract | DC-ONB-CAPACITY-v1 | Specialty-tagged hospital capacity onboarding metadata (Sprint 6) |
+
+### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
+
+Sprint 6 baselines two onboarding contract families with a minimum-sensitive-data
+design. Machine-readable JSON Schema contracts and synthesized, non-production
+SIT datasets live in [`data/synthetic/`](../data/synthetic/README.md) and are
+validated by [`data/synthetic/validate_datasets.py`](../data/synthetic/validate_datasets.py)
+in CI. These contracts realize `FR-ONB-001`, `FR-ONB-002`, `FR-ONB-003`,
+`NFR-COMP-011`, `NFR-DQ-005`, and `CH-C01`.
+
+#### DC-ONB-PATIENT-v1 (patient minimum-data lane)
+
+Minimized, pseudonymous field set. Direct identifiers are forbidden and rejected
+by the validator (re-identification minimization, `CH-C01` / `NFR-COMP-011`).
+
+| Field | Type | Notes |
+| ----- | ----- | ----- |
+| `onboardingId` | string | Synthetic onboarding key (`ONB-...`) |
+| `pseudonymId` | string | Pseudonym only; no direct identifier |
+| `ageBand` | enum | Banded age (`0-17`..`80+`), not date of birth |
+| `sex` | enum | `female`/`male`/`other`/`unspecified` |
+| `admissionType` | enum | `emergency`/`elective`/`transfer`/`observation` |
+| `careSpecialty` | string | Treatment specialty tag |
+| `arrivalDate` | date | Day-granularity only |
+| `purposeTag` | enum | Purpose limitation tag |
+| `minimizationReviewed` | boolean | Minimization review marker |
+
+Forbidden (validator-enforced): name, date of birth, AHV/SSN, address, contact
+details, insurance/patient identifiers.
+
+#### DC-ONB-CAPACITY-v1 and provider extensions (specialty-capacity lane)
+
+Specialty-tagged capacity metadata with a versioned specialty taxonomy
+(`specialtyTaxonomyVersion`) and the capacity invariant `bedsAvailable <=
+bedsTotal` (`NFR-DQ-005`). Provider profiles (`FR-ONB-003`) extend the base
+contract:
+
+| Contract | Provider scope | Extension signals |
+| ----- | ----- | ----- |
+| `DC-ONB-CAPACITY-v1` | generic | specialty, specialty tags, ward, beds, LOS calibration |
+| `DC-ONB-CAPACITY-HIRSLANDEN-v1` | Klinik Hirslanden | OR schedule pressure, specialty bed-demand windows, LOS calibration signal |
+| `DC-ONB-CAPACITY-ZOLLIKERBERG-v1` | Spital Zollikerberg | care mode + optional Hospital-at-Home indicators (virtual ward, discharge pathway, telemetry readiness) |
+
+Hospital-at-Home fields are optional and provider-scoped, consistent with the
+Sprint 6 risk mitigation to keep the baseline model simple.
 
 ### Contract Validation Pattern
 
@@ -210,6 +257,8 @@ architecture, AI, and compliance baselines.
 | NFR-COMP-009 | EPR-specific retention and conformance dependency notes | Partially Covered (EPR pack pending) |
 | NFR-COMP-010 | Governance evidence model, retention classes, release evidence hooks | Covered |
 | NFR-AI-003 and NFR-AI-004 | AI trace domain, AI output contracts, grounding and versioned output flow | Covered |
+| FR-ONB-001 to FR-ONB-003 | Sprint 6 onboarding contracts (`DC-ONB-PATIENT-v1`, `DC-ONB-CAPACITY-v1` + provider extensions) with synthesized SIT datasets | Covered |
+| NFR-COMP-011 and NFR-DQ-005 | Minimum-data minimization (validator-enforced), specialty taxonomy versioning and capacity invariants | Covered |
 
 ### Compliance Control Mapping
 

@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "specialty-capacity-onboarding.schema.json",
+  "title": "Specialty-Driven Capacity Onboarding Dataset (DC-ONB-CAPACITY-v1)",
+  "description": "Synthesized, non-production SIT dataset for the specialty-driven hospital capacity onboarding lane. Carries specialty-tagged capacity metadata with versioned taxonomy and purpose tags (FR-ONB-002, FR-ONB-003, NFR-DQ-005, CH-C01).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId",
+    "contractId",
+    "contractVersion",
+    "classification",
+    "residency",
+    "purposeTags",
+    "specialtyTaxonomyVersion",
+    "records"
+  ],
+  "properties": {
+    "datasetId": { "type": "string", "pattern": "^DS-ONB-CAPACITY-[a-z0-9-]+$" },
+    "contractId": { "type": "string", "enum": ["DC-ONB-CAPACITY-v1"] },
+    "contractVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification": { "type": "string", "enum": ["operational-confidential"] },
+    "residency": { "type": "string", "enum": ["CH"] },
+    "purposeTags": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["capacity-planning", "bed-management"] }
+    },
+    "specialtyTaxonomyVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capacityRecordId",
+          "providerId",
+          "specialty",
+          "specialtyTags",
+          "ward",
+          "bedsTotal",
+          "bedsAvailable",
+          "purposeTag"
+        ],
+        "properties": {
+          "capacityRecordId": { "type": "string", "pattern": "^CAP-[A-Z]{2,4}-[0-9]{4,}$" },
+          "providerId": { "type": "string", "pattern": "^[a-z][a-z-]+$" },
+          "specialty": { "type": "string", "pattern": "^[a-z][a-z-]+$" },
+          "specialtyTags": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^[a-z][a-z-]+$" }
+          },
+          "ward": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+          "bedsTotal": { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "bedsAvailable": { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "losCalibrationSignal": { "type": "number", "minimum": 0, "maximum": 60 },
+          "purposeTag": { "type": "string", "enum": ["capacity-planning", "bed-management"] }
+        }
+      }
+    }
+  }
+}

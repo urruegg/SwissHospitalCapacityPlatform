@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (Sprint 05 runtime pattern + recovery-class design mapping) |
+| **Previous Version** | 1.2.0 (Sprint 05 runtime pattern + recovery-class design mapping) |
 
 ## Purpose
 
@@ -164,6 +164,47 @@ Key controls:
 6. Actionable events trigger Logic Apps partner workflows.
 7. Acknowledgements are written back and surfaced in operational views.
 8. Logs and evidence artifacts are emitted for governance review.
+
+## Onboarding Lanes and Deterministic Classification (Sprint 6)
+
+Sprint 6 introduces two onboarding lanes with a minimum-sensitive-data design.
+This section is the design baseline for `FR-ONB-001` to `FR-ONB-004` and
+`NFR-COMP-011`, `NFR-SEC-005`, `NFR-DQ-005`, `NFR-REL-005`, `NFR-MAINT-005`.
+
+### Lane Design
+
+| Lane | Responsibility | Data contract | Minimization rule |
+| ----- | ----- | ----- | ----- |
+| Patient minimum-data onboarding | Onboard patients with the least required, pseudonymous metadata | `DC-ONB-PATIENT-v1` (see `docs/DATA.md`) | No direct identifiers; pseudonym + age band + purpose tag only (`NFR-COMP-011`, `CH-C01`) |
+| Specialty-driven capacity onboarding | Onboard hospital capacity using specialty-tagged metadata and provider profiles | `DC-ONB-CAPACITY-v1` plus provider extensions `DC-ONB-CAPACITY-HIRSLANDEN-v1` / `DC-ONB-CAPACITY-ZOLLIKERBERG-v1` | Specialty taxonomy versioned; capacity invariant `bedsAvailable <= bedsTotal` (`NFR-DQ-005`) |
+
+Both lanes are validated against their contracts by the synthesized-data gate
+[`data/synthetic/validate_datasets.py`](../data/synthetic/validate_datasets.py),
+which produces SIT contract/schema evidence and enforces re-identification
+minimization on the patient lane. Onboarding services follow the
+degraded-mode-over-hard-failure principle (`NFR-REL-005`) and are deployed
+through the IaC-first data-platform bootstrap path (`NFR-MAINT-005`).
+
+### Deterministic Service vs Agentic Flow Classification (FR-ONB-004)
+
+Each onboarding workflow is classified before implementation using a documented
+criterion. A workflow is an **agentic flow** only when **all** of the following
+hold; otherwise it is implemented as a **deterministic service/workflow**
+(default), consistent with Design Principle 4 (deterministic components are not
+AI agents by default).
+
+| Classification test | Deterministic service | Agentic flow |
+| ----- | ----- | ----- |
+| Decision space | Fixed rules / schema validation | Open-ended reasoning over heterogeneous context |
+| Inputs | Structured, contract-bound | Mixed structured + unstructured / conversational |
+| Output authority | No clinically impactful recommendation | Advisory recommendation requiring human-in-the-loop |
+| Reproducibility | Same input yields same output | Context-dependent synthesis |
+
+Applying this criterion to the onboarding lanes: patient-minimum onboarding
+ingestion, specialty-capacity contract validation, and synthesized-data
+validation are **deterministic services**; OOA/DCA/BMCA decision support over
+onboarded capacity is **agentic** and remains advisory and HITL-gated. See
+[`docs/agents/sprint-06-mvp-agent-readiness.md`](agents/sprint-06-mvp-agent-readiness.md).
 
 ## Non-Functional Design Targets
 

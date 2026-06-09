@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (Phase 0 control bootstrap index) |
 
 ## Purpose
 
@@ -25,6 +25,12 @@ built from the baselines in
 | [`requires-validation-register.md`](requires-validation-register.md) | Task 2 | Requires-validation register for onboarding and specialty-capacity deltas with FR/NFR/CH anchors |
 | [`pr-evidence-checklist.md`](pr-evidence-checklist.md) | Task 3 | PR evidence checklist with FR/NFR/CH controls, draft-PR-first contract, gate outcomes, residual risks |
 | [`gate-sequence.md`](gate-sequence.md) | Task 4 | Confirmed SIT and PROD gate sequence for all Sprint 06 phases |
+
+## Phase Records
+
+| Phase | Record | Evidence |
+| ----- | ----- | ----- |
+| Phase 1 (#45) | [`phase-1-iac-data-platform.md`](phase-1-iac-data-platform.md) | [`evidence/2026-06-09-phase-1-sit-synthesized-data.json`](evidence/2026-06-09-phase-1-sit-synthesized-data.json) |
 
 ## Baseline Inputs
 

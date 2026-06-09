@@ -1,0 +1,76 @@
+{
+  "datasetId": "DS-ONB-CAPACITY-HIRSLANDEN-sit-2026-06-09",
+  "contractId": "DC-ONB-CAPACITY-HIRSLANDEN-v1",
+  "contractVersion": "1.0.0",
+  "providerId": "hirslanden",
+  "classification": "operational-confidential",
+  "residency": "CH",
+  "purposeTags": ["capacity-planning", "bed-management"],
+  "specialtyTaxonomyVersion": "1.0.0",
+  "records": [
+    {
+      "capacityRecordId": "CAP-HIR-300001",
+      "specialty": "visceral-surgery",
+      "specialtyTags": ["visceral-surgery", "elective-pipeline"],
+      "ward": "vis-surg-1",
+      "bedsTotal": 22,
+      "bedsAvailable": 3,
+      "orSchedulePressure": "high",
+      "bedDemandWindow": {
+        "start": "2026-06-10",
+        "end": "2026-06-17",
+        "expectedPeakOccupancyPct": 94.0
+      },
+      "losCalibrationSignal": 5.1,
+      "purposeTag": "capacity-planning"
+    },
+    {
+      "capacityRecordId": "CAP-HIR-300002",
+      "specialty": "cardiology",
+      "specialtyTags": ["cardiology", "interventional"],
+      "ward": "card-2",
+      "bedsTotal": 26,
+      "bedsAvailable": 6,
+      "orSchedulePressure": "medium",
+      "bedDemandWindow": {
+        "start": "2026-06-10",
+        "end": "2026-06-17",
+        "expectedPeakOccupancyPct": 88.0
+      },
+      "losCalibrationSignal": 4.2,
+      "purposeTag": "bed-management"
+    },
+    {
+      "capacityRecordId": "CAP-HIR-300003",
+      "specialty": "orthopedics-sports-medicine",
+      "specialtyTags": ["orthopedics-sports-medicine", "elective-pipeline"],
+      "ward": "ortho-3",
+      "bedsTotal": 30,
+      "bedsAvailable": 8,
+      "orSchedulePressure": "high",
+      "bedDemandWindow": {
+        "start": "2026-06-11",
+        "end": "2026-06-18",
+        "expectedPeakOccupancyPct": 91.0
+      },
+      "losCalibrationSignal": 3.6,
+      "purposeTag": "capacity-planning"
+    },
+    {
+      "capacityRecordId": "CAP-HIR-300004",
+      "specialty": "neurosurgery",
+      "specialtyTags": ["neurosurgery", "high-acuity"],
+      "ward": "neuro-1",
+      "bedsTotal": 14,
+      "bedsAvailable": 1,
+      "orSchedulePressure": "high",
+      "bedDemandWindow": {
+        "start": "2026-06-10",
+        "end": "2026-06-17",
+        "expectedPeakOccupancyPct": 96.0
+      },
+      "losCalibrationSignal": 7.4,
+      "purposeTag": "capacity-planning"
+    }
+  ]
+}

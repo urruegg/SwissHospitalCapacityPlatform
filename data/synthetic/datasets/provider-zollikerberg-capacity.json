@@ -1,0 +1,72 @@
+{
+  "datasetId": "DS-ONB-CAPACITY-ZOLLIKERBERG-sit-2026-06-09",
+  "contractId": "DC-ONB-CAPACITY-ZOLLIKERBERG-v1",
+  "contractVersion": "1.0.0",
+  "providerId": "zollikerberg",
+  "classification": "operational-confidential",
+  "residency": "CH",
+  "purposeTags": ["capacity-planning", "bed-management"],
+  "specialtyTaxonomyVersion": "1.0.0",
+  "records": [
+    {
+      "capacityRecordId": "CAP-ZOL-400001",
+      "specialty": "internal-medicine",
+      "specialtyTags": ["internal-medicine", "general-ward"],
+      "ward": "med-1",
+      "careMode": "inpatient",
+      "bedsTotal": 34,
+      "bedsAvailable": 7,
+      "hospitalAtHome": {
+        "virtualWardCapacityContribution": 6,
+        "dischargePathwayType": "hah-transfer",
+        "telemetryReadinessFlag": true
+      },
+      "purposeTag": "capacity-planning"
+    },
+    {
+      "capacityRecordId": "CAP-ZOL-400002",
+      "specialty": "gynecology-obstetrics",
+      "specialtyTags": ["gynecology-obstetrics", "maternity"],
+      "ward": "obs-1",
+      "careMode": "inpatient",
+      "bedsTotal": 20,
+      "bedsAvailable": 5,
+      "purposeTag": "bed-management"
+    },
+    {
+      "capacityRecordId": "CAP-ZOL-400003",
+      "specialty": "neonatology",
+      "specialtyTags": ["neonatology", "special-care"],
+      "ward": "neo-1",
+      "careMode": "inpatient",
+      "bedsTotal": 12,
+      "bedsAvailable": 2,
+      "purposeTag": "capacity-planning"
+    },
+    {
+      "capacityRecordId": "CAP-ZOL-400004",
+      "specialty": "emergency-intake-routing",
+      "specialtyTags": ["emergency-intake-routing", "triage"],
+      "ward": "ed-1",
+      "careMode": "emergency-intake",
+      "bedsTotal": 18,
+      "bedsAvailable": 3,
+      "purposeTag": "bed-management"
+    },
+    {
+      "capacityRecordId": "CAP-ZOL-400005",
+      "specialty": "orthopedics-spine",
+      "specialtyTags": ["orthopedics-spine", "day-case"],
+      "ward": "ortho-1",
+      "careMode": "day-case",
+      "bedsTotal": 16,
+      "bedsAvailable": 9,
+      "hospitalAtHome": {
+        "virtualWardCapacityContribution": 4,
+        "dischargePathwayType": "post-acute",
+        "telemetryReadinessFlag": false
+      },
+      "purposeTag": "capacity-planning"
+    }
+  ]
+}
