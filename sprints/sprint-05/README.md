@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (Phase 0 control bootstrap) |
 
 ## Purpose
 
@@ -26,6 +26,7 @@ and the CAF/WAF review session.
 | [`requires-validation-register.md`](requires-validation-register.md) | Task 2 | Requires-validation register sourced from review findings |
 | [`pr-evidence-checklist.md`](pr-evidence-checklist.md) | Task 3 | PR evidence checklist with FR/NFR/CH controls, gate outcomes, residual risks |
 | [`gate-sequence.md`](gate-sequence.md) | Task 4 | Confirmed SIT and PROD gate sequence for all remaining phases |
+| [`phase-2-policy-gate.md`](phase-2-policy-gate.md) | Phase 2 (#35) | Policy-as-code gate implementation and SIT gate evidence (RV-03) |
 
 ## Baseline Inputs
 

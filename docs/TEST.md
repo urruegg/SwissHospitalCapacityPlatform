@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.0 |
+| **Version** | 0.4.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.2.1 (Sprint 05 evidence-automation checkpoints) |
+| **Previous Version** | 0.3.0 (Sprint 05 evidence-automation checkpoints) |
 
 ## Purpose
 
@@ -154,6 +154,16 @@ affected scope and are captured via the PR evidence checklist
 
 Promotion thresholds: zero critical policy failures and 100 percent mandatory-control
 coverage for SIT to PROD promotion (ADR-0010); expired exceptions are hard blockers.
+
+The `Policy gate run` and `Cantonal annex check` checkpoints above are implemented as
+the executable policy gate in [`policy/`](../policy/README.md) (`policy/policy_gate.py`,
+`policy/policy-pack.json`, `policy/exceptions.json`,
+`policy/schema/evidence-schema.json`). The gate runs in
+[`.github/workflows/policy-gate.yml`](../.github/workflows/policy-gate.yml) and as a
+blocking step on the SIT and PROD deploy workflows. Validate locally with
+`python3 policy/policy_gate.py --scope sit` and `python3 -m unittest discover -s policy/tests`.
+The Phase 2 SIT gate evidence is recorded in
+[`sprints/sprint-05/phase-2-policy-gate.md`](../sprints/sprint-05/phase-2-policy-gate.md).
 
 ## Defect and Risk Handling
 

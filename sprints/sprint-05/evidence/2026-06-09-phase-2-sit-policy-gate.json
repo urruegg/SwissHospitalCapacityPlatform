@@ -1,0 +1,20 @@
+{
+  "policyPackVersion": "1.0.0",
+  "gateName": "sit-policy-gate",
+  "evaluatedResources": [
+    "infra/environments/sit.bicepparam",
+    "docs/compliance/cantonal-annex.md"
+  ],
+  "passFailSummary": {
+    "result": "pass",
+    "totalChecks": 5,
+    "passed": 5,
+    "failed": 0,
+    "criticalFailures": 0,
+    "mandatoryControlCoveragePercent": 100.0
+  },
+  "failureDetails": [],
+  "exceptionRefs": [],
+  "executionTimestampUtc": "2026-06-09T06:59:01Z",
+  "pipelineRunId": "local"
+}

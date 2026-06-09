@@ -1,0 +1,93 @@
+{
+  "policyPackVersion": "1.0.0",
+  "description": "Sprint 05 Phase 2 policy-as-code pack. Encodes the mandatory release controls from ADR-0010 (policy-as-code and release evidence gates) and ADR-0011 (cantonal legal applicability gate) as machine-checkable rules.",
+  "sourceAdrs": [
+    "docs/adr/0010-policy-as-code-and-release-evidence-gates.md",
+    "docs/adr/0011-cantonal-legal-applicability-gate.md"
+  ],
+  "promotionThreshold": {
+    "maxCriticalFailures": 0,
+    "requiredMandatoryControlCoveragePercent": 100
+  },
+  "exceptions": {
+    "maxValidityDays": 90
+  },
+  "residency": {
+    "allowedRegions": [
+      "switzerlandnorth",
+      "switzerlandwest"
+    ]
+  },
+  "prohibitedDeploymentTypes": [
+    "global",
+    "data-zone-standard",
+    "data-zone-provisioned"
+  ],
+  "mandatoryControls": [
+    {
+      "id": "MC-RESIDENCY",
+      "name": "PHI residency and transfer guardrails",
+      "description": "Every deployment environment must pin resources to an approved Swiss region so PHI does not leave Switzerland.",
+      "severity": "critical",
+      "check": "residency"
+    },
+    {
+      "id": "MC-DEPLOYMENT-TYPE",
+      "name": "Prohibited deployment-type restrictions",
+      "description": "No environment may select a prohibited (global or data-zone) deployment type for PHI-bearing workloads.",
+      "severity": "critical",
+      "check": "deploymentType"
+    },
+    {
+      "id": "MC-IDENTITY",
+      "name": "Mandatory identity controls",
+      "description": "Managed-identity controls must be enabled for affected resources.",
+      "severity": "critical",
+      "check": "moduleEnabled",
+      "requiredParam": "enableIdentityModule"
+    },
+    {
+      "id": "MC-DIAGNOSTICS",
+      "name": "Mandatory diagnostics controls",
+      "description": "Diagnostics / observability must be enabled for affected resources.",
+      "severity": "critical",
+      "check": "moduleEnabled",
+      "requiredParam": "enableObservabilityModule"
+    },
+    {
+      "id": "MC-CANTONAL-ANNEX",
+      "name": "Cantonal legal applicability annex completeness",
+      "description": "Every canton entry in the annex must carry the ADR-0011 mandatory fields, an assigned owner, and a valid status; expired annex exceptions block PROD promotion.",
+      "severity": "high",
+      "check": "cantonalAnnex"
+    }
+  ],
+  "cantonalAnnex": {
+    "file": "docs/compliance/cantonal-annex.md",
+    "requiredFields": [
+      "cantonId",
+      "legalSource",
+      "obligationSummary",
+      "controlMappings",
+      "controlOwner",
+      "evidenceArtifacts",
+      "status",
+      "openValidationPoints"
+    ],
+    "allowedStatuses": [
+      "design-aligned",
+      "implemented",
+      "requires-validation"
+    ],
+    "allowedOwners": [
+      "LEGAL",
+      "SEC",
+      "OPS",
+      "ARCH"
+    ]
+  },
+  "environmentParamFiles": [
+    "infra/environments/sit.bicepparam",
+    "infra/environments/prod.bicepparam"
+  ]
+}
