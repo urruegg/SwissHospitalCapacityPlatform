@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.0 |
+| **Version** | 0.5.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.1 (added Sprint 05 cantonal annex link and control owners) |
+| **Previous Version** | 0.4.0 (added Sprint 05 cantonal annex link and control owners) |
 
 ## Purpose
 
@@ -127,6 +127,28 @@ top of the federal `CH-C01`..`CH-C10` controls, per the CAF/WAF review §8/§9 a
 
 3. Open and partial items are tracked with owner, target phase, and evidence in
    [`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md).
+
+### Sprint 6 Onboarding Minimum-Data and Re-identification Controls
+
+Sprint 6 onboarding flows are governed by a minimum-sensitive-data design that
+strengthens `CH-C01` (lawfulness, purpose limitation, data minimization) and
+`CH-C05` (cross-border / residency) for the onboarding lanes. These controls map
+to `NFR-COMP-011` and the register items in
+[`sprints/sprint-06/requires-validation-register.md`](../sprints/sprint-06/requires-validation-register.md).
+
+| Onboarding control | Requirement | Enforcement | Owner role |
+| ----- | ----- | ----- | ----- |
+| Minimum-data patient onboarding contract (`DC-ONB-PATIENT-v1`) | `FR-ONB-001`, `NFR-COMP-011`, `CH-C01` | Validator rejects forbidden direct-identifier fields; pseudonym + age band only | SEC |
+| Purpose limitation tags on onboarding records | `NFR-COMP-011`, `CH-C01` | `purposeTag` / `purposeTags` required by contract schema | SEC |
+| Re-identification minimization (quasi-identifier control) | `NFR-COMP-011`, `CH-C01`, `CH-C05` | Banded age and day-granularity dates only; no free-text identifiers; tracked as `RV-06-04` | SEC |
+| Swiss residency tag on onboarding datasets | `CH-C05` | `residency: CH` required by contract schema | LEGAL |
+| Specialty metadata quality and versioning | `NFR-DQ-005` | `specialtyTaxonomyVersion` + capacity invariants in validator | ARCH |
+
+The enforcement point is the synthesized-data gate
+[`data/synthetic/validate_datasets.py`](../data/synthetic/validate_datasets.py),
+run in CI by [`.github/workflows/data-contracts.yml`](../.github/workflows/data-contracts.yml).
+Formal re-identification risk acceptance (`RV-06-04`) remains a Phase 2 legal /
+security sign-off item; Phase 1 establishes the enforced minimization baseline.
 
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.11.0 |
+| **Version** | 0.12.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.10.0 (Sprint 05 CAF/WAF runtime + reliability baseline closure) |
+| **Previous Version** | 0.11.0 (Sprint 05 CAF/WAF runtime + reliability baseline closure) |
 
 ## Purpose
 
@@ -128,6 +128,36 @@ flowchart LR
 - Auditable chain from source event to model output, response, and partner trigger.
 - Governance evidence artifacts retained for compliance review.
 
+## Sprint 6 Onboarding and Data-Platform Overlay
+
+Sprint 6 adds two onboarding lanes and an IaC-first data-platform bootstrap path
+on top of the layered architecture, scoped to the MVP agents OOA/DCA/BMCA.
+
+### Onboarding Lanes
+
+| Lane | Architecture placement | Classification (FR-ONB-004) |
+| ----- | ----- | ----- |
+| Patient minimum-data onboarding | Interoperability/normalization -> data-platform curated zone, minimized pseudonymous contract `DC-ONB-PATIENT-v1` | Deterministic service |
+| Specialty-driven capacity onboarding | Data-platform curated zone, specialty-tagged contract `DC-ONB-CAPACITY-v1` + provider extensions | Deterministic service |
+| OOA/DCA/BMCA decision support over onboarded data | AI/decision-intelligence + copilot layers, advisory and HITL-gated | Agentic flow |
+
+The deterministic-service-vs-agentic-flow classification criterion is defined in
+[`docs/SD.md`](SD.md) and applied per onboarding workflow.
+
+### Data-Platform Bootstrap (IaC-first)
+
+1. The data-platform module
+   [`infra/modules/data-platform/main.bicep`](../infra/modules/data-platform/main.bicep)
+   provisions a governed storage account and a dedicated `onboarding` blob
+   container for synthesized SIT onboarding datasets used by the MVP flows.
+2. Synthesized, non-production datasets and their JSON Schema contracts live in
+   [`data/synthetic/`](../data/synthetic/README.md); the CI gate
+   [`.github/workflows/data-contracts.yml`](../.github/workflows/data-contracts.yml)
+   validates contract conformance, re-identification minimization, and
+   FR/NFR/CH traceability on every change (`NFR-MAINT-005`, `NFR-DQ-005`).
+3. Agent-to-IaC component mapping for OOA/DCA/BMCA is recorded in
+   [`docs/agents/sprint-06-mvp-agent-readiness.md`](agents/sprint-06-mvp-agent-readiness.md).
+
 ## Requirement Mapping Summary
 
 | Requirement Family | Architectural Coverage |
@@ -142,6 +172,7 @@ flowchart LR
 | NFR-DQ and NFR-PERF | Quality gates on feeds, near-real-time processing and hourly forecast cadence |
 | NFR-REL and NFR-AI | Continuous operations, restartability, advisory copilot and response traceability |
 | NFR-MAINT | Modular architecture lanes and Git-first release model |
+| FR-ONB and onboarding NFRs | Sprint 6 onboarding lanes overlay, IaC-first data-platform bootstrap, synthesized-data contract/schema gate, OOA/DCA/BMCA agent-to-IaC mapping |
 
 ## Decisions
 
