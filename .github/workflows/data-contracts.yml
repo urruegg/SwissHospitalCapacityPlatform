@@ -1,0 +1,76 @@
+name: data-contracts
+
+# Sprint 6 Phase 1 — Synthesized-data contract and schema validation gate.
+#
+# Runs the dependency-free synthesized-data validator
+# (data/synthetic/validate_datasets.py) for the Sprint 6 onboarding datasets,
+# fails the build on any schema, re-identification minimization, capacity
+# invariant, or FR/NFR/CH traceability failure, and uploads the synthesized-data
+# evidence artifact for the SIT gate record.
+
+on:
+  pull_request:
+    paths:
+      - 'data/synthetic/**'
+      - '.github/workflows/data-contracts.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/synthetic/**'
+      - '.github/workflows/data-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-contracts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  data-contracts-selftest:
+    name: Synthesized-data validator self-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run validator unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data/synthetic/tests -v
+
+  data-contracts:
+    name: Synthesized-data contract/schema gate
+    runs-on: ubuntu-latest
+    needs: data-contracts-selftest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate datasets and emit evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data-evidence
+          python3 data/synthetic/validate_datasets.py \
+            --output "data-evidence/sit-synthesized-data-${GITHUB_RUN_ID}.json"
+
+      - name: Upload synthesized-data evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthesized-data-evidence
+          path: data-evidence/
+          if-no-files-found: error

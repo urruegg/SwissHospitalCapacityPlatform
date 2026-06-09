@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "provider-zollikerberg-capacity.schema.json",
+  "title": "Spital Zollikerberg Specialty and Care-Mode Capacity Onboarding Dataset (DC-ONB-CAPACITY-ZOLLIKERBERG-v1)",
+  "description": "Synthesized provider-extension dataset for Spital Zollikerberg capacity onboarding. Adds specialty and care-mode signals plus optional, provider-scoped Hospital-at-Home extension indicators (FR-ONB-002, FR-ONB-003, CH-C01).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId",
+    "contractId",
+    "contractVersion",
+    "providerId",
+    "classification",
+    "residency",
+    "purposeTags",
+    "specialtyTaxonomyVersion",
+    "records"
+  ],
+  "properties": {
+    "datasetId": { "type": "string", "pattern": "^DS-ONB-CAPACITY-ZOLLIKERBERG-[a-z0-9-]+$" },
+    "contractId": { "type": "string", "enum": ["DC-ONB-CAPACITY-ZOLLIKERBERG-v1"] },
+    "contractVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "providerId": { "type": "string", "enum": ["zollikerberg"] },
+    "classification": { "type": "string", "enum": ["operational-confidential"] },
+    "residency": { "type": "string", "enum": ["CH"] },
+    "purposeTags": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["capacity-planning", "bed-management"] }
+    },
+    "specialtyTaxonomyVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capacityRecordId",
+          "specialty",
+          "specialtyTags",
+          "ward",
+          "careMode",
+          "bedsTotal",
+          "bedsAvailable",
+          "purposeTag"
+        ],
+        "properties": {
+          "capacityRecordId": { "type": "string", "pattern": "^CAP-ZOL-[0-9]{4,}$" },
+          "specialty": {
+            "type": "string",
+            "enum": [
+              "internal-medicine",
+              "gynecology-obstetrics",
+              "neonatology",
+              "orthopedics-spine",
+              "surgery",
+              "emergency-intake-routing"
+            ]
+          },
+          "specialtyTags": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^[a-z][a-z-]+$" }
+          },
+          "ward": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+          "careMode": { "type": "string", "enum": ["inpatient", "day-case", "emergency-intake"] },
+          "bedsTotal": { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "bedsAvailable": { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "hospitalAtHome": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["virtualWardCapacityContribution", "dischargePathwayType", "telemetryReadinessFlag"],
+            "properties": {
+              "virtualWardCapacityContribution": { "type": "integer", "minimum": 0, "maximum": 500 },
+              "dischargePathwayType": {
+                "type": "string",
+                "enum": ["conventional", "hah-transfer", "post-acute"]
+              },
+              "telemetryReadinessFlag": { "type": "boolean" }
+            }
+          },
+          "purposeTag": { "type": "string", "enum": ["capacity-planning", "bed-management"] }
+        }
+      }
+    }
+  }
+}

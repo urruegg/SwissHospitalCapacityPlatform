@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "description": "Traceability map from synthesized Sprint 6 onboarding datasets to their contract schemas and FR/NFR/CH controls and requires-validation register items. Consumed by validate_datasets.py to produce the Phase 1 SIT contract/schema validation evidence.",
+  "specialtyTaxonomyVersion": "1.0.0",
+  "datasets": [
+    {
+      "datasetId": "DS-ONB-PATIENT-sit-2026-06-09",
+      "lane": "patient-minimum",
+      "providerScope": "none",
+      "dataFile": "datasets/patient-minimum-onboarding.json",
+      "schemaFile": "schema/patient-minimum-onboarding.schema.json",
+      "minimizationChecked": true,
+      "fr": ["FR-ONB-001"],
+      "nfr": ["NFR-COMP-011", "NFR-MAINT-005"],
+      "ch": ["CH-C01", "CH-C05"],
+      "rv": ["RV-06-01", "RV-06-10"]
+    },
+    {
+      "datasetId": "DS-ONB-CAPACITY-sit-2026-06-09",
+      "lane": "specialty-capacity",
+      "providerScope": "none",
+      "dataFile": "datasets/specialty-capacity-onboarding.json",
+      "schemaFile": "schema/specialty-capacity-onboarding.schema.json",
+      "minimizationChecked": true,
+      "fr": ["FR-ONB-002", "FR-ONB-003"],
+      "nfr": ["NFR-DQ-005", "NFR-MAINT-005"],
+      "ch": ["CH-C01"],
+      "rv": ["RV-06-06", "RV-06-10"]
+    },
+    {
+      "datasetId": "DS-ONB-CAPACITY-HIRSLANDEN-sit-2026-06-09",
+      "lane": "specialty-capacity",
+      "providerScope": "hirslanden",
+      "dataFile": "datasets/provider-hirslanden-capacity.json",
+      "schemaFile": "schema/provider-hirslanden-capacity.schema.json",
+      "minimizationChecked": true,
+      "fr": ["FR-ONB-002", "FR-ONB-003"],
+      "nfr": ["NFR-DQ-005", "NFR-MAINT-005"],
+      "ch": ["CH-C01"],
+      "rv": ["RV-06-08", "RV-06-10"]
+    },
+    {
+      "datasetId": "DS-ONB-CAPACITY-ZOLLIKERBERG-sit-2026-06-09",
+      "lane": "specialty-capacity",
+      "providerScope": "zollikerberg",
+      "dataFile": "datasets/provider-zollikerberg-capacity.json",
+      "schemaFile": "schema/provider-zollikerberg-capacity.schema.json",
+      "minimizationChecked": true,
+      "fr": ["FR-ONB-002", "FR-ONB-003"],
+      "nfr": ["NFR-DQ-005", "NFR-MAINT-005"],
+      "ch": ["CH-C01"],
+      "rv": ["RV-06-09", "RV-06-10"]
+    }
+  ]
+}

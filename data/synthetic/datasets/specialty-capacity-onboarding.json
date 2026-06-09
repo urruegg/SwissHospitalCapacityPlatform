@@ -1,0 +1,44 @@
+{
+  "datasetId": "DS-ONB-CAPACITY-sit-2026-06-09",
+  "contractId": "DC-ONB-CAPACITY-v1",
+  "contractVersion": "1.0.0",
+  "classification": "operational-confidential",
+  "residency": "CH",
+  "purposeTags": ["capacity-planning", "bed-management"],
+  "specialtyTaxonomyVersion": "1.0.0",
+  "records": [
+    {
+      "capacityRecordId": "CAP-USZ-200001",
+      "providerId": "usz",
+      "specialty": "cardiology",
+      "specialtyTags": ["cardiology", "acute-coronary"],
+      "ward": "card-a1",
+      "bedsTotal": 28,
+      "bedsAvailable": 4,
+      "losCalibrationSignal": 4.5,
+      "purposeTag": "capacity-planning"
+    },
+    {
+      "capacityRecordId": "CAP-USZ-200002",
+      "providerId": "usz",
+      "specialty": "internal-medicine",
+      "specialtyTags": ["internal-medicine", "general-ward"],
+      "ward": "med-b2",
+      "bedsTotal": 40,
+      "bedsAvailable": 9,
+      "losCalibrationSignal": 6.2,
+      "purposeTag": "bed-management"
+    },
+    {
+      "capacityRecordId": "CAP-USZ-200003",
+      "providerId": "usz",
+      "specialty": "surgery",
+      "specialtyTags": ["surgery", "post-operative"],
+      "ward": "surg-c1",
+      "bedsTotal": 24,
+      "bedsAvailable": 2,
+      "losCalibrationSignal": 3.8,
+      "purposeTag": "capacity-planning"
+    }
+  ]
+}

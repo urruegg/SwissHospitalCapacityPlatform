@@ -41,6 +41,15 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01'
 	}
 }
 
+@description('Onboarding bootstrap container for synthesized SIT onboarding datasets consumed by the OOA/DCA/BMCA MVP flows (Sprint 6 Phase 1).')
+resource onboardingContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+	parent: blobService
+	name: 'onboarding'
+	properties: {
+		publicAccess: 'None'
+	}
+}
+
 @description('Data platform module implementation marker.')
 output moduleStatus string = 'data-platform-implemented'
 
@@ -49,6 +58,9 @@ output storageAccountName string = storageAccount.name
 
 @description('Blob service resource ID for diagnostics wiring.')
 output blobServiceResourceId string = blobService.id
+
+@description('Onboarding bootstrap container name for synthesized SIT onboarding data.')
+output onboardingContainerName string = onboardingContainer.name
 
 @description('Data platform module scaffold input echo for validation only.')
 output scaffoldInput object = {

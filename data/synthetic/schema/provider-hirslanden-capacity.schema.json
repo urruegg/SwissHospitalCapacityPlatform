@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "provider-hirslanden-capacity.schema.json",
+  "title": "Klinik Hirslanden Specialty-Weighted Capacity Onboarding Dataset (DC-ONB-CAPACITY-HIRSLANDEN-v1)",
+  "description": "Synthesized provider-extension dataset for Klinik Hirslanden capacity onboarding. Adds specialty-weighted elective-pipeline influences: OR schedule pressure, specialty bed-demand windows, and LOS calibration signal (FR-ONB-002, FR-ONB-003, CH-C01).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId",
+    "contractId",
+    "contractVersion",
+    "providerId",
+    "classification",
+    "residency",
+    "purposeTags",
+    "specialtyTaxonomyVersion",
+    "records"
+  ],
+  "properties": {
+    "datasetId": { "type": "string", "pattern": "^DS-ONB-CAPACITY-HIRSLANDEN-[a-z0-9-]+$" },
+    "contractId": { "type": "string", "enum": ["DC-ONB-CAPACITY-HIRSLANDEN-v1"] },
+    "contractVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "providerId": { "type": "string", "enum": ["hirslanden"] },
+    "classification": { "type": "string", "enum": ["operational-confidential"] },
+    "residency": { "type": "string", "enum": ["CH"] },
+    "purposeTags": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["capacity-planning", "bed-management"] }
+    },
+    "specialtyTaxonomyVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capacityRecordId",
+          "specialty",
+          "specialtyTags",
+          "ward",
+          "bedsTotal",
+          "bedsAvailable",
+          "orSchedulePressure",
+          "bedDemandWindow",
+          "losCalibrationSignal",
+          "purposeTag"
+        ],
+        "properties": {
+          "capacityRecordId": { "type": "string", "pattern": "^CAP-HIR-[0-9]{4,}$" },
+          "specialty": {
+            "type": "string",
+            "enum": [
+              "surgery",
+              "visceral-surgery",
+              "cardiology",
+              "gynecology-obstetrics",
+              "orthopedics-sports-medicine",
+              "urology",
+              "neurosurgery"
+            ]
+          },
+          "specialtyTags": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^[a-z][a-z-]+$" }
+          },
+          "ward": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+          "bedsTotal": { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "bedsAvailable": { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "orSchedulePressure": { "type": "string", "enum": ["low", "medium", "high"] },
+          "bedDemandWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["start", "end", "expectedPeakOccupancyPct"],
+            "properties": {
+              "start": { "type": "string", "format": "date" },
+              "end": { "type": "string", "format": "date" },
+              "expectedPeakOccupancyPct": { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          },
+          "losCalibrationSignal": { "type": "number", "minimum": 0, "maximum": 60 },
+          "purposeTag": { "type": "string", "enum": ["capacity-planning", "bed-management"] }
+        }
+      }
+    }
+  }
+}
