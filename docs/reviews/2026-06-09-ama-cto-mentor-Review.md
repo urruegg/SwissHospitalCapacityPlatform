@@ -93,7 +93,7 @@ The CTO Mentor confirmed this interpretation, noting that the **Cantonal Health 
 
 **Transcript reference:**
 > *"Wenn wir aber dort sprechen, sind nicht die Schweiz machen, aber wir haben keinen PH in Daten. Dann spielt es keine Rolle mehr."* — Solution Architect, ~3:39
-> 
+>
 > *"Ich kann die Komplexität reduzieren und bin rein kapazitätsorientiert unterwegs."* — Solution Architect, ~3:50
 
 The CTO Mentor noted that **Dragon Copilot** is already used at reference hospitals (e.g., Inselspital Bern) despite data residency not being guaranteed in Switzerland — illustrating the pragmatic tension between regulatory intent and current practice in the sector.
@@ -269,7 +269,7 @@ The following requirements are **not explicitly stated in the existing PRD or so
 
 Based on the review session and GitHub repository description, the current architecture state is:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │              SwissHospitalCapacityPlatform (Conceptual)          │
 │                                                                   │
@@ -368,7 +368,7 @@ These are **unresolved architecture decisions** that will materially affect the 
 
 Based on the review session, the compliance architecture must model two distinct layers:
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │  Layer 1: National Legislative Baseline                      │
 │  nDSG / KVG / EPR — applies uniformly across all cantons    │
@@ -497,4 +497,4 @@ This matrix links key requirements and decisions to their sources in the review 
 
 ---
 
-*End of Document*
+End of document.
