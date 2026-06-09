@@ -111,12 +111,15 @@ mandatory-control coverage. In CI the same gate runs in
 
 ### Approvals (PROD promotion only)
 
+> PROD promotion is **pending**: the approvals below are required before the PROD
+> gate may read `pass`. Handles and timestamps are recorded at sign-off time.
+
 | Role | Approver handle | Timestamp | Decision |
 | ----- | ----- | ----- | ----- |
-| ARCH | @ | | pending |
-| SEC | @ | | pending |
-| OPS | @ | | pending |
-| LEGAL (cantonal) | @ | | pending |
+| ARCH | TBD | | pending |
+| SEC | TBD | | pending |
+| OPS | TBD | | pending |
+| LEGAL (cantonal) | TBD | | pending |
 
 ### Residual Risks
 

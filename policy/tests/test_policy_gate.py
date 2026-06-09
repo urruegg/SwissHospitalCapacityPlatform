@@ -161,7 +161,7 @@ class CantonalAnnexTests(unittest.TestCase):
 
 
 def _exc(**overrides):
-    today = pg._today_utc()
+    today = pg._today_date_utc()
     base = {
         "id": "EX-1",
         "control": "MC-RESIDENCY",
@@ -196,14 +196,14 @@ class ExceptionTests(unittest.TestCase):
         self.assertIn("EX-1", ev["exceptionRefs"])
 
     def test_expired_exception_blocks(self):
-        today = pg._today_utc()
+        today = pg._today_date_utc()
         ev = self._run([_exc(expiry=(today - dt.timedelta(days=1)).isoformat())])
         self.assertEqual(ev["passFailSummary"]["result"], "fail")
         ids = {f["controlId"] for f in ev["failureDetails"]}
         self.assertIn("EXC-EXPIRY", ids)
 
     def test_over_validity_exception_blocks(self):
-        today = pg._today_utc()
+        today = pg._today_date_utc()
         ev = self._run([_exc(
             approvalDate=today.isoformat(),
             expiry=(today + dt.timedelta(days=120)).isoformat())])

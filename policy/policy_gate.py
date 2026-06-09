@@ -84,7 +84,7 @@ def parse_bicepparam(text: str) -> dict[str, str]:
     return params
 
 
-def _today_utc() -> _dt.date:
+def _today_date_utc() -> _dt.date:
     return _dt.datetime.now(_dt.timezone.utc).date()
 
 
@@ -277,7 +277,7 @@ def evaluate_exceptions(pack: dict, exceptions_doc: dict, report: GateReport) ->
     valid_by_control: dict[str, dict] = {}
     required_fields = exceptions_doc.get("requiredFields", [])
     max_days = pack.get("exceptions", {}).get("maxValidityDays", 90)
-    today = _today_utc()
+    today = _today_date_utc()
 
     for exc in exceptions_doc.get("exceptions", []):
         exc_id = exc.get("id", "<unknown>")
