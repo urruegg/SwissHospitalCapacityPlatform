@@ -2,17 +2,43 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
-| **Status** | Planned |
-| **Previous Version** | N/A |
+| **Status** | Completed |
+| **Previous Version** | 1.0.0 (initial sprint plan baseline) |
 
 ## Sprint Goal
 
 Convert AMA review outcomes into an implementation-ready and governance-auditable baseline, then execute phased SIT and PROD implementation with strict release gates and explicit Definition of Done per phase.
 
 This sprint is designed to be delegated to repository agents for autonomous execution under GitHub issue and PR controls.
+
+## Completion Summary
+
+Sprint 5 was executed end-to-end using the canonical issue chain and phase PRs.
+
+Canonical issue chain:
+1. `#32` Sprint umbrella (closed)
+2. `#33` Phase 0 (closed)
+3. `#34` Phase 1 (closed)
+4. `#35` Phase 2 (closed)
+5. `#36` Phase 3 (closed)
+6. `#37` Phase 4 (closed)
+
+Phase PR outcomes:
+1. `#38` Phase 0 — merged
+2. `#39` Phase 1 — merged
+3. `#40` Phase 2 — merged
+4. `#41` Phase 3 — merged
+5. `#42` Phase 4 — merged
+
+Primary evidence bundle:
+1. `sprints/sprint-05/README.md`
+2. `sprints/sprint-05/gate-sequence.md`
+3. `sprints/sprint-05/phase-issue-map.md`
+4. `sprints/sprint-05/pr-evidence-checklist.md`
+5. `sprints/sprint-05/requires-validation-register.md`
 
 ## Review Baseline and Priority
 
