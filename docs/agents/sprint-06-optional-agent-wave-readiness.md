@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (initial optional-wave gate decision) |
 
 ## Purpose
 
@@ -62,10 +62,9 @@ and the register in
 **Decision: DEFER the optional agent wave (DFA / IWA / DQSA / CSA / EAA).**
 
 The Phase 1, Phase 2, and Phase 3 **SIT** gates are green, so the optional wave
-is **staged and ready** at the SIT level. However, "gates are green" for
-onboarding the optional wave requires the upstream **PROD** gates to pass as
-well, per [`../../sprints/sprint-06/gate-sequence.md`](../../sprints/sprint-06/gate-sequence.md)
-("Phase 1 PROD gate must pass before Phase 2 and Phase 3 SIT gates are entered").
+is **staged and ready** at the SIT level. However, onboarding the optional wave
+would expand scope beyond the Sprint 6 MVP lock and would still be blocked from
+any PROD promotion while upstream approvals and register blockers remain open.
 Two conditions are not yet met:
 
 1. Phase 1 and Phase 2 **PROD** gates remain `pending` (owner approvals not

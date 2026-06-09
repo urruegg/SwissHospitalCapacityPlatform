@@ -1,18 +1,19 @@
-# Sprint 06 Control and Traceability Bootstrap
+# Sprint 06 Governance, Evidence, and Closeout Pack
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.2.0 (Phase 2 record indexed) |
+| **Previous Version** | 1.3.0 (Phase 3 record indexed) |
 
 ## Purpose
 
-This directory holds the Sprint 06 **Phase 0** control and traceability
-artifacts: the execution controls, issue structure, and evidence templates that
-govern the rest of the sprint. It is the deliverable set for Phase 0 (#44) of
+This directory holds the Sprint 06 governance controls, phase evidence records,
+and closeout artifacts. It started as the Phase 0 (#44) control pack and now
+serves as the canonical index for the Sprint 6 evidence trail from Phase 0 to
+Phase 4 for
 [`sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`](../sprint-06-minimal-data-onboarding-and-capacity-specialty.md),
 built from the baselines in
 [`docs/runbooks/sprint-06-copilot-delegation-runbook.md`](../../docs/runbooks/sprint-06-copilot-delegation-runbook.md).
@@ -33,6 +34,7 @@ built from the baselines in
 | Phase 1 (#45) | [`phase-1-iac-data-platform.md`](phase-1-iac-data-platform.md) | [`evidence/2026-06-09-phase-1-sit-synthesized-data.json`](evidence/2026-06-09-phase-1-sit-synthesized-data.json) |
 | Phase 2 (#46) | [`phase-2-policy-schema-enforcement.md`](phase-2-policy-schema-enforcement.md) | [`evidence/2026-06-09-phase-2-sit-onboarding-policy.json`](evidence/2026-06-09-phase-2-sit-onboarding-policy.json) |
 | Phase 3 (#47) | [`phase-3-provider-sit-evidence.md`](phase-3-provider-sit-evidence.md) | [`evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json`](evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json) |
+| Phase 4 (#48) | [`phase-4-hardening-closeout.md`](phase-4-hardening-closeout.md) | [`evidence/2026-06-09-phase-4-hardening-closeout.json`](evidence/2026-06-09-phase-4-hardening-closeout.json) |
 
 ## Baseline Inputs
 
@@ -61,7 +63,8 @@ built from the baselines in
 
 These artifacts are governance documentation only. They create no infrastructure
 and change no runtime behavior, consistent with ADR-0002 (agents and controls are
-realized as Markdown). Phase 1..4 implementation work is tracked in the
-respective phase issues (#45..#48) and must not start until the Phase 0 PROD gate
-passes. MVP Phase 1 scope remains locked to OOA/DCA/BMCA; optional agents
-(DFA/IWA/DQSA/CSA/EAA) are deferred to Phase 3.
+realized as Markdown). Later phases may collect **SIT evidence** after the Phase 0
+SIT control pack is in place, while **PROD promotion** remains blocked until the
+relevant approvals and register blockers are cleared. MVP Phase 1 scope remains
+locked to OOA/DCA/BMCA; optional agents (DFA/IWA/DQSA/CSA/EAA) are deferred to
+Phase 3 and beyond.

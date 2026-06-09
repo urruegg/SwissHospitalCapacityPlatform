@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.2.0 (Phase 2 evidence trace for onboarding policy/schema register) |
+| **Previous Version** | 1.3.0 (Phase 3 evidence trace and optional-wave decision indexed) |
 
 ## Purpose
 
@@ -98,6 +98,18 @@ the SIT evidence artifact
 The optional agent wave (DFA/IWA/DQSA/CSA/EAA) is deferred with an explicit gate
 decision recorded in
 [`../../docs/agents/sprint-06-optional-agent-wave-readiness.md`](../../docs/agents/sprint-06-optional-agent-wave-readiness.md).
+
+### Phase 4 closeout trace
+
+Phase 4 (#48) closes the evidence gap for Sprint 6 hardening and closure by
+committing an explicit closeout package in
+[`phase-4-hardening-closeout.md`](phase-4-hardening-closeout.md) and
+[`evidence/2026-06-09-phase-4-hardening-closeout.json`](evidence/2026-06-09-phase-4-hardening-closeout.json).
+The closeout package consolidates deterministic-service vs agentic-flow
+classification coverage for `RV-06-02`, links the onboarding control-path checks
+used in Sprint 6, and records the final recommendation: Sprint 6 is
+SIT-complete but remains PROD-pending until `RV-06-04` and owner approvals are
+closed.
 
 ## FR / NFR / CH Traceability Anchors
 

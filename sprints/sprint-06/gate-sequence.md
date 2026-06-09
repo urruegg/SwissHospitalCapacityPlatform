@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (initial Sprint 6 gate sequence) |
 
 ## Purpose
 
@@ -28,7 +28,8 @@ CI gate  ->  SIT gate  ->  approval  ->  PROD gate  ->  (Runtime gate at executi
 1. **CI gate** — markdown/link checks and (Phase 1+) synthesized-data contract and
    schema checks execute for affected scope; evidence artifacts generated.
 2. **SIT gate** — onboarding contracts, specialty-metadata schemas, and synthesized
-   datasets validated; unresolved high-severity onboarding blockers stop progression.
+   datasets validated; unresolved high-severity onboarding blockers stop progression
+   for the affected phase's SIT evidence.
 3. **Approval** — required owner roles sign off (ARCH / SEC / OPS / LEGAL as
    applicable); `approved-to-apply` recorded for any deploy/delete action.
 4. **PROD gate** — all SIT evidence plus owner approvals and residual-risk
@@ -70,7 +71,7 @@ CI gate  ->  SIT gate  ->  approval  ->  PROD gate  ->  (Runtime gate at executi
 
 | Gate | Entry criteria | Exit evidence |
 | ----- | ----- | ----- |
-| SIT | Deterministic-classification (`RV-06-02`) coverage and golden-task checks pass for onboarding control paths | Classification coverage validated; onboarding control-path golden tasks pass |
+| SIT | Deterministic-classification (`RV-06-02`) coverage and Sprint 6 onboarding control-path checks are consolidated | Classification coverage validated; closeout evidence and control-path checks linked |
 | PROD | SIT passed | Governance reviewers confirm Sprint 06 closeout and next-increment recommendation |
 
 ## Promotion Blockers (all phases)
@@ -90,10 +91,13 @@ A PROD gate must read `fail` or `pending` whenever any of the following holds:
 Gate sequencing across phases follows the dependency model in
 [`phase-issue-map.md`](phase-issue-map.md):
 
-1. Phase 0 PROD gate must pass before any Phase 1..4 SIT gate is entered.
-2. Phase 1 PROD gate must pass before Phase 2 and Phase 3 SIT gates are entered.
-3. Phase 2 and Phase 3 PROD gates must both pass before the Phase 4 SIT gate is
-   entered.
+1. Phase 0 SIT gate must pass before any Phase 1..4 SIT evidence is entered.
+2. Phase 1 SIT gate must pass before Phase 2 and Phase 3 SIT evidence is entered.
+3. Phase 2 and Phase 3 SIT evidence must both pass before the Phase 4 closeout
+   SIT evidence is entered.
+4. A later phase may collect SIT evidence while an earlier phase's PROD gate is
+   still pending, but no later phase may claim **PROD pass** or trigger
+   promotion until the prerequisite phases' PROD blockers are cleared.
 
 ## Change Control
 

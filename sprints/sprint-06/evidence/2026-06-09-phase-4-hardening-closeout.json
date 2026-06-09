@@ -1,0 +1,46 @@
+{
+  "evidenceType": "sprint-06-phase-4-hardening-closeout",
+  "phase": 4,
+  "result": "pass",
+  "classificationCoverage": {
+    "frOnb004": "documented",
+    "sources": [
+      "docs/SD.md",
+      "docs/ARCHITECTURE.md",
+      "docs/agents/sprint-06-mvp-agent-readiness.md",
+      "docs/agents/sprint-06-optional-agent-wave-readiness.md"
+    ]
+  },
+  "controlPathChecks": [
+    {
+      "name": "synthetic-data unit tests",
+      "command": "python -m unittest discover -s data/synthetic/tests -v",
+      "result": "pass"
+    },
+    {
+      "name": "synthetic-data validator",
+      "command": "python data/synthetic/validate_datasets.py",
+      "result": "pass"
+    }
+  ],
+  "closeoutRecommendation": "Sprint 6 is SIT-complete and PROD-pending",
+  "prodBlockers": [
+    "RV-06-04 requires legal/security sign-off",
+    "Phase 1 and Phase 2 approvals remain pending"
+  ],
+  "residualRisks": [
+    {
+      "id": "RV-06-04",
+      "severity": "high",
+      "owner": "SEC",
+      "status": "open"
+    },
+    {
+      "id": "SPRINT-06-PROD-APPROVALS",
+      "severity": "medium",
+      "owner": "ARCH",
+      "status": "open"
+    }
+  ],
+  "executionDateUtc": "2026-06-09T12:40:05Z"
+}
