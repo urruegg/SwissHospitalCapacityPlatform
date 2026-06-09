@@ -198,7 +198,7 @@ def parse_annex_register(text: str, required_fields: list[str]) -> list[dict[str
     for idx, line in enumerate(lines):
         if not line.strip().startswith("|"):
             continue
-        cells = [c.strip().strip("`").strip() for c in line.strip().strip("|").split("|")]
+        cells = [c.strip(" `") for c in line.strip().strip("|").split("|")]
         if all(f in cells for f in required_fields):
             header_idx = idx
             headers = cells
@@ -214,7 +214,7 @@ def parse_annex_register(text: str, required_fields: list[str]) -> list[dict[str
             continue
         if len(cells) != len(headers):
             continue
-        row = {headers[i]: cells[i].strip().strip("`").strip() for i in range(len(headers))}
+        row = {headers[i]: cells[i].strip(" `") for i in range(len(headers))}
         rows.append(row)
     return rows
 
