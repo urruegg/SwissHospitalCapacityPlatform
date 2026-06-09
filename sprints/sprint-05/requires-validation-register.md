@@ -15,7 +15,7 @@ or **Partial / open**, with an owner role, target phase, and the evidence needed
 to close it. This is the Phase 0 control artifact for Phase 0 task 2 of
 [`sprints/sprint-05-caf-waf-mvp-sit-prod.md`](../sprint-05-caf-waf-mvp-sit-prod.md)
 and the `Requires validation` register requested in the CAF/WAF review
-[quick wins](../../docs/reviews/2026-06-09-ama-caf-waf-review%20session.md#quick-wins-0-30-days).
+[quick wins](<../../docs/reviews/2026-06-09-ama-caf-waf-review session.md#quick-wins-0-30-days>).
 
 ## Source Findings
 
