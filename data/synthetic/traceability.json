@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "description": "Traceability map from synthesized Sprint 6 onboarding datasets to their contract schemas and FR/NFR/CH controls and requires-validation register items. Consumed by validate_datasets.py to produce the Phase 1 SIT contract/schema validation evidence.",
+  "version": "1.1.0",
+  "description": "Traceability map from synthesized Sprint 6 onboarding datasets to their contract schemas and FR/NFR/CH controls and requires-validation register items. Consumed by validate_datasets.py to produce the Phase 1 SIT contract/schema validation evidence and the Phase 2 onboarding policy and schema enforcement evidence (minimum-data purpose tags, specialty-metadata quality and versioning, cross-tenant identity boundary).",
   "specialtyTaxonomyVersion": "1.0.0",
   "datasets": [
     {
@@ -11,9 +11,9 @@
       "schemaFile": "schema/patient-minimum-onboarding.schema.json",
       "minimizationChecked": true,
       "fr": ["FR-ONB-001"],
-      "nfr": ["NFR-COMP-011", "NFR-MAINT-005"],
-      "ch": ["CH-C01", "CH-C05"],
-      "rv": ["RV-06-01", "RV-06-10"]
+      "nfr": ["NFR-COMP-011", "NFR-SEC-005", "NFR-MAINT-005"],
+      "ch": ["CH-C01", "CH-C02", "CH-C05"],
+      "rv": ["RV-06-01", "RV-06-03", "RV-06-04", "RV-06-10"]
     },
     {
       "datasetId": "DS-ONB-CAPACITY-sit-2026-06-09",
@@ -23,9 +23,9 @@
       "schemaFile": "schema/specialty-capacity-onboarding.schema.json",
       "minimizationChecked": true,
       "fr": ["FR-ONB-002", "FR-ONB-003"],
-      "nfr": ["NFR-DQ-005", "NFR-MAINT-005"],
-      "ch": ["CH-C01"],
-      "rv": ["RV-06-06", "RV-06-10"]
+      "nfr": ["NFR-DQ-005", "NFR-SEC-005", "NFR-MAINT-005"],
+      "ch": ["CH-C01", "CH-C02"],
+      "rv": ["RV-06-03", "RV-06-06", "RV-06-07", "RV-06-10"]
     },
     {
       "datasetId": "DS-ONB-CAPACITY-HIRSLANDEN-sit-2026-06-09",
@@ -35,9 +35,9 @@
       "schemaFile": "schema/provider-hirslanden-capacity.schema.json",
       "minimizationChecked": true,
       "fr": ["FR-ONB-002", "FR-ONB-003"],
-      "nfr": ["NFR-DQ-005", "NFR-MAINT-005"],
-      "ch": ["CH-C01"],
-      "rv": ["RV-06-08", "RV-06-10"]
+      "nfr": ["NFR-DQ-005", "NFR-SEC-005", "NFR-MAINT-005"],
+      "ch": ["CH-C01", "CH-C02"],
+      "rv": ["RV-06-03", "RV-06-07", "RV-06-08", "RV-06-10"]
     },
     {
       "datasetId": "DS-ONB-CAPACITY-ZOLLIKERBERG-sit-2026-06-09",
@@ -47,9 +47,9 @@
       "schemaFile": "schema/provider-zollikerberg-capacity.schema.json",
       "minimizationChecked": true,
       "fr": ["FR-ONB-002", "FR-ONB-003"],
-      "nfr": ["NFR-DQ-005", "NFR-MAINT-005"],
-      "ch": ["CH-C01"],
-      "rv": ["RV-06-09", "RV-06-10"]
+      "nfr": ["NFR-DQ-005", "NFR-SEC-005", "NFR-MAINT-005"],
+      "ch": ["CH-C01", "CH-C02"],
+      "rv": ["RV-06-03", "RV-06-07", "RV-06-09", "RV-06-10"]
     }
   ]
 }

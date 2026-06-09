@@ -1,0 +1,51 @@
+{
+  "evidenceType": "synthesized-data-contract-validation",
+  "schemaSource": "data/synthetic/schema/*.schema.json",
+  "gateName": "sit-synthesized-data",
+  "environment": "SIT",
+  "traceabilityVersion": "1.1.0",
+  "specialtyTaxonomyVersion": "1.0.0",
+  "datasetsEvaluated": [
+    "DS-ONB-PATIENT-sit-2026-06-09",
+    "DS-ONB-CAPACITY-sit-2026-06-09",
+    "DS-ONB-CAPACITY-HIRSLANDEN-sit-2026-06-09",
+    "DS-ONB-CAPACITY-ZOLLIKERBERG-sit-2026-06-09"
+  ],
+  "passFailSummary": {
+    "result": "pass",
+    "totalChecks": 26,
+    "passed": 26,
+    "failed": 0,
+    "criticalFailures": 0
+  },
+  "controlCoverage": {
+    "fr": [
+      "FR-ONB-001",
+      "FR-ONB-002",
+      "FR-ONB-003"
+    ],
+    "nfr": [
+      "NFR-COMP-011",
+      "NFR-DQ-005",
+      "NFR-MAINT-005",
+      "NFR-SEC-005"
+    ],
+    "ch": [
+      "CH-C01",
+      "CH-C02",
+      "CH-C05"
+    ],
+    "rv": [
+      "RV-06-01",
+      "RV-06-03",
+      "RV-06-04",
+      "RV-06-06",
+      "RV-06-07",
+      "RV-06-08",
+      "RV-06-09",
+      "RV-06-10"
+    ]
+  },
+  "failureDetails": [],
+  "executionTimestampUtc": "2026-06-09T11:21:14Z"
+}

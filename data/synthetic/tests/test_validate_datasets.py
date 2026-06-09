@@ -90,6 +90,119 @@ class CapacityInvariantTests(unittest.TestCase):
         self.assertTrue(all(r.passed for r in report.results))
 
 
+class PurposeTagPolicyTests(unittest.TestCase):
+    def test_undeclared_purpose_tag_detected(self):
+        report = vd.GateReport()
+        data = {"purposeTags": ["capacity-planning"]}
+        vd.check_purpose_tags(data, [{"onboardingId": "ONB-1", "purposeTag": "marketing"}],
+                              "ds", report)
+        self.assertTrue(any(not r.passed and r.control_id == "NFR-COMP-011"
+                            for r in report.results))
+
+    def test_missing_minimization_marker_detected(self):
+        report = vd.GateReport()
+        data = {"purposeTags": ["capacity-planning"]}
+        vd.check_purpose_tags(
+            data,
+            [{"onboardingId": "ONB-1", "purposeTag": "capacity-planning",
+              "minimizationReviewed": False}],
+            "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_compliant_records_pass(self):
+        report = vd.GateReport()
+        data = {"purposeTags": ["capacity-planning", "bed-management"]}
+        vd.check_purpose_tags(
+            data,
+            [{"onboardingId": "ONB-1", "purposeTag": "bed-management",
+              "minimizationReviewed": True}],
+            "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+
+class SpecialtyMetadataTests(unittest.TestCase):
+    def test_taxonomy_version_mismatch_detected(self):
+        report = vd.GateReport()
+        data = {"specialtyTaxonomyVersion": "9.9.9"}
+        vd.check_specialty_metadata(data, [], "ds", "1.0.0", report)
+        self.assertTrue(any(not r.passed and r.control_id == "NFR-DQ-005"
+                            for r in report.results))
+
+    def test_specialty_not_in_tags_detected(self):
+        report = vd.GateReport()
+        data = {"specialtyTaxonomyVersion": "1.0.0"}
+        vd.check_specialty_metadata(
+            data,
+            [{"capacityRecordId": "CAP-1", "specialty": "cardiology",
+              "specialtyTags": ["surgery"]}],
+            "ds", "1.0.0", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_duplicate_tags_detected(self):
+        report = vd.GateReport()
+        data = {"specialtyTaxonomyVersion": "1.0.0"}
+        vd.check_specialty_metadata(
+            data,
+            [{"capacityRecordId": "CAP-1", "specialty": "cardiology",
+              "specialtyTags": ["cardiology", "cardiology"]}],
+            "ds", "1.0.0", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_valid_specialty_metadata_passes(self):
+        report = vd.GateReport()
+        data = {"specialtyTaxonomyVersion": "1.0.0"}
+        vd.check_specialty_metadata(
+            data,
+            [{"capacityRecordId": "CAP-1", "specialty": "cardiology",
+              "specialtyTags": ["cardiology", "acute-coronary"]}],
+            "ds", "1.0.0", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+
+class TenantBoundaryTests(unittest.TestCase):
+    def test_dataset_provider_mismatch_detected(self):
+        report = vd.GateReport()
+        data = {"providerId": "hirslanden"}
+        entry = {"providerScope": "zollikerberg"}
+        vd.check_tenant_boundary(data, entry, [], "ds", report)
+        self.assertTrue(any(not r.passed and r.control_id == "NFR-SEC-005"
+                            for r in report.results))
+
+    def test_cross_tenant_record_detected(self):
+        report = vd.GateReport()
+        data = {"providerId": "hirslanden"}
+        entry = {"providerScope": "hirslanden"}
+        vd.check_tenant_boundary(
+            data, entry,
+            [{"capacityRecordId": "CAP-1", "providerId": "zollikerberg"}],
+            "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_provider_scoped_dataset_passes(self):
+        report = vd.GateReport()
+        data = {"providerId": "hirslanden"}
+        entry = {"providerScope": "hirslanden"}
+        vd.check_tenant_boundary(
+            data, entry, [{"capacityRecordId": "CAP-1"}], "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+    def test_shared_lane_rejects_dataset_provider_id(self):
+        report = vd.GateReport()
+        data = {"providerId": "usz"}
+        entry = {"providerScope": "none"}
+        vd.check_tenant_boundary(data, entry, [], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_shared_lane_with_record_providers_passes(self):
+        report = vd.GateReport()
+        data = {}
+        entry = {"providerScope": "none"}
+        vd.check_tenant_boundary(
+            data, entry, [{"capacityRecordId": "CAP-1", "providerId": "usz"}],
+            "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+
 class EndToEndTests(unittest.TestCase):
     def test_committed_datasets_pass(self):
         evidence, report = vd.run(ROOT)
@@ -104,6 +217,14 @@ class EndToEndTests(unittest.TestCase):
             self.assertIn(fr, coverage["fr"])
         self.assertIn("CH-C01", coverage["ch"])
         self.assertIn("NFR-MAINT-005", coverage["nfr"])
+
+    def test_traceability_covers_phase2_controls(self):
+        evidence, _ = vd.run(ROOT)
+        coverage = evidence["controlCoverage"]
+        self.assertIn("NFR-SEC-005", coverage["nfr"])
+        self.assertIn("CH-C02", coverage["ch"])
+        for rv in ("RV-06-03", "RV-06-04", "RV-06-07"):
+            self.assertIn(rv, coverage["rv"])
 
 
 if __name__ == "__main__":
