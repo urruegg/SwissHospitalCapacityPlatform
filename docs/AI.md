@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 0.5.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.4.0 (PHI in-country controls and Foundry/Fabric IaC coverage baseline) |
+| **Previous Version** | 0.4.1 (Sprint 05 runtime pattern decision matrix alignment) |
 
 ## Purpose
 
@@ -23,6 +23,14 @@ controls.
 - Strict Swiss in-country processing for PHI inference.
 - PHI inference must use Standard/Regional deployments in Switzerland regions
   only.
+
+> **Runtime pattern decision (Sprint 05):** the application-hosted default above is the
+> binding baseline per `ADR-0008`. Foundry-hosted or hybrid runtime is permitted only
+> under explicit workload scope with GA-in-region evidence and an approved boundary
+> contract. The authoritative per-workload-class decision is recorded in
+> [`docs/architecture/runtime-pattern-decision-matrix.md`](architecture/runtime-pattern-decision-matrix.md)
+> and is consistent with `AR-D-007` in [`docs/ARCHITECTURE.md`](ARCHITECTURE.md); no
+> PHI-sensitive workload class uses a Foundry-hosted or hybrid runtime in Sprint 05.
 
 ## AI Use Cases
 

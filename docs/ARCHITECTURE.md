@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.10.0 |
-| **Date** | 2026-06-04 |
+| **Version** | 0.11.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.9.1 (reviewed GA-constrained architecture baseline) |
+| **Previous Version** | 0.10.0 (Sprint 05 CAF/WAF runtime + reliability baseline closure) |
 
 ## Purpose
 
@@ -158,9 +158,33 @@ flowchart LR
 ### Open For Review
 
 1. Region resilience strategy for high availability and failover.
+   Resolved for Sprint 05 baseline in
+   [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md)
+   (recovery classes R1/R2/R3, failover by data class). See `AR-D-008`.
 2. Exact FHIR resource profile scope for first implementation increment.
 3. Concrete SLO targets for data freshness, model latency, and copilot response.
 4. Detailed backup and disaster recovery controls by data classification tier.
+   Resolved for Sprint 05 baseline in
+   [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md)
+   (dependency redundancy posture + restore-proof rule). See `AR-D-008`.
+
+### Sprint 05 CAF/WAF Baseline Closure
+
+The Sprint 05 CAF/WAF review hardening closes two architecture ambiguities that were
+previously open: agent runtime pattern scope and reliability/DR target state.
+
+1. **Runtime pattern** is fixed to application-hosted by default, with Foundry/hybrid
+   permitted only under explicit scope and GA-in-region rules. The authoritative,
+   per-workload-class decision is in
+   [`docs/architecture/runtime-pattern-decision-matrix.md`](architecture/runtime-pattern-decision-matrix.md)
+   (ADR-0008). This matrix is consistent with the application-hosted default in
+   [`docs/AI.md`](AI.md); there is no contradiction between the two documents. See
+   `AR-D-007`.
+2. **Reliability/DR** target state is defined in
+   [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md)
+   (ADR-0009). See `AR-D-008`.
+3. CAF/WAF delta closure status is tracked in
+   [`docs/architecture/caf-waf-alignment-matrix.md`](architecture/caf-waf-alignment-matrix.md).
 
 ### GA-Based Decision Record (As Of 2026-06-01)
 
@@ -175,6 +199,8 @@ capabilities and remove preview dependencies from MVP-critical workflows.
 | `AR-D-004` | Global, Data Zone, and Developer deployment types are not permitted for PHI-sensitive copilot traffic. See `ADR-0004`. | Accepted | MVP and PROD baseline |
 | `AR-D-005` | Dedicated React web app channel is mandatory for MVP as the primary GA-safe experience path. Microsoft 365 Copilot remains optional post-MVP. See `ADR-0005`. | Accepted | MVP and PROD baseline |
 | `AR-D-006` | Any service or feature that is preview-only is classified as non-production for regulated data unless an explicit exception is approved. See `ADR-0006`. | Accepted | Governance control rule |
+| `AR-D-007` | Application-hosted agent runtime is the default for regulated MVP paths; Foundry-hosted/hybrid runtime is permitted only under explicit workload scope with GA-in-region evidence and an approved boundary contract. See `ADR-0008` and `docs/architecture/runtime-pattern-decision-matrix.md`. | Accepted | MVP and PROD baseline |
+| `AR-D-008` | Reliability/DR baseline uses recovery classes R1/R2/R3 with RTO/RPO targets and PHI cross-region failover default-deny; targets and evidence model are in `docs/operations/reliability-dr-profile.md`. See `ADR-0009`. | Accepted | MVP and PROD baseline |
 
 ### MVP Scope Impact From GA Decisions
 

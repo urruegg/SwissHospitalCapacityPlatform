@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.2.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 0.3.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.2.0 (quality gate and evidence baseline) |
+| **Previous Version** | 0.2.1 (Sprint 05 evidence-automation checkpoints) |
 
 ## Purpose
 
@@ -136,6 +136,24 @@ Each PR should include:
 1. Per PR: gate outcomes captured in PR template.
 2. Per sprint: quality summary in sprint document.
 3. Per release candidate: readiness statement including open risks and accepted waivers.
+
+### Sprint 05 Evidence-Automation Checkpoints
+
+Per the consolidated enforcement model in
+[`docs/adr/0007-0011-hardening-delta-summary.md`](adr/0007-0011-hardening-delta-summary.md)
+and the ADR-0008/0009/0010 evidence schemas, the following checkpoints are mandatory for
+affected scope and are captured via the PR evidence checklist
+[`sprints/sprint-05/pr-evidence-checklist.md`](../sprints/sprint-05/pr-evidence-checklist.md):
+
+| Checkpoint | Source ADR | Evidence schema | Phase |
+| ----- | ----- | ----- | ----- |
+| Runtime matrix conformance | ADR-0008 | Boundary contract fields + GA-region evidence | Phase 1+ |
+| Policy gate run | ADR-0010 | `policyPackVersion`, `gateName`, `evaluatedResources`, `passFailSummary`, `failureDetails`, `exceptionRefs`, `executionTimestampUtc`, `pipelineRunId` | Phase 2 |
+| DR rehearsal | ADR-0009 | `scenarioId`, `systemsInScope`, `targetRtoRpo`, `actualRtoRpo`, `passFailResult`, `gaps`, `owner`, `retestDate` | Phase 3 |
+| Cantonal annex check | ADR-0011 | Schema completeness, owner assignment, evidence-link validity, exception status/expiry | Phase 2 |
+
+Promotion thresholds: zero critical policy failures and 100 percent mandatory-control
+coverage for SIT to PROD promotion (ADR-0010); expired exceptions are hard blockers.
 
 ## Defect and Risk Handling
 

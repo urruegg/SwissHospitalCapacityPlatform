@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (Phase 1 baseline artifacts advanced register items) |
 
 ## Purpose
 
@@ -46,11 +46,11 @@ Owner roles follow the approval ownership baseline in
 
 | ID | Finding (Requires validation) | Source | Severity | FR / NFR | CH Control | Owner | Target Phase | Evidence Needed | Status |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
-| RV-01 | Canton-specific legal applicability not operationalized into a control annex | CAF/WAF §1, §8; cantonal review | High | `NFR-COMP-004` | `CH-C05` | LEGAL | Phase 1 | `docs/compliance/cantonal-annex.md` with canonical fields and legal sign-off | open |
-| RV-02 | Reliability / DR target state (RTO/RPO, failover by data class, DR runbooks) undefined | CAF/WAF §4.2, §6 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | `docs/operations/reliability-dr-profile.md` with R1/R2/R3 targets + rehearsal evidence | open |
+| RV-01 | Canton-specific legal applicability not operationalized into a control annex | CAF/WAF §1, §8; cantonal review | High | `NFR-COMP-004` | `CH-C05` | LEGAL | Phase 1 | `docs/compliance/cantonal-annex.md` with canonical fields and legal sign-off | in-validation |
+| RV-02 | Reliability / DR target state (RTO/RPO, failover by data class, DR runbooks) undefined | CAF/WAF §4.2, §6 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | `docs/operations/reliability-dr-profile.md` with R1/R2/R3 targets + rehearsal evidence | in-validation |
 | RV-03 | Policy-as-code enforcement for residency, deployment-type, and PHI transfer not evidenced in CI | CAF/WAF §4.3, §9 | High | `NFR-COMP-004` | `CH-C05` | SEC | Phase 2 | CI policy checks + generated evidence artifact for one SIT run | open |
 | RV-04 | DSR operations and privacy-incident timing matrix not executable workflows | CAF/WAF §1, §8 | High | `FR-GOV-001` | `CH-C02` | SEC | Phase 2 | DSR + incident runbooks with owner/SLA and evidence cycle | open |
-| RV-05 | Runtime pattern drift (application-hosted vs Foundry-hosted) target state per workload class unresolved | CAF/WAF §3.4, §5.1 | Medium | `NFR-AI-001` | `CH-C10` | ARCH | Phase 1 | Runtime decision matrix + ADR consistency confirmation | open |
+| RV-05 | Runtime pattern drift (application-hosted vs Foundry-hosted) target state per workload class unresolved | CAF/WAF §3.4, §5.1 | Medium | `NFR-AI-001` | `CH-C10` | ARCH | Phase 1 | Runtime decision matrix + ADR consistency confirmation | validated |
 | RV-06 | CAF landing-zone governance evidence (MG hierarchy, policy assignment, RBAC scopes) weaker than intent | CAF/WAF §4.1, §7 | Medium | `FR-GOV-003` | `CH-C03` | ARCH | Phase 2 | Landing-zone governance evidence document | open |
 | RV-07 | HITL/audit persistence implementation evidence required (Cosmos DB baseline) | CAF/WAF §10 matrix `FR-GOV-001` | High | `FR-GOV-001` | `CH-C03` | OPS | Phase 3 | HITL evidence schema captured; persistence restore proof | open |
 | RV-08 | Least-privilege operational recertification evidence missing | CAF/WAF §10 matrix `NFR-SEC-001` | Medium | `NFR-SEC-001` | `CH-C02` | SEC | Phase 2 | Access recertification run + evidence artifact | open |
@@ -58,6 +58,22 @@ Owner roles follow the approval ownership baseline in
 | RV-10 | Control-effectiveness metrics (security, AI safety, HITL) in SIT/PROD not consolidated | CAF/WAF §4.3, §7 | Medium | `NFR-AI-001` | `CH-C10` | SEC | Phase 4 | Consolidated control-effectiveness report artifact | open |
 | RV-11 | DR game-day / restore proof for memory and audit stores missing | CAF/WAF §5.2 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | SIT DR rehearsal output + restore proof (<= 90 days) | open |
 | RV-12 | Architecture drift detection between ADRs and deployed IaC not formalized | CAF/WAF §5.1 | Medium | `FR-GOV-003` | `CH-C03` | ARCH | Phase 4 | Drift detection golden task / control note | open |
+
+## Phase 1 Documentation Baseline Closure (2026-06-09)
+
+The Phase 1 document-first baseline created the artifacts that advance the Phase 1 register
+items and seed the Phase 2/Phase 3 items:
+
+| RV ID | Phase 1 action | New status | Evidence artifact |
+| ----- | ----- | ----- | ----- |
+| RV-01 | Cantonal annex schema + seed register created | `in-validation` | [`docs/compliance/cantonal-annex.md`](../../docs/compliance/cantonal-annex.md) — pending legal sign-off (Phase 2) |
+| RV-02 | Reliability/DR profile with R1/R2/R3 targets created | `in-validation` | [`docs/operations/reliability-dr-profile.md`](../../docs/operations/reliability-dr-profile.md) — rehearsal evidence Phase 3 |
+| RV-05 | Runtime decision matrix + AI/ARCHITECTURE consistency confirmed | `validated` | [`docs/architecture/runtime-pattern-decision-matrix.md`](../../docs/architecture/runtime-pattern-decision-matrix.md) |
+
+CAF/WAF delta closure across all findings is tracked in
+[`docs/architecture/caf-waf-alignment-matrix.md`](../../docs/architecture/caf-waf-alignment-matrix.md).
+All other items remain at their target phase; high-severity `open`/`in-validation` items
+stay PROD-promotion blockers per the closure rules below.
 
 ## Closure Rules
 

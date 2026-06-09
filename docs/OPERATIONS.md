@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (initial operations baseline with monitoring and health model) |
+| **Previous Version** | 1.0.1 (Sprint 05 reliability/DR profile and DR evidence checkpoints) |
 
 ## Purpose
 
@@ -180,6 +180,29 @@ Required implementation controls:
 2. Monitor capacity headroom for burst scenarios (3x target windows).
 3. Track cost-to-serve KPIs: cost per copilot turn and cost per pipeline run.
 4. Review monthly cost anomalies and optimization opportunities against BVA targets.
+
+## Reliability and Disaster Recovery Operations
+
+The reliability/DR target state — recovery classes R1/R2/R3, RTO/RPO targets, failover
+boundaries by data class, and the DR rehearsal evidence model — is defined in
+[`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md)
+(ADR-0009). Operations is the accountable owner (`OPS`) for the evidence cadence.
+
+### DR Test Evidence Checkpoints
+
+1. Each DR rehearsal records the schema fields in the reliability/DR profile
+   (`scenarioId`, `systemsInScope`, `targetRtoRpo`, `actualRtoRpo`, `passFailResult`,
+   `gaps`, `owner`, `retestDate`).
+2. Every in-scope stateful dependency keeps a SIT restore-proof artifact fresh
+   (<= 90 days) before PROD promotion.
+3. Rehearsal cadence: quarterly for R1/R2 workflows, semiannual for R3; monthly
+   evidence-freshness review.
+4. PHI cross-region failover stays default-deny; activation requires the exception gate
+   in the reliability/DR profile.
+
+> SIT DR rehearsal execution and restore-proof capture are Phase 3 deliverables
+> (`RV-02`, `RV-07`, `RV-11`); this section defines the operational checkpoints they
+> populate.
 
 ## Traceability to Requirements
 

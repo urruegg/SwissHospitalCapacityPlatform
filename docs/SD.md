@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-06-02 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.1 (initial MVP solution design baseline refinements) |
+| **Previous Version** | 1.1.0 (Sprint 05 runtime pattern + recovery-class design mapping) |
 
 ## Purpose
 
@@ -52,6 +52,9 @@ This design is derived from and constrained by:
 4. Evidence-first governance for compliance and auditability.
 5. IaC-first infrastructure with operational automation for non-declarative areas.
 6. Degraded-mode support over hard failure where clinically safe.
+7. Application-hosted agent runtime by default; Foundry-hosted/hybrid only under
+   explicit scope per `ADR-0008` and
+   [`docs/architecture/runtime-pattern-decision-matrix.md`](architecture/runtime-pattern-decision-matrix.md).
 
 ## Solution Overview
 
@@ -252,6 +255,9 @@ Implement via scripted ops workflows:
 2. Exact FHIR profile and message-set boundaries per provider.
 3. EPR integration timing and conformance sequencing.
 4. Recovery objectives by data class and workflow criticality.
+   Baseline recovery classes (R1/R2/R3) and RTO/RPO targets are now defined in
+   [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md)
+   (ADR-0009); remaining work is SIT rehearsal validation in Phase 3.
 
 ## Acceptance Criteria for MVP Solution Design
 

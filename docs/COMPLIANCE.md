@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 0.4.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.0 (Swiss control and evidence baseline with traceability) |
+| **Previous Version** | 0.3.1 (added Sprint 05 cantonal annex link and control owners) |
 
 ## Purpose
 
@@ -97,6 +97,37 @@ Material gaps to close:
 - Policy-as-code enforcement for residency and deployment-type rules.
 - Evidence automation for audits and release readiness.
 
+### Sprint 05 Baseline Upgrade (CAF/WAF)
+
+This baseline adds canton-specific legal applicability and explicit control ownership on
+top of the federal `CH-C01`..`CH-C10` controls, per the CAF/WAF review §8/§9 and
+[`docs/adr/0011-cantonal-legal-applicability-gate.md`](adr/0011-cantonal-legal-applicability-gate.md).
+
+1. Canton-specific deltas are tracked in
+   [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md). Federal controls
+   remain the baseline; the annex records each canton's delta, owner, evidence, and
+   status. Cantonal workloads are limited to SIT until their annex entries reach
+   `implemented` with legal sign-off (ADR-0011 §3).
+2. Control ownership roles for open CH controls follow the approval ownership baseline:
+   `LEGAL`, `SEC`, `OPS`, `ARCH` (see
+   [`docs/adr/0007-0011-hardening-delta-summary.md`](adr/0007-0011-hardening-delta-summary.md#approval-ownership-baseline)).
+
+| Control ID | Owner role | Sprint 05 closure artifact |
+| ----- | ----- | ----- |
+| `CH-C01` | SEC | Data inventory + cantonal annex `cantonId` mapping |
+| `CH-C02` | SEC | Policy-as-code checks (ADR-0010, Phase 2) |
+| `CH-C03` | OPS | HITL/audit persistence evidence (ADR-0007/0009, Phase 3) |
+| `CH-C04` | SEC | DSR runbook (`RV-04`, Phase 2) |
+| `CH-C05` | LEGAL | Cantonal annex + transfer-risk gate (ADR-0011) |
+| `CH-C06` | SEC | Privacy incident runbook (`RV-04`, Phase 2) |
+| `CH-C07` | LEGAL | EPR consent/access controls (cantonal annex `VD`/`ZH`) |
+| `CH-C08` | LEGAL | EPR conformance pack (deferred) |
+| `CH-C09` | LEGAL | Research lane (deferred, conditional) |
+| `CH-C10` | SEC | AI oversight acceptance + control-effectiveness report (`RV-10`, Phase 4) |
+
+3. Open and partial items are tracked with owner, target phase, and evidence in
+   [`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md).
+
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 
 This section defines how Microsoft Purview contributes to the control set
@@ -172,3 +203,4 @@ For this repository, Purview shall be treated as:
 3. Add operational runbooks for DSR and privacy incident response.
 4. Add evidence collection templates for E-01 to E-09.
 5. Add canton-specific annex once target canton rollout plan is fixed.
+   Seeded in [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md) (Sprint 05).
