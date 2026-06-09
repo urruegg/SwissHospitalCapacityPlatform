@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (requirement baseline finalized for implementation planning) |
+| **Previous Version** | 1.1.1 (Sprint 05 CAF/WAF baseline cross-references) |
 
 ## Purpose
 
@@ -204,3 +204,13 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 - Exact FHIR profile and integration message sets by provider.
 - Jurisdiction-specific residency controls by dataset class.
 - Operational SLO values for data freshness, inference latency, and dashboard response time.
+
+### Sprint 05 CAF/WAF Baseline Cross-References
+
+The Sprint 05 documentation baseline operationalizes several of these assumptions into
+explicit, release-gated artifacts mapped back to the requirements above:
+
+- `NFR-COMP-001`/`NFR-COMP-002` (cantonal governance): [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md) (ADR-0011).
+- `NFR-REL-001`/`NFR-REL-003` (reliability/DR): [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md) (ADR-0009).
+- `NFR-AI-001`/`NFR-COMP-004` (runtime pattern + residency): [`docs/architecture/runtime-pattern-decision-matrix.md`](architecture/runtime-pattern-decision-matrix.md) (ADR-0008).
+- CAF/WAF delta closure status: [`docs/architecture/caf-waf-alignment-matrix.md`](architecture/caf-waf-alignment-matrix.md).

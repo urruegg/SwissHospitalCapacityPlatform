@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-06-04 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (added provider registration runbook and phased PROD strategy) |
+| **Previous Version** | 1.2.0 (Sprint 05 landing-zone governance evidence pointer) |
 
 ## Purpose
 
@@ -97,3 +97,13 @@ Current strategy has progressed from phased rollout to controlled parity enablem
 - Optional module flags are now enabled in `infra/environments/prod.bicepparam`.
 - Deployments remain approval-gated and evidence-first via `workflow_dispatch` with explicit confirmation.
 - Provider registration remains a prerequisite control and is captured in runbook automation.
+
+## Sprint 05 Landing-Zone Governance Evidence
+
+The CAF/WAF review (§4.1, §7) found landing-zone governance evidence — management-group
+hierarchy, policy assignments, and RBAC scopes — weaker than architecture intent. A
+dedicated landing-zone governance evidence document is a Phase 2 deliverable, tracked as
+`RV-06` (owner `ARCH`) in
+[`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md).
+Policy assignment and residency/deployment-type enforcement are governed by `ADR-0010`
+(policy-as-code) and implemented as CI checks in Sprint 05 Phase 2.

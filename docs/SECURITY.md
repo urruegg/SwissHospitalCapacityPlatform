@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 0.4.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.0 (Zero Trust baseline aligned to Swiss compliance) |
+| **Previous Version** | 0.3.1 (Sprint 05 policy-as-code and DSR/incident evidence pointers) |
 
 ## Purpose
 
@@ -246,3 +246,14 @@ Minimum evidence required for release and audit:
 2. Add CI validation for required security policies and diagnostics.
 3. Add a privacy and security incident runbook linked to CH-C06.
 4. Add release checklist integration that requires security evidence artifacts.
+
+### Sprint 05 CAF/WAF Baseline Pointers
+
+These items are governed by the Sprint 05 hardening ADRs and tracked in
+[`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md):
+
+1. Policy-as-code enforcement (residency, deployment-type, PHI transfer, diagnostics,
+   identity) is specified in `ADR-0010` and implemented in Phase 2 (`RV-03`, `RV-08`).
+2. DSR operations and privacy-incident timing matrix become executable runbooks in
+   Phase 2 (`RV-04`), mapped to `CH-C04`/`CH-C06`.
+3. Control-effectiveness telemetry consolidation is tracked for Phase 4 (`RV-10`).

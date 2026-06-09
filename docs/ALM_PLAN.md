@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.0 |
-| **Date** | 2026-06-04 |
+| **Version** | 0.4.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.2.1 (reviewed Git-first ALM baseline with governance gates) |
+| **Previous Version** | 0.3.0 (Sprint 05 release evidence gate fields) |
 
 ## Purpose
 
@@ -137,6 +137,23 @@ Changes affecting these files or areas require explicit elevated review:
 2. Requirement IDs impacted and coverage note.
 3. Compliance and security impact statement.
 4. Residual risks and mitigation plan.
+
+### Sprint 05 Release Evidence Gate Fields
+
+For Sprint 05 phases, PRs use the evidence block in
+[`sprints/sprint-05/pr-evidence-checklist.md`](../sprints/sprint-05/pr-evidence-checklist.md)
+and follow the ordered gate chain in
+[`sprints/sprint-05/gate-sequence.md`](../sprints/sprint-05/gate-sequence.md)
+(`CI -> SIT -> approval -> PROD -> Runtime`). The mandatory evidence-gate fields are:
+
+1. FR/NFR and `CH-C0x` controls impacted, mapped to the requires-validation register
+   item(s) the PR closes or advances.
+2. Gate outcomes (`pass|fail|n/a|pending`) recorded in order; no PROD gate `pass` unless
+   the SIT gate for the same change reads `pass`.
+3. Policy/DR/runtime evidence artifacts per the schemas in
+   [`docs/TEST.md`](TEST.md#sprint-05-evidence-automation-checkpoints) (ADR-0008/0009/0010).
+4. Residual-risk table with owner and expiry; expired governance exceptions (max 90 days
+   for critical) block promotion.
 
 ### Evidence Persistence
 
