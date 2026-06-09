@@ -257,16 +257,17 @@ def check_purpose_tags(data: dict, records: list[dict], dataset_id: str,
             undeclared.add(tag)
         if "minimizationReviewed" in record and record.get("minimizationReviewed") is not True:
             unreviewed.append(record.get("onboardingId", "<unknown>"))
+    problems: list[str] = []
     if undeclared:
+        problems.append(
+            f"record purposeTag(s) not in dataset purposeTags allowlist: "
+            f"{sorted(undeclared)}")
+    if unreviewed:
+        problems.append(f"record(s) missing minimization review marker: {unreviewed}")
+    if problems:
         report.add(CheckResult(
             "NFR-COMP-011", "high", False,
-            f"Record purposeTag(s) not in dataset purposeTags allowlist: "
-            f"{sorted(undeclared)}",
-            dataset_id))
-    elif unreviewed:
-        report.add(CheckResult(
-            "NFR-COMP-011", "high", False,
-            f"Record(s) missing minimization review marker: {unreviewed}",
+            "Minimum-data purpose-tag policy violated: " + "; ".join(problems),
             dataset_id))
     else:
         report.add(CheckResult(
@@ -338,7 +339,7 @@ def check_tenant_boundary(data: dict, entry: dict, records: list[dict],
                 dataset_id))
             return
         cross = sorted({
-            record.get("providerId")
+            f"{record.get('capacityRecordId', '<unknown>')}:{record.get('providerId')}"
             for record in records
             if isinstance(record, dict)
             and record.get("providerId") is not None
@@ -347,8 +348,8 @@ def check_tenant_boundary(data: dict, entry: dict, records: list[dict],
         if cross:
             report.add(CheckResult(
                 "NFR-SEC-005", "critical", False,
-                f"Cross-tenant record(s) for foreign tenant(s) {cross} found in "
-                f"tenant-scoped dataset {declared_scope!r}.",
+                f"Cross-tenant record(s) found in tenant-scoped dataset "
+                f"{declared_scope!r}: {cross}",
                 dataset_id))
         else:
             report.add(CheckResult(
