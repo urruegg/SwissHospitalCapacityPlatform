@@ -37,6 +37,14 @@ adds, on top of the Phase 1 schema gate:
   dataset and every record to the declared tenant, so no record from another
   tenant can leak into a tenant-scoped dataset (NFR-SEC-005 / CH-C02).
 
+Phase 3 provider SIT evidence and reliability enforcement (RV-06-05) adds, on top
+of the Phase 1 and Phase 2 gates:
+
+* **Degraded-mode and recovery contract** — provider-scoped onboarding datasets
+  must declare a ``degradedMode`` block with a fallback read model, a positive
+  and bounded data-staleness ceiling, an explicit manual-override capability, and
+  a recovery-runbook reference (NFR-REL-005 / CH-C03).
+
 * The run emits a synthesized-data evidence artifact and exits non-zero on any
   failure.
 """
@@ -385,6 +393,55 @@ def check_tenant_boundary(data: dict, entry: dict, records: list[dict],
             dataset_id))
 
 
+def check_degraded_mode(data: dict, entry: dict, dataset_id: str,
+                        report: GateReport) -> None:
+    """Onboarding degraded-mode and recovery readiness (NFR-REL-005 / CH-C03).
+
+    Provider-scoped onboarding datasets must declare a ``degradedMode`` contract
+    that bounds degraded-mode behaviour: a fallback read model, a positive and
+    bounded data-staleness ceiling, an explicit manual-override capability, and a
+    recovery-runbook reference. This is the SIT proof for the onboarding
+    degraded-mode and recovery behaviour deferred from Phase 1 (RV-06-05).
+    """
+    declared_scope = entry.get("providerScope", "none")
+    if not declared_scope or declared_scope == "none":
+        return
+
+    block = data.get("degradedMode") if isinstance(data, dict) else None
+    if not isinstance(block, dict):
+        report.add(CheckResult(
+            "NFR-REL-005", "high", False,
+            "Provider-scoped dataset missing degradedMode reliability contract.",
+            dataset_id))
+        return
+
+    problems: list[str] = []
+    staleness = block.get("maxDataStalenessMinutes")
+    if not isinstance(staleness, int) or isinstance(staleness, bool) or staleness <= 0:
+        problems.append("maxDataStalenessMinutes must be a positive integer")
+    elif staleness > 60:
+        problems.append(
+            f"maxDataStalenessMinutes {staleness} exceeds the 60-minute ceiling")
+    if block.get("manualOverrideSupported") is not True:
+        problems.append("manualOverrideSupported must be true")
+    if not block.get("fallbackReadModel"):
+        problems.append("missing fallbackReadModel")
+    if not block.get("recoveryRunbook"):
+        problems.append("missing recoveryRunbook")
+
+    if problems:
+        report.add(CheckResult(
+            "NFR-REL-005", "high", False,
+            "Degraded-mode contract incomplete: " + "; ".join(problems),
+            dataset_id))
+    else:
+        report.add(CheckResult(
+            "NFR-REL-005", "low", True,
+            "Degraded-mode and recovery contract declared (fallback read model, "
+            "bounded staleness, manual override, recovery runbook).",
+            dataset_id))
+
+
 def validate_dataset(entry: dict, root: str, report: GateReport,
                      taxonomy_version: str = "") -> None:
     dataset_id = entry.get("datasetId", "<unknown>")
@@ -431,6 +488,8 @@ def validate_dataset(entry: dict, root: str, report: GateReport,
     # Phase 2 onboarding policy enforcement (applies to every onboarding lane).
     check_purpose_tags(data, records, dataset_id, report)
     check_tenant_boundary(data, entry, records, dataset_id, report)
+    # Phase 3 provider degraded-mode / recovery reliability enforcement.
+    check_degraded_mode(data, entry, dataset_id, report)
 
     # Traceability coverage: at least one FR and one CH control must be declared.
     if not entry.get("fr"):

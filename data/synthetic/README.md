@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (Phase 1 synthesized-data contract/schema gate) |
+| **Previous Version** | 1.1.0 (Phase 2 onboarding policy and schema enforcement gate) |
 
 ## Purpose
 
@@ -49,8 +49,8 @@ python3 -m unittest discover -s data/synthetic/tests
 ```
 
 The validator exits non-zero on any schema, minimization, capacity-invariant,
-onboarding-policy (purpose-tag, specialty-metadata, tenant-boundary), or
-traceability-coverage failure. CI runs it in
+onboarding-policy (purpose-tag, specialty-metadata, tenant-boundary),
+provider degraded-mode reliability, or traceability-coverage failure. CI runs it in
 [`.github/workflows/data-contracts.yml`](../../.github/workflows/data-contracts.yml).
 
 ## Controls enforced
@@ -83,6 +83,16 @@ items `RV-06-03`, `RV-06-04`, `RV-06-07`):
    and every record to the declared tenant; the shared lane must not declare a
    dataset-level tenant id. No foreign-tenant record may leak into a
    tenant-scoped dataset (`NFR-SEC-005`, `CH-C02`).
+
+### Phase 3 provider SIT evidence and reliability enforcement
+
+This check is layered on top of the Phase 1 and Phase 2 gates (advancing register
+item `RV-06-05`, alongside provider SIT evidence for `RV-06-08`/`RV-06-09`):
+
+9. **Degraded-mode and recovery contract** — provider-scoped onboarding datasets
+   must declare a `degradedMode` block with a fallback read model, a positive and
+   bounded (`<= 60` minute) data-staleness ceiling, an explicit manual-override
+   capability, and a recovery-runbook reference (`NFR-REL-005`, `CH-C03`).
 
 ## Relationship to IaC
 

@@ -203,6 +203,50 @@ class TenantBoundaryTests(unittest.TestCase):
         self.assertTrue(all(r.passed for r in report.results))
 
 
+class DegradedModeTests(unittest.TestCase):
+    def _ok_block(self):
+        return {
+            "fallbackReadModel": "last-known-good-capacity-snapshot",
+            "maxDataStalenessMinutes": 15,
+            "manualOverrideSupported": True,
+            "recoveryRunbook": "docs/runbooks/x.md",
+        }
+
+    def test_shared_lane_skipped(self):
+        report = vd.GateReport()
+        vd.check_degraded_mode({}, {"providerScope": "none"}, "ds", report)
+        self.assertEqual(report.results, [])
+
+    def test_missing_block_detected(self):
+        report = vd.GateReport()
+        vd.check_degraded_mode({}, {"providerScope": "hirslanden"}, "ds", report)
+        self.assertTrue(any(not r.passed and r.control_id == "NFR-REL-005"
+                            for r in report.results))
+
+    def test_staleness_ceiling_enforced(self):
+        report = vd.GateReport()
+        block = self._ok_block()
+        block["maxDataStalenessMinutes"] = 120
+        vd.check_degraded_mode({"degradedMode": block},
+                               {"providerScope": "hirslanden"}, "ds", report)
+        self.assertTrue(any(not r.passed and "60-minute ceiling" in r.message
+                            for r in report.results))
+
+    def test_manual_override_required(self):
+        report = vd.GateReport()
+        block = self._ok_block()
+        block["manualOverrideSupported"] = False
+        vd.check_degraded_mode({"degradedMode": block},
+                               {"providerScope": "zollikerberg"}, "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_valid_degraded_mode_passes(self):
+        report = vd.GateReport()
+        vd.check_degraded_mode({"degradedMode": self._ok_block()},
+                               {"providerScope": "hirslanden"}, "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+
 class EndToEndTests(unittest.TestCase):
     def test_committed_datasets_pass(self):
         evidence, report = vd.run(ROOT)
@@ -224,6 +268,15 @@ class EndToEndTests(unittest.TestCase):
         self.assertIn("NFR-SEC-005", coverage["nfr"])
         self.assertIn("CH-C02", coverage["ch"])
         for rv in ("RV-06-03", "RV-06-04", "RV-06-07"):
+            self.assertIn(rv, coverage["rv"])
+
+
+    def test_traceability_covers_phase3_controls(self):
+        evidence, _ = vd.run(ROOT)
+        coverage = evidence["controlCoverage"]
+        self.assertIn("NFR-REL-005", coverage["nfr"])
+        self.assertIn("CH-C03", coverage["ch"])
+        for rv in ("RV-06-05", "RV-06-08", "RV-06-09"):
             self.assertIn(rv, coverage["rv"])
 
 
