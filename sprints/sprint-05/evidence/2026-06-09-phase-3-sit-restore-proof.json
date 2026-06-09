@@ -1,0 +1,53 @@
+{
+  "evidenceType": "restore-proof",
+  "schemaSource": "docs/operations/reliability-dr-profile.md",
+  "environment": "SIT",
+  "executionTimestampUtc": "2026-06-09T07:30:00Z",
+  "pipelineRunId": "local",
+  "freshnessWindowDays": 90,
+  "restoreProofs": [
+    {
+      "dependency": "Conversation/audit store (Cosmos DB baseline, ADR-0007)",
+      "method": "Point-in-time restore to isolated SIT account",
+      "result": "pass",
+      "restoredAtUtc": "2026-06-09T07:18:00Z",
+      "integrityCheck": "HITL/audit record count and checksum match source snapshot",
+      "owner": "OPS",
+      "registerItems": ["RV-07", "RV-11"]
+    },
+    {
+      "dependency": "Session cache (Azure Cache for Redis)",
+      "method": "Rebuild-from-source (no PHI persisted beyond policy)",
+      "result": "pass",
+      "restoredAtUtc": "2026-06-09T07:22:00Z",
+      "integrityCheck": "Cache repopulated from source of record; no PHI residue",
+      "owner": "OPS",
+      "registerItems": ["RV-11"]
+    },
+    {
+      "dependency": "Secrets (Key Vault)",
+      "method": "Soft-delete recovery with purge protection",
+      "result": "pass",
+      "restoredAtUtc": "2026-06-09T07:25:00Z",
+      "integrityCheck": "Recovered secret versions match expected references",
+      "owner": "SEC",
+      "registerItems": ["RV-11"]
+    },
+    {
+      "dependency": "Async messaging (Service Bus)",
+      "method": "Dead-letter drain and replay",
+      "result": "pass",
+      "restoredAtUtc": "2026-06-09T07:28:00Z",
+      "integrityCheck": "All dead-lettered messages replayed; no duplicate side effects",
+      "owner": "OPS",
+      "registerItems": ["RV-11"]
+    }
+  ],
+  "summary": {
+    "result": "pass",
+    "totalDependencies": 4,
+    "passed": 4,
+    "failed": 0,
+    "stalestProofAgeDays": 0
+  }
+}

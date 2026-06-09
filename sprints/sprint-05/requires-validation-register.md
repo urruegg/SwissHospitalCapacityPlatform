@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.1.0 (Phase 1 baseline artifacts advanced register items) |
+| **Previous Version** | 1.2.0 (Phase 2 policy-as-code closure advanced RV-03) |
 
 ## Purpose
 
@@ -47,16 +47,16 @@ Owner roles follow the approval ownership baseline in
 | ID | Finding (Requires validation) | Source | Severity | FR / NFR | CH Control | Owner | Target Phase | Evidence Needed | Status |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | RV-01 | Canton-specific legal applicability not operationalized into a control annex | CAF/WAF §1, §8; cantonal review | High | `NFR-COMP-004` | `CH-C05` | LEGAL | Phase 1 | `docs/compliance/cantonal-annex.md` with canonical fields and legal sign-off | in-validation |
-| RV-02 | Reliability / DR target state (RTO/RPO, failover by data class, DR runbooks) undefined | CAF/WAF §4.2, §6 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | `docs/operations/reliability-dr-profile.md` with R1/R2/R3 targets + rehearsal evidence | in-validation |
+| RV-02 | Reliability / DR target state (RTO/RPO, failover by data class, DR runbooks) undefined | CAF/WAF §4.2, §6 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | `docs/operations/reliability-dr-profile.md` with R1/R2/R3 targets + rehearsal evidence | validated |
 | RV-03 | Policy-as-code enforcement for residency, deployment-type, and PHI transfer not evidenced in CI | CAF/WAF §4.3, §9 | High | `NFR-COMP-004` | `CH-C05` | SEC | Phase 2 | CI policy checks + generated evidence artifact for one SIT run | validated |
 | RV-04 | DSR operations and privacy-incident timing matrix not executable workflows | CAF/WAF §1, §8 | High | `FR-GOV-001` | `CH-C02` | SEC | Phase 2 | DSR + incident runbooks with owner/SLA and evidence cycle | open |
 | RV-05 | Runtime pattern drift (application-hosted vs Foundry-hosted) target state per workload class unresolved | CAF/WAF §3.4, §5.1 | Medium | `NFR-AI-001` | `CH-C10` | ARCH | Phase 1 | Runtime decision matrix + ADR consistency confirmation | validated |
 | RV-06 | CAF landing-zone governance evidence (MG hierarchy, policy assignment, RBAC scopes) weaker than intent | CAF/WAF §4.1, §7 | Medium | `FR-GOV-003` | `CH-C03` | ARCH | Phase 2 | Landing-zone governance evidence document | open |
-| RV-07 | HITL/audit persistence implementation evidence required (Cosmos DB baseline) | CAF/WAF §10 matrix `FR-GOV-001` | High | `FR-GOV-001` | `CH-C03` | OPS | Phase 3 | HITL evidence schema captured; persistence restore proof | open |
+| RV-07 | HITL/audit persistence implementation evidence required (Cosmos DB baseline) | CAF/WAF §10 matrix `FR-GOV-001` | High | `FR-GOV-001` | `CH-C03` | OPS | Phase 3 | HITL evidence schema captured; persistence restore proof | validated |
 | RV-08 | Least-privilege operational recertification evidence missing | CAF/WAF §10 matrix `NFR-SEC-001` | Medium | `NFR-SEC-001` | `CH-C02` | SEC | Phase 2 | Access recertification run + evidence artifact | open |
 | RV-09 | Cost governance (token/telemetry budgets) lacks evidence loop | CAF/WAF §4.2, §9 | Low | `NFR-COMP-004` | n/a | OPS | Phase 3 | FinOps thresholds + telemetry sampling policy | deferred |
 | RV-10 | Control-effectiveness metrics (security, AI safety, HITL) in SIT/PROD not consolidated | CAF/WAF §4.3, §7 | Medium | `NFR-AI-001` | `CH-C10` | SEC | Phase 4 | Consolidated control-effectiveness report artifact | open |
-| RV-11 | DR game-day / restore proof for memory and audit stores missing | CAF/WAF §5.2 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | SIT DR rehearsal output + restore proof (<= 90 days) | open |
+| RV-11 | DR game-day / restore proof for memory and audit stores missing | CAF/WAF §5.2 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | SIT DR rehearsal output + restore proof (<= 90 days) | validated |
 | RV-12 | Architecture drift detection between ADRs and deployed IaC not formalized | CAF/WAF §5.1 | Medium | `FR-GOV-003` | `CH-C03` | ARCH | Phase 4 | Drift detection golden task / control note | open |
 
 ## Phase 1 Documentation Baseline Closure (2026-06-09)
@@ -84,6 +84,21 @@ gate, advancing the Phase 2 register item:
 | RV ID | Phase 2 action | New status | Evidence artifact |
 | ----- | ----- | ----- | ----- |
 | RV-03 | Policy gate, evidence schema, exception-expiry blocker, and cantonal annex checks implemented and run for the SIT scope | `validated` | [`phase-2-policy-gate.md`](phase-2-policy-gate.md) and [`evidence/2026-06-09-phase-2-sit-policy-gate.json`](evidence/2026-06-09-phase-2-sit-policy-gate.json) |
+
+## Phase 3 Reliability and DR Closure (2026-06-09)
+
+The Phase 3 reliability/DR operationalization executed a SIT DR rehearsal and captured
+restore proof, advancing the Phase 3 register items:
+
+| RV ID | Phase 3 action | New status | Evidence artifact |
+| ----- | ----- | ----- | ----- |
+| RV-02 | R1/R2/R3 targets validated; DR runbook added; SIT rehearsal executed | `validated` | [`phase-3-reliability-dr.md`](phase-3-reliability-dr.md) and [`evidence/2026-06-09-phase-3-sit-dr-rehearsal.json`](evidence/2026-06-09-phase-3-sit-dr-rehearsal.json) |
+| RV-07 | HITL/audit persistence point-in-time restore proof captured | `validated` | [`evidence/2026-06-09-phase-3-sit-restore-proof.json`](evidence/2026-06-09-phase-3-sit-restore-proof.json) |
+| RV-11 | SIT DR game-day rehearsal + restore proof (<= 90 days) captured | `validated` | [`phase-3-reliability-dr.md`](phase-3-reliability-dr.md) and [`evidence/2026-06-09-phase-3-sit-restore-proof.json`](evidence/2026-06-09-phase-3-sit-restore-proof.json) |
+
+PROD promotion for the reliability domain stays `pending` until OPS/SEC approvals and
+documented business acceptance of the residual risks recorded in the phase-3 evidence
+record are captured.
 
 ## Closure Rules
 

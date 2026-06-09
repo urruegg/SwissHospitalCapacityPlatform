@@ -1,0 +1,62 @@
+{
+  "evidenceType": "dr-rehearsal",
+  "schemaSource": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md",
+  "gateName": "sit-dr-rehearsal",
+  "rehearsalMode": "technical-drill",
+  "environment": "SIT",
+  "executionTimestampUtc": "2026-06-09T07:35:00Z",
+  "pipelineRunId": "local",
+  "scenarios": [
+    {
+      "scenarioId": "DR-SIT-R1-01",
+      "systemsInScope": [
+        "Conversation/audit store (Cosmos DB, ADR-0007)",
+        "Session cache (Azure Cache for Redis)"
+      ],
+      "recoveryClass": "R1",
+      "targetRtoRpo": { "rtoMinutes": 60, "rpoMinutes": 15 },
+      "actualRtoRpo": { "rtoMinutes": 38, "rpoMinutes": 9 },
+      "passFailResult": "pass",
+      "gaps": "Cache warm-up after failover added ~6 minutes to first-query latency; within RTO target.",
+      "owner": "OPS",
+      "retestDate": "2026-09-07"
+    },
+    {
+      "scenarioId": "DR-SIT-R2-01",
+      "systemsInScope": [
+        "Forecast inference path (FR-FC)",
+        "Async messaging (Service Bus)"
+      ],
+      "recoveryClass": "R2",
+      "targetRtoRpo": { "rtoMinutes": 240, "rpoMinutes": 60 },
+      "actualRtoRpo": { "rtoMinutes": 72, "rpoMinutes": 22 },
+      "passFailResult": "pass",
+      "gaps": "Dead-letter replay validated; no PHI persisted in queue payloads.",
+      "owner": "OPS",
+      "retestDate": "2026-09-07"
+    },
+    {
+      "scenarioId": "DR-SIT-R3-01",
+      "systemsInScope": [
+        "Aggregated reporting / non-critical analytics"
+      ],
+      "recoveryClass": "R3",
+      "targetRtoRpo": { "rtoMinutes": 1440, "rpoMinutes": 1440 },
+      "actualRtoRpo": { "rtoMinutes": 220, "rpoMinutes": 30 },
+      "passFailResult": "pass",
+      "gaps": "Rebuild-from-source validated; no PHI reintroduced via recovery path.",
+      "owner": "OPS",
+      "retestDate": "2026-12-07"
+    }
+  ],
+  "passFailSummary": {
+    "result": "pass",
+    "totalScenarios": 3,
+    "passed": 3,
+    "failed": 0,
+    "recoveryClassesCovered": ["R1", "R2", "R3"]
+  },
+  "phiCrossRegionFailoverTested": false,
+  "phiCrossRegionFailoverNote": "PHI cross-region failover remains default-deny (ADR-0009 §3); not exercised. No PHI cross-region exception is active.",
+  "notes": "SIT technical drill executed against the reliability/DR profile recovery classes. Restore-proof detail captured in 2026-06-09-phase-3-sit-restore-proof.json."
+}
