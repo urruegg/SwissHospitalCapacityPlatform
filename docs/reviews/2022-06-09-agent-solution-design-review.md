@@ -59,7 +59,7 @@ Before defining agents, the following architecture constraints from the baseline
 Eight agents form the MVP agent set. They are organized into three tiers:
 **Orchestration**, **Specialist Domain**, and **Governance**.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  ORCHESTRATION TIER                                             │
 │  ┌────────────────────────────────────────────────────────┐    │
@@ -299,7 +299,7 @@ Eight agents form the MVP agent set. They are organized into three tiers:
 This is the primary interactive path serving the 120 peak concurrent users
 at a P95 response target under 4 seconds.
 
-```
+```text
 Operator (React UI)
   │
   ▼
@@ -358,7 +358,7 @@ is the primary latency lever; cache miss must not push P95 beyond threshold.
 
 This path handles the 180,000 events/day baseline with 3× burst headroom.
 
-```
+```text
 Hospital Source Systems (KIS, ADT, ED, Bed-state)
   │
   ▼
@@ -409,7 +409,7 @@ Hospital Source Systems (KIS, ADT, ED, Bed-state)
 
 When CSA issues a Deny decision and an operator requests an exception:
 
-```
+```text
 Operator requests policy exception
   │
   ▼
@@ -450,7 +450,7 @@ The following gates are **mandatory** for MVP and **cannot be bypassed**:
 
 ### 1.5 Orchestration Model
 
-**Decision: Hybrid Centralized Planner with Decentralized Execution**
+#### Decision: Hybrid Centralized Planner with Decentralized Execution
 
 This follows the `Planner-Executor` pattern from the Microsoft Agent Framework reference.
 
@@ -472,7 +472,7 @@ adding a new specialist agent requires only registering its tool contract with O
 
 ### 2.1 Layered Service Architecture
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────┐
 │  EXPERIENCE LAYER                                                    │
 │  React Operations Channel (Azure App Service / Static Web Apps)     │
@@ -545,7 +545,7 @@ adding a new specialist agent requires only registering its tool contract with O
 
 #### Ingestion to Serving (Data Platform)
 
-```
+```text
 KIS / EHR / ADT / ED / Bed Management / Staffing systems
   │  (HL7 v2, FHIR R4, operational API feeds)
   ▼
@@ -577,7 +577,7 @@ Agent retrieval layer (DFA, DCA, BMCA grounding)
 
 #### Agent Runtime to Audit Store
 
-```
+```text
 Agent action (any tier)
   │
   ▼
@@ -627,7 +627,7 @@ Compliance evidence artifacts (E-07: AI safety and oversight report)
 
 #### Identity Architecture (Zero Trust)
 
-```
+```text
 Operations User
   │  Entra ID MFA + Conditional Access
   ▼
@@ -653,7 +653,7 @@ and `CH-C02`. Human admin access uses **PIM JIT elevation** per `docs/SECURITY.m
 
 Every agent action produces a traceable chain:
 
-```
+```text
 Source event ID
   → Ingestion correlation ID
     → Curated dataset version + partition
