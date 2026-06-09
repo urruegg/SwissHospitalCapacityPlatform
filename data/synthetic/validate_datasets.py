@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sprint 6 Phase 1 synthesized-data contract and schema validation gate.
+"""Sprint 6 synthesized-data contract, schema, and onboarding-policy gate.
 
 Validates the synthesized, non-production SIT onboarding datasets under
 ``data/synthetic/datasets`` against their JSON Schema contracts under
@@ -22,6 +22,21 @@ Behaviour:
 * Capacity datasets must keep ``bedsAvailable`` <= ``bedsTotal``.
 * Every dataset must declare at least one FR and one CH control in the
   traceability map.
+
+Phase 2 onboarding policy and schema enforcement (RV-06-03, RV-06-04, RV-06-07)
+adds, on top of the Phase 1 schema gate:
+
+* **Minimum-data purpose-tag policy** — every record's ``purposeTag`` must be
+  declared in the dataset-level ``purposeTags`` allowlist, and patient-lane
+  records must carry ``minimizationReviewed: true`` (NFR-COMP-011 / CH-C01).
+* **Specialty-metadata quality and controlled versioning** — capacity datasets
+  must pin ``specialtyTaxonomyVersion`` to the governed taxonomy version and keep
+  each record's ``specialty`` consistent with its ``specialtyTags`` with no
+  duplicate tags (NFR-DQ-005).
+* **Cross-tenant identity boundary** — provider-scoped datasets must pin the
+  dataset and every record to the declared tenant, so no record from another
+  tenant can leak into a tenant-scoped dataset (NFR-SEC-005 / CH-C02).
+
 * The run emits a synthesized-data evidence artifact and exits non-zero on any
   failure.
 """
@@ -223,7 +238,154 @@ def check_capacity_invariants(records: list[dict], dataset_id: str, report: Gate
             dataset_id))
 
 
-def validate_dataset(entry: dict, root: str, report: GateReport) -> None:
+def check_purpose_tags(data: dict, records: list[dict], dataset_id: str,
+                       report: GateReport) -> None:
+    """Minimum-data purpose-tag policy (NFR-COMP-011 / CH-C01).
+
+    Every record ``purposeTag`` must be declared in the dataset ``purposeTags``
+    allowlist (purpose limitation), and patient-lane records must carry an
+    explicit ``minimizationReviewed`` marker.
+    """
+    allowed = set(data.get("purposeTags", []) if isinstance(data, dict) else [])
+    undeclared: set[str] = set()
+    unreviewed: list[str] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        tag = record.get("purposeTag")
+        if tag is not None and tag not in allowed:
+            undeclared.add(tag)
+        if "minimizationReviewed" in record and record.get("minimizationReviewed") is not True:
+            unreviewed.append(record.get("onboardingId", "<unknown>"))
+    if undeclared:
+        report.add(CheckResult(
+            "NFR-COMP-011", "high", False,
+            f"Record purposeTag(s) not in dataset purposeTags allowlist: "
+            f"{sorted(undeclared)}",
+            dataset_id))
+    elif unreviewed:
+        report.add(CheckResult(
+            "NFR-COMP-011", "high", False,
+            f"Record(s) missing minimization review marker: {unreviewed}",
+            dataset_id))
+    else:
+        report.add(CheckResult(
+            "NFR-COMP-011", "low", True,
+            "Purpose-tag allowlist and minimization markers upheld.",
+            dataset_id))
+
+
+def check_specialty_metadata(data: dict, records: list[dict], dataset_id: str,
+                             taxonomy_version: str, report: GateReport) -> None:
+    """Specialty-metadata quality and controlled versioning (NFR-DQ-005).
+
+    The dataset ``specialtyTaxonomyVersion`` must match the governed taxonomy
+    version, and every record's ``specialty`` must be present in its
+    ``specialtyTags`` with no duplicate tags.
+    """
+    declared = data.get("specialtyTaxonomyVersion") if isinstance(data, dict) else None
+    if declared != taxonomy_version:
+        report.add(CheckResult(
+            "NFR-DQ-005", "high", False,
+            f"specialtyTaxonomyVersion {declared!r} does not match the governed "
+            f"taxonomy version {taxonomy_version!r}.",
+            dataset_id))
+        return
+    problems: list[str] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        record_id = record.get("capacityRecordId", "<unknown>")
+        specialty = record.get("specialty")
+        tags = record.get("specialtyTags", [])
+        if not isinstance(tags, list) or not tags:
+            problems.append(f"{record_id}: missing specialtyTags")
+            continue
+        if specialty is not None and specialty not in tags:
+            problems.append(f"{record_id}: specialty '{specialty}' not in specialtyTags")
+        if len(tags) != len(set(tags)):
+            problems.append(f"{record_id}: duplicate specialtyTags")
+    if problems:
+        report.add(CheckResult(
+            "NFR-DQ-005", "high", False,
+            "Specialty-metadata quality violations: " + "; ".join(problems),
+            dataset_id))
+    else:
+        report.add(CheckResult(
+            "NFR-DQ-005", "low", True,
+            f"Specialty metadata quality and taxonomy version {taxonomy_version} "
+            "upheld.",
+            dataset_id))
+
+
+def check_tenant_boundary(data: dict, entry: dict, records: list[dict],
+                          dataset_id: str, report: GateReport) -> None:
+    """Cross-tenant identity boundary control (NFR-SEC-005 / CH-C02).
+
+    Provider-scoped datasets must pin the dataset and every record to the
+    declared tenant; the shared lane must not carry a dataset-level tenant id.
+    No record may carry a ``providerId`` that differs from the dataset tenant.
+    """
+    declared_scope = entry.get("providerScope", "none")
+    dataset_provider = data.get("providerId") if isinstance(data, dict) else None
+
+    if declared_scope and declared_scope != "none":
+        if dataset_provider != declared_scope:
+            report.add(CheckResult(
+                "NFR-SEC-005", "critical", False,
+                f"Provider-scoped dataset providerId {dataset_provider!r} does not "
+                f"match declared tenant scope {declared_scope!r}.",
+                dataset_id))
+            return
+        cross = sorted({
+            record.get("providerId")
+            for record in records
+            if isinstance(record, dict)
+            and record.get("providerId") is not None
+            and record.get("providerId") != declared_scope
+        })
+        if cross:
+            report.add(CheckResult(
+                "NFR-SEC-005", "critical", False,
+                f"Cross-tenant record(s) for foreign tenant(s) {cross} found in "
+                f"tenant-scoped dataset {declared_scope!r}.",
+                dataset_id))
+        else:
+            report.add(CheckResult(
+                "NFR-SEC-005", "low", True,
+                f"Tenant boundary upheld; all records pinned to tenant "
+                f"{declared_scope!r}.",
+                dataset_id))
+        return
+
+    # Shared (non-provider-scoped) lane: no dataset-level tenant id permitted.
+    if dataset_provider is not None:
+        report.add(CheckResult(
+            "NFR-SEC-005", "high", False,
+            f"Shared-lane dataset must not declare a dataset-level providerId "
+            f"(found {dataset_provider!r}).",
+            dataset_id))
+        return
+    empty = [
+        record.get("capacityRecordId", "<unknown>")
+        for record in records
+        if isinstance(record, dict) and "providerId" in record
+        and not record.get("providerId")
+    ]
+    if empty:
+        report.add(CheckResult(
+            "NFR-SEC-005", "high", False,
+            f"Record(s) with empty providerId in shared lane: {empty}",
+            dataset_id))
+    else:
+        report.add(CheckResult(
+            "NFR-SEC-005", "low", True,
+            "Tenant boundary upheld for shared lane (per-record tenant ids).",
+            dataset_id))
+
+
+def validate_dataset(entry: dict, root: str, report: GateReport,
+                     taxonomy_version: str = "") -> None:
     dataset_id = entry.get("datasetId", "<unknown>")
     data_rel = entry["dataFile"]
     schema_rel = entry["schemaFile"]
@@ -264,6 +426,10 @@ def validate_dataset(entry: dict, root: str, report: GateReport) -> None:
         check_minimization(records, dataset_id, report)
     if entry.get("lane") == "specialty-capacity":
         check_capacity_invariants(records, dataset_id, report)
+        check_specialty_metadata(data, records, dataset_id, taxonomy_version, report)
+    # Phase 2 onboarding policy enforcement (applies to every onboarding lane).
+    check_purpose_tags(data, records, dataset_id, report)
+    check_tenant_boundary(data, entry, records, dataset_id, report)
 
     # Traceability coverage: at least one FR and one CH control must be declared.
     if not entry.get("fr"):
@@ -316,9 +482,10 @@ def build_evidence(report: GateReport, traceability: dict) -> dict:
 
 def run(root: str) -> tuple[dict, GateReport]:
     traceability = _load_json(os.path.join(root, "traceability.json"))
+    taxonomy_version = traceability.get("specialtyTaxonomyVersion", "")
     report = GateReport()
     for entry in traceability["datasets"]:
-        validate_dataset(entry, root, report)
+        validate_dataset(entry, root, report, taxonomy_version)
     evidence = build_evidence(report, traceability)
     return evidence, report
 

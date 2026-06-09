@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (initial Sprint 06 onboarding/specialty-capacity register) |
+| **Previous Version** | 1.1.0 (Phase 1 evidence trace for onboarding/specialty-capacity register) |
 
 ## Purpose
 
@@ -49,8 +49,8 @@ Owner roles follow the same approval ownership baseline used across the platform
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | RV-06-01 | Patient onboarding minimum-metadata contract not yet baselined as an enforceable data contract | Sprint 6 §Scope, FR-ONB-001 | High | `FR-ONB-001`, `NFR-COMP-011` | `CH-C01` | SEC | Phase 1 | Patient-minimum onboarding contract schema in `docs/DATA.md` with purpose tags and minimized field set | in-validation |
 | RV-06-02 | Deterministic-service vs agentic-flow classification criterion for onboarding undocumented | Sprint 6 §Guiding Principles, FR-ONB-004 | Medium | `FR-ONB-004` | `CH-C10` | ARCH | Phase 1 | Documented classification criterion in `docs/SD.md`/`docs/ARCHITECTURE.md` applied to onboarding flows | in-validation |
-| RV-06-03 | Onboarding identity and cross-tenant boundaries not explicit or auditable | Sprint 6 §NFR, NFR-SEC-005 | High | `NFR-SEC-005` | `CH-C02` | SEC | Phase 2 | Cross-tenant/onboarding identity boundary check enforced in policy/CI with evidence artifact | open |
-| RV-06-04 | Quasi-identifier re-identification risk through onboarding attributes not controlled | Sprint 6 §Risks, NFR-COMP-011 | High | `NFR-COMP-011` | `CH-C01`, `CH-C05` | SEC | Phase 2 | Minimization + re-identification risk rule in `docs/COMPLIANCE.md` and policy gate | open |
+| RV-06-03 | Onboarding identity and cross-tenant boundaries not explicit or auditable | Sprint 6 §NFR, NFR-SEC-005 | High | `NFR-SEC-005` | `CH-C02` | SEC | Phase 2 | Cross-tenant/onboarding identity boundary check enforced in policy/CI with evidence artifact | in-validation |
+| RV-06-04 | Quasi-identifier re-identification risk through onboarding attributes not controlled | Sprint 6 §Risks, NFR-COMP-011 | High | `NFR-COMP-011` | `CH-C01`, `CH-C05` | SEC | Phase 2 | Minimization + re-identification risk rule in `docs/COMPLIANCE.md` and policy gate | in-validation |
 | RV-06-05 | Onboarding services degraded-mode and recovery behavior undefined | Sprint 6 §NFR, NFR-REL-005 | Medium | `NFR-REL-005` | `CH-C03` | OPS | Phase 3 | Degraded-mode behavior spec + SIT evidence of recovery controls for onboarding services | open |
 
 ### Specialty-capacity deltas (capacity onboarding lane + provider extension)
@@ -58,7 +58,7 @@ Owner roles follow the same approval ownership baseline used across the platform
 | ID | Finding (Requires validation) | Source | Severity | FR / NFR | CH Control | Owner | Target Phase | Evidence Needed | Status |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | RV-06-06 | Specialty-driven capacity onboarding contract and provider specialty profiles not baselined | Sprint 6 §Scope, FR-ONB-002, FR-ONB-003 | High | `FR-ONB-002`, `FR-ONB-003` | `CH-C01` | ARCH | Phase 1 | Specialty-capacity onboarding contract schema in `docs/DATA.md` with specialty tags and provider profile model | in-validation |
-| RV-06-07 | Specialty metadata quality checks and controlled versioning missing | Sprint 6 §NFR, NFR-DQ-005 | Medium | `NFR-DQ-005` | `CH-C03` | ARCH | Phase 2 | Specialty metadata quality checks + versioned taxonomy with schema gate in CI | open |
+| RV-06-07 | Specialty metadata quality checks and controlled versioning missing | Sprint 6 §NFR, NFR-DQ-005 | Medium | `NFR-DQ-005` | `CH-C03` | ARCH | Phase 2 | Specialty metadata quality checks + versioned taxonomy with schema gate in CI | in-validation |
 | RV-06-08 | Klinik Hirslanden specialty-weighted capacity onboarding signals not evidenced in SIT | Sprint 6 §Klinik Hirslanden incorporation | High | `FR-ONB-002`, `FR-ONB-003` | `CH-C01` | OPS | Phase 3 | Synthesized Hirslanden specialty-capacity dataset + SIT contract/schema validation evidence | open |
 | RV-06-09 | Spital Zollikerberg specialty/care-mode and Hospital-at-Home onboarding signals not evidenced in SIT | Sprint 6 §Spital Zollikerberg incorporation | High | `FR-ONB-002`, `FR-ONB-003` | `CH-C01` | OPS | Phase 3 | Synthesized Zollikerberg specialty-capacity + HaH dataset with SIT validation; HaH fields optional and provider-scoped | open |
 | RV-06-10 | IaC-first deployable bootstrap and synthesized-data validation for onboarding not reproducible | Sprint 6 §Data Platform Kickstart, NFR-MAINT-005 | High | `NFR-MAINT-005` | `CH-C03` | OPS | Phase 1 | IaC modules + synthesized onboarding datasets with CI contract/schema validation and FR/NFR/CH traceability mapping | in-validation |
@@ -73,6 +73,18 @@ evidence artifact
 [`evidence/2026-06-09-phase-1-sit-synthesized-data.json`](evidence/2026-06-09-phase-1-sit-synthesized-data.json).
 Provider SIT evidence (`RV-06-08`, `RV-06-09`) and the formal re-identification
 acceptance (`RV-06-04`) remain scoped to Phase 3 and Phase 2 respectively.
+
+### Phase 2 evidence trace
+
+Phase 2 (#46) advanced `RV-06-03`, `RV-06-04`, and `RV-06-07` to `in-validation`
+by enforcing onboarding minimum-data purpose-tag policy, specialty-metadata
+quality and controlled taxonomy versioning, and cross-tenant identity boundary
+checks as SIT gate criteria in the synthesized-data gate. See
+[`phase-2-policy-schema-enforcement.md`](phase-2-policy-schema-enforcement.md)
+and the SIT evidence artifact
+[`evidence/2026-06-09-phase-2-sit-onboarding-policy.json`](evidence/2026-06-09-phase-2-sit-onboarding-policy.json).
+Formal re-identification risk acceptance (`RV-06-04`) remains an open PROD gate
+item pending legal/security sign-off.
 
 ## FR / NFR / CH Traceability Anchors
 

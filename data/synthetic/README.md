@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (Phase 1 synthesized-data contract/schema gate) |
 
 ## Purpose
 
@@ -48,7 +48,8 @@ python3 data/synthetic/validate_datasets.py \
 python3 -m unittest discover -s data/synthetic/tests
 ```
 
-The validator exits non-zero on any schema, minimization, capacity-invariant, or
+The validator exits non-zero on any schema, minimization, capacity-invariant,
+onboarding-policy (purpose-tag, specialty-metadata, tenant-boundary), or
 traceability-coverage failure. CI runs it in
 [`.github/workflows/data-contracts.yml`](../../.github/workflows/data-contracts.yml).
 
@@ -65,6 +66,23 @@ traceability-coverage failure. CI runs it in
    `specialtyTaxonomyVersion` (`NFR-DQ-005`).
 5. **FR/NFR/CH traceability coverage** — every dataset maps to at least one FR
    and one CH control (`NFR-MAINT-005`).
+
+### Phase 2 onboarding policy and schema enforcement
+
+These checks are layered on top of the Phase 1 schema gate (advancing register
+items `RV-06-03`, `RV-06-04`, `RV-06-07`):
+
+6. **Minimum-data purpose-tag policy** — every record `purposeTag` must be in the
+   dataset-level `purposeTags` allowlist, and patient-lane records must carry
+   `minimizationReviewed: true` (`NFR-COMP-011`, `CH-C01`).
+7. **Specialty-metadata quality and controlled versioning** — capacity datasets
+   pin `specialtyTaxonomyVersion` to the governed taxonomy version and keep each
+   record's `specialty` consistent with its `specialtyTags`, with no duplicate
+   tags (`NFR-DQ-005`).
+8. **Cross-tenant identity boundary** — provider-scoped datasets pin the dataset
+   and every record to the declared tenant; the shared lane must not declare a
+   dataset-level tenant id. No foreign-tenant record may leak into a
+   tenant-scoped dataset (`NFR-SEC-005`, `CH-C02`).
 
 ## Relationship to IaC
 

@@ -1,12 +1,14 @@
 name: data-contracts
 
-# Sprint 6 Phase 1 — Synthesized-data contract and schema validation gate.
+# Sprint 6 Phase 1+2 — Synthesized-data contract, schema, and onboarding-policy
+# gate.
 #
 # Runs the dependency-free synthesized-data validator
 # (data/synthetic/validate_datasets.py) for the Sprint 6 onboarding datasets,
 # fails the build on any schema, re-identification minimization, capacity
-# invariant, or FR/NFR/CH traceability failure, and uploads the synthesized-data
-# evidence artifact for the SIT gate record.
+# invariant, onboarding-policy (purpose-tag, specialty-metadata, tenant-boundary),
+# or FR/NFR/CH traceability failure, and uploads the synthesized-data evidence
+# artifact for the SIT gate record.
 
 on:
   pull_request:
