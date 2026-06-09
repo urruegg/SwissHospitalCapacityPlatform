@@ -7,6 +7,12 @@
   "residency": "CH",
   "purposeTags": ["capacity-planning", "bed-management"],
   "specialtyTaxonomyVersion": "1.0.0",
+  "degradedMode": {
+    "fallbackReadModel": "last-known-good-capacity-snapshot",
+    "maxDataStalenessMinutes": 20,
+    "manualOverrideSupported": true,
+    "recoveryRunbook": "docs/runbooks/sprint-06-copilot-delegation-runbook.md"
+  },
   "records": [
     {
       "capacityRecordId": "CAP-ZOL-400001",

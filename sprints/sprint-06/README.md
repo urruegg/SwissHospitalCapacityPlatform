@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.1.0 (Phase 1 record indexed) |
+| **Previous Version** | 1.2.0 (Phase 2 record indexed) |
 
 ## Purpose
 
@@ -32,6 +32,7 @@ built from the baselines in
 | ----- | ----- | ----- |
 | Phase 1 (#45) | [`phase-1-iac-data-platform.md`](phase-1-iac-data-platform.md) | [`evidence/2026-06-09-phase-1-sit-synthesized-data.json`](evidence/2026-06-09-phase-1-sit-synthesized-data.json) |
 | Phase 2 (#46) | [`phase-2-policy-schema-enforcement.md`](phase-2-policy-schema-enforcement.md) | [`evidence/2026-06-09-phase-2-sit-onboarding-policy.json`](evidence/2026-06-09-phase-2-sit-onboarding-policy.json) |
+| Phase 3 (#47) | [`phase-3-provider-sit-evidence.md`](phase-3-provider-sit-evidence.md) | [`evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json`](evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json) |
 
 ## Baseline Inputs
 
