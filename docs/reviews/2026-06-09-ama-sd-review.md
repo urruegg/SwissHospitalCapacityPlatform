@@ -10,7 +10,7 @@ This document provides a structured post-review analysis of the AMA (Azure Maste
 
 The solution demonstrates strong foundational thinking: GA-only service constraints, a deliberate human-in-the-loop design, and an emerging data minimization principle are architecturally sound and appropriate for the Swiss public sector healthcare context. However, several critical gaps were surfaced during the review.
 
-**Overall Assessment: Conditionally Sound — Critical Actions Required**
+### Overall Assessment: Conditionally Sound — Critical Actions Required
 
 | Dimension | Status | Notes |
 |-----------|--------|-------|
@@ -73,7 +73,7 @@ The solution demonstrates strong foundational thinking: GA-only service constrai
 
 The solution is structured in three tiers:
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────┐
 │               React Frontend (Web Application)                │
 │     Site deployment within existing solutions OR standalone   │
@@ -403,5 +403,3 @@ The session produced a pivotal design decision: **the platform should receive on
 ---
 
 *This document was produced based on the transcript of the AMA Solution Design Review Call (2026-06-09) and the baseline documentation available in the [SwissHospitalCapacityPlatform repository](https://github.com/urruegg/SwissHospitalCapacityPlatform). Participant names have been anonymised: **Solution Owner (SO)**, **Senior Architect Reviewer (SAR)**, **Canton/CSA Reference (CCR)**. Items marked **[Gap]** indicate controls or requirements not yet addressed. Items marked **[Open]** indicate unresolved questions requiring follow-up action.*
-
-*Version: Draft v1.0 | Prepared: 2026-06-09*

@@ -338,7 +338,7 @@ External coordination remains critical, but is handled as integration endpoints,
 
 ---
 
-# Extended Provider Analysis
+## Extended Provider Analysis
 
 ## 13) Klinik Hirslanden, Zürich — Provider Profile and Platform Fit
 
