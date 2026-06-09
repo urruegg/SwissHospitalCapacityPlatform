@@ -34,6 +34,25 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
+      - name: Policy gate (PROD promotion, blocking)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p policy-evidence
+          python3 policy/policy_gate.py \
+            --scope prod \
+            --repo-root . \
+            --pipeline-run-id "${GITHUB_RUN_ID}" \
+            --output "policy-evidence/policy-gate-prod.json"
+
+      - name: Upload PROD policy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-gate-evidence-prod
+          path: policy-evidence/
+          if-no-files-found: error
+
       - name: Validate required environment configuration (PROD)
         shell: bash
         env:

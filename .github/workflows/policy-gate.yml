@@ -1,0 +1,89 @@
+name: policy-gate
+
+# Sprint 05 Phase 2 — Policy-as-Code and Governance Gates (ADR-0010, ADR-0011).
+#
+# Runs the dependency-free policy gate (policy/policy_gate.py) for the changed
+# deployment scope, fails the build on any uncovered critical policy failure or
+# expired/over-validity governance exception, and uploads the canonical evidence
+# artifact (ADR-0010 Target 3 schema) for the release record.
+
+on:
+  pull_request:
+    paths:
+      - 'policy/**'
+      - 'infra/environments/**'
+      - 'docs/compliance/cantonal-annex.md'
+      - '.github/workflows/policy-gate.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'policy/**'
+      - 'infra/environments/**'
+      - 'docs/compliance/cantonal-annex.md'
+      - '.github/workflows/policy-gate.yml'
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Deployment scope to evaluate (sit, prod, or all)."
+        required: false
+        default: 'sit'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: policy-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy-gate-selftest:
+    name: Policy gate self-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run policy gate unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s policy/tests -v
+
+  policy-gate:
+    name: Policy gate (${{ github.event.inputs.scope || 'sit' }})
+    runs-on: ubuntu-latest
+    needs: policy-gate-selftest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run policy gate and emit evidence
+        shell: bash
+        env:
+          SCOPE: ${{ github.event.inputs.scope || 'sit' }}
+        run: |
+          set -euo pipefail
+          mkdir -p policy-evidence
+          python3 policy/policy_gate.py \
+            --scope "${SCOPE}" \
+            --repo-root . \
+            --pipeline-run-id "${GITHUB_RUN_ID}" \
+            --output "policy-evidence/policy-gate-${SCOPE}.json"
+
+      - name: Upload policy evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-gate-evidence
+          path: policy-evidence/
+          if-no-files-found: error

@@ -23,6 +23,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Policy gate (SIT, blocking)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p policy-evidence
+          python3 policy/policy_gate.py \
+            --scope sit \
+            --repo-root . \
+            --pipeline-run-id "${GITHUB_RUN_ID}" \
+            --output "policy-evidence/policy-gate-sit.json"
+
+      - name: Upload SIT policy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-gate-evidence-sit
+          path: policy-evidence/
+          if-no-files-found: error
+
       - name: Validate required environment configuration (SIT)
         shell: bash
         env:

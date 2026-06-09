@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.0 |
+| **Version** | 0.5.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.0 (Sprint 05 release evidence gate fields) |
+| **Previous Version** | 0.4.0 (Sprint 05 release evidence gate fields) |
 
 ## Purpose
 
@@ -154,6 +154,13 @@ and follow the ordered gate chain in
    [`docs/TEST.md`](TEST.md#sprint-05-evidence-automation-checkpoints) (ADR-0008/0009/0010).
 4. Residual-risk table with owner and expiry; expired governance exceptions (max 90 days
    for critical) block promotion.
+
+The policy/DR/runtime evidence in item 3 is produced for the policy scope by the
+executable policy gate in [`policy/`](../policy/README.md): `python3 policy/policy_gate.py`
+emits the canonical ADR-0010 evidence artifact, enforces the zero critical-failure
+promotion threshold, and blocks on expired governance exceptions. It runs in
+[`.github/workflows/policy-gate.yml`](../.github/workflows/policy-gate.yml) and as a
+blocking gate step on the SIT and PROD deploy workflows.
 
 ### Evidence Persistence
 

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "description": "Machine-readable governance exception register for the Sprint 05 policy gate. Every active exception is validated against the exception-management baseline in docs/adr/0007-0011-hardening-delta-summary.md (max 90-day validity for critical governance exceptions). Expired or over-validity exceptions are hard promotion blockers (ADR-0010 Target 4, ADR-0011 Target 4).",
+  "requiredFields": [
+    "id",
+    "control",
+    "rationale",
+    "compensatingControls",
+    "owner",
+    "approvedBy",
+    "approvalDate",
+    "expiry",
+    "mitigationPlan",
+    "followUpValidationDate"
+  ],
+  "exceptions": []
+}

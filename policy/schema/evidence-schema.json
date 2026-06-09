@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swiss-hospital-capacity-platform/policy/schema/evidence-schema.json",
+  "title": "Policy Gate Evidence Artifact",
+  "description": "Canonical release-evidence artifact emitted by the policy gate, per ADR-0010 Target 3 (Evidence artifact schema).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "policyPackVersion",
+    "gateName",
+    "evaluatedResources",
+    "passFailSummary",
+    "failureDetails",
+    "exceptionRefs",
+    "executionTimestampUtc",
+    "pipelineRunId"
+  ],
+  "properties": {
+    "policyPackVersion": {
+      "type": "string",
+      "description": "Semantic version of the policy pack that produced this evidence."
+    },
+    "gateName": {
+      "type": "string",
+      "description": "Name of the gate run, for example 'sit-policy-gate' or 'prod-policy-gate'."
+    },
+    "evaluatedResources": {
+      "type": "array",
+      "description": "Resources / artifacts evaluated by this run.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "passFailSummary": {
+      "type": "object",
+      "required": ["result", "totalChecks", "passed", "failed", "criticalFailures"],
+      "properties": {
+        "result": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "totalChecks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "passed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "criticalFailures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mandatoryControlCoveragePercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "failureDetails": {
+      "type": "array",
+      "description": "One entry per failing check.",
+      "items": {
+        "type": "object",
+        "required": ["controlId", "severity", "message"],
+        "properties": {
+          "controlId": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "resource": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "exceptionRefs": {
+      "type": "array",
+      "description": "IDs of governance exceptions considered during this run.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "executionTimestampUtc": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp of the gate run."
+    },
+    "pipelineRunId": {
+      "type": "string",
+      "description": "CI pipeline run identifier (GitHub Actions run id, or 'local' for local runs)."
+    }
+  }
+}
