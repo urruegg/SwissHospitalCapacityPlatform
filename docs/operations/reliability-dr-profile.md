@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Draft |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (Phase 1 target-state baseline; rehearsal/restore evidence pending) |
 
 ## Purpose
 
@@ -24,8 +24,9 @@ recommendation.
 ## Scope
 
 1. Defines reliability/DR targets and the evidence model for SIT and PROD promotion.
-2. Operational rehearsal execution and restore-proof capture are Phase 3 deliverables;
-   this profile defines the **targets and evidence schema** that Phase 3 validates.
+2. The Phase 3 SIT DR rehearsal and restore-proof capture are recorded in the
+   [Rehearsal Evidence Register](#rehearsal-evidence-register) and
+   [Restore-Proof Register](#restore-proof-register) below.
 3. This profile is governance documentation; it provisions no infrastructure.
 
 ## Recovery Classes and Targets
@@ -74,9 +75,29 @@ Per ADR-0009 Target 2, each rehearsal records all fields below. This schema is t
 
 ### Rehearsal Evidence Register
 
-| `scenarioId` | Recovery class | Status |
-| ----- | ----- | ----- |
-| _none_ | — | Pending Phase 3 SIT rehearsal (`RV-11`) |
+The first SIT DR rehearsal (technical drill) was executed on 2026-06-09 (Phase 3, `RV-11`).
+Full evidence: [`sprints/sprint-05/evidence/2026-06-09-phase-3-sit-dr-rehearsal.json`](../../sprints/sprint-05/evidence/2026-06-09-phase-3-sit-dr-rehearsal.json).
+
+| `scenarioId` | Recovery class | Target RTO/RPO | Actual RTO/RPO | Status |
+| ----- | ----- | ----- | ----- | ----- |
+| `DR-SIT-R1-01` | `R1` | 60 min / 15 min | 38 min / 9 min | pass |
+| `DR-SIT-R2-01` | `R2` | 4 h / 1 h | 72 min / 22 min | pass |
+| `DR-SIT-R3-01` | `R3` | 24 h / 24 h | 220 min / 30 min | pass |
+
+PHI cross-region failover was not exercised; it remains default-deny (ADR-0009 §3) with no
+active exception.
+
+### Restore-Proof Register
+
+SIT restore proof captured on 2026-06-09 (Phase 3, `RV-07`, `RV-11`). Full evidence:
+[`sprints/sprint-05/evidence/2026-06-09-phase-3-sit-restore-proof.json`](../../sprints/sprint-05/evidence/2026-06-09-phase-3-sit-restore-proof.json).
+
+| Dependency | Restore method | Result | Freshness |
+| ----- | ----- | ----- | ----- |
+| Conversation/audit store (Cosmos DB) | Point-in-time restore | pass | <= 90 days |
+| Session cache (Redis) | Rebuild-from-source | pass | <= 90 days |
+| Secrets (Key Vault) | Soft-delete recovery | pass | <= 90 days |
+| Async messaging (Service Bus) | Dead-letter drain and replay | pass | <= 90 days |
 
 ## Restore-Proof Freshness Rule
 

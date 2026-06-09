@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-06-08 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (initial runbook index) |
 
 ## Purpose
 
@@ -19,6 +19,7 @@ Runbooks are distinct from application logic and infrastructure code — they ca
 | Runbook | Scope | Operator | Outcome |
 | ------- | ----- | -------- | ------- |
 | [Work IQ Teams Transcript Intake](work-iq-teams-transcript-intake.md) | Read Microsoft Teams meetings with transcripts and export raw content to repository | `urruegg@microsoft.com` | Raw transcript file placed in `docs/reviews/raw/` for downstream review-session-agent processing |
+| [DR Rehearsal and SIT Restore-Proof](dr-rehearsal-runbook.md) | Run SIT DR rehearsal and capture restore proof for R1/R2/R3 recovery classes | `OPS` | Rehearsal + restore-proof evidence under `sprints/sprint-05/evidence/` (ADR-0009) |
 
 ## Runbook Lifecycle
 

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.1 (Sprint 05 reliability/DR profile and DR evidence checkpoints) |
+| **Previous Version** | 1.1.0 (Sprint 05 reliability/DR profile and DR evidence checkpoints) |
 
 ## Purpose
 
@@ -200,9 +200,12 @@ boundaries by data class, and the DR rehearsal evidence model — is defined in
 4. PHI cross-region failover stays default-deny; activation requires the exception gate
    in the reliability/DR profile.
 
-> SIT DR rehearsal execution and restore-proof capture are Phase 3 deliverables
-> (`RV-02`, `RV-07`, `RV-11`); this section defines the operational checkpoints they
-> populate.
+> The first SIT DR rehearsal and restore-proof capture were executed in Phase 3
+> (`RV-02`, `RV-07`, `RV-11`); see the
+> [DR Rehearsal and SIT Restore-Proof runbook](runbooks/dr-rehearsal-runbook.md)
+> and the Phase 3 evidence record
+> [`sprints/sprint-05/phase-3-reliability-dr.md`](../sprints/sprint-05/phase-3-reliability-dr.md).
+> This section defines the recurring operational checkpoints they populate.
 
 ## Traceability to Requirements
 
