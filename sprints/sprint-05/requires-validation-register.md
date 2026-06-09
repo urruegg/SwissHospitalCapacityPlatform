@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-06-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.2.0 (Phase 2 policy-as-code closure advanced RV-03) |
+| **Previous Version** | 1.3.0 (Phase 3 reliability/DR closure validated RV-02, RV-07, RV-11) |
 
 ## Purpose
 
@@ -55,9 +55,9 @@ Owner roles follow the approval ownership baseline in
 | RV-07 | HITL/audit persistence implementation evidence required (Cosmos DB baseline) | CAF/WAF §10 matrix `FR-GOV-001` | High | `FR-GOV-001` | `CH-C03` | OPS | Phase 3 | HITL evidence schema captured; persistence restore proof | validated |
 | RV-08 | Least-privilege operational recertification evidence missing | CAF/WAF §10 matrix `NFR-SEC-001` | Medium | `NFR-SEC-001` | `CH-C02` | SEC | Phase 2 | Access recertification run + evidence artifact | open |
 | RV-09 | Cost governance (token/telemetry budgets) lacks evidence loop | CAF/WAF §4.2, §9 | Low | `NFR-COMP-004` | n/a | OPS | Phase 3 | FinOps thresholds + telemetry sampling policy | deferred |
-| RV-10 | Control-effectiveness metrics (security, AI safety, HITL) in SIT/PROD not consolidated | CAF/WAF §4.3, §7 | Medium | `NFR-AI-001` | `CH-C10` | SEC | Phase 4 | Consolidated control-effectiveness report artifact | open |
+| RV-10 | Control-effectiveness metrics (security, AI safety, HITL) in SIT/PROD not consolidated | CAF/WAF §4.3, §7 | Medium | `NFR-AI-001` | `CH-C10` | SEC | Phase 4 | Consolidated control-effectiveness report artifact | validated |
 | RV-11 | DR game-day / restore proof for memory and audit stores missing | CAF/WAF §5.2 | High | `NFR-REL-003` | Reliability baseline | OPS | Phase 3 | SIT DR rehearsal output + restore proof (<= 90 days) | validated |
-| RV-12 | Architecture drift detection between ADRs and deployed IaC not formalized | CAF/WAF §5.1 | Medium | `FR-GOV-003` | `CH-C03` | ARCH | Phase 4 | Drift detection golden task / control note | open |
+| RV-12 | Architecture drift detection between ADRs and deployed IaC not formalized | CAF/WAF §5.1 | Medium | `FR-GOV-003` | `CH-C03` | ARCH | Phase 4 | Drift detection golden task / control note | validated |
 
 ## Phase 1 Documentation Baseline Closure (2026-06-09)
 
@@ -99,6 +99,20 @@ restore proof, advancing the Phase 3 register items:
 PROD promotion for the reliability domain stays `pending` until OPS/SEC approvals and
 documented business acceptance of the residual risks recorded in the phase-3 evidence
 record are captured.
+
+## Phase 4 Autonomous Agent Execution Hardening Closure (2026-06-09)
+
+The Phase 4 agent-hardening implementation enforced deny-by-default for missing
+HITL evidence, validated runtime boundary enforcement, and formalized ADR-vs-IaC
+drift detection, advancing the Phase 4 register items:
+
+| RV ID | Phase 4 action | New status | Evidence artifact |
+| ----- | ----- | ----- | ----- |
+| RV-10 | HITL / AI-safety / boundary control-effectiveness consolidated into the phase evidence record | `validated` | [`phase-4-agent-hardening.md`](phase-4-agent-hardening.md) Control-Effectiveness Summary and [`evidence/2026-06-09-phase-4-sit-golden-replay.json`](evidence/2026-06-09-phase-4-sit-golden-replay.json) |
+| RV-12 | ADR-vs-IaC drift detection golden task / control note formalized | `validated` | [`agents/drift-analyzer/golden-tasks.md`](../../agents/drift-analyzer/golden-tasks.md) `adr-iac-drift` fixture |
+
+PROD promotion for the autonomous-execution domain stays `pending` until governance
+reviewers confirm the controls are sufficient for subsequent sprints (Phase 4 PROD gate).
 
 ## Closure Rules
 
