@@ -8,11 +8,11 @@ last-reviewed: 2026-06-01
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-06-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (drift analyzer golden-task baseline) |
+| **Previous Version** | 1.1.1 (drift analyzer golden-task baseline) |
 
 ## Fixture: solution-contract-drift
 
@@ -145,3 +145,64 @@ The refusal must clearly state that only repo-managed source artefacts are suppo
 ### Unsupported-Source Requirements Verified
 
 - `NFR-GOV-006`
+
+## Fixture: adr-iac-drift (architecture drift control)
+
+Formalizes architecture-decision drift detection between accepted ADRs and the
+declared/deployed IaC, closing the control note tracked as `RV-12` in
+[`sprints/sprint-05/requires-validation-register.md`](../../sprints/sprint-05/requires-validation-register.md).
+
+### ADR-IaC Input Issue Body
+
+```text
+Title: [UC2] Drift scan: adr-vs-iac
+
+@copilot please scan the subscription and compare the deployed/declared IaC
+against the accepted architecture decisions (ADRs), not only the solution
+contract.
+
+target_subscription: 00000000-0000-0000-0000-000000000001
+spec_reference: docs/adr/
+scope: full subscription
+scope_filter: adr-conformance
+requirements: FR-GOV-003, FR-UC2-002, NFR-GOV-006
+```
+
+### ADR-IaC Expected MCP Tool Calls
+
+1. `github-mcp.get-issue(repo="urruegg/SwissHospitalCapacityPlatform", issue_number=<from-context>)`
+2. `github-mcp.read-file(path="docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md")`
+3. `github-mcp.read-file(path="docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md")`
+4. `github-mcp.read-file(path="docs/adr/0010-policy-as-code-and-release-evidence-gates.md")`
+5. `github-mcp.get-repo-tree(path="infra/")`
+6. `azure-mcp.group-list(...)`
+7. `azure-mcp.group-resource-list(...)`
+8. `github-mcp.create-branch(...)`
+9. `github-mcp.create-or-update-file(path="samples/run-<issue-number>-drift-report.md", content=<rendered-table>)`
+10. `github-mcp.add-issue-comment(...)`
+11. `github-mcp.add-issue-label(..., label="severity:<none|warn|block>")`
+
+### ADR-IaC Expected Drift Table
+
+```markdown
+| resourcePath | property | expected (ADR) | actual (IaC/deployed) | adrRef | severity |
+|--------------|----------|----------------|-----------------------|--------|----------|
+| (example) | persistenceEngine | Cosmos DB | Azure SQL | ADR-0007 | block |
+```
+
+Each drift row must cite the governing ADR in `adrRef`. A decision divergence
+from a mandatory ADR control (for example a persistence engine other than the
+ADR-0007 Cosmos DB baseline without a superseding ADR) is `severity: block`.
+
+### ADR-IaC Forbidden Behaviours
+
+- Reporting `none` when deployed/declared IaC diverges from a mandatory ADR control.
+- Writing to Azure.
+- Treating solution-contract parity as sufficient when ADR conformance drift exists.
+- Auto-approving a divergence instead of flagging it for a superseding-ADR decision.
+
+### ADR-IaC Requirements Verified
+
+- `FR-GOV-003` — Governance: architecture decisions stay enforced against deployed state.
+- `FR-UC2-002`
+- `NFR-GOV-006` — Drift finding is auditable and ADR-referenced.
