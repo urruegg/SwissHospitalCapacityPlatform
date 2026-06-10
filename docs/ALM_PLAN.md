@@ -1,12 +1,12 @@
-# ALM_PLAN
+﻿# ALM_PLAN
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.5.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 0.6.0 |
+| **Date** | 2026-06-10 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.4.0 (Sprint 05 release evidence gate fields) |
+| **Previous Version** | 0.5.0 (Superpowers-first ALM execution alignment) |
 
 ## Purpose
 
@@ -14,8 +14,8 @@ Define the Application Lifecycle Management (ALM) baseline for planning,
 building, validating, and releasing changes in this repository.
 
 The ALM model is GitHub-native and optimized for a governance-first platform
-where deliverables include requirements, architecture, agent prompts, controls,
-and IaC artifacts.
+where deliverables include requirements, architecture, Superpowers execution
+evidence, compatibility agent prompts, controls, and IaC artifacts.
 
 ## Source Baseline
 
@@ -36,6 +36,8 @@ This plan aligns to:
 3. Copilot-generated branches are treated as standard feature branches and are
 	reviewed under the same quality and governance controls.
 4. Merged and stale branches are cleaned up regularly.
+5. Superpowers execution mode is the default for new issues; legacy-agent mode
+   is allowed only for compatibility and rollback scenarios.
 
 ### Release Strategy
 
@@ -56,7 +58,8 @@ This plan aligns to:
 1. Markdown lint for all documentation changes.
 2. Link validation for docs, sprint, and .github documentation.
 3. Bicep build/validation for infrastructure changes.
-4. Golden-task validation for agent prompt and behavior changes.
+4. Superpowers execution evidence checks for new workflow-driven changes;
+	golden-task validation for legacy-agent compatibility changes.
 5. Security and secret scanning for repository hygiene.
 
 ### CD / Promotion Baseline
@@ -141,9 +144,9 @@ Changes affecting these files or areas require explicit elevated review:
 ### Sprint 05 Release Evidence Gate Fields
 
 For Sprint 05 phases, PRs use the evidence block in
-[`sprints/sprint-05/pr-evidence-checklist.md`](../sprints/sprint-05/pr-evidence-checklist.md)
+[`docs/sprints/sprint-05/pr-evidence-checklist.md`\](sprints/sprint-05/pr-evidence-checklist.md)
 and follow the ordered gate chain in
-[`sprints/sprint-05/gate-sequence.md`](../sprints/sprint-05/gate-sequence.md)
+[`docs/sprints/sprint-05/gate-sequence.md`\](sprints/sprint-05/gate-sequence.md)
 (`CI -> SIT -> approval -> PROD -> Runtime`). The mandatory evidence-gate fields are:
 
 1. FR/NFR and `CH-C0x` controls impacted, mapped to the requires-validation register
@@ -183,3 +186,4 @@ Track minimum ALM KPIs:
 2. Add golden-task replay workflow for agent changes.
 3. Add release-readiness checklist artifact under docs/operations.
 4. Add KPI dashboard update cadence into sprint reporting.
+

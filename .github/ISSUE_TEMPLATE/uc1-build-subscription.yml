@@ -1,19 +1,31 @@
 name: "UC1 — Build landing-zone subscription"
-description: "Trigger the spec-parser-agent to read repo-managed markdown sources and assemble a UC1-output GitHub PR."
+description: "Run a Superpowers-driven UC1 flow to assemble a landing-zone PR from repo-managed markdown sources."
 title: "[UC1] Build subscription: <short-name>"
-labels: ["uc1", "agent:spec-parser-agent", "needs-triage"]
+labels: ["uc1", "needs-triage"]
 assignees: ["copilot"]
 body:
   - type: markdown
     attributes:
       value: |
-        > Triggers the **spec-parser-agent** (per [AGENTS.md](../../AGENTS.md)).
-        > The agent reads the canonical markdown source set from `docs/` and
+        > Triggers a **Superpowers-first** UC1 flow.
+        > Copilot reads the canonical markdown source set from `docs/` and
         > `docs/specs/`, generates Bicep parameters, and opens a GitHub PR for
         > the customer landing zone plan.
         > A `what-if` plan is produced first; a human must comment
         > `approved-to-apply` before any deploy fires
         > (per [AGENTS.md §4](../../AGENTS.md#4-confirmation-rule-for-deploy--delete)).
+
+  - type: dropdown
+    id: execution_mode
+    attributes:
+      label: Execution mode
+      description: "Default is Superpowers. Legacy mode is for compatibility checks only."
+      options:
+        - "superpowers (default)"
+        - "legacy-agent-compat"
+      default: 0
+    validations:
+      required: true
 
   - type: textarea
     id: spec_sources

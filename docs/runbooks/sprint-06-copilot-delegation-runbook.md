@@ -17,7 +17,7 @@ implementation readiness for OOA, DCA, and BMCA.
 
 ## Baseline References
 
-1. sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md
+1. docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md
 2. docs/reviews/2026-06-09-ama-cto-mentor-Review.md
 3. docs/reviews/2026-06-09-ama-sd-review.md
 4. docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md
@@ -85,7 +85,7 @@ implementation readiness for OOA, DCA, and BMCA.
 
 ### Umbrella
 
-@copilot Execute Sprint 6 from this umbrella issue by orchestrating Phase 0 to Phase 4 in order, using mandatory baseline sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md. Keep MVP Phase 1 scope locked to OOA DCA BMCA only, keep DFA IWA DQSA CSA EAA optional in Phase 3, enforce draft PR first, maintain FR/NFR/CH traceability, and post evidence links per phase.
+@copilot Execute Sprint 6 from this umbrella issue by orchestrating Phase 0 to Phase 4 in order, using mandatory baseline docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md. Keep MVP Phase 1 scope locked to OOA DCA BMCA only, keep DFA IWA DQSA CSA EAA optional in Phase 3, enforce draft PR first, maintain FR/NFR/CH traceability, and post evidence links per phase.
 
 ### Phase 0
 

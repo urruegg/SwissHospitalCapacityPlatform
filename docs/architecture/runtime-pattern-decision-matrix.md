@@ -1,4 +1,4 @@
-# Agent Runtime Pattern Decision Matrix
+﻿# Agent Runtime Pattern Decision Matrix
 
 | Field | Value |
 | ----- | ----- |
@@ -16,9 +16,9 @@ explicit, reviewable runtime decision per workload class. This is the Phase 1
 deliverable for the runtime pattern scope gate in
 [`docs/adr/0008-agent-runtime-pattern-scope-and-selection.md`](../adr/0008-agent-runtime-pattern-scope-and-selection.md)
 and closes register item `RV-05` in
-[`sprints/sprint-05/requires-validation-register.md`](../../sprints/sprint-05/requires-validation-register.md).
+[`docs/sprints/sprint-05/requires-validation-register.md`\](../sprints/sprint-05/requires-validation-register.md).
 
-It addresses CAF/WAF review findings §3.4, §4.1, and §5.1 and removes the
+It addresses CAF/WAF review findings Â§3.4, Â§4.1, and Â§5.1 and removes the
 DoD-blocking contradiction between
 [`docs/AI.md`](../AI.md) and [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md) runtime
 pattern decisions.
@@ -76,20 +76,20 @@ A hybrid flow without a complete contract is denied at the runtime gate.
 
 Per ADR-0008, runtime decisions are enforced at:
 
-1. **CI gate** — runtime-matrix update required when runtime-related files change.
-2. **SIT gate** — boundary contract, GA-region evidence, and test evidence required for
+1. **CI gate** â€” runtime-matrix update required when runtime-related files change.
+2. **SIT gate** â€” boundary contract, GA-region evidence, and test evidence required for
    any non-default runtime path.
-3. **PROD gate** — all SIT evidence plus explicit human approvals and residual-risk
+3. **PROD gate** â€” all SIT evidence plus explicit human approvals and residual-risk
    statement.
-4. **Runtime gate** — side-effecting paths enforce selected runtime boundaries and deny
+4. **Runtime gate** â€” side-effecting paths enforce selected runtime boundaries and deny
    execution on contract violations.
 
 ## Approval Ownership
 
-1. **ARCH** — Architecture Owner approves runtime pattern and boundary contract.
-2. **SEC** — Security and Compliance Owner approves data-class, residency, and control
+1. **ARCH** â€” Architecture Owner approves runtime pattern and boundary contract.
+2. **SEC** â€” Security and Compliance Owner approves data-class, residency, and control
    mapping.
-3. **OPS** — Operations and Release Owner approves production readiness, fallback, and
+3. **OPS** â€” Operations and Release Owner approves production readiness, fallback, and
    supportability.
 
 ## Revalidation Cadence
@@ -103,9 +103,9 @@ issues for any drift.
 This matrix is the single source of truth for runtime mode by workload class. The
 following documents are aligned to it and must not state a conflicting default:
 
-1. [`docs/AI.md`](../AI.md) §Scope and Constraints — application-hosted default.
-2. [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md) §Decisions — runtime pattern decision.
-3. [`docs/SD.md`](../SD.md) §Design Principles — runtime mode mapping.
+1. [`docs/AI.md`](../AI.md) Â§Scope and Constraints â€” application-hosted default.
+2. [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md) Â§Decisions â€” runtime pattern decision.
+3. [`docs/SD.md`](../SD.md) Â§Design Principles â€” runtime mode mapping.
 
 ## Traceability
 
@@ -117,4 +117,5 @@ following documents are aligned to it and must not state a conflicting default:
 ## Change Control
 
 Any change to the decision matrix or boundary contract register bumps this document's
-version per `.github/copilot-instructions.md` §9 and must stay consistent with ADR-0008.
+version per `.github/copilot-instructions.md` Â§9 and must stay consistent with ADR-0008.
+

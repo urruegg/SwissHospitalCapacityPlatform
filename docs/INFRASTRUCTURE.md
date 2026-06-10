@@ -1,4 +1,4 @@
-# Infrastructure Baseline
+﻿# Infrastructure Baseline
 
 | Field | Value |
 | ----- | ----- |
@@ -100,10 +100,11 @@ Current strategy has progressed from phased rollout to controlled parity enablem
 
 ## Sprint 05 Landing-Zone Governance Evidence
 
-The CAF/WAF review (§4.1, §7) found landing-zone governance evidence — management-group
-hierarchy, policy assignments, and RBAC scopes — weaker than architecture intent. A
+The CAF/WAF review (Â§4.1, Â§7) found landing-zone governance evidence â€” management-group
+hierarchy, policy assignments, and RBAC scopes â€” weaker than architecture intent. A
 dedicated landing-zone governance evidence document is a Phase 2 deliverable, tracked as
 `RV-06` (owner `ARCH`) in
-[`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md).
+[`docs/sprints/sprint-05/requires-validation-register.md`\](sprints/sprint-05/requires-validation-register.md).
 Policy assignment and residency/deployment-type enforcement are governed by `ADR-0010`
 (policy-as-code) and implemented as CI checks in Sprint 05 Phase 2.
+

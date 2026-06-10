@@ -1,20 +1,32 @@
 name: "UC3 — PR review"
-description: "Trigger the pr-review agent to comment on a GitHub pull request."
+description: "Run a Superpowers-driven PR review flow to comment on a GitHub pull request."
 title: "[UC3] Review GitHub PR: <pr-id>"
-labels: ["uc3", "agent:pr-review", "needs-triage"]
+labels: ["uc3", "needs-triage"]
 assignees: ["copilot"]
 body:
   - type: markdown
     attributes:
       value: |
-        > Triggers the **pr-review** agent (per [AGENTS.md](../../AGENTS.md)).
-        > The agent reads the PR via GitHub-native context and posts a single,
+        > Triggers a **Superpowers-first** UC3 flow.
+        > Copilot reads the PR via GitHub-native context and posts a single,
         > idempotent review comment marked with
         > `<!-- agentic-devops:pr-review -->`. Re-runs update the same comment
         > rather than appending duplicates.
         >
         > **Side-effect ceiling**: `write` (GitHub comments only).
         > **Latency target**: < 60 s p95 from PR-created event to comment.
+
+  - type: dropdown
+    id: execution_mode
+    attributes:
+      label: Execution mode
+      description: "Default is Superpowers. Legacy mode is for compatibility checks only."
+      options:
+        - "superpowers (default)"
+        - "legacy-agent-compat"
+      default: 0
+    validations:
+      required: true
 
   - type: input
     id: github_pr_url

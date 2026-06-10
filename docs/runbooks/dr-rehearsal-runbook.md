@@ -1,4 +1,4 @@
-# DR Rehearsal and SIT Restore-Proof Runbook
+﻿# DR Rehearsal and SIT Restore-Proof Runbook
 
 | Field | Value |
 | ----- | ----- |
@@ -22,10 +22,10 @@ rehearsal and capturing restore-proof evidence against the recovery classes and 
 - Restore-proof capture for in-scope stateful dependencies (Cosmos DB, Redis, Key Vault,
   Service Bus).
 - Recording rehearsal and restore evidence in the canonical schemas under
-  `sprints/sprint-05/evidence/`.
+  `docs/sprints/sprint-05/evidence/`.
 
 ### Out of scope
-- PHI cross-region failover activation (remains default-deny per ADR-0009 §3 unless a
+- PHI cross-region failover activation (remains default-deny per ADR-0009 Â§3 unless a
   compliance-approved exception is completed).
 - PROD execution; this runbook validates SIT and feeds the PROD readiness recommendation.
 - Provisioning infrastructure; this runbook is governance documentation only.
@@ -38,9 +38,9 @@ Mandatory prerequisites:
 3. `OPS` owns execution; `SEC` is available for the Key Vault restore step.
 
 Repository prerequisites already in place:
-1. [`docs/operations/reliability-dr-profile.md`](../operations/reliability-dr-profile.md) — recovery classes, targets, evidence schema.
-2. [`docs/OPERATIONS.md`](../OPERATIONS.md) — DR test evidence checkpoints.
-3. [`docs/TEST.md`](../TEST.md) — DR rehearsal evidence schema checkpoint.
+1. [`docs/operations/reliability-dr-profile.md`](../operations/reliability-dr-profile.md) â€” recovery classes, targets, evidence schema.
+2. [`docs/OPERATIONS.md`](../OPERATIONS.md) â€” DR test evidence checkpoints.
+3. [`docs/TEST.md`](../TEST.md) â€” DR rehearsal evidence schema checkpoint.
 
 ## Security and Compliance Guardrails
 
@@ -84,14 +84,14 @@ Expected outcome:
 Write the rehearsal evidence and restore-proof artifacts using the canonical schemas.
 
 Expected outcome:
-1. Rehearsal evidence in `sprints/sprint-05/evidence/<date>-phase-3-sit-dr-rehearsal.json`.
-2. Restore proof in `sprints/sprint-05/evidence/<date>-phase-3-sit-restore-proof.json`.
+1. Rehearsal evidence in `docs/sprints/sprint-05/evidence/<date>-phase-3-sit-dr-rehearsal.json`.
+2. Restore proof in `docs/sprints/sprint-05/evidence/<date>-phase-3-sit-restore-proof.json`.
 3. The Rehearsal Evidence Register in the reliability/DR profile updated.
 
 ## Handoff to Next Process
 
 After this runbook is complete, proceed with:
-- Phase 3 evidence record ([`sprints/sprint-05/phase-3-reliability-dr.md`](../../sprints/sprint-05/phase-3-reliability-dr.md)) with SIT pass/fail and PROD readiness recommendation.
+- Phase 3 evidence record ([`docs/sprints/sprint-05/phase-3-reliability-dr.md`\](../sprints/sprint-05/phase-3-reliability-dr.md)) with SIT pass/fail and PROD readiness recommendation.
 - Requires-validation register closure for `RV-02`, `RV-07`, `RV-11`.
 
 ## Troubleshooting
@@ -115,6 +115,7 @@ Before closing this runbook execution:
 
 ## Linked Documentation
 
-- [docs/operations/reliability-dr-profile.md](../operations/reliability-dr-profile.md) — recovery classes, targets, evidence schema (ADR-0009)
-- [docs/OPERATIONS.md](../OPERATIONS.md) — DR test evidence checkpoints
-- [docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md](../adr/0009-reliability-and-dr-baseline-for-sit-prod.md) — reliability/DR baseline decision
+- [docs/operations/reliability-dr-profile.md](../operations/reliability-dr-profile.md) â€” recovery classes, targets, evidence schema (ADR-0009)
+- [docs/OPERATIONS.md](../OPERATIONS.md) â€” DR test evidence checkpoints
+- [docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md](../adr/0009-reliability-and-dr-baseline-for-sit-prod.md) â€” reliability/DR baseline decision
+

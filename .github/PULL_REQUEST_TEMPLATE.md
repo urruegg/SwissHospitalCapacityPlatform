@@ -18,16 +18,23 @@
 
 ## Sprint Context
 
-- Sprint: `S<N>` — sprint file: `sprints/sprint-<N>-<name>.md`
+- Sprint: `S<N>` — sprint file: `docs/sprints/sprint-<N>-<name>.md`
 - User stories: `S<N>-<n>`, …
+
+## Execution Mode
+
+<!-- Required during Superpowers cutover. -->
+
+- [ ] `superpowers` (default)
+- [ ] `legacy-agent-compat`
 
 ## Validation Evidence
 
 <!-- Commands executed + outcomes. Paste tail of relevant output. -->
 - [ ] `npx --yes markdownlint-cli2 "**/*.md" "#node_modules"` (markdown lint)
-- [ ] `lychee docs/**/*.md sprints/*.md .github/*.md AGENTS.md README.md` (link check; same scope as CI)
+- [ ] `lychee docs/**/*.md docs/sprints/*.md .github/*.md AGENTS.md README.md` (link check; same scope as CI)
 - [ ] `az bicep build --file infra/main.bicep` / `az deployment group what-if ...` (if `infra/**` changed — UC1 outputs)
-- [ ] Golden-task replay attached (if `agents/**` or `evals/**` or `.github/copilot/mcp.json` changed)
+- [ ] Superpowers execution evidence attached, or golden-task replay attached for legacy-agent compatibility mode
 
 ## Eval Impact
 
@@ -56,7 +63,7 @@
 
 - [ ] `docs/PRD.md` (traceability matrix §7 updated if new requirement or scope change)
 - [ ] `docs/<relevant>.md` (architecture, security, data, infra, AI, ALM)
-- [ ] `sprints/sprint-NN-*.md` (acceptance criteria reflected)
+- [ ] `docs/sprints/sprint-NN-*.md` (acceptance criteria reflected)
 - [ ] `docs/adr/*.md` (if a cross-cutting decision was made)
 - [ ] Runbooks (`docs/runbooks/*.md`) if operational behavior changed
 

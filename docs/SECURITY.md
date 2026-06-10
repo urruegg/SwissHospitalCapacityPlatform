@@ -1,4 +1,4 @@
-# SECURITY
+﻿# SECURITY
 
 | Field | Value |
 | ----- | ----- |
@@ -250,10 +250,11 @@ Minimum evidence required for release and audit:
 ### Sprint 05 CAF/WAF Baseline Pointers
 
 These items are governed by the Sprint 05 hardening ADRs and tracked in
-[`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md):
+[`docs/sprints/sprint-05/requires-validation-register.md`\](sprints/sprint-05/requires-validation-register.md):
 
 1. Policy-as-code enforcement (residency, deployment-type, PHI transfer, diagnostics,
    identity) is specified in `ADR-0010` and implemented in Phase 2 (`RV-03`, `RV-08`).
 2. DSR operations and privacy-incident timing matrix become executable runbooks in
    Phase 2 (`RV-04`), mapped to `CH-C04`/`CH-C06`.
 3. Control-effectiveness telemetry consolidation is tracked for Phase 4 (`RV-10`).
+

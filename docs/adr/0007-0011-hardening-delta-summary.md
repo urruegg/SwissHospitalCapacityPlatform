@@ -147,7 +147,7 @@ It is intended as a Sprint 5 kickoff reference for autonomous issue/PR execution
 
 ## Traceability References
 
-1. Sprint plan: `sprints/sprint-05-caf-waf-mvp-sit-prod.md`
+1. Sprint plan: `docs/sprints/sprint-05-caf-waf-mvp-sit-prod.md`
 2. Review baseline priority: `docs/reviews/2026-06-09-ama-caf-waf-review session.md`
 3. Additional review inputs:
    - `docs/reviews/2026-06-08-ama-review-session-csa-sd-challanger.md`

@@ -1,20 +1,32 @@
 name: "UC2 — Drift scan"
-description: "Trigger the drift-analyzer agent to compare a subscription against its spec."
+description: "Run a Superpowers-driven drift scan to compare a subscription against its spec."
 title: "[UC2] Drift scan: <subscription-name-or-id>"
-labels: ["uc2", "agent:drift-analyzer", "needs-triage"]
+labels: ["uc2", "needs-triage"]
 assignees: ["copilot"]
 body:
   - type: markdown
     attributes:
       value: |
-        > Triggers the **drift-analyzer** agent (per [AGENTS.md](../../AGENTS.md)).
-        > The agent scans the subscription read-only via `azure-mcp`, diffs
+        > Triggers a **Superpowers-first** UC2 flow.
+        > Copilot scans the subscription read-only via `azure-mcp`, diffs
         > against the repo-managed source artefacts UC1 owns, and writes a drift report to this issue plus a reproducible branch sidecar.
-        > Remediation PRs are routed through the **spec-parser-agent** (UC1),
+        > Remediation PRs are routed through the UC1 workflow,
         > never opened directly by `drift-analyzer`.
         >
         > **Side-effect ceiling**: `write` (GitHub issue + branch artefacts only — no
         > Azure mutations).
+
+  - type: dropdown
+    id: execution_mode
+    attributes:
+      label: Execution mode
+      description: "Default is Superpowers. Legacy mode is for compatibility checks only."
+      options:
+        - "superpowers (default)"
+        - "legacy-agent-compat"
+      default: 0
+    validations:
+      required: true
 
   - type: input
     id: target_subscription

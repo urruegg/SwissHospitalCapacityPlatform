@@ -8,7 +8,7 @@ and
 into an enforceable, testable CI and promotion gate.
 
 It closes register item `RV-03` in
-[`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md).
+[`docs/sprints/sprint-05/requires-validation-register.md`](../docs/sprints/sprint-05/requires-validation-register.md).
 
 ## Contents
 
@@ -76,4 +76,4 @@ when supplied, and exits `0` on pass / `1` on fail.
 | PROD promotion | `.github/workflows/cd-infra-deploy-prod.yml` | Blocking PROD-scope gate before any `az deployment`. |
 
 Generated evidence for the Phase 2 SIT gate run is committed under
-[`sprints/sprint-05/evidence/`](../sprints/sprint-05/evidence/).
+[`docs/sprints/sprint-05/evidence/`](../docs/sprints/sprint-05/evidence/).

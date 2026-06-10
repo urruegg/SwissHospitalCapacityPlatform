@@ -1,4 +1,4 @@
-# OPERATIONS
+﻿# OPERATIONS
 
 | Field | Value |
 | ----- | ----- |
@@ -183,8 +183,8 @@ Required implementation controls:
 
 ## Reliability and Disaster Recovery Operations
 
-The reliability/DR target state — recovery classes R1/R2/R3, RTO/RPO targets, failover
-boundaries by data class, and the DR rehearsal evidence model — is defined in
+The reliability/DR target state â€” recovery classes R1/R2/R3, RTO/RPO targets, failover
+boundaries by data class, and the DR rehearsal evidence model â€” is defined in
 [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md)
 (ADR-0009). Operations is the accountable owner (`OPS`) for the evidence cadence.
 
@@ -204,7 +204,7 @@ boundaries by data class, and the DR rehearsal evidence model — is defined in
 > (`RV-02`, `RV-07`, `RV-11`); see the
 > [DR Rehearsal and SIT Restore-Proof runbook](runbooks/dr-rehearsal-runbook.md)
 > and the Phase 3 evidence record
-> [`sprints/sprint-05/phase-3-reliability-dr.md`](../sprints/sprint-05/phase-3-reliability-dr.md).
+> [`docs/sprints/sprint-05/phase-3-reliability-dr.md`\](sprints/sprint-05/phase-3-reliability-dr.md).
 > This section defines the recurring operational checkpoints they populate.
 
 ## Traceability to Requirements
@@ -251,3 +251,4 @@ boundaries by data class, and the DR rehearsal evidence model — is defined in
 4. Define incident communication templates and escalation matrix.
 5. Add operations readiness checklist referenced by release PR template.
 6. Add monthly operations review cadence with KPI trend reporting.
+

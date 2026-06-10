@@ -1,4 +1,4 @@
-# Sprint 6 MVP Agent Readiness Baseline (OOA / DCA / BMCA)
+﻿# Sprint 6 MVP Agent Readiness Baseline (OOA / DCA / BMCA)
 
 | Field | Value |
 | ----- | ----- |
@@ -11,11 +11,11 @@
 ## Purpose
 
 Baseline the **MVP Phase 1 agent readiness** for the three mandatory Sprint 6
-agents — Operations Orchestrator Agent (OOA), Discharge Coordination Agent
-(DCA), and Bed Management Copilot Agent (BMCA) — with explicit interfaces, data
+agents â€” Operations Orchestrator Agent (OOA), Discharge Coordination Agent
+(DCA), and Bed Management Copilot Agent (BMCA) â€” with explicit interfaces, data
 contracts, and IaC component mapping. This is the Phase 1 (#45) readiness
 deliverable for
-[`sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`](../../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md)
+[`docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`\](../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md)
 "MVP Agent Scope for Sprint 6".
 
 ## Scope Lock
@@ -94,10 +94,11 @@ These mirror the MVP agent solution design and remain mandatory for Phase 1.
 - [x] Agent-to-IaC component mapping documented with data-platform bootstrap path.
 - [x] Deterministic-vs-agentic classification applied to onboarding flows.
 - [x] Advisory-only + HITL gates confirmed for all three agents.
-- [ ] Agent golden-task packs (`agents/<name>/`) — deferred to agent build phase.
+- [ ] Agent golden-task packs (`agents/<name>/`) â€” deferred to agent build phase.
 
 ## Change Control
 
 Any change to MVP agent scope or the IaC mapping bumps this document's version
-per `.github/copilot-instructions.md` §9 and must keep MVP Phase 1 scope locked
+per `.github/copilot-instructions.md` Â§9 and must keep MVP Phase 1 scope locked
 to OOA/DCA/BMCA.
+

@@ -14,7 +14,7 @@ Provide one operational runbook to kick off Sprint 05 with GitHub issues and `@c
 
 ## Baseline References
 
-1. `sprints/sprint-05-caf-waf-mvp-sit-prod.md`
+1. `docs/sprints/sprint-05-caf-waf-mvp-sit-prod.md`
 2. `docs/adr/0007-0011-hardening-delta-summary.md`
 3. `docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md`
 4. `docs/adr/0008-agent-runtime-pattern-scope-and-selection.md`
@@ -68,7 +68,7 @@ Provide one operational runbook to kick off Sprint 05 with GitHub issues and `@c
 
 ### Umbrella
 
-`@copilot Execute Sprint 05 from this umbrella issue by orchestrating Phase 0 to Phase 4 in order, using mandatory baselines in sprints/sprint-05-caf-waf-mvp-sit-prod.md and docs/adr/0007-0011-hardening-delta-summary.md. Use draft PR first per phase, enforce SIT before PROD gates, block promotion on critical failures or expired exceptions, and maintain FR/NFR/CH traceability in every PR.`
+`@copilot Execute Sprint 05 from this umbrella issue by orchestrating Phase 0 to Phase 4 in order, using mandatory baselines in docs/sprints/sprint-05-caf-waf-mvp-sit-prod.md and docs/adr/0007-0011-hardening-delta-summary.md. Use draft PR first per phase, enforce SIT before PROD gates, block promotion on critical failures or expired exceptions, and maintain FR/NFR/CH traceability in every PR.`
 
 ### Phase 0
 

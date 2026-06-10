@@ -1,4 +1,4 @@
-# COMPLIANCE
+﻿# COMPLIANCE
 
 | Field | Value |
 | ----- | ----- |
@@ -100,14 +100,14 @@ Material gaps to close:
 ### Sprint 05 Baseline Upgrade (CAF/WAF)
 
 This baseline adds canton-specific legal applicability and explicit control ownership on
-top of the federal `CH-C01`..`CH-C10` controls, per the CAF/WAF review §8/§9 and
+top of the federal `CH-C01`..`CH-C10` controls, per the CAF/WAF review Â§8/Â§9 and
 [`docs/adr/0011-cantonal-legal-applicability-gate.md`](adr/0011-cantonal-legal-applicability-gate.md).
 
 1. Canton-specific deltas are tracked in
    [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md). Federal controls
    remain the baseline; the annex records each canton's delta, owner, evidence, and
    status. Cantonal workloads are limited to SIT until their annex entries reach
-   `implemented` with legal sign-off (ADR-0011 §3).
+   `implemented` with legal sign-off (ADR-0011 Â§3).
 2. Control ownership roles for open CH controls follow the approval ownership baseline:
    `LEGAL`, `SEC`, `OPS`, `ARCH` (see
    [`docs/adr/0007-0011-hardening-delta-summary.md`](adr/0007-0011-hardening-delta-summary.md#approval-ownership-baseline)).
@@ -126,7 +126,7 @@ top of the federal `CH-C01`..`CH-C10` controls, per the CAF/WAF review §8/§9 a
 | `CH-C10` | SEC | AI oversight acceptance + control-effectiveness report (`RV-10`, Phase 4) |
 
 3. Open and partial items are tracked with owner, target phase, and evidence in
-   [`sprints/sprint-05/requires-validation-register.md`](../sprints/sprint-05/requires-validation-register.md).
+   [`docs/sprints/sprint-05/requires-validation-register.md`\](sprints/sprint-05/requires-validation-register.md).
 
 ### Sprint 6 Onboarding Minimum-Data and Re-identification Controls
 
@@ -134,7 +134,7 @@ Sprint 6 onboarding flows are governed by a minimum-sensitive-data design that
 strengthens `CH-C01` (lawfulness, purpose limitation, data minimization) and
 `CH-C05` (cross-border / residency) for the onboarding lanes. These controls map
 to `NFR-COMP-011` and the register items in
-[`sprints/sprint-06/requires-validation-register.md`](../sprints/sprint-06/requires-validation-register.md).
+[`docs/sprints/sprint-06/requires-validation-register.md`\](sprints/sprint-06/requires-validation-register.md).
 
 | Onboarding control | Requirement | Enforcement | Owner role |
 | ----- | ----- | ----- | ----- |
@@ -226,3 +226,4 @@ For this repository, Purview shall be treated as:
 4. Add evidence collection templates for E-01 to E-09.
 5. Add canton-specific annex once target canton rollout plan is fixed.
    Seeded in [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md) (Sprint 05).
+

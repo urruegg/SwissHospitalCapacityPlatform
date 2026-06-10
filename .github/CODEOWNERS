@@ -11,7 +11,7 @@
 
 # Governing prose (Markdown, ADRs, sprint plan, requirements)
 /docs/                                  @urruegg
-/sprints/                               @urruegg
+/docs/sprints/                          @urruegg
 /README.md                              @urruegg
 /AGENTS.md                              @urruegg
 

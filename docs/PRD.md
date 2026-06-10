@@ -1,4 +1,4 @@
-# PRD
+﻿# PRD
 
 | Field | Value |
 | ----- | ----- |
@@ -112,7 +112,7 @@ Swiss cantonal hospital provider deployment at a time.
 Sprint 6 deltas. Onboarding is split into two lanes: a patient lane using only a
 minimum required metadata set, and a hospital-capacity lane driven by
 treatment-specialty metadata. See
-[`sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`](../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md).
+[`docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`\](sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md).
 
 | ID | Requirement |
 | -- | ----------- |
@@ -216,7 +216,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform.md` | `FR-OM-001` to `FR-OM-005`, `FR-DATA-001` to `FR-DATA-007`, `FR-FC-001` to `FR-FC-005`, `FR-DC-001` to `FR-DC-005`, `FR-CX-001` to `FR-CX-005`, `NFR-COMP-001` to `NFR-COMP-004`, `NFR-SEC-001` to `NFR-SEC-004` |
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md` | `FR-DATA-008`, `FR-FC-006`, `FR-DC-006`, `FR-CX-006`, `FR-GOV-001` to `FR-GOV-006`, `NFR-DQ-001` to `NFR-DQ-004`, `NFR-PERF-001` to `NFR-PERF-005`, `NFR-REL-001` to `NFR-REL-004`, `NFR-AI-001` to `NFR-AI-005`, `NFR-MAINT-001` to `NFR-MAINT-004` |
 | `docs/COMPLIANCE.md` | `NFR-COMP-005` to `NFR-COMP-010` |
-| `sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md` | `FR-ONB-001` to `FR-ONB-004`, `NFR-COMP-011`, `NFR-SEC-005`, `NFR-DQ-005`, `NFR-REL-005`, `NFR-MAINT-005` |
+| `docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md` | `FR-ONB-001` to `FR-ONB-004`, `NFR-COMP-011`, `NFR-SEC-005`, `NFR-DQ-005`, `NFR-REL-005`, `NFR-MAINT-005` |
 
 ## Assumptions To Validate In Implementation Planning
 
@@ -234,3 +234,4 @@ explicit, release-gated artifacts mapped back to the requirements above:
 - `NFR-REL-001`/`NFR-REL-003` (reliability/DR): [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md) (ADR-0009).
 - `NFR-AI-001`/`NFR-COMP-004` (runtime pattern + residency): [`docs/architecture/runtime-pattern-decision-matrix.md`](architecture/runtime-pattern-decision-matrix.md) (ADR-0008).
 - CAF/WAF delta closure status: [`docs/architecture/caf-waf-alignment-matrix.md`](architecture/caf-waf-alignment-matrix.md).
+

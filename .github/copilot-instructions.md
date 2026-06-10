@@ -2,24 +2,26 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
-| **Date** | 2026-06-02 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-06-10 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (testing strategy alignment and governance refinements) |
+| **Previous Version** | 1.3.0 (legacy packs archived; agents path now compatibility stubs) |
 
 This repository hosts a sample **Swiss Hospital Capacity Platform**: a system where AI agents
 plan, execute, and observe hospital capacity management workflows (CI/CD, infrastructure provisioning,
 incident response, cost/compliance) on Microsoft Azure.
 
 **Runtime (per ADR-0002):**
-Every agent in this platform is realised as a **GitHub Copilot coding agent**
-configured by assets in this repository — `AGENTS.md`, prompt files under
-`agents/`, this `copilot-instructions.md`, `.github/copilot/mcp.json`,
-ISSUE_TEMPLATE/, PR template, golden-task fixtures, and Bicep template
-libraries (UC1 outputs). There is **no bespoke Python service, no Foundry-hosted
-agent, and no platform-runtime Azure infrastructure** in this repo. Agents act
-on Azure and Microsoft 365 *targets* via MCP servers.
+This platform uses the **GitHub Copilot coding agent** with a
+**Superpowers-first execution model** for new work, configured by assets in this
+repository — `AGENTS.md`, archived legacy prompt files under
+`agents-archive/` with compatibility stubs under `agents/`,
+this `copilot-instructions.md`, `.github/copilot/mcp.json`, ISSUE_TEMPLATE/,
+PR template, validation workflows, and Bicep template libraries (UC1 outputs).
+There is **no bespoke Python service, no Foundry-hosted agent, and no
+platform-runtime Azure infrastructure** in this repo. Work targets Azure and
+Microsoft 365 resources via MCP servers.
 
 Use these instructions to guide all code, documentation, and review suggestions in
 this repo.
@@ -77,10 +79,11 @@ agent runtime remains GitHub Copilot coding agent + MCP servers.
 | `AGENTS.md` *(planned, top-level)* | Markdown | Top-level agent registry: one row per agent (name, owner, trigger, MCP servers in use, side-effect ceiling, golden-task path). Read by the Copilot coding agent on every run. |
 | `.github/copilot-instructions.md` | Markdown | This file. Repo-wide conventions and contracts for the Copilot coding agent. |
 | `.github/copilot/` *(planned)* | JSON / Markdown | Copilot coding-agent configuration: `mcp.json` allow-list, optional per-agent overrides. |
-| `.github/ISSUE_TEMPLATE/` *(planned)* | YAML | Issue templates that drive agent invocation (`uc1-build-subscription.yml`, `uc2-drift-scan.yml`, `uc3-pr-review.yml`, etc.). |
+| `.github/ISSUE_TEMPLATE/` *(planned)* | YAML | Issue templates that drive Superpowers-first execution (`uc1-build-subscription.yml`, `uc2-drift-scan.yml`, `uc3-pr-review.yml`, etc.). |
 | `.github/PULL_REQUEST_TEMPLATE.md` *(exists)* | Markdown | PR template enforcing the PR Output Contract (§6). |
 | `.github/workflows/` *(planned)* | GitHub Actions YAML | CI: markdown lint, Bicep build/validate, security/secret scans, optional eval-on-fixtures workflows. UC2 nightly scheduler workflow opens an issue for the drift agent. |
-| `agents/` *(planned)* | Markdown | One folder per agent: `<agent-name>/AGENT.md` (system prompt + tool-call rules + refusal rules), `golden-tasks.md` (acceptance fixtures), `runbook.md`. Markdown only — no source code. |
+| `agents/` *(planned)* | Markdown | Legacy compatibility stubs only (decommissioned packs point to archived sources). Markdown only — no source code. |
+| `agents-archive/` *(exists)* | Markdown | Canonical archived legacy agent packs with original prompts and golden-task fixtures for compatibility and rollback. |
 | `evals/` *(planned)* | Markdown / YAML | Golden-task fixtures: input issue body + expected PR/comment shape. Optionally driven by a `gh` workflow. **Not pytest.** |
 | `infra/` *(planned)* | Bicep | **UC1 output artefacts** — the Bicep modules the Spec Parser Agent assembles into a customer's landing-zone PR. Not infrastructure that hosts the agent. |
 | `infra/environments/` *(planned)* | Bicep parameters | Customer environment definitions (`dev` / `sit` / `prod`) for UC outputs. |
@@ -92,13 +95,13 @@ agent runtime remains GitHub Copilot coding agent + MCP servers.
 | `security-governance/` *(planned)* | Policy-as-code / Markdown | Purview mappings, access model definitions, and control evidence. |
 | `pipelines/` *(planned)* | YAML | Delivery workflows spanning docs, infra, data, AI, and app release lanes. |
 | `samples/` *(planned)* | JSON / Markdown | Sample source bundles, sample GitHub PR payloads, and sample drift reports — used as fixtures in golden tasks. |
-| `sprints/` *(exists)* | Markdown | Sprint backlogs S0–S6. |
+| `docs/sprints/` *(exists)* | Markdown | Sprint backlogs S0–S6. |
 
 ### Architecture Lanes (mandatory mental model)
 When creating or reviewing changes, map them to one or more explicit lanes:
 
 1. Governance lane: `docs/`, `security-governance/`, policy and compliance evidence
-2. Platform control lane: `agents/`, `.github/`, `evals/`, `AGENTS.md`
+2. Platform control lane: `agents-archive/`, `agents/`, `.github/`, `evals/`, `AGENTS.md`
 3. Infrastructure lane: `infra/`, environment parameters, deployment contracts
 4. Data lane: `data-platform/`, interoperability artefacts, semantic models
 5. AI lane: `ai-models/`, `copilot/`, eval assets, safety controls
@@ -133,15 +136,15 @@ security, or agent behavior.
 > cross-cutting concerns (security, data, infrastructure, AI governance).
 
 ### Agent Decision Order
-1. Identify target scope (`agents/<name>/`, `infra/`, `docs/`, `.github/`, etc.).
+1. Identify target scope (`agents-archive/<name>/`, `agents/<name>/` stubs, `infra/`, `docs/`, `.github/`, etc.).
 2. Read docs in this order: target's local `AGENT.md` or `README.md` (if present) → `AGENTS.md` → this file → cross-cutting solution docs (`docs/*`).
 3. Use the **MCP server allow-list** in `.github/copilot/mcp.json` to discover which tools are available. Never assume an MCP server exists — if it isn't in the allow-list, propose adding it via a separate PR with mandatory reviewer.
-4. Implement minimal changes in the correct layer (`agents/<name>/` for prompt changes, `infra/` for UC1 Bicep outputs, `docs/` for governance).
+4. Implement minimal changes in the correct layer (`agents-archive/<name>/` for legacy prompt changes, `infra/` for UC1 Bicep outputs, `docs/` for governance).
 5. Run the most specific golden-task fixture first, then broader ones, then propose updates to other fixtures if the change affects them.
 6. Validate cross-cutting impact: prompts, MCP tool contracts in `AGENTS.md`, RBAC implied by new MCP usage, Bicep templates touched, security, docs.
 
 ### Scope Guards (mandatory)
-- Changes in `agents/<name>/**`: read `agents/<name>/AGENT.md` and `AGENTS.md` first; if the change introduces a new MCP server or tool, also read `.github/copilot/mcp.json` and `docs/SECURITY.md`.
+- Changes in `agents-archive/<name>/**` (or `agents/<name>/` compatibility stubs): read `agents-archive/<name>/AGENT.md` and `AGENTS.md` first; if the change introduces a new MCP server or tool, also read `.github/copilot/mcp.json` and `docs/SECURITY.md`.
 - Changes in `.github/copilot/mcp.json`: read `docs/SECURITY.md` and `docs/AI.md`; require CODEOWNERS approval; declare new server's required permissions in the PR.
 - Changes in `infra/**`: read `docs/INFRASTRUCTURE.md` (which clarifies these are UC1 *outputs*) and `docs/ALM_PLAN.md` (Bicep validate workflow).
 - Changes in `data-platform/**`: read `docs/DATA.md`, `docs/COMPLIANCE.md`, and `docs/INTEGRATION.md` first.
@@ -149,11 +152,11 @@ security, or agent behavior.
 - Changes in `apps/**` or `integrations/**`: read `docs/ARCHITECTURE.md`, `docs/INTEGRATION.md`, and `docs/SECURITY.md` first.
 - Changes in `security-governance/**`: read `docs/SECURITY.md`, `docs/COMPLIANCE.md`, and `docs/AI.md` first.
 - Changes in `.github/workflows/**`: read `docs/ALM_PLAN.md` and `docs/SECURITY.md` (OIDC, secrets) before editing.
-- Changes in `evals/**` / `agents/<name>/golden-tasks.md`: read `docs/AI.md` and `docs/TEST.md` first.
+- Changes in `evals/**` / `agents-archive/<name>/golden-tasks.md`: read `docs/AI.md` and `docs/TEST.md` first.
 - Changes in `docs/**`: every edited doc must follow §9 Document Versioning.
 
 ### Key Technical Decisions
-- **Runtime**: **GitHub Copilot coding agent** (per ADR-0002). No bespoke service, no Foundry-hosted agent. Agents are Markdown + MCP config + GitHub-native triggers (issues, `@copilot` mentions, `workflow_dispatch`, and scheduled GitHub workflows when needed).
+- **Runtime**: **GitHub Copilot coding agent** (per ADR-0002) with Superpowers-first execution for new work. No bespoke service, no Foundry-hosted agent. Legacy per-agent Markdown assets are retained for compatibility and rollback.
 - **Model**: Whatever GitHub Copilot uses at runtime. The platform does not select, deploy, or manage a model.
 - **Cloud**: Microsoft Azure for **agent targets only** (UC1's customer landing zones and UC2's scanned subscriptions). Delivery, review, and planning workflows are GitHub-native. No multi-cloud abstractions unless explicitly required.
 - **IaC**: **Bicep** for all UC1 *output artefacts* (the landing-zone templates the Spec Parser Agent assembles). Use Terraform only when multi-cloud or an existing verified module mandates it.
@@ -193,7 +196,7 @@ Use the following mapping as a design constraint when structuring artefacts:
 npx --yes markdownlint-cli2 "**/*.md" "#node_modules"
 
 # Link check (catches broken cross-doc anchors when bumping versions)
-npx --yes markdown-link-check docs/**/*.md sprints/*.md .github/*.md
+npx --yes markdown-link-check docs/**/*.md docs/sprints/*.md .github/*.md
 
 # Bicep (UC1 output templates only)
 az bicep build --file infra/main.bicep
@@ -441,7 +444,7 @@ Before approving a PR, verify:
 
 ## 9. Document Versioning
 
-Every Markdown document in `docs/`, `sprints/`, `.github/`, and the root
+Every Markdown document in `docs/`, `docs/sprints/`, `.github/`, and the root
 `README.md` carries a version header (`Version`, `Date`, `Author`, `Status`,
 `Previous Version`). Doc versions follow **[Semantic Versioning 2.0](https://semver.org/)**
 adapted for prose:

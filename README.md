@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| Version | 1.4.0 |
-| Date | 2026-06-04 |
+| Version | 1.5.0 |
+| Date | 2026-06-10 |
 | Author | Urs Rueegg |
 | Status | Reviewed |
-| Previous Version | 1.3.1 (reviewed artefact linkage baseline) |
+| Previous Version | 1.4.0 (added Superpowers cutover operating references) |
 
 ## Executive Summary
 
@@ -72,4 +72,5 @@ flowchart LR
 | Business Value Assessment | ROM-based ROI, TCO, value levers, and executive KPI framework | [docs/BVA.md](docs/BVA.md) |
 | Solution Design Draft | MVP implementation view and phased delivery framing | [docs/SD.md](docs/SD.md) |
 | Agent Registry | Operational view of agent responsibilities and side-effect controls | [AGENTS.md](AGENTS.md) |
-| Sprint Trace | Detailed Sprint 02 refinement record and outcomes | [sprints/sprint-02-prd-refine-detailed-reviews.md](sprints/sprint-02-prd-refine-detailed-reviews.md) |
+| Superpowers Cutover Runbook | Migration guide for Superpowers-first execution while retaining governance controls | [docs/runbooks/superpowers-cutover.md](docs/runbooks/superpowers-cutover.md) |
+| Sprint Trace | Detailed Sprint 02 refinement record and outcomes | [docs/sprints/sprint-02-prd-refine-detailed-reviews.md](docs/sprints/sprint-02-prd-refine-detailed-reviews.md) |

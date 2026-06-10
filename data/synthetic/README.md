@@ -13,9 +13,9 @@
 This pack holds the **non-production, synthesized** SIT datasets and their
 contract schemas for the Sprint 6 minimum-data onboarding and specialty-driven
 capacity onboarding lanes. It is the executable Phase 1 deliverable for
-[`sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`](../../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md)
+[`docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`](../../docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md)
 "Data Platform Kickstart" and closes/advances register item `RV-06-10` in
-[`sprints/sprint-06/requires-validation-register.md`](../../sprints/sprint-06/requires-validation-register.md).
+[`docs/sprints/sprint-06/requires-validation-register.md`](../../docs/sprints/sprint-06/requires-validation-register.md).
 
 All records are fabricated. No real patient or provider data is present. The
 patient lane carries only a minimized, pseudonymous field set; direct
@@ -42,7 +42,7 @@ python3 data/synthetic/validate_datasets.py
 
 # Write a dated SIT evidence artifact
 python3 data/synthetic/validate_datasets.py \
-  --output sprints/sprint-06/evidence/2026-06-09-phase-1-sit-synthesized-data.json
+  --output docs/sprints/sprint-06/evidence/2026-06-09-phase-1-sit-synthesized-data.json
 
 # Run the unit tests
 python3 -m unittest discover -s data/synthetic/tests

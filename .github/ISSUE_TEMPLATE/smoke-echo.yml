@@ -1,25 +1,33 @@
-name: "Smoke — orchestrator echo"
-description: "Sprint 1 smoke fixture: trigger the orchestrator agent with a trivial echo request."
-title: "[SMOKE] orchestrator echo — <short-tag>"
-labels: ["smoke", "agent:orchestrator"]
+name: "Smoke — superpowers echo"
+description: "Smoke fixture: run a Superpowers-driven echo request with no cloud mutations."
+title: "[SMOKE] superpowers echo — <short-tag>"
+labels: ["smoke", "needs-triage"]
 assignees: ["copilot"]
 body:
   - type: markdown
     attributes:
       value: |
-        > Triggers the **orchestrator** agent (per [AGENTS.md](../../AGENTS.md)).
-        > The agent reads this issue, posts a single triage comment confirming
-        > the echo phrase, and exits. No branch, no PR, no calls to
-        > `azure-mcp`.
-        >
-        > Acceptance is defined by the `smoke-echo` fixture in
-        > [`agents/orchestrator/golden-tasks.md`](../../agents/orchestrator/golden-tasks.md).
+        > Triggers a **Superpowers-first** execution flow using GitHub Copilot.
+        > This smoke run validates issue intake and execution-mode handling.
+        > No Azure mutations are allowed.
+
+  - type: dropdown
+    id: execution_mode
+    attributes:
+      label: Execution mode
+      description: "Default is Superpowers. Legacy mode is for compatibility checks only."
+      options:
+        - "superpowers (default)"
+        - "legacy-agent-compat"
+      default: 0
+    validations:
+      required: true
 
   - type: input
     id: echo_phrase
     attributes:
       label: Echo phrase
-      description: "A short phrase the orchestrator will echo back in its triage comment."
+      description: "A short phrase Copilot should echo in the first response."
       placeholder: "Sprint 1 complete"
     validations:
       required: true
@@ -39,10 +47,10 @@ body:
   - type: dropdown
     id: auto_apply
     attributes:
-      label: Auto-apply orchestrator plan
-      description: "Include the `auto-apply-orchestrator` phrase so the agent skips the plan-comment wait. Smoke runs default to yes; specialized agents (UC1/UC2/UC3) ignore this field."
+      label: Auto-apply lightweight smoke plan
+      description: "Use yes for smoke-only runs. Deploy/delete operations still require explicit approval gating."
       options:
-        - "yes (auto-apply-orchestrator)"
+        - "yes"
         - "no (wait for human comment)"
       default: 0
     validations:

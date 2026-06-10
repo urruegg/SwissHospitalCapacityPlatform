@@ -1,4 +1,4 @@
-# Sprint 6 Optional Agent Wave Readiness (DFA / IWA / DQSA / CSA / EAA)
+﻿# Sprint 6 Optional Agent Wave Readiness (DFA / IWA / DQSA / CSA / EAA)
 
 | Field | Value |
 | ----- | ----- |
@@ -10,12 +10,12 @@
 
 ## Purpose
 
-Stage the **deferred optional agent wave** for Sprint 6 — Demand Forecasting
+Stage the **deferred optional agent wave** for Sprint 6 â€” Demand Forecasting
 Agent (DFA), Integration Workflow Agent (IWA), Data Quality and Semantics Agent
 (DQSA), Compliance and Safety Agent (CSA), and Explainability and Audit Agent
-(EAA) — and record the **explicit gate decision** on whether to onboard them in
+(EAA) â€” and record the **explicit gate decision** on whether to onboard them in
 Phase 3. This is the optional-wave deliverable for Phase 3 (#47) of
-[`sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`](../../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md)
+[`docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`\](../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md)
 "Optional agents (deferred to Phase 3)", and is non-blocking for the MVP Phase 1
 scope locked to OOA/DCA/BMCA in
 [`sprint-06-mvp-agent-readiness.md`](sprint-06-mvp-agent-readiness.md).
@@ -25,8 +25,8 @@ scope locked to OOA/DCA/BMCA in
 The optional agents remain **deferred backlog** and are realized as Markdown
 governance artifacts only, consistent with ADR-0002 (agents and controls are
 realized as Markdown). This note introduces no optional-agent implementation
-work; it records readiness signals and the gate decision that authorizes — or
-defers — onboarding.
+work; it records readiness signals and the gate decision that authorizes â€” or
+defers â€” onboarding.
 
 ## Optional Agent Backlog
 
@@ -44,15 +44,15 @@ closed-loop clinical actuation (`NFR-AI-001`).
 ## Gate Inputs
 
 The optional-wave decision reads the Sprint 6 phase gate states defined in
-[`../../sprints/sprint-06/gate-sequence.md`](../../sprints/sprint-06/gate-sequence.md)
+[`../../docs/sprints/sprint-06/gate-sequence.md`\](../sprints/sprint-06/gate-sequence.md)
 and the register in
-[`../../sprints/sprint-06/requires-validation-register.md`](../../sprints/sprint-06/requires-validation-register.md).
+[`../../docs/sprints/sprint-06/requires-validation-register.md`\](../sprints/sprint-06/requires-validation-register.md).
 
 | Gate input | State | Evidence |
 | ----- | ----- | ----- |
-| Phase 1 SIT gate | pass | [`../../sprints/sprint-06/evidence/2026-06-09-phase-1-sit-synthesized-data.json`](../../sprints/sprint-06/evidence/2026-06-09-phase-1-sit-synthesized-data.json) |
-| Phase 2 SIT gate | pass | [`../../sprints/sprint-06/evidence/2026-06-09-phase-2-sit-onboarding-policy.json`](../../sprints/sprint-06/evidence/2026-06-09-phase-2-sit-onboarding-policy.json) |
-| Phase 3 SIT gate (provider + degraded-mode) | pass | [`../../sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json`](../../sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json) |
+| Phase 1 SIT gate | pass | [`../../docs/sprints/sprint-06/evidence/2026-06-09-phase-1-sit-synthesized-data.json`\](../sprints/sprint-06/evidence/2026-06-09-phase-1-sit-synthesized-data.json) |
+| Phase 2 SIT gate | pass | [`../../docs/sprints/sprint-06/evidence/2026-06-09-phase-2-sit-onboarding-policy.json`\](../sprints/sprint-06/evidence/2026-06-09-phase-2-sit-onboarding-policy.json) |
+| Phase 3 SIT gate (provider + degraded-mode) | pass | [`../../docs/sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json`\](../sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json) |
 | Phase 1 PROD gate | pending | Owner approvals + version-header confirmation outstanding |
 | Phase 2 PROD gate | pending | Legal/compliance re-identification acceptance (`RV-06-04`) outstanding |
 | High-severity register blockers | open | `RV-06-04` (re-identification acceptance) remains a PROD blocker |
@@ -88,7 +88,7 @@ of the following hold:
 2. `RV-06-04` re-identification risk acceptance is `validated` with legal/security
    sign-off.
 3. The Phase 3 provider SIT evidence
-   ([`../../sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json`](../../sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json))
+   ([`../../docs/sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json`\](../sprints/sprint-06/evidence/2026-06-09-phase-3-sit-provider-degraded-mode.json))
    remains `pass` with zero critical failures.
 4. Each onboarded agent ships its own readiness baseline (scope, contracts,
    HITL gates) mirroring [`sprint-06-mvp-agent-readiness.md`](sprint-06-mvp-agent-readiness.md).
@@ -96,5 +96,6 @@ of the following hold:
 ## Change Control
 
 Any change to the optional-agent backlog or the gate decision bumps this
-document's version per `.github/copilot-instructions.md` §9 and must stay
+document's version per `.github/copilot-instructions.md` Â§9 and must stay
 consistent with the Sprint 6 phase plan and gate sequence.
+

@@ -1,12 +1,12 @@
-# TEST
+﻿# TEST
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 0.6.0 |
+| **Date** | 2026-06-10 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.0 (Sprint 05 evidence-automation checkpoints) |
+| **Previous Version** | 0.5.0 (legacy pack archive alignment for compatibility validation) |
 
 ## Purpose
 
@@ -14,7 +14,8 @@ Define the baseline quality strategy, quality gates, and evidence model for the
 Swiss Hospital Capacity Platform repository.
 
 This plan is designed for the current repository shape where delivery is
-governance-first (documents, agent prompts, workflows, and IaC outputs), with
+governance-first (documents, Superpowers execution workflow, compatibility
+agent prompts, workflows, and IaC outputs), with
 future extension into data, AI, app, and integration code lanes.
 
 ## Source Baseline
@@ -43,7 +44,8 @@ This document is aligned to:
 | Lane | Scope | Baseline Validation |
 | ----- | ----- | ----- |
 | Governance docs | PRD, ARCHITECTURE, AI, SECURITY, COMPLIANCE, DATA, BVA, README, sprint docs | Markdown lint, link check, traceability review |
-| Agent control lane | agents/*/AGENT.md and golden tasks | Golden-task replay, refusal and side-effect checks |
+| Superpowers execution lane | Superpowers-driven issue intake, planning, execution, and completion evidence | Execution-mode declaration, plan/verification evidence, PR contract conformance |
+| Agent control lane | agents-archive/*/AGENT.md and golden tasks (with stubs in agents/*) | Golden-task compatibility replay, refusal and side-effect checks |
 | Infrastructure lane | infra/**/*.bicep and environment parameters (when present) | Bicep build, what-if validation, policy baseline checks |
 | Delivery lane | .github workflows, issue templates, PR templates | Workflow lint, branch and approval rule checks |
 | Future data/AI/app lanes | data-platform, ai-models, apps, integrations (when populated) | Lane-specific tests and evaluation packs defined in lane-local READMEs |
@@ -59,20 +61,23 @@ This document is aligned to:
 
 ### Gate 1: Documentation Integrity
 
-Required for any change under docs/, sprints/, AGENTS.md, or README.md.
+Required for any change under docs/, docs/sprints/, AGENTS.md, or README.md.
 
 1. Markdown lint passes.
 2. Link check passes.
 3. Version header is updated per document versioning rules.
 4. Requirement and control traceability remains explicit for changed scope.
 
-### Gate 2: Agent Change Safety
+### Gate 2: Execution Method Safety
 
-Required for any change under agents/ or AGENTS.md.
+Required for execution-workflow changes under issue templates, PR templates,
+agents-archive/, agents/ stubs, or AGENTS.md.
 
-1. At least one happy-path golden task validated.
-2. At least one failure-mode/refusal golden task validated.
-3. Side-effect ceiling remains unchanged unless explicitly approved.
+1. Superpowers execution mode is declared for new work unless compatibility mode
+	is explicitly required.
+2. For legacy-agent compatibility mode, at least one happy-path and one
+	failure-mode golden task are validated.
+3. Side-effect ceilings remain unchanged unless explicitly approved.
 4. Deploy/delete confirmation rules remain intact and testable.
 
 ### Gate 3: Infrastructure Fitness
@@ -99,7 +104,7 @@ Primary baseline commands:
 
 ```bash
 npx --yes markdownlint-cli2 "**/*.md" "#node_modules"
-npx --yes markdown-link-check docs/**/*.md sprints/*.md .github/*.md
+npx --yes markdown-link-check docs/**/*.md docs/sprints/*.md .github/*.md
 az bicep build --file infra/main.bicep
 az deployment group what-if -g <rg> -f infra/main.bicep
 ```
@@ -143,7 +148,7 @@ Per the consolidated enforcement model in
 [`docs/adr/0007-0011-hardening-delta-summary.md`](adr/0007-0011-hardening-delta-summary.md)
 and the ADR-0008/0009/0010 evidence schemas, the following checkpoints are mandatory for
 affected scope and are captured via the PR evidence checklist
-[`sprints/sprint-05/pr-evidence-checklist.md`](../sprints/sprint-05/pr-evidence-checklist.md):
+[`docs/sprints/sprint-05/pr-evidence-checklist.md`\](sprints/sprint-05/pr-evidence-checklist.md):
 
 | Checkpoint | Source ADR | Evidence schema | Phase |
 | ----- | ----- | ----- | ----- |
@@ -163,7 +168,7 @@ the executable policy gate in [`policy/`](../policy/README.md) (`policy/policy_g
 blocking step on the SIT and PROD deploy workflows. Validate locally with
 `python3 policy/policy_gate.py --scope sit` and `python3 -m unittest discover -s policy/tests`.
 The Phase 2 SIT gate evidence is recorded in
-[`sprints/sprint-05/phase-2-policy-gate.md`](../sprints/sprint-05/phase-2-policy-gate.md).
+[`docs/sprints/sprint-05/phase-2-policy-gate.md`\](sprints/sprint-05/phase-2-policy-gate.md).
 
 ## Defect and Risk Handling
 
@@ -177,10 +182,12 @@ The Phase 2 SIT gate evidence is recorded in
 2. 100 percent pass on required golden tasks for changed agents.
 3. Zero unresolved high-severity security/compliance test findings at release gate.
 4. Explicit requirement traceability for all changed design and governance artifacts.
+5. Zero approval-gate bypasses (`approved-to-apply` remains mandatory for deploy/delete).
 
 ## Next Steps
 
 1. Add lane-local test commands as soon as data-platform, ai-models, apps, and
 	integrations code lanes are populated.
-2. Add automated golden-task replay workflow in .github/workflows.
+2. Keep automated legacy golden-task compatibility replay workflow in .github/workflows.
 3. Add release dashboard for gate pass rates and requirement coverage trend.
+

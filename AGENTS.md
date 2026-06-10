@@ -2,19 +2,25 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.7.0 |
-| **Date** | 2026-06-08 |
+| **Version** | 1.8.0 |
+| **Date** | 2026-06-10 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.6.0 (added review-session-agent registry row) |
+| **Previous Version** | 1.7.0 (Superpowers-first execution alignment; legacy agents retained for compatibility) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
 > which agents exist, which MCP servers they may call, and how they refuse
 > destructive actions.
 >
+> **Execution default (migration status)**: Superpowers-first execution is now
+> the default operating model for new work. The per-agent registry below is
+> retained as a compatibility layer during migration and remains authoritative
+> for side-effect ceilings, refusal rules, and approval gates.
+>
 > **Runtime**: Per [ADR-0002](docs/adr/0002-runtime-is-github-copilot-coding-agent.md),
-> every agent is realised as **Markdown** under `agents/<name>/` and configured
+> legacy agent packs are archived as **Markdown** under `agents-archive/<name>/`
+> with compatibility stubs retained under `agents/<name>/`, and configured
 > via [.github/copilot/mcp.json](.github/copilot/mcp.json) — no Python service,
 > no Foundry-hosted agent, no platform-runtime Azure infrastructure.
 
@@ -35,22 +41,26 @@
 
 | Agent | Use Case | Owner | Trigger | MCP Servers | Side-Effect Ceiling | Prompt | Golden Tasks |
 | ------- | ---------- | ------- | --------- | ------------- | -------------------- | -------- | -------------- |
-| `orchestrator` | Cross-cutting dispatcher | @urruegg | `@copilot` mention on any issue, or issue from [`smoke-echo.yml`](.github/ISSUE_TEMPLATE/smoke-echo.yml) | `github-mcp` | `write` | [`agents/orchestrator/AGENT.md`](agents/orchestrator/AGENT.md) | [`agents/orchestrator/golden-tasks.md`](agents/orchestrator/golden-tasks.md) |
-| `spec-parser-agent` | Spec discovery and PRD drafting from `docs/specs/` | @urruegg | Issue requesting requirement extraction or PRD creation from source specs | `github-mcp` | `write` | [`agents/spec-parser-agent/AGENT.md`](agents/spec-parser-agent/AGENT.md) | [`agents/spec-parser-agent/golden-tasks.md`](agents/spec-parser-agent/golden-tasks.md) |
-| `solution-design-agent` | PRD to solution architecture and MVP slicing | @urruegg | Issue requesting architecture, design, or scope decomposition from [docs/PRD.md](docs/PRD.md) | `github-mcp` | `write` | [`agents/solution-design-agent/AGENT.md`](agents/solution-design-agent/AGENT.md) | [`agents/solution-design-agent/golden-tasks.md`](agents/solution-design-agent/golden-tasks.md) |
-| `landing-zone-agent` | PRD + architecture to Azure landing zone and IaC | @urruegg | Issue requesting Azure landing zone, Bicep, or deployment-plan generation | `github-mcp`, `azure-mcp` | `deploy` (plan-first, gated by `approved-to-apply`) | [`agents/landing-zone-agent/AGENT.md`](agents/landing-zone-agent/AGENT.md) | [`agents/landing-zone-agent/golden-tasks.md`](agents/landing-zone-agent/golden-tasks.md) |
-| `compliance-agent` | Compliance coverage and control traceability | @urruegg | Issue requesting compliance mapping, evidence tracking, or policy gaps | `github-mcp` | `write` | [`agents/compliance-agent/AGENT.md`](agents/compliance-agent/AGENT.md) | [`agents/compliance-agent/golden-tasks.md`](agents/compliance-agent/golden-tasks.md) |
-| `data-design-agent` | Data model, contracts, and platform design | @urruegg | Issue requesting data model, data platform, or interoperability design | `github-mcp` | `write` | [`agents/data-design-agent/AGENT.md`](agents/data-design-agent/AGENT.md) | [`agents/data-design-agent/golden-tasks.md`](agents/data-design-agent/golden-tasks.md) |
-| `app-builder-agent` | App and integration implementation slices | @urruegg | Issue requesting app or integration implementation from approved architecture | `github-mcp` | `write` | [`agents/app-builder-agent/AGENT.md`](agents/app-builder-agent/AGENT.md) | [`agents/app-builder-agent/golden-tasks.md`](agents/app-builder-agent/golden-tasks.md) |
-| `test-verifier-agent` | Artefact validation across docs, IaC, app, and integration outputs | @urruegg | Issue requesting test plan, validation, or release readiness review | `github-mcp` | `write` | [`agents/test-verifier-agent/AGENT.md`](agents/test-verifier-agent/AGENT.md) | [`agents/test-verifier-agent/golden-tasks.md`](agents/test-verifier-agent/golden-tasks.md) |
-| `review-session-agent` | Review transcript evaluation and outcome reporting against repository artefacts | @urruegg | Issue requesting review-session transcript intake (for example Work IQ Teams Transcript) and evaluation report generation | `github-mcp`, `work-iq-mcp` (read-only) | `write` | [`agents/review-session-agent/AGENT.md`](agents/review-session-agent/AGENT.md) | [`agents/review-session-agent/golden-tasks.md`](agents/review-session-agent/golden-tasks.md) |
+| `orchestrator` | Cross-cutting dispatcher | @urruegg | `@copilot` mention on any issue, or issue from [`smoke-echo.yml`](.github/ISSUE_TEMPLATE/smoke-echo.yml) | `github-mcp` | `write` | [`agents-archive/orchestrator/AGENT.md`](agents-archive/orchestrator/AGENT.md) | [`agents-archive/orchestrator/golden-tasks.md`](agents-archive/orchestrator/golden-tasks.md) |
+| `spec-parser-agent` | Spec discovery and PRD drafting from `docs/specs/` | @urruegg | Issue requesting requirement extraction or PRD creation from source specs | `github-mcp` | `write` | [`agents-archive/spec-parser-agent/AGENT.md`](agents-archive/spec-parser-agent/AGENT.md) | [`agents-archive/spec-parser-agent/golden-tasks.md`](agents-archive/spec-parser-agent/golden-tasks.md) |
+| `solution-design-agent` | PRD to solution architecture and MVP slicing | @urruegg | Issue requesting architecture, design, or scope decomposition from [docs/PRD.md](docs/PRD.md) | `github-mcp` | `write` | [`agents-archive/solution-design-agent/AGENT.md`](agents-archive/solution-design-agent/AGENT.md) | [`agents-archive/solution-design-agent/golden-tasks.md`](agents-archive/solution-design-agent/golden-tasks.md) |
+| `landing-zone-agent` | PRD + architecture to Azure landing zone and IaC | @urruegg | Issue requesting Azure landing zone, Bicep, or deployment-plan generation | `github-mcp`, `azure-mcp` | `deploy` (plan-first, gated by `approved-to-apply`) | [`agents-archive/landing-zone-agent/AGENT.md`](agents-archive/landing-zone-agent/AGENT.md) | [`agents-archive/landing-zone-agent/golden-tasks.md`](agents-archive/landing-zone-agent/golden-tasks.md) |
+| `compliance-agent` | Compliance coverage and control traceability | @urruegg | Issue requesting compliance mapping, evidence tracking, or policy gaps | `github-mcp` | `write` | [`agents-archive/compliance-agent/AGENT.md`](agents-archive/compliance-agent/AGENT.md) | [`agents-archive/compliance-agent/golden-tasks.md`](agents-archive/compliance-agent/golden-tasks.md) |
+| `data-design-agent` | Data model, contracts, and platform design | @urruegg | Issue requesting data model, data platform, or interoperability design | `github-mcp` | `write` | [`agents-archive/data-design-agent/AGENT.md`](agents-archive/data-design-agent/AGENT.md) | [`agents-archive/data-design-agent/golden-tasks.md`](agents-archive/data-design-agent/golden-tasks.md) |
+| `app-builder-agent` | App and integration implementation slices | @urruegg | Issue requesting app or integration implementation from approved architecture | `github-mcp` | `write` | [`agents-archive/app-builder-agent/AGENT.md`](agents-archive/app-builder-agent/AGENT.md) | [`agents-archive/app-builder-agent/golden-tasks.md`](agents-archive/app-builder-agent/golden-tasks.md) |
+| `test-verifier-agent` | Artefact validation across docs, IaC, app, and integration outputs | @urruegg | Issue requesting test plan, validation, or release readiness review | `github-mcp` | `write` | [`agents-archive/test-verifier-agent/AGENT.md`](agents-archive/test-verifier-agent/AGENT.md) | [`agents-archive/test-verifier-agent/golden-tasks.md`](agents-archive/test-verifier-agent/golden-tasks.md) |
+| `review-session-agent` | Review transcript evaluation and outcome reporting against repository artefacts | @urruegg | Issue requesting review-session transcript intake (for example Work IQ Teams Transcript) and evaluation report generation | `github-mcp`, `work-iq-mcp` (read-only) | `write` | [`agents-archive/review-session-agent/AGENT.md`](agents-archive/review-session-agent/AGENT.md) | [`agents-archive/review-session-agent/golden-tasks.md`](agents-archive/review-session-agent/golden-tasks.md) |
 | `pr-review` | UC3 — PR Review | @urruegg | GitHub pull request or issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp` | `write` (GitHub review comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
-| `drift-analyzer` | Solution and Azure drift detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents/drift-analyzer/AGENT.md` §2](agents/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents/drift-analyzer/AGENT.md`](agents/drift-analyzer/AGENT.md) | [`agents/drift-analyzer/golden-tasks.md`](agents/drift-analyzer/golden-tasks.md) |
+| `drift-analyzer` | Solution and Azure drift detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents-archive/drift-analyzer/AGENT.md` §2](agents-archive/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents-archive/drift-analyzer/AGENT.md`](agents-archive/drift-analyzer/AGENT.md) | [`agents-archive/drift-analyzer/golden-tasks.md`](agents-archive/drift-analyzer/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per
-> [SPRINT_PLAN.md](sprints/SPRINT_PLAN.md). No agent prompt file is required
+> [SPRINT_PLAN.md](docs/sprints/SPRINT_PLAN.md). No agent prompt file is required
 > to exist on disk before its sprint.
+>
+> **Migration note**: For new issue intake, use Superpowers execution mode in
+> issue templates. Agent-specific routing labels remain for legacy compatibility
+> and controlled rollback only.
 
 ---
 
