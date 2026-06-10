@@ -7,6 +7,12 @@
 
 <!-- e.g., Closes #123 -->
 
+- Parent sprint issue: `#...` (required)
+- Delivery issue for this PR: `#...` (required)
+
+> Traceability rule: every PR must link to at least one sprint-scoped GitHub
+> issue, and every sprint issue must be closed by one or more linked PRs.
+
 ## Requirements Implemented
 
 > **Required** by [NFR-GOV-006](../docs/PRD.md#55-governance--compliance-nfr-gov-).
@@ -20,6 +26,7 @@
 
 - Sprint: `S<N>` — sprint file: `docs/sprints/sprint-<N>-<name>.md`
 - User stories: `S<N>-<n>`, …
+- Sprint issue link: `#...` (required)
 
 ## Execution Mode
 
