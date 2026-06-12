@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-12 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (new execution pack) |
+| **Previous Version** | 1.1.0 (shared baseline link added) |
 
 ## Purpose
 
@@ -19,6 +19,8 @@ platform and data products delivery.
 2. [issue-body-templates.md](issue-body-templates.md) - Reusable issue prompts for each stage.
 3. [checkpoint-matrix.md](checkpoint-matrix.md) - Stage and gate checklist with pass criteria.
 4. [kpi-weekly-template.md](kpi-weekly-template.md) - Weekly performance and quality report template.
+5. [data-model-and-data-product.md](data-model-and-data-product.md) - Episode-based model and first data product scope.
+6. [sample-data-generator.md](sample-data-generator.md) - Metadata-only sample data generator scope.
 
 ## Shared Baseline
 

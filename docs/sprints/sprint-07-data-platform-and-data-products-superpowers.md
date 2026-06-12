@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-12 |
 | **Author** | GitHub Copilot |
 | **Status** | Planned |
-| **Previous Version** | 0.0.0 (new sprint baseline) |
+| **Previous Version** | 1.0.0 (new sprint baseline) |
 
 ## Sprint Goal
 
@@ -26,15 +26,27 @@ compliance, and evidence controls already defined in repository baselines.
 6. [docs/ALM_PLAN.md](../ALM_PLAN.md)
 7. [docs/TEST.md](../TEST.md)
 8. [docs/runbooks/superpowers-cutover.md](../runbooks/superpowers-cutover.md)
+9. [docs/reviews/2026-06-10-ama-sd-review.md](../reviews/2026-06-10-ama-sd-review.md)
+10. [docs/reviews/2026-06-09-ama-sd-review.md](../reviews/2026-06-09-ama-sd-review.md)
+11. [docs/reviews/2026-06-09-ama-cto-mentor-review.md](../reviews/2026-06-09-ama-cto-mentor-review.md)
 
 ## Sprint Scope
 
 ### In scope
 
-1. Implement data-platform slices for ingestion-to-curation-to-serving paths.
-2. Implement first data-product slices with explicit contract ownership.
-3. Enforce Superpowers stage-gates for design, planning, execution, review, and closure.
-4. Capture weekly KPI evidence for acceleration and quality.
+1. Implement the episode-based data model and first data-product slices with explicit contract ownership.
+2. Implement a sample data generator for pseudonymised, metadata-only planning datasets.
+3. Implement data-platform slices for ingestion-to-curation-to-serving paths.
+4. Enforce Superpowers stage-gates for design, planning, execution, review, and closure.
+5. Capture weekly KPI evidence for acceleration and quality.
+
+### Review-driven constraints (mandatory)
+
+1. Follow Hospital Operations abstraction: control unit is Hospitalisation Episode, not patient.
+2. Preserve Minimal-Invasive Data Architecture: no PII in planning platform, pseudonymised identifiers only.
+3. Enforce boundary separation: KIS identity layer vs planning metadata layer.
+4. Include metadata quality controls (validation rules and completeness thresholds) as part of the data-product scope.
+5. Keep governance traceability explicit (requirements, controls, evidence) for every scope slice.
 
 ### Out of scope
 
@@ -62,6 +74,8 @@ Each workflow stage has explicit artifacts and entry/exit criteria in
 3. [docs/sprints/sprint-07/issue-body-templates.md](sprint-07/issue-body-templates.md)
 4. [docs/sprints/sprint-07/checkpoint-matrix.md](sprint-07/checkpoint-matrix.md)
 5. [docs/sprints/sprint-07/kpi-weekly-template.md](sprint-07/kpi-weekly-template.md)
+6. [docs/sprints/sprint-07/data-model-and-data-product.md](sprint-07/data-model-and-data-product.md)
+7. [docs/sprints/sprint-07/sample-data-generator.md](sprint-07/sample-data-generator.md)
 
 ## Definition of Done
 
@@ -70,3 +84,5 @@ Each workflow stage has explicit artifacts and entry/exit criteria in
 3. Data-product changes include contract/schema and validation evidence.
 4. Weekly KPI summary is produced from sprint execution data.
 5. No deploy/delete action bypasses `approved-to-apply`.
+6. Episode-based demand/supply metadata model is documented and traceable to review decisions.
+7. Sample data generator produces pseudonymised, metadata-only datasets with quality checks.
