@@ -22,3 +22,6 @@ config:
   # restart-numbered sub-lists; accepted as baseline house style for now.
   MD007: false
   MD029: false
+
+  # Imported baseline docs contain intentional visual section spacing.
+  MD012: false
