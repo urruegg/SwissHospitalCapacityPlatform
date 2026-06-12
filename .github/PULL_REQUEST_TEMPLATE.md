@@ -35,6 +35,31 @@
 - [ ] `superpowers` (default)
 - [ ] `legacy-agent-compat`
 
+## Skill Applicability and Evidence
+
+<!-- Required by Superpowers Skills System policy. -->
+
+- [ ] `writing-plans` applicable and evidence linked
+- [ ] `test-driven-development` applicable and evidence linked
+- [ ] `systematic-debugging` applicable and evidence linked
+- [ ] `verification-before-completion` applicable and evidence linked
+
+Non-applicable rationale (required for every unchecked skill):
+
+- `writing-plans`: ...
+- `test-driven-development`: ...
+- `systematic-debugging`: ...
+- `verification-before-completion`: ...
+
+Evidence links:
+
+- Planning artifact or issue comment: ...
+- Test or validation output: ...
+- Debug log or incident analysis (if applicable): ...
+- Final verification output: ...
+
+Legacy mode approval issue: `#...` (required only if `legacy-agent-compat` is checked)
+
 ## Validation Evidence
 
 <!-- Commands executed + outcomes. Paste tail of relevant output. -->

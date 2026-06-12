@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-12 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 0.0.0 (new execution pack) |
+| **Previous Version** | 1.0.0 (new execution pack) |
 
 ## Purpose
 
@@ -19,6 +19,12 @@ platform and data products delivery.
 2. [issue-body-templates.md](issue-body-templates.md) - Reusable issue prompts for each stage.
 3. [checkpoint-matrix.md](checkpoint-matrix.md) - Stage and gate checklist with pass criteria.
 4. [kpi-weekly-template.md](kpi-weekly-template.md) - Weekly performance and quality report template.
+
+## Shared Baseline
+
+Use the reusable Superpowers checkpoint baseline in
+[docs/sprints/superpowers-checkpoint-matrix.md](../superpowers-checkpoint-matrix.md)
+for cross-sprint consistency.
 
 ## Parent Sprint Document
 

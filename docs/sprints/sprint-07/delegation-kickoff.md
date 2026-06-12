@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-12 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 0.0.0 (new kickoff guide) |
+| **Previous Version** | 1.0.0 (new kickoff guide) |
 
 ## Objective
 
@@ -24,9 +24,11 @@ mandatory issue-to-PR traceability.
 1. Stage 1 `brainstorming`
 2. Stage 3 `writing-plans`
 3. Stage 4 `subagent-driven-development` or `executing-plans`
-4. Stage 5 `test-driven-development`
-5. Stage 6 `requesting-code-review`
-6. Stage 7 `finishing-a-development-branch`
+4. `systematic-debugging` when failures, regressions, or unexpected behavior appears
+5. Stage 5 `test-driven-development`
+6. Stage 6 `requesting-code-review`
+7. `verification-before-completion` before claiming completion
+8. Stage 7 `finishing-a-development-branch`
 
 Use detailed templates in [issue-body-templates.md](issue-body-templates.md).
 
@@ -67,6 +69,7 @@ Examples:
 3. Requirements implemented list
 4. Validation evidence
 5. Security/compliance impact
+6. Skill applicability and evidence for core Superpowers skills
 
 Use [../../../../.github/PULL_REQUEST_TEMPLATE.md](../../../../.github/PULL_REQUEST_TEMPLATE.md).
 

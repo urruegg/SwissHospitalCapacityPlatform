@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.1 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-06-12 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (new stage runbook) |
+| **Previous Version** | 1.0.1 (traceability controls added) |
 
 ## Purpose
 
@@ -19,7 +19,7 @@ criteria, outputs, and gates per stage.
 
 1. Sprint-scoped GitHub issue exists for the delivery slice.
 2. Issue has problem statement and target lane.
-2. FR/NFR IDs are listed.
+3. FR/NFR IDs are listed.
 
 ### Stage 1 Required outputs
 
@@ -84,6 +84,22 @@ Plan approved before implementation tasks run.
 
 Critical issues block progression to next task cluster.
 
+## Stage 4.1 - systematic-debugging (conditional mandatory)
+
+### Stage 4.1 Entry criteria
+
+1. Any failure, regression, flaky test, or unexpected behavior appears during execution.
+
+### Stage 4.1 Required outputs
+
+1. Reproducible failure statement and scope.
+2. Hypothesis-driven debugging record.
+3. Verified root-cause evidence.
+
+### Stage 4.1 Gate
+
+No workaround-only closure without identified root cause or explicit risk acceptance by owner.
+
 ## Stage 5 - test-driven-development
 
 ### Stage 5 Entry criteria
@@ -120,6 +136,7 @@ No critical findings open before branch closeout.
 
 1. All planned tasks complete.
 2. Required checks pass.
+3. `verification-before-completion` evidence is attached.
 
 ### Stage 7 Required outputs
 
@@ -139,4 +156,5 @@ PR merge only when governance and approval rules are satisfied.
 3. Security/compliance impact statement in each PR.
 4. Every delivery slice starts with a sprint-linked issue.
 5. Every mergeable change is delivered through a PR linked to that issue.
-6. Checkpoint matrix completion: [checkpoint-matrix.md](checkpoint-matrix.md).
+6. Core skills are explicitly assessed: `writing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`.
+7. Checkpoint matrix completion: [checkpoint-matrix.md](checkpoint-matrix.md).

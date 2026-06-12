@@ -72,6 +72,7 @@ when supplied, and exits `0` on pass / `1` on fail.
 | Surface | Workflow | Behaviour |
 | ----- | ----- | ----- |
 | CI (pull request / push) | `.github/workflows/policy-gate.yml` | Runs unit tests, then the SIT-scope gate; uploads the evidence artifact. |
+| CI (pull request) | `.github/workflows/superpowers-compliance.yml` | Validates PR contract fields for Superpowers execution mode, issue linkage, and core-skill evidence expectations. |
 | SIT deploy | `.github/workflows/cd-infra-deploy-sit.yml` | Blocking SIT-scope gate before any `az deployment`. |
 | PROD promotion | `.github/workflows/cd-infra-deploy-prod.yml` | Blocking PROD-scope gate before any `az deployment`. |
 

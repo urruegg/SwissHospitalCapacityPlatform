@@ -1,0 +1,69 @@
+name: superpowers-compliance
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: superpowers-compliance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-contract:
+    name: Validate Superpowers PR Contract
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request != null }}
+    steps:
+      - name: Validate required PR sections and fields
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = (context.payload.pull_request.body || "").toString();
+            const missing = [];
+
+            const requiredSnippets = [
+              "## Linked Issue / Work Item",
+              "Parent sprint issue:",
+              "Delivery issue for this PR:",
+              "## Execution Mode",
+              "## Skill Applicability and Evidence",
+              "writing-plans",
+              "test-driven-development",
+              "systematic-debugging",
+              "verification-before-completion",
+              "Legacy mode approval issue:"
+            ];
+
+            for (const token of requiredSnippets) {
+              if (!body.includes(token)) {
+                missing.push(`Missing required PR contract token: ${token}`);
+              }
+            }
+
+            const legacyChecked = /- \[x\]\s*`legacy-agent-compat`/i.test(body);
+            if (legacyChecked) {
+              if (!/Legacy mode approval issue:\s*`?#\d+/i.test(body)) {
+                missing.push("legacy-agent-compat is checked but Legacy mode approval issue is missing or invalid.");
+              }
+            }
+
+            const requiredIssueRefs = [
+              /Parent sprint issue:\s*`?#\d+/i,
+              /Delivery issue for this PR:\s*`?#\d+/i,
+              /Sprint issue link:\s*`?#\d+/i,
+            ];
+
+            for (const pattern of requiredIssueRefs) {
+              if (!pattern.test(body)) {
+                missing.push(`Missing required issue reference matching ${pattern}`);
+              }
+            }
+
+            if (missing.length > 0) {
+              core.setFailed(missing.join("\n"));
+            } else {
+              core.info("Superpowers PR contract validated.");
+            }

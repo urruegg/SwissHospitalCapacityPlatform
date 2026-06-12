@@ -44,6 +44,37 @@ body:
     validations:
       required: true
 
+  - type: checkboxes
+    id: applicable_skills
+    attributes:
+      label: Applicable Superpowers skills
+      description: "Select every skill that applies for this run."
+      options:
+        - label: "writing-plans"
+        - label: "test-driven-development"
+        - label: "systematic-debugging"
+        - label: "verification-before-completion"
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_applicable_rationale
+    attributes:
+      label: Non-applicable skill rationale
+      description: "For each non-selected core skill, provide why it does not apply."
+      placeholder: "test-driven-development: documentation-only smoke flow"
+    validations:
+      required: true
+
+  - type: input
+    id: legacy_mode_approval_issue
+    attributes:
+      label: Legacy mode approval issue
+      description: "Required only when execution mode is legacy-agent-compat."
+      placeholder: "#123"
+    validations:
+      required: false
+
   - type: dropdown
     id: auto_apply
     attributes:
@@ -62,4 +93,6 @@ body:
       label: Acknowledgements
       options:
         - label: "This is a smoke run only. No production data and no Azure mutations."
+          required: true
+        - label: "If I selected legacy-agent-compat, I provided an approval issue reference."
           required: true
