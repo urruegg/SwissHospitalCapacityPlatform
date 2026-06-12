@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-06-12 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.1 (traceability checkpoints added) |
+| **Previous Version** | 1.1.0 (traceability checkpoints added) |
 
 ## Usage
 
@@ -16,7 +16,7 @@ Mark each checkpoint `pass`, `fail`, or `n/a` with evidence links.
 
 | Stage | Checkpoint | Pass Criteria | Evidence |
 | ----- | ----- | ----- | ----- |
-| brainstorming | Design brief approved | Alternatives and acceptance criteria documented | Link to issue comment or artifact |
+| brainstorming | Design brief approved | Alternatives and acceptance criteria documented | [brainstorming-policy-evidence-slice.md](brainstorming-policy-evidence-slice.md) (policy-evidence-slice) or link to issue comment/artifact |
 | using-git-worktrees | Worktree isolation complete | One worktree per major slice and clean baseline check | Terminal output or note |
 | writing-plans | Sprint issue present | Sprint-linked issue exists before implementation starts | Issue link |
 | writing-plans | Plan quality gate | Tasks include files, verification, requirement mapping | Plan artifact link |
