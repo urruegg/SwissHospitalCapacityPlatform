@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.8.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.9.0 |
+| **Date** | 2026-06-12 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.7.0 (Superpowers-first execution alignment; legacy agents retained for compatibility) |
+| **Previous Version** | 1.8.0 (Superpowers-first execution alignment; legacy agents retained for compatibility) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -23,6 +23,32 @@
 > with compatibility stubs retained under `agents/<name>/`, and configured
 > via [.github/copilot/mcp.json](.github/copilot/mcp.json) — no Python service,
 > no Foundry-hosted agent, no platform-runtime Azure infrastructure.
+
+## Superpowers Skill Enforcement
+
+This repository enforces mandatory skill execution semantics for Superpowers.
+
+Before any task:
+
+1. Determine if a Superpowers skill applies.
+2. If a skill applies, read its `SKILL.md` before proceeding.
+
+If a skill applies:
+
+1. Use of that skill is mandatory.
+2. Required steps in that skill must not be skipped.
+3. If multiple skills apply, run them in a documented, justified sequence.
+
+Core skills that must always be considered for applicable work:
+
+1. `test-driven-development`
+2. `systematic-debugging`
+3. `writing-plans`
+4. `verification-before-completion`
+
+Compliance requirement:
+
+1. Work that skips applicable mandatory skills is non-compliant and must be corrected before PR completion.
 
 ---
 

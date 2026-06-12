@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.4.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.5.0 |
+| **Date** | 2026-06-12 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.3.0 (legacy packs archived; agents path now compatibility stubs) |
+| **Previous Version** | 1.4.0 (Superpowers-first baseline for new work) |
 
 This repository hosts a sample **Swiss Hospital Capacity Platform**: a system where AI agents
 plan, execute, and observe hospital capacity management workflows (CI/CD, infrastructure provisioning,
@@ -25,6 +25,31 @@ Microsoft 365 resources via MCP servers.
 
 Use these instructions to guide all code, documentation, and review suggestions in
 this repo.
+
+### Superpowers Skills System (Mandatory)
+
+Before starting any task:
+
+1. Check whether a Superpowers skill applies to the requested work.
+2. If a skill applies, read its `SKILL.md` before implementation.
+
+When a skill applies:
+
+1. Skill usage is mandatory.
+2. Do not skip required steps in that skill.
+3. If multiple skills apply, execute them in a defensible order and document the order in your reasoning or issue/PR trail.
+
+Core skills that must always be considered for applicable work:
+
+1. `test-driven-development`
+2. `systematic-debugging`
+3. `writing-plans`
+4. `verification-before-completion`
+
+Enforcement:
+
+1. If a mandatory applicable skill is not used, treat the run as non-compliant.
+2. Non-compliant runs must be corrected before completion or merge.
 
 ### Scenario Alignment (Case Study 26)
 The target domain is a regulated Swiss healthcare platform for patient-flow and

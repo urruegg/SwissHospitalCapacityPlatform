@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.2.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 2.3.0 |
+| **Date** | 2026-06-12 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.1.0 (legacy packs archived; compatibility stubs retained) |
+| **Previous Version** | 2.2.0 (Superpowers execution playbook baseline) |
 
 ## Purpose
 
@@ -33,6 +33,26 @@ verification, and approval gates.
 3. Refuse out-of-scope or unsafe actions.
 4. Follow workflow discipline: design -> plan -> execute -> review -> verify.
 
+## Superpowers Skills System (Mandatory)
+
+Before starting any task:
+
+1. Check if a Superpowers skill applies.
+2. If yes, read the relevant `SKILL.md` and follow it.
+
+When a skill applies:
+
+1. It is mandatory to use it.
+2. Do not skip steps.
+3. If multiple skills apply, execute them in a documented sequence.
+
+Core skills to always consider:
+
+1. `test-driven-development`
+2. `systematic-debugging`
+3. `writing-plans`
+4. `verification-before-completion`
+
 ## Cutover Status
 
 1. Default mode is Superpowers-driven execution.
@@ -46,7 +66,7 @@ verification, and approval gates.
 
 ## Superpowers Workflow Mapping
 
-Use this sequence as default unless sprint objectives require adjustments.
+Use this sequence as mandatory baseline unless a higher-priority repository safety or compliance rule requires an additional step.
 
 1. brainstorming: refine scope, alternatives, and acceptance criteria.
 2. writing-plans: create a small-step implementation plan with explicit files.
