@@ -140,4 +140,3 @@ the traceability baseline that every phase PR must reference via
    their target phase, consistent with the consolidated enforcement gate model.
 4. Any change to this register bumps the document version per
    `.github/copilot-instructions.md` §9.
-

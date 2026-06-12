@@ -98,4 +98,3 @@ of the following hold:
 Any change to the optional-agent backlog or the gate decision bumps this
 document's version per `.github/copilot-instructions.md` Â§9 and must stay
 consistent with the Sprint 6 phase plan and gate sequence.
-

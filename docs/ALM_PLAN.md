@@ -186,4 +186,3 @@ Track minimum ALM KPIs:
 2. Add golden-task replay workflow for agent changes.
 3. Add release-readiness checklist artifact under docs/operations.
 4. Add KPI dashboard update cadence into sprint reporting.
-

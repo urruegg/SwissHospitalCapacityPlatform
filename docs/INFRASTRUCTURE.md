@@ -107,4 +107,3 @@ dedicated landing-zone governance evidence document is a Phase 2 deliverable, tr
 [`docs/sprints/sprint-05/requires-validation-register.md`\](sprints/sprint-05/requires-validation-register.md).
 Policy assignment and residency/deployment-type enforcement are governed by `ADR-0010`
 (policy-as-code) and implemented as CI checks in Sprint 05 Phase 2.
-

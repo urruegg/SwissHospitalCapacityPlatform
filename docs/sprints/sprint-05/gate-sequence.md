@@ -101,4 +101,3 @@ Any change to the gate sequence bumps this document's version per
 `.github/copilot-instructions.md` §9 and must stay consistent with the phase
 gates in the sprint file and the enforcement gate model in the hardening delta
 summary.
-

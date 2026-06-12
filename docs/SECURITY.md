@@ -257,4 +257,3 @@ These items are governed by the Sprint 05 hardening ADRs and tracked in
 2. DSR operations and privacy-incident timing matrix become executable runbooks in
    Phase 2 (`RV-04`), mapped to `CH-C04`/`CH-C06`.
 3. Control-effectiveness telemetry consolidation is tracked for Phase 4 (`RV-10`).
-

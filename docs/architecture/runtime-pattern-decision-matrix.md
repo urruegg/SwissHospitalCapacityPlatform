@@ -118,4 +118,3 @@ following documents are aligned to it and must not state a conflicting default:
 
 Any change to the decision matrix or boundary contract register bumps this document's
 version per `.github/copilot-instructions.md` Â§9 and must stay consistent with ADR-0008.
-

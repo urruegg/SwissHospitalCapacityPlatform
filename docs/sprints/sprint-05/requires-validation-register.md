@@ -126,4 +126,3 @@ reviewers confirm the controls are sufficient for subsequent sprints (Phase 4 PR
    their target phase, consistent with the consolidated enforcement gate model.
 4. Any change to this register bumps the document version per
    `.github/copilot-instructions.md` §9.
-

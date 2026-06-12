@@ -92,4 +92,3 @@ satisfying the Phase 1 Definition of Done.
 Any change to closure status or artifact links bumps this document's version per
 `.github/copilot-instructions.md` Â§9 and must stay consistent with the requires-validation
 register and the hardening delta summary.
-

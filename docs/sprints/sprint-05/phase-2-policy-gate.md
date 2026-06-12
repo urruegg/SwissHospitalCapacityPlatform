@@ -139,4 +139,3 @@ mandatory-control coverage. In CI the same gate runs in
 Any change to this evidence record or the gate behaviour bumps this document's
 version per `.github/copilot-instructions.md` §9 and must stay consistent with
 ADR-0010 and ADR-0011.
-

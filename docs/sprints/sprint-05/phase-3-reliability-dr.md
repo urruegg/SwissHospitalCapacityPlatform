@@ -154,4 +154,3 @@ PHI cross-region failover stays default-deny pending a compliance-approved excep
 Any change to this evidence record or the rehearsal results bumps this document's
 version per `.github/copilot-instructions.md` §9 and must stay consistent with
 ADR-0009 and the reliability/DR profile.
-

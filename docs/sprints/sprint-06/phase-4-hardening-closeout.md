@@ -127,4 +127,3 @@ closeout artifact gap is resolved. However, Sprint 6 should remain
 Any change to this closeout package or its recommendation bumps this document's
 version per `.github/copilot-instructions.md` §9 and must stay consistent with
 the Sprint 6 phase plan.
-

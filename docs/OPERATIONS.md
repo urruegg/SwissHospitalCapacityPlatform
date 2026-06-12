@@ -251,4 +251,3 @@ boundaries by data class, and the DR rehearsal evidence model â€” is define
 4. Define incident communication templates and escalation matrix.
 5. Add operations readiness checklist referenced by release PR template.
 6. Add monthly operations review cadence with KPI trend reporting.
-

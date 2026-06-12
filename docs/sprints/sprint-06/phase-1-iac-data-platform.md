@@ -144,4 +144,3 @@ four synthesized onboarding datasets. The same gate runs in CI in
 Any change to this evidence record or the synthesized-data gate behaviour bumps
 this document's version per `.github/copilot-instructions.md` §9 and must stay
 consistent with the Sprint 6 phase plan.
-

@@ -101,4 +101,3 @@ These mirror the MVP agent solution design and remain mandatory for Phase 1.
 Any change to MVP agent scope or the IaC mapping bumps this document's version
 per `.github/copilot-instructions.md` Â§9 and must keep MVP Phase 1 scope locked
 to OOA/DCA/BMCA.
-

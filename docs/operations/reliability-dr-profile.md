@@ -139,4 +139,3 @@ Per ADR-0009 Target 5:
 
 Any change to recovery classes, targets, or the evidence schema bumps this document's
 version per `.github/copilot-instructions.md` Â§9 and must stay consistent with ADR-0009.
-

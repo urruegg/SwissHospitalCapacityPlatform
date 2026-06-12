@@ -59,4 +59,3 @@ These artifacts are governance documentation only. They create no infrastructure
 and change no runtime behavior, consistent with ADR-0002 (agents and controls are
 realized as Markdown). Phase 1..4 implementation work is tracked in the
 respective phase issues and must not start until Phase 0 PROD gate passes.
-

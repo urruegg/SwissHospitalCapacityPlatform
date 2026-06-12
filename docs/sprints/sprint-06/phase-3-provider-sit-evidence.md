@@ -167,4 +167,3 @@ MVP Phase 1 scope stays locked to OOA/DCA/BMCA.
 Any change to this evidence record or the provider degraded-mode gate behaviour
 bumps this document's version per `.github/copilot-instructions.md` §9 and must
 stay consistent with the Sprint 6 phase plan.
-

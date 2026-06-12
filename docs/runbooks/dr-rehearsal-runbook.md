@@ -118,4 +118,3 @@ Before closing this runbook execution:
 - [docs/operations/reliability-dr-profile.md](../operations/reliability-dr-profile.md) â€” recovery classes, targets, evidence schema (ADR-0009)
 - [docs/OPERATIONS.md](../OPERATIONS.md) â€” DR test evidence checkpoints
 - [docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md](../adr/0009-reliability-and-dr-baseline-for-sit-prod.md) â€” reliability/DR baseline decision
-

@@ -198,4 +198,3 @@ live-agent replay remains a tracked residual risk and does not block SIT.
 Any change to this evidence record or the golden-task fixtures bumps this
 document's version per `.github/copilot-instructions.md` §9 and must stay
 consistent with ADR-0007, ADR-0008, and ADR-0010.
-

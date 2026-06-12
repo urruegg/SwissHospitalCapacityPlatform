@@ -97,4 +97,3 @@ but both must complete before Phase 4 (#37) starts.
 Any change to the issue tree or dependency edges requires a bump to this
 document's version per `.github/copilot-instructions.md` §9 and must remain
 consistent with the delegation runbook dependency model.
-

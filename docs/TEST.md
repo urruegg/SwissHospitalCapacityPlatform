@@ -190,4 +190,3 @@ The Phase 2 SIT gate evidence is recorded in
 	integrations code lanes are populated.
 2. Keep automated legacy golden-task compatibility replay workflow in .github/workflows.
 3. Add release dashboard for gate pass rates and requirement coverage trend.
-

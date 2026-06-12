@@ -226,4 +226,3 @@ For this repository, Purview shall be treated as:
 4. Add evidence collection templates for E-01 to E-09.
 5. Add canton-specific annex once target canton rollout plan is fixed.
    Seeded in [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md) (Sprint 05).
-
