@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Traceability map from synthesized Sprint 6 onboarding datasets to their contract schemas and FR/NFR/CH controls and requires-validation register items. Consumed by validate_datasets.py to produce the Phase 1 SIT contract/schema validation evidence, the Phase 2 onboarding policy and schema enforcement evidence (minimum-data purpose tags, specialty-metadata quality and versioning, cross-tenant identity boundary), and the Phase 3 provider SIT evidence with degraded-mode and recovery reliability controls.",
   "specialtyTaxonomyVersion": "1.0.0",
   "datasets": [
@@ -85,6 +85,18 @@
       "fr": ["FR-DATA-001", "FR-DATA-002", "FR-DATA-005"],
       "nfr": ["NFR-COMP-011", "NFR-DQ-005"],
       "ch": ["CH-C01", "CH-C05"],
+      "rv": ["RV-06-10"]
+    },
+    {
+      "datasetId": "DS-MATCH-REC-sit-2026-06-12",
+      "lane": "planning-match-recommendation",
+      "providerScope": "none",
+      "dataFile": "datasets/dc-match-recommendation-v1.sample.json",
+      "schemaFile": "schema/dc-match-recommendation-v1.schema.json",
+      "minimizationChecked": false,
+      "fr": ["FR-DATA-002", "FR-DATA-005", "FR-DATA-008"],
+      "nfr": ["NFR-AI-003", "NFR-AI-004", "NFR-COMP-011"],
+      "ch": ["CH-C01", "CH-C03", "CH-C05"],
       "rv": ["RV-06-10"]
     }
   ]

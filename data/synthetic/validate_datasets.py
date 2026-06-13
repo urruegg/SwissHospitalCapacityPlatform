@@ -236,6 +236,8 @@ def validate_schema(value: Any, schema: dict, path: str) -> list[str]:
     if expected_type == "array" and isinstance(value, list):
         if "minItems" in schema and len(value) < schema["minItems"]:
             errors.append(f"{path}: array length {len(value)} < minItems {schema['minItems']}")
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            errors.append(f"{path}: maxItems violated ({len(value)} > {schema['maxItems']})")
         item_schema = schema.get("items")
         if item_schema:
             for index, item in enumerate(value):
@@ -429,6 +431,67 @@ def check_planning_phi_denylist(records: list[dict], dataset_id: str,
     if failures == 0:
         report.add(CheckResult("CH-C01", "low", True,
             "Planning PHI/clinical denylist clean.", dataset_id))
+
+
+def check_recommendation_invariants(records: list[dict], dataset_id: str,
+                                    report: GateReport) -> None:
+    """Validate DC-MATCH-RECOMMENDATION-v1 invariants (spec §7.5)."""
+    failures = 0
+    for rec in records:
+        rec_id = rec.get("recommendationId", "<unknown>")
+        candidates = rec.get("candidates") or []
+
+        ranks = [c.get("rank") for c in candidates]
+        if ranks != list(range(1, len(candidates) + 1)):
+            report.add(CheckResult("NFR-AI-003", "high", False,
+                f"Recommendation {rec_id!r} ranks must be 1..N dense ascending; got {ranks}.",
+                dataset_id))
+            failures += 1
+        scores = [c.get("fitScore", 0) for c in candidates]
+        if any(scores[i] < scores[i + 1] for i in range(len(scores) - 1)):
+            report.add(CheckResult("NFR-AI-003", "high", False,
+                f"Recommendation {rec_id!r} fitScore must be non-increasing; got {scores}.",
+                dataset_id))
+            failures += 1
+
+        for c in candidates:
+            if c.get("hardConstraintsMet") is not True:
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rec_id!r} candidate rank {c.get('rank')} "
+                    "hardConstraintsMet=False (must be excluded).", dataset_id))
+                failures += 1
+            weights = [f.get("weight", 0) for f in (c.get("explanationFactors") or [])]
+            total = sum(weights)
+            if abs(total - 1.0) > 0.01:
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rec_id!r} candidate rank {c.get('rank')} "
+                    f"explanationFactors weight sum {total:.3f} != 1.0.", dataset_id))
+                failures += 1
+
+        gen = rec.get("generatedAt")
+        val = rec.get("validUntil")
+        if gen and val:
+            try:
+                g = _dt.datetime.strptime(gen.rstrip("Z").split(".")[0],
+                                          "%Y-%m-%dT%H:%M:%S")
+                v = _dt.datetime.strptime(val.rstrip("Z").split(".")[0],
+                                          "%Y-%m-%dT%H:%M:%S")
+                if v <= g:
+                    report.add(CheckResult("NFR-AI-003", "high", False,
+                        f"Recommendation {rec_id!r} validUntil <= generatedAt.",
+                        dataset_id))
+                    failures += 1
+                elif (v - g).total_seconds() > 60 * 60:
+                    report.add(CheckResult("NFR-AI-003", "high", False,
+                        f"Recommendation {rec_id!r} staleness window > 60 minutes.",
+                        dataset_id))
+                    failures += 1
+            except ValueError:
+                pass
+
+    if failures == 0:
+        report.add(CheckResult("NFR-AI-003", "low", True,
+            "Recommendation invariants OK.", dataset_id))
 
 
 def check_purpose_tags(data: dict, records: list[dict], dataset_id: str,
@@ -674,6 +737,9 @@ def validate_dataset(entry: dict, root: str, report: GateReport,
         check_location_hierarchy(records, dataset_id, report)
     if entry.get("lane") == "planning-demand-encounter":
         check_encounter_lifecycle(records, dataset_id, report)
+        check_planning_phi_denylist(records, dataset_id, report)
+    if entry.get("lane") == "planning-match-recommendation":
+        check_recommendation_invariants(records, dataset_id, report)
         check_planning_phi_denylist(records, dataset_id, report)
     # Phase 2 onboarding policy enforcement (applies to every onboarding lane).
     check_purpose_tags(data, records, dataset_id, report)

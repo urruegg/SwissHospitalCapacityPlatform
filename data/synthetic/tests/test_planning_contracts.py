@@ -319,5 +319,121 @@ class PlanningPhiDenylistTests(unittest.TestCase):
         self.assertTrue(all(r.passed for r in report.results))
 
 
+class MatchRecommendationSchemaTests(unittest.TestCase):
+    def setUp(self) -> None:
+        full = _load("schema/dc-match-recommendation-v1.schema.json")
+        self.item_schema = full["properties"]["records"]["items"]
+
+    def _record(self):
+        return {
+            "contractId": "DC-MATCH-RECOMMENDATION-v1",
+            "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0001",
+            "encounterId": "ENC-2026-0001",
+            "organizationId": "ORG-HIRSLANDEN",
+            "generatedAt": "2026-06-12T08:00:00Z",
+            "validUntil":  "2026-06-12T08:30:00Z",
+            "algorithmId": "stub-rules-v1",
+            "algorithmVersion": "1.0.0",
+            "status": "advisory",
+            "dataResidencyRegion": "switzerlandnorth",
+            "inputSnapshot": {
+                "encounterAsOf": "2026-06-12T08:00:00Z",
+                "supplyAsOf":    "2026-06-12T08:00:00Z",
+                "consideredStationIds": ["LOC-HIRSL-WARD-01"]
+            },
+            "candidates": [{
+                "rank": 1,
+                "stationLocationId": "LOC-HIRSL-WARD-01",
+                "recommendedBedLocationId": None,
+                "fitScore": 0.92,
+                "capacityHeadroom": 5,
+                "expectedAdmitWindowStart": "2026-06-14T08:00:00Z",
+                "expectedAdmitWindowEnd":   "2026-06-14T14:00:00Z",
+                "explanationFactors": [
+                    {"factor": "specialty-match",  "weight": 0.6},
+                    {"factor": "capacity-headroom","weight": 0.4}
+                ],
+                "hardConstraintsMet": True
+            }]
+        }
+
+    def test_minimal_valid_record_passes(self):
+        self.assertFalse(vd.validate_schema(self._record(), self.item_schema, "$"))
+
+    def test_more_than_five_candidates_rejected(self):
+        rec = self._record()
+        rec["candidates"] = [dict(rec["candidates"][0], rank=i + 1) for i in range(6)]
+        errors = vd.validate_schema(rec, self.item_schema, "$")
+        self.assertTrue(any("maxItems" in e or "candidates" in e for e in errors))
+
+    def test_unknown_factor_rejected(self):
+        rec = self._record()
+        rec["candidates"][0]["explanationFactors"][0]["factor"] = "vibes"
+        errors = vd.validate_schema(rec, self.item_schema, "$")
+        self.assertTrue(any("vibes" in e or "factor" in e for e in errors))
+
+
+class RecommendationInvariantsTests(unittest.TestCase):
+    def _record(self):
+        return {
+            "recommendationId": "REC-1",
+            "generatedAt": "2026-06-12T08:00:00Z",
+            "validUntil":  "2026-06-12T08:30:00Z",
+            "candidates": [
+                {"rank": 1, "fitScore": 0.9, "hardConstraintsMet": True,
+                 "recommendedBedLocationId": None,
+                 "explanationFactors": [
+                     {"factor": "specialty-match", "weight": 0.7},
+                     {"factor": "capacity-headroom", "weight": 0.3}]},
+                {"rank": 2, "fitScore": 0.7, "hardConstraintsMet": True,
+                 "recommendedBedLocationId": None,
+                 "explanationFactors": [
+                     {"factor": "specialty-match", "weight": 1.0}]},
+            ],
+        }
+
+    def test_well_formed_passes(self):
+        report = vd.GateReport()
+        vd.check_recommendation_invariants([self._record()], "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+    def test_ranks_must_be_dense_and_ascending(self):
+        rec = self._record()
+        rec["candidates"][1]["rank"] = 3
+        report = vd.GateReport()
+        vd.check_recommendation_invariants([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_fitscore_must_be_non_increasing(self):
+        rec = self._record()
+        rec["candidates"][0]["fitScore"] = 0.5
+        rec["candidates"][1]["fitScore"] = 0.9
+        report = vd.GateReport()
+        vd.check_recommendation_invariants([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_weights_must_sum_to_one(self):
+        rec = self._record()
+        rec["candidates"][0]["explanationFactors"][0]["weight"] = 0.3
+        rec["candidates"][0]["explanationFactors"][1]["weight"] = 0.3
+        report = vd.GateReport()
+        vd.check_recommendation_invariants([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_hard_constraints_must_be_met(self):
+        rec = self._record()
+        rec["candidates"][0]["hardConstraintsMet"] = False
+        report = vd.GateReport()
+        vd.check_recommendation_invariants([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_valid_until_staleness_bound(self):
+        rec = self._record()
+        rec["validUntil"] = "2026-06-12T10:00:00Z"
+        report = vd.GateReport()
+        vd.check_recommendation_invariants([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+
 if __name__ == "__main__":
     unittest.main()

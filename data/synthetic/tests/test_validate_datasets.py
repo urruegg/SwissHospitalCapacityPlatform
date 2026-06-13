@@ -49,6 +49,11 @@ class SchemaValidationTests(unittest.TestCase):
         errors = vd.validate_schema([], schema, "$")
         self.assertTrue(any("minItems" in e for e in errors))
 
+    def test_max_items_reported(self):
+        schema = {"type": "array", "maxItems": 1, "items": {"type": "string"}}
+        errors = vd.validate_schema(["a", "b"], schema, "$")
+        self.assertTrue(any("maxItems" in e for e in errors))
+
     def test_numeric_bounds_reported(self):
         schema = {"type": "integer", "minimum": 0, "maximum": 10}
         self.assertTrue(vd.validate_schema(-1, schema, "$"))
