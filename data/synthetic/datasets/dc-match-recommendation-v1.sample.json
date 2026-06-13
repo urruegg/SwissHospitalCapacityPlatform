@@ -4,7 +4,6 @@
   "contractVersion": "1.0.0",
   "classification": "operational-confidential",
   "residency": "CH",
-  "purposeTags": ["capacity-planning", "bed-management"],
   "records": [
     {
       "contractId": "DC-MATCH-RECOMMENDATION-v1",
@@ -12,34 +11,2418 @@
       "encounterId": "ENC-2026-0001",
       "organizationId": "ORG-HIRSLANDEN",
       "generatedAt": "2026-06-12T08:00:00Z",
-      "validUntil":  "2026-06-12T08:30:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
       "algorithmId": "stub-rules-v1",
       "algorithmVersion": "1.0.0",
       "status": "advisory",
       "dataResidencyRegion": "switzerlandnorth",
       "inputSnapshot": {
         "encounterAsOf": "2026-06-12T08:00:00Z",
-        "supplyAsOf":    "2026-06-12T08:00:00Z",
-        "consideredStationIds": ["LOC-HIRSL-WARD-01"]
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0205"
+        ]
       },
       "candidates": [
         {
           "rank": 1,
-          "stationLocationId": "LOC-HIRSL-WARD-01",
-          "recommendedBedLocationId": "LOC-HIRSL-BED-001",
-          "fitScore": 0.92,
-          "capacityHeadroom": 5,
-          "expectedAdmitWindowStart": "2026-06-14T08:00:00Z",
-          "expectedAdmitWindowEnd":   "2026-06-14T14:00:00Z",
+          "stationLocationId": "LOC-HIRSL-WARD-0205",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0205006",
+          "fitScore": 0.925,
+          "capacityHeadroom": 9,
+          "expectedAdmitWindowStart": "2026-06-19T08:37:00Z",
+          "expectedAdmitWindowEnd": "2026-06-19T14:37:00Z",
           "explanationFactors": [
-            {"factor": "specialty-match",       "weight": 0.5},
-            {"factor": "capacity-headroom",     "weight": 0.3},
-            {"factor": "characteristic-match",  "weight": 0.2}
+            {
+              "factor": "specialty-match",
+              "weight": 0.5405
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2432
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2162
+            }
           ],
-          "bedFitFactors": ["single-room-available", "monitoring-equipped"],
-          "hardConstraintsMet": true
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0002",
+      "encounterId": "ENC-2026-0002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0106",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0106001",
+          "fitScore": 0.775,
+          "capacityHeadroom": 3,
+          "expectedAdmitWindowStart": "2026-06-23T07:42:00Z",
+          "expectedAdmitWindowEnd": "2026-06-23T13:42:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6452
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0968
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2581
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0003",
+      "encounterId": "ENC-2026-0003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0101"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0101",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0101002",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-25T07:45:00Z",
+          "expectedAdmitWindowEnd": "2026-06-25T13:45:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0004",
+      "encounterId": "ENC-2026-0004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0203"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0203",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0203003",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-23T12:56:00Z",
+          "expectedAdmitWindowEnd": "2026-06-23T18:56:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0005",
+      "encounterId": "ENC-2026-0005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0106",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0106001",
+          "fitScore": 0.775,
+          "capacityHeadroom": 3,
+          "expectedAdmitWindowStart": "2026-06-16T04:48:00Z",
+          "expectedAdmitWindowEnd": "2026-06-16T10:48:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6452
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0968
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2581
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0006",
+      "encounterId": "ENC-2026-0006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0206"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0206",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0206003",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-15T23:33:00Z",
+          "expectedAdmitWindowEnd": "2026-06-16T05:33:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0007",
+      "encounterId": "ENC-2026-0007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0101"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0101",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0101002",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-22T00:08:00Z",
+          "expectedAdmitWindowEnd": "2026-06-22T06:08:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0008",
+      "encounterId": "ENC-2026-0008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0102"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0102",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0102001",
+          "fitScore": 0.775,
+          "capacityHeadroom": 3,
+          "expectedAdmitWindowStart": "2026-06-18T19:52:00Z",
+          "expectedAdmitWindowEnd": "2026-06-19T01:52:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6452
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0968
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2581
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0009",
+      "encounterId": "ENC-2026-0009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0104"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0104",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0104010",
+          "fitScore": 1.0,
+          "capacityHeadroom": 12,
+          "expectedAdmitWindowStart": "2026-06-23T02:54:00Z",
+          "expectedAdmitWindowEnd": "2026-06-23T08:54:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.3
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0010",
+      "encounterId": "ENC-2026-0010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0206"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0206",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0206003",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-17T10:25:00Z",
+          "expectedAdmitWindowEnd": "2026-06-17T16:25:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0011",
+      "encounterId": "ENC-2026-0011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0205"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0205",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0205005",
+          "fitScore": 1.0,
+          "capacityHeadroom": 12,
+          "expectedAdmitWindowStart": "2026-06-20T09:11:00Z",
+          "expectedAdmitWindowEnd": "2026-06-20T15:11:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.3
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0012",
+      "encounterId": "ENC-2026-0012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0102"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0102",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0102001",
+          "fitScore": 0.775,
+          "capacityHeadroom": 3,
+          "expectedAdmitWindowStart": "2026-06-16T19:45:00Z",
+          "expectedAdmitWindowEnd": "2026-06-17T01:45:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6452
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0968
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2581
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0013",
+      "encounterId": "ENC-2026-0013",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0105"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0105",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0105010",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-23T01:09:00Z",
+          "expectedAdmitWindowEnd": "2026-06-23T07:09:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0014",
+      "encounterId": "ENC-2026-0014",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0202"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0202",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0202003",
+          "fitScore": 0.85,
+          "capacityHeadroom": 6,
+          "expectedAdmitWindowStart": "2026-06-13T06:44:00Z",
+          "expectedAdmitWindowEnd": "2026-06-13T12:44:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5882
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1765
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2353
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0015",
+      "encounterId": "ENC-2026-0015",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0105"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0105",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0105010",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-13T07:59:00Z",
+          "expectedAdmitWindowEnd": "2026-06-13T13:59:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0016",
+      "encounterId": "ENC-2026-0016",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0203"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0203",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0203002",
+          "fitScore": 0.75,
+          "capacityHeadroom": 2,
+          "expectedAdmitWindowStart": "2026-06-19T22:58:00Z",
+          "expectedAdmitWindowEnd": "2026-06-20T04:58:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6667
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0667
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2667
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0017",
+      "encounterId": "ENC-2026-0017",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0206"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0206",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0206001",
+          "fitScore": 0.875,
+          "capacityHeadroom": 7,
+          "expectedAdmitWindowStart": "2026-06-21T17:34:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T23:34:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5714
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2286
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped",
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0018",
+      "encounterId": "ENC-2026-0018",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0103"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0103",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0103007",
+          "fitScore": 0.9,
+          "capacityHeadroom": 8,
+          "expectedAdmitWindowStart": "2026-06-21T11:56:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T17:56:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5556
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2222
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2222
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0019",
+      "encounterId": "ENC-2026-0019",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0101"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0101",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0101002",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-15T21:00:00Z",
+          "expectedAdmitWindowEnd": "2026-06-16T03:00:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0020",
+      "encounterId": "ENC-2026-0020",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0203"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0203",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0203003",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-15T04:44:00Z",
+          "expectedAdmitWindowEnd": "2026-06-15T10:44:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0021",
+      "encounterId": "ENC-2026-0021",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0101"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0101",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0101002",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-13T22:46:00Z",
+          "expectedAdmitWindowEnd": "2026-06-14T04:46:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0022",
+      "encounterId": "ENC-2026-0022",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0105"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0105",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0105011",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-15T04:20:00Z",
+          "expectedAdmitWindowEnd": "2026-06-15T10:20:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0023",
+      "encounterId": "ENC-2026-0023",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0105"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0105",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0105010",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-22T10:12:00Z",
+          "expectedAdmitWindowEnd": "2026-06-22T16:12:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0024",
+      "encounterId": "ENC-2026-0024",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0104"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0104",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0104008",
+          "fitScore": 0.825,
+          "capacityHeadroom": 5,
+          "expectedAdmitWindowStart": "2026-06-18T13:39:00Z",
+          "expectedAdmitWindowEnd": "2026-06-18T19:39:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6061
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1515
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2424
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0025",
+      "encounterId": "ENC-2026-0025",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0102"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0102",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0102009",
+          "fitScore": 0.85,
+          "capacityHeadroom": 6,
+          "expectedAdmitWindowStart": "2026-06-15T12:28:00Z",
+          "expectedAdmitWindowEnd": "2026-06-15T18:28:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5882
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1765
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2353
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0026",
+      "encounterId": "ENC-2026-0026",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0202"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0202",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0202001",
+          "fitScore": 0.9,
+          "capacityHeadroom": 8,
+          "expectedAdmitWindowStart": "2026-06-13T00:27:00Z",
+          "expectedAdmitWindowEnd": "2026-06-13T06:27:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5556
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2222
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2222
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0027",
+      "encounterId": "ENC-2026-0027",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0102"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0102",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0102009",
+          "fitScore": 0.85,
+          "capacityHeadroom": 6,
+          "expectedAdmitWindowStart": "2026-06-19T17:01:00Z",
+          "expectedAdmitWindowEnd": "2026-06-19T23:01:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5882
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1765
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2353
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0028",
+      "encounterId": "ENC-2026-0028",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0106",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0106007",
+          "fitScore": 0.9,
+          "capacityHeadroom": 8,
+          "expectedAdmitWindowStart": "2026-06-23T09:34:00Z",
+          "expectedAdmitWindowEnd": "2026-06-23T15:34:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5556
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2222
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2222
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0029",
+      "encounterId": "ENC-2026-0029",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0106",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0106001",
+          "fitScore": 0.775,
+          "capacityHeadroom": 3,
+          "expectedAdmitWindowStart": "2026-06-24T13:57:00Z",
+          "expectedAdmitWindowEnd": "2026-06-24T19:57:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6452
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0968
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2581
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0030",
+      "encounterId": "ENC-2026-0030",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0202"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0202",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0202001",
+          "fitScore": 0.9,
+          "capacityHeadroom": 8,
+          "expectedAdmitWindowStart": "2026-06-22T17:49:00Z",
+          "expectedAdmitWindowEnd": "2026-06-22T23:49:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5556
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2222
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2222
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0031",
+      "encounterId": "ENC-2026-0031",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0201"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0201",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0201001",
+          "fitScore": 0.975,
+          "capacityHeadroom": 11,
+          "expectedAdmitWindowStart": "2026-06-25T22:42:00Z",
+          "expectedAdmitWindowEnd": "2026-06-26T04:42:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5128
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2821
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2051
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0032",
+      "encounterId": "ENC-2026-0032",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0202"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0202",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0202003",
+          "fitScore": 0.85,
+          "capacityHeadroom": 6,
+          "expectedAdmitWindowStart": "2026-06-25T20:18:00Z",
+          "expectedAdmitWindowEnd": "2026-06-26T02:18:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5882
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1765
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2353
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0033",
+      "encounterId": "ENC-2026-0033",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0106",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0106007",
+          "fitScore": 0.9,
+          "capacityHeadroom": 8,
+          "expectedAdmitWindowStart": "2026-06-24T10:21:00Z",
+          "expectedAdmitWindowEnd": "2026-06-24T16:21:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5556
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2222
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2222
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0034",
+      "encounterId": "ENC-2026-0034",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0204"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0204",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0204008",
+          "fitScore": 0.825,
+          "capacityHeadroom": 5,
+          "expectedAdmitWindowStart": "2026-06-13T12:40:00Z",
+          "expectedAdmitWindowEnd": "2026-06-13T18:40:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6061
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1515
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2424
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0035",
+      "encounterId": "ENC-2026-0035",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0203"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0203",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0203003",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-21T09:26:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T15:26:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0036",
+      "encounterId": "ENC-2026-0036",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0105"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0105",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0105011",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-21T08:57:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T14:57:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0037",
+      "encounterId": "ENC-2026-0037",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0203"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0203",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0203003",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-14T09:39:00Z",
+          "expectedAdmitWindowEnd": "2026-06-14T15:39:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0038",
+      "encounterId": "ENC-2026-0038",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0204"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0204",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0204008",
+          "fitScore": 0.825,
+          "capacityHeadroom": 5,
+          "expectedAdmitWindowStart": "2026-06-20T14:33:00Z",
+          "expectedAdmitWindowEnd": "2026-06-20T20:33:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6061
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1515
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2424
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available",
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0039",
+      "encounterId": "ENC-2026-0039",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0106",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0106007",
+          "fitScore": 0.9,
+          "capacityHeadroom": 8,
+          "expectedAdmitWindowStart": "2026-06-21T12:10:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T18:10:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5556
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2222
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2222
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0040",
+      "encounterId": "ENC-2026-0040",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0102"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0102",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0102009",
+          "fitScore": 0.85,
+          "capacityHeadroom": 6,
+          "expectedAdmitWindowStart": "2026-06-26T04:01:00Z",
+          "expectedAdmitWindowEnd": "2026-06-26T10:01:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5882
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1765
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2353
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0041",
+      "encounterId": "ENC-2026-0041",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0106",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0106001",
+          "fitScore": 0.775,
+          "capacityHeadroom": 3,
+          "expectedAdmitWindowStart": "2026-06-21T01:00:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T07:00:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6452
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0968
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2581
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0042",
+      "encounterId": "ENC-2026-0042",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0102"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0102",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0102009",
+          "fitScore": 0.85,
+          "capacityHeadroom": 6,
+          "expectedAdmitWindowStart": "2026-06-15T17:33:00Z",
+          "expectedAdmitWindowEnd": "2026-06-15T23:33:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5882
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1765
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2353
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0043",
+      "encounterId": "ENC-2026-0043",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0105"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0105",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0105010",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-20T18:33:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T00:33:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0044",
+      "encounterId": "ENC-2026-0044",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0205"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0205",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0205005",
+          "fitScore": 1.0,
+          "capacityHeadroom": 12,
+          "expectedAdmitWindowStart": "2026-06-20T18:19:00Z",
+          "expectedAdmitWindowEnd": "2026-06-21T00:19:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.3
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0045",
+      "encounterId": "ENC-2026-0045",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0106"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0106",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0106001",
+          "fitScore": 0.775,
+          "capacityHeadroom": 3,
+          "expectedAdmitWindowStart": "2026-06-25T17:13:00Z",
+          "expectedAdmitWindowEnd": "2026-06-25T23:13:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6452
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0968
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2581
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "single-room-available"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0046",
+      "encounterId": "ENC-2026-0046",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0103"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0103",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0103007",
+          "fitScore": 0.9,
+          "capacityHeadroom": 8,
+          "expectedAdmitWindowStart": "2026-06-15T05:07:00Z",
+          "expectedAdmitWindowEnd": "2026-06-15T11:07:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5556
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2222
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2222
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "bariatric-equipped"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0047",
+      "encounterId": "ENC-2026-0047",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0104"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0104",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0104008",
+          "fitScore": 0.825,
+          "capacityHeadroom": 5,
+          "expectedAdmitWindowStart": "2026-06-19T00:48:00Z",
+          "expectedAdmitWindowEnd": "2026-06-19T06:48:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.6061
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.1515
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2424
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0048",
+      "encounterId": "ENC-2026-0048",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0103"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0103",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0103011",
+          "fitScore": 0.8,
+          "capacityHeadroom": 4,
+          "expectedAdmitWindowStart": "2026-06-13T01:53:00Z",
+          "expectedAdmitWindowEnd": "2026-06-13T07:53:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.625
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.125
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.25
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0049",
+      "encounterId": "ENC-2026-0049",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-ZOLLI-WARD-0105"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-ZOLLI-WARD-0105",
+          "recommendedBedLocationId": "LOC-ZOLLI-BED-0105010",
+          "fitScore": 0.7,
+          "capacityHeadroom": 0,
+          "expectedAdmitWindowStart": "2026-06-18T13:54:00Z",
+          "expectedAdmitWindowEnd": "2026-06-18T19:54:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.7143
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.0
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2857
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "monitoring-equipped",
+            "isolation-capable"
+          ]
+        }
+      ]
+    },
+    {
+      "contractId": "DC-MATCH-RECOMMENDATION-v1",
+      "recommendationId": "REC-2026-06-12T08:00:00Z-ENC-2026-0050",
+      "encounterId": "ENC-2026-0050",
+      "organizationId": "ORG-HIRSLANDEN",
+      "generatedAt": "2026-06-12T08:00:00Z",
+      "validUntil": "2026-06-12T08:30:00Z",
+      "algorithmId": "stub-rules-v1",
+      "algorithmVersion": "1.0.0",
+      "status": "advisory",
+      "dataResidencyRegion": "switzerlandnorth",
+      "inputSnapshot": {
+        "encounterAsOf": "2026-06-12T08:00:00Z",
+        "supplyAsOf": "2026-06-12T08:00:00Z",
+        "consideredStationIds": [
+          "LOC-HIRSL-WARD-0201"
+        ]
+      },
+      "candidates": [
+        {
+          "rank": 1,
+          "stationLocationId": "LOC-HIRSL-WARD-0201",
+          "recommendedBedLocationId": "LOC-HIRSL-BED-0201005",
+          "fitScore": 0.875,
+          "capacityHeadroom": 7,
+          "expectedAdmitWindowStart": "2026-06-25T06:09:00Z",
+          "expectedAdmitWindowEnd": "2026-06-25T12:09:00Z",
+          "explanationFactors": [
+            {
+              "factor": "specialty-match",
+              "weight": 0.5714
+            },
+            {
+              "factor": "capacity-headroom",
+              "weight": 0.2
+            },
+            {
+              "factor": "characteristic-match",
+              "weight": 0.2286
+            }
+          ],
+          "hardConstraintsMet": true,
+          "bedFitFactors": [
+            "last-cleaned-within-2h"
+          ]
         }
       ]
     }
+  ],
+  "purposeTags": [
+    "capacity-planning",
+    "bed-management"
   ]
 }

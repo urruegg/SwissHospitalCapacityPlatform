@@ -11,24 +11,26 @@
       "organizationId": "ORG-HIRSLANDEN",
       "physicalType": "si",
       "partOfId": null,
-      "name": "Hirslanden Zurich Campus",
+      "name": "HIRSL Campus 1",
       "status": "active",
       "asOfTimestamp": "2026-06-12T08:00:00Z"
     },
     {
       "contractId": "DC-SUPPLY-LOCATION-v1",
-      "locationId": "LOC-HIRSL-WARD-01",
+      "locationId": "LOC-HIRSL-WARD-0101",
       "organizationId": "ORG-HIRSLANDEN",
       "physicalType": "wa",
       "partOfId": "LOC-HIRSL-SITE-01",
-      "name": "Cardiology Ward",
+      "name": "Cardiology Ward 1-1",
       "status": "active",
-      "bedsTotal": 24,
-      "bedsAvailable": 6,
-      "specialtyServiceIds": ["HCS-CARD-01"],
+      "bedsTotal": 12,
+      "bedsAvailable": 0,
+      "specialtyServiceIds": [
+        "HCS-CARDIOLOGY-0101"
+      ],
       "healthcareServices": [
         {
-          "healthcareServiceId": "HCS-CARD-01",
+          "healthcareServiceId": "HCS-CARDIOLOGY-0101",
           "specialty": "cardiology",
           "specialtyTaxonomyVersion": "1.0.0",
           "category": "inpatient"
@@ -38,14 +40,4493 @@
     },
     {
       "contractId": "DC-SUPPLY-LOCATION-v1",
-      "locationId": "LOC-HIRSL-BED-001",
+      "locationId": "LOC-HIRSL-BED-0101001",
       "organizationId": "ORG-HIRSLANDEN",
       "physicalType": "bd",
-      "partOfId": "LOC-HIRSL-WARD-01",
-      "name": "Bed 1A",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-1",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-2",
       "status": "active",
       "operationalStatus": "U",
-      "characteristic": ["single-room", "cardiac-monitoring"],
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-3",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "negative-pressure",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-4",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-5",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-6",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "negative-pressure",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-7",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-8",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "bariatric",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-9",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-10",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-11",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0101012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0101",
+      "name": "Bed 1-1-12",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "single-room",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0102",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-01",
+      "name": "Orthopedics Ward 1-2",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 6,
+      "specialtyServiceIds": [
+        "HCS-ORTHOPEDICS-0102"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ORTHOPEDICS-0102",
+          "specialty": "orthopedics",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "surgical"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-1",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-2",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-3",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-4",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "bariatric",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-5",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "negative-pressure",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-6",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "isolation",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-7",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-9",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-10",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "isolation",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-11",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0102012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0102",
+      "name": "Bed 1-2-12",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0103",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-01",
+      "name": "Internal-Med Ward 1-3",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 8,
+      "specialtyServiceIds": [
+        "HCS-INTERNAL-MED-0103"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-INTERNAL-MED-0103",
+          "specialty": "internal-med",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-1",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-2",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-3",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-4",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-6",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-7",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-8",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-9",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-10",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-11",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "cardiac-monitoring",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0103012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0103",
+      "name": "Bed 1-3-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0104",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-01",
+      "name": "Neurology Ward 1-4",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 5,
+      "specialtyServiceIds": [
+        "HCS-NEUROLOGY-0104"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-NEUROLOGY-0104",
+          "specialty": "neurology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-1",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-2",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-3",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-4",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-5",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-6",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-7",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-8",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-9",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "isolation",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-10",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-11",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0104012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0104",
+      "name": "Bed 1-4-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0105",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-01",
+      "name": "Oncology Ward 1-5",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 4,
+      "specialtyServiceIds": [
+        "HCS-ONCOLOGY-0105"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ONCOLOGY-0105",
+          "specialty": "oncology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-1",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-2",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-3",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "single-room",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-4",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "bariatric",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-5",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-6",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-7",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "negative-pressure",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-9",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-10",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-11",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "single-room",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0105012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0105",
+      "name": "Bed 1-5-12",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "pediatric-equipped",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0106",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-01",
+      "name": "Rehab Ward 1-6",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 3,
+      "specialtyServiceIds": [
+        "HCS-REHAB-0106"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-REHAB-0106",
+          "specialty": "rehab",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "rehab"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-1",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "pediatric-equipped",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-2",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-3",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-4",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-6",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-7",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "single-room",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-10",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-11",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "pediatric-equipped",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0106012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0106",
+      "name": "Bed 1-6-12",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-SITE-02",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "si",
+      "partOfId": null,
+      "name": "HIRSL Campus 2",
+      "status": "active",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0201",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-02",
+      "name": "Cardiology Ward 2-1",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 7,
+      "specialtyServiceIds": [
+        "HCS-CARDIOLOGY-0201"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-CARDIOLOGY-0201",
+          "specialty": "cardiology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-1",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-2",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-3",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "isolation",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-4",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-5",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-6",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-7",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-10",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "negative-pressure",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-11",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0201012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0201",
+      "name": "Bed 2-1-12",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0202",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-02",
+      "name": "Orthopedics Ward 2-2",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 8,
+      "specialtyServiceIds": [
+        "HCS-ORTHOPEDICS-0202"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ORTHOPEDICS-0202",
+          "specialty": "orthopedics",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "surgical"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-1",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "isolation",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-2",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-3",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-4",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-5",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-6",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-7",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-10",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-11",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0202012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0202",
+      "name": "Bed 2-2-12",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0203",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-02",
+      "name": "Internal-Med Ward 2-3",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 2,
+      "specialtyServiceIds": [
+        "HCS-INTERNAL-MED-0203"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-INTERNAL-MED-0203",
+          "specialty": "internal-med",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-1",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "cardiac-monitoring",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-2",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-3",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-4",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "cardiac-monitoring",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "isolation",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-6",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-7",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-8",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-9",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-10",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-11",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0203012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0203",
+      "name": "Bed 2-3-12",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0204",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-02",
+      "name": "Neurology Ward 2-4",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 5,
+      "specialtyServiceIds": [
+        "HCS-NEUROLOGY-0204"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-NEUROLOGY-0204",
+          "specialty": "neurology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-1",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-2",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-3",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-4",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-5",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-6",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-7",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-8",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "single-room",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-9",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-10",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-11",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "negative-pressure",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0204012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0204",
+      "name": "Bed 2-4-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0205",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-02",
+      "name": "Oncology Ward 2-5",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 9,
+      "specialtyServiceIds": [
+        "HCS-ONCOLOGY-0205"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ONCOLOGY-0205",
+          "specialty": "oncology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-1",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-2",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-3",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-4",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-5",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-6",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "single-room",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-7",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-8",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-10",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-11",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0205012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0205",
+      "name": "Bed 2-5-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-0206",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-02",
+      "name": "Rehab Ward 2-6",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 7,
+      "specialtyServiceIds": [
+        "HCS-REHAB-0206"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-REHAB-0206",
+          "specialty": "rehab",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "rehab"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-1",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "cardiac-monitoring",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206002",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-2",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206003",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-3",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206004",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-4",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206005",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-5",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206006",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-6",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206007",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-7",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206008",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-8",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "negative-pressure",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206009",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206010",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-10",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "isolation",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206011",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-11",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-0206012",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-0206",
+      "name": "Bed 2-6-12",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-SITE-01",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "si",
+      "partOfId": null,
+      "name": "ZOLLI Campus 1",
+      "status": "active",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0101",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-01",
+      "name": "Cardiology Ward 1-1",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 8,
+      "specialtyServiceIds": [
+        "HCS-CARDIOLOGY-0101"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-CARDIOLOGY-0101",
+          "specialty": "cardiology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-1",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "single-room",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-2",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "pediatric-equipped",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-3",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-4",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-5",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-6",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-7",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "isolation",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-8",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "pediatric-equipped",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-10",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-11",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0101012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0101",
+      "name": "Bed 1-1-12",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0102",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-01",
+      "name": "Orthopedics Ward 1-2",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 3,
+      "specialtyServiceIds": [
+        "HCS-ORTHOPEDICS-0102"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ORTHOPEDICS-0102",
+          "specialty": "orthopedics",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "surgical"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-1",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-2",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-3",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-4",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "pediatric-equipped",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-6",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "negative-pressure",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-7",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "bariatric",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-8",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "bariatric",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-9",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "isolation",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-10",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-11",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0102012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0102",
+      "name": "Bed 1-2-12",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "isolation",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0103",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-01",
+      "name": "Internal-Med Ward 1-3",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 4,
+      "specialtyServiceIds": [
+        "HCS-INTERNAL-MED-0103"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-INTERNAL-MED-0103",
+          "specialty": "internal-med",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-1",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-2",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-3",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-4",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "pediatric-equipped",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-6",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-7",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-8",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "negative-pressure",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-9",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-10",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-11",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0103012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0103",
+      "name": "Bed 1-3-12",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0104",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-01",
+      "name": "Neurology Ward 1-4",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 12,
+      "specialtyServiceIds": [
+        "HCS-NEUROLOGY-0104"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-NEUROLOGY-0104",
+          "specialty": "neurology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-1",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "pediatric-equipped",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-2",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-3",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-4",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "negative-pressure",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-6",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "negative-pressure",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-7",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-8",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "bariatric",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-9",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-10",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-11",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0104012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0104",
+      "name": "Bed 1-4-12",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0105",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-01",
+      "name": "Oncology Ward 1-5",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 0,
+      "specialtyServiceIds": [
+        "HCS-ONCOLOGY-0105"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ONCOLOGY-0105",
+          "specialty": "oncology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-1",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-2",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-3",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "bariatric",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-4",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-5",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "cardiac-monitoring",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-6",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-7",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-8",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-10",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "cardiac-monitoring",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-11",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0105012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0105",
+      "name": "Bed 1-5-12",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "single-room",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0106",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-01",
+      "name": "Rehab Ward 1-6",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 8,
+      "specialtyServiceIds": [
+        "HCS-REHAB-0106"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-REHAB-0106",
+          "specialty": "rehab",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "rehab"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-1",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-2",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "pediatric-equipped",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-3",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "cardiac-monitoring",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-4",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-5",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-6",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-7",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-8",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-9",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "negative-pressure",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-10",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-11",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0106012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0106",
+      "name": "Bed 1-6-12",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-SITE-02",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "si",
+      "partOfId": null,
+      "name": "ZOLLI Campus 2",
+      "status": "active",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0201",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-02",
+      "name": "Cardiology Ward 2-1",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 11,
+      "specialtyServiceIds": [
+        "HCS-CARDIOLOGY-0201"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-CARDIOLOGY-0201",
+          "specialty": "cardiology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-1",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-2",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-3",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-4",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-5",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-6",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "single-room",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-7",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-9",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "negative-pressure",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-10",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "negative-pressure",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-11",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "pediatric-equipped",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0201012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0201",
+      "name": "Bed 2-1-12",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0202",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-02",
+      "name": "Orthopedics Ward 2-2",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 6,
+      "specialtyServiceIds": [
+        "HCS-ORTHOPEDICS-0202"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ORTHOPEDICS-0202",
+          "specialty": "orthopedics",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "surgical"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-1",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-2",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-3",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "pediatric-equipped",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-4",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "isolation",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-6",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-7",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-9",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-10",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-11",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0202012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0202",
+      "name": "Bed 2-2-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0203",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-02",
+      "name": "Internal-Med Ward 2-3",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 4,
+      "specialtyServiceIds": [
+        "HCS-INTERNAL-MED-0203"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-INTERNAL-MED-0203",
+          "specialty": "internal-med",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-1",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-2",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "bariatric",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-3",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "bariatric",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-4",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "pediatric-equipped",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-5",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "pediatric-equipped",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-6",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped",
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-7",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-8",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "single-room",
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-9",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "pediatric-equipped",
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-10",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-11",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "isolation",
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0203012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0203",
+      "name": "Bed 2-3-12",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0204",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-02",
+      "name": "Neurology Ward 2-4",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 11,
+      "specialtyServiceIds": [
+        "HCS-NEUROLOGY-0204"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-NEUROLOGY-0204",
+          "specialty": "neurology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-1",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-2",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-3",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-4",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-5",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-6",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-7",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "bariatric",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-8",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "isolation",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-9",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-10",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "isolation",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-11",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0204012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0204",
+      "name": "Bed 2-4-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0205",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-02",
+      "name": "Oncology Ward 2-5",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 12,
+      "specialtyServiceIds": [
+        "HCS-ONCOLOGY-0205"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-ONCOLOGY-0205",
+          "specialty": "oncology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-1",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-2",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-3",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-4",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-5",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-6",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [
+        "bariatric"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-7",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-8",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-9",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-10",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "single-room",
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-11",
+      "status": "active",
+      "operationalStatus": "H",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0205012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0205",
+      "name": "Bed 2-5-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-WARD-0206",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "wa",
+      "partOfId": "LOC-ZOLLI-SITE-02",
+      "name": "Rehab Ward 2-6",
+      "status": "active",
+      "bedsTotal": 12,
+      "bedsAvailable": 4,
+      "specialtyServiceIds": [
+        "HCS-REHAB-0206"
+      ],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-REHAB-0206",
+          "specialty": "rehab",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "rehab"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206001",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-1",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206002",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-2",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206003",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-3",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "cardiac-monitoring"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206004",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-4",
+      "status": "active",
+      "operationalStatus": "O",
+      "characteristic": [
+        "isolation"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206005",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-5",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [
+        "single-room"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206006",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-6",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206007",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-7",
+      "status": "active",
+      "operationalStatus": "C",
+      "characteristic": [
+        "negative-pressure"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206008",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-8",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206009",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-9",
+      "status": "active",
+      "operationalStatus": "K",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206010",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-10",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206011",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-11",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": [
+        "bariatric",
+        "pediatric-equipped"
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-ZOLLI-BED-0206012",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "physicalType": "bd",
+      "partOfId": "LOC-ZOLLI-WARD-0206",
+      "name": "Bed 2-6-12",
+      "status": "active",
+      "operationalStatus": "I",
+      "characteristic": [],
       "asOfTimestamp": "2026-06-12T08:00:00Z"
     }
   ]

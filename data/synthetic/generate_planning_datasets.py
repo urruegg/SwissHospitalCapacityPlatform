@@ -372,7 +372,7 @@ def build_manifest(cfg: GeneratorConfig, bundle: dict) -> dict:
 
 def _wrap_dataset(records: list[dict], contract_id: str,
                   dataset_id: str, ds_prefix: str) -> dict:
-    return {
+    payload = {
         "datasetId": dataset_id,
         "contractId": contract_id,
         "contractVersion": CONTRACT_VERSION,
@@ -380,6 +380,9 @@ def _wrap_dataset(records: list[dict], contract_id: str,
         "residency": "CH",
         "records": records,
     }
+    if contract_id in ("DC-DEMAND-ENCOUNTER-v1", "DC-MATCH-RECOMMENDATION-v1"):
+        payload["purposeTags"] = ["capacity-planning", "bed-management"]
+    return payload
 
 
 def write_datasets(cfg: GeneratorConfig, out_dir: str) -> dict:

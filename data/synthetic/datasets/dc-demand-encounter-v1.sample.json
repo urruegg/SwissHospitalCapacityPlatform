@@ -4,25 +4,100 @@
   "contractVersion": "1.0.0",
   "classification": "operational-confidential",
   "residency": "CH",
-  "purposeTags": ["capacity-planning", "bed-management"],
   "records": [
     {
       "contractId": "DC-DEMAND-ENCOUNTER-v1",
       "encounterId": "ENC-2026-0001",
-      "pseudonymId": "PID-9F2A1B7C",
+      "pseudonymId": "PID-3103A465",
       "organizationId": "ORG-HIRSLANDEN",
       "class": "IMP",
-      "status": "planned",
-      "admissionType": "elective",
-      "requestedSpecialtyServiceId": "HCS-CARD-01",
-      "requiredCharacteristics": ["cardiac-monitoring"],
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0205",
+      "requiredCharacteristics": [],
       "acuityBand": "routine",
-      "expectedArrivalTimestamp": "2026-06-14T10:00:00Z",
+      "expectedArrivalTimestamp": "2026-06-19T08:37:00Z",
+      "expectedLOSDays": 9,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-17T08:37:00Z",
+          "periodEnd": "2026-06-19T08:37:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-19T08:46:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0002",
+      "pseudonymId": "PID-C2CB314B",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-23T07:42:00Z",
       "expectedLOSDays": 4,
       "statusHistory": [
         {
           "status": "planned",
-          "periodStart": "2026-06-12T08:00:00Z",
+          "periodStart": "2026-06-21T07:42:00Z",
+          "periodEnd": "2026-06-23T07:42:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-23T07:56:00Z",
+          "periodEnd": "2026-06-26T15:56:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-26T15:56:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0003",
+      "pseudonymId": "PID-63B54ED8",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-CARDIOLOGY-0101",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-25T07:45:00Z",
+      "expectedLOSDays": 3,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-23T07:45:00Z",
+          "periodEnd": "2026-06-25T07:45:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-25T07:45:00Z",
           "periodEnd": null,
           "locationId": null
         }
@@ -33,25 +108,1690 @@
     },
     {
       "contractId": "DC-DEMAND-ENCOUNTER-v1",
-      "encounterId": "ENC-2026-0002",
-      "pseudonymId": "PID-12345678",
-      "organizationId": "ORG-HIRSLANDEN",
+      "encounterId": "ENC-2026-0004",
+      "pseudonymId": "PID-37297D0B",
+      "organizationId": "ORG-ZOLLIKERBERG",
       "class": "IMP",
       "status": "in-progress",
-      "admissionType": "emergency",
-      "requestedSpecialtyServiceId": "HCS-CARD-01",
-      "requiredCharacteristics": ["isolation"],
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0203",
+      "requiredCharacteristics": [],
       "acuityBand": "urgent",
-      "expectedArrivalTimestamp": "2026-06-12T06:00:00Z",
-      "expectedLOSDays": 6,
+      "expectedArrivalTimestamp": "2026-06-23T12:56:00Z",
+      "expectedLOSDays": 7,
       "statusHistory": [
-        {"status": "arrived",     "periodStart": "2026-06-12T06:00:00Z", "periodEnd": "2026-06-12T06:30:00Z", "locationId": null},
-        {"status": "triaged",     "periodStart": "2026-06-12T06:30:00Z", "periodEnd": "2026-06-12T07:15:00Z", "locationId": null},
-        {"status": "in-progress", "periodStart": "2026-06-12T07:15:00Z", "periodEnd": null,                    "locationId": "LOC-HIRSL-WARD-01"}
+        {
+          "status": "planned",
+          "periodStart": "2026-06-21T12:56:00Z",
+          "periodEnd": "2026-06-23T12:56:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-23T13:24:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
       ],
       "purposeTag": "bed-management",
       "dataResidencyRegion": "switzerlandnorth",
       "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0005",
+      "pseudonymId": "PID-67C9B5CF",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "stat",
+      "expectedArrivalTimestamp": "2026-06-16T04:48:00Z",
+      "expectedLOSDays": 12,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-14T04:48:00Z",
+          "periodEnd": "2026-06-16T04:48:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-16T04:57:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0006",
+      "pseudonymId": "PID-E3485BBB",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0206",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-15T23:33:00Z",
+      "expectedLOSDays": 7,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-13T23:33:00Z",
+          "periodEnd": "2026-06-15T23:33:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-15T23:33:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0007",
+      "pseudonymId": "PID-8F295DCE",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-CARDIOLOGY-0101",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-22T00:08:00Z",
+      "expectedLOSDays": 4,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-20T00:08:00Z",
+          "periodEnd": "2026-06-22T00:08:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-22T00:36:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0008",
+      "pseudonymId": "PID-BF3460F5",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0102",
+      "requiredCharacteristics": [
+        "cardiac-monitoring"
+      ],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-18T19:52:00Z",
+      "expectedLOSDays": 6,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-16T19:52:00Z",
+          "periodEnd": "2026-06-18T19:52:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-18T20:03:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0009",
+      "pseudonymId": "PID-7DB36BEC",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-NEUROLOGY-0104",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-23T02:54:00Z",
+      "expectedLOSDays": 7,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-21T02:54:00Z",
+          "periodEnd": "2026-06-23T02:54:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-23T03:02:00Z",
+          "periodEnd": "2026-06-23T22:02:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-23T22:02:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0010",
+      "pseudonymId": "PID-4356DE02",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0206",
+      "requiredCharacteristics": [
+        "single-room"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-17T10:25:00Z",
+      "expectedLOSDays": 11,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-15T10:25:00Z",
+          "periodEnd": "2026-06-17T10:25:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-17T10:33:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0011",
+      "pseudonymId": "PID-F3459A85",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0205",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-20T09:11:00Z",
+      "expectedLOSDays": 5,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-18T09:11:00Z",
+          "periodEnd": "2026-06-20T09:11:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-20T09:30:00Z",
+          "periodEnd": "2026-06-20T20:30:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-20T20:30:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0012",
+      "pseudonymId": "PID-F4B4BA52",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0102",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-16T19:45:00Z",
+      "expectedLOSDays": 12,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-14T19:45:00Z",
+          "periodEnd": "2026-06-16T19:45:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-16T19:49:00Z",
+          "periodEnd": "2026-06-19T06:49:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-19T06:49:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0013",
+      "pseudonymId": "PID-DCC0271D",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0105",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-23T01:09:00Z",
+      "expectedLOSDays": 3,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-21T01:09:00Z",
+          "periodEnd": "2026-06-23T01:09:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-23T01:13:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0014",
+      "pseudonymId": "PID-AA7790AB",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0202",
+      "requiredCharacteristics": [],
+      "acuityBand": "stat",
+      "expectedArrivalTimestamp": "2026-06-13T06:44:00Z",
+      "expectedLOSDays": 12,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-11T06:44:00Z",
+          "periodEnd": "2026-06-13T06:44:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-13T06:57:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0015",
+      "pseudonymId": "PID-85A962B3",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0105",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-13T07:59:00Z",
+      "expectedLOSDays": 14,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-11T07:59:00Z",
+          "periodEnd": "2026-06-13T07:59:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-13T08:04:00Z",
+          "periodEnd": "2026-06-15T09:04:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-15T09:04:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0016",
+      "pseudonymId": "PID-126B174F",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0203",
+      "requiredCharacteristics": [],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-19T22:58:00Z",
+      "expectedLOSDays": 4,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-17T22:58:00Z",
+          "periodEnd": "2026-06-19T22:58:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-19T23:13:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0017",
+      "pseudonymId": "PID-9F2AD24C",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0206",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-21T17:34:00Z",
+      "expectedLOSDays": 4,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-19T17:34:00Z",
+          "periodEnd": "2026-06-21T17:34:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-21T18:01:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0018",
+      "pseudonymId": "PID-2B413B6E",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0103",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-21T11:56:00Z",
+      "expectedLOSDays": 1,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-19T11:56:00Z",
+          "periodEnd": "2026-06-21T11:56:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-21T12:14:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0019",
+      "pseudonymId": "PID-E38DA13A",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-CARDIOLOGY-0101",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-15T21:00:00Z",
+      "expectedLOSDays": 9,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-13T21:00:00Z",
+          "periodEnd": "2026-06-15T21:00:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-15T21:16:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0020",
+      "pseudonymId": "PID-0E9F98F3",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0203",
+      "requiredCharacteristics": [
+        "single-room"
+      ],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-15T04:44:00Z",
+      "expectedLOSDays": 9,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-13T04:44:00Z",
+          "periodEnd": "2026-06-15T04:44:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-15T04:47:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0021",
+      "pseudonymId": "PID-30DF48DA",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-CARDIOLOGY-0101",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-13T22:46:00Z",
+      "expectedLOSDays": 10,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-11T22:46:00Z",
+          "periodEnd": "2026-06-13T22:46:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-13T22:46:00Z",
+          "periodEnd": "2026-06-13T23:40:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-13T23:40:00Z",
+          "periodEnd": "2026-06-14T00:21:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-14T00:21:00Z",
+          "periodEnd": "2026-06-16T21:21:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-16T21:21:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0022",
+      "pseudonymId": "PID-BF85B6D3",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0105",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-15T04:20:00Z",
+      "expectedLOSDays": 7,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-13T04:20:00Z",
+          "periodEnd": "2026-06-15T04:20:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-15T04:20:00Z",
+          "periodEnd": "2026-06-15T04:43:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-15T04:43:00Z",
+          "periodEnd": "2026-06-15T05:05:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-15T05:05:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0023",
+      "pseudonymId": "PID-10177406",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0105",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-22T10:12:00Z",
+      "expectedLOSDays": 1,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-20T10:12:00Z",
+          "periodEnd": "2026-06-22T10:12:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-22T10:39:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0024",
+      "pseudonymId": "PID-6D9C4F8E",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-NEUROLOGY-0104",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-18T13:39:00Z",
+      "expectedLOSDays": 12,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-16T13:39:00Z",
+          "periodEnd": "2026-06-18T13:39:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-18T13:43:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0025",
+      "pseudonymId": "PID-CCD7DE43",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0102",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-15T12:28:00Z",
+      "expectedLOSDays": 10,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-13T12:28:00Z",
+          "periodEnd": "2026-06-15T12:28:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-15T12:45:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0026",
+      "pseudonymId": "PID-B5728072",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0202",
+      "requiredCharacteristics": [],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-13T00:27:00Z",
+      "expectedLOSDays": 14,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-11T00:27:00Z",
+          "periodEnd": "2026-06-13T00:27:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-13T00:45:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0027",
+      "pseudonymId": "PID-4056DC14",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0102",
+      "requiredCharacteristics": [
+        "cardiac-monitoring"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-19T17:01:00Z",
+      "expectedLOSDays": 12,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-17T17:01:00Z",
+          "periodEnd": "2026-06-19T17:01:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-19T17:22:00Z",
+          "periodEnd": "2026-06-20T07:22:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-20T07:22:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0028",
+      "pseudonymId": "PID-1AF5FF61",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-23T09:34:00Z",
+      "expectedLOSDays": 12,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-21T09:34:00Z",
+          "periodEnd": "2026-06-23T09:34:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-23T10:00:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0029",
+      "pseudonymId": "PID-1D5AF9DF",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-24T13:57:00Z",
+      "expectedLOSDays": 7,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-22T13:57:00Z",
+          "periodEnd": "2026-06-24T13:57:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-24T14:16:00Z",
+          "periodEnd": "2026-06-25T12:16:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-25T12:16:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0030",
+      "pseudonymId": "PID-E684BA2E",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0202",
+      "requiredCharacteristics": [
+        "single-room"
+      ],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-22T17:49:00Z",
+      "expectedLOSDays": 8,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-20T17:49:00Z",
+          "periodEnd": "2026-06-22T17:49:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-22T17:49:00Z",
+          "periodEnd": "2026-06-22T18:16:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-22T18:16:00Z",
+          "periodEnd": "2026-06-22T18:51:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-22T18:51:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0031",
+      "pseudonymId": "PID-8EA98061",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-CARDIOLOGY-0201",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-25T22:42:00Z",
+      "expectedLOSDays": 14,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-23T22:42:00Z",
+          "periodEnd": "2026-06-25T22:42:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-25T22:44:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0032",
+      "pseudonymId": "PID-02C9678B",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0202",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-25T20:18:00Z",
+      "expectedLOSDays": 5,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-23T20:18:00Z",
+          "periodEnd": "2026-06-25T20:18:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-25T20:18:00Z",
+          "periodEnd": "2026-06-25T20:38:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-25T20:38:00Z",
+          "periodEnd": "2026-06-25T21:01:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-25T21:01:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0033",
+      "pseudonymId": "PID-BD0C05BD",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-24T10:21:00Z",
+      "expectedLOSDays": 2,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-22T10:21:00Z",
+          "periodEnd": "2026-06-24T10:21:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-24T10:40:00Z",
+          "periodEnd": "2026-06-25T10:40:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-25T10:40:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0034",
+      "pseudonymId": "PID-A3C96EB7",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-NEUROLOGY-0204",
+      "requiredCharacteristics": [],
+      "acuityBand": "stat",
+      "expectedArrivalTimestamp": "2026-06-13T12:40:00Z",
+      "expectedLOSDays": 7,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-11T12:40:00Z",
+          "periodEnd": "2026-06-13T12:40:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-13T13:08:00Z",
+          "periodEnd": "2026-06-16T19:08:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-16T19:08:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0035",
+      "pseudonymId": "PID-6054B5A1",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0203",
+      "requiredCharacteristics": [],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-21T09:26:00Z",
+      "expectedLOSDays": 7,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-19T09:26:00Z",
+          "periodEnd": "2026-06-21T09:26:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-21T09:50:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0036",
+      "pseudonymId": "PID-3BB1F53E",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0105",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-21T08:57:00Z",
+      "expectedLOSDays": 14,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-19T08:57:00Z",
+          "periodEnd": "2026-06-21T08:57:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-21T08:59:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0037",
+      "pseudonymId": "PID-96D5535B",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0203",
+      "requiredCharacteristics": [
+        "cardiac-monitoring"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-14T09:39:00Z",
+      "expectedLOSDays": 12,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-12T09:39:00Z",
+          "periodEnd": "2026-06-14T09:39:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-14T09:39:00Z",
+          "periodEnd": "2026-06-14T10:09:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-14T10:09:00Z",
+          "periodEnd": "2026-06-14T10:33:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-14T10:33:00Z",
+          "periodEnd": "2026-06-16T02:33:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-16T02:33:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0038",
+      "pseudonymId": "PID-BBA9708C",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-NEUROLOGY-0204",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-20T14:33:00Z",
+      "expectedLOSDays": 11,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-18T14:33:00Z",
+          "periodEnd": "2026-06-20T14:33:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-20T14:33:00Z",
+          "periodEnd": "2026-06-20T15:21:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-20T15:21:00Z",
+          "periodEnd": "2026-06-20T15:51:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-20T15:51:00Z",
+          "periodEnd": "2026-06-21T06:51:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-21T06:51:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0039",
+      "pseudonymId": "PID-7DEEF7FD",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-21T12:10:00Z",
+      "expectedLOSDays": 10,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-19T12:10:00Z",
+          "periodEnd": "2026-06-21T12:10:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-21T12:10:00Z",
+          "periodEnd": "2026-06-21T12:51:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-21T12:51:00Z",
+          "periodEnd": "2026-06-21T13:06:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-21T13:06:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0040",
+      "pseudonymId": "PID-85F76F3C",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0102",
+      "requiredCharacteristics": [],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-26T04:01:00Z",
+      "expectedLOSDays": 11,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-24T04:01:00Z",
+          "periodEnd": "2026-06-26T04:01:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-26T04:23:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0041",
+      "pseudonymId": "PID-0CC22111",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [
+        "isolation"
+      ],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-21T01:00:00Z",
+      "expectedLOSDays": 10,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-19T01:00:00Z",
+          "periodEnd": "2026-06-21T01:00:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-21T01:04:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0042",
+      "pseudonymId": "PID-6C0F2DCE",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-ORTHOPEDICS-0102",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-15T17:33:00Z",
+      "expectedLOSDays": 2,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-13T17:33:00Z",
+          "periodEnd": "2026-06-15T17:33:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-15T18:00:00Z",
+          "periodEnd": "2026-06-17T11:00:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-17T11:00:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0043",
+      "pseudonymId": "PID-419A9FCD",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0105",
+      "requiredCharacteristics": [
+        "cardiac-monitoring"
+      ],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-20T18:33:00Z",
+      "expectedLOSDays": 14,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-18T18:33:00Z",
+          "periodEnd": "2026-06-20T18:33:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-20T18:41:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0044",
+      "pseudonymId": "PID-519EE4E7",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0205",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-20T18:19:00Z",
+      "expectedLOSDays": 3,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-18T18:19:00Z",
+          "periodEnd": "2026-06-20T18:19:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-20T18:19:00Z",
+          "periodEnd": "2026-06-20T19:04:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-20T19:04:00Z",
+          "periodEnd": "2026-06-20T19:47:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-20T19:47:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0045",
+      "pseudonymId": "PID-3CA599D5",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-REHAB-0106",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-25T17:13:00Z",
+      "expectedLOSDays": 9,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-23T17:13:00Z",
+          "periodEnd": "2026-06-25T17:13:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-25T17:13:00Z",
+          "periodEnd": "2026-06-25T18:12:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-25T18:12:00Z",
+          "periodEnd": "2026-06-25T18:34:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-25T18:34:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0046",
+      "pseudonymId": "PID-39D6B150",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0103",
+      "requiredCharacteristics": [],
+      "acuityBand": "asap",
+      "expectedArrivalTimestamp": "2026-06-15T05:07:00Z",
+      "expectedLOSDays": 4,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-13T05:07:00Z",
+          "periodEnd": "2026-06-15T05:07:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-15T05:19:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0047",
+      "pseudonymId": "PID-A4A26A73",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "observation",
+      "requestedSpecialtyServiceId": "HCS-NEUROLOGY-0104",
+      "requiredCharacteristics": [],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-19T00:48:00Z",
+      "expectedLOSDays": 8,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-17T00:48:00Z",
+          "periodEnd": "2026-06-19T00:48:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-19T01:14:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0048",
+      "pseudonymId": "PID-6AFA3FB8",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-INTERNAL-MED-0103",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-13T01:53:00Z",
+      "expectedLOSDays": 7,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-11T01:53:00Z",
+          "periodEnd": "2026-06-13T01:53:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-13T02:13:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0049",
+      "pseudonymId": "PID-B2069602",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "class": "IMP",
+      "status": "finished",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-ONCOLOGY-0105",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-18T13:54:00Z",
+      "expectedLOSDays": 14,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-16T13:54:00Z",
+          "periodEnd": "2026-06-18T13:54:00Z",
+          "locationId": null
+        },
+        {
+          "status": "arrived",
+          "periodStart": "2026-06-18T13:54:00Z",
+          "periodEnd": "2026-06-18T14:43:00Z",
+          "locationId": null
+        },
+        {
+          "status": "triaged",
+          "periodStart": "2026-06-18T14:43:00Z",
+          "periodEnd": "2026-06-18T15:14:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-18T15:14:00Z",
+          "periodEnd": "2026-06-22T12:14:00Z",
+          "locationId": null
+        },
+        {
+          "status": "finished",
+          "periodStart": "2026-06-22T12:14:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0050",
+      "pseudonymId": "PID-58DA69AD",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "transfer",
+      "requestedSpecialtyServiceId": "HCS-CARDIOLOGY-0201",
+      "requiredCharacteristics": [],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-25T06:09:00Z",
+      "expectedLOSDays": 6,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-23T06:09:00Z",
+          "periodEnd": "2026-06-25T06:09:00Z",
+          "locationId": null
+        },
+        {
+          "status": "in-progress",
+          "periodStart": "2026-06-25T06:13:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
     }
+  ],
+  "purposeTags": [
+    "capacity-planning",
+    "bed-management"
   ]
 }
