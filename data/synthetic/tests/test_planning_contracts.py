@@ -200,5 +200,124 @@ class LocationHierarchyTests(unittest.TestCase):
         self.assertTrue(any(not r.passed for r in report.results))
 
 
+class DemandEncounterSchemaTests(unittest.TestCase):
+    def setUp(self) -> None:
+        full = _load("schema/dc-demand-encounter-v1.schema.json")
+        self.item_schema = full["properties"]["records"]["items"]
+
+    def _record(self):
+        return {
+            "contractId": "DC-DEMAND-ENCOUNTER-v1",
+            "encounterId": "ENC-2026-0001",
+            "pseudonymId": "PID-9F2A1B7C",
+            "organizationId": "ORG-HIRSLANDEN",
+            "class": "IMP",
+            "status": "planned",
+            "admissionType": "elective",
+            "requestedSpecialtyServiceId": "HCS-CARD-01",
+            "requiredCharacteristics": ["cardiac-monitoring"],
+            "acuityBand": "routine",
+            "expectedArrivalTimestamp": "2026-06-14T10:00:00Z",
+            "expectedLOSDays": 4,
+            "statusHistory": [{
+                "status": "planned",
+                "periodStart": "2026-06-12T08:00:00Z",
+                "periodEnd": None,
+                "locationId": None
+            }],
+            "purposeTag": "capacity-planning",
+            "dataResidencyRegion": "switzerlandnorth",
+            "asOfTimestamp": "2026-06-12T08:00:00Z"
+        }
+
+    def test_minimal_valid_record_passes(self):
+        self.assertFalse(vd.validate_schema(self._record(), self.item_schema, "$"))
+
+    def test_outpatient_class_rejected(self):
+        rec = self._record()
+        rec["class"] = "AMB"
+        errors = vd.validate_schema(rec, self.item_schema, "$")
+        self.assertTrue(any("class" in e for e in errors))
+
+    def test_phi_field_in_extensions_path_rejected(self):
+        rec = self._record()
+        rec["firstName"] = "Anna"
+        errors = vd.validate_schema(rec, self.item_schema, "$")
+        self.assertTrue(any("firstName" in e for e in errors))
+
+
+class EncounterLifecycleTests(unittest.TestCase):
+    def _record(self, status="planned", history=None):
+        return {
+            "encounterId": "ENC-2026-0001",
+            "status": status,
+            "statusHistory": history or [
+                {"status": "planned", "periodStart": "2026-06-12T08:00:00Z",
+                 "periodEnd": None}
+            ],
+            "expectedLOSDays": 4,
+            "dataResidencyRegion": "switzerlandnorth",
+            "organizationId": "ORG-X",
+        }
+
+    def test_well_formed_passes(self):
+        report = vd.GateReport()
+        vd.check_encounter_lifecycle([self._record()], "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+    def test_current_status_must_match_last_history(self):
+        rec = self._record(status="finished")
+        report = vd.GateReport()
+        vd.check_encounter_lifecycle([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_periods_must_be_strictly_ordered(self):
+        rec = self._record(status="in-progress", history=[
+            {"status": "planned",     "periodStart": "2026-06-12T10:00:00Z",
+             "periodEnd": "2026-06-12T08:00:00Z"},
+            {"status": "in-progress", "periodStart": "2026-06-12T08:00:00Z",
+             "periodEnd": None},
+        ])
+        report = vd.GateReport()
+        vd.check_encounter_lifecycle([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_only_last_entry_may_have_null_period_end(self):
+        rec = self._record(status="in-progress", history=[
+            {"status": "planned",     "periodStart": "2026-06-12T08:00:00Z",
+             "periodEnd": None},
+            {"status": "in-progress", "periodStart": "2026-06-12T10:00:00Z",
+             "periodEnd": None},
+        ])
+        report = vd.GateReport()
+        vd.check_encounter_lifecycle([rec], "ds", report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_long_los_emits_warning_not_failure(self):
+        rec = self._record()
+        rec["expectedLOSDays"] = 120
+        report = vd.GateReport()
+        vd.check_encounter_lifecycle([rec], "ds", report)
+        warnings = [r for r in report.results
+                    if r.control_id == "NFR-DQ-005" and r.severity == "low" and not r.passed]
+        self.assertFalse(any(r.severity in ("critical", "high")
+                             for r in report.results if not r.passed))
+
+
+class PlanningPhiDenylistTests(unittest.TestCase):
+    def test_clinical_code_field_detected(self):
+        rec = {"encounterId": "ENC-1", "icdCode": "I21.4"}
+        report = vd.GateReport()
+        vd.check_planning_phi_denylist([rec], "ds", report)
+        self.assertTrue(any(not r.passed and r.control_id == "CH-C01"
+                            for r in report.results))
+
+    def test_clean_record_passes(self):
+        rec = {"encounterId": "ENC-1", "pseudonymId": "PID-AAAAAAAA"}
+        report = vd.GateReport()
+        vd.check_planning_phi_denylist([rec], "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+
 if __name__ == "__main__":
     unittest.main()

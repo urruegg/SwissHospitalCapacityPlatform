@@ -93,6 +93,13 @@ FORBIDDEN_IDENTIFIER_FIELDS = {
     "passport",
 }
 
+PLANNING_CLINICAL_DENYLIST = {
+    "icdcode", "icd10", "icd11", "snomed", "snomedcode",
+    "diagnosis", "diagnoses", "diagnosiscode",
+    "clinicalnote", "clinicalnotes", "notes",
+    "procedurecode", "drgcode",
+}
+
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 # Strict ISO-8601 UTC instants. We deliberately require the trailing 'Z'
@@ -352,6 +359,78 @@ def check_location_hierarchy(records: list[dict], dataset_id: str,
             dataset_id))
 
 
+def check_encounter_lifecycle(records: list[dict], dataset_id: str,
+                              report: GateReport) -> None:
+    """Validate DC-DEMAND-ENCOUNTER-v1 lifecycle invariants (spec §6.4)."""
+    failures = 0
+    for rec in records:
+        enc_id = rec.get("encounterId", "<unknown>")
+        history = rec.get("statusHistory") or []
+        if not history:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {enc_id!r} has empty statusHistory.", dataset_id))
+            failures += 1
+            continue
+
+        starts = [h.get("periodStart") for h in history]
+        if starts != sorted(starts):
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {enc_id!r} statusHistory periodStart not strictly ordered.",
+                dataset_id))
+            failures += 1
+
+        for idx, h in enumerate(history[:-1]):
+            if h.get("periodEnd") is None:
+                report.add(CheckResult("NFR-DQ-005", "high", False,
+                    f"Encounter {enc_id!r} non-terminal statusHistory[{idx}] has null periodEnd.",
+                    dataset_id))
+                failures += 1
+
+        for idx, h in enumerate(history):
+            end = h.get("periodEnd")
+            if end is not None and end < h.get("periodStart", ""):
+                report.add(CheckResult("NFR-DQ-005", "high", False,
+                    f"Encounter {enc_id!r} statusHistory[{idx}] periodEnd < periodStart.",
+                    dataset_id))
+                failures += 1
+
+        if rec.get("status") != history[-1].get("status"):
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {enc_id!r} status {rec.get('status')!r} does not match "
+                f"last statusHistory entry {history[-1].get('status')!r}.",
+                dataset_id))
+            failures += 1
+
+        # Long-stay LOS is warn-only (legitimate for rehab) per design D-09.
+        los = rec.get("expectedLOSDays")
+        if isinstance(los, int) and los > 90:
+            report.add(CheckResult("NFR-DQ-005", "low", True,
+                f"Encounter {enc_id!r} expectedLOSDays={los} exceeds 90-day soft bound "
+                "(legitimate for long-stay rehab; informational).", dataset_id))
+
+    if failures == 0:
+        report.add(CheckResult("NFR-DQ-005", "low", True,
+            "Encounter lifecycle invariants OK.", dataset_id))
+
+
+def check_planning_phi_denylist(records: list[dict], dataset_id: str,
+                                report: GateReport) -> None:
+    """Reject clinical / direct-identifier fields on planning records (spec §6.5)."""
+    failures = 0
+    for rec in records:
+        rec_id = rec.get("encounterId") or rec.get("recommendationId") or "<unknown>"
+        for key in rec.keys():
+            lk = key.lower()
+            if lk in FORBIDDEN_IDENTIFIER_FIELDS or lk in PLANNING_CLINICAL_DENYLIST:
+                report.add(CheckResult("CH-C01", "critical", False,
+                    f"Planning record {rec_id!r} carries forbidden field {key!r}.",
+                    dataset_id))
+                failures += 1
+    if failures == 0:
+        report.add(CheckResult("CH-C01", "low", True,
+            "Planning PHI/clinical denylist clean.", dataset_id))
+
+
 def check_purpose_tags(data: dict, records: list[dict], dataset_id: str,
                        report: GateReport) -> None:
     """Minimum-data purpose-tag policy (NFR-COMP-011 / CH-C01).
@@ -593,6 +672,9 @@ def validate_dataset(entry: dict, root: str, report: GateReport,
         check_specialty_metadata(data, records, dataset_id, taxonomy_version, report)
     if entry.get("lane") == "planning-supply-location":
         check_location_hierarchy(records, dataset_id, report)
+    if entry.get("lane") == "planning-demand-encounter":
+        check_encounter_lifecycle(records, dataset_id, report)
+        check_planning_phi_denylist(records, dataset_id, report)
     # Phase 2 onboarding policy enforcement (applies to every onboarding lane).
     check_purpose_tags(data, records, dataset_id, report)
     check_tenant_boundary(data, entry, records, dataset_id, report)

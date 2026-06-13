@@ -1,0 +1,57 @@
+{
+  "datasetId": "DS-DEMAND-ENC-sit-2026-06-12",
+  "contractId": "DC-DEMAND-ENCOUNTER-v1",
+  "contractVersion": "1.0.0",
+  "classification": "operational-confidential",
+  "residency": "CH",
+  "purposeTags": ["capacity-planning", "bed-management"],
+  "records": [
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0001",
+      "pseudonymId": "PID-9F2A1B7C",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "planned",
+      "admissionType": "elective",
+      "requestedSpecialtyServiceId": "HCS-CARD-01",
+      "requiredCharacteristics": ["cardiac-monitoring"],
+      "acuityBand": "routine",
+      "expectedArrivalTimestamp": "2026-06-14T10:00:00Z",
+      "expectedLOSDays": 4,
+      "statusHistory": [
+        {
+          "status": "planned",
+          "periodStart": "2026-06-12T08:00:00Z",
+          "periodEnd": null,
+          "locationId": null
+        }
+      ],
+      "purposeTag": "capacity-planning",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-DEMAND-ENCOUNTER-v1",
+      "encounterId": "ENC-2026-0002",
+      "pseudonymId": "PID-12345678",
+      "organizationId": "ORG-HIRSLANDEN",
+      "class": "IMP",
+      "status": "in-progress",
+      "admissionType": "emergency",
+      "requestedSpecialtyServiceId": "HCS-CARD-01",
+      "requiredCharacteristics": ["isolation"],
+      "acuityBand": "urgent",
+      "expectedArrivalTimestamp": "2026-06-12T06:00:00Z",
+      "expectedLOSDays": 6,
+      "statusHistory": [
+        {"status": "arrived",     "periodStart": "2026-06-12T06:00:00Z", "periodEnd": "2026-06-12T06:30:00Z", "locationId": null},
+        {"status": "triaged",     "periodStart": "2026-06-12T06:30:00Z", "periodEnd": "2026-06-12T07:15:00Z", "locationId": null},
+        {"status": "in-progress", "periodStart": "2026-06-12T07:15:00Z", "periodEnd": null,                    "locationId": "LOC-HIRSL-WARD-01"}
+      ],
+      "purposeTag": "bed-management",
+      "dataResidencyRegion": "switzerlandnorth",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    }
+  ]
+}
