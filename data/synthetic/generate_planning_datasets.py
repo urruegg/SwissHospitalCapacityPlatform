@@ -250,3 +250,202 @@ def build_encounters(cfg: GeneratorConfig, locations: list[dict]) -> list[dict]:
             "asOfTimestamp": cfg.as_of,
         })
     return records
+
+
+ALGORITHM_ID      = "stub-rules-v1"
+ALGORITHM_VERSION = "1.0.0"
+STALENESS_MIN     = 30
+
+
+def _bed_fit_factors(bed: dict) -> list[str]:
+    factors = []
+    chars = bed.get("characteristic", [])
+    if "single-room" in chars:
+        factors.append("single-room-available")
+    if "cardiac-monitoring" in chars:
+        factors.append("monitoring-equipped")
+    if "isolation" in chars or "negative-pressure" in chars:
+        factors.append("isolation-capable")
+    if "bariatric" in chars:
+        factors.append("bariatric-equipped")
+    return factors or ["last-cleaned-within-2h"]
+
+
+def _score_station(ward: dict, encounter: dict) -> tuple[float, list[dict]]:
+    """Deterministic scoring -- not an algorithm commitment."""
+    specialty_match = ward["specialtyServiceIds"][0] == encounter["requestedSpecialtyServiceId"]
+    headroom_norm = min(ward.get("bedsAvailable", 0) / max(ward.get("bedsTotal", 1), 1), 1.0)
+    required = set(encounter.get("requiredCharacteristics", []))
+    char_match = 1.0 if not required else (1.0 if required.issubset({"isolation", "cardiac-monitoring", "single-room"}) else 0.5)
+    weights = [
+        ("specialty-match",      0.5 if specialty_match else 0.0),
+        ("capacity-headroom",    0.3 * headroom_norm),
+        ("characteristic-match", 0.2 * char_match),
+    ]
+    total = sum(w for _, w in weights) or 1.0
+    norm = [{"factor": f, "weight": round(w / total, 4)} for f, w in weights]
+    return round(total, 4), norm
+
+
+def build_recommendations(cfg: GeneratorConfig, bundle: dict) -> list[dict]:
+    locs = bundle["locations"]
+    org_emits_beds = {l["organizationId"] for l in locs if l["physicalType"] == "bd"}
+    wards_by_org: dict[str, list[dict]] = {}
+    beds_by_ward: dict[str, list[dict]] = {}
+    for loc in locs:
+        if loc["physicalType"] == "wa":
+            wards_by_org.setdefault(loc["organizationId"], []).append(loc)
+        elif loc["physicalType"] == "bd":
+            beds_by_ward.setdefault(loc["partOfId"], []).append(loc)
+    gen_at = _dt.datetime.strptime(cfg.as_of.rstrip("Z"), "%Y-%m-%dT%H:%M:%S")
+    valid_until = gen_at + _dt.timedelta(minutes=STALENESS_MIN)
+    results: list[dict] = []
+    for enc in bundle["encounters"]:
+        org_id = enc["organizationId"]
+        candidate_wards = [w for w in wards_by_org.get(org_id, [])
+                           if w["specialtyServiceIds"][0] == enc["requestedSpecialtyServiceId"]]
+        if not candidate_wards:
+            continue
+        considered_ids = [w["locationId"] for w in candidate_wards]
+        scored = [(w, *_score_station(w, enc)) for w in candidate_wards]
+        scored.sort(key=lambda t: t[1], reverse=True)
+        top = scored[:5]
+        arrival = _dt.datetime.strptime(enc["expectedArrivalTimestamp"].rstrip("Z"),
+                                        "%Y-%m-%dT%H:%M:%S")
+        candidates = []
+        for rank, (ward, score, factors) in enumerate(top, start=1):
+            bed = None
+            if org_id in org_emits_beds:
+                available = [b for b in beds_by_ward.get(ward["locationId"], [])
+                             if b.get("operationalStatus") == "U"]
+                bed = available[0] if available else beds_by_ward.get(ward["locationId"], [None])[0]
+            candidate = {
+                "rank": rank,
+                "stationLocationId": ward["locationId"],
+                "recommendedBedLocationId": bed["locationId"] if bed else None,
+                "fitScore": score,
+                "capacityHeadroom": ward.get("bedsAvailable", 0),
+                "expectedAdmitWindowStart": _iso(arrival),
+                "expectedAdmitWindowEnd": _iso(arrival + _dt.timedelta(hours=6)),
+                "explanationFactors": factors,
+                "hardConstraintsMet": True,
+            }
+            if bed:
+                candidate["bedFitFactors"] = _bed_fit_factors(bed)
+            candidates.append(candidate)
+        if not candidates:
+            continue
+        results.append({
+            "contractId": "DC-MATCH-RECOMMENDATION-v1",
+            "recommendationId": f"REC-{cfg.as_of}-{enc['encounterId']}",
+            "encounterId": enc["encounterId"],
+            "organizationId": org_id,
+            "generatedAt": cfg.as_of,
+            "validUntil": _iso(valid_until),
+            "algorithmId": ALGORITHM_ID,
+            "algorithmVersion": ALGORITHM_VERSION,
+            "status": "advisory",
+            "dataResidencyRegion": enc["dataResidencyRegion"],
+            "inputSnapshot": {
+                "encounterAsOf": enc["asOfTimestamp"],
+                "supplyAsOf":    cfg.as_of,
+                "consideredStationIds": considered_ids,
+            },
+            "candidates": candidates,
+        })
+    return results
+
+
+def build_manifest(cfg: GeneratorConfig, bundle: dict) -> dict:
+    return {
+        "manifestVersion": "1.0.0",
+        "generatedAt": cfg.as_of,
+        "seed": cfg.seed,
+        "config": asdict(cfg),
+        "counts": {k: len(v) for k, v in bundle.items()},
+        "checksums": {
+            k: hashlib.sha256(json.dumps(v, sort_keys=True).encode()).hexdigest()
+            for k, v in bundle.items()
+        },
+    }
+
+
+def _wrap_dataset(records: list[dict], contract_id: str,
+                  dataset_id: str, ds_prefix: str) -> dict:
+    return {
+        "datasetId": dataset_id,
+        "contractId": contract_id,
+        "contractVersion": CONTRACT_VERSION,
+        "classification": "operational-confidential",
+        "residency": "CH",
+        "records": records,
+    }
+
+
+def write_datasets(cfg: GeneratorConfig, out_dir: str) -> dict:
+    bundle = build_bundle(cfg)
+    bundle["recommendations"] = build_recommendations(cfg, bundle)
+    os.makedirs(out_dir, exist_ok=True)
+    plan = [
+        ("dc-supply-organization-v1.sample.json",
+         "DC-SUPPLY-ORGANIZATION-v1",
+         "DS-SUPPLY-ORG-sit-2026-06-12", bundle["organizations"]),
+        ("dc-supply-location-v1.sample.json",
+         "DC-SUPPLY-LOCATION-v1",
+         "DS-SUPPLY-LOC-sit-2026-06-12", bundle["locations"]),
+        ("dc-demand-encounter-v1.sample.json",
+         "DC-DEMAND-ENCOUNTER-v1",
+         "DS-DEMAND-ENC-sit-2026-06-12", bundle["encounters"]),
+        ("dc-match-recommendation-v1.sample.json",
+         "DC-MATCH-RECOMMENDATION-v1",
+         "DS-MATCH-REC-sit-2026-06-12", bundle["recommendations"]),
+    ]
+    for fname, contract_id, ds_id, records in plan:
+        payload = _wrap_dataset(records, contract_id, ds_id, "")
+        with open(os.path.join(out_dir, fname), "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=2, sort_keys=False)
+            fh.write("\n")
+    manifest = build_manifest(cfg, bundle)
+    with open(os.path.join(out_dir, "manifest.json"), "w", encoding="utf-8") as fh:
+        json.dump(manifest, fh, indent=2, sort_keys=False)
+        fh.write("\n")
+    return manifest
+
+
+def _parse_args(argv: list[str] | None = None) -> GeneratorConfig:
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--organizations",     type=int,  default=2)
+    p.add_argument("--sites-per-org",     type=int,  default=2)
+    p.add_argument("--stations-per-site", type=int,  default=6)
+    p.add_argument("--beds-per-station",  type=int,  default=12)
+    p.add_argument("--with-beds",         action="store_true")
+    p.add_argument("--encounters",        type=int,  default=500)
+    p.add_argument("--horizon-days",      type=int,  default=14)
+    p.add_argument("--seed",              type=int,  default=42)
+    p.add_argument("--out", default=os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "datasets"))
+    args = p.parse_args(argv)
+    cfg = GeneratorConfig(
+        organizations=args.organizations,
+        sites_per_org=args.sites_per_org,
+        stations_per_site=args.stations_per_site,
+        beds_per_station=args.beds_per_station,
+        with_beds=args.with_beds,
+        encounters=args.encounters,
+        horizon_days=args.horizon_days,
+        seed=args.seed,
+    )
+    cfg.__dict__["_out_dir"] = args.out
+    return cfg
+
+
+def main(argv: list[str] | None = None) -> int:
+    cfg = _parse_args(argv)
+    out_dir = cfg.__dict__.pop("_out_dir")
+    manifest = write_datasets(cfg, out_dir)
+    print(json.dumps(manifest["counts"], indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
