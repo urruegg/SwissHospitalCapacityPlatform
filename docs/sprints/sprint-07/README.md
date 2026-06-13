@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
-| **Date** | 2026-06-12 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-06-13 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.2.0 (policy-evidence brainstorming brief link added) |
+| **Previous Version** | 1.3.0 (Stage-1 ingestion-pipeline brief link added) |
 
 ## Purpose
 
@@ -21,7 +21,11 @@ platform and data products delivery.
 4. [kpi-weekly-template.md](kpi-weekly-template.md) - Weekly performance and quality report template.
 5. [data-model-and-data-product.md](data-model-and-data-product.md) - Episode-based model and first data product scope.
 6. [sample-data-generator.md](sample-data-generator.md) - Metadata-only sample data generator scope.
-7. [brainstorming-policy-evidence-slice.md](brainstorming-policy-evidence-slice.md) - Stage 1 brainstorming brief for the policy validation and evidence slice.
+
+## Stage 1 Brainstorming Outputs
+
+1. [brainstorming-ingestion-pipeline-slice.md](brainstorming-ingestion-pipeline-slice.md) - Design brief, alternatives, acceptance criteria, and risks for the ingestion pipeline slice (issue #55).
+2. [brainstorming-policy-evidence-slice.md](brainstorming-policy-evidence-slice.md) - Stage 1 brainstorming brief for the policy validation and evidence slice (issue #56).
 
 ## Shared Baseline
 
