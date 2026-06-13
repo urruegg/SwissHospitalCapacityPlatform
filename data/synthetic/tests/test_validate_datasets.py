@@ -60,6 +60,25 @@ class SchemaValidationTests(unittest.TestCase):
         self.assertFalse(vd.validate_schema("2026-06-09", schema, "$"))
         self.assertTrue(vd.validate_schema("2026-13-40", schema, "$"))
 
+    def test_nullable_type_accepts_null(self):
+        schema = {"type": ["string", "null"]}
+        self.assertFalse(vd.validate_schema(None, schema, "$"))
+        self.assertFalse(vd.validate_schema("ok", schema, "$"))
+
+    def test_nullable_type_rejects_other_types(self):
+        schema = {"type": ["string", "null"]}
+        errors = vd.validate_schema(5, schema, "$")
+        self.assertTrue(any("expected type" in e for e in errors))
+
+    def test_date_time_format_validation(self):
+        schema = {"type": "string", "format": "date-time"}
+        self.assertFalse(vd.validate_schema("2026-06-12T14:32:00Z", schema, "$"))
+        self.assertFalse(vd.validate_schema("2026-06-12T14:32:00.123Z", schema, "$"))
+        # Non-UTC offsets and missing 'T'/'Z' must be rejected.
+        self.assertTrue(vd.validate_schema("2026-06-12 14:32:00Z", schema, "$"))
+        self.assertTrue(vd.validate_schema("2026-06-12T14:32:00+02:00", schema, "$"))
+        self.assertTrue(vd.validate_schema("not-a-timestamp", schema, "$"))
+
 
 class MinimizationTests(unittest.TestCase):
     def test_forbidden_identifier_detected(self):

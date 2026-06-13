@@ -95,6 +95,12 @@ FORBIDDEN_IDENTIFIER_FIELDS = {
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
+# Strict ISO-8601 UTC instants. We deliberately require the trailing 'Z'
+# (no offsets) so every record can be safely compared lexicographically.
+_DATETIME_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z$"
+)
+
 
 @dataclass
 class CheckResult:
@@ -146,6 +152,8 @@ def _type_ok(value: Any, expected: str) -> bool:
         return isinstance(value, (int, float)) and not isinstance(value, bool)
     if expected == "boolean":
         return isinstance(value, bool)
+    if expected == "null":
+        return value is None
     return False
 
 
@@ -155,6 +163,19 @@ def validate_schema(value: Any, schema: dict, path: str) -> list[str]:
     Returns a list of human-readable error strings (empty when valid).
     """
     errors: list[str] = []
+
+    type_decl = schema.get("type")
+    if isinstance(type_decl, list):
+        type_errors_per_branch = []
+        for candidate in type_decl:
+            branch = dict(schema)
+            branch["type"] = candidate
+            branch_errors = validate_schema(value, branch, path)
+            if not branch_errors:
+                return []
+            type_errors_per_branch.append(branch_errors)
+        joined = " / ".join(repr(t) for t in type_decl)
+        return [f"{path}: expected type {joined}, got {type(value).__name__}"]
 
     expected_type = schema.get("type")
     if expected_type and not _type_ok(value, expected_type):
@@ -170,6 +191,20 @@ def validate_schema(value: Any, schema: dict, path: str) -> list[str]:
             errors.append(f"{path}: value {value!r} does not match pattern '{pattern}'")
         if schema.get("format") == "date" and not _is_date(value):
             errors.append(f"{path}: value {value!r} is not a valid 'date'")
+        if schema.get("format") == "date-time":
+            if not isinstance(value, str) or not _DATETIME_RE.match(value):
+                errors.append(
+                    f"{path}: invalid date-time {value!r} "
+                    f"(expected ISO-8601 UTC with trailing 'Z')"
+                )
+            else:
+                try:
+                    _dt.datetime.strptime(
+                        value.split(".")[0].rstrip("Z"),
+                        "%Y-%m-%dT%H:%M:%S",
+                    )
+                except ValueError:
+                    errors.append(f"{path}: invalid date-time {value!r}")
 
     if expected_type in ("integer", "number"):
         if "minimum" in schema and value < schema["minimum"]:
