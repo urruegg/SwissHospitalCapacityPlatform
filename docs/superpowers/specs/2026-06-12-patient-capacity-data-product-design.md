@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-06-12 |
 | **Author** | Urs Rüegg (with GitHub Copilot) |
 | **Status** | Drafted (pending user review) |
-| **Previous Version** | 0.0.0 (new design spec) |
+| **Previous Version** | 1.0.0 (initial approved spec) |
 | **Sprint** | [Sprint 07 — Data Platform and Data Products](../../sprints/sprint-07-data-platform-and-data-products-superpowers.md) |
 | **Skill used** | `superpowers/brainstorming` |
 
@@ -144,8 +144,8 @@ Maps to FHIR `Location` + linked `HealthcareService`. Discriminated by
 | `operationalStatus` | enum | ✓ when `physicalType=bd` | `Location.operationalStatus` (FHIR `v2-0116`) | `U` unoccupied, `O` occupied, `H` housekeeping, `I` isolated, `K` contaminated, `C` closed |
 | `bedsTotal` | integer | ✓ when `physicalType=wa` | *(aggregate)* | Station-level supply capacity |
 | `bedsAvailable` | integer | ✓ when `physicalType=wa` | *(aggregate)* | Live planning signal |
-| `specialtyServiceIds` | array<string> | ✓ when `physicalType=wa` | `HealthcareService.id[]` | FK to embedded `HealthcareService` |
-| `characteristic` | array<enum> | ✗ | `Location.characteristic` (R4-B+) | `isolation`, `cardiac-monitoring`, `negative-pressure`, `bariatric`, `single-room`, `pediatric-equipped`, `female-only`, `male-only` |
+| `specialtyServiceIds` | `array<string>` | ✓ when `physicalType=wa` | `HealthcareService.id[]` | FK to embedded `HealthcareService` |
+| `characteristic` | `array<enum>` | ✗ | `Location.characteristic` (R4-B+) | `isolation`, `cardiac-monitoring`, `negative-pressure`, `bariatric`, `single-room`, `pediatric-equipped`, `female-only`, `male-only` |
 | `asOfTimestamp` | datetime (UTC) | ✓ | *(governance)* | Snapshot freshness |
 | `extensions` | object | ✗ | — | Provider-namespaced |
 
@@ -204,7 +204,7 @@ broader meaning — multi-Encounter care relationships — and is the wrong fit)
 | `status` | enum | ✓ | `Encounter.status` | See state machine in 6.3 |
 | `admissionType` | enum | ✓ | `Encounter.hospitalization.admitSource` | `emergency` \| `elective` \| `transfer` \| `observation` |
 | `requestedSpecialtyServiceId` | string | ✓ | `Encounter.serviceType` → `HealthcareService` | FK to a specialty service; drives match |
-| `requiredCharacteristics` | array<enum> | ✗ | `Encounter.hospitalization.specialArrangement` | Subset of supply-side `characteristic` enum; **hard** constraints |
+| `requiredCharacteristics` | `array<enum>` | ✗ | `Encounter.hospitalization.specialArrangement` | Subset of supply-side `characteristic` enum; **hard** constraints |
 | `acuityBand` | enum | ✓ | `Encounter.priority` (banded) | `routine` \| `urgent` \| `asap` \| `stat` |
 | `expectedArrivalTimestamp` | datetime (UTC) | ✓ | `Encounter.period.start` (planned) | Planning horizon anchor |
 | `expectedLOSDays` | integer | ✓ | *(governance)* | Provider-estimated length of stay; calibrated over time |
@@ -320,10 +320,10 @@ to inputs.
 | `capacityHeadroom` | integer | ✓ | `bedsAvailable - committedDemand` at `generatedAt` |
 | `expectedAdmitWindowStart` | datetime (UTC) | ✓ | Earliest admit time given current supply |
 | `expectedAdmitWindowEnd` | datetime (UTC) | ✓ | Latest acceptable admit time before fit degrades |
-| `explanationFactors` | array<object> | ✓ (min 1) | See 7.4 |
-| `bedFitFactors` | array<enum> | conditional | Required when `recommendedBedLocationId` is non-null: `single-room-available`, `isolation-capable`, `monitoring-equipped`, `bariatric-equipped`, `last-cleaned-within-2h`, `gender-constraint-met` |
+| `explanationFactors` | `array<object>` | ✓ (min 1) | See 7.4 |
+| `bedFitFactors` | `array<enum>` | conditional | Required when `recommendedBedLocationId` is non-null: `single-room-available`, `isolation-capable`, `monitoring-equipped`, `bariatric-equipped`, `last-cleaned-within-2h`, `gender-constraint-met` |
 | `hardConstraintsMet` | boolean | ✓ | True iff every `requiredCharacteristic` is satisfied |
-| `softConstraintGaps` | array<string> | ✗ | Preferences not met (informational) |
+| `softConstraintGaps` | `array<string>` | ✗ | Preferences not met (informational) |
 
 > **Cap at N=5** for MVP. Bed managers don't reason over more than a handful;
 > larger N is a future optimisation product (bipartite assignment plan).
@@ -336,8 +336,8 @@ Without this block we can't defend a recommendation in a clinical review.
 | ----- | ----- | ----- | ----- |
 | `encounterAsOf` | datetime (UTC) | ✓ | `asOfTimestamp` of the Encounter at compute time |
 | `supplyAsOf` | datetime (UTC) | ✓ | Newest `asOfTimestamp` across consulted Location records |
-| `consideredStationIds` | array<string> | ✓ | Every Station the algorithm evaluated (not just the top-N); enables fairness audits |
-| `excludedStationIds` | array<object> | ✗ | `{stationId, reason}` for hard-constraint failures |
+| `consideredStationIds` | `array<string>` | ✓ | Every Station the algorithm evaluated (not just the top-N); enables fairness audits |
+| `excludedStationIds` | `array<object>` | ✗ | `{stationId, reason}` for hard-constraint failures |
 
 ### 7.4 `explanationFactors` — per-candidate justification
 
