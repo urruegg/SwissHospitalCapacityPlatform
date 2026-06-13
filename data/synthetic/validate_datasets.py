@@ -494,6 +494,83 @@ def check_recommendation_invariants(records: list[dict], dataset_id: str,
             "Recommendation invariants OK.", dataset_id))
 
 
+def check_planning_cross_contract(bundle: dict, report: GateReport) -> None:
+    """Cross-contract FK + residency + bed-required-when-supply checks."""
+    orgs = {o["organizationId"]: o for o in bundle.get("organizations", [])}
+    locs = {l["locationId"]: l for l in bundle.get("locations", [])}
+    services = {
+        s["healthcareServiceId"]: s
+        for l in bundle.get("locations", [])
+        for s in (l.get("healthcareServices") or [])
+    }
+    org_emits_beds = {l["organizationId"] for l in bundle.get("locations", [])
+                      if l.get("physicalType") == "bd"}
+    failures = 0
+
+    for enc in bundle.get("encounters", []):
+        eid = enc.get("encounterId", "<unknown>")
+        org_id = enc.get("organizationId")
+        if org_id not in orgs:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {eid!r} organizationId {org_id!r} not found.", eid))
+            failures += 1
+        elif orgs[org_id].get("dataResidencyRegion") != enc.get("dataResidencyRegion"):
+            report.add(CheckResult("CH-C05", "high", False,
+                f"Encounter {eid!r} dataResidencyRegion mismatches its Organization.", eid))
+            failures += 1
+        svc = enc.get("requestedSpecialtyServiceId")
+        if svc not in services:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {eid!r} requestedSpecialtyServiceId {svc!r} does not resolve.",
+                eid))
+            failures += 1
+
+    enc_ids = {e["encounterId"] for e in bundle.get("encounters", [])}
+    for rec in bundle.get("recommendations", []):
+        rid = rec.get("recommendationId", "<unknown>")
+        if rec.get("encounterId") not in enc_ids:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Recommendation {rid!r} encounterId not found.", rid))
+            failures += 1
+        org_id = rec.get("organizationId")
+        if org_id in orgs and orgs[org_id].get("dataResidencyRegion") != rec.get("dataResidencyRegion"):
+            report.add(CheckResult("CH-C05", "high", False,
+                f"Recommendation {rid!r} dataResidencyRegion mismatches its Organization.",
+                rid))
+            failures += 1
+        for c in rec.get("candidates", []):
+            station = locs.get(c.get("stationLocationId"))
+            if station is None or station.get("physicalType") != "wa":
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rid!r} candidate rank {c.get('rank')} "
+                    "stationLocationId must reference a ward.", rid))
+                failures += 1
+            bed_id = c.get("recommendedBedLocationId")
+            if org_id in org_emits_beds and bed_id is None:
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rid!r} candidate rank {c.get('rank')} "
+                    "must include recommendedBedLocationId when supply emits beds.",
+                    rid))
+                failures += 1
+            if bed_id is not None:
+                bed = locs.get(bed_id)
+                if bed is None or bed.get("physicalType") != "bd":
+                    report.add(CheckResult("NFR-AI-004", "high", False,
+                        f"Recommendation {rid!r} bed {bed_id!r} not found or not a bed.",
+                        rid))
+                    failures += 1
+                elif bed.get("partOfId") != c.get("stationLocationId"):
+                    report.add(CheckResult("NFR-AI-004", "high", False,
+                        f"Recommendation {rid!r} bed {bed_id!r} does not belong to "
+                        f"station {c.get('stationLocationId')!r}.", rid))
+                    failures += 1
+
+    if failures == 0:
+        report.add(CheckResult("NFR-DQ-005", "low", True,
+            "Cross-contract FK + residency + bed-requirement checks OK.",
+            "planning-bundle"))
+
+
 def check_purpose_tags(data: dict, records: list[dict], dataset_id: str,
                        report: GateReport) -> None:
     """Minimum-data purpose-tag policy (NFR-COMP-011 / CH-C01).
@@ -802,6 +879,24 @@ def run(root: str) -> tuple[dict, GateReport]:
     report = GateReport()
     for entry in traceability["datasets"]:
         validate_dataset(entry, root, report, taxonomy_version)
+
+    bundle = {"organizations": [], "locations": [],
+              "encounters": [], "recommendations": []}
+    lane_to_key = {
+        "planning-supply-organization": "organizations",
+        "planning-supply-location":     "locations",
+        "planning-demand-encounter":    "encounters",
+        "planning-match-recommendation":"recommendations",
+    }
+    for entry in traceability["datasets"]:
+        key = lane_to_key.get(entry.get("lane"))
+        if not key:
+            continue
+        data = _load_json(os.path.join(root, entry["dataFile"]))
+        bundle[key].extend(data.get("records", []))
+    if any(bundle.values()):
+        check_planning_cross_contract(bundle, report)
+
     evidence = build_evidence(report, traceability)
     return evidence, report
 

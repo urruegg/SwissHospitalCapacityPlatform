@@ -435,5 +435,78 @@ class RecommendationInvariantsTests(unittest.TestCase):
         self.assertTrue(any(not r.passed for r in report.results))
 
 
+class CrossContractTests(unittest.TestCase):
+    def _bundle(self):
+        return {
+            "organizations": [{"organizationId": "ORG-X",
+                               "dataResidencyRegion": "switzerlandnorth"}],
+            "locations": [
+                {"locationId": "LOC-S", "physicalType": "si",
+                 "organizationId": "ORG-X", "partOfId": None},
+                {"locationId": "LOC-W", "physicalType": "wa",
+                 "organizationId": "ORG-X", "partOfId": "LOC-S",
+                 "specialtyServiceIds": ["HCS-X"],
+                 "healthcareServices": [
+                   {"healthcareServiceId": "HCS-X", "specialty": "cardiology",
+                    "specialtyTaxonomyVersion": "1.0.0", "category": "inpatient"}]}
+            ],
+            "encounters": [
+                {"encounterId": "ENC-1", "organizationId": "ORG-X",
+                 "requestedSpecialtyServiceId": "HCS-X",
+                 "dataResidencyRegion": "switzerlandnorth"}
+            ],
+            "recommendations": [
+                {"recommendationId": "REC-1", "encounterId": "ENC-1",
+                 "organizationId": "ORG-X",
+                 "dataResidencyRegion": "switzerlandnorth",
+                 "candidates": [
+                   {"rank": 1, "stationLocationId": "LOC-W",
+                    "recommendedBedLocationId": None}
+                 ]}
+            ],
+        }
+
+    def test_well_formed_passes(self):
+        report = vd.GateReport()
+        vd.check_planning_cross_contract(self._bundle(), report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+    def test_encounter_org_must_exist(self):
+        b = self._bundle()
+        b["encounters"][0]["organizationId"] = "ORG-MISSING"
+        report = vd.GateReport()
+        vd.check_planning_cross_contract(b, report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_encounter_specialty_must_resolve(self):
+        b = self._bundle()
+        b["encounters"][0]["requestedSpecialtyServiceId"] = "HCS-NOPE"
+        report = vd.GateReport()
+        vd.check_planning_cross_contract(b, report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_recommendation_station_must_be_ward(self):
+        b = self._bundle()
+        b["recommendations"][0]["candidates"][0]["stationLocationId"] = "LOC-S"
+        report = vd.GateReport()
+        vd.check_planning_cross_contract(b, report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_residency_mismatch_detected(self):
+        b = self._bundle()
+        b["encounters"][0]["dataResidencyRegion"] = "switzerlandwest"
+        report = vd.GateReport()
+        vd.check_planning_cross_contract(b, report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+    def test_bed_required_when_supply_emits_beds(self):
+        b = self._bundle()
+        b["locations"].append({"locationId": "LOC-B", "physicalType": "bd",
+                               "organizationId": "ORG-X", "partOfId": "LOC-W"})
+        report = vd.GateReport()
+        vd.check_planning_cross_contract(b, report)
+        self.assertTrue(any(not r.passed for r in report.results))
+
+
 if __name__ == "__main__":
     unittest.main()
