@@ -1,0 +1,52 @@
+{
+  "datasetId": "DS-SUPPLY-LOC-sit-2026-06-12",
+  "contractId": "DC-SUPPLY-LOCATION-v1",
+  "contractVersion": "1.0.0",
+  "classification": "operational-confidential",
+  "residency": "CH",
+  "records": [
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-SITE-01",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "si",
+      "partOfId": null,
+      "name": "Hirslanden Zurich Campus",
+      "status": "active",
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-WARD-01",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "wa",
+      "partOfId": "LOC-HIRSL-SITE-01",
+      "name": "Cardiology Ward",
+      "status": "active",
+      "bedsTotal": 24,
+      "bedsAvailable": 6,
+      "specialtyServiceIds": ["HCS-CARD-01"],
+      "healthcareServices": [
+        {
+          "healthcareServiceId": "HCS-CARD-01",
+          "specialty": "cardiology",
+          "specialtyTaxonomyVersion": "1.0.0",
+          "category": "inpatient"
+        }
+      ],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    },
+    {
+      "contractId": "DC-SUPPLY-LOCATION-v1",
+      "locationId": "LOC-HIRSL-BED-001",
+      "organizationId": "ORG-HIRSLANDEN",
+      "physicalType": "bd",
+      "partOfId": "LOC-HIRSL-WARD-01",
+      "name": "Bed 1A",
+      "status": "active",
+      "operationalStatus": "U",
+      "characteristic": ["single-room", "cardiac-monitoring"],
+      "asOfTimestamp": "2026-06-12T08:00:00Z"
+    }
+  ]
+}

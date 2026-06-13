@@ -281,6 +281,77 @@ def check_capacity_invariants(records: list[dict], dataset_id: str, report: Gate
             dataset_id))
 
 
+def check_location_hierarchy(records: list[dict], dataset_id: str,
+                             report: GateReport) -> None:
+    """Recursive supply-location hierarchy + bed/ward invariants (NFR-DQ-005).
+
+    Rules per DC-SUPPLY-LOCATION-v1:
+      - physicalType=si (site): partOfId must be None.
+      - physicalType=wa (ward): partOfId must reference an existing site.
+      - physicalType=bd (bed):  partOfId must reference an existing ward.
+      - Ward: bedsAvailable <= bedsTotal (both must be integers).
+      - Ward: must declare at least one specialtyServiceIds entry.
+      - Bed:  must declare operationalStatus.
+    """
+    by_id: dict[str, dict] = {}
+    for record in records:
+        if isinstance(record, dict):
+            loc_id = record.get("locationId")
+            if isinstance(loc_id, str):
+                by_id[loc_id] = record
+
+    failures: list[str] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        loc_id = record.get("locationId", "<unknown>")
+        physical_type = record.get("physicalType")
+        parent_id = record.get("partOfId")
+
+        if physical_type == "si":
+            if parent_id is not None:
+                failures.append(
+                    f"{loc_id}: site must have partOfId=null (got {parent_id!r})")
+        elif physical_type == "wa":
+            parent = by_id.get(parent_id) if isinstance(parent_id, str) else None
+            if not parent or parent.get("physicalType") != "si":
+                failures.append(
+                    f"{loc_id}: ward partOfId {parent_id!r} must reference a site")
+            beds_total = record.get("bedsTotal")
+            beds_avail = record.get("bedsAvailable")
+            if (not isinstance(beds_total, int) or isinstance(beds_total, bool)
+                    or not isinstance(beds_avail, int) or isinstance(beds_avail, bool)):
+                failures.append(
+                    f"{loc_id}: ward bedsTotal/bedsAvailable must be integers")
+            elif beds_avail > beds_total:
+                failures.append(
+                    f"{loc_id}: ward bedsAvailable {beds_avail} > bedsTotal {beds_total}")
+            services = record.get("specialtyServiceIds")
+            if not isinstance(services, list) or len(services) < 1:
+                failures.append(
+                    f"{loc_id}: ward must declare >=1 specialtyServiceIds")
+        elif physical_type == "bd":
+            parent = by_id.get(parent_id) if isinstance(parent_id, str) else None
+            if not parent or parent.get("physicalType") != "wa":
+                failures.append(
+                    f"{loc_id}: bed partOfId {parent_id!r} must reference a ward")
+            if not record.get("operationalStatus"):
+                failures.append(
+                    f"{loc_id}: bed must declare operationalStatus")
+
+    if failures:
+        report.add(CheckResult(
+            "NFR-DQ-005", "high", False,
+            "Location hierarchy / ward / bed invariant violations: "
+            + "; ".join(failures),
+            dataset_id))
+    else:
+        report.add(CheckResult(
+            "NFR-DQ-005", "low", True,
+            "Location hierarchy and ward/bed invariants OK.",
+            dataset_id))
+
+
 def check_purpose_tags(data: dict, records: list[dict], dataset_id: str,
                        report: GateReport) -> None:
     """Minimum-data purpose-tag policy (NFR-COMP-011 / CH-C01).
@@ -520,6 +591,8 @@ def validate_dataset(entry: dict, root: str, report: GateReport,
     if entry.get("lane") == "specialty-capacity":
         check_capacity_invariants(records, dataset_id, report)
         check_specialty_metadata(data, records, dataset_id, taxonomy_version, report)
+    if entry.get("lane") == "planning-supply-location":
+        check_location_hierarchy(records, dataset_id, report)
     # Phase 2 onboarding policy enforcement (applies to every onboarding lane).
     check_purpose_tags(data, records, dataset_id, report)
     check_tenant_boundary(data, entry, records, dataset_id, report)

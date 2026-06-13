@@ -62,6 +62,18 @@
       "nfr": ["NFR-COMP-011"],
       "ch": ["CH-C05"],
       "rv": ["RV-06-10"]
+    },
+    {
+      "datasetId": "DS-SUPPLY-LOC-sit-2026-06-12",
+      "lane": "planning-supply-location",
+      "providerScope": "none",
+      "dataFile": "datasets/dc-supply-location-v1.sample.json",
+      "schemaFile": "schema/dc-supply-location-v1.schema.json",
+      "minimizationChecked": false,
+      "fr": ["FR-DATA-002", "FR-DATA-005", "FR-ONB-003"],
+      "nfr": ["NFR-DQ-005", "NFR-COMP-011"],
+      "ch": ["CH-C05"],
+      "rv": ["RV-06-10"]
     }
   ]
 }
