@@ -1,0 +1,29 @@
+{
+  "datasetId": "DS-SUPPLY-ORG-sit-2026-06-12",
+  "contractId": "DC-SUPPLY-ORGANIZATION-v1",
+  "contractVersion": "1.0.0",
+  "classification": "operational-confidential",
+  "residency": "CH",
+  "records": [
+    {
+      "contractId": "DC-SUPPLY-ORGANIZATION-v1",
+      "organizationId": "ORG-HIRSLANDEN",
+      "name": "Klinik Hirslanden",
+      "organizationType": "prov",
+      "active": true,
+      "country": "CH",
+      "canton": "CH-ZH",
+      "dataResidencyRegion": "switzerlandnorth"
+    },
+    {
+      "contractId": "DC-SUPPLY-ORGANIZATION-v1",
+      "organizationId": "ORG-ZOLLIKERBERG",
+      "name": "Spital Zollikerberg",
+      "organizationType": "prov",
+      "active": true,
+      "country": "CH",
+      "canton": "CH-ZH",
+      "dataResidencyRegion": "switzerlandnorth"
+    }
+  ]
+}
