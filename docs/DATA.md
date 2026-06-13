@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 0.5.0 |
+| **Date** | 2026-06-12 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.1 (data domains, contracts, retention, and requirement traceability baseline) |
+| **Previous Version** | 0.4.0 (Sprint 6 onboarding contracts) |
 
 ## Purpose
 
@@ -146,6 +146,23 @@ contract:
 
 Hospital-at-Home fields are optional and provider-scoped, consistent with the
 Sprint 6 risk mitigation to keep the baseline model simple.
+
+### Sprint 07 — Patient capacity planning data product contracts
+
+| Contract ID | Role | CDM/FHIR source | Dataset |
+| ----- | ----- | ----- | ----- |
+| `DC-SUPPLY-ORGANIZATION-v1` | Tenancy and legal-entity catalog (Hospital) | `Organization` (Commoncore) | `datasets/dc-supply-organization-v1.sample.json` |
+| `DC-SUPPLY-LOCATION-v1` | Recursive supply hierarchy (Site/Ward/Bed) | `Location` + embedded `HealthcareService` | `datasets/dc-supply-location-v1.sample.json` |
+| `DC-DEMAND-ENCOUNTER-v1` | Inpatient demand (`Encounter.class=IMP`) | `Encounter` + `EncounterStatusHistory` | `datasets/dc-demand-encounter-v1.sample.json` |
+| `DC-MATCH-RECOMMENDATION-v1` | Ranked top-N candidate Stations (advisory) | *(bespoke)* | `datasets/dc-match-recommendation-v1.sample.json` |
+
+Design rationale, validator rules, partition-key strategy, and the deterministic stub matcher are documented in [docs/superpowers/specs/2026-06-12-patient-capacity-data-product-design.md](superpowers/specs/2026-06-12-patient-capacity-data-product-design.md).
+
+### Deprecations
+
+| Contract | Superseded by | Removal | Notes |
+| ----- | ----- | ----- | ----- |
+| `DC-ONB-CAPACITY-v1` (incl. provider variants `*-HIRSLANDEN-v1`, `*-ZOLLIKERBERG-v1`) | `DC-SUPPLY-LOCATION-v1` + `DC-SUPPLY-ORGANIZATION-v1` | Later sprint — migration PR will move provider variants to `extensions.<provider>` on the new `Location` contract | Sprint 07 keeps both in place; CI continues to validate the deprecated contract until removal. |
 
 ### Contract Validation Pattern
 
