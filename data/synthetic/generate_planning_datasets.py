@@ -144,9 +144,109 @@ def build_locations(cfg: GeneratorConfig) -> list[dict]:
 
 
 def build_bundle(cfg: GeneratorConfig) -> dict:
+    organizations = build_organizations(cfg)
+    locations     = build_locations(cfg)
+    encounters    = build_encounters(cfg, locations)
     return {
-        "organizations": build_organizations(cfg),
-        "locations":     build_locations(cfg),
-        "encounters":    [],
-        "recommendations":[],
+        "organizations":   organizations,
+        "locations":       locations,
+        "encounters":      encounters,
+        "recommendations": [],
     }
+
+
+ACUITY_WEIGHTS = [("routine", 60), ("urgent", 25), ("asap", 12), ("stat", 3)]
+ADMISSION_TYPES = ("emergency", "elective", "transfer", "observation")
+PURPOSE_TAGS = ("capacity-planning", "bed-management")
+
+
+def _weighted_choice(rng: random.Random, weighted: list[tuple[str, int]]) -> str:
+    total = sum(w for _, w in weighted)
+    pick = rng.randint(1, total)
+    cum = 0
+    for value, weight in weighted:
+        cum += weight
+        if pick <= cum:
+            return value
+    return weighted[-1][0]
+
+
+def _iso(ts: _dt.datetime) -> str:
+    return ts.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _pseudonym(rng: random.Random) -> str:
+    return f"PID-{rng.randint(0, 0xFFFFFFFF):08X}"
+
+
+def _build_status_history(rng: random.Random, start: _dt.datetime,
+                          admission_type: str
+                          ) -> tuple[str, list[dict], str | None]:
+    """Lifecycle subsets the spec state machine (§6.3); deterministic for a given RNG state."""
+    history: list[dict] = []
+    cursor = start - _dt.timedelta(days=2)
+    history.append({"status": "planned", "periodStart": _iso(cursor),
+                    "periodEnd": _iso(start), "locationId": None})
+    cursor = start
+    if admission_type == "emergency":
+        triage_end = cursor + _dt.timedelta(minutes=rng.randint(15, 60))
+        history.append({"status": "arrived", "periodStart": _iso(cursor),
+                        "periodEnd": _iso(triage_end), "locationId": None})
+        in_progress_start = triage_end + _dt.timedelta(minutes=rng.randint(10, 45))
+        history.append({"status": "triaged", "periodStart": _iso(triage_end),
+                        "periodEnd": _iso(in_progress_start), "locationId": None})
+        cursor = in_progress_start
+    else:
+        cursor = cursor + _dt.timedelta(minutes=rng.randint(0, 30))
+    if rng.random() < 0.7:
+        history.append({"status": "in-progress", "periodStart": _iso(cursor),
+                        "periodEnd": None, "locationId": None})
+        return "in-progress", history, None
+    finished_at = cursor + _dt.timedelta(hours=rng.randint(8, 96))
+    history.append({"status": "in-progress", "periodStart": _iso(cursor),
+                    "periodEnd": _iso(finished_at), "locationId": None})
+    history.append({"status": "finished", "periodStart": _iso(finished_at),
+                    "periodEnd": None, "locationId": None})
+    return "finished", history, None
+
+
+def build_encounters(cfg: GeneratorConfig, locations: list[dict]) -> list[dict]:
+    rng = _rng(cfg, "encounters")
+    base = _dt.datetime.strptime(cfg.as_of.rstrip("Z"), "%Y-%m-%dT%H:%M:%S")
+    services_by_org: dict[str, list[dict]] = {}
+    for loc in locations:
+        for svc in loc.get("healthcareServices", []):
+            services_by_org.setdefault(loc["organizationId"], []).append({
+                "id": svc["healthcareServiceId"],
+                "wardId": loc["locationId"],
+            })
+    org_ids = sorted(services_by_org.keys())
+    records: list[dict] = []
+    for i in range(1, cfg.encounters + 1):
+        org_id = rng.choice(org_ids)
+        svc = rng.choice(services_by_org[org_id])
+        admission_type = rng.choice(ADMISSION_TYPES)
+        arrival_offset = rng.randint(0, cfg.horizon_days * 24 * 60)
+        arrival = base + _dt.timedelta(minutes=arrival_offset)
+        status, history, _ = _build_status_history(rng, arrival, admission_type)
+        records.append({
+            "contractId": "DC-DEMAND-ENCOUNTER-v1",
+            "encounterId": f"ENC-2026-{i:04d}",
+            "pseudonymId": _pseudonym(rng),
+            "organizationId": org_id,
+            "class": "IMP",
+            "status": status,
+            "admissionType": admission_type,
+            "requestedSpecialtyServiceId": svc["id"],
+            "requiredCharacteristics": rng.sample(
+                ["isolation", "cardiac-monitoring", "single-room"],
+                k=rng.randint(0, 1)),
+            "acuityBand": _weighted_choice(rng, ACUITY_WEIGHTS),
+            "expectedArrivalTimestamp": _iso(arrival),
+            "expectedLOSDays": rng.randint(1, 14),
+            "statusHistory": history,
+            "purposeTag": rng.choice(PURPOSE_TAGS),
+            "dataResidencyRegion": "switzerlandnorth",
+            "asOfTimestamp": cfg.as_of,
+        })
+    return records

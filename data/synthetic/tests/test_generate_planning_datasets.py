@@ -54,5 +54,38 @@ class GeneratorLocationTests(unittest.TestCase):
         self.assertEqual(a["locations"], b["locations"])
 
 
+class GeneratorEncounterTests(unittest.TestCase):
+    def test_default_encounter_count(self):
+        cfg = gen.GeneratorConfig(seed=42, encounters=50)
+        bundle = gen.build_bundle(cfg)
+        self.assertEqual(len(bundle["encounters"]), 50)
+
+    def test_encounter_passes_lifecycle_check(self):
+        cfg = gen.GeneratorConfig(seed=42, encounters=20)
+        bundle = gen.build_bundle(cfg)
+        report = vd.GateReport()
+        vd.check_encounter_lifecycle(bundle["encounters"], "ds", report)
+        self.assertTrue(all(r.severity == "low" or r.passed
+                            for r in report.results),
+                        msg=[r.message for r in report.results if not r.passed])
+
+    def test_acuity_distribution_weighted(self):
+        cfg = gen.GeneratorConfig(seed=42, encounters=1000)
+        bundle = gen.build_bundle(cfg)
+        counts = {"routine": 0, "urgent": 0, "asap": 0, "stat": 0}
+        for e in bundle["encounters"]:
+            counts[e["acuityBand"]] += 1
+        self.assertGreater(counts["routine"], counts["urgent"])
+        self.assertGreater(counts["urgent"], counts["asap"])
+        self.assertGreater(counts["asap"], counts["stat"])
+
+    def test_phi_denylist_clean(self):
+        cfg = gen.GeneratorConfig(seed=42, encounters=20)
+        bundle = gen.build_bundle(cfg)
+        report = vd.GateReport()
+        vd.check_planning_phi_denylist(bundle["encounters"], "ds", report)
+        self.assertTrue(all(r.passed for r in report.results))
+
+
 if __name__ == "__main__":
     unittest.main()
