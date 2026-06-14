@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-06-14 |
 | **Author** | Urs Ruegg (with GitHub Copilot) |
 | **Status** | Reviewed |
-| **Previous Version** | - (initial design) |
+| **Previous Version** | 1.0.0 (initial design; corrected to treat silver as intermediate non-contracted zone since DC-EPISODE/ENCOUNTER do not exist in `data/synthetic/schema/`) |
 | **Sprint** | [docs/sprints/sprint-08-data-platform-resources-and-ingestion-pipeline.md](../../sprints/sprint-08-data-platform-resources-and-ingestion-pipeline.md) |
 | **Umbrella issue** | `#66` |
 | **Baseline PR** | `#67` |
@@ -67,8 +67,8 @@ data product in SIT.
                  |  notebook: validate + pseudonymise re-assert
                  v
        +---------+----------+
-       |  OneLake silver    |   DC-EPISODE-v1, DC-ENCOUNTER-v1
-       +---------+----------+
+       |  OneLake silver    |   intermediate Delta tables
+       +---------+----------+   (no formal contract; allow-listed shape)
                  |  notebook: conform, aggregate, tag
                  v
        +---------+----------+
@@ -169,7 +169,7 @@ Azure SQL DB (kis.*)
 bronze.kis_patient, kis_episode, kis_encounter, kis_diagnosis, kis_procedure   (Delta)
     | nb_silver_transform.py (PySpark, micro-batch append)
     v
-silver.episode (DC-EPISODE-v1), silver.encounter (DC-ENCOUNTER-v1)             (Delta)
+silver.episode, silver.encounter (intermediate Delta, allow-listed shape)     (Delta)
     | nb_gold_publish.py (PySpark, micro-batch append)
     v
 gold.demand_encounter (DC-DEMAND-ENCOUNTER-v1)                                 (Delta)
@@ -211,22 +211,30 @@ exist.
 
 ### 5.4 Contract registry (no new contracts in Sprint 08)
 
+Data contracts apply at data-product boundaries, not at internal transform
+layers. Sprint 08 therefore implements only one contracted boundary: the gold
+zone.
+
 | Contract | File | Owner |
 | -------- | ---- | ----- |
-| `DC-EPISODE-v1` | `data/synthetic/schema/dc-episode-v1.json` | Data design agent |
-| `DC-ENCOUNTER-v1` | `data/synthetic/schema/dc-encounter-v1.json` | Data design agent |
-| `DC-DEMAND-ENCOUNTER-v1` | `data/synthetic/schema/dc-demand-encounter-v1.json` | Data design agent |
+| `DC-DEMAND-ENCOUNTER-v1` | `data/synthetic/schema/dc-demand-encounter-v1.schema.json` | Data design agent |
 
-If a gap appears during implementation, file a separate `data-design-agent`
-issue and amend the contract first.
+Silver tables (`silver.episode`, `silver.encounter`) are intermediate Delta
+tables with an allow-listed column shape enforced in `nb_silver_transform.py`;
+they deliberately have no formal contract. If a future use case needs to
+expose silver to an external consumer, file a separate `data-design-agent`
+issue to author a contract first.
+
+If any gap appears during implementation against `DC-DEMAND-ENCOUNTER-v1`,
+file a separate `data-design-agent` issue and amend the contract first.
 
 ### 5.5 Traceability
 
 | Requirement (PRD) | Implemented by |
 | ----------------- | -------------- |
-| `FR-DATA-001` Hospitalisation Episode as control unit | `nb_silver_transform.py` (one row per episode) |
-| `FR-DATA-002` Metadata-only envelope | Contract validation on both paths |
-| `FR-DATA-003` Pseudonymous identifiers only | Pseudonymisation invariant (silver) |
+| `FR-DATA-001` Hospitalisation Episode as control unit | `nb_silver_transform.py` (one row per episode in `silver.episode`) |
+| `FR-DATA-002` Metadata-only envelope | `DC-DEMAND-ENCOUNTER-v1` validation on both paths into gold |
+| `FR-DATA-003` Pseudonymous identifiers only | Pseudonymisation invariant (silver allow-list + shape check) |
 | `FR-DATA-005` Capacity demand as DC | `nb_gold_publish.py` + simulator |
 | `FR-DATA-006` Streaming demand path | Path 2 |
 | `FR-DATA-008` Data product publication for Power BI | Direct Lake Semantic Model |
