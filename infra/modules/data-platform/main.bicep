@@ -7,6 +7,18 @@ param nameSuffix string
 @description('Resource tags applied to all resources.')
 param tags object
 
+@description('Enable the source-SQL submodule (Sprint 08 W1.1 synthetic KIS feed).')
+param enableSourceSqlModule bool = false
+
+@description('Resource ID of the data subnet used for the SQL private endpoint. Required when enableSourceSqlModule = true.')
+param sourceSqlDataSubnetId string = ''
+
+@description('Resource ID of the Key Vault that stores the SQL admin password. Required when enableSourceSqlModule = true.')
+param sourceSqlKeyVaultId string = ''
+
+@description('Name of the Key Vault secret holding the SQL admin password. Required when enableSourceSqlModule = true.')
+param sourceSqlAdminPasswordSecretName string = ''
+
 var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}')
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
@@ -50,8 +62,23 @@ resource onboardingContainer 'Microsoft.Storage/storageAccounts/blobServices/con
 	}
 }
 
+module sourceSql './source-sql/main.bicep' = if (enableSourceSqlModule) {
+	name: 'source-sql-${nameSuffix}'
+	params: {
+		nameSuffix: nameSuffix
+		location: location
+		tags: tags
+		dataSubnetId: sourceSqlDataSubnetId
+		keyVaultId: sourceSqlKeyVaultId
+		sqlAdminPasswordSecretName: sourceSqlAdminPasswordSecretName
+	}
+}
+
 @description('Data platform module implementation marker.')
 output moduleStatus string = 'data-platform-implemented'
+
+@description('Source-SQL submodule status (Sprint 08 W1.1).')
+output sourceSqlStatus string = enableSourceSqlModule ? sourceSql!.outputs.moduleStatus : 'source-sql-disabled'
 
 @description('Storage account name for the data platform baseline.')
 output storageAccountName string = storageAccount.name
