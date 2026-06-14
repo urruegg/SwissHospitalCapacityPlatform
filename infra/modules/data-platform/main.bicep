@@ -19,7 +19,17 @@ param sourceSqlKeyVaultId string = ''
 @description('Name of the Key Vault secret holding the SQL admin password. Required when enableSourceSqlModule = true.')
 param sourceSqlAdminPasswordSecretName string = ''
 
+@description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally.')
+param sourceSqlPrivateDnsZoneId string = ''
+
 var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}')
+
+var sourceSqlKvIdParts = split(sourceSqlKeyVaultId, '/')
+
+resource sourceSqlKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (enableSourceSqlModule && !empty(sourceSqlKeyVaultId)) {
+	name: last(sourceSqlKvIdParts)
+	scope: resourceGroup(sourceSqlKvIdParts[2], sourceSqlKvIdParts[4])
+}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 	name: storageAccountName
@@ -69,8 +79,8 @@ module sourceSql './source-sql/main.bicep' = if (enableSourceSqlModule) {
 		location: location
 		tags: tags
 		dataSubnetId: sourceSqlDataSubnetId
-		keyVaultId: sourceSqlKeyVaultId
-		sqlAdminPasswordSecretName: sourceSqlAdminPasswordSecretName
+		sqlAdminPassword: sourceSqlKeyVault.getSecret(sourceSqlAdminPasswordSecretName)
+		privateDnsZoneId: sourceSqlPrivateDnsZoneId
 	}
 }
 

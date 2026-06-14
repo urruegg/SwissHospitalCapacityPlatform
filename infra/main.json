@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "79339879536142890"
+      "templateHash": "14071584557024710670"
     }
   },
   "parameters": {
@@ -132,6 +132,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "Name of the Key Vault secret holding the source-SQL admin password. Required when enableSourceSqlModule = true."
+      }
+    },
+    "sourceSqlPrivateDnsZoneId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally."
       }
     },
     "enableAiPlatformModule": {
@@ -672,6 +679,9 @@
           },
           "sourceSqlAdminPasswordSecretName": {
             "value": "[parameters('sourceSqlAdminPasswordSecretName')]"
+          },
+          "sourceSqlPrivateDnsZoneId": {
+            "value": "[parameters('sourceSqlPrivateDnsZoneId')]"
           }
         },
         "template": {
@@ -681,7 +691,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "13178839593805542398"
+              "templateHash": "16356803576138643229"
             }
           },
           "parameters": {
@@ -730,10 +740,18 @@
               "metadata": {
                 "description": "Name of the Key Vault secret holding the SQL admin password. Required when enableSourceSqlModule = true."
               }
+            },
+            "sourceSqlPrivateDnsZoneId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally."
+              }
             }
           },
           "variables": {
-            "storageAccountName": "[toLower(format('stdp{0}', replace(parameters('nameSuffix'), '-', '')))]"
+            "storageAccountName": "[toLower(format('stdp{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "sourceSqlKvIdParts": "[split(parameters('sourceSqlKeyVaultId'), '/')]"
           },
           "resources": [
             {
@@ -809,11 +827,16 @@
                   "dataSubnetId": {
                     "value": "[parameters('sourceSqlDataSubnetId')]"
                   },
-                  "keyVaultId": {
-                    "value": "[parameters('sourceSqlKeyVaultId')]"
+                  "sqlAdminPassword": {
+                    "reference": {
+                      "keyVault": {
+                        "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('sourceSqlKvIdParts')[2], variables('sourceSqlKvIdParts')[4]), 'Microsoft.KeyVault/vaults', last(variables('sourceSqlKvIdParts')))]"
+                      },
+                      "secretName": "[parameters('sourceSqlAdminPasswordSecretName')]"
+                    }
                   },
-                  "sqlAdminPasswordSecretName": {
-                    "value": "[parameters('sourceSqlAdminPasswordSecretName')]"
+                  "privateDnsZoneId": {
+                    "value": "[parameters('sourceSqlPrivateDnsZoneId')]"
                   }
                 },
                 "template": {
@@ -823,7 +846,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "8452362432864375660"
+                      "templateHash": "997256505249605883"
                     }
                   },
                   "parameters": {
@@ -854,16 +877,10 @@
                         "description": "Resource ID of the data subnet for the SQL private endpoint."
                       }
                     },
-                    "keyVaultId": {
-                      "type": "string",
+                    "sqlAdminPassword": {
+                      "type": "securestring",
                       "metadata": {
-                        "description": "Resource ID of the Key Vault that stores the SQL admin password."
-                      }
-                    },
-                    "sqlAdminPasswordSecretName": {
-                      "type": "string",
-                      "metadata": {
-                        "description": "Name of the Key Vault secret holding the SQL admin password."
+                        "description": "SQL admin password. Pass via keyVault.getSecret() from the caller."
                       }
                     },
                     "sqlAdminLogin": {
@@ -871,6 +888,13 @@
                       "defaultValue": "sqladmin",
                       "metadata": {
                         "description": "SQL admin login."
+                      }
+                    },
+                    "privateDnsZoneId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone. Leave empty to wire DNS externally (e.g. via hub network)."
                       }
                     }
                   },
@@ -891,7 +915,7 @@
                       },
                       "properties": {
                         "administratorLogin": "[parameters('sqlAdminLogin')]",
-                        "administratorLoginPassword": "[format('@Microsoft.KeyVault(SecretUri={0}secrets/{1}/)', reference(parameters('keyVaultId'), '2023-07-01').vaultUri, parameters('sqlAdminPasswordSecretName'))]",
+                        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
                         "publicNetworkAccess": "Disabled",
                         "minimalTlsVersion": "1.2",
                         "version": "12.0"
@@ -943,6 +967,25 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.Sql/servers', variables('serverName'))]"
                       ]
+                    },
+                    {
+                      "condition": "[not(empty(parameters('privateDnsZoneId')))]",
+                      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+                      "apiVersion": "2023-09-01",
+                      "name": "[format('{0}/{1}', variables('privateEndpointName'), 'default')]",
+                      "properties": {
+                        "privateDnsZoneConfigs": [
+                          {
+                            "name": "privatelink-database-windows-net",
+                            "properties": {
+                              "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                            }
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+                      ]
                     }
                   ],
                   "outputs": {
@@ -961,6 +1004,10 @@
                     "sqlServerPrincipalId": {
                       "type": "string",
                       "value": "[reference(resourceId('Microsoft.Sql/servers', variables('serverName')), '2023-08-01-preview', 'full').identity.principalId]"
+                    },
+                    "sqlPrivateDnsWarning": {
+                      "type": "string",
+                      "value": "[if(empty(parameters('privateDnsZoneId')), 'WARN: privateDnsZoneId not supplied. Configure the privatelink.database.windows.net DNS zone group externally before clients can resolve the SQL FQDN.', 'ok')]"
                     },
                     "moduleStatus": {
                       "type": "string",
@@ -1775,6 +1822,10 @@
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
         "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]"
       }
+    },
+    "sourceSqlGatingWarning": {
+      "type": "string",
+      "value": "[if(and(parameters('enableSourceSqlModule'), not(parameters('enableDataPlatformModule'))), 'WARN: enableSourceSqlModule=true requires enableDataPlatformModule=true; source-sql module will NOT deploy.', 'ok')]"
     }
   }
 }

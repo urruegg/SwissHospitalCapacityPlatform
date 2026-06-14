@@ -32,3 +32,7 @@ param enableSourceSqlModule = true
 param sourceSqlDataSubnetId = '/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-chhealthpf-sit/subnets/snet-data-sit'
 param sourceSqlKeyVaultId = '/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.KeyVault/vaults/kv-chhealthpf-sit'
 param sourceSqlAdminPasswordSecretName = 'sql-admin-password'
+
+// Private DNS zone for SQL private endpoint. Owned by a separate platform-foundation slice
+// (hub-spoke DNS). Leave empty here and wire post-deploy; do not invent a resource ID.
+param sourceSqlPrivateDnsZoneId = ''

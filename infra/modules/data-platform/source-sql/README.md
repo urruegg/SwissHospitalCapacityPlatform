@@ -34,9 +34,9 @@ PHI is **forbidden** in SIT (ADR-0003 + ADR-0004). All seed data is synthetic.
 | `location` | string | yes | Deployment region. Must be `switzerlandnorth`. |
 | `tags` | object | yes | Resource tags applied to all resources. |
 | `dataSubnetId` | string | yes | Resource ID of the data subnet for the SQL private endpoint. |
-| `keyVaultId` | string | yes | Resource ID of the Key Vault that stores the SQL admin password. |
-| `sqlAdminPasswordSecretName` | string | yes | Name of the Key Vault secret holding the SQL admin password. |
+| `sqlAdminPassword` | securestring | yes | SQL admin password. Caller must pass via `keyVault.getSecret(...)`; never hard-code. |
 | `sqlAdminLogin` | string | no | SQL admin login (default `sqladmin`). |
+| `privateDnsZoneId` | string | no | Resource ID of the existing `privatelink.database.windows.net` private DNS zone. Empty = wire DNS externally. |
 
 ## Outputs
 
@@ -46,6 +46,30 @@ PHI is **forbidden** in SIT (ADR-0003 + ADR-0004). All seed data is synthetic.
 | `sqlServerFqdn` | Fully-qualified domain name of the server. |
 | `sqlDatabaseName` | Database name (`kis`). |
 | `sqlServerPrincipalId` | Principal ID of the server's system-assigned managed identity. |
+| `sqlPrivateDnsWarning` | `'ok'` when DNS is wired by this module, otherwise a `WARN:` string asking the operator to wire DNS externally. |
+| `moduleStatus` | Implementation marker (`source-sql-implemented`). |
+
+## Prerequisites
+
+Before deploying this module via the parent data-platform / top-level entry:
+
+- Caller must enable `enableDataPlatformModule = true`. If the data-platform
+  module is gated off, `enableSourceSqlModule = true` is silently ignored
+  (the top-level `sourceSqlGatingWarning` output flags this).
+- The target Key Vault must have `enabledForTemplateDeployment = true` so the
+  parent module's `Microsoft.KeyVault/vaults@2023-07-01 existing` + `getSecret`
+  flow can dereference the admin password at deploy time.
+- The target Key Vault must already contain a secret named in
+  `sourceSqlAdminPasswordSecretName` with the SQL admin password. The deploying
+  principal needs `get` on that secret.
+- The data subnet referenced by `dataSubnetId` must allow private endpoints
+  (`privateEndpointNetworkPolicies: 'Disabled'`) and have routing/NSGs that
+  permit traffic to the SQL FQDN.
+- Private DNS: either supply `sourceSqlPrivateDnsZoneId` pointing at an existing
+  `privatelink.database.windows.net` zone, **or** wire DNS externally
+  (hub-managed zone / DNS forwarders) before clients can resolve the SQL FQDN.
+  When omitted, the module emits `sqlPrivateDnsWarning` and does not create the
+  DNS zone group.
 
 ## Walking-skeleton scope (W1.1)
 

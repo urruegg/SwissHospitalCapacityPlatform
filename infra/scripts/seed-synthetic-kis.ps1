@@ -63,6 +63,11 @@ function Invoke-W1Seed {
         [string]$ConnectionString
     )
 
+    if (-not (Get-Module -ListAvailable -Name SqlServer)) {
+        throw "The 'SqlServer' PowerShell module is required to seed Azure SQL. Install via: Install-Module SqlServer -Scope CurrentUser -Force -AllowClobber"
+    }
+    Import-Module SqlServer -ErrorAction Stop
+
     $payload = Get-W1SeedPayload
 
     $ddl = @'

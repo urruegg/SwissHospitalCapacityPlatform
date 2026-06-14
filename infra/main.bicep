@@ -60,6 +60,9 @@ param sourceSqlKeyVaultId string = ''
 @description('Name of the Key Vault secret holding the source-SQL admin password. Required when enableSourceSqlModule = true.')
 param sourceSqlAdminPasswordSecretName string = ''
 
+@description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally.')
+param sourceSqlPrivateDnsZoneId string = ''
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -140,6 +143,7 @@ module dataPlatform './modules/data-platform/main.bicep' = if (enableDataPlatfor
     sourceSqlDataSubnetId: sourceSqlDataSubnetId
     sourceSqlKeyVaultId: sourceSqlKeyVaultId
     sourceSqlAdminPasswordSecretName: sourceSqlAdminPasswordSecretName
+    sourceSqlPrivateDnsZoneId: sourceSqlPrivateDnsZoneId
   }
 }
 
@@ -222,3 +226,5 @@ output moduleStatuses object = {
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
 }
+
+output sourceSqlGatingWarning string = enableSourceSqlModule && !enableDataPlatformModule ? 'WARN: enableSourceSqlModule=true requires enableDataPlatformModule=true; source-sql module will NOT deploy.' : 'ok'
