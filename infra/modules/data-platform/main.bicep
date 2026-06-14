@@ -7,6 +7,12 @@ param nameSuffix string
 @description('Resource tags applied to all resources.')
 param tags object
 
+@description('Enable the Fabric foundation submodule (capacity).')
+param enableFabricFoundationModule bool = false
+
+@description('Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true.')
+param fabricCapacityAdmins array = []
+
 var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}')
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
@@ -50,6 +56,16 @@ resource onboardingContainer 'Microsoft.Storage/storageAccounts/blobServices/con
 	}
 }
 
+module fabricFoundation './fabric/main.bicep' = if (enableFabricFoundationModule) {
+	name: 'fabric-foundation'
+	params: {
+		location: location
+		nameSuffix: nameSuffix
+		tags: tags
+		capacityAdmins: fabricCapacityAdmins
+	}
+}
+
 @description('Data platform module implementation marker.')
 output moduleStatus string = 'data-platform-implemented'
 
@@ -61,6 +77,9 @@ output blobServiceResourceId string = blobService.id
 
 @description('Onboarding bootstrap container name for synthesized SIT onboarding data.')
 output onboardingContainerName string = onboardingContainer.name
+
+@description('Fabric foundation submodule status (or disabled sentinel).')
+output fabricFoundationStatus string = enableFabricFoundationModule ? fabricFoundation!.outputs.moduleStatus : 'fabric-foundation-disabled'
 
 @description('Data platform module scaffold input echo for validation only.')
 output scaffoldInput object = {

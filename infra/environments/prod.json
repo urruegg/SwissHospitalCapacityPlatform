@@ -55,6 +55,15 @@
     },
     "enableIntegrationOrchestrationModule": {
       "value": true
+    },
+    "networkVnetAddressPrefix": {
+      "value": "10.60.0.0/16"
+    },
+    "networkAppSubnetPrefix": {
+      "value": "10.60.1.0/24"
+    },
+    "enableFabricFoundationModule": {
+      "value": false
     }
   }
 }

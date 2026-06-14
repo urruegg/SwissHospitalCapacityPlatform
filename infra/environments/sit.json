@@ -61,6 +61,14 @@
     },
     "networkAppSubnetPrefix": {
       "value": "10.60.1.0/24"
+    },
+    "enableFabricFoundationModule": {
+      "value": true
+    },
+    "fabricCapacityAdmins": {
+      "value": [
+        "<ADMIN_OBJECT_ID>"
+      ]
     }
   }
 }

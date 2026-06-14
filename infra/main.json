@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "15906696319793438285"
+      "templateHash": "2714483913534605817"
     }
   },
   "parameters": {
@@ -104,6 +104,20 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable data platform module deployment scaffold."
+      }
+    },
+    "enableFabricFoundationModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable Fabric foundation submodule (capacity + post-deploy workspace/lakehouse/mirror)."
+      }
+    },
+    "fabricCapacityAdmins": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true."
       }
     },
     "enableAiPlatformModule": {
@@ -632,6 +646,12 @@
           },
           "tags": {
             "value": "[variables('tags')]"
+          },
+          "enableFabricFoundationModule": {
+            "value": "[parameters('enableFabricFoundationModule')]"
+          },
+          "fabricCapacityAdmins": {
+            "value": "[parameters('fabricCapacityAdmins')]"
           }
         },
         "template": {
@@ -641,7 +661,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "4674294091638708056"
+              "templateHash": "14643072303355468097"
             }
           },
           "parameters": {
@@ -661,6 +681,20 @@
               "type": "object",
               "metadata": {
                 "description": "Resource tags applied to all resources."
+              }
+            },
+            "enableFabricFoundationModule": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable the Fabric foundation submodule (capacity)."
+              }
+            },
+            "fabricCapacityAdmins": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true."
               }
             }
           },
@@ -717,6 +751,107 @@
               "metadata": {
                 "description": "Onboarding bootstrap container for synthesized SIT onboarding datasets consumed by the OOA/DCA/BMCA MVP flows (Sprint 6 Phase 1)."
               }
+            },
+            {
+              "condition": "[parameters('enableFabricFoundationModule')]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "fabric-foundation",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "nameSuffix": {
+                    "value": "[parameters('nameSuffix')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "capacityAdmins": {
+                    "value": "[parameters('fabricCapacityAdmins')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.43.8.12551",
+                      "templateHash": "463056549317325709"
+                    }
+                  },
+                  "parameters": {
+                    "nameSuffix": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Suffix appended to resource names (e.g. chhealthpf-sit)."
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "allowedValues": [
+                        "switzerlandnorth"
+                      ],
+                      "metadata": {
+                        "description": "Deployment region. Must be switzerlandnorth (ADR-0003)."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Resource tags applied to all resources."
+                      }
+                    },
+                    "capacityAdmins": {
+                      "type": "array",
+                      "metadata": {
+                        "description": "Object ID(s) of Fabric capacity administrators."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "capacityName": "[format('fabric{0}', replace(parameters('nameSuffix'), '-', ''))]"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Fabric/capacities",
+                      "apiVersion": "2023-11-01",
+                      "name": "[variables('capacityName')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "sku": {
+                        "name": "F2",
+                        "tier": "Fabric"
+                      },
+                      "properties": {
+                        "administration": {
+                          "members": "[parameters('capacityAdmins')]"
+                        }
+                      }
+                    }
+                  ],
+                  "outputs": {
+                    "capacityName": {
+                      "type": "string",
+                      "value": "[variables('capacityName')]"
+                    },
+                    "capacityId": {
+                      "type": "string",
+                      "value": "[resourceId('Microsoft.Fabric/capacities', variables('capacityName'))]"
+                    },
+                    "moduleStatus": {
+                      "type": "string",
+                      "value": "fabric-foundation-implemented"
+                    }
+                  }
+                }
+              }
             }
           ],
           "outputs": {
@@ -747,6 +882,13 @@
                 "description": "Onboarding bootstrap container name for synthesized SIT onboarding data."
               },
               "value": "onboarding"
+            },
+            "fabricFoundationStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Fabric foundation submodule status (or disabled sentinel)."
+              },
+              "value": "[if(parameters('enableFabricFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', 'fabric-foundation'), '2025-04-01').outputs.moduleStatus.value, 'fabric-foundation-disabled')]"
             },
             "scaffoldInput": {
               "type": "object",
@@ -1496,6 +1638,10 @@
     "logAnalyticsWorkspaceName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value]"
+    },
+    "fabricFoundationGatingWarning": {
+      "type": "string",
+      "value": "[if(and(parameters('enableFabricFoundationModule'), not(parameters('enableDataPlatformModule'))), 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.', 'ok')]"
     },
     "moduleStatuses": {
       "type": "object",
