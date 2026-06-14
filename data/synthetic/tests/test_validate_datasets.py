@@ -49,6 +49,11 @@ class SchemaValidationTests(unittest.TestCase):
         errors = vd.validate_schema([], schema, "$")
         self.assertTrue(any("minItems" in e for e in errors))
 
+    def test_max_items_reported(self):
+        schema = {"type": "array", "maxItems": 1, "items": {"type": "string"}}
+        errors = vd.validate_schema(["a", "b"], schema, "$")
+        self.assertTrue(any("maxItems" in e for e in errors))
+
     def test_numeric_bounds_reported(self):
         schema = {"type": "integer", "minimum": 0, "maximum": 10}
         self.assertTrue(vd.validate_schema(-1, schema, "$"))
@@ -59,6 +64,25 @@ class SchemaValidationTests(unittest.TestCase):
         schema = {"type": "string", "format": "date"}
         self.assertFalse(vd.validate_schema("2026-06-09", schema, "$"))
         self.assertTrue(vd.validate_schema("2026-13-40", schema, "$"))
+
+    def test_nullable_type_accepts_null(self):
+        schema = {"type": ["string", "null"]}
+        self.assertFalse(vd.validate_schema(None, schema, "$"))
+        self.assertFalse(vd.validate_schema("ok", schema, "$"))
+
+    def test_nullable_type_rejects_other_types(self):
+        schema = {"type": ["string", "null"]}
+        errors = vd.validate_schema(5, schema, "$")
+        self.assertTrue(any("expected type" in e for e in errors))
+
+    def test_date_time_format_validation(self):
+        schema = {"type": "string", "format": "date-time"}
+        self.assertFalse(vd.validate_schema("2026-06-12T14:32:00Z", schema, "$"))
+        self.assertFalse(vd.validate_schema("2026-06-12T14:32:00.123Z", schema, "$"))
+        # Non-UTC offsets and missing 'T'/'Z' must be rejected.
+        self.assertTrue(vd.validate_schema("2026-06-12 14:32:00Z", schema, "$"))
+        self.assertTrue(vd.validate_schema("2026-06-12T14:32:00+02:00", schema, "$"))
+        self.assertTrue(vd.validate_schema("not-a-timestamp", schema, "$"))
 
 
 class MinimizationTests(unittest.TestCase):

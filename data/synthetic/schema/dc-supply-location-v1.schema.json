@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-supply-location-v1.schema.json",
+  "title": "Supply Location (Site/Ward/Bed) Contract (DC-SUPPLY-LOCATION-v1)",
+  "description": "FHIR R4 Location + HealthcareService aligned recursive supply contract. Discriminated by physicalType: si=site, wa=ward/station, bd=bed. Hierarchy and bed/ward invariants are enforced by check_location_hierarchy in validate_datasets.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId", "contractId", "contractVersion",
+    "classification", "residency", "records"
+  ],
+  "properties": {
+    "datasetId":        { "type": "string", "pattern": "^DS-SUPPLY-LOC-[a-z0-9-]+$" },
+    "contractId":       { "type": "string", "enum": ["DC-SUPPLY-LOCATION-v1"] },
+    "contractVersion":  { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":   { "type": "string", "enum": ["operational-confidential"] },
+    "residency":        { "type": "string", "enum": ["CH"] },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractId", "locationId", "organizationId",
+          "physicalType", "partOfId", "name", "status", "asOfTimestamp"
+        ],
+        "properties": {
+          "contractId":         { "type": "string", "enum": ["DC-SUPPLY-LOCATION-v1"] },
+          "locationId":         { "type": "string", "pattern": "^LOC-[A-Z0-9-]+$" },
+          "organizationId":     { "type": "string", "pattern": "^ORG-[A-Z0-9-]+$" },
+          "physicalType":       { "type": "string", "enum": ["si", "wa", "bd"] },
+          "partOfId":           { "type": ["string", "null"], "pattern": "^LOC-[A-Z0-9-]+$" },
+          "name":               { "type": "string" },
+          "status":             { "type": "string", "enum": ["active", "suspended", "inactive"] },
+          "operationalStatus":  { "type": "string", "enum": ["U", "O", "H", "I", "K", "C"] },
+          "bedsTotal":          { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "bedsAvailable":      { "type": "integer", "minimum": 0, "maximum": 2000 },
+          "specialtyServiceIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^HCS-[A-Z0-9-]+$" }
+          },
+          "characteristic": {
+            "type": "array",
+            "items": { "type": "string", "enum": [
+              "isolation", "cardiac-monitoring", "negative-pressure",
+              "bariatric", "single-room", "pediatric-equipped",
+              "female-only", "male-only"
+            ]}
+          },
+          "healthcareServices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["healthcareServiceId", "specialty", "specialtyTaxonomyVersion", "category"],
+              "properties": {
+                "healthcareServiceId":      { "type": "string", "pattern": "^HCS-[A-Z0-9-]+$" },
+                "specialty":                { "type": "string", "pattern": "^[a-z][a-z-]+$" },
+                "specialtyTaxonomyVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+                "category":                 { "type": "string", "enum": ["inpatient", "surgical", "icu", "rehab"] }
+              }
+            }
+          },
+          "asOfTimestamp": { "type": "string", "format": "date-time" },
+          "extensions":    { "type": "object" }
+        }
+      }
+    }
+  }
+}

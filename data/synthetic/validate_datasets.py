@@ -93,7 +93,20 @@ FORBIDDEN_IDENTIFIER_FIELDS = {
     "passport",
 }
 
+PLANNING_CLINICAL_DENYLIST = {
+    "icdcode", "icd10", "icd11", "snomed", "snomedcode",
+    "diagnosis", "diagnoses", "diagnosiscode",
+    "clinicalnote", "clinicalnotes", "notes",
+    "procedurecode", "drgcode",
+}
+
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+# Strict ISO-8601 UTC instants. We deliberately require the trailing 'Z'
+# (no offsets) so every record can be safely compared lexicographically.
+_DATETIME_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z$"
+)
 
 
 @dataclass
@@ -146,6 +159,8 @@ def _type_ok(value: Any, expected: str) -> bool:
         return isinstance(value, (int, float)) and not isinstance(value, bool)
     if expected == "boolean":
         return isinstance(value, bool)
+    if expected == "null":
+        return value is None
     return False
 
 
@@ -155,6 +170,19 @@ def validate_schema(value: Any, schema: dict, path: str) -> list[str]:
     Returns a list of human-readable error strings (empty when valid).
     """
     errors: list[str] = []
+
+    type_decl = schema.get("type")
+    if isinstance(type_decl, list):
+        type_errors_per_branch = []
+        for candidate in type_decl:
+            branch = dict(schema)
+            branch["type"] = candidate
+            branch_errors = validate_schema(value, branch, path)
+            if not branch_errors:
+                return []
+            type_errors_per_branch.append(branch_errors)
+        joined = " / ".join(repr(t) for t in type_decl)
+        return [f"{path}: expected type {joined}, got {type(value).__name__}"]
 
     expected_type = schema.get("type")
     if expected_type and not _type_ok(value, expected_type):
@@ -170,6 +198,20 @@ def validate_schema(value: Any, schema: dict, path: str) -> list[str]:
             errors.append(f"{path}: value {value!r} does not match pattern '{pattern}'")
         if schema.get("format") == "date" and not _is_date(value):
             errors.append(f"{path}: value {value!r} is not a valid 'date'")
+        if schema.get("format") == "date-time":
+            if not isinstance(value, str) or not _DATETIME_RE.match(value):
+                errors.append(
+                    f"{path}: invalid date-time {value!r} "
+                    f"(expected ISO-8601 UTC with trailing 'Z')"
+                )
+            else:
+                try:
+                    _dt.datetime.strptime(
+                        value.split(".")[0].rstrip("Z"),
+                        "%Y-%m-%dT%H:%M:%S",
+                    )
+                except ValueError:
+                    errors.append(f"{path}: invalid date-time {value!r}")
 
     if expected_type in ("integer", "number"):
         if "minimum" in schema and value < schema["minimum"]:
@@ -194,6 +236,8 @@ def validate_schema(value: Any, schema: dict, path: str) -> list[str]:
     if expected_type == "array" and isinstance(value, list):
         if "minItems" in schema and len(value) < schema["minItems"]:
             errors.append(f"{path}: array length {len(value)} < minItems {schema['minItems']}")
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            errors.append(f"{path}: maxItems violated ({len(value)} > {schema['maxItems']})")
         item_schema = schema.get("items")
         if item_schema:
             for index, item in enumerate(value):
@@ -244,6 +288,287 @@ def check_capacity_invariants(records: list[dict], dataset_id: str, report: Gate
             "NFR-DQ-005", "low", True,
             "Capacity invariant bedsAvailable <= bedsTotal holds for all records.",
             dataset_id))
+
+
+def check_location_hierarchy(records: list[dict], dataset_id: str,
+                             report: GateReport) -> None:
+    """Recursive supply-location hierarchy + bed/ward invariants (NFR-DQ-005).
+
+    Rules per DC-SUPPLY-LOCATION-v1:
+      - physicalType=si (site): partOfId must be None.
+      - physicalType=wa (ward): partOfId must reference an existing site.
+      - physicalType=bd (bed):  partOfId must reference an existing ward.
+      - Ward: bedsAvailable <= bedsTotal (both must be integers).
+      - Ward: must declare at least one specialtyServiceIds entry.
+      - Bed:  must declare operationalStatus.
+    """
+    by_id: dict[str, dict] = {}
+    for record in records:
+        if isinstance(record, dict):
+            loc_id = record.get("locationId")
+            if isinstance(loc_id, str):
+                by_id[loc_id] = record
+
+    failures: list[str] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        loc_id = record.get("locationId", "<unknown>")
+        physical_type = record.get("physicalType")
+        parent_id = record.get("partOfId")
+
+        if physical_type == "si":
+            if parent_id is not None:
+                failures.append(
+                    f"{loc_id}: site must have partOfId=null (got {parent_id!r})")
+        elif physical_type == "wa":
+            parent = by_id.get(parent_id) if isinstance(parent_id, str) else None
+            if not parent or parent.get("physicalType") != "si":
+                failures.append(
+                    f"{loc_id}: ward partOfId {parent_id!r} must reference a site")
+            beds_total = record.get("bedsTotal")
+            beds_avail = record.get("bedsAvailable")
+            if (not isinstance(beds_total, int) or isinstance(beds_total, bool)
+                    or not isinstance(beds_avail, int) or isinstance(beds_avail, bool)):
+                failures.append(
+                    f"{loc_id}: ward bedsTotal/bedsAvailable must be integers")
+            elif beds_avail > beds_total:
+                failures.append(
+                    f"{loc_id}: ward bedsAvailable {beds_avail} > bedsTotal {beds_total}")
+            services = record.get("specialtyServiceIds")
+            if not isinstance(services, list) or len(services) < 1:
+                failures.append(
+                    f"{loc_id}: ward must declare >=1 specialtyServiceIds")
+        elif physical_type == "bd":
+            parent = by_id.get(parent_id) if isinstance(parent_id, str) else None
+            if not parent or parent.get("physicalType") != "wa":
+                failures.append(
+                    f"{loc_id}: bed partOfId {parent_id!r} must reference a ward")
+            if not record.get("operationalStatus"):
+                failures.append(
+                    f"{loc_id}: bed must declare operationalStatus")
+
+    if failures:
+        report.add(CheckResult(
+            "NFR-DQ-005", "high", False,
+            "Location hierarchy / ward / bed invariant violations: "
+            + "; ".join(failures),
+            dataset_id))
+    else:
+        report.add(CheckResult(
+            "NFR-DQ-005", "low", True,
+            "Location hierarchy and ward/bed invariants OK.",
+            dataset_id))
+
+
+def check_encounter_lifecycle(records: list[dict], dataset_id: str,
+                              report: GateReport) -> None:
+    """Validate DC-DEMAND-ENCOUNTER-v1 lifecycle invariants (spec §6.4)."""
+    failures = 0
+    for rec in records:
+        enc_id = rec.get("encounterId", "<unknown>")
+        history = rec.get("statusHistory") or []
+        if not history:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {enc_id!r} has empty statusHistory.", dataset_id))
+            failures += 1
+            continue
+
+        starts = [h.get("periodStart") for h in history]
+        if starts != sorted(starts):
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {enc_id!r} statusHistory periodStart not strictly ordered.",
+                dataset_id))
+            failures += 1
+
+        for idx, h in enumerate(history[:-1]):
+            if h.get("periodEnd") is None:
+                report.add(CheckResult("NFR-DQ-005", "high", False,
+                    f"Encounter {enc_id!r} non-terminal statusHistory[{idx}] has null periodEnd.",
+                    dataset_id))
+                failures += 1
+
+        for idx, h in enumerate(history):
+            end = h.get("periodEnd")
+            if end is not None and end < h.get("periodStart", ""):
+                report.add(CheckResult("NFR-DQ-005", "high", False,
+                    f"Encounter {enc_id!r} statusHistory[{idx}] periodEnd < periodStart.",
+                    dataset_id))
+                failures += 1
+
+        if rec.get("status") != history[-1].get("status"):
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {enc_id!r} status {rec.get('status')!r} does not match "
+                f"last statusHistory entry {history[-1].get('status')!r}.",
+                dataset_id))
+            failures += 1
+
+        # Long-stay LOS is warn-only (legitimate for rehab) per design D-09.
+        los = rec.get("expectedLOSDays")
+        if isinstance(los, int) and los > 90:
+            report.add(CheckResult("NFR-DQ-005", "low", True,
+                f"Encounter {enc_id!r} expectedLOSDays={los} exceeds 90-day soft bound "
+                "(legitimate for long-stay rehab; informational).", dataset_id))
+
+    if failures == 0:
+        report.add(CheckResult("NFR-DQ-005", "low", True,
+            "Encounter lifecycle invariants OK.", dataset_id))
+
+
+def check_planning_phi_denylist(records: list[dict], dataset_id: str,
+                                report: GateReport) -> None:
+    """Reject clinical / direct-identifier fields on planning records (spec §6.5)."""
+    failures = 0
+    for rec in records:
+        rec_id = rec.get("encounterId") or rec.get("recommendationId") or "<unknown>"
+        for key in rec.keys():
+            lk = key.lower()
+            if lk in FORBIDDEN_IDENTIFIER_FIELDS or lk in PLANNING_CLINICAL_DENYLIST:
+                report.add(CheckResult("CH-C01", "critical", False,
+                    f"Planning record {rec_id!r} carries forbidden field {key!r}.",
+                    dataset_id))
+                failures += 1
+    if failures == 0:
+        report.add(CheckResult("CH-C01", "low", True,
+            "Planning PHI/clinical denylist clean.", dataset_id))
+
+
+def check_recommendation_invariants(records: list[dict], dataset_id: str,
+                                    report: GateReport) -> None:
+    """Validate DC-MATCH-RECOMMENDATION-v1 invariants (spec §7.5)."""
+    failures = 0
+    for rec in records:
+        rec_id = rec.get("recommendationId", "<unknown>")
+        candidates = rec.get("candidates") or []
+
+        ranks = [c.get("rank") for c in candidates]
+        if ranks != list(range(1, len(candidates) + 1)):
+            report.add(CheckResult("NFR-AI-003", "high", False,
+                f"Recommendation {rec_id!r} ranks must be 1..N dense ascending; got {ranks}.",
+                dataset_id))
+            failures += 1
+        scores = [c.get("fitScore", 0) for c in candidates]
+        if any(scores[i] < scores[i + 1] for i in range(len(scores) - 1)):
+            report.add(CheckResult("NFR-AI-003", "high", False,
+                f"Recommendation {rec_id!r} fitScore must be non-increasing; got {scores}.",
+                dataset_id))
+            failures += 1
+
+        for c in candidates:
+            if c.get("hardConstraintsMet") is not True:
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rec_id!r} candidate rank {c.get('rank')} "
+                    "hardConstraintsMet=False (must be excluded).", dataset_id))
+                failures += 1
+            weights = [f.get("weight", 0) for f in (c.get("explanationFactors") or [])]
+            total = sum(weights)
+            if abs(total - 1.0) > 0.01:
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rec_id!r} candidate rank {c.get('rank')} "
+                    f"explanationFactors weight sum {total:.3f} != 1.0.", dataset_id))
+                failures += 1
+
+        gen = rec.get("generatedAt")
+        val = rec.get("validUntil")
+        if gen and val:
+            try:
+                g = _dt.datetime.strptime(gen.rstrip("Z").split(".")[0],
+                                          "%Y-%m-%dT%H:%M:%S")
+                v = _dt.datetime.strptime(val.rstrip("Z").split(".")[0],
+                                          "%Y-%m-%dT%H:%M:%S")
+                if v <= g:
+                    report.add(CheckResult("NFR-AI-003", "high", False,
+                        f"Recommendation {rec_id!r} validUntil <= generatedAt.",
+                        dataset_id))
+                    failures += 1
+                elif (v - g).total_seconds() > 60 * 60:
+                    report.add(CheckResult("NFR-AI-003", "high", False,
+                        f"Recommendation {rec_id!r} staleness window > 60 minutes.",
+                        dataset_id))
+                    failures += 1
+            except ValueError:
+                pass
+
+    if failures == 0:
+        report.add(CheckResult("NFR-AI-003", "low", True,
+            "Recommendation invariants OK.", dataset_id))
+
+
+def check_planning_cross_contract(bundle: dict, report: GateReport) -> None:
+    """Cross-contract FK + residency + bed-required-when-supply checks."""
+    orgs = {o["organizationId"]: o for o in bundle.get("organizations", [])}
+    locs = {l["locationId"]: l for l in bundle.get("locations", [])}
+    services = {
+        s["healthcareServiceId"]: s
+        for l in bundle.get("locations", [])
+        for s in (l.get("healthcareServices") or [])
+    }
+    org_emits_beds = {l["organizationId"] for l in bundle.get("locations", [])
+                      if l.get("physicalType") == "bd"}
+    failures = 0
+
+    for enc in bundle.get("encounters", []):
+        eid = enc.get("encounterId", "<unknown>")
+        org_id = enc.get("organizationId")
+        if org_id not in orgs:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {eid!r} organizationId {org_id!r} not found.", eid))
+            failures += 1
+        elif orgs[org_id].get("dataResidencyRegion") != enc.get("dataResidencyRegion"):
+            report.add(CheckResult("CH-C05", "high", False,
+                f"Encounter {eid!r} dataResidencyRegion mismatches its Organization.", eid))
+            failures += 1
+        svc = enc.get("requestedSpecialtyServiceId")
+        if svc not in services:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Encounter {eid!r} requestedSpecialtyServiceId {svc!r} does not resolve.",
+                eid))
+            failures += 1
+
+    enc_ids = {e["encounterId"] for e in bundle.get("encounters", [])}
+    for rec in bundle.get("recommendations", []):
+        rid = rec.get("recommendationId", "<unknown>")
+        if rec.get("encounterId") not in enc_ids:
+            report.add(CheckResult("NFR-DQ-005", "high", False,
+                f"Recommendation {rid!r} encounterId not found.", rid))
+            failures += 1
+        org_id = rec.get("organizationId")
+        if org_id in orgs and orgs[org_id].get("dataResidencyRegion") != rec.get("dataResidencyRegion"):
+            report.add(CheckResult("CH-C05", "high", False,
+                f"Recommendation {rid!r} dataResidencyRegion mismatches its Organization.",
+                rid))
+            failures += 1
+        for c in rec.get("candidates", []):
+            station = locs.get(c.get("stationLocationId"))
+            if station is None or station.get("physicalType") != "wa":
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rid!r} candidate rank {c.get('rank')} "
+                    "stationLocationId must reference a ward.", rid))
+                failures += 1
+            bed_id = c.get("recommendedBedLocationId")
+            if org_id in org_emits_beds and bed_id is None:
+                report.add(CheckResult("NFR-AI-004", "high", False,
+                    f"Recommendation {rid!r} candidate rank {c.get('rank')} "
+                    "must include recommendedBedLocationId when supply emits beds.",
+                    rid))
+                failures += 1
+            if bed_id is not None:
+                bed = locs.get(bed_id)
+                if bed is None or bed.get("physicalType") != "bd":
+                    report.add(CheckResult("NFR-AI-004", "high", False,
+                        f"Recommendation {rid!r} bed {bed_id!r} not found or not a bed.",
+                        rid))
+                    failures += 1
+                elif bed.get("partOfId") != c.get("stationLocationId"):
+                    report.add(CheckResult("NFR-AI-004", "high", False,
+                        f"Recommendation {rid!r} bed {bed_id!r} does not belong to "
+                        f"station {c.get('stationLocationId')!r}.", rid))
+                    failures += 1
+
+    if failures == 0:
+        report.add(CheckResult("NFR-DQ-005", "low", True,
+            "Cross-contract FK + residency + bed-requirement checks OK.",
+            "planning-bundle"))
 
 
 def check_purpose_tags(data: dict, records: list[dict], dataset_id: str,
@@ -485,6 +810,14 @@ def validate_dataset(entry: dict, root: str, report: GateReport,
     if entry.get("lane") == "specialty-capacity":
         check_capacity_invariants(records, dataset_id, report)
         check_specialty_metadata(data, records, dataset_id, taxonomy_version, report)
+    if entry.get("lane") == "planning-supply-location":
+        check_location_hierarchy(records, dataset_id, report)
+    if entry.get("lane") == "planning-demand-encounter":
+        check_encounter_lifecycle(records, dataset_id, report)
+        check_planning_phi_denylist(records, dataset_id, report)
+    if entry.get("lane") == "planning-match-recommendation":
+        check_recommendation_invariants(records, dataset_id, report)
+        check_planning_phi_denylist(records, dataset_id, report)
     # Phase 2 onboarding policy enforcement (applies to every onboarding lane).
     check_purpose_tags(data, records, dataset_id, report)
     check_tenant_boundary(data, entry, records, dataset_id, report)
@@ -546,6 +879,24 @@ def run(root: str) -> tuple[dict, GateReport]:
     report = GateReport()
     for entry in traceability["datasets"]:
         validate_dataset(entry, root, report, taxonomy_version)
+
+    bundle = {"organizations": [], "locations": [],
+              "encounters": [], "recommendations": []}
+    lane_to_key = {
+        "planning-supply-organization": "organizations",
+        "planning-supply-location":     "locations",
+        "planning-demand-encounter":    "encounters",
+        "planning-match-recommendation":"recommendations",
+    }
+    for entry in traceability["datasets"]:
+        key = lane_to_key.get(entry.get("lane"))
+        if not key:
+            continue
+        data = _load_json(os.path.join(root, entry["dataFile"]))
+        bundle[key].extend(data.get("records", []))
+    if any(bundle.values()):
+        check_planning_cross_contract(bundle, report)
+
     evidence = build_evidence(report, traceability)
     return evidence, report
 

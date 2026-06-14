@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-supply-organization-v1.schema.json",
+  "title": "Supply Organization (Hospital) Contract (DC-SUPPLY-ORGANIZATION-v1)",
+  "description": "FHIR R4 Organization-aligned supply catalog entry for the patient capacity planning data product (Sprint 07).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId",
+    "contractId",
+    "contractVersion",
+    "classification",
+    "residency",
+    "records"
+  ],
+  "properties": {
+    "datasetId":        { "type": "string", "pattern": "^DS-SUPPLY-ORG-[a-z0-9-]+$" },
+    "contractId":       { "type": "string", "enum": ["DC-SUPPLY-ORGANIZATION-v1"] },
+    "contractVersion":  { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":   { "type": "string", "enum": ["operational-confidential"] },
+    "residency":        { "type": "string", "enum": ["CH"] },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractId",
+          "organizationId",
+          "name",
+          "organizationType",
+          "active",
+          "country",
+          "canton",
+          "dataResidencyRegion"
+        ],
+        "properties": {
+          "contractId":          { "type": "string", "enum": ["DC-SUPPLY-ORGANIZATION-v1"] },
+          "organizationId":      { "type": "string", "pattern": "^ORG-[A-Z0-9-]+$" },
+          "name":                { "type": "string", "minimum": 1 },
+          "organizationType":    { "type": "string", "enum": ["prov"] },
+          "active":              { "type": "boolean" },
+          "country":             { "type": "string", "enum": ["CH"] },
+          "canton":              { "type": "string", "pattern": "^CH-[A-Z]{2}$" },
+          "dataResidencyRegion": { "type": "string", "enum": ["switzerlandnorth", "switzerlandwest"] },
+          "extensions":          { "type": "object" }
+        }
+      }
+    }
+  }
+}

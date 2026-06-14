@@ -1,0 +1,28 @@
+{
+  "manifestVersion": "1.0.0",
+  "generatedAt": "2026-06-12T08:00:00Z",
+  "seed": 42,
+  "config": {
+    "organizations": 2,
+    "sites_per_org": 2,
+    "stations_per_site": 6,
+    "beds_per_station": 12,
+    "with_beds": true,
+    "encounters": 50,
+    "horizon_days": 14,
+    "seed": 42,
+    "as_of": "2026-06-12T08:00:00Z"
+  },
+  "counts": {
+    "organizations": 2,
+    "locations": 316,
+    "encounters": 50,
+    "recommendations": 50
+  },
+  "checksums": {
+    "organizations": "4903c31e8d6f4fdef8cbbcb1eea9fe2e89252397d70a80adc19ac2b8d2d87aee",
+    "locations": "7df32044997b1565433027d64aafc0638abc71240dc531c69215a3885cb70db2",
+    "encounters": "2516cc0398a1fa61eeebd42f3a422663a37155f8ddd87d33a75a7a4e955ea7db",
+    "recommendations": "945982643a774f709fa62372c98bf4f14ab781792cf015d036a7ba63d7c12cf6"
+  }
+}
