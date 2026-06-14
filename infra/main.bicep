@@ -200,7 +200,11 @@ module integrationOrchestration './modules/integration-orchestration/main.bicep'
 
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
-output fabricFoundationGatingWarning string = enableFabricFoundationModule && !enableDataPlatformModule ? 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.' : 'ok'
+output fabricFoundationGatingWarning string = enableFabricFoundationModule && !enableDataPlatformModule
+  ? 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.'
+  : (enableFabricFoundationModule && empty(fabricCapacityAdmins))
+    ? 'WARN: enableFabricFoundationModule=true but fabricCapacityAdmins is empty; deploy will fail.'
+    : 'ok'
 output moduleStatuses object = {
   identity: enableIdentityModule ? identity!.outputs.moduleStatus : 'identity-disabled'
   network: enableNetworkModule ? network!.outputs.moduleStatus : 'network-disabled'

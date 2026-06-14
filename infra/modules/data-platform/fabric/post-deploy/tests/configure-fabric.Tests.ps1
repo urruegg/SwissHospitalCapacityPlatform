@@ -3,23 +3,36 @@ BeforeAll {
 }
 
 Describe 'configure-fabric (dry run payloads)' {
-    It 'workspace payload pins the right capacity and region' {
-        $p = Get-WorkspaceCreatePayload -CapacityId 'fabric-chhealthpf-sit' -Region 'switzerlandnorth'
-        $p.capacityId | Should -Be 'fabric-chhealthpf-sit'
+    It 'workspace payload pins the supplied capacity GUID' {
+        $guid = '11111111-2222-3333-4444-555555555555'
+        $p = Get-WorkspaceCreatePayload -CapacityId $guid
+        $p.capacityId | Should -Be $guid
         $p.displayName | Should -Be 'ws-chhealthpf-sit-data'
     }
 
-    It 'lakehouse payload requests Delta + 3-zone layout' {
+    It 'lakehouse payload requests Delta + 3-zone layout via enableSchemas' {
         $p = Get-LakehouseCreatePayload
         $p.displayName | Should -Be 'lh_chhealthpf_sit'
         $p.creationPayload.enableSchemas | Should -Be $true
     }
 
-    It 'mirror payload binds source server + database + KIS schema' {
-        $p = Get-MirrorCreatePayload -ServerFqdn 'sql-chhealthpf-sit.database.windows.net' -Database 'kis'
+    It 'mirror payload base64-encodes mirroring.json with AzureSqlDatabase source + Delta target' {
+        $connectionId = '66666666-7777-8888-9999-000000000000'
+        $p = Get-MirrorCreatePayload -ConnectionId $connectionId -Database 'kis'
+
         $p.displayName | Should -Be 'mir_chhealthpf_kis'
-        $p.sourceConnection.server | Should -Be 'sql-chhealthpf-sit.database.windows.net'
-        $p.sourceConnection.database | Should -Be 'kis'
-        $p.sourceConnection.schemas | Should -Contain 'kis'
+        $part = $p.definition.parts[0]
+        $part.path | Should -Be 'mirroring.json'
+        $part.payloadType | Should -Be 'InlineBase64'
+
+        $json = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($part.payload))
+        $obj = $json | ConvertFrom-Json
+
+        $obj.properties.source.type | Should -Be 'AzureSqlDatabase'
+        $obj.properties.source.typeProperties.connection | Should -Be $connectionId
+        $obj.properties.source.typeProperties.database | Should -Be 'kis'
+
+        $obj.properties.target.type | Should -Be 'MountedRelationalDatabase'
+        $obj.properties.target.typeProperties.format | Should -Be 'Delta'
     }
 }

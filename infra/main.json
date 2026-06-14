@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "2714483913534605817"
+      "templateHash": "15101612745232802429"
     }
   },
   "parameters": {
@@ -661,7 +661,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "14643072303355468097"
+              "templateHash": "795260376992716164"
             }
           },
           "parameters": {
@@ -783,7 +783,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "463056549317325709"
+                      "templateHash": "10992348497249646809"
                     }
                   },
                   "parameters": {
@@ -810,6 +810,7 @@
                     },
                     "capacityAdmins": {
                       "type": "array",
+                      "minLength": 1,
                       "metadata": {
                         "description": "Object ID(s) of Fabric capacity administrators."
                       }
@@ -1641,7 +1642,7 @@
     },
     "fabricFoundationGatingWarning": {
       "type": "string",
-      "value": "[if(and(parameters('enableFabricFoundationModule'), not(parameters('enableDataPlatformModule'))), 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.', 'ok')]"
+      "value": "[if(and(parameters('enableFabricFoundationModule'), not(parameters('enableDataPlatformModule'))), 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.', if(and(parameters('enableFabricFoundationModule'), empty(parameters('fabricCapacityAdmins'))), 'WARN: enableFabricFoundationModule=true but fabricCapacityAdmins is empty; deploy will fail.', 'ok'))]"
     },
     "moduleStatuses": {
       "type": "object",

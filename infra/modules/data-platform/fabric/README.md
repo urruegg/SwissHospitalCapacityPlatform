@@ -43,15 +43,47 @@ a workspace, lakehouse, and KIS mirror via the Fabric REST API.
 ## Post-deploy steps
 
 The Bicep deployment only creates the capacity. Workspace, lakehouse, and
-mirror are configured by the PowerShell script under `post-deploy/`:
+mirror are configured by the PowerShell script under `post-deploy/`.
+
+### Prerequisites
+
+The script will fail without these in place:
+
+1. **Microsoft.Fabric resource provider registered** on the subscription
+   (`az provider register --namespace Microsoft.Fabric`).
+2. **Operator (the principal running the script) holds the Fabric Capacity
+   Admin role** on the deployed capacity. Bicep wires the object IDs in
+   `capacityAdmins` into `properties.administration.members`; the operator
+   must be one of them, otherwise `POST /v1/workspaces` returns 401/403.
+3. **Source Azure SQL has System-Assigned Managed Identity (SAMI) enabled**
+   and the **Fabric portal mirror bootstrap** has been done once for that
+   server (creates the necessary Azure SQL grants for the mirror). See the
+   [Azure SQL Database mirror tutorial][asqltut].
+4. **Fabric connection to the source Azure SQL database exists** and its GUID
+   is known. Create via the Fabric portal (Data Factory → Connections) or
+   `POST /v1/connections`. The mirrored database REST call binds to this
+   connection by ID — see the [Microsoft Fabric mirroring REST API][mirapi]
+   reference. Without a pre-existing connection, the mirror cannot be created.
+
+[asqltut]: https://learn.microsoft.com/fabric/mirroring/azure-sql-database-tutorial
+[mirapi]: https://learn.microsoft.com/fabric/mirroring/mirrored-database-rest-api#create-mirrored-database
+
+### Invocation
 
 ```powershell
-# After capacity is deployed AND W1.1's SQL server is reachable:
+# After capacity is deployed, the source SQL bootstrap is done, and a Fabric
+# connection to the KIS database has been created:
 ./post-deploy/configure-fabric.ps1 `
-    -CapacityId '<capacity-id-from-bicep-output>' `
-    -SourceServerFqdn 'sql-chhealthpf-sit.database.windows.net' `
+    -CapacityName 'fabricchhealthpfsit' `
+    -ConnectionId '<fabric-connection-guid>' `
     -SourceDatabase 'kis'
 ```
+
+`-CapacityName` is the Fabric capacity **displayName** — emitted by the Bicep
+module as the `capacityName` output (e.g. `fabricchhealthpfsit`). The script
+resolves this to the Fabric capacity GUID via `GET /v1/capacities`; the Bicep
+`capacityId` output is the ARM resource ID and is **not** the value the Fabric
+workspace API expects.
 
 Per `AGENTS.md` §4, both `az deployment group create` and execution of
 `configure-fabric.ps1` against Azure require an explicit `approved-to-apply`

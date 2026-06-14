@@ -13,6 +13,7 @@ param location string
 param tags object
 
 @description('Object ID(s) of Fabric capacity administrators.')
+@minLength(1)
 param capacityAdmins array
 
 var capacityName = 'fabric${replace(nameSuffix, '-', '')}'
