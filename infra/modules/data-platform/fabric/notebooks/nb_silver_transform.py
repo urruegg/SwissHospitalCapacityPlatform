@@ -8,7 +8,7 @@
 
 # COMMAND ----------
 
-from _lib import transforms
+from _lib import io, transforms
 
 # COMMAND ----------
 
@@ -31,20 +31,9 @@ silver, quarantine = transforms.bronze_to_silver_episode_with_quarantine(bronze)
 
 # COMMAND ----------
 
-(
-    silver.write
-    .format("delta")
-    .mode("overwrite")
-    .option("overwriteSchema", "true")
-    .saveAsTable(SILVER_TABLE)
-)
+# Idempotent MERGE on episode_id (natural key) per spec sec.6.3.
+io.merge_upsert(spark, silver, SILVER_TABLE, key_cols=["episode_id"])
 
 # COMMAND ----------
 
-(
-    quarantine.write
-    .format("delta")
-    .mode("overwrite")
-    .option("overwriteSchema", "true")
-    .saveAsTable(QUARANTINE_TABLE)
-)
+io.merge_upsert(spark, quarantine, QUARANTINE_TABLE, key_cols=["episode_id"])

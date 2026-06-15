@@ -6,7 +6,7 @@
 
 # COMMAND ----------
 
-from _lib import transforms
+from _lib import io, transforms
 
 # COMMAND ----------
 
@@ -32,10 +32,5 @@ gold = transforms.silver_episode_to_gold_demand_encounter(
 
 # COMMAND ----------
 
-(
-    gold.write
-    .format("delta")
-    .mode("overwrite")
-    .option("overwriteSchema", "true")
-    .saveAsTable(GOLD_TABLE)
-)
+# Idempotent MERGE on episode_id (natural key) per spec sec.6.3.
+io.merge_upsert(spark, gold, GOLD_TABLE, key_cols=["episode_id"])
