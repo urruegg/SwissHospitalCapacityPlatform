@@ -32,7 +32,7 @@ partition 'demand_encounter' = directLake
 
 `gold.demand_encounter` carries a pseudonymised `patient_id` (`pseudo-[a-z0-9]{16}`). The pseudonym is not direct PII, but exposing it in the report layer would still allow analysts to count distinct patients across reports, which is a re-identification surface this thin slice does not need. The semantic model therefore **omits `patient_id`** entirely. If a future measure needs patient-level distinct counts, that requires a separate `data-design-agent` review and an addition to `DC-DEMAND-ENCOUNTER-v1` exposure rules.
 
-A pytest enforces that `patient_id` does not appear in any TMDL file under this folder.
+A pytest enforces that `patient_id` does not appear in any TMDL file under this folder: see [`tests/test_tmdl_definition.py::test_no_patient_id_in_any_tmdl_least_disclosure`](tests/test_tmdl_definition.py). A Pester case mirrors the invariant on the base64-encoded deploy payload.
 
 ## Measures (this slice)
 

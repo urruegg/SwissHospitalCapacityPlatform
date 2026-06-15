@@ -131,7 +131,8 @@ function Get-SemanticModelCreatePayload {
         $abs = Join-Path $modelRoot $rel
         if (-not (Test-Path $abs)) { throw "TMDL file not found: $abs" }
         $text = Get-Content -Raw -Path $abs
-        # Substitute OneLake GUID placeholders only in dataSources.tmdl (others contain none).
+        # Apply placeholder substitution uniformly; the tokens exist only in dataSources.tmdl
+        # so this is a no-op for the other three files but keeps the loop branch-free.
         $text = $text.Replace('[WORKSPACE_GUID]', $WorkspaceId).Replace('[LAKEHOUSE_GUID]', $LakehouseId)
         @{
             path        = $rel
