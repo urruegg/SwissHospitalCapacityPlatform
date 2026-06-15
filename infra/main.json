@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "15101612745232802429"
+      "templateHash": "5845789575308375628"
     }
   },
   "parameters": {
@@ -104,6 +104,41 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable data platform module deployment scaffold."
+      }
+    },
+    "enableSourceSqlModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the source-SQL submodule inside data-platform (Sprint 08 W1.1 synthetic KIS feed)."
+      }
+    },
+    "sourceSqlDataSubnetId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the data subnet used for the source-SQL private endpoint. Required when enableSourceSqlModule = true."
+      }
+    },
+    "sourceSqlKeyVaultId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Key Vault that stores the source-SQL admin password. Required when enableSourceSqlModule = true."
+      }
+    },
+    "sourceSqlAdminPasswordSecretName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name of the Key Vault secret holding the source-SQL admin password. Required when enableSourceSqlModule = true."
+      }
+    },
+    "sourceSqlPrivateDnsZoneId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally."
       }
     },
     "enableFabricFoundationModule": {
@@ -647,6 +682,21 @@
           "tags": {
             "value": "[variables('tags')]"
           },
+          "enableSourceSqlModule": {
+            "value": "[parameters('enableSourceSqlModule')]"
+          },
+          "sourceSqlDataSubnetId": {
+            "value": "[parameters('sourceSqlDataSubnetId')]"
+          },
+          "sourceSqlKeyVaultId": {
+            "value": "[parameters('sourceSqlKeyVaultId')]"
+          },
+          "sourceSqlAdminPasswordSecretName": {
+            "value": "[parameters('sourceSqlAdminPasswordSecretName')]"
+          },
+          "sourceSqlPrivateDnsZoneId": {
+            "value": "[parameters('sourceSqlPrivateDnsZoneId')]"
+          },
           "enableFabricFoundationModule": {
             "value": "[parameters('enableFabricFoundationModule')]"
           },
@@ -661,7 +711,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "795260376992716164"
+              "templateHash": "15796033015197710576"
             }
           },
           "parameters": {
@@ -683,6 +733,41 @@
                 "description": "Resource tags applied to all resources."
               }
             },
+            "enableSourceSqlModule": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable the source-SQL submodule (Sprint 08 W1.1 synthetic KIS feed)."
+              }
+            },
+            "sourceSqlDataSubnetId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the data subnet used for the SQL private endpoint. Required when enableSourceSqlModule = true."
+              }
+            },
+            "sourceSqlKeyVaultId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the Key Vault that stores the SQL admin password. Required when enableSourceSqlModule = true."
+              }
+            },
+            "sourceSqlAdminPasswordSecretName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Name of the Key Vault secret holding the SQL admin password. Required when enableSourceSqlModule = true."
+              }
+            },
+            "sourceSqlPrivateDnsZoneId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally."
+              }
+            },
             "enableFabricFoundationModule": {
               "type": "bool",
               "defaultValue": false,
@@ -699,7 +784,8 @@
             }
           },
           "variables": {
-            "storageAccountName": "[toLower(format('stdp{0}', replace(parameters('nameSuffix'), '-', '')))]"
+            "storageAccountName": "[toLower(format('stdp{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "sourceSqlKvIdParts": "[split(parameters('sourceSqlKeyVaultId'), '/')]"
           },
           "resources": [
             {
@@ -750,6 +836,222 @@
               ],
               "metadata": {
                 "description": "Onboarding bootstrap container for synthesized SIT onboarding datasets consumed by the OOA/DCA/BMCA MVP flows (Sprint 6 Phase 1)."
+              }
+            },
+            {
+              "condition": "[parameters('enableSourceSqlModule')]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "[format('source-sql-{0}', parameters('nameSuffix'))]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "nameSuffix": {
+                    "value": "[parameters('nameSuffix')]"
+                  },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "dataSubnetId": {
+                    "value": "[parameters('sourceSqlDataSubnetId')]"
+                  },
+                  "sqlAdminPassword": {
+                    "reference": {
+                      "keyVault": {
+                        "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('sourceSqlKvIdParts')[2], variables('sourceSqlKvIdParts')[4]), 'Microsoft.KeyVault/vaults', last(variables('sourceSqlKvIdParts')))]"
+                      },
+                      "secretName": "[parameters('sourceSqlAdminPasswordSecretName')]"
+                    }
+                  },
+                  "privateDnsZoneId": {
+                    "value": "[parameters('sourceSqlPrivateDnsZoneId')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.43.8.12551",
+                      "templateHash": "997256505249605883"
+                    }
+                  },
+                  "parameters": {
+                    "nameSuffix": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Suffix appended to resource names (e.g. chhealthpf-sit)."
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "allowedValues": [
+                        "switzerlandnorth"
+                      ],
+                      "metadata": {
+                        "description": "Deployment region. Must be switzerlandnorth (ADR-0003)."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Resource tags applied to all resources."
+                      }
+                    },
+                    "dataSubnetId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource ID of the data subnet for the SQL private endpoint."
+                      }
+                    },
+                    "sqlAdminPassword": {
+                      "type": "securestring",
+                      "metadata": {
+                        "description": "SQL admin password. Pass via keyVault.getSecret() from the caller."
+                      }
+                    },
+                    "sqlAdminLogin": {
+                      "type": "string",
+                      "defaultValue": "sqladmin",
+                      "metadata": {
+                        "description": "SQL admin login."
+                      }
+                    },
+                    "privateDnsZoneId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone. Leave empty to wire DNS externally (e.g. via hub network)."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "serverName": "[format('sql-{0}', parameters('nameSuffix'))]",
+                    "databaseName": "kis",
+                    "privateEndpointName": "[format('pe-{0}', variables('serverName'))]"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Sql/servers",
+                      "apiVersion": "2023-08-01-preview",
+                      "name": "[variables('serverName')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "identity": {
+                        "type": "SystemAssigned"
+                      },
+                      "properties": {
+                        "administratorLogin": "[parameters('sqlAdminLogin')]",
+                        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+                        "publicNetworkAccess": "Disabled",
+                        "minimalTlsVersion": "1.2",
+                        "version": "12.0"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Sql/servers/databases",
+                      "apiVersion": "2023-08-01-preview",
+                      "name": "[format('{0}/{1}', variables('serverName'), variables('databaseName'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "sku": {
+                        "name": "GP_Gen5_2",
+                        "tier": "GeneralPurpose",
+                        "family": "Gen5",
+                        "capacity": 2
+                      },
+                      "properties": {
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "zoneRedundant": false,
+                        "requestedBackupStorageRedundancy": "Local"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', variables('serverName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Network/privateEndpoints",
+                      "apiVersion": "2023-09-01",
+                      "name": "[variables('privateEndpointName')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "subnet": {
+                          "id": "[parameters('dataSubnetId')]"
+                        },
+                        "privateLinkServiceConnections": [
+                          {
+                            "name": "sqlServer",
+                            "properties": {
+                              "privateLinkServiceId": "[resourceId('Microsoft.Sql/servers', variables('serverName'))]",
+                              "groupIds": [
+                                "sqlServer"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', variables('serverName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[not(empty(parameters('privateDnsZoneId')))]",
+                      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+                      "apiVersion": "2023-09-01",
+                      "name": "[format('{0}/{1}', variables('privateEndpointName'), 'default')]",
+                      "properties": {
+                        "privateDnsZoneConfigs": [
+                          {
+                            "name": "privatelink-database-windows-net",
+                            "properties": {
+                              "privateDnsZoneId": "[parameters('privateDnsZoneId')]"
+                            }
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "sqlServerName": {
+                      "type": "string",
+                      "value": "[variables('serverName')]"
+                    },
+                    "sqlServerFqdn": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Sql/servers', variables('serverName')), '2023-08-01-preview').fullyQualifiedDomainName]"
+                    },
+                    "sqlDatabaseName": {
+                      "type": "string",
+                      "value": "[variables('databaseName')]"
+                    },
+                    "sqlServerPrincipalId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Sql/servers', variables('serverName')), '2023-08-01-preview', 'full').identity.principalId]"
+                    },
+                    "sqlPrivateDnsWarning": {
+                      "type": "string",
+                      "value": "[if(empty(parameters('privateDnsZoneId')), 'WARN: privateDnsZoneId not supplied. Configure the privatelink.database.windows.net DNS zone group externally before clients can resolve the SQL FQDN.', 'ok')]"
+                    },
+                    "moduleStatus": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Source-SQL module implementation marker."
+                      },
+                      "value": "source-sql-implemented"
+                    }
+                  }
+                }
               }
             },
             {
@@ -862,6 +1164,13 @@
                 "description": "Data platform module implementation marker."
               },
               "value": "data-platform-implemented"
+            },
+            "sourceSqlStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Source-SQL submodule status (Sprint 08 W1.1)."
+              },
+              "value": "[if(parameters('enableSourceSqlModule'), reference(resourceId('Microsoft.Resources/deployments', format('source-sql-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.moduleStatus.value, 'source-sql-disabled')]"
             },
             "storageAccountName": {
               "type": "string",
@@ -1640,6 +1949,10 @@
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value]"
     },
+    "sourceSqlGatingWarning": {
+      "type": "string",
+      "value": "[if(and(parameters('enableSourceSqlModule'), not(parameters('enableDataPlatformModule'))), 'WARN: enableSourceSqlModule=true requires enableDataPlatformModule=true; source-sql module will NOT deploy.', 'ok')]"
+    },
     "fabricFoundationGatingWarning": {
       "type": "string",
       "value": "[if(and(parameters('enableFabricFoundationModule'), not(parameters('enableDataPlatformModule'))), 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.', if(and(parameters('enableFabricFoundationModule'), empty(parameters('fabricCapacityAdmins'))), 'WARN: enableFabricFoundationModule=true but fabricCapacityAdmins is empty; deploy will fail.', 'ok'))]"
@@ -1651,6 +1964,7 @@
         "network": "[if(parameters('enableNetworkModule'), reference(resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'network-disabled')]",
         "observability": "[if(parameters('enableObservabilityModule'), reference(resourceId('Microsoft.Resources/deployments', format('observability-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'observability-disabled')]",
         "dataPlatform": "[if(parameters('enableDataPlatformModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-platform-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-platform-disabled')]",
+        "sourceSql": "[if(parameters('enableDataPlatformModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-platform-{0}', parameters('environmentName'))), '2025-04-01').outputs.sourceSqlStatus.value, 'source-sql-disabled')]",
         "aiPlatform": "[if(parameters('enableAiPlatformModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-platform-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-platform-disabled')]",
         "integration": "[if(parameters('enableIntegrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-disabled')]",
         "experienceHosting": "[if(parameters('enableExperienceHostingModule'), reference(resourceId('Microsoft.Resources/deployments', format('experience-hosting-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'experience-hosting-disabled')]",

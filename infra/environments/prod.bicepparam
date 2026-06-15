@@ -26,4 +26,8 @@ param enableIntegrationOrchestrationModule = true
 param networkVnetAddressPrefix = '10.60.0.0/16'
 param networkAppSubnetPrefix = '10.60.1.0/24'
 
+// Sprint 08 W1.1 — source-SQL submodule remains opt-out in PROD until approved.
+param enableSourceSqlModule = false
+
+// Sprint 08 W1.2 — Fabric foundation submodule remains opt-out in PROD until separately approved.
 param enableFabricFoundationModule = false

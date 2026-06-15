@@ -62,6 +62,21 @@
     "networkAppSubnetPrefix": {
       "value": "10.60.1.0/24"
     },
+    "enableSourceSqlModule": {
+      "value": true
+    },
+    "sourceSqlDataSubnetId": {
+      "value": "/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-chhealthpf-sit/subnets/snet-data-sit"
+    },
+    "sourceSqlKeyVaultId": {
+      "value": "/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.KeyVault/vaults/kv-chhealthpf-sit"
+    },
+    "sourceSqlAdminPasswordSecretName": {
+      "value": "sql-admin-password"
+    },
+    "sourceSqlPrivateDnsZoneId": {
+      "value": ""
+    },
     "enableFabricFoundationModule": {
       "value": true
     },
