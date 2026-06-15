@@ -48,6 +48,21 @@ param enableObservabilityModule bool = false
 @description('Enable data platform module deployment scaffold.')
 param enableDataPlatformModule bool = false
 
+@description('Enable the source-SQL submodule inside data-platform (Sprint 08 W1.1 synthetic KIS feed).')
+param enableSourceSqlModule bool = false
+
+@description('Resource ID of the data subnet used for the source-SQL private endpoint. Required when enableSourceSqlModule = true.')
+param sourceSqlDataSubnetId string = ''
+
+@description('Resource ID of the Key Vault that stores the source-SQL admin password. Required when enableSourceSqlModule = true.')
+param sourceSqlKeyVaultId string = ''
+
+@description('Name of the Key Vault secret holding the source-SQL admin password. Required when enableSourceSqlModule = true.')
+param sourceSqlAdminPasswordSecretName string = ''
+
+@description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally.')
+param sourceSqlPrivateDnsZoneId string = ''
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -124,6 +139,11 @@ module dataPlatform './modules/data-platform/main.bicep' = if (enableDataPlatfor
     location: location
     nameSuffix: resourceSuffix
     tags: tags
+    enableSourceSqlModule: enableSourceSqlModule
+    sourceSqlDataSubnetId: sourceSqlDataSubnetId
+    sourceSqlKeyVaultId: sourceSqlKeyVaultId
+    sourceSqlAdminPasswordSecretName: sourceSqlAdminPasswordSecretName
+    sourceSqlPrivateDnsZoneId: sourceSqlPrivateDnsZoneId
   }
 }
 
@@ -197,6 +217,7 @@ output moduleStatuses object = {
   network: enableNetworkModule ? network!.outputs.moduleStatus : 'network-disabled'
   observability: enableObservabilityModule ? observability!.outputs.moduleStatus : 'observability-disabled'
   dataPlatform: enableDataPlatformModule ? dataPlatform!.outputs.moduleStatus : 'data-platform-disabled'
+  sourceSql: enableDataPlatformModule ? dataPlatform!.outputs.sourceSqlStatus : 'source-sql-disabled'
   aiPlatform: enableAiPlatformModule ? aiPlatform!.outputs.moduleStatus : 'ai-platform-disabled'
   integration: enableIntegrationModule ? integration!.outputs.moduleStatus : 'integration-disabled'
   experienceHosting: enableExperienceHostingModule ? experienceHosting!.outputs.moduleStatus : 'experience-hosting-disabled'
@@ -205,3 +226,5 @@ output moduleStatuses object = {
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
 }
+
+output sourceSqlGatingWarning string = enableSourceSqlModule && !enableDataPlatformModule ? 'WARN: enableSourceSqlModule=true requires enableDataPlatformModule=true; source-sql module will NOT deploy.' : 'ok'
