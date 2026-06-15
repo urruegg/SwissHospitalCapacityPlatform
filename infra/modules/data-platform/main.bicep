@@ -22,66 +22,82 @@ param sourceSqlAdminPasswordSecretName string = ''
 @description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally.')
 param sourceSqlPrivateDnsZoneId string = ''
 
+@description('Enable the Fabric foundation submodule (capacity).')
+param enableFabricFoundationModule bool = false
+
+@description('Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true.')
+param fabricCapacityAdmins array = []
+
 var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}')
 
 var sourceSqlKvIdParts = split(sourceSqlKeyVaultId, '/')
 
 resource sourceSqlKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (enableSourceSqlModule && !empty(sourceSqlKeyVaultId)) {
-	name: last(sourceSqlKvIdParts)
-	scope: resourceGroup(sourceSqlKvIdParts[2], sourceSqlKvIdParts[4])
+name: last(sourceSqlKvIdParts)
+scope: resourceGroup(sourceSqlKvIdParts[2], sourceSqlKvIdParts[4])
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-	name: storageAccountName
-	location: location
-	tags: tags
-	kind: 'StorageV2'
-	sku: {
-		name: 'Standard_LRS'
-	}
-	properties: {
-		accessTier: 'Hot'
-		allowBlobPublicAccess: false
-		minimumTlsVersion: 'TLS1_2'
-		supportsHttpsTrafficOnly: true
-		publicNetworkAccess: 'Enabled'
-	}
+name: storageAccountName
+location: location
+tags: tags
+kind: 'StorageV2'
+sku: {
+name: 'Standard_LRS'
+}
+properties: {
+accessTier: 'Hot'
+allowBlobPublicAccess: false
+minimumTlsVersion: 'TLS1_2'
+supportsHttpsTrafficOnly: true
+publicNetworkAccess: 'Enabled'
+}
 }
 
 resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
-	parent: storageAccount
-	name: 'default'
-	properties: {
-		deleteRetentionPolicy: {
-			enabled: true
-			days: 7
-		}
-		containerDeleteRetentionPolicy: {
-			enabled: true
-			days: 7
-		}
-	}
+parent: storageAccount
+name: 'default'
+properties: {
+deleteRetentionPolicy: {
+enabled: true
+days: 7
+}
+containerDeleteRetentionPolicy: {
+enabled: true
+days: 7
+}
+}
 }
 
 @description('Onboarding bootstrap container for synthesized SIT onboarding datasets consumed by the OOA/DCA/BMCA MVP flows (Sprint 6 Phase 1).')
 resource onboardingContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
-	parent: blobService
-	name: 'onboarding'
-	properties: {
-		publicAccess: 'None'
-	}
+parent: blobService
+name: 'onboarding'
+properties: {
+publicAccess: 'None'
+}
 }
 
 module sourceSql './source-sql/main.bicep' = if (enableSourceSqlModule) {
-	name: 'source-sql-${nameSuffix}'
-	params: {
-		nameSuffix: nameSuffix
-		location: location
-		tags: tags
-		dataSubnetId: sourceSqlDataSubnetId
-		sqlAdminPassword: sourceSqlKeyVault.getSecret(sourceSqlAdminPasswordSecretName)
-		privateDnsZoneId: sourceSqlPrivateDnsZoneId
-	}
+name: 'source-sql-${nameSuffix}'
+params: {
+nameSuffix: nameSuffix
+location: location
+tags: tags
+dataSubnetId: sourceSqlDataSubnetId
+sqlAdminPassword: sourceSqlKeyVault.getSecret(sourceSqlAdminPasswordSecretName)
+privateDnsZoneId: sourceSqlPrivateDnsZoneId
+}
+}
+
+module fabricFoundation './fabric/main.bicep' = if (enableFabricFoundationModule) {
+name: 'fabric-foundation'
+params: {
+location: location
+nameSuffix: nameSuffix
+tags: tags
+capacityAdmins: fabricCapacityAdmins
+}
 }
 
 @description('Data platform module implementation marker.')
@@ -99,9 +115,12 @@ output blobServiceResourceId string = blobService.id
 @description('Onboarding bootstrap container name for synthesized SIT onboarding data.')
 output onboardingContainerName string = onboardingContainer.name
 
+@description('Fabric foundation submodule status (or disabled sentinel).')
+output fabricFoundationStatus string = enableFabricFoundationModule ? fabricFoundation!.outputs.moduleStatus : 'fabric-foundation-disabled'
+
 @description('Data platform module scaffold input echo for validation only.')
 output scaffoldInput object = {
-	location: location
-	nameSuffix: nameSuffix
-	tagCount: length(items(tags))
+location: location
+nameSuffix: nameSuffix
+tagCount: length(items(tags))
 }

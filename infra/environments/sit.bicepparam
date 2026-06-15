@@ -36,3 +36,10 @@ param sourceSqlAdminPasswordSecretName = 'sql-admin-password'
 // Private DNS zone for SQL private endpoint. Owned by a separate platform-foundation slice
 // (hub-spoke DNS). Leave empty here and wire post-deploy; do not invent a resource ID.
 param sourceSqlPrivateDnsZoneId = ''
+
+// Sprint 08 W1.2 — Fabric foundation submodule (F2 capacity + workspace/lakehouse/mirror).
+// Replace <ADMIN_OBJECT_ID> with the actual AAD object ID before the first apply.
+param enableFabricFoundationModule = true
+param fabricCapacityAdmins = [
+    '<ADMIN_OBJECT_ID>'
+]
