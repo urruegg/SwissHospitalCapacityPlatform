@@ -1,8 +1,10 @@
 # Notebook: nb_silver_transform
-# Walking-skeleton: bronze.episode -> silver.episode (+ silver.episode_quarantine)
+# Walking-skeleton: kis.Episode (mirror landing) -> silver.episode (+ silver.quarantine_episode)
 # Spec: docs/superpowers/specs/2026-06-14-sprint-08-data-platform-design.md §8.1
 # Implements: FR-DATA-001 (Episode as control unit), FR-DATA-003 (pseudonymisation invariant)
-# Lakehouse: lh_chhealthpf_sit
+# Lakehouse: lh_chhealthpf_sit (enableSchemas=true; mirror lands source dbo schema as `kis`).
+# Spec uses `bronze.kis_*` naming; the W1.2 mirror lands at `kis.Episode` — this notebook
+# bridges that gap for the walking skeleton (no separate bronze rename layer yet).
 
 # COMMAND ----------
 
@@ -11,9 +13,13 @@ from _lib import transforms
 # COMMAND ----------
 
 LAKEHOUSE = "lh_chhealthpf_sit"
-BRONZE_TABLE = f"{LAKEHOUSE}.bronze_episode"
-SILVER_TABLE = f"{LAKEHOUSE}.silver_episode"
-QUARANTINE_TABLE = f"{LAKEHOUSE}.silver_episode_quarantine"
+BRONZE_TABLE = f"{LAKEHOUSE}.kis.Episode"
+SILVER_TABLE = f"{LAKEHOUSE}.silver.episode"
+QUARANTINE_TABLE = f"{LAKEHOUSE}.silver.quarantine_episode"
+
+# COMMAND ----------
+
+spark.sql(f"CREATE SCHEMA IF NOT EXISTS {LAKEHOUSE}.silver")
 
 # COMMAND ----------
 

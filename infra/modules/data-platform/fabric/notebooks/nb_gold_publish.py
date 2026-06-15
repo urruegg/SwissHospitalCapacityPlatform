@@ -11,9 +11,13 @@ from _lib import transforms
 # COMMAND ----------
 
 LAKEHOUSE = "lh_chhealthpf_sit"
-SILVER_TABLE = f"{LAKEHOUSE}.silver_episode"
-GOLD_TABLE = f"{LAKEHOUSE}.gold_demand_encounter"
+SILVER_TABLE = f"{LAKEHOUSE}.silver.episode"
+GOLD_TABLE = f"{LAKEHOUSE}.gold.demand_encounter"
 PROVENANCE_SOURCE = "kis-mirror"
+
+# COMMAND ----------
+
+spark.sql(f"CREATE SCHEMA IF NOT EXISTS {LAKEHOUSE}.gold")
 
 # COMMAND ----------
 
