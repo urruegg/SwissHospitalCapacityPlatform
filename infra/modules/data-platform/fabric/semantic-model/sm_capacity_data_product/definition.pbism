@@ -1,0 +1,5 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/semanticModel/definitionProperties.json",
+    "version": "1.0",
+    "name": "sm_capacity_data_product"
+}

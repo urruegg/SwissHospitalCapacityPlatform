@@ -104,6 +104,53 @@ function Get-MirrorCreatePayload {
     }
 }
 
+function Get-SemanticModelCreatePayload {
+    <#
+    .SYNOPSIS
+    Builds the Fabric REST payload for `sm_capacity_data_product`, a Direct Lake
+    semantic model bound to `lh_chhealthpf_sit.gold.demand_encounter`.
+    .NOTES
+    Reads TMDL from ../semantic-model/sm_capacity_data_product/ and substitutes
+    the two OneLake GUID placeholders. Posted to /workspaces/{wsId}/items with
+    type=SemanticModel and definition.format=tmdl.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$WorkspaceId,
+        [Parameter(Mandatory)][string]$LakehouseId
+    )
+
+    $modelRoot = Join-Path $PSScriptRoot '../semantic-model/sm_capacity_data_product'
+    $tmdlFiles = @(
+        'definition/database.tmdl',
+        'definition/model.tmdl',
+        'definition/dataSources.tmdl',
+        'definition/tables/demand_encounter.tmdl'
+    )
+
+    $parts = foreach ($rel in $tmdlFiles) {
+        $abs = Join-Path $modelRoot $rel
+        if (-not (Test-Path $abs)) { throw "TMDL file not found: $abs" }
+        $text = Get-Content -Raw -Path $abs
+        # Substitute OneLake GUID placeholders only in dataSources.tmdl (others contain none).
+        $text = $text.Replace('[WORKSPACE_GUID]', $WorkspaceId).Replace('[LAKEHOUSE_GUID]', $LakehouseId)
+        @{
+            path        = $rel
+            payload     = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($text))
+            payloadType = 'InlineBase64'
+        }
+    }
+
+    return @{
+        displayName = 'sm_capacity_data_product'
+        description = 'Direct Lake semantic model on gold.demand_encounter (Sprint 08 W1.4 thin slice)'
+        type        = 'SemanticModel'
+        definition  = @{
+            format = 'tmdl'
+            parts  = $parts
+        }
+    }
+}
+
 if ($DryRun) { return }
 
 if (-not $CapacityName) { throw 'CapacityName required. Pass the Fabric capacity displayName (Bicep `capacityName` output, e.g. fabricchhealthpfsit).' }
@@ -126,5 +173,9 @@ Write-Host "Lakehouse: $($lh.id)"
 # 3. Create mirrored database bound to the supplied Fabric connection + source database.
 $mir = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/mirroredDatabases" -Body (Get-MirrorCreatePayload -ConnectionId $ConnectionId -Database $SourceDatabase)
 Write-Host "Mirror: $($mir.id)"
+
+# 4. Create Direct Lake semantic model bound to gold.demand_encounter.
+$sm = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/items" -Body (Get-SemanticModelCreatePayload -WorkspaceId $ws.id -LakehouseId $lh.id)
+Write-Host "Semantic Model: $($sm.id)"
 
 Write-Host 'Done. Wait up to 5 minutes for the initial replication snapshot.'
