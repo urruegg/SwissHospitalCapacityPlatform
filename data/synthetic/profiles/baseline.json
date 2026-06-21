@@ -1,0 +1,6 @@
+{
+  "profile": "baseline",
+  "eventsPerMinute": 1,
+  "mode": "thin",
+  "description": "Sprint 08 W1.5 thin slice profile: emit exactly one deterministic demand event for end-to-end validation."
+}
