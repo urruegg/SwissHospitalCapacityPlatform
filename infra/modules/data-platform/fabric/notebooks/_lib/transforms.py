@@ -37,8 +37,10 @@ def silver_episode_to_gold_demand_encounter(silver: DataFrame, provenance_source
 
 
 def simulator_records_to_gold_demand_encounter(records: DataFrame) -> DataFrame:
-    arrival_ts = F.to_timestamp(F.col("expectedArrivalTimestamp"))
+    # Parse explicit UTC ISO-8601 timestamps from simulator envelopes.
+    arrival_ts = F.to_timestamp(F.col("expectedArrivalTimestamp"), "yyyy-MM-dd'T'HH:mm:ssX")
     los_days = F.coalesce(F.col("expectedLOSDays"), F.lit(1))
+    # Keep patient_id aligned to silver pseudonym regex: pseudo-[a-z0-9]{16}.
     pseudo_seed = F.lower(F.regexp_replace(F.col("pseudonymId"), r"^PID-", ""))
 
     return (
@@ -54,7 +56,7 @@ def simulator_records_to_gold_demand_encounter(records: DataFrame) -> DataFrame:
         .withColumn("provenance_source", F.lit("simulator"))
         .withColumn("purpose_tags", F.array(F.lit("capacity-planning")))
         .withColumn("residency", F.lit("CH"))
-        .withColumn("emitted_ts", F.to_timestamp(F.col("asOfTimestamp")))
+        .withColumn("emitted_ts", F.to_timestamp(F.col("asOfTimestamp"), "yyyy-MM-dd'T'HH:mm:ssX"))
         .select(
             "episode_id",
             "patient_id",

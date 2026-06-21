@@ -23,4 +23,8 @@ def test_simulator_record_maps_to_gold_schema_with_simulator_provenance(spark):
     assert row["purpose_tags"] == ["capacity-planning"]
     assert row["residency"] == "CH"
     assert row["patient_id"].startswith("pseudo-")
+    assert row["ward"] == "HCS-ONCOLOGY-0205"
+    assert row["admit_ts"] is not None
+    assert row["discharge_ts"] is not None
+    assert row["emitted_ts"] is not None
 

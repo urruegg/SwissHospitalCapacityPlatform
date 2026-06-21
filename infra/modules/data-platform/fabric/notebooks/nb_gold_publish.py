@@ -49,5 +49,17 @@ if spark.catalog.tableExists(BRONZE_EVENTS_TABLE):
     else:
         simulator_records = bronze_events
 
+    required_fields = [
+        "encounterId",
+        "pseudonymId",
+        "expectedArrivalTimestamp",
+        "expectedLOSDays",
+        "requestedSpecialtyServiceId",
+        "asOfTimestamp",
+    ]
+    missing = [c for c in required_fields if c not in simulator_records.columns]
+    if missing:
+        raise ValueError(f"Simulator bronze events missing required fields: {missing}")
+
     simulator_gold = transforms.simulator_records_to_gold_demand_encounter(simulator_records)
     io.merge_upsert(spark, simulator_gold, GOLD_TABLE, key_cols=["episode_id"])
