@@ -48,6 +48,27 @@ param enableObservabilityModule bool = false
 @description('Enable data platform module deployment scaffold.')
 param enableDataPlatformModule bool = false
 
+@description('Enable the source-SQL submodule inside data-platform (Sprint 08 W1.1 synthetic KIS feed).')
+param enableSourceSqlModule bool = false
+
+@description('Resource ID of the data subnet used for the source-SQL private endpoint. Required when enableSourceSqlModule = true.')
+param sourceSqlDataSubnetId string = ''
+
+@description('Resource ID of the Key Vault that stores the source-SQL admin password. Required when enableSourceSqlModule = true.')
+param sourceSqlKeyVaultId string = ''
+
+@description('Name of the Key Vault secret holding the source-SQL admin password. Required when enableSourceSqlModule = true.')
+param sourceSqlAdminPasswordSecretName string = ''
+
+@description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally.')
+param sourceSqlPrivateDnsZoneId string = ''
+
+@description('Enable Fabric foundation submodule (capacity + post-deploy workspace/lakehouse/mirror).')
+param enableFabricFoundationModule bool = false
+
+@description('Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true.')
+param fabricCapacityAdmins array = []
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -124,6 +145,13 @@ module dataPlatform './modules/data-platform/main.bicep' = if (enableDataPlatfor
     location: location
     nameSuffix: resourceSuffix
     tags: tags
+    enableSourceSqlModule: enableSourceSqlModule
+    sourceSqlDataSubnetId: sourceSqlDataSubnetId
+    sourceSqlKeyVaultId: sourceSqlKeyVaultId
+    sourceSqlAdminPasswordSecretName: sourceSqlAdminPasswordSecretName
+    sourceSqlPrivateDnsZoneId: sourceSqlPrivateDnsZoneId
+    enableFabricFoundationModule: enableFabricFoundationModule
+    fabricCapacityAdmins: fabricCapacityAdmins
   }
 }
 
@@ -192,11 +220,20 @@ module integrationOrchestration './modules/integration-orchestration/main.bicep'
 
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
+output sourceSqlGatingWarning string = enableSourceSqlModule && !enableDataPlatformModule
+  ? 'WARN: enableSourceSqlModule=true requires enableDataPlatformModule=true; source-sql module will NOT deploy.'
+  : 'ok'
+output fabricFoundationGatingWarning string = enableFabricFoundationModule && !enableDataPlatformModule
+  ? 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.'
+  : (enableFabricFoundationModule && empty(fabricCapacityAdmins))
+    ? 'WARN: enableFabricFoundationModule=true but fabricCapacityAdmins is empty; deploy will fail.'
+    : 'ok'
 output moduleStatuses object = {
   identity: enableIdentityModule ? identity!.outputs.moduleStatus : 'identity-disabled'
   network: enableNetworkModule ? network!.outputs.moduleStatus : 'network-disabled'
   observability: enableObservabilityModule ? observability!.outputs.moduleStatus : 'observability-disabled'
   dataPlatform: enableDataPlatformModule ? dataPlatform!.outputs.moduleStatus : 'data-platform-disabled'
+  sourceSql: enableDataPlatformModule ? dataPlatform!.outputs.sourceSqlStatus : 'source-sql-disabled'
   aiPlatform: enableAiPlatformModule ? aiPlatform!.outputs.moduleStatus : 'ai-platform-disabled'
   integration: enableIntegrationModule ? integration!.outputs.moduleStatus : 'integration-disabled'
   experienceHosting: enableExperienceHostingModule ? experienceHosting!.outputs.moduleStatus : 'experience-hosting-disabled'

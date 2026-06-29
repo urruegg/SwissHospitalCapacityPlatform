@@ -1,0 +1,6 @@
+{
+  "profile": "baseline",
+  "eventsPerMinute": 1,
+  "mode": "thin",
+  "description": "Thin simulator profile for single-event sprint validation."
+}
