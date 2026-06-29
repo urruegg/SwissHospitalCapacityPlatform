@@ -1,0 +1,6 @@
+datasource lakehouse
+	type: structuredDataSource
+	credential: implicit
+	connectionDetails:
+		https://onelake.dfs.fabric.microsoft.com/[WORKSPACE_GUID]/[LAKEHOUSE_GUID]
+	connectionString: AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/[WORKSPACE_GUID]/[LAKEHOUSE_GUID]")

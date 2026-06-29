@@ -1,0 +1,21 @@
+table demand_encounter
+
+	partition 'demand_encounter' = directLake
+		mode: directLake
+		source = entity 'gold.demand_encounter'
+
+	column episode_id
+		dataType: string
+		sourceColumn: episode_id
+		isKey: true
+
+	column admit_ts
+		dataType: dateTime
+		sourceColumn: admit_ts
+
+	column discharge_ts
+		dataType: dateTime
+		sourceColumn: discharge_ts
+
+	measure 'Encounter Count' = COUNTROWS('demand_encounter')
+		formatString: #,##0
