@@ -15,7 +15,10 @@ param(
     [string]$CapacityName,
     [string]$ConnectionId,
     [string]$SourceDatabase = 'kis',
-    [switch]$DryRun
+    [switch]$DryRun,
+    # Skip mirror + semantic model creation. Used by Sprint 00 Slice 1 (Fabric plane only,
+    # before source SQL is provisioned) to create just the workspace and lakehouse.
+    [switch]$SkipMirror
 )
 
 Set-StrictMode -Version Latest
@@ -155,8 +158,8 @@ function Get-SemanticModelCreatePayload {
 if ($DryRun) { return }
 
 if (-not $CapacityName) { throw 'CapacityName required. Pass the Fabric capacity displayName (Bicep `capacityName` output, e.g. fabricihzhhpfsit).' }
-if (-not $ConnectionId) {
-    throw 'ConnectionId required. Create a Fabric connection to the Azure SQL source first (portal or POST /v1/connections) and pass the resulting GUID.'
+if (-not $SkipMirror -and -not $ConnectionId) {
+    throw 'ConnectionId required unless -SkipMirror is set. Create a Fabric connection to the Azure SQL source first (portal or POST /v1/connections) and pass the resulting GUID.'
 }
 
 # 0. Resolve the Fabric capacity GUID from its displayName (Bicep outputs an ARM resource ID, not the Fabric GUID).
@@ -170,6 +173,11 @@ Write-Host "Workspace: $($ws.id)"
 # 2. Create lakehouse in the workspace.
 $lh = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/lakehouses" -Body (Get-LakehouseCreatePayload)
 Write-Host "Lakehouse: $($lh.id)"
+
+if ($SkipMirror) {
+    Write-Host 'SkipMirror set: workspace + lakehouse created. Re-run without -SkipMirror once the Fabric connection to source SQL exists to add mirror + semantic model.' -ForegroundColor Yellow
+    return [pscustomobject]@{ WorkspaceId = $ws.id; LakehouseId = $lh.id }
+}
 
 # 3. Create mirrored database bound to the supplied Fabric connection + source database.
 $mir = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/mirroredDatabases" -Body (Get-MirrorCreatePayload -ConnectionId $ConnectionId -Database $SourceDatabase)
