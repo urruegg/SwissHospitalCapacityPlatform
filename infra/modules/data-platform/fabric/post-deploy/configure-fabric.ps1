@@ -18,7 +18,11 @@ param(
     [switch]$DryRun,
     # Skip mirror + semantic model creation. Used by Sprint 00 Slice 1 (Fabric plane only,
     # before source SQL is provisioned) to create just the workspace and lakehouse.
-    [switch]$SkipMirror
+    [switch]$SkipMirror,
+    # When both are supplied, skip workspace + lakehouse creation and reuse the existing pair.
+    # Combined with -SkipMirror (no ConnectionId) this creates only the semantic model.
+    [string]$WorkspaceId,
+    [string]$LakehouseId
 )
 
 Set-StrictMode -Version Latest
@@ -123,19 +127,24 @@ function Get-SemanticModelCreatePayload {
     )
 
     $modelRoot = Join-Path $PSScriptRoot '../semantic-model/sm_capacity_data_product'
-    $tmdlFiles = @(
+    # Fabric semantic-model REST API requires the .platform + definition.pbism container files
+    # alongside the TMDL parts, otherwise it fails with Workload_FailedToParseFile
+    # "Required artifact is missing in 'definition.pbism'".
+    $partFiles = @(
+        '.platform',
+        'definition.pbism',
         'definition/database.tmdl',
         'definition/model.tmdl',
         'definition/dataSources.tmdl',
         'definition/tables/demand_encounter.tmdl'
     )
 
-    $parts = foreach ($rel in $tmdlFiles) {
+    $parts = foreach ($rel in $partFiles) {
         $abs = Join-Path $modelRoot $rel
-        if (-not (Test-Path $abs)) { throw "TMDL file not found: $abs" }
+        if (-not (Test-Path $abs)) { throw "Semantic model part file not found: $abs" }
         $text = Get-Content -Raw -Path $abs
         # Apply placeholder substitution uniformly; the tokens exist only in dataSources.tmdl
-        # so this is a no-op for the other three files but keeps the loop branch-free.
+        # so this is a no-op for the other files but keeps the loop branch-free.
         $text = $text.Replace('[WORKSPACE_GUID]', $WorkspaceId).Replace('[LAKEHOUSE_GUID]', $LakehouseId)
         @{
             path        = $rel
@@ -157,34 +166,50 @@ function Get-SemanticModelCreatePayload {
 
 if ($DryRun) { return }
 
-if (-not $CapacityName) { throw 'CapacityName required. Pass the Fabric capacity displayName (Bicep `capacityName` output, e.g. fabricihzhhpfsit).' }
+$reuseExisting = $WorkspaceId -and $LakehouseId
+
+if (-not $reuseExisting) {
+    if (-not $CapacityName) { throw 'CapacityName required unless -WorkspaceId and -LakehouseId are supplied. Pass the Fabric capacity displayName (Bicep `capacityName` output, e.g. fabricihzhhpfsit).' }
+}
 if (-not $SkipMirror -and -not $ConnectionId) {
     throw 'ConnectionId required unless -SkipMirror is set. Create a Fabric connection to the Azure SQL source first (portal or POST /v1/connections) and pass the resulting GUID.'
 }
 
-# 0. Resolve the Fabric capacity GUID from its displayName (Bicep outputs an ARM resource ID, not the Fabric GUID).
-$capacityGuid = Resolve-FabricCapacityIdByName -CapacityName $CapacityName
-Write-Host "Capacity GUID: $capacityGuid"
+if ($reuseExisting) {
+    Write-Host "Reusing existing WorkspaceId=$WorkspaceId LakehouseId=$LakehouseId; skipping workspace + lakehouse creation." -ForegroundColor Yellow
+    $ws = [pscustomobject]@{ id = $WorkspaceId }
+    $lh = [pscustomobject]@{ id = $LakehouseId }
+} else {
+    # 0. Resolve the Fabric capacity GUID from its displayName (Bicep outputs an ARM resource ID, not the Fabric GUID).
+    $capacityGuid = Resolve-FabricCapacityIdByName -CapacityName $CapacityName
+    Write-Host "Capacity GUID: $capacityGuid"
 
-# 1. Create workspace bound to the capacity.
-$ws = Invoke-FabricRest -Method POST -Path '/workspaces' -Body (Get-WorkspaceCreatePayload -CapacityId $capacityGuid)
-Write-Host "Workspace: $($ws.id)"
+    # 1. Create workspace bound to the capacity.
+    $ws = Invoke-FabricRest -Method POST -Path '/workspaces' -Body (Get-WorkspaceCreatePayload -CapacityId $capacityGuid)
+    Write-Host "Workspace: $($ws.id)"
 
-# 2. Create lakehouse in the workspace.
-$lh = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/lakehouses" -Body (Get-LakehouseCreatePayload)
-Write-Host "Lakehouse: $($lh.id)"
+    # 2. Create lakehouse in the workspace.
+    $lh = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/lakehouses" -Body (Get-LakehouseCreatePayload)
+    Write-Host "Lakehouse: $($lh.id)"
+}
 
-if ($SkipMirror) {
+if ($SkipMirror -and -not $reuseExisting) {
     Write-Host 'SkipMirror set: workspace + lakehouse created. Re-run without -SkipMirror once the Fabric connection to source SQL exists to add mirror + semantic model.' -ForegroundColor Yellow
     return [pscustomobject]@{ WorkspaceId = $ws.id; LakehouseId = $lh.id }
 }
 
-# 3. Create mirrored database bound to the supplied Fabric connection + source database.
-$mir = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/mirroredDatabases" -Body (Get-MirrorCreatePayload -ConnectionId $ConnectionId -Database $SourceDatabase)
-Write-Host "Mirror: $($mir.id)"
+if (-not $SkipMirror) {
+    # 3. Create mirrored database bound to the supplied Fabric connection + source database.
+    $mir = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/mirroredDatabases" -Body (Get-MirrorCreatePayload -ConnectionId $ConnectionId -Database $SourceDatabase)
+    Write-Host "Mirror: $($mir.id)"
+}
 
 # 4. Create Direct Lake semantic model bound to gold.demand_encounter.
 $sm = Invoke-FabricRest -Method POST -Path "/workspaces/$($ws.id)/items" -Body (Get-SemanticModelCreatePayload -WorkspaceId $ws.id -LakehouseId $lh.id)
 Write-Host "Semantic Model: $($sm.id)"
 
-Write-Host 'Done. Wait up to 5 minutes for the initial replication snapshot.'
+if ($SkipMirror) {
+    Write-Host 'Semantic model created against existing workspace + lakehouse (no mirror). Ensure gold.demand_encounter table exists in the lakehouse.' -ForegroundColor Green
+} else {
+    Write-Host 'Done. Wait up to 5 minutes for the initial replication snapshot.'
+}

@@ -50,9 +50,11 @@ Describe 'Get-SemanticModelCreatePayload' {
         $payload.definition.format | Should -Be 'tmdl'
     }
 
-    It 'carries exactly the four TMDL parts in the expected paths' {
+    It 'carries all six required parts (2 container files + 4 TMDL) in the expected paths' {
         $paths = $payload.definition.parts | ForEach-Object { $_.path } | Sort-Object
         $paths | Should -Be @(
+            '.platform',
+            'definition.pbism',
             'definition/database.tmdl',
             'definition/dataSources.tmdl',
             'definition/model.tmdl',

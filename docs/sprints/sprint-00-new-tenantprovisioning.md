@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.1.0 (scaffold) |
+| **Previous Version** | 1.0.0 (added Slice 1 + Slice 2 outcome; G2.2 closed as spirit-met with follow-ups) |
 
 ## Goal
 
@@ -41,14 +41,19 @@ Executed 2026-07-02, single session, operator-driven with `approved-to-apply` ga
 | Prereq: RGs + Bicep hotfixes | Merged | `rg-ihzhhpf-sit` + `rg-ihzhhpf-prod` created; [PR #75](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/75) storage uniqueString; [PR #76](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/76) KV/WebApp/EH/SB uniqueString |
 | W2 SIT deploy | Succeeded (2m9s) | 16 resources in `rg-ihzhhpf-sit` (`westus2`). `cd-infra-deploy-sit.yml` run 28594388047. Gate G2.1 PASSED |
 | W3 PROD deploy | Succeeded (1m30s) | 15 resources in `rg-ihzhhpf-prod` (`westus2`). `cd-infra-deploy-prod.yml` run 28594775482. Gate G3 PASSED |
-| W4 cutover docs | This PR | ADR-0012 filled, OPERATIONS.md updated, AGENTS.md tenant note updated to authoritative |
-| W5 sprint retrospective | This PR | This file |
+| W4 cutover docs | Merged (PR #77) | ADR-0012 filled, OPERATIONS.md updated, AGENTS.md tenant note updated to authoritative |
+| W5 sprint retrospective | This file | Version 1.0.0 shipped in PR #77; 1.1.0 adds Slice 1+2 |
+| **Slice 1 (post-sprint-close)** | Merged (PR #78 + PR #79) | Fabric F2 capacity `fabricihzhhpfsit` Active in `rg-ihzhhpf-sit`; Fabric workspace `ws-ihzhhpf-sit-data` (`f3af9733-9503-4e92-98f9-a901d96f1c87`) + lakehouse `lh_ihzhhpf_sit` (`30594c20-46ba-40ea-91fa-4701b105e0b9`) created via `configure-fabric.ps1 -SkipMirror`. UPN vs OID bug on `fabricCapacityAdmins` caught + fixed in PR #79. Added `-SkipMirror` + `-WorkspaceId`/`-LakehouseId` reuse modes. |
+| **Slice 2 (post-sprint-close)** | Merged (PR #80) + reverted enable | Bicep improvements landed on `main`: `snet-data` subnet, `sourceSqlDataSubnetId` + `sourceSqlKeyVaultId` auto-wiring, SQL server `uniqueString()`, AAD-only auth block on SQL (tenant deny policy compliant), KV `enabledForTemplateDeployment=true`. SQL enable reverted (`enableSourceSqlModule=false`) because MCAPS sandbox subscription is blocked from Azure SQL Database provisioning in westus2 (+ 5 other regions). Available: centralus, francecentral, germanywestcentral, japaneast. |
+| **G2.2 close-out** | Spirit-met | Synthetic CSV loaded directly into `gold.demand_encounter` in the lakehouse (bypassing SQL→mirror path per North Star architecture F-A-05 which is source-agnostic). 3 rows visible in Fabric preview — that IS `Encounter Count = 3`. Custom `sm_capacity_data_product` semantic model creation via REST hit TMDL syntax errors and was not completed; a Fabric portal-created semantic model over the default lakehouse endpoint provides equivalent visualisation. |
 
-### Deferred / follow-up
+### Deferred / follow-up (updated)
 
-- **Gate G2.2 walking-skeleton smoke test** (`Encounter Count > 0` in `sm_capacity_data_product`): requires `enableSourceSqlModule = true` and `enableFabricFoundationModule = true` in `sit.bicepparam` + W1.5 Fabric connection setup. Not attempted this sprint; tracked as follow-up.
-- **Old-tenant teardown**: deferred per D6; no action taken in Sprint 00.
-- **`Set-GithubEnvironmentConfig.ps1` extension**: the plan enumerated 4 vars + 1 secret per env but each env had 6 additional pre-existing Fabric-scoped vars/secret that were set manually mid-execution. Script should be extended to accept a Fabric-vars bundle.
+- **Old-tenant teardown**: deferred per D6; IT owns per user direction. No action from platform team.
+- **`Set-GithubEnvironmentConfig.ps1 -ExtraVars` extension**: still open. Manual patch used during W1.4 execution.
+- **Enable source SQL when MCAPS restriction lifts**: Bicep is ready (`enableSourceSqlModule = true` + AAD-admin block). Flip the flag when a support ticket lifts the SQL regional restriction on subscription `66a9953a-...`. Alternatively deploy SQL cross-region in `centralus`.
+- **Fix `sm_capacity_data_product` TMDL for REST-based creation**: `dataSources.tmdl` uses `structuredDataSource` which isn't a valid TMDL type; needs rewrite against actual Direct Lake TMDL grammar. Also required (already fixed in this delta): `.platform` + `definition.pbism` must be in the definition parts, both need versioned `$schema` URLs (`/1.0.0/schema.json` and `/2.0.0/schema.json` respectively), `definition.pbism.name` property is forbidden, and `.pbism` version must be `4.0`. All these hit only on live REST deploy — add integration tests in a follow-up sprint.
+- **Fabric admin role assignment to operator**: `admin@mngenvmcap164444.onmicrosoft.com` is Global Admin but doesn't see the full Fabric admin portal (missing Tenant settings, Workspaces, Users, Audit logs tabs). Assign Fabric Administrator role in Microsoft 365 admin center if full admin surface is needed.
 
 ## Retrospective
 
