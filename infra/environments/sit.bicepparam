@@ -26,11 +26,12 @@ param enableIntegrationOrchestrationModule = true
 param networkVnetAddressPrefix = '10.60.0.0/16'
 param networkAppSubnetPrefix = '10.60.1.0/24'
 
-// Sprint 08 W1.1 — source-SQL submodule (synthetic KIS feed).
-// Temporarily disabled until real subnet and Key Vault IDs are supplied.
-param enableSourceSqlModule = false
-param sourceSqlDataSubnetId = '/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-ihzhhpf-sit/subnets/snet-data-sit'
-param sourceSqlKeyVaultId = '/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.KeyVault/vaults/kv-ihzhhpf-sit'
+// Sprint 08 W1.1 / Sprint 00 Slice 2 — source-SQL submodule (synthetic KIS feed).
+// Enabled for the Sprint 00 demo scope on the new tenant.
+// Empty strings for subnet + KV IDs — main.bicep auto-wires from network + platform-foundation module outputs.
+param enableSourceSqlModule = true
+param sourceSqlDataSubnetId = ''
+param sourceSqlKeyVaultId = ''
 param sourceSqlAdminPasswordSecretName = 'sql-admin-password'
 
 // Private DNS zone for SQL private endpoint. Owned by a separate platform-foundation slice

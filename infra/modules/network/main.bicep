@@ -13,6 +13,9 @@ param vnetAddressPrefix string = '10.60.0.0/16'
 @description('Address prefix for the platform application subnet.')
 param appSubnetPrefix string = '10.60.1.0/24'
 
+@description('Address prefix for the platform data subnet (private endpoints for SQL, KV, Storage).')
+param dataSubnetPrefix string = '10.60.2.0/24'
+
 resource platformVnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 	name: 'vnet-platform-${nameSuffix}'
 	location: location
@@ -30,6 +33,13 @@ resource platformVnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 					addressPrefix: appSubnetPrefix
 				}
 			}
+			{
+				name: 'snet-data'
+				properties: {
+					addressPrefix: dataSubnetPrefix
+					privateEndpointNetworkPolicies: 'Disabled'
+				}
+			}
 		]
 	}
 }
@@ -42,6 +52,9 @@ output vnetName string = platformVnet.name
 
 @description('Application subnet resource ID.')
 output appSubnetResourceId string = resourceId('Microsoft.Network/virtualNetworks/subnets', platformVnet.name, 'snet-app')
+
+@description('Data subnet resource ID (for private endpoints).')
+output dataSubnetResourceId string = resourceId('Microsoft.Network/virtualNetworks/subnets', platformVnet.name, 'snet-data')
 
 @description('Network module scaffold input echo for validation only.')
 output scaffoldInput object = {

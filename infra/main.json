@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "12209448123017587172"
+      "templateHash": "17689888277026048301"
     }
   },
   "parameters": {
@@ -90,6 +90,13 @@
       "defaultValue": "10.60.1.0/24",
       "metadata": {
         "description": "Address prefix for the platform application subnet."
+      }
+    },
+    "networkDataSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.60.2.0/24",
+      "metadata": {
+        "description": "Address prefix for the platform data subnet (private endpoints)."
       }
     },
     "enableObservabilityModule": {
@@ -457,6 +464,9 @@
           },
           "appSubnetPrefix": {
             "value": "[parameters('networkAppSubnetPrefix')]"
+          },
+          "dataSubnetPrefix": {
+            "value": "[parameters('networkDataSubnetPrefix')]"
           }
         },
         "template": {
@@ -466,7 +476,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "14192403297630532627"
+              "templateHash": "16941282333936484545"
             }
           },
           "parameters": {
@@ -501,6 +511,13 @@
               "metadata": {
                 "description": "Address prefix for the platform application subnet."
               }
+            },
+            "dataSubnetPrefix": {
+              "type": "string",
+              "defaultValue": "10.60.2.0/24",
+              "metadata": {
+                "description": "Address prefix for the platform data subnet (private endpoints for SQL, KV, Storage)."
+              }
             }
           },
           "resources": [
@@ -521,6 +538,13 @@
                     "name": "snet-app",
                     "properties": {
                       "addressPrefix": "[parameters('appSubnetPrefix')]"
+                    }
+                  },
+                  {
+                    "name": "snet-data",
+                    "properties": {
+                      "addressPrefix": "[parameters('dataSubnetPrefix')]",
+                      "privateEndpointNetworkPolicies": "Disabled"
                     }
                   }
                 ]
@@ -548,6 +572,13 @@
                 "description": "Application subnet resource ID."
               },
               "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-app')]"
+            },
+            "dataSubnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Data subnet resource ID (for private endpoints)."
+              },
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-data')]"
             },
             "scaffoldInput": {
               "type": "object",
@@ -688,12 +719,8 @@
           "enableSourceSqlModule": {
             "value": "[parameters('enableSourceSqlModule')]"
           },
-          "sourceSqlDataSubnetId": {
-            "value": "[parameters('sourceSqlDataSubnetId')]"
-          },
-          "sourceSqlKeyVaultId": {
-            "value": "[parameters('sourceSqlKeyVaultId')]"
-          },
+          "sourceSqlDataSubnetId": "[if(not(empty(parameters('sourceSqlDataSubnetId'))), createObject('value', parameters('sourceSqlDataSubnetId')), if(parameters('enableNetworkModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName'))), '2025-04-01').outputs.dataSubnetResourceId.value), createObject('value', '')))]",
+          "sourceSqlKeyVaultId": "[if(not(empty(parameters('sourceSqlKeyVaultId'))), createObject('value', parameters('sourceSqlKeyVaultId')), createObject('value', resourceId('Microsoft.KeyVault/vaults', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.keyVaultName.value)))]",
           "sourceSqlAdminPasswordSecretName": {
             "value": "[parameters('sourceSqlAdminPasswordSecretName')]"
           },
@@ -714,7 +741,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "7147992801440877839"
+              "templateHash": "12083855336619399185"
             }
           },
           "parameters": {
@@ -883,7 +910,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "17312663332830010117"
+                      "templateHash": "720226389797260471"
                     }
                   },
                   "parameters": {
@@ -937,7 +964,8 @@
                     }
                   },
                   "variables": {
-                    "serverName": "[format('sql-{0}', parameters('nameSuffix'))]",
+                    "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]",
+                    "serverName": "[format('sql-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
                     "databaseName": "kis",
                     "privateEndpointName": "[format('pe-{0}', variables('serverName'))]"
                   },
@@ -1218,7 +1246,11 @@
             }
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
     },
     {
       "condition": "[parameters('enableAiPlatformModule')]",

@@ -42,6 +42,9 @@ param networkVnetAddressPrefix string = '10.60.0.0/16'
 @description('Address prefix for the platform application subnet.')
 param networkAppSubnetPrefix string = '10.60.1.0/24'
 
+@description('Address prefix for the platform data subnet (private endpoints).')
+param networkDataSubnetPrefix string = '10.60.2.0/24'
+
 @description('Enable observability module deployment scaffold.')
 param enableObservabilityModule bool = false
 
@@ -127,6 +130,7 @@ module network './modules/network/main.bicep' = if (enableNetworkModule) {
     tags: tags
     vnetAddressPrefix: networkVnetAddressPrefix
     appSubnetPrefix: networkAppSubnetPrefix
+    dataSubnetPrefix: networkDataSubnetPrefix
   }
 }
 
@@ -146,8 +150,10 @@ module dataPlatform './modules/data-platform/main.bicep' = if (enableDataPlatfor
     nameSuffix: resourceSuffix
     tags: tags
     enableSourceSqlModule: enableSourceSqlModule
-    sourceSqlDataSubnetId: sourceSqlDataSubnetId
-    sourceSqlKeyVaultId: sourceSqlKeyVaultId
+    // Auto-wire from network module output when the caller passes empty; otherwise honour the explicit param.
+    sourceSqlDataSubnetId: !empty(sourceSqlDataSubnetId) ? sourceSqlDataSubnetId : (enableNetworkModule ? network.outputs.dataSubnetResourceId : '')
+    // Auto-wire from platform-foundation module (always deployed) when the caller passes empty.
+    sourceSqlKeyVaultId: !empty(sourceSqlKeyVaultId) ? sourceSqlKeyVaultId : resourceId('Microsoft.KeyVault/vaults', platformFoundation.outputs.keyVaultName)
     sourceSqlAdminPasswordSecretName: sourceSqlAdminPasswordSecretName
     sourceSqlPrivateDnsZoneId: sourceSqlPrivateDnsZoneId
     enableFabricFoundationModule: enableFabricFoundationModule
