@@ -24,8 +24,12 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
   }
 }
 
+// Key Vault names are globally unique across all Azure and soft-delete-locked for 90 days.
+// Add a short, deterministic per-(subscription, RG) suffix so ihzhhpf-based names don't collide.
+var globalUniquenessSuffix = take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)
+
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: 'kv-${nameSuffix}'
+  name: 'kv-${nameSuffix}-${globalUniquenessSuffix}'
   location: location
   tags: tags
   properties: {

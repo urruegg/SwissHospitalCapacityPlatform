@@ -25,8 +25,11 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   }
 }
 
+// Web app names must be globally unique DNS-wide (<name>.azurewebsites.net).
+var globalUniquenessSuffix = take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)
+
 resource commandCenterWebApp 'Microsoft.Web/sites@2023-12-01' = {
-  name: 'app-platform-${nameSuffix}'
+  name: 'app-platform-${nameSuffix}-${globalUniquenessSuffix}'
   location: location
   tags: tags
   kind: 'app,linux'

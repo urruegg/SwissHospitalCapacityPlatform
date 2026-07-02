@@ -7,8 +7,11 @@ param nameSuffix string
 @description('Resource tags applied to all resources.')
 param tags object
 
+// Service Bus namespaces need globally unique DNS names (<ns>.servicebus.windows.net).
+var globalUniquenessSuffix = take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)
+
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
-	name: 'sb-${nameSuffix}'
+	name: 'sb-${nameSuffix}-${globalUniquenessSuffix}'
 	location: location
 	tags: tags
 	sku: {

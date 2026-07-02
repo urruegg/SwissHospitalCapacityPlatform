@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "77771533043704478"
+      "templateHash": "9848319494759667152"
     }
   },
   "parameters": {
@@ -246,7 +246,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "3603929685911375617"
+              "templateHash": "13539215258498175816"
             }
           },
           "parameters": {
@@ -278,6 +278,9 @@
               }
             }
           },
+          "variables": {
+            "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]"
+          },
           "resources": [
             {
               "type": "Microsoft.OperationalInsights/workspaces",
@@ -295,7 +298,7 @@
             {
               "type": "Microsoft.KeyVault/vaults",
               "apiVersion": "2023-07-01",
-              "name": "[format('kv-{0}', parameters('nameSuffix'))]",
+              "name": "[format('kv-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -315,7 +318,7 @@
           "outputs": {
             "keyVaultName": {
               "type": "string",
-              "value": "[format('kv-{0}', parameters('nameSuffix'))]"
+              "value": "[format('kv-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
             },
             "logAnalyticsWorkspaceName": {
               "type": "string",
@@ -1349,7 +1352,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "12624919477067538131"
+              "templateHash": "11555118018075281392"
             }
           },
           "parameters": {
@@ -1372,11 +1375,14 @@
               }
             }
           },
+          "variables": {
+            "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]"
+          },
           "resources": [
             {
               "type": "Microsoft.ServiceBus/namespaces",
               "apiVersion": "2022-10-01-preview",
-              "name": "[format('sb-{0}', parameters('nameSuffix'))]",
+              "name": "[format('sb-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "sku": {
@@ -1402,14 +1408,14 @@
               "metadata": {
                 "description": "Service Bus namespace name."
               },
-              "value": "[format('sb-{0}', parameters('nameSuffix'))]"
+              "value": "[format('sb-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
             },
             "serviceBusNamespaceResourceId": {
               "type": "string",
               "metadata": {
                 "description": "Service Bus namespace resource ID."
               },
-              "value": "[resourceId('Microsoft.ServiceBus/namespaces', format('sb-{0}', parameters('nameSuffix')))]"
+              "value": "[resourceId('Microsoft.ServiceBus/namespaces', format('sb-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')))]"
             },
             "scaffoldInput": {
               "type": "object",
@@ -1454,7 +1460,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "16629153764390935352"
+              "templateHash": "2193840713404097178"
             }
           },
           "parameters": {
@@ -1485,6 +1491,9 @@
               }
             }
           },
+          "variables": {
+            "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]"
+          },
           "resources": [
             {
               "type": "Microsoft.Web/serverfarms",
@@ -1504,7 +1513,7 @@
             {
               "type": "Microsoft.Web/sites",
               "apiVersion": "2023-12-01",
-              "name": "[format('app-platform-{0}', parameters('nameSuffix'))]",
+              "name": "[format('app-platform-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "kind": "app,linux",
@@ -1542,7 +1551,7 @@
               "metadata": {
                 "description": "Command center web app name."
               },
-              "value": "[format('app-platform-{0}', parameters('nameSuffix'))]"
+              "value": "[format('app-platform-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
             }
           }
         }
@@ -1689,7 +1698,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "18120350590760298430"
+              "templateHash": "15610456190073515092"
             }
           },
           "parameters": {
@@ -1713,11 +1722,14 @@
               }
             }
           },
+          "variables": {
+            "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]"
+          },
           "resources": [
             {
               "type": "Microsoft.EventHub/namespaces",
               "apiVersion": "2022-10-01-preview",
-              "name": "[format('evh-{0}', parameters('nameSuffix'))]",
+              "name": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "sku": {
@@ -1744,7 +1756,7 @@
               "metadata": {
                 "description": "Event Hub namespace name."
               },
-              "value": "[format('evh-{0}', parameters('nameSuffix'))]"
+              "value": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
             }
           }
         }
@@ -1778,7 +1790,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "2181231043339027451"
+              "templateHash": "9862980659449813882"
             }
           },
           "parameters": {
@@ -1804,7 +1816,8 @@
           },
           "variables": {
             "storageAccountName": "[toLower(format('stdp{0}{1}', replace(parameters('nameSuffix'), '-', ''), take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)))]",
-            "containerRegistryName": "[toLower(format('cr{0}', uniqueString(resourceGroup().id, parameters('nameSuffix'))))]"
+            "containerRegistryName": "[toLower(format('cr{0}', uniqueString(resourceGroup().id, parameters('nameSuffix'))))]",
+            "keyVaultName": "[format('kv-{0}-{1}', parameters('nameSuffix'), take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4))]"
           },
           "resources": [
             {
@@ -1823,7 +1836,7 @@
               "properties": {
                 "publicNetworkAccess": "Enabled",
                 "friendlyName": "[format('mlw-{0}', parameters('nameSuffix'))]",
-                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', format('kv-{0}', parameters('nameSuffix')))]",
+                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
                 "applicationInsights": "[resourceId('Microsoft.Insights/components', format('appi-{0}', parameters('nameSuffix')))]",
                 "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                 "containerRegistry": "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]"
