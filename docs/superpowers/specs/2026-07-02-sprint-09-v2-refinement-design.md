@@ -1,3 +1,9 @@
+<!-- markdownlint-disable MD060 -->
+<!-- Design spec uses mixed compact + standard table pipe styles for readability -->
+<!-- across 35 deliverables + 7 event kinds + 6 DAX measures + 12 ontology classes. -->
+<!-- Consistency of prose > pipe-style purity. Same pattern as                    -->
+<!-- docs/reviews/2026-06-29-ama-capacity-metadata-review.md.                     -->
+
 # Design Spec — Sprint 09 v2.0.0 Refinement (Art-of-Possible MVP Demo)
 
 | Field | Value |
