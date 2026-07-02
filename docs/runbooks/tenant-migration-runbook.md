@@ -18,7 +18,9 @@ Fixed values used throughout:
 
 - Source tenant: `2dfb4d85-3ca7-474e-86eb-9ba3762d9474` (`MngEnvMCAP228255.onmicrosoft.com`)
 - Target tenant: `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicrosoft.com`)
-- Region (per [ADR-0003](../adr/0003-swiss-regional-inference-for-phi.md)): `switzerlandnorth`
+- Target subscription (SIT + PROD, single sub for demo scope): `66a9953a-df37-4c51-856c-9971b9bf3e03`
+- Region: `westus2` — **demo scope only** per [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md); [ADR-0003](../adr/0003-swiss-regional-inference-for-phi.md) `switzerlandnorth` remains the default for all PHI and production scope
+- Data: **synthetic sample data only** (`data/synthetic/`) — no PHI, no real patient identifiers, no connection to any Swiss KIS source
 - Solution short name (new): `ihzhhpf`
 - SIT resource group: `rg-ihzhhpf-sit`
 - PROD resource group: `rg-ihzhhpf-prod`
@@ -27,10 +29,11 @@ Fixed values used throughout:
 ## Prerequisites (before §1)
 
 - [ ] Operator has full Entra tenant admin + subscription Owner in the new tenant
-- [ ] Two subscriptions provisioned in the new tenant (SIT + PROD)
-- [ ] Empty resource groups `rg-ihzhhpf-sit` and `rg-ihzhhpf-prod` pre-created in the correct subscriptions
+- [ ] Single subscription `66a9953a-df37-4c51-856c-9971b9bf3e03` provisioned in the new tenant (hosts both SIT and PROD RGs per D9)
+- [ ] Empty resource groups `rg-ihzhhpf-sit` and `rg-ihzhhpf-prod` pre-created in that subscription in `westus2`
 - [ ] Workstation has PowerShell 7+, Azure CLI 2.60+, Az PowerShell 12+, GitHub CLI 2.50+, Pester 5.x
-- [ ] Spec [`2026-07-02-tenant-migration-design.md`](../superpowers/specs/2026-07-02-tenant-migration-design.md) v1.1.0 and this runbook are merged to `main`
+- [ ] Spec [`2026-07-02-tenant-migration-design.md`](../superpowers/specs/2026-07-02-tenant-migration-design.md) v1.2.0 and this runbook are merged to `main`
+- [ ] [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md) is Accepted and the exception `EX-2026-07-02-westus2-demo` is present in `policy/exceptions.json`
 - [ ] Phase-1 PR from plan Task 15 is merged (scripts + rename are on `main`)
 
 ---
@@ -46,7 +49,7 @@ Purpose: everything one-time in the new tenant that must happen before any SIT/P
   ```powershell
   ./infra/scripts/tenant-migration/Enable-DeveloperTenantTrust.ps1 `
       -TenantId 1337187a-4c41-4da9-8fca-731bba7a4329 `
-      -SubscriptionId <sit-subscription-id>
+      -SubscriptionId 66a9953a-df37-4c51-856c-9971b9bf3e03
   ```
 
 - [ ] Confirm the script prints `az account show` matches the new tenant + subscription
@@ -103,15 +106,14 @@ Purpose: everything one-time in the new tenant that must happen before any SIT/P
 
 ### 1.3 Subscription RBAC
 
-- [ ] Grant `Contributor` on SIT subscription:
+- [ ] Grant `Contributor` on the shared subscription (one call — both RGs live in the same sub per D9):
 
   ```powershell
   ./infra/scripts/tenant-migration/Grant-SubscriptionRbac.ps1 `
       -PrincipalId $oidc.PrincipalId `
-      -SubscriptionId <sit-subscription-id>
+      -SubscriptionId 66a9953a-df37-4c51-856c-9971b9bf3e03
   ```
 
-- [ ] Grant `Contributor` on PROD subscription (same script, different `-SubscriptionId`)
 - [ ] Verify:
 
   ```powershell
@@ -135,13 +137,13 @@ Purpose: everything one-time in the new tenant that must happen before any SIT/P
       -RepoFullName 'urruegg/SwissHospitalCapacityPlatform' `
       -Environment sit `
       -TenantId 1337187a-4c41-4da9-8fca-731bba7a4329 `
-      -SubscriptionId <sit-subscription-id> `
+      -SubscriptionId 66a9953a-df37-4c51-856c-9971b9bf3e03 `
       -ResourceGroup 'rg-ihzhhpf-sit' `
       -BicepParamFile 'infra/environments/sit.bicepparam' `
       -ClientId $clientSecure
   ```
 
-- [ ] Configure the `prod` environment (same script, `-Environment prod`, PROD sub-id, `rg-ihzhhpf-prod`, `prod.bicepparam`)
+- [ ] Configure the `prod` environment (same script, `-Environment prod`, same subscription `66a9953a-df37-4c51-856c-9971b9bf3e03`, `rg-ihzhhpf-prod`, `prod.bicepparam`)
 - [ ] Verify:
 
   ```powershell

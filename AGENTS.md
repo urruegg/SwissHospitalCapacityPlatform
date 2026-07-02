@@ -13,7 +13,7 @@
 > which agents exist, which MCP servers they may call, and how they refuse
 > destructive actions.
 >
-> **Tenant migration in progress (Sprint 00):** the platform is being rebuilt in Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicrosoft.com`) with solution short name `ihzhhpf`. See [docs/superpowers/specs/2026-07-02-tenant-migration-design.md](docs/superpowers/specs/2026-07-02-tenant-migration-design.md).
+> **Tenant migration in progress (Sprint 00):** the platform is being rebuilt in Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicrosoft.com`) with solution short name `ihzhhpf`. **Demo/proof-of-technology scope only:** deployed in `westus2` per [ADR-0013](docs/adr/0013-temporary-us-region-demo-scope.md), synthetic sample data only, no PHI — sunset back to `switzerlandnorth` when target services reach Swiss GA. See [docs/superpowers/specs/2026-07-02-tenant-migration-design.md](docs/superpowers/specs/2026-07-02-tenant-migration-design.md).
 >
 > **Execution default (migration status)**: Superpowers-first execution is now
 > the default operating model for new work. The per-agent registry below is

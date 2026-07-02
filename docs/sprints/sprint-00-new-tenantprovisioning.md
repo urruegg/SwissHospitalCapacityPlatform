@@ -12,6 +12,8 @@
 
 Rebuild SIT and PROD end-to-end in the new Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicrosoft.com`) with solution short name `ihzhhpf`, without disturbing the current tenant.
 
+**Scope carve-out (D9 / [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md)):** deployment region is `westus2` for this sprint — demonstration / proof-of-technology scope only, synthetic sample data only, no PHI. Single subscription `66a9953a-df37-4c51-856c-9971b9bf3e03` hosts both SIT and PROD RGs. Sunset back to `switzerlandnorth` when target services reach Swiss GA or exception `EX-2026-07-02-westus2-demo` expires (2026-09-30).
+
 ## Scope
 
 - W0 — Repo prep (rename `chhealthpf` → `ihzhhpf` in live/authoritative files)

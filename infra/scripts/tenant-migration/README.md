@@ -36,22 +36,21 @@ Each script has a Pester test file under [`tests/`](./tests/).
 
 ## Recommended invocation order
 
-Mirror runbook §1:
+Mirror runbook §1 (Sprint 00: single subscription hosts both SIT and PROD per D9 / ADR-0013 demo scope):
 
 ```powershell
 # 1.0 Machine trust
 ./Enable-DeveloperTenantTrust.ps1 `
     -TenantId 1337187a-4c41-4da9-8fca-731bba7a4329 `
-    -SubscriptionId <sit-sub-id>
+    -SubscriptionId 66a9953a-df37-4c51-856c-9971b9bf3e03
 
 # 1.2 Entra app registration + federated credentials
 $oidc = ./New-OidcFederation.ps1 `
     -DisplayName 'gh-oidc-ihzhhpf' `
     -RepoFullName 'urruegg/SwissHospitalCapacityPlatform'
 
-# 1.3 Grant Contributor on SIT and PROD subscriptions
-./Grant-SubscriptionRbac.ps1 -PrincipalId $oidc.PrincipalId -SubscriptionId <sit-sub-id>
-./Grant-SubscriptionRbac.ps1 -PrincipalId $oidc.PrincipalId -SubscriptionId <prod-sub-id>
+# 1.3 Grant Contributor on the shared demo subscription (one call — SIT and PROD RGs both live here)
+./Grant-SubscriptionRbac.ps1 -PrincipalId $oidc.PrincipalId -SubscriptionId 66a9953a-df37-4c51-856c-9971b9bf3e03
 
 # 1.4 Configure GitHub environments (never echoes ClientId to shell history)
 $clientSecure = ConvertTo-SecureString $oidc.ClientId -AsPlainText -Force
@@ -59,12 +58,12 @@ $clientSecure = ConvertTo-SecureString $oidc.ClientId -AsPlainText -Force
     -RepoFullName 'urruegg/SwissHospitalCapacityPlatform' `
     -Environment sit `
     -TenantId 1337187a-4c41-4da9-8fca-731bba7a4329 `
-    -SubscriptionId <sit-sub-id> `
+    -SubscriptionId 66a9953a-df37-4c51-856c-9971b9bf3e03 `
     -ResourceGroup 'rg-ihzhhpf-sit' `
     -BicepParamFile 'infra/environments/sit.bicepparam' `
     -ClientId $clientSecure
 
-# Repeat -Environment prod with prod sub-id + rg-ihzhhpf-prod
+# Repeat -Environment prod with same subscription + rg-ihzhhpf-prod + prod.bicepparam
 ```
 
 ## Rollback

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft — awaiting user review |
-| **Previous Version** | 1.0.0 (added W1.0 Developer workstation trust and D8) |
+| **Previous Version** | 1.1.0 (added D9 westus2 demo-scope carve-out per ADR-0013 and known subscription 66a9953a-df37-4c51-856c-9971b9bf3e03 shared by SIT + PROD) |
 
 ---
 
@@ -40,7 +40,7 @@ The Swiss Hospital Capacity Platform currently deploys SIT and PROD environments
 - Both tenants are MCAP sandboxes; cross-tenant subscription transfer is not attempted.
 - Operator has full Entra tenant admin + subscription Owner on the new tenant.
 - Fabric F2 capacity remains the smallest SKU supporting Direct Lake + Mirroring per [docs/superpowers/specs/2026-06-14-sprint-08-data-platform-design.md](2026-06-14-sprint-08-data-platform-design.md).
-- Region remains `switzerlandnorth` per [ADR-0003](../../adr/0003-swiss-regional-inference-for-phi.md).
+- Region remains `switzerlandnorth` **for any PHI or production scope**. For the new-tenant demo scope only, `westus2` is used per [ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md) with synthetic-only data enforcement.
 
 ---
 
@@ -56,6 +56,7 @@ The Swiss Hospital Capacity Platform currently deploys SIT and PROD environments
 | D6 | Keep old tenant running post-cutover; teardown decision deferred. | User retains rollback surface; billing exposure is acceptable in the short term. Teardown handled by a separate later decision (out of scope for this sprint). |
 | D7 | Runbook-first (Approach 1). Small idempotent helper scripts under `infra/scripts/tenant-migration/`; no `azd`, no new orchestrator. | Matches repo Markdown-first model (ADR-0002); once-per-lifetime operation doesn't warrant heavy automation; human-in-the-loop is a feature. |
 | D8 | Establish machine trust on the operator's workstation via the Windows Account Manager (WAM) broker so `az`, `Az PowerShell`, VS Code Azure Account / Azure Resources extensions, and Bicep tooling reuse a TPM-bound device key for silent sign-in to the new tenant. Optional Workplace Join for Conditional Access "device compliant" claims. | Removes repeated MFA / device-code prompts, gives the operator the same VS Code SSO experience they have on the existing tenant, and produces a persistent audit-friendly login trail. |
+| D9 | Deploy the new-tenant SIT + PROD environments in `westus2` (both hosted by the single subscription `66a9953a-df37-4c51-856c-9971b9bf3e03`) as a time-limited demonstration and proof-of-technology scope. Synthetic sample data only; no PHI. Sunset when required services reach GA in `switzerlandnorth` or exception `EX-2026-07-02-westus2-demo` in `policy/exceptions.json` expires (2026-09-30) — whichever comes first. | Unblocks validation of North Star services (Fabric IQ Ontology and adjacent paths) not yet GA in `switzerlandnorth`. Formal carve-out via [ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md) supersedes ADR-0003 and ADR-0004 for this scope only; both ADRs remain authoritative for all PHI and future production scope. |
 
 ---
 
@@ -213,7 +214,7 @@ Live / authoritative — MUST rename:
 | # | Risk | Severity | Mitigation |
 | --- | --- | --- | --- |
 | R-01 | Rename regex is too greedy and modifies historical docs | M | The W0 PR lists exact files (§8.2). Reviewer diff-checks. If any file outside the list changed, PR is rejected. |
-| R-02 | Fabric F2 capacity in new-tenant `switzerlandnorth` is out of quota | M | W1.1 validates capacity availability with `az fabric capacity list-skus` before deploy. |
+| R-02 | Fabric F2 capacity in new-tenant `westus2` is out of quota | M | W1.1 validates capacity availability with `az fabric capacity list-skus --location westus2` before deploy. |
 | R-03 | OIDC federated credentials misconfigured (wrong subject) causes CI failures at G2 | L | `New-OidcFederation.ps1` prints the exact subject strings it wrote; runbook step G1.1 verifies. |
 | R-04 | Source SQL managed identity not enabled or Fabric connection not created before W2.3 | M | W1.5 is explicit; W2.3 fails fast with clear error if `-ConnectionId` is empty. |
 | R-05 | Fabric IQ Ontology preview status may change during sprint | L | Out of scope per [ADR-0002](../../adr/0002-defer-fabric-iq-ontology-from-mvp.md); no impact on this migration. |
