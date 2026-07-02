@@ -2,16 +2,18 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.9.0 |
-| **Date** | 2026-06-12 |
+| **Version** | 1.10.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.8.0 (Superpowers-first execution alignment; legacy agents retained for compatibility) |
+| **Previous Version** | 1.9.0 (added tenant migration in-progress note; solution short name ihzhhpf per Sprint 00) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
 > which agents exist, which MCP servers they may call, and how they refuse
 > destructive actions.
+>
+> **Tenant migration in progress (Sprint 00):** the platform is being rebuilt in Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicrosoft.com`) with solution short name `ihzhhpf`. See [docs/superpowers/specs/2026-07-02-tenant-migration-design.md](docs/superpowers/specs/2026-07-02-tenant-migration-design.md).
 >
 > **Execution default (migration status)**: Superpowers-first execution is now
 > the default operating model for new work. The per-agent registry below is

@@ -222,8 +222,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          sit_rg='rg-chhealthpf-sit'
-          prod_rg='rg-chhealthpf-prod'
+          sit_rg='rg-ihzhhpf-sit'
+          prod_rg='rg-ihzhhpf-prod'
 
           sit_types=$(az resource list -g "$sit_rg" --query "[].type" -o tsv | tr '[:upper:]' '[:lower:]' | sort -u)
           prod_types=$(az resource list -g "$prod_rg" --query "[].type" -o tsv | tr '[:upper:]' '[:lower:]' | sort -u)
