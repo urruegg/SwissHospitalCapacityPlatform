@@ -15,6 +15,9 @@
 .venv*/
 venv/
 
+# Tenant migration local snapshot files (per-run rollback artefacts, per operator machine)
+tenant-migration-github-env-snapshot-*.json
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

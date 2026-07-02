@@ -2,17 +2,25 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (Sprint 05 reliability/DR profile and DR evidence checkpoints) |
+| **Previous Version** | 1.2.0 (added Sprint 00 tenant migration callout — authoritative tenant is now MngEnvMCAP164444; westus2 demo scope per ADR-0013) |
 
 ## Purpose
 
 Define the target operating model for the Swiss Hospital Capacity Platform,
 including service ownership, run operations, monitoring, health management,
 and incident response.
+
+> **Sprint 00 tenant migration (authoritative as of 2026-07-02):**
+> The platform is now operated from Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329`
+> (`MngEnvMCAP164444.onmicrosoft.com`) using subscription `66a9953a-df37-4c51-856c-9971b9bf3e03`
+> in region `westus2` (demo/proof-of-technology scope per [ADR-0013](adr/0013-temporary-us-region-demo-scope.md)).
+> Old tenant `MngEnvMCAP228255.onmicrosoft.com` is frozen — teardown deferred.
+> See [ADR-0012](adr/0012-tenant-migration-to-mcap164444.md) and
+> [sprint-00 report](sprints/sprint-00-new-tenantprovisioning.md).
 
 This baseline supports the MVP scope and is aligned to the platform constraints
 already defined in PRD, architecture, security, compliance, data, and ALM plans.
