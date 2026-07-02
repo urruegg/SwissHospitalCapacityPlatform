@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (added Sprint 00 tenant migration callout — authoritative tenant is now MngEnvMCAP164444; westus2 demo scope per ADR-0013) |
+| **Previous Version** | 1.3.0 (added Sprint 00 tenant migration callout — authoritative tenant is now MngEnvMCAP164444; westus2 demo scope per ADR-0013) |
 
 ## Purpose
 
@@ -65,6 +65,18 @@ This document aligns to:
 | AI run reliability and guardrails | AI governance lead | AI engineering and MLOps | Platform ops, security lead |
 | Integration incident handling | Integration lead | Integration operations | Platform ops, compliance lead |
 | Security/privacy incident governance | Security lead | Security operations | Compliance lead, legal/privacy officer |
+| Semantic / ontology stewardship (reference layer + operational layer + crosswalk) | Data platform lead | **Semantic / ontology owner** *(new role — nominated per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) §4; incumbent TBD, target nomination in Sprint 09)* | AI governance lead, product owner, security lead |
+
+### Semantic / Ontology Owner (new role per ADR-0014)
+
+Realises `FR-GOV-ONT-001..003` and anchors `NFR-ONT-001`. See [ADR-0014 §4](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#4-governance-model-obo-inspired).
+
+1. **Remit.** Authority over the reference ontology (OWL/RDF under `docs/ontology/`), the operational ontology (Fabric IQ), and the crosswalk artefact (`docs/ontology/crosswalk.md`). Approves the semantic change workflow: proposal → domain-owner review → versioned release → downstream impact check.
+2. **Change discipline.** Every ontology change follows the same breaking-change control as data contracts (`NFR-MAINT-002`): SemVer, deprecation window, downstream-consumer notification, CI conformance check must be green.
+3. **Principles enforced.** Realism (align to OBO Foundry), univocity (one term / one meaning), orthogonality / reuse (import; do not duplicate published ontologies).
+4. **Deliverables owned.** The reference-layer skeleton in `docs/ontology/`, the crosswalk in `docs/ontology/crosswalk.md`, the CI conformance workflow, and the ontology entries in [DATA.md](DATA.md) and [PRD.md](PRD.md).
+5. **Escalation.** Semantic change disputes escalate to Architecture Working Group. Preview-service exceptions escalate through the `policy/exceptions.json` mechanism ([ADR-0010](adr/0010-policy-as-code-and-release-evidence-gates.md)).
+6. **Nomination status (2026-07-02).** Role created; incumbent not yet nominated. Sprint 09 acceptance evidence includes the named individual per [AMA §11.3](reviews/2026-07-01-ama-hcc-northstar-review.md#113-sprint-09-acceptance-evidence-proposed).
 
 ## Service Health Model
 
@@ -215,6 +227,24 @@ boundaries by data class, and the DR rehearsal evidence model â€” is define
 > [`docs/sprints/sprint-05/phase-3-reliability-dr.md`\](sprints/sprint-05/phase-3-reliability-dr.md).
 > This section defines the recurring operational checkpoints they populate.
 
+## Live Risk Register (new)
+
+Added 2026-07-02 (v1.4.0) per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) §5 to give operations a single place to track live vendor/product-readiness go/no-go items that gate architectural commitments. Distinct from **incident** tracking (§ Incident and Problem Management) and from **DR rehearsal evidence** (§ Reliability and Disaster Recovery Operations).
+
+**Owner:** each row names an accountable role who owns the go/no-go call. **Review cadence:** monthly; escalate to Architecture Working Group when severity is `H` or trigger date passes without decision.
+
+| Risk ID | Description | Category | Severity | Trigger / Go-No-Go | Owner | Fallback | Source |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| OPS-RISK-01 | **Fabric IQ Ontology Switzerland-region GA + DPA equivalence** — gates the regulated-path operational ontology layer per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) §5 gate G-C | Technical / Vendor | **H** | Microsoft publishes firm GA date for `switzerlandnorth` + DPA equivalence with GA Fabric components. Review monthly; escalate if no update by 2026-Q4. | Semantic / ontology owner (RACI table above) | Regulated operational layer runs on GA property-graph fallback per [ADR-0014 §3](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo); demo scope continues on Fabric IQ preview in `westus2` per [ADR-0013](adr/0013-temporary-us-region-demo-scope.md) | [AMA review R-01](reviews/2026-07-01-ama-hcc-northstar-review.md#11-key-risks-h--high-m--medium-l--low), [ADR-0014 gate G-C](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#5-explicit-go-no-go-gates) |
+| OPS-RISK-02 | **ADR-0013 westus2 demo exception expiry** (`EX-2026-07-02-westus2-demo`) — 90-day window per [`policy/exceptions.json`](../policy/exceptions.json) | Compliance / Governance | **M** | Expiry 2026-09-30. Renewal review required by 2026-09-15. | Compliance lead | Migrate demo workloads back to `switzerlandnorth` (subject to service GA); alternatively renew exception with fresh 90-day window via [ADR-0010](adr/0010-policy-as-code-and-release-evidence-gates.md) mechanism | [ADR-0013](adr/0013-temporary-us-region-demo-scope.md), [`policy/exceptions.json`](../policy/exceptions.json) |
+
+### Risk Register Discipline
+
+1. **Add rule.** New rows added on ADR approval whenever a decision is gated on an external event (vendor GA, regulatory change, partner commitment).
+2. **Close rule.** Rows are closed when either the trigger fires (positive close: recorded in row's history + monthly review) or the fallback is activated (negative close: incident-reported + ADR-supersession or amendment PR).
+3. **Traceability.** Every row cites its source ADR / AMA review section. Rows without a source citation are invalid and must be corrected before the next monthly review.
+4. **Escalation.** Severity `H` rows appear in the monthly Architecture Working Group agenda automatically.
+
 ## Traceability to Requirements
 
 | Requirement Family | Operations Coverage |
@@ -227,6 +257,8 @@ boundaries by data class, and the DR rehearsal evidence model â€” is define
 | NFR-SEC-001 to NFR-SEC-004 | Operational access control, auditing, secure secret handling |
 | NFR-COMP-004 to NFR-COMP-010 | Residency-safe operations, privacy incident governance, evidence cadence |
 | NFR-AI-003 to NFR-AI-005 | Model and response traceability, AI run governance and control |
+| FR-GOV-ONT-001 to FR-GOV-ONT-003 *(proposed)* | Semantic / ontology owner role (RACI baseline), semantic change workflow, two-layer conformance CI — per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
+| NFR-ONT-001 *(proposed)* | Ontology versioning + governed reference↔operational crosswalk + CI check — per [ADR-0014 §4](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#4-governance-model-obo-inspired) |
 
 ## Operational KPI Baseline
 
