@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.2 |
+| **Version** | 1.1.3 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg (recovery from GitHub Copilot v1.0.0 draft) |
 | **Status** | Draft — pre-refresh (recovered from unmerged branch) |
-| **Previous Version** | 1.1.1 (RB-04 resolved by ADR-0014) |
+| **Previous Version** | 1.1.2 (RB-07 + RB-09 resolved by OPERATIONS.md v1.4.0) |
 
 > **⚠️ Recovery banner — read before execution.**
 > This document was authored on 2026-06-29 and lay unmerged on branch
@@ -40,7 +40,7 @@
 | RB-03 | Fabric capacity SKU | Draft assumes Direct Lake; verify F2 (`fabricihzhhpfsit`) supports Direct Lake in `westus2` demo scope. Fabric F2 is currently **Paused** for cost hygiene — resume before dashboard smoke test. | Data platform | Fabric portal / [`az resource show`](https://learn.microsoft.com/en-us/azure/azure-resource-manager/) |
 | RB-04 | AMA HCC/North Star H-01 | **Resolved 2026-07-02** by [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) *(Proposed)* — supersedes ADR-0002; establishes Fabric IQ Ontology as target semantic backbone, GA-gated, with portable reference layer, two-layer conformance CI, and gates G-A/G-B/G-C. AMA §9.1 H-01 proposed ADR-0005 as placeholder path; renumbered to 0014 because 0005 was already taken. | Governance / ADR track | [AMA §11.1 H-01](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
 | RB-05 | AMA HCC/North Star H-02 | **Stand up the Minimum Viable Ontology (MVO)** in the Sprint-09 Power BI semantic model + Fabric IQ ontology generation, bounded to bed + OR slot + encounter + facility hierarchy. Adds a new track / deliverable. | Data platform | [AMA §11.1 H-02, §11.2](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
-| RB-06 | AMA HCC/North Star H-03 | Extend `docs/PRD.md` with `FR-ONT-*` family. | Product / PRD track | [AMA §11.1 H-03](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
+| RB-06 | AMA HCC/North Star H-03 | **Resolved 2026-07-02** — [PRD.md v1.4.0](../PRD.md) adds **§H Semantic Ontology** (`FR-ONT-001..007`, `FR-GOV-ONT-001..003`) under Functional Requirements and **§H Semantic Ontology** (`NFR-ONT-001`) under Non-Functional Requirements. Traceability matrix extended with 4 new rows anchoring the family to ADR-0014, AMA review, OPERATIONS.md and this sprint doc. | Product / PRD track | [AMA §11.1 H-03](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [PRD §H](../PRD.md#h-semantic-ontology); [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
 | RB-07 | AMA HCC/North Star H-04 | **Resolved 2026-07-02** — [OPERATIONS.md v1.4.0 RACI baseline](../OPERATIONS.md#roles-and-accountability-raci-baseline) adds *Semantic / ontology stewardship* row; new subsection *Semantic / Ontology Owner (new role per ADR-0014)* defines remit, change discipline, principles, deliverables and escalation. Incumbent nomination is Sprint 09 acceptance evidence. | Governance | [AMA §11.1 H-04](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014 §4](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#4-governance-model-obo-inspired) |
 | RB-08 | AMA HCC/North Star H-05 | Design the **reference↔operational crosswalk** artefact (`docs/ontology/crosswalk.md`) + CI conformance check (design in Sprint 09; enforcement may slip to Sprint 10). | Governance + Data Platform | [AMA §11.1 H-05](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
 | RB-09 | AMA HCC/North Star H-06 | **Resolved 2026-07-02** — [OPERATIONS.md v1.4.0 Live Risk Register](../OPERATIONS.md#live-risk-register-new) adds `OPS-RISK-01` (Fabric IQ Switzerland-region GA + DPA equivalence). Monthly review cadence; owner = semantic / ontology owner; fallback = property-graph on GA per [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo). | Product | [AMA §11.1 H-06](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [OPERATIONS.md `OPS-RISK-01`](../OPERATIONS.md#live-risk-register-new) |
