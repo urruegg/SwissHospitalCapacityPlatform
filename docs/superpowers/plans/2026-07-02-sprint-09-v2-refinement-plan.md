@@ -12,8 +12,9 @@
 
 ---
 
-<!-- markdownlint-disable MD060 -->
+<!-- markdownlint-disable MD060 MD031 -->
 <!-- Plan uses mixed compact + standard table pipe styles for readability across 35 deliverables. -->
+<!-- MD031 disabled: TDD-style step blocks intentionally pair prose + fenced code without extra blank lines. -->
 <!-- Same pattern as the design spec. -->
 
 ## File Structure
@@ -120,7 +121,7 @@ Total: **~55 files created + ~10 files modified**.
 
 - [ ] **Step 1: Author ADR-0015** at `docs/adr/0015-skip-sql-for-mvp-demo.md`. Copy the full ADR text from design spec §2.1 (Context / Decision / Consequences / Review triggers). Use the metadata table shape from ADR-0013 (`Status: Proposed`, `Supersedes (scoped)`, `Related`, `Date: 2026-07-02`, `Author: Urs Rüegg`).
 
-- [ ] **Step 2: Add reference from `docs/INFRASTRUCTURE.md`**. Locate the §Data platform section; insert a callout: `> **SQL-optional posture (2026-07-02):** For the MVP demo scope, SQL Server is skipped per [ADR-0015](adr/0015-skip-sql-for-mvp-demo.md). The `source-sql` Bicep module remains in the tree behind `enableSourceSqlModule=false`.` Bump `docs/INFRASTRUCTURE.md` version per §9 Document Versioning (PATCH).
+- [ ] **Step 2: Add reference from `docs/INFRASTRUCTURE.md`**. Locate the §Data platform section; insert a callout blockquote (regular prose, not code): `> **SQL-optional posture (2026-07-02):**` followed by `For the MVP demo scope, SQL Server is skipped per` [ADR-0015](../../adr/0015-skip-sql-for-mvp-demo.md) `. The` `source-sql` `Bicep module remains in the tree behind` `enableSourceSqlModule=false`. Bump `docs/INFRASTRUCTURE.md` version per §9 Document Versioning (PATCH).
 
 - [ ] **Step 3: Lint**. Run:
   ```powershell
@@ -429,7 +430,7 @@ Total: **~55 files created + ~10 files modified**.
   ```
 
 - [ ] **Step 2: Add a new rule for `agents/**`**. Add at an appropriate location (following existing rule pattern):
-  ```
+  ```text
   # Runtime user-facing agents (BM-Copilot, Fabric Data Agent, CSA) — 2-of-2 review per FR-GOV-ONT-002
   agents/**                              @urruegg
   ```
@@ -443,9 +444,9 @@ Total: **~55 files created + ~10 files modified**.
 
 ### Task T1.8: Sprint 09 doc v2.0.0 rewrite (interim placeholder — full rewrite in cross-cutting DX.1 at sprint close)
 
-*(T1 leaves the sprint doc largely intact — DX.1 does the full v2.0.0 rewrite at sprint close, once all deliverables land.)*
+> **Note.** T1 leaves the sprint doc largely intact. DX.1 does the full v2.0.0 rewrite at sprint close, once all deliverables land.
 
-- [ ] **Step 1: Update sprint-09 doc §0 Refresh Backlog** to reflect T1 progress. Add a new §0.5 subsection stating "T1 Foundation delivered on <date>; sprint doc v2.0.0 rewrite pending DX.1 at sprint close per design spec DX.1."
+- [ ] **Step 1: Update sprint-09 doc §0 Refresh Backlog** to reflect T1 progress. Add a new §0.5 subsection stating "T1 Foundation delivered on YYYY-MM-DD; sprint doc v2.0.0 rewrite pending DX.1 at sprint close per design spec DX.1."
 
 - [ ] **Step 2: Commit**.
   ```powershell
