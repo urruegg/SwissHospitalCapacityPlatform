@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-02 |
-| **Author** | Urs Rüegg |
+| **Author** | Urs Rüeegg |
 | **Status** | Draft — awaiting user review |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (added W1.0 Developer workstation trust and D8) |
 
 ---
 
@@ -55,6 +55,7 @@ The Swiss Hospital Capacity Platform currently deploys SIT and PROD environments
 | D5 | Staged cutover: SIT first, prove it green, then PROD. | Lowest-risk cadence; keeps old tenant fully operational as fallback throughout. |
 | D6 | Keep old tenant running post-cutover; teardown decision deferred. | User retains rollback surface; billing exposure is acceptable in the short term. Teardown handled by a separate later decision (out of scope for this sprint). |
 | D7 | Runbook-first (Approach 1). Small idempotent helper scripts under `infra/scripts/tenant-migration/`; no `azd`, no new orchestrator. | Matches repo Markdown-first model (ADR-0002); once-per-lifetime operation doesn't warrant heavy automation; human-in-the-loop is a feature. |
+| D8 | Establish machine trust on the operator's workstation via the Windows Account Manager (WAM) broker so `az`, `Az PowerShell`, VS Code Azure Account / Azure Resources extensions, and Bicep tooling reuse a TPM-bound device key for silent sign-in to the new tenant. Optional Workplace Join for Conditional Access "device compliant" claims. | Removes repeated MFA / device-code prompts, gives the operator the same VS Code SSO experience they have on the existing tenant, and produces a persistent audit-friendly login trail. |
 
 ---
 
@@ -62,10 +63,11 @@ The Swiss Hospital Capacity Platform currently deploys SIT and PROD environments
 
 **Single source of truth:** `docs/runbooks/tenant-migration-runbook.md` — a numbered, checkbox-driven Markdown runbook. Every `az`, `gh`, and `Invoke-Fabric*` command is printed inline. Operator ticks each checkbox as they proceed.
 
-**Automation surface:** three PowerShell 7+ scripts under `infra/scripts/tenant-migration/`, each with `-WhatIf` support and safe re-run behavior. Written to be idempotent so an operator can re-run without state corruption.
+**Automation surface:** four PowerShell 7+ scripts under `infra/scripts/tenant-migration/`, each with `-WhatIf` support and safe re-run behavior. Written to be idempotent so an operator can re-run without state corruption.
 
 | Script | Responsibility | Idempotency strategy |
 | --- | --- | --- |
+| `Enable-DeveloperTenantTrust.ps1` | Enables the WAM broker for Azure CLI (`az config set core.enable_broker_on_windows=true`) and the Az PowerShell module, runs `az login --tenant <new>` + `Connect-AzAccount -Tenant <new>` via the broker so subsequent tooling reuses the TPM-bound device key, validates the VS Code Azure Account / Azure Resources extension can list new-tenant subscriptions, and prints the recommended Workplace Join steps (Settings → Accounts → Access work or school → Connect). No RBAC or resource changes. | All commands are idempotent; the broker toggle is a no-op if already set; interactive sign-in reuses the cached token if valid. Script exits early with a green summary when the workstation is already trusted. |
 | `New-OidcFederation.ps1` | Creates the Entra app registration in the new tenant; adds federated credentials for `sit` and `prod` (subject `repo:urruegg/SwissHospitalCapacityPlatform:environment:<env>`, audience `https://management.azure.com`); outputs the resulting client ID. | Detects existing app by `displayName`; skips fed-cred creation if a matching subject exists. |
 | `Grant-SubscriptionRbac.ps1` | Grants the OIDC service principal `Contributor` on the target subscription (or a narrower custom role via `-RoleName`). | `New-AzRoleAssignment` is idempotent when scope + role + principal are unchanged; script pre-checks with `Get-AzRoleAssignment` to keep output clean. |
 | `Set-GithubEnvironmentConfig.ps1` | Wraps `gh api` to set `vars.AZURE_TENANT_ID`, `vars.AZURE_SUBSCRIPTION_ID`, `vars.AZURE_RESOURCE_GROUP`, `vars.BICEP_PARAM_FILE`, and `secrets.AZURE_CLIENT_ID` on GitHub environments `sit` and `prod`. Supports `-Restore` mode using a JSON snapshot for rollback. | Uses PUT semantics of `gh api`; captures previous values into a snapshot file before overwriting. |
@@ -83,7 +85,7 @@ The Swiss Hospital Capacity Platform currently deploys SIT and PROD environments
 | # | Workstream | Deliverables | Scope guard |
 | --- | --- | --- | --- |
 | **W0** | Repo prep (rename + governance) | 1 PR renaming `chhealthpf` → `ihzhhpf` in the 13–15 live files identified in §8; updates `.github/copilot-instructions.md §8` naming rule; bumps `docs/SD.md`, `docs/INFRASTRUCTURE.md`, `.github/copilot-instructions.md`, and `AGENTS.md` per §9 versioning. Must merge to `main` **before** any deployment. | Historical sprint/spec docs untouched. |
-| **W1** | Tenant plane (new tenant, one-time) | Runbook §1: register `Microsoft.Fabric` + `Microsoft.KeyVault` + `Microsoft.OperationalInsights` + `Microsoft.Insights` + `Microsoft.ManagedIdentity` on new subscriptions; `New-OidcFederation.ps1` creates app reg + fed creds; `Grant-SubscriptionRbac.ps1` grants `Contributor` on SIT + PROD subs; `Set-GithubEnvironmentConfig.ps1` updates `sit` + `prod` GitHub environments; Fabric prereq — bootstrap source SQL managed identity and create the Fabric connection to source SQL. | Only touches new tenant; no changes to old tenant. |
+| **W1** | Tenant plane (new tenant, one-time) | Runbook §1: **W1.0 Developer workstation trust** (`Enable-DeveloperTenantTrust.ps1` — WAM broker on, `az login --tenant <new>`, `Connect-AzAccount -Tenant <new>`, verify VS Code Azure Account extension sees new-tenant subscriptions, optional Workplace Join); then register `Microsoft.Fabric` + `Microsoft.KeyVault` + `Microsoft.OperationalInsights` + `Microsoft.Insights` + `Microsoft.ManagedIdentity` on new subscriptions; `New-OidcFederation.ps1` creates app reg + fed creds; `Grant-SubscriptionRbac.ps1` grants `Contributor` on SIT + PROD subs; `Set-GithubEnvironmentConfig.ps1` updates `sit` + `prod` GitHub environments; Fabric prereq — bootstrap source SQL managed identity and create the Fabric connection to source SQL. | Only touches new tenant; no changes to old tenant. W1.0 is a per-workstation prerequisite; it does not modify any Azure resource. |
 | **W2** | SIT deploy + smoke test | Runbook §2: `gh workflow run ci-infra-validate.yml` against SIT → `cd-infra-deploy-sit.yml` with `approved-to-apply` → `configure-fabric.ps1` post-deploy → regenerate synthetic data (`data/synthetic/generate_planning_datasets.py`) → smoke check per Sprint 08 walking-skeleton verification. | Uses existing workflows unchanged after W0 lands. |
 | **W3** | PROD deploy + smoke test | Runbook §3: same shape as W2 for PROD, gated by W2 success + explicit `approved-to-apply` on the PROD deploy PR. Fabric module remains opt-out for PROD per existing `prod.bicepparam`. | Won't fire until W2 is green. |
 | **W4** | Cutover completion & documentation | Runbook §4: create `docs/adr/0012-tenant-migration-to-mcap164444.md`; update `docs/OPERATIONS.md` service-ownership section; add "old tenant frozen, teardown pending" marker in `AGENTS.md`. No teardown steps (D6). | Ends with new tenant declared authoritative. |
@@ -97,6 +99,7 @@ The Swiss Hospital Capacity Platform currently deploys SIT and PROD environments
 W0 — Repo prep PR (rename + governance)
      └─► merged to main; workflows now expect new naming; nothing deployed yet
 W1 — Tenant plane (new tenant, one-time; no destructive ops in old tenant)
+     ├─ 1.0 Enable-DeveloperTenantTrust.ps1 (WAM broker + az login + Az PowerShell + VS Code SSO check + optional Workplace Join)
      ├─ 1.1 Register providers on new-tenant SIT + PROD subs
      ├─ 1.2 New-OidcFederation.ps1 → app reg + fed creds for sit + prod
      ├─ 1.3 Grant-SubscriptionRbac.ps1 → Contributor on both subs
@@ -147,6 +150,7 @@ Every W2 / W3 apply step is gated by `approved-to-apply` on the deploy PR per [A
 | G0 | `markdownlint-cli2` + `markdown-link-check` on W0 PR | Zero errors |
 | G0.1 | `az bicep build --file infra/main.bicep` | Zero errors after rename |
 | G0.2 | Pester on `infra/modules/data-platform/fabric/post-deploy/tests/configure-fabric.Tests.ps1` | All tests pass with renamed lakehouse / workspace / mirror names |
+| G0.3 | `Enable-DeveloperTenantTrust.ps1` post-run: `az account show --query tenantId -o tsv` returns `1337187a-4c41-4da9-8fca-731bba7a4329`; `Get-AzContext` returns the same tenant; VS Code Azure Resources extension lists new-tenant subscriptions | Workstation is trusted to the new tenant; no device-code prompt on subsequent `az`/`Az` calls within the token lifetime |
 | G1 | `az ad app show --id <new-client-id>` + `az role assignment list --assignee <sp>` | App reg exists in new tenant with 2 federated credentials; service principal has `Contributor` on both SIT and PROD subscriptions |
 | G1.1 | `gh api /repos/urruegg/SwissHospitalCapacityPlatform/environments/sit/variables` | Returns new tenant + subscription IDs |
 | G2 | `ci-infra-validate.yml` (SIT job) | What-if returns green diff (creates only, no unexpected deletes) |
@@ -164,6 +168,7 @@ Every W2 / W3 apply step is gated by `approved-to-apply` on the deploy PR per [A
 ### 8.1 New files
 
 - `docs/runbooks/tenant-migration-runbook.md`
+- `infra/scripts/tenant-migration/Enable-DeveloperTenantTrust.ps1`
 - `infra/scripts/tenant-migration/New-OidcFederation.ps1`
 - `infra/scripts/tenant-migration/Grant-SubscriptionRbac.ps1`
 - `infra/scripts/tenant-migration/Set-GithubEnvironmentConfig.ps1`
@@ -214,6 +219,7 @@ Live / authoritative — MUST rename:
 | R-05 | Fabric IQ Ontology preview status may change during sprint | L | Out of scope per [ADR-0002](../../adr/0002-defer-fabric-iq-ontology-from-mvp.md); no impact on this migration. |
 | R-06 | Old-tenant Fabric F2 capacity continues billing while deferred | L | Explicitly accepted per D6. Cost impact documented in ADR-0012 for future teardown decision. |
 | R-07 | GitHub env var updates leak sensitive values into shell history | M | `Set-GithubEnvironmentConfig.ps1` reads secrets via `-AsSecureString` and never echoes them to console. |
+| R-08 | Windows workstation lacks TPM or WAM broker prerequisites (older Windows build, group policy blocking broker) | L | `Enable-DeveloperTenantTrust.ps1` detects and reports missing prerequisites; falls back to `az login --use-device-code` with a warning; does not proceed silently. |
 
 **Open questions (defer to plan phase):**
 - Should `Migrate-KeyVaultSecrets.ps1` be added as a placeholder for the eventual data-migration story (currently N/A per D2)?
