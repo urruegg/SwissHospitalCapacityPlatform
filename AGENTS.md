@@ -2,18 +2,18 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.10.0 |
+| **Version** | 1.11.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.9.0 (added tenant migration in-progress note; solution short name ihzhhpf per Sprint 00) |
+| **Previous Version** | 1.10.0 (Sprint 00 tenant migration completed; new tenant is now authoritative) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
 > which agents exist, which MCP servers they may call, and how they refuse
 > destructive actions.
 >
-> **Tenant migration in progress (Sprint 00):** the platform is being rebuilt in Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicrosoft.com`) with solution short name `ihzhhpf`. **Demo/proof-of-technology scope only:** deployed in `westus2` per [ADR-0013](docs/adr/0013-temporary-us-region-demo-scope.md), synthetic sample data only, no PHI — sunset back to `switzerlandnorth` when target services reach Swiss GA. See [docs/superpowers/specs/2026-07-02-tenant-migration-design.md](docs/superpowers/specs/2026-07-02-tenant-migration-design.md).
+> **Tenant migration authoritative (Sprint 00 completed 2026-07-02):** the platform now runs in Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicrosoft.com`) with solution short name `ihzhhpf` and subscription `66a9953a-df37-4c51-856c-9971b9bf3e03`. **Demo/proof-of-technology scope only:** deployed in `westus2` per [ADR-0013](docs/adr/0013-temporary-us-region-demo-scope.md), synthetic sample data only, no PHI — sunset back to `switzerlandnorth` when target services reach Swiss GA. Old tenant `MngEnvMCAP228255` is frozen; teardown deferred. See [ADR-0012](docs/adr/0012-tenant-migration-to-mcap164444.md).
 >
 > **Execution default (migration status)**: Superpowers-first execution is now
 > the default operating model for new work. The per-agent registry below is

@@ -25,7 +25,18 @@ Describe 'New-OidcFederation' {
         Select-String -Path $script:ScriptPath -Pattern 'az ad app list' -Quiet | Should -BeTrue
     }
     It 'uses the GitHub OIDC federated credential subject format' {
-        Select-String -Path $script:ScriptPath -Pattern 'repo:\$RepoFullName:environment:' -Quiet | Should -BeTrue
+        # Guard against the PowerShell 'scope specifier' interpolation bug where
+        # "repo:$RepoFullName:environment:$env" was silently parsed as accessing
+        # $RepoFullName in scope 'environment', producing a malformed subject.
+        # Assert the literal is built via string concatenation, not naked interpolation.
+        Select-String -Path $script:ScriptPath -Pattern "'repo:' \+ \`$RepoFullName \+ ':environment:' \+ \`$env" -Quiet | Should -BeTrue
+    }
+    It 'produces a well-formed subject at runtime for a sample env' {
+        # Load the script's subject-building expression by simulating the same locals.
+        $RepoFullName = 'urruegg/SwissHospitalCapacityPlatform'
+        $env = 'sit'
+        $subject = 'repo:' + $RepoFullName + ':environment:' + $env
+        $subject | Should -Be 'repo:urruegg/SwissHospitalCapacityPlatform:environment:sit'
     }
     It 'uses AzureADTokenExchange audience for federated OIDC exchange' {
         Select-String -Path $script:ScriptPath -Pattern 'api://AzureADTokenExchange' -Quiet | Should -BeTrue

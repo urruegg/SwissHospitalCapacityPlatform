@@ -43,7 +43,10 @@ if ($PSCmdlet.ShouldProcess('Azure CLI', 'enable WAM broker (az config set core.
 }
 
 Write-Section '3. Sign in to Azure CLI (interactive, TPM-bound device key)'
-if ($PSCmdlet.ShouldProcess("tenant $TenantId", 'az login --tenant')) {
+$existingAz = az account show --query '{tenantId:tenantId, subscriptionId:id}' -o json 2>$null | ConvertFrom-Json -ErrorAction SilentlyContinue
+if ($existingAz -and $existingAz.tenantId -eq $TenantId.ToString() -and (-not $SubscriptionId -or $existingAz.subscriptionId -eq $SubscriptionId.ToString())) {
+    Write-Host "Already signed in to tenant $TenantId. Skipping interactive az login." -ForegroundColor Yellow
+} elseif ($PSCmdlet.ShouldProcess("tenant $TenantId", 'az login --tenant')) {
     try {
         az login --tenant $TenantId.ToString() | Out-Null
     } catch {
@@ -56,7 +59,10 @@ if ($PSCmdlet.ShouldProcess("tenant $TenantId", 'az login --tenant')) {
 }
 
 Write-Section '4. Sign in to Az PowerShell'
-if ($PSCmdlet.ShouldProcess("tenant $TenantId", 'Connect-AzAccount')) {
+$existingCtx = Get-AzContext -ErrorAction SilentlyContinue
+if ($existingCtx -and $existingCtx.Tenant.Id -eq $TenantId.ToString()) {
+    Write-Host "Az PowerShell context already on tenant $TenantId. Skipping Connect-AzAccount." -ForegroundColor Yellow
+} elseif ($PSCmdlet.ShouldProcess("tenant $TenantId", 'Connect-AzAccount')) {
     $connectArgs = @{ Tenant = $TenantId.ToString() }
     if ($SubscriptionId) { $connectArgs.Subscription = $SubscriptionId.ToString() }
     Connect-AzAccount @connectArgs | Out-Null

@@ -58,7 +58,10 @@ if ($spExisting.Count -eq 0) {
 $existingFics = az ad app federated-credential list --id $appId -o json | ConvertFrom-Json
 foreach ($env in $Environments) {
     $ficName = "gh-$env"
-    $subject = "repo:$RepoFullName:environment:$env"
+    # NB: use ${} explicitly and string concatenation for the colon-separated subject.
+    # PowerShell interprets '$var:literal' as a scope specifier, which silently truncated
+    # earlier attempts to 'repo:$env' — caught by an actual Entra deploy in Sprint 00.
+    $subject = 'repo:' + $RepoFullName + ':environment:' + $env
     if ($existingFics | Where-Object { $_.subject -eq $subject }) {
         Write-Host "Federated credential '$ficName' (subject $subject) already exists - skipping." -ForegroundColor Yellow
         continue
