@@ -1,0 +1,43 @@
+name: ontology-conformance
+
+on:
+  pull_request:
+    paths:
+      - "docs/ontology/**"
+      - "scripts/ontology/**"
+      - ".github/workflows/ontology-conformance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  crosswalk-conformance:
+    runs-on: ubuntu-latest
+    name: Two-layer crosswalk conformance (WARN-only, Sprint 09 scaffold)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Sprint 09 WARN-only mode. The script's own exit code is 0 unless it
+      # errors internally. Enforcement flip to STRICT mode is deferred to
+      # Sprint 10 per AMA HCC/North Star review §11.1 H-05.
+      #
+      # No pip install needed — the script uses only stdlib.
+      - name: Run crosswalk conformance check
+        run: |
+          python scripts/ontology/check_crosswalk_conformance.py
+
+      # Sprint 10 preview: uncomment the block below to run STRICT mode.
+      # Do NOT enable in Sprint 09 — the reference layer is a skeleton and
+      # some subtypes are intentionally deferred (StaffShift, Device).
+      #
+      # - name: Run crosswalk conformance check (STRICT preview)
+      #   run: |
+      #     python scripts/ontology/check_crosswalk_conformance.py --strict

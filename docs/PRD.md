@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (Sprint 05 CAF/WAF baseline cross-references) |
+| **Previous Version** | 1.3.0 (Sprint 05 CAF/WAF baseline cross-references) |
 
 ## Purpose
 
@@ -121,6 +121,23 @@ treatment-specialty metadata. See
 | `FR-ONB-003` | The platform shall support provider-specific specialty profiles for capacity planning. |
 | `FR-ONB-004` | The platform shall classify onboarding workflows as deterministic service vs agentic flow using a documented criterion. |
 
+### H) Semantic Ontology
+
+Sprint 09 deltas per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) (supersedes ADR-0002) and [AMA HCC/North Star review §5.1](reviews/2026-07-01-ama-hcc-northstar-review.md#51-ontology-requirements-new-family-fr-ont--nfr-ont). Adds a semantic backbone family that grounds copilot, dashboards and simulation on shared meaning. All items are gated per ADR-0014 §5 (G-A / G-B / G-C).
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-ONT-001` | The platform shall maintain a **reference ontology** authored in OWL/RDF, importing established published ontologies (BFO ISO/IEC 21838-2:2021, OMRSE, OGMS, OOSTT, Goyer et al. healthcare-system classes) and adding the platform-specific `CapacityUnit` abstraction with subtypes for bed, OR slot, room, staff shift and device. |
+| `FR-ONT-002` | The platform shall realise the **operational ontology** in Fabric IQ, auto-generated from the governed semantic model with static (lakehouse) and time-series (eventhouse) bindings. Use in `switzerlandnorth` PROD paths carrying PHI is gated on Fabric IQ Switzerland-region GA + DPA equivalence per ADR-0014 gate G-C; use in the `westus2` demo scope is permitted per ADR-0013. |
+| `FR-ONT-003` | The platform shall model all in-scope hospital resource dimensions (beds, OR slots, rooms, staff shifts, devices) as **capacity-unit subtypes** with shared states (available / occupied / blocked / planned) and shared relations, so one set of KPIs, forecasts and simulation logic applies across all dimensions. |
+| `FR-ONT-004` | The copilot and Fabric Data Agents shall **ground responses on ontology entities and relationships** to deliver concept-level traceability, extending `NFR-AI-002/003/004`. |
+| `FR-ONT-005` | The platform shall provide a **process-ontology overlay** on the reference layer to support what-if simulation (`FR-SIM-*` when introduced). |
+| `FR-ONT-006` | The ontology shall carry a **crosswalk to FHIR resource types and SNOMED CT concepts** for clinical interoperability (extends `FR-DATA-002`). |
+| `FR-ONT-007` | The ontology shall support **provider-specific extensions** (specialisations) without re-architecture, realising `NFR-MAINT-004` at the semantic layer. |
+| `FR-GOV-ONT-001` | The data-governance RACI shall include a nominated **semantic / ontology owner**. Documented in [OPERATIONS.md](OPERATIONS.md) as of v1.4.0. |
+| `FR-GOV-ONT-002` | Ontology changes shall follow an **OBO-inspired semantic change workflow** (proposal → domain-owner review → versioned release → downstream impact check), mirroring the data-contract breaking-change control in `NFR-MAINT-002`. |
+| `FR-GOV-ONT-003` | The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -199,6 +216,12 @@ treatment-specialty metadata. See
 | `NFR-MAINT-004` | Platform configuration shall support provider-specific rollout without full re-architecture. |
 | `NFR-MAINT-005` | Sprint 6 onboarding and MVP agent services shall be deployable through IaC-first pipelines with reproducible environment bootstrap (Sprint 6). |
 
+### H) Semantic Ontology (Sprint 9)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-ONT-001` | The ontology (reference layer OWL/RDF + operational layer Fabric IQ + crosswalk) shall be **versioned, governed and promoted as a first-class asset** with DEV/SIT/PROD gates, an explicit reference↔operational crosswalk artefact (`docs/ontology/crosswalk.md`), and a **CI conformance check** enforcing `FR-GOV-ONT-003`. Extends `NFR-MAINT-002`. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -217,6 +240,10 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | `docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md` | `FR-DATA-008`, `FR-FC-006`, `FR-DC-006`, `FR-CX-006`, `FR-GOV-001` to `FR-GOV-006`, `NFR-DQ-001` to `NFR-DQ-004`, `NFR-PERF-001` to `NFR-PERF-005`, `NFR-REL-001` to `NFR-REL-004`, `NFR-AI-001` to `NFR-AI-005`, `NFR-MAINT-001` to `NFR-MAINT-004` |
 | `docs/COMPLIANCE.md` | `NFR-COMP-005` to `NFR-COMP-010` |
 | `docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md` | `FR-ONB-001` to `FR-ONB-004`, `NFR-COMP-011`, `NFR-SEC-005`, `NFR-DQ-005`, `NFR-REL-005`, `NFR-MAINT-005` |
+| [`docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md`](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) *(supersedes [`0002`](adr/0002-defer-fabric-iq-ontology-from-mvp.md))* | `FR-ONT-001` to `FR-ONT-007`, `FR-GOV-ONT-001` to `FR-GOV-ONT-003`, `NFR-ONT-001` |
+| [`docs/reviews/2026-07-01-ama-hcc-northstar-review.md`](reviews/2026-07-01-ama-hcc-northstar-review.md) *(source review, §5.1 and §5.8)* | `FR-ONT-001` to `FR-ONT-007`, `FR-GOV-ONT-001` to `FR-GOV-ONT-003`, `NFR-ONT-001` |
+| [`docs/OPERATIONS.md`](OPERATIONS.md) *(v1.4.0 semantic-owner RACI + Live Risk Register)* | `FR-GOV-ONT-001`, `NFR-ONT-001` (partial — owner named; workflow + CI implementation pending) |
+| [`docs/sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md`](sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md) *(recovered draft — pre-refresh)* | `FR-ONT-001` to `FR-ONT-007` (MVO scope), `NFR-ONT-001` (target implementation slot) |
 
 ## Assumptions To Validate In Implementation Planning
 

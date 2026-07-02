@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-or-case-v1.schema.json",
+  "title": "OR Case Events Contract (DC-OR-CASE-v1)",
+  "description": "Operating-room case-event contract (Sprint 09 draft per AMA HCC/North Star review H-07 / FR-OR-002). Contract only; ingestion in Sprint 10. Captures the intra-day event stream (start / over-run / cancellation / turnover) that feeds OR-steering models (FR-OR-003), the OR-steering dashboard (FR-OR-004) and the OR Steering Agent (FR-OR-005). Related to DC-OR-SCHEDULE-v1 via caseId + orSlotId; related to DC-DEMAND-ENCOUNTER-v1 via encounterId.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId", "contractId", "contractVersion",
+    "classification", "residency", "purposeTags", "records"
+  ],
+  "properties": {
+    "datasetId":       { "type": "string", "pattern": "^DS-OR-CASE-[a-z0-9-]+$" },
+    "contractId":      { "type": "string", "enum": ["DC-OR-CASE-v1"] },
+    "contractVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":  { "type": "string", "enum": ["operational-confidential"] },
+    "residency":       { "type": "string", "enum": ["CH"] },
+    "purposeTags": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["or-steering", "case-monitoring", "utilization-analytics"]
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractId", "caseEventId", "caseId", "orSlotId",
+          "eventType", "eventTimestamp",
+          "purposeTag", "dataResidencyRegion", "asOfTimestamp"
+        ],
+        "properties": {
+          "contractId":     { "type": "string", "enum": ["DC-OR-CASE-v1"] },
+          "caseEventId":    { "type": "string", "pattern": "^ORCE-[A-Z0-9-]+$", "description": "Unique event identifier; monotonic per case." },
+          "caseId":         { "type": "string", "pattern": "^ORC-[A-Z0-9-]+$", "description": "Case identifier. Multiple events per case are correlated via this ID." },
+          "orSlotId":       { "type": "string", "pattern": "^ORS-[A-Z0-9-]+$", "description": "Slot the case is executing against; links to DC-OR-SCHEDULE-v1." },
+          "encounterId":    { "type": ["string", "null"], "pattern": "^ENC-[0-9]{4}-[0-9]{4,}$", "description": "Optional link to DC-DEMAND-ENCOUNTER-v1." },
+          "eventType": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "anaesthesia-consult-completed",
+              "patient-in-room",
+              "incision-start",
+              "incision-end",
+              "patient-out-of-room",
+              "overrun",
+              "cancelled",
+              "turnover-started",
+              "turnover-completed"
+            ],
+            "description": "Kispi-pattern OR event vocabulary. anaesthesia-consult-completed is required for FR-OR-006. turnover-* pair feeds turnover-time KPI (NFR-KPI-001)."
+          },
+          "eventTimestamp":          { "type": "string", "format": "date-time" },
+          "plannedDurationMinutes":  { "type": ["integer", "null"], "minimum": 0, "maximum": 720 },
+          "actualDurationMinutes":   { "type": ["integer", "null"], "minimum": 0, "maximum": 1440, "description": "Populated on incision-end or patient-out-of-room; used for overrun detection." },
+          "overrunMinutes":          { "type": ["integer", "null"], "minimum": 0, "description": "Populated on overrun events; positive value = minutes past planned end." },
+          "cancellationReason": {
+            "type": ["string", "null"],
+            "enum": ["patient-condition", "staffing-shortage", "equipment-outage", "no-bed-available", "surgeon-unavailable", "other", null],
+            "description": "Populated on cancelled events; feeds short-notice cancellation rate KPI (NFR-KPI-001)."
+          },
+          "turnoverPredecessorCaseId": { "type": ["string", "null"], "pattern": "^ORC-[A-Z0-9-]+$", "description": "For turnover-* events, the case that just completed in the same theatre." },
+          "purposeTag":                { "type": "string", "enum": ["or-steering", "case-monitoring", "utilization-analytics"] },
+          "dataResidencyRegion":       { "type": "string", "enum": ["switzerlandnorth", "switzerlandwest"] },
+          "asOfTimestamp":             { "type": "string", "format": "date-time" },
+          "extensions":                { "type": "object" }
+        }
+      }
+    }
+  }
+}

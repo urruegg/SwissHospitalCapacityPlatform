@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-01 |
+| **Version** | 1.1.1 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft for Review |
-| **Previous Version** | 1.0.0 (moved reviewer prompt template to `docs/reviews/README.md` as the standard for all review sessions) |
+| **Previous Version** | 1.1.0 (added realisation pointers on §9.1 H-01 and §11.1 H-01 to [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md)) |
 | **Session date** | 2026-07-01 |
 | **Session type** | Architecture Maturity Assessment (AMA) — outcome consolidation |
 | **Subject** | Hospital Command Center (HCC) operating model and North Star ontology for integral capacity management |
@@ -464,7 +464,7 @@ Prioritised as **H = High (act now / Sprint 09)**, **M = Medium (Sprint 10–12)
 
 | # | Recommendation | Type | Owner |
 | --- | --- | --- | --- |
-| H-01 | **Draft a superseding ADR** (`docs/adr/0005-fabric-iq-ontology-target-backbone-ga-gated.md`) amending ADR-0002: ontology becomes the target semantic backbone for the integral/HCC tier, hard Switzerland-region GA gate, portable reference layer in the interim | Strategic | Architecture |
+| H-01 | **Draft a superseding ADR** (`docs/adr/0005-fabric-iq-ontology-target-backbone-ga-gated.md`) amending ADR-0002: ontology becomes the target semantic backbone for the integral/HCC tier, hard Switzerland-region GA gate, portable reference layer in the interim. **Realised 2026-07-02 as [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md)** *(Proposed)* — renumbered because `docs/adr/0005-*` was already assigned. | Strategic | Architecture |
 | H-02 | **Stand up the Minimum Viable Ontology (MVO)** — auto-generated from the Sprint-09 Power BI semantic model per the Fabric IQ lab pattern; scope: Facility→Ward→Room→Bed→Encounter→Patient→Care team→Equipment **+ OR slot**; first time-series binding on bed state; reference-layer skeleton authored in parallel | Quick win | Data Platform |
 | H-03 | **Extend the PRD** — add `FR-ONT-*`, `FR-OR-*`, `FR-STAFF-*`, `FR-CAP-*`, `FR-SIM-*`, `FR-HCC-*`, `NFR-KPI-*`, `NFR-ONT-*` to [PRD.md](../PRD.md) with traceability-matrix rows in §7 | Strategic | Product |
 | H-04 | **Nominate a semantic / ontology owner** in the data-governance RACI; document in [OPERATIONS.md](../OPERATIONS.md) | Quick win | Governance |
@@ -541,7 +541,7 @@ Sprint 09 is scoped as *Master Data Foundation, Simulation Enhancement & Capacit
 
 | # | Handoff | Sprint 09 track | Reference |
 | --- | --- | --- | --- |
-| H-01 | Draft superseding ADR 0005 (Fabric IQ ontology as target backbone — GA-gated) | Governance / ADR track | This review §9.1 (H-01) |
+| H-01 | Draft superseding ADR 0005 (Fabric IQ ontology as target backbone — GA-gated). **Realised 2026-07-02 as [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md)** *(Proposed)* — renumbered because ADR-0005 was already taken. | Governance / ADR track | This review §9.1 (H-01) |
 | H-02 | **Stand up the MVO** in the Sprint-09 Power BI semantic model + Fabric IQ ontology generation (bounded to bed + OR slot + encounter + facility hierarchy) | Track 1 (data model extensions) | This review §9.1 (H-02); [Sprint-09 §1](../sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md#sprint-scope) |
 | H-03 | Extend PRD with `FR-ONT-*` (minimum) — even if OR/STAFF/CAP/SIM/HCC/KPI families land in a later sprint | Product / PRD track | This review §5.1 |
 | H-04 | Nominate the **semantic / ontology owner** in [OPERATIONS.md](../OPERATIONS.md) | Governance track | This review §9.1 (H-04) |
