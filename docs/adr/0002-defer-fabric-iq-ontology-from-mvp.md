@@ -1,6 +1,6 @@
 # ADR-0002: Defer Fabric IQ Ontology from MVP
 
-- Status: Accepted
+- Status: **Superseded by [ADR-0014](0014-fabric-iq-ontology-target-backbone-ga-gated.md)** (2026-07-02) — the platform target has widened to an integral HCC tier where Fabric IQ Ontology is the target semantic backbone (GA-gated); the "deferred indefinitely" posture no longer matches design intent. The content below is preserved unchanged as the accepted-but-superseded record.
 - Date: 2026-06-01
 - Deciders: Architecture Working Group
 - Related Decision ID: AR-D-002

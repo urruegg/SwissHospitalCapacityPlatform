@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg (recovery from GitHub Copilot v1.0.0 draft) |
 | **Status** | Draft — pre-refresh (recovered from unmerged branch) |
-| **Previous Version** | 1.0.0 (2026-06-29 initial draft, unmerged on `hotfix/sit-disable-placeholder-modules` at commit `6424eff`) |
+| **Previous Version** | 1.1.0 (2026-07-02 recovery + §0 Refresh Backlog; RB-04 pointed to placeholder ADR-0005) |
 
 > **⚠️ Recovery banner — read before execution.**
 > This document was authored on 2026-06-29 and lay unmerged on branch
@@ -38,7 +38,7 @@
 | RB-01 | Residency tags | Replace `residency_tag: CH-North` with dual-mode: `CH-North` (target GA) + `US-West` (demo carve-out per ADR-0013, exception `EX-2026-07-02-westus2-demo`, expires 2026-09-30). No PHI in either mode. | Governance | [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md); [`policy/exceptions.json`](../../policy/exceptions.json) |
 | RB-02 | Sprint 08 dependency | Prerequisite table (§ Dependency on Sprint 08) says *"Blocked on Fabric admin"*. Update: Sprint 00 delivered Fabric F2 (`fabricihzhhpfsit`) + workspace `ws-ihzhhpf-sit-data` + lakehouse `lh_ihzhhpf_sit` with `gold.demand_encounter` (3 rows). Bronze/silver pipeline NOT delivered — currently lakehouse-direct CSV load (G2.2 spirit-met). Decide: run full bronze→silver→gold notebooks now, or extend the lakehouse-direct pattern. | Data platform | [sprint-00 report §Slice 1+2](sprint-00-new-tenantprovisioning.md); [G2.2 close-out narrative](sprint-00-new-tenantprovisioning.md) |
 | RB-03 | Fabric capacity SKU | Draft assumes Direct Lake; verify F2 (`fabricihzhhpfsit`) supports Direct Lake in `westus2` demo scope. Fabric F2 is currently **Paused** for cost hygiene — resume before dashboard smoke test. | Data platform | Fabric portal / [`az resource show`](https://learn.microsoft.com/en-us/azure/azure-resource-manager/) |
-| RB-04 | AMA HCC/North Star H-01 | Draft superseding **ADR-0005** for Fabric IQ ontology as target backbone (GA-gated). | Governance / ADR track | [AMA §11.1 H-01](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
+| RB-04 | AMA HCC/North Star H-01 | **Resolved 2026-07-02** by [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) *(Proposed)* — supersedes ADR-0002; establishes Fabric IQ Ontology as target semantic backbone, GA-gated, with portable reference layer, two-layer conformance CI, and gates G-A/G-B/G-C. AMA §9.1 H-01 proposed ADR-0005 as placeholder path; renumbered to 0014 because 0005 was already taken. | Governance / ADR track | [AMA §11.1 H-01](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
 | RB-05 | AMA HCC/North Star H-02 | **Stand up the Minimum Viable Ontology (MVO)** in the Sprint-09 Power BI semantic model + Fabric IQ ontology generation, bounded to bed + OR slot + encounter + facility hierarchy. Adds a new track / deliverable. | Data platform | [AMA §11.1 H-02, §11.2](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
 | RB-06 | AMA HCC/North Star H-03 | Extend `docs/PRD.md` with `FR-ONT-*` family. | Product / PRD track | [AMA §11.1 H-03](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
 | RB-07 | AMA HCC/North Star H-04 | Nominate the **semantic / ontology owner** in [docs/OPERATIONS.md](../OPERATIONS.md). | Governance | [AMA §11.1 H-04](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
