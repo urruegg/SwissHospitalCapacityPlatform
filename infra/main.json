@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "12967786102784800832"
+      "templateHash": "8560991661682448539"
     }
   },
   "parameters": {
@@ -711,7 +711,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "566264025500298565"
+              "templateHash": "12185296377270705497"
             }
           },
           "parameters": {
@@ -880,7 +880,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "2285443710996547203"
+                      "templateHash": "17312663332830010117"
                     }
                   },
                   "parameters": {
@@ -893,10 +893,11 @@
                     "location": {
                       "type": "string",
                       "allowedValues": [
-                        "switzerlandnorth"
+                        "switzerlandnorth",
+                        "westus2"
                       ],
                       "metadata": {
-                        "description": "Deployment region. Must be switzerlandnorth (ADR-0003)."
+                        "description": "Deployment region. switzerlandnorth (ADR-0003 default) or westus2 (ADR-0013 demo-scope carve-out)."
                       }
                     },
                     "tags": {
@@ -1085,7 +1086,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "13350743960831580555"
+                      "templateHash": "10785951546242682772"
                     }
                   },
                   "parameters": {
@@ -1098,10 +1099,11 @@
                     "location": {
                       "type": "string",
                       "allowedValues": [
-                        "switzerlandnorth"
+                        "switzerlandnorth",
+                        "westus2"
                       ],
                       "metadata": {
-                        "description": "Deployment region. Must be switzerlandnorth (ADR-0003)."
+                        "description": "Deployment region. switzerlandnorth (ADR-0003 default) or westus2 (ADR-0013 demo-scope carve-out)."
                       }
                     },
                     "tags": {

@@ -2,7 +2,7 @@ using '../main.bicep'
 
 param environmentName = 'sit'
 param solutionShortName = 'ihzhhpf'
-param location = 'switzerlandnorth'
+param location = 'westus2'
 
 param owner = 'platform-team'
 param costCenter = 'ihzhhpf-sit'
