@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (Sprint 05 runtime pattern + recovery-class design mapping) |
+| **Previous Version** | 1.3.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
 
 ## Purpose
 
@@ -78,19 +78,19 @@ This design is derived from and constrained by:
 
 ### Azure Resource Naming Standard
 
-- Solution short name: `chhealthpf`.
+- Solution short name: `ihzhhpf`.
 - Apply this short name to Azure resource names in all environments.
 - Environment suffix policy:
    - DEV: no mandatory postfix rule in this baseline (project teams may use `dev` when needed).
    - SIT: always postfix `sit`.
    - PROD: always postfix `prod`.
 - Shared resources across environments: no environment postfix.
-- Recommended pattern for non-shared resources: `<resource-type>-chhealthpf-<env-suffix>`.
+- Recommended pattern for non-shared resources: `<resource-type>-ihzhhpf-<env-suffix>`.
 
 Examples:
-- SIT Key Vault: `kv-chhealthpf-sit`
-- PROD Key Vault: `kv-chhealthpf-prod`
-- Shared Log Analytics workspace: `log-chhealthpf`
+- SIT Key Vault: `kv-ihzhhpf-sit`
+- PROD Key Vault: `kv-ihzhhpf-prod`
+- Shared Log Analytics workspace: `log-ihzhhpf`
 
 ## Core Component Design
 

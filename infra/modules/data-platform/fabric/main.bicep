@@ -1,11 +1,12 @@
 targetScope = 'resourceGroup'
 
-@description('Suffix appended to resource names (e.g. chhealthpf-sit).')
+@description('Suffix appended to resource names (e.g. ihzhhpf-sit).')
 param nameSuffix string
 
-@description('Deployment region. Must be switzerlandnorth (ADR-0003).')
+@description('Deployment region. switzerlandnorth (ADR-0003 default) or westus2 (ADR-0013 demo-scope carve-out).')
 @allowed([
   'switzerlandnorth'
+  'westus2'
 ])
 param location string
 

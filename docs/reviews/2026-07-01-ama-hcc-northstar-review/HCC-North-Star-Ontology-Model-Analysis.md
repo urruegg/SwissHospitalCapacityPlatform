@@ -91,7 +91,7 @@ Fabric IQ makes this practical: it **generates an ontology from the semantic mod
 
 ### 4.2 Upper-level skeleton (BFO categories)
 
-```
+```text
 BFO: entity
 ├── continuant
 │   ├── independent continuant (material entity)
@@ -237,9 +237,9 @@ Reusing OBO ontologies (OMRSE, OGMS, OOSTT, Goyer et al.) is **materially cheape
 
 ### 7.1 Target architecture (ontology in the platform)
 
-```
+```text
 Reference layer (rigor)              Operational layer (execution, Swiss-resident)
-─────────────────────────           ─────────────────────────────────────────────
+───────────────────────           ────────────────────────────────────────
 BFO (ISO 21838-2)                    Fabric IQ Ontology (property graph)
   imports OMRSE, OGMS, OOSTT,   ⇄     generated from Power BI semantic model
   Goyer healthcare-system,      ⇄     entity types  ← lakehouse (static bindings)

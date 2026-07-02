@@ -21,7 +21,7 @@ The walking-skeleton variant seeds exactly **one** `kis.Episode` row via
   identity and `publicNetworkAccess = Disabled`.
 - One database `kis` on `GP_Gen5_2` (General Purpose, 2 vCore).
 - One private endpoint into the data subnet.
-- TLS 1.2 minimum, locally-redundant backups (SIT only — ADR-0001 GA-only MVP).
+- TLS 1.2 minimum, locally-redundant backups (SIT only â€” ADR-0001 GA-only MVP).
 - Region locked to `switzerlandnorth` (ADR-0003).
 
 PHI is **forbidden** in SIT (ADR-0003 + ADR-0004). All seed data is synthetic.
@@ -30,7 +30,7 @@ PHI is **forbidden** in SIT (ADR-0003 + ADR-0004). All seed data is synthetic.
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| `nameSuffix` | string | yes | Suffix appended to resource names (e.g. `chhealthpf-sit`). |
+| `nameSuffix` | string | yes | Suffix appended to resource names (e.g. `ihzhhpf-sit`). |
 | `location` | string | yes | Deployment region. Must be `switzerlandnorth`. |
 | `tags` | object | yes | Resource tags applied to all resources. |
 | `dataSubnetId` | string | yes | Resource ID of the data subnet for the SQL private endpoint. |
@@ -73,7 +73,7 @@ Before deploying this module via the parent data-platform / top-level entry:
 
 ## Walking-skeleton scope (W1.1)
 
-- One row in `kis.Episode` only — see
+- One row in `kis.Episode` only â€” see
   [`infra/scripts/seed-synthetic-kis.ps1`](../../../scripts/seed-synthetic-kis.ps1)
   for the seed payload and Pester tests under
   [`infra/scripts/tests/seed-synthetic-kis.Tests.ps1`](../../../scripts/tests/seed-synthetic-kis.Tests.ps1).
@@ -82,6 +82,6 @@ Before deploying this module via the parent data-platform / top-level entry:
 
 ## Related
 
-- Spec: `docs/superpowers/specs/2026-06-14-sprint-08-data-platform-design.md` §8.1
+- Spec: `docs/superpowers/specs/2026-06-14-sprint-08-data-platform-design.md` Â§8.1
 - Requirements: FR-DATA-001, FR-DATA-003, NFR-RES-001, NFR-SEC-002, NFR-GOV-006
 - Tracking issue: #66 (sprint-08 umbrella)

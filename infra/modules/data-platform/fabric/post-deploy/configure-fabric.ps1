@@ -45,7 +45,7 @@ function Resolve-FabricCapacityIdByName {
 function Get-WorkspaceCreatePayload {
     param([Parameter(Mandatory)][string]$CapacityId)
     return @{
-        displayName = 'ws-chhealthpf-sit-data'
+        displayName = 'ws-ihzhhpf-sit-data'
         description = 'Sprint 08 data platform workspace (SIT, switzerlandnorth)'
         capacityId  = $CapacityId
     }
@@ -53,7 +53,7 @@ function Get-WorkspaceCreatePayload {
 
 function Get-LakehouseCreatePayload {
     return @{
-        displayName     = 'lh_chhealthpf_sit'
+        displayName     = 'lh_ihzhhpf_sit'
         description     = 'Bronze / silver / gold zones for the capacity data product'
         creationPayload = @{
             enableSchemas = $true
@@ -90,7 +90,7 @@ function Get-MirrorCreatePayload {
     $json = $inner | ConvertTo-Json -Depth 10
     $base64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))
     return @{
-        displayName = 'mir_chhealthpf_kis'
+        displayName = 'mir_ihzhhpf_kis'
         description = 'Mirror of the synthetic KIS Azure SQL source'
         definition  = @{
             parts = @(
@@ -108,7 +108,7 @@ function Get-SemanticModelCreatePayload {
     <#
     .SYNOPSIS
     Builds the Fabric REST payload for `sm_capacity_data_product`, a Direct Lake
-    semantic model bound to `lh_chhealthpf_sit.gold.demand_encounter`.
+    semantic model bound to `lh_ihzhhpf_sit.gold.demand_encounter`.
     .NOTES
     Reads TMDL from ../semantic-model/sm_capacity_data_product/ and substitutes
     the two OneLake GUID placeholders. Posted to /workspaces/{wsId}/items with
@@ -154,7 +154,7 @@ function Get-SemanticModelCreatePayload {
 
 if ($DryRun) { return }
 
-if (-not $CapacityName) { throw 'CapacityName required. Pass the Fabric capacity displayName (Bicep `capacityName` output, e.g. fabricchhealthpfsit).' }
+if (-not $CapacityName) { throw 'CapacityName required. Pass the Fabric capacity displayName (Bicep `capacityName` output, e.g. fabricihzhhpfsit).' }
 if (-not $ConnectionId) {
     throw 'ConnectionId required. Create a Fabric connection to the Azure SQL source first (portal or POST /v1/connections) and pass the resulting GUID.'
 }

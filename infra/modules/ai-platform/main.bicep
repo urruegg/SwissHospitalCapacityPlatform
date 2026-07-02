@@ -1,7 +1,7 @@
 @description('Location for all resources.')
 param location string
 
-@description('Resource name suffix, e.g. chhealthpf-sit or chhealthpf-prod.')
+@description('Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod.')
 param nameSuffix string
 
 @description('Resource tags applied to all resources.')

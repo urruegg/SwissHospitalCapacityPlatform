@@ -6,16 +6,16 @@
       "value": "prod"
     },
     "solutionShortName": {
-      "value": "chhealthpf"
+      "value": "ihzhhpf"
     },
     "location": {
-      "value": "switzerlandnorth"
+      "value": "westus2"
     },
     "owner": {
       "value": "platform-team"
     },
     "costCenter": {
-      "value": "chhealthpf-prod"
+      "value": "ihzhhpf-prod"
     },
     "workload": {
       "value": "hospital-capacity"

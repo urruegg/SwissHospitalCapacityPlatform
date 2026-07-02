@@ -2,17 +2,24 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.5.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 0.6.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.4.0 (added Sprint 05 cantonal annex link and control owners) |
+| **Previous Version** | 0.5.0 (added Sprint 00 westus2 demo-scope carve-out reference — see ADR-0013) |
 
 ## Purpose
 
 Define the compliance baseline for the Swiss Hospital Capacity Platform and make
 Swiss legal obligations traceable to architecture controls, delivery artifacts,
 and operational evidence.
+
+> **Scope carve-out (Sprint 00, time-limited):** the new-tenant demo environment
+> in tenant `1337187a-4c41-4da9-8fca-731bba7a4329` is deployed in `westus2` for
+> synthetic-data proof-of-technology validation of services not yet GA in
+> `switzerlandnorth`. See [ADR-0013](adr/0013-temporary-us-region-demo-scope.md)
+> and the exception `EX-2026-07-02-westus2-demo` in [policy/exceptions.json](../policy/exceptions.json).
+> This carve-out does NOT weaken ADR-0003 / ADR-0004 for any PHI or production scope.
 
 Scope of this version:
 - Swiss federal privacy and health-data obligations relevant to the platform.

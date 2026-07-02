@@ -232,7 +232,7 @@ This section translates the gaps into concrete, architecture-consistent changes.
 
 Add three capability blocks to the current layered architecture without changing its shape:
 
-```
+```text
 Source & event layer      +  OR/surgical scheduling systems, anaesthesia,
                              staffing/rostering, room booking, biomedical/asset mgmt
 Normalization             +  FHIR resources: Appointment, Slot, Schedule, Encounter(surgical),
@@ -337,19 +337,19 @@ Sequencing rationale: **OR first** delivers the highest, most visible operationa
 
 ## 9. Risks, Dependencies and Open Questions
 
-**Delivery risks**
+### Delivery risks
 
 - Scope expansion could destabilise the MVP timeline → contain via OR-first T2 before integral T3.
 - Simulation is a genuinely new capability class (skills, validation, data) → treat as a distinct workstream with its own acceptance criteria; label current technical assumptions (e.g. discrete-event approach) as *to be validated*.
 - OR/staffing source-system integration is provider-specific and can be complex (surgical scheduling and rostering systems vary widely) → discovery-led, contract-first.
 
-**Dependencies**
+### Dependencies
 
 - Fabric IQ Ontology GA + Switzerland-region availability for the integral semantic backbone (already a tracked gate).
 - Access to OR, anaesthesia and rostering source systems per provider.
 - Executive sponsorship for the process/operating-model change (the non-software half of IKM value).
 
-**Open questions to resolve (ideally with VR&P and pilot providers)**
+### Open questions to resolve (ideally with VR&P and pilot providers)
 
 1. VR&P's actual software-partner stack and data model — where would we integrate vs. replace vs. co-sell?
 2. Which provider is the best OR-module pilot — Hirslanden (elective/OR-heavy) is the strongest technical fit per our own analysis.

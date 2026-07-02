@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (Sprint 05 landing-zone governance evidence pointer) |
+| **Previous Version** | 1.3.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
 
 ## Purpose
 
@@ -39,25 +39,25 @@ Implemented module domains:
 ```mermaid
 flowchart TD
   subgraph SIT[Environment: SIT]
-    SITKV[kv-chhealthpf-sit]
-    SITLOG[log-chhealthpf-sit]
-    SITAPPI[appi-chhealthpf-sit]
-    SITID[id-platform-chhealthpf-sit]
-    SITVNET[vnet-platform-chhealthpf-sit]
-    SITST[stdpchhealthpfsit]
-    SITSB[sb-chhealthpf-sit]
-    SITAI[ai-chhealthpf-sit]
+    SITKV[kv-ihzhhpf-sit]
+    SITLOG[log-ihzhhpf-sit]
+    SITAPPI[appi-ihzhhpf-sit]
+    SITID[id-platform-ihzhhpf-sit]
+    SITVNET[vnet-platform-ihzhhpf-sit]
+    SITST[stdpihzhhpfsit]
+    SITSB[sb-ihzhhpf-sit]
+    SITAI[ai-ihzhhpf-sit]
   end
 
   subgraph PROD[Environment: PROD]
-    PRODKV[kv-chhealthpf-prod]
-    PRODLOG[log-chhealthpf-prod]
-    PRODAPPI[appi-chhealthpf-prod]
-    PRODID[id-platform-chhealthpf-prod]
-    PRODVNET[vnet-platform-chhealthpf-prod]
-    PRODST[stdpchhealthpfprod]
-    PRODSB[sb-chhealthpf-prod]
-    PRODAI[ai-chhealthpf-prod]
+    PRODKV[kv-ihzhhpf-prod]
+    PRODLOG[log-ihzhhpf-prod]
+    PRODAPPI[appi-ihzhhpf-prod]
+    PRODID[id-platform-ihzhhpf-prod]
+    PRODVNET[vnet-platform-ihzhhpf-prod]
+    PRODST[stdpihzhhpfprod]
+    PRODSB[sb-ihzhhpf-prod]
+    PRODAI[ai-ihzhhpf-prod]
   end
 ```
 

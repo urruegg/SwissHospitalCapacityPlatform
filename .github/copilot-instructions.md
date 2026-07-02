@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.0 |
-| **Date** | 2026-06-12 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.4.0 (Superpowers-first baseline for new work) |
+| **Previous Version** | 1.5.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
 
 This repository hosts a sample **Swiss Hospital Capacity Platform**: a system where AI agents
 plan, execute, and observe hospital capacity management workflows (CI/CD, infrastructure provisioning,
@@ -452,13 +452,13 @@ Before approving a PR, verify:
   `integrations/`, `security-governance/`, `pipelines/`.
 - **Bicep resources**: `kebab-case` with environment suffix
   (e.g., `kv-agentic-devops-dev`, `cosmos-agentic-devops-prod`). These names appear in UC1 *output* templates; they are not the platform's own infrastructure.
-- **Azure resource short name**: Use `chhealthpf` in Azure resource names to represent the solution.
+- **Azure resource short name**: Use `ihzhhpf` in Azure resource names to represent the solution.
 - **Azure environment suffix policy**:
   - `SIT` resources must end with `-sit`.
   - `PROD` resources must end with `-prod`.
   - Shared resources across environments must not have an environment suffix.
   - `DEV` does not have a mandatory postfix rule in this baseline.
-- **Azure resource pattern**: Prefer `<resource-type>-chhealthpf-<env-suffix>` for environment-scoped resources and `<resource-type>-chhealthpf` for shared resources.
+- **Azure resource pattern**: Prefer `<resource-type>-ihzhhpf-<env-suffix>` for environment-scoped resources and `<resource-type>-ihzhhpf` for shared resources.
 - **Resource tags** (UC1 outputs): `env`, `owner`, `costCenter`, `workload` on every resource.
 - **Git tags**: `vX.Y.Z` — managed by release tooling, never manual.
 - **Agent names**: `kebab-case` matching the folder name (`spec-parser-agent`, `solution-design-agent`, `landing-zone-agent`, `compliance-agent`, `data-design-agent`, `app-builder-agent`, `test-verifier-agent`, `pr-review`, `drift-analyzer`, `orchestrator`).

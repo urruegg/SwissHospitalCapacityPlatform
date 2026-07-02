@@ -7,12 +7,12 @@ Describe 'configure-fabric (dry run payloads)' {
         $guid = '11111111-2222-3333-4444-555555555555'
         $p = Get-WorkspaceCreatePayload -CapacityId $guid
         $p.capacityId | Should -Be $guid
-        $p.displayName | Should -Be 'ws-chhealthpf-sit-data'
+        $p.displayName | Should -Be 'ws-ihzhhpf-sit-data'
     }
 
     It 'lakehouse payload requests Delta + 3-zone layout via enableSchemas' {
         $p = Get-LakehouseCreatePayload
-        $p.displayName | Should -Be 'lh_chhealthpf_sit'
+        $p.displayName | Should -Be 'lh_ihzhhpf_sit'
         $p.creationPayload.enableSchemas | Should -Be $true
     }
 
@@ -20,7 +20,7 @@ Describe 'configure-fabric (dry run payloads)' {
         $connectionId = '66666666-7777-8888-9999-000000000000'
         $p = Get-MirrorCreatePayload -ConnectionId $connectionId -Database 'kis'
 
-        $p.displayName | Should -Be 'mir_chhealthpf_kis'
+        $p.displayName | Should -Be 'mir_ihzhhpf_kis'
         $part = $p.definition.parts[0]
         $part.path | Should -Be 'mirroring.json'
         $part.payloadType | Should -Be 'InlineBase64'

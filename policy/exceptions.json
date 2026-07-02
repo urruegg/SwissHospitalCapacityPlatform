@@ -13,5 +13,24 @@
     "mitigationPlan",
     "followUpValidationDate"
   ],
-  "exceptions": []
+  "exceptions": [
+    {
+      "id": "EX-2026-07-02-westus2-demo",
+      "control": "MC-RESIDENCY",
+      "rationale": "Sprint 00 tenant migration: temporary US-region (westus2) deployment on the new tenant MngEnvMCAP164444 for demonstration and proof-of-technology validation of North Star services that are not yet GA in switzerlandnorth. See ADR-0013.",
+      "compensatingControls": [
+        "Synthetic sample data only (data/synthetic/*); no PHI, no real patient identifiers",
+        "No inbound connection from any Swiss KIS or hospital data source",
+        "Scope hard-limited to tenant 1337187a-4c41-4da9-8fca-731bba7a4329 only",
+        "Bicep @allowed in fabric and source-sql modules explicitly enumerates westus2 + switzerlandnorth so a slip to any other region fails at build time",
+        "Sprint report and runbook enforce the synthetic-only rule as a promotion gate"
+      ],
+      "owner": "Urs Rüegg",
+      "approvedBy": "Urs Rüegg",
+      "approvalDate": "2026-07-02",
+      "expiry": "2026-09-30",
+      "mitigationPlan": "Sunset when either (a) required target services reach GA in switzerlandnorth, or (b) expiry date reached — whichever comes first. Transfer of workload back to switzerlandnorth follows a separate migration decision.",
+      "followUpValidationDate": "2026-08-15"
+    }
+  ]
 }

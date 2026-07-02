@@ -1,11 +1,11 @@
 using '../main.bicep'
 
 param environmentName = 'sit'
-param solutionShortName = 'chhealthpf'
-param location = 'switzerlandnorth'
+param solutionShortName = 'ihzhhpf'
+param location = 'westus2'
 
 param owner = 'platform-team'
-param costCenter = 'chhealthpf-sit'
+param costCenter = 'ihzhhpf-sit'
 param workload = 'hospital-capacity'
 
 param logAnalyticsRetentionInDays = 90
@@ -29,8 +29,8 @@ param networkAppSubnetPrefix = '10.60.1.0/24'
 // Sprint 08 W1.1 — source-SQL submodule (synthetic KIS feed).
 // Temporarily disabled until real subnet and Key Vault IDs are supplied.
 param enableSourceSqlModule = false
-param sourceSqlDataSubnetId = '/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-chhealthpf-sit/subnets/snet-data-sit'
-param sourceSqlKeyVaultId = '/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.KeyVault/vaults/kv-chhealthpf-sit'
+param sourceSqlDataSubnetId = '/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-ihzhhpf-sit/subnets/snet-data-sit'
+param sourceSqlKeyVaultId = '/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.KeyVault/vaults/kv-ihzhhpf-sit'
 param sourceSqlAdminPasswordSecretName = 'sql-admin-password'
 
 // Private DNS zone for SQL private endpoint. Owned by a separate platform-foundation slice

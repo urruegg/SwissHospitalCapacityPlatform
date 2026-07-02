@@ -6,16 +6,16 @@
       "value": "sit"
     },
     "solutionShortName": {
-      "value": "chhealthpf"
+      "value": "ihzhhpf"
     },
     "location": {
-      "value": "switzerlandnorth"
+      "value": "westus2"
     },
     "owner": {
       "value": "platform-team"
     },
     "costCenter": {
-      "value": "chhealthpf-sit"
+      "value": "ihzhhpf-sit"
     },
     "workload": {
       "value": "hospital-capacity"
@@ -63,13 +63,13 @@
       "value": "10.60.1.0/24"
     },
     "enableSourceSqlModule": {
-      "value": true
+      "value": false
     },
     "sourceSqlDataSubnetId": {
-      "value": "/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-chhealthpf-sit/subnets/snet-data-sit"
+      "value": "/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-ihzhhpf-sit/subnets/snet-data-sit"
     },
     "sourceSqlKeyVaultId": {
-      "value": "/subscriptions/<SUB>/resourceGroups/rg-chhealthpf-sit/providers/Microsoft.KeyVault/vaults/kv-chhealthpf-sit"
+      "value": "/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.KeyVault/vaults/kv-ihzhhpf-sit"
     },
     "sourceSqlAdminPasswordSecretName": {
       "value": "sql-admin-password"
@@ -78,7 +78,7 @@
       "value": ""
     },
     "enableFabricFoundationModule": {
-      "value": true
+      "value": false
     },
     "fabricCapacityAdmins": {
       "value": [
