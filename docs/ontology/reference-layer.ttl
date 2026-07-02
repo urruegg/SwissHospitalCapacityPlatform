@@ -1,0 +1,132 @@
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+
+# ---------------------------------------------------------------------------
+# Published imports (references only; not axiomatically loaded in this skeleton).
+# Sprint 09 scope: declare + label so crosswalk.md can reference them; full
+# axiomatic import + reasoning is Phase 3 per AMA §9.3 L-06.
+# ---------------------------------------------------------------------------
+@prefix bfo:    <http://purl.obolibrary.org/obo/BFO_> .
+@prefix omrse:  <http://purl.obolibrary.org/obo/OMRSE_> .
+@prefix ogms:   <http://purl.obolibrary.org/obo/OGMS_> .
+@prefix oostt:  <http://purl.obolibrary.org/obo/OOSTT_> .
+@prefix obo:    <http://purl.obolibrary.org/obo/> .
+
+# ---------------------------------------------------------------------------
+# Platform-specific namespace (Swiss Hospital Capacity Platform).
+# ---------------------------------------------------------------------------
+@prefix hcp:    <https://swisshcapacity.example/ontology/hcp#> .
+
+# ===========================================================================
+# Ontology header
+# ===========================================================================
+<https://swisshcapacity.example/ontology/hcp> a owl:Ontology ;
+    dcterms:title       "Swiss Hospital Capacity Platform — Reference Ontology (skeleton)"@en ;
+    dcterms:description "Reference layer of the two-layer ontology per ADR-0014. Skeleton only — full axiomatic content is Phase 3."@en ;
+    dcterms:creator     "Urs Rüegg"@en ;
+    dcterms:issued      "2026-07-02"^^xsd:date ;
+    owl:versionInfo     "0.1.0" ;
+    rdfs:comment        "Sprint 09 RB-11 deliverable. See docs/ontology/README.md for scope discipline and versioning."@en ;
+
+    # Imports declared but not loaded axiomatically in this skeleton.
+    # A follow-up PR (or an ontology-authoring tool) resolves these to full IRIs.
+    owl:imports
+        <http://purl.obolibrary.org/obo/bfo.owl> ,      # BFO (ISO/IEC 21838-2:2021)
+        <http://purl.obolibrary.org/obo/omrse.owl> ,    # OMRSE — health-care facility function typology
+        <http://purl.obolibrary.org/obo/ogms.owl> ,     # OGMS — clinical-encounter terms
+        <http://purl.obolibrary.org/obo/oostt.owl> .    # OOSTT — organisational structure of care sites
+
+# ===========================================================================
+# hcp:CapacityUnit — the platform's integral abstraction (per ADR-0014 §1).
+# ===========================================================================
+# A CapacityUnit is a material entity (or time-bounded slot) that bears a
+# capacity function and has a capacity state. Beds, OR slots, rooms, staff
+# shifts and devices are all subtypes. This gives one set of relations,
+# states, KPIs, forecasts and simulation logic across all resource
+# dimensions.
+#
+# Note: aligning CapacityUnit under bfo:BFO_0000030 (Object) vs
+# bfo:BFO_0000035 (Process boundary) vs a slot-oriented class is a
+# Phase 3 decision. Sprint 09 skeleton keeps it as an owl:Class only.
+
+hcp:CapacityUnit a owl:Class ;
+    rdfs:label   "Capacity Unit"@en ;
+    rdfs:comment "A material entity or time-bounded slot that bears a capacity function and has a capacity state (available / occupied / blocked / planned). Abstract; every resource dimension in scope of the HCC is a subtype."@en ;
+    skos:example "Bed, ORSlot, Room, StaffShift, Device."@en .
+
+# --- Subtypes (RB-11 skeleton set) ---
+
+hcp:Bed a owl:Class ;
+    rdfs:subClassOf hcp:CapacityUnit ;
+    rdfs:label      "Bed"@en ;
+    rdfs:comment    "A physical bed as a capacity unit within a ward. First time-series binding target in Sprint 09 (bed-state changes)."@en .
+
+hcp:ORSlot a owl:Class ;
+    rdfs:subClassOf hcp:CapacityUnit ;
+    rdfs:label      "OR Slot"@en ;
+    rdfs:comment    "A time-bounded slot in an operating theatre. Distinct from the OR room itself; the OR steering anchor per ADR-0014 §3 MVO scope."@en .
+
+hcp:Room a owl:Class ;
+    rdfs:subClassOf hcp:CapacityUnit ;
+    rdfs:label      "Room"@en ;
+    rdfs:comment    "A physical room capacity unit (examination, therapy, consult). Ontological placement under omrse:facility-part-of pending Phase 3 review."@en .
+
+hcp:StaffShift a owl:Class ;
+    rdfs:subClassOf hcp:CapacityUnit ;
+    rdfs:label      "Staff Shift"@en ;
+    rdfs:comment    "A time-bounded shift as a capacity unit. Distinct from the health-care worker (which realises the role). Feeds the future FR-STAFF-* family (RB-10 unrelated; SBA agent per AMA F-A-06)."@en .
+
+hcp:Device a owl:Class ;
+    rdfs:subClassOf hcp:CapacityUnit ;
+    rdfs:label      "Device"@en ;
+    rdfs:comment    "A biomedical device treated as a capacity unit (availability + PM windows + monitoring state). Extends dim_device per AMA §5.4."@en .
+
+# ===========================================================================
+# hcp:CapacityState — the shared state vocabulary across every CapacityUnit.
+# ===========================================================================
+hcp:CapacityState a owl:Class ;
+    rdfs:label   "Capacity State"@en ;
+    rdfs:comment "The instantaneous state of a CapacityUnit: available / occupied / blocked / planned. Bound to time-series data via the operational layer."@en .
+
+hcp:Available a hcp:CapacityState ;
+    rdfs:label "available"@en .
+
+hcp:Occupied a hcp:CapacityState ;
+    rdfs:label "occupied"@en .
+
+hcp:Blocked a hcp:CapacityState ;
+    rdfs:label "blocked"@en ;
+    rdfs:comment "Unit is offline (maintenance, isolation, cleaning). Reason recorded via a data property in the operational layer."@en .
+
+hcp:Planned a hcp:CapacityState ;
+    rdfs:label "planned"@en ;
+    rdfs:comment "Unit is scheduled for future use (typical for ORSlot; also used for bed pre-assignment)."@en .
+
+# ===========================================================================
+# Basic relations (skeleton). Full property chains + inverse properties are
+# Phase 3 material.
+# ===========================================================================
+hcp:hasState a owl:ObjectProperty ;
+    rdfs:label   "has state"@en ;
+    rdfs:domain  hcp:CapacityUnit ;
+    rdfs:range   hcp:CapacityState .
+
+hcp:isPartOf a owl:ObjectProperty ;
+    rdfs:label   "is part of"@en ;
+    rdfs:comment "Compositional relation. Bed ⊑ Room ⊑ Ward ⊑ Hospital. Subject to Phase 3 alignment with bfo:part-of."@en .
+
+# ===========================================================================
+# Provider-extension pattern (per FR-ONT-007).
+# Providers add subclasses under their own namespace, importing this
+# skeleton. Example (informal, not axiomatic in this file):
+#
+#   @prefix uzh: <https://usz.example/ontology/> .
+#   uzh:ICUBed rdfs:subClassOf hcp:Bed .
+#
+# The crosswalk (docs/ontology/crosswalk.md) records each provider
+# extension against Fabric IQ operational entities.
+# ===========================================================================

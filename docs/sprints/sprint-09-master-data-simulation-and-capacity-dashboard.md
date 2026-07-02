@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.2.1 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg (recovery from GitHub Copilot v1.0.0 draft) |
 | **Status** | Draft — pre-refresh (recovered from unmerged branch) |
-| **Previous Version** | 1.1.3 (RB-06 resolved by PRD v1.4.0 §H) |
+| **Previous Version** | 1.2.0 (RB-01/02/03/12/13 env-drift refresh) |
 
 > **⚠️ Recovery banner — read before execution.**
 > This document was authored on 2026-06-29 and lay unmerged on branch
@@ -45,7 +45,7 @@
 | RB-08 | AMA HCC/North Star H-05 | Design the **reference↔operational crosswalk** artefact (`docs/ontology/crosswalk.md`) + CI conformance check (design in Sprint 09; enforcement may slip to Sprint 10). | Governance + Data Platform | [AMA §11.1 H-05](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
 | RB-09 | AMA HCC/North Star H-06 | **Resolved 2026-07-02** — [OPERATIONS.md v1.4.0 Live Risk Register](../OPERATIONS.md#live-risk-register-new) adds `OPS-RISK-01` (Fabric IQ Switzerland-region GA + DPA equivalence). Monthly review cadence; owner = semantic / ontology owner; fallback = property-graph on GA per [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo). | Product | [AMA §11.1 H-06](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [OPERATIONS.md `OPS-RISK-01`](../OPERATIONS.md#live-risk-register-new) |
 | RB-10 | AMA HCC/North Star H-07 | Draft `DC-OR-SCHEDULE-v1` + `DC-OR-CASE-v1` **contract schemas only** (ingestion in Sprint 10). Adds to the 9 DC-MASTER-* contracts. | Data contracts | [AMA §11.1 H-07](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
-| RB-11 | Reference-layer skeleton | Create `docs/ontology/` folder + OWL/RDF skeleton importing BFO / OMRSE / OGMS / OOSTT + `CapacityUnit` abstraction. | Governance | [AMA §11.2 "Reference-layer skeleton"](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
+| RB-11 | Reference-layer skeleton | **Resolved 2026-07-02** — [`docs/ontology/`](../ontology/) created with [`README.md`](../ontology/README.md) (purpose, structure, versioning, contribution workflow, principles), [`reference-layer.ttl`](../ontology/reference-layer.ttl) (Turtle/OWL skeleton importing BFO/OMRSE/OGMS/OOSTT + `CapacityUnit` class family + `Bed`/`ORSlot`/`Room`/`StaffShift`/`Device` subtypes + `CapacityState` vocabulary + basic relations), and [`crosswalk.md`](../ontology/crosswalk.md) (reference-layer class ↔ Fabric IQ entity type ↔ data contract). CI conformance check placeholder documented for RB-08 follow-up. | Governance | [AMA §11.2 "Reference-layer skeleton"](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014 §1](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#1-two-layer-ontology-one-intent) |
 | RB-12 | Source-of-record for master data | **Resolved 2026-07-02** — §2.2 Track 2 now documents the ingestion decision: **lakehouse-direct CSV upload is the accepted interim path** (validated in Sprint 00 for `gold.demand_encounter`). Full bronze→silver→gold notebook pipeline stays in scope for volume/complexity but is not gated on Sprint 08 delivery. Source SQL remains disabled per MCAPS regional restriction ([sprint-00 v1.1.0 follow-up #2](sprint-00-new-tenantprovisioning.md)); Bicep is ready — flip when unblocked. | Data platform | [sprint-00 v1.1.0](sprint-00-new-tenantprovisioning.md) |
 | RB-13 | TMDL semantic model creation | **Resolved 2026-07-02** — §4.1 semantic-model section now specifies **Approach A** (portal-authored TMDL export as reference, then REST-based `getDefinition` → `updateDefinition` for automation). REST-only creation via handwritten `dataSources.tmdl` deferred until the Direct Lake TMDL grammar reference is available. Aligns with Sprint 00 follow-up #1. | Data platform | [sprint-00 v1.1.0 follow-up #1](sprint-00-new-tenantprovisioning.md) |
 | RB-14 | Naming | Verified on recovery (2026-07-02): no legacy `chhealthpf` references in this doc or the design spec. Item closed on recovery, kept for traceability. | Data platform | [.github/copilot-instructions.md §8](../../.github/copilot-instructions.md) |
