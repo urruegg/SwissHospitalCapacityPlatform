@@ -8,9 +8,9 @@ a workspace, lakehouse, and KIS mirror via the Fabric REST API.
 
 - **In scope (Bicep):** Fabric capacity (`Microsoft.Fabric/capacities`, SKU `F2`,
   region `switzerlandnorth` per ADR-0003).
-- **In scope (post-deploy):** Workspace `ws-chhealthpf-sit-data`, lakehouse
-  `lh_chhealthpf_sit` (Delta + 3-zone via `enableSchemas`), mirrored database
-  `mir_chhealthpf_kis` bound to the `kis` schema of the source SQL.
+- **In scope (post-deploy):** Workspace `ws-ihzhhpf-sit-data`, lakehouse
+  `lh_ihzhhpf_sit` (Delta + 3-zone via `enableSchemas`), mirrored database
+  `mir_ihzhhpf_kis` bound to the `kis` schema of the source SQL.
 - **Out of scope:** Pipelines, notebooks, RBAC for workspace members,
   semantic models. Those land in later walking-skeleton tasks (W1.3+).
 
@@ -18,7 +18,7 @@ a workspace, lakehouse, and KIS mirror via the Fabric REST API.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `nameSuffix` | `string` | e.g. `chhealthpf-sit`. Capacity name derives from this with hyphens stripped. |
+| `nameSuffix` | `string` | e.g. `ihzhhpf-sit`. Capacity name derives from this with hyphens stripped. |
 | `location` | `string` | Must be `switzerlandnorth` (ADR-0003). |
 | `tags` | `object` | Applied to the capacity. |
 | `capacityAdmins` | `array` | Object IDs of Fabric capacity administrators. |
@@ -27,7 +27,7 @@ a workspace, lakehouse, and KIS mirror via the Fabric REST API.
 
 | Name | Description |
 | --- | --- |
-| `capacityName` | The deployed Fabric capacity name (e.g. `fabricchhealthpfsit`). |
+| `capacityName` | The deployed Fabric capacity name (e.g. `fabricihzhhpfsit`). |
 | `capacityId` | Full ARM resource ID of the Fabric capacity. |
 | `moduleStatus` | Sentinel string for the parent module's status map. |
 
@@ -60,9 +60,9 @@ The script will fail without these in place:
    server (creates the necessary Azure SQL grants for the mirror). See the
    [Azure SQL Database mirror tutorial][asqltut].
 4. **Fabric connection to the source Azure SQL database exists** and its GUID
-   is known. Create via the Fabric portal (Data Factory → Connections) or
+   is known. Create via the Fabric portal (Data Factory â†’ Connections) or
    `POST /v1/connections`. The mirrored database REST call binds to this
-   connection by ID — see the [Microsoft Fabric mirroring REST API][mirapi]
+   connection by ID â€” see the [Microsoft Fabric mirroring REST API][mirapi]
    reference. Without a pre-existing connection, the mirror cannot be created.
 
 [asqltut]: https://learn.microsoft.com/fabric/mirroring/azure-sql-database-tutorial
@@ -74,21 +74,21 @@ The script will fail without these in place:
 # After capacity is deployed, the source SQL bootstrap is done, and a Fabric
 # connection to the KIS database has been created:
 ./post-deploy/configure-fabric.ps1 `
-    -CapacityName 'fabricchhealthpfsit' `
+    -CapacityName 'fabricihzhhpfsit' `
     -ConnectionId '<fabric-connection-guid>' `
     -SourceDatabase 'kis'
 ```
 
-`-CapacityName` is the Fabric capacity **displayName** — emitted by the Bicep
-module as the `capacityName` output (e.g. `fabricchhealthpfsit`). The script
+`-CapacityName` is the Fabric capacity **displayName** â€” emitted by the Bicep
+module as the `capacityName` output (e.g. `fabricihzhhpfsit`). The script
 resolves this to the Fabric capacity GUID via `GET /v1/capacities`; the Bicep
 `capacityId` output is the ARM resource ID and is **not** the value the Fabric
 workspace API expects.
 
-Per `AGENTS.md` §4, both `az deployment group create` and execution of
+Per `AGENTS.md` Â§4, both `az deployment group create` and execution of
 `configure-fabric.ps1` against Azure require an explicit `approved-to-apply`
 comment on the governing issue/PR. The script supports a `-DryRun` switch that
-loads the payload-builder functions without making any REST calls — that is
+loads the payload-builder functions without making any REST calls â€” that is
 what the Pester suite under `post-deploy/tests/` exercises.
 
 ## Tests
