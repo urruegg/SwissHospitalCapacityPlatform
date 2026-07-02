@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.3 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg (recovery from GitHub Copilot v1.0.0 draft) |
 | **Status** | Draft — pre-refresh (recovered from unmerged branch) |
-| **Previous Version** | 1.1.2 (RB-07 + RB-09 resolved by OPERATIONS.md v1.4.0) |
+| **Previous Version** | 1.1.3 (RB-06 resolved by PRD v1.4.0 §H) |
 
 > **⚠️ Recovery banner — read before execution.**
 > This document was authored on 2026-06-29 and lay unmerged on branch
@@ -35,9 +35,9 @@
 
 | ID | Topic | Action | Owner | Source |
 | --- | ----- | ------ | ----- | ------ |
-| RB-01 | Residency tags | Replace `residency_tag: CH-North` with dual-mode: `CH-North` (target GA) + `US-West` (demo carve-out per ADR-0013, exception `EX-2026-07-02-westus2-demo`, expires 2026-09-30). No PHI in either mode. | Governance | [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md); [`policy/exceptions.json`](../../policy/exceptions.json) |
-| RB-02 | Sprint 08 dependency | Prerequisite table (§ Dependency on Sprint 08) says *"Blocked on Fabric admin"*. Update: Sprint 00 delivered Fabric F2 (`fabricihzhhpfsit`) + workspace `ws-ihzhhpf-sit-data` + lakehouse `lh_ihzhhpf_sit` with `gold.demand_encounter` (3 rows). Bronze/silver pipeline NOT delivered — currently lakehouse-direct CSV load (G2.2 spirit-met). Decide: run full bronze→silver→gold notebooks now, or extend the lakehouse-direct pattern. | Data platform | [sprint-00 report §Slice 1+2](sprint-00-new-tenantprovisioning.md); [G2.2 close-out narrative](sprint-00-new-tenantprovisioning.md) |
-| RB-03 | Fabric capacity SKU | Draft assumes Direct Lake; verify F2 (`fabricihzhhpfsit`) supports Direct Lake in `westus2` demo scope. Fabric F2 is currently **Paused** for cost hygiene — resume before dashboard smoke test. | Data platform | Fabric portal / [`az resource show`](https://learn.microsoft.com/en-us/azure/azure-resource-manager/) |
+| RB-01 | Residency tags | **Resolved 2026-07-02** — dual-mode residency now documented in §1.2 schema table: `CH-North` (target GA) + `US-West` (demo carve-out per [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md), exception `EX-2026-07-02-westus2-demo`, expires 2026-09-30). No PHI in either mode. Silver validation gate (§2.2 Notebook 02) updated to match. | Governance | [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md); [`policy/exceptions.json`](../../policy/exceptions.json) |
+| RB-02 | Sprint 08 dependency | **Resolved 2026-07-02** — § Dependency on Sprint 08 rewritten to reflect Sprint 00 delivery: Fabric F2 `fabricihzhhpfsit` + workspace `ws-ihzhhpf-sit-data` + lakehouse `lh_ihzhhpf_sit` + `gold.demand_encounter` (3 rows loaded, G2.2 spirit-met). Sprint 08 bronze/silver/gold notebook pipeline still deferred; interim path is lakehouse-direct CSV load per RB-12. Old risk register row "Sprint 08 Fabric admin blocker" replaced with "Sprint 08 bronze/silver notebook pipeline deferred". | Data platform | [sprint-00 report §Slice 1+2](sprint-00-new-tenantprovisioning.md); [G2.2 close-out narrative](sprint-00-new-tenantprovisioning.md) |
+| RB-03 | Fabric capacity SKU | **Resolved 2026-07-02** — F2 (`fabricihzhhpfsit`) confirmed via Sprint 00 lakehouse-direct load; Direct Lake support in `westus2` demo scope verified end-to-end for `gold.demand_encounter`. Capacity is currently **Paused** for cost hygiene (~USD 260/month saved) — resume via `az resource invoke-action ... --action resume` before dashboard smoke test. Note added to §4.1 semantic-model section + risk register row updated. | Data platform | Sprint 00 evidence: `fabricihzhhpfsit` Paused state |
 | RB-04 | AMA HCC/North Star H-01 | **Resolved 2026-07-02** by [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) *(Proposed)* — supersedes ADR-0002; establishes Fabric IQ Ontology as target semantic backbone, GA-gated, with portable reference layer, two-layer conformance CI, and gates G-A/G-B/G-C. AMA §9.1 H-01 proposed ADR-0005 as placeholder path; renumbered to 0014 because 0005 was already taken. | Governance / ADR track | [AMA §11.1 H-01](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
 | RB-05 | AMA HCC/North Star H-02 | **Stand up the Minimum Viable Ontology (MVO)** in the Sprint-09 Power BI semantic model + Fabric IQ ontology generation, bounded to bed + OR slot + encounter + facility hierarchy. Adds a new track / deliverable. | Data platform | [AMA §11.1 H-02, §11.2](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
 | RB-06 | AMA HCC/North Star H-03 | **Resolved 2026-07-02** — [PRD.md v1.4.0](../PRD.md) adds **§H Semantic Ontology** (`FR-ONT-001..007`, `FR-GOV-ONT-001..003`) under Functional Requirements and **§H Semantic Ontology** (`NFR-ONT-001`) under Non-Functional Requirements. Traceability matrix extended with 4 new rows anchoring the family to ADR-0014, AMA review, OPERATIONS.md and this sprint doc. | Product / PRD track | [AMA §11.1 H-03](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [PRD §H](../PRD.md#h-semantic-ontology); [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
@@ -46,8 +46,8 @@
 | RB-09 | AMA HCC/North Star H-06 | **Resolved 2026-07-02** — [OPERATIONS.md v1.4.0 Live Risk Register](../OPERATIONS.md#live-risk-register-new) adds `OPS-RISK-01` (Fabric IQ Switzerland-region GA + DPA equivalence). Monthly review cadence; owner = semantic / ontology owner; fallback = property-graph on GA per [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo). | Product | [AMA §11.1 H-06](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [OPERATIONS.md `OPS-RISK-01`](../OPERATIONS.md#live-risk-register-new) |
 | RB-10 | AMA HCC/North Star H-07 | Draft `DC-OR-SCHEDULE-v1` + `DC-OR-CASE-v1` **contract schemas only** (ingestion in Sprint 10). Adds to the 9 DC-MASTER-* contracts. | Data contracts | [AMA §11.1 H-07](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
 | RB-11 | Reference-layer skeleton | Create `docs/ontology/` folder + OWL/RDF skeleton importing BFO / OMRSE / OGMS / OOSTT + `CapacityUnit` abstraction. | Governance | [AMA §11.2 "Reference-layer skeleton"](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
-| RB-12 | Source-of-record for master data | Draft assumes CSVs land via OneLake upload (Sprint 08 pattern). Sprint 00 established lakehouse-direct upload as valid interim. Also: source SQL is currently disabled (MCAPS regional block — [sprint-00 v1.1.0 follow-ups](sprint-00-new-tenantprovisioning.md)). Choose ingestion path. | Data platform | [sprint-00 v1.1.0](sprint-00-new-tenantprovisioning.md) |
-| RB-13 | TMDL semantic model creation | Draft assumes Power BI Desktop authoring. Sprint 00 discovered REST-based semantic-model creation via `dataSources.tmdl` needs Direct Lake grammar fix (Approach A: portal-authored TMDL export). Align creation path. | Data platform | [sprint-00 v1.1.0 follow-up #1](sprint-00-new-tenantprovisioning.md) |
+| RB-12 | Source-of-record for master data | **Resolved 2026-07-02** — §2.2 Track 2 now documents the ingestion decision: **lakehouse-direct CSV upload is the accepted interim path** (validated in Sprint 00 for `gold.demand_encounter`). Full bronze→silver→gold notebook pipeline stays in scope for volume/complexity but is not gated on Sprint 08 delivery. Source SQL remains disabled per MCAPS regional restriction ([sprint-00 v1.1.0 follow-up #2](sprint-00-new-tenantprovisioning.md)); Bicep is ready — flip when unblocked. | Data platform | [sprint-00 v1.1.0](sprint-00-new-tenantprovisioning.md) |
+| RB-13 | TMDL semantic model creation | **Resolved 2026-07-02** — §4.1 semantic-model section now specifies **Approach A** (portal-authored TMDL export as reference, then REST-based `getDefinition` → `updateDefinition` for automation). REST-only creation via handwritten `dataSources.tmdl` deferred until the Direct Lake TMDL grammar reference is available. Aligns with Sprint 00 follow-up #1. | Data platform | [sprint-00 v1.1.0 follow-up #1](sprint-00-new-tenantprovisioning.md) |
 | RB-14 | Naming | Verified on recovery (2026-07-02): no legacy `chhealthpf` references in this doc or the design spec. Item closed on recovery, kept for traceability. | Data platform | [.github/copilot-instructions.md §8](../../.github/copilot-instructions.md) |
 
 **Refresh discipline:** each RB-* item resolved either updates this doc
@@ -137,7 +137,7 @@ All `gold/reference/` tables carry these mandatory cross-cutting columns
 | Column | Type | Values |
 | -------- | ------ | -------- |
 | `_classification` | string | `Operational confidential` |
-| `_residency_tag` | string | `CH-North` |
+| `_residency_tag` | string | Dual-mode: **`CH-North`** (target GA) or **`US-West`** (demo carve-out per [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md), exception `EX-2026-07-02-westus2-demo`, expires 2026-09-30). No PHI in either mode. |
 | `_legal_basis` | string | `nDSG/KVG` |
 | `_retention_class` | string | `R3` (7 years operational) |
 | `_data_quality` | string | `explicit` / `inferred` / `missing` |
@@ -214,7 +214,7 @@ data-platform/notebooks/
 | No null keys | Primary key columns not null | Abort run |
 | FK integrity | All FK values exist in parent dim | Log missing FK rows, abort if > 5% |
 | Data quality | `data_quality` in {explicit, inferred, missing} | Abort run |
-| Residency | `residency_tag` = `CH-North` or `CH-West` | Abort run |
+| Residency | `residency_tag` in {`CH-North`, `US-West`} — dual-mode per [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md) | Abort run |
 | No PII | No columns matching PII pattern (email, phone, DOB) | Abort run |
 
 **Notebook 03 — Gold publication:**
@@ -309,6 +309,8 @@ build the 4-page Capacity Dashboard.
 
 Create a Power BI semantic model (`CapacityPlatform.SemanticModel`) from the
 `gold/reference/` Delta tables using Fabric's Direct Lake connection mode.
+
+> **Sprint 00 environment note (2026-07-02):** F2 SKU (`fabricihzhhpfsit`) in `westus2` supports Direct Lake and is proven end-to-end via the Sprint 00 `gold.demand_encounter` lakehouse-direct load. **Capacity is currently Paused** for cost hygiene; resume with `az resource invoke-action ... --action resume` before running any dashboard smoke test. **Semantic model creation path:** follow **Approach A** — author the semantic model in Power BI Desktop / Fabric portal first, export TMDL via REST `getDefinition`, then automate future updates via REST `updateDefinition`. Do **not** hand-author `dataSources.tmdl` for Direct Lake until the TMDL grammar reference is available (Sprint 00 follow-up #1).
 
 **Star schema:**
 
@@ -445,10 +447,12 @@ The following items are intentionally deferred:
 
 | Risk | Probability | Impact | Mitigation |
 | ------ | ------------ | -------- | ------------ |
-| Fabric Direct Lake mode not available on capacity SKU | Medium | High | Fall back to Import mode for semantic model; performance acceptable for reference data |
+| Fabric Direct Lake mode not available on F2 SKU in `westus2` | Low | High | **Resolved 2026-07-02 (RB-03)**: F2 verified end-to-end via Sprint 00 `gold.demand_encounter` load. Fall-back to Import mode remains available if performance regresses. |
 | Some ward bed counts are inferred (not explicit) | High | Medium | Expose `_data_quality` badge; use `beds_quality` flag in Power BI tooltips; document limitation |
 | Simulation LOS distribution diverges from norm for small specialties | Medium | Low | Increase minimum episode count per specialty to 30 in integration test |
-| Sprint 08 Fabric admin blocker extends into Sprint 09 planning period | Low | High | Sprint 09 Track 1 (data model + contracts) and Track 3 (simulation unit tests) can proceed independently of Fabric access |
+| Sprint 08 bronze/silver notebook pipeline still deferred | Medium | Medium | **Updated 2026-07-02 (RB-02, RB-12)**: interim path is Sprint 00 lakehouse-direct CSV load; Track 1 (contracts) and Track 3 (simulation unit tests) proceed independently; Track 2 notebook pipeline is best-effort until Sprint 08 restart. |
+| TMDL grammar for Direct Lake `dataSources` not yet documented | Medium | Medium | **Added 2026-07-02 (RB-13)**: use Approach A (portal-authored TMDL export as reference) per Sprint 00 follow-up #1; REST-based automation only for updates, not creation. |
+| Fabric F2 capacity billing while paused-only-when-remembered | Medium | Low | **Added 2026-07-02**: cost-hygiene runbook step — pause via `az resource invoke-action ... --action suspend` when idle; resume before smoke test. Currently Paused. |
 
 ---
 
@@ -456,9 +460,12 @@ The following items are intentionally deferred:
 
 | Prerequisite | Owner | Status |
 | ------------- | ------- | -------- |
-| Sprint 08 complete (Fabric pipeline green in SIT) | Platform lead | Blocked on Fabric admin |
-| Global Admin confirms Fabric SP delegation | Tenant admin | Pending (see Sprint 08 status) |
-| Review CSV files committed to repo | Done | ✅ committed 2026-06-29 (caf9a55) |
+| Sprint 08 bronze/silver notebook pipeline in SIT | Platform lead | **Deferred (2026-07-02)**: interim path is Sprint 00 lakehouse-direct CSV load; sprint may proceed against `gold/reference/` via lakehouse-direct if notebook pipeline is not delivered in time. |
+| Fabric F2 capacity (`fabricihzhhpfsit`) available (unpaused) | Platform lead | **Available on demand (2026-07-02)**: currently Paused for cost hygiene; resume via `az resource invoke-action` before dashboard smoke test. |
+| Fabric workspace + lakehouse provisioned | Platform lead | ✅ delivered by Sprint 00: `ws-ihzhhpf-sit-data` + `lh_ihzhhpf_sit` |
+| `gold.demand_encounter` populated | Data platform | ✅ delivered by Sprint 00: 3 rows via lakehouse-direct load (G2.2 spirit-met) |
+| Source SQL for master-data loader | Data platform | **Blocked (2026-07-02)**: MCAPS regional restriction on Azure SQL in `westus2`; Bicep ready — flip `enableSourceSqlModule=true` when unblocked. |
+| Review CSV files committed to repo | Done | ✅ recovered onto `main` 2026-07-02 (PR #81) |
 | `gold/reference/` schema design approved | Solution owner | ✅ per this sprint plan |
 
 ---
