@@ -63,7 +63,7 @@
       "value": "10.60.1.0/24"
     },
     "enableSourceSqlModule": {
-      "value": true
+      "value": false
     },
     "sourceSqlDataSubnetId": {
       "value": ""

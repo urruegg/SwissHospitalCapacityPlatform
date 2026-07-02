@@ -27,10 +27,14 @@ param networkVnetAddressPrefix = '10.60.0.0/16'
 param networkAppSubnetPrefix = '10.60.1.0/24'
 
 // Sprint 08 W1.1 / Sprint 00 Slice 2 — source-SQL submodule (synthetic KIS feed).
-// Enabled for the Sprint 00 demo scope on the new tenant.
-// Empty strings for subnet + KV IDs — main.bicep auto-wires from network + platform-foundation module outputs.
-// AAD admin uses the operator's Entra user in the new tenant (required by tenant AAD-only auth deny policy).
-param enableSourceSqlModule = true
+// TEMPORARILY DISABLED for the Sprint 00 demo scope: MCAPS sandbox subscription
+// 66a9953a-... is blocked from provisioning Azure SQL Database in westus2 (and most
+// other regions except centralus, francecentral, germanywestcentral, japaneast).
+// Deferring source-SQL until either (a) support ticket lifts the restriction, or
+// (b) we accept a cross-region SQL deployment. All the underlying Bicep improvements
+// (network snet-data subnet, auto-wiring, SQL uniqueString suffix, AAD-only auth block,
+// KV enabledForTemplateDeployment) remain in place and are ready when this flips to true.
+param enableSourceSqlModule = false
 param sourceSqlDataSubnetId = ''
 param sourceSqlKeyVaultId = ''
 param sourceSqlAdminPasswordSecretName = 'sql-admin-password'
