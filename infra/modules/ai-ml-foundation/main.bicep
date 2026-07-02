@@ -12,8 +12,11 @@ param tags object
 var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}${take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)}')
 var containerRegistryName = toLower('cr${uniqueString(resourceGroup().id, nameSuffix)}')
 
+// Must match the expression in platform-foundation/main.bicep so the existing reference resolves.
+var keyVaultName = 'kv-${nameSuffix}-${take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)}'
+
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: 'kv-${nameSuffix}'
+  name: keyVaultName
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
