@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "9848319494759667152"
+      "templateHash": "12209448123017587172"
     }
   },
   "parameters": {
@@ -714,7 +714,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "2345959628000021485"
+              "templateHash": "7147992801440877839"
             }
           },
           "parameters": {
@@ -1089,7 +1089,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "10785951546242682772"
+                      "templateHash": "4037495517618174413"
                     }
                   },
                   "parameters": {
@@ -1119,7 +1119,7 @@
                       "type": "array",
                       "minLength": 1,
                       "metadata": {
-                        "description": "Object ID(s) of Fabric capacity administrators."
+                        "description": "UPN(s) of Fabric capacity administrators (email format per Fabric API, e.g. admin@contoso.onmicrosoft.com). Object IDs are not accepted."
                       }
                     }
                   },
