@@ -26,7 +26,9 @@ param sqlAdminLogin string = 'sqladmin'
 @description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone. Leave empty to wire DNS externally (e.g. via hub network).')
 param privateDnsZoneId string = ''
 
-var serverName = 'sql-${nameSuffix}'
+// SQL server names are globally unique DNS-wide (<name>.database.windows.net). Add per-(subscription, RG) suffix.
+var globalUniquenessSuffix = take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)
+var serverName = 'sql-${nameSuffix}-${globalUniquenessSuffix}'
 var databaseName = 'kis'
 var privateEndpointName = 'pe-${serverName}'
 

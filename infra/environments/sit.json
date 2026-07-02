@@ -63,13 +63,13 @@
       "value": "10.60.1.0/24"
     },
     "enableSourceSqlModule": {
-      "value": false
+      "value": true
     },
     "sourceSqlDataSubnetId": {
-      "value": "/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.Network/virtualNetworks/vnet-ihzhhpf-sit/subnets/snet-data-sit"
+      "value": ""
     },
     "sourceSqlKeyVaultId": {
-      "value": "/subscriptions/<SUB>/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.KeyVault/vaults/kv-ihzhhpf-sit"
+      "value": ""
     },
     "sourceSqlAdminPasswordSecretName": {
       "value": "sql-admin-password"
