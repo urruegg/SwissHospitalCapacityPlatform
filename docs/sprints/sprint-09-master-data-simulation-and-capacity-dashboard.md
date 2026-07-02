@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.3 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg (recovery from GitHub Copilot v1.0.0 draft) |
-| **Status** | Draft — pre-refresh (recovered from unmerged branch) |
-| **Previous Version** | 1.2.2 (RB-08 resolved by CI conformance check scaffold) |
+| **Status** | **Refreshed 2026-07-02 — ready for execution.** §0 Refresh Backlog RB-01…RB-14 fully resolved via PRs #82–#89. |
+| **Previous Version** | 1.2.3 (RB-10 resolved by DC-OR-SCHEDULE-v1 + DC-OR-CASE-v1 drafts) |
 
 > **⚠️ Recovery banner — read before execution.**
 > This document was authored on 2026-06-29 and lay unmerged on branch
@@ -39,7 +39,7 @@
 | RB-02 | Sprint 08 dependency | **Resolved 2026-07-02** — § Dependency on Sprint 08 rewritten to reflect Sprint 00 delivery: Fabric F2 `fabricihzhhpfsit` + workspace `ws-ihzhhpf-sit-data` + lakehouse `lh_ihzhhpf_sit` + `gold.demand_encounter` (3 rows loaded, G2.2 spirit-met). Sprint 08 bronze/silver/gold notebook pipeline still deferred; interim path is lakehouse-direct CSV load per RB-12. Old risk register row "Sprint 08 Fabric admin blocker" replaced with "Sprint 08 bronze/silver notebook pipeline deferred". | Data platform | [sprint-00 report §Slice 1+2](sprint-00-new-tenantprovisioning.md); [G2.2 close-out narrative](sprint-00-new-tenantprovisioning.md) |
 | RB-03 | Fabric capacity SKU | **Resolved 2026-07-02** — F2 (`fabricihzhhpfsit`) confirmed via Sprint 00 lakehouse-direct load; Direct Lake support in `westus2` demo scope verified end-to-end for `gold.demand_encounter`. Capacity is currently **Paused** for cost hygiene (~USD 260/month saved) — resume via `az resource invoke-action ... --action resume` before dashboard smoke test. Note added to §4.1 semantic-model section + risk register row updated. | Data platform | Sprint 00 evidence: `fabricihzhhpfsit` Paused state |
 | RB-04 | AMA HCC/North Star H-01 | **Resolved 2026-07-02** by [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) *(Proposed)* — supersedes ADR-0002; establishes Fabric IQ Ontology as target semantic backbone, GA-gated, with portable reference layer, two-layer conformance CI, and gates G-A/G-B/G-C. AMA §9.1 H-01 proposed ADR-0005 as placeholder path; renumbered to 0014 because 0005 was already taken. | Governance / ADR track | [AMA §11.1 H-01](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
-| RB-05 | AMA HCC/North Star H-02 | **Stand up the Minimum Viable Ontology (MVO)** in the Sprint-09 Power BI semantic model + Fabric IQ ontology generation, bounded to bed + OR slot + encounter + facility hierarchy. Adds a new track / deliverable. | Data platform | [AMA §11.1 H-02, §11.2](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff) |
+| RB-05 | AMA HCC/North Star H-02 | **Resolved 2026-07-02** — new [Track 5 — Minimum Viable Ontology (MVO)](#track-5--minimum-viable-ontology-mvo) added below (11 entity types incl. new `Ward`/`Room`/`Bed`/`ORSlot`; first time-series binding on bed state; scoped to `westus2` demo per ADR-0013 / ADR-0014 gate G-A). Reference layer + crosswalk + CI check already delivered via RB-11 + RB-08. Deliverables D10–D14 added; Success Criteria + Definition of Done + Traceability extended. | Data platform | [AMA §11.1 H-02, §11.2](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo) |
 | RB-06 | AMA HCC/North Star H-03 | **Resolved 2026-07-02** — [PRD.md v1.4.0](../PRD.md) adds **§H Semantic Ontology** (`FR-ONT-001..007`, `FR-GOV-ONT-001..003`) under Functional Requirements and **§H Semantic Ontology** (`NFR-ONT-001`) under Non-Functional Requirements. Traceability matrix extended with 4 new rows anchoring the family to ADR-0014, AMA review, OPERATIONS.md and this sprint doc. | Product / PRD track | [AMA §11.1 H-03](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [PRD §H](../PRD.md#h-semantic-ontology); [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) |
 | RB-07 | AMA HCC/North Star H-04 | **Resolved 2026-07-02** — [OPERATIONS.md v1.4.0 RACI baseline](../OPERATIONS.md#roles-and-accountability-raci-baseline) adds *Semantic / ontology stewardship* row; new subsection *Semantic / Ontology Owner (new role per ADR-0014)* defines remit, change discipline, principles, deliverables and escalation. Incumbent nomination is Sprint 09 acceptance evidence. | Governance | [AMA §11.1 H-04](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014 §4](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#4-governance-model-obo-inspired) |
 | RB-08 | AMA HCC/North Star H-05 | **Resolved 2026-07-02 (design + scaffold; WARN-only per AMA §11.1 H-05 "design only in Sprint 09; enforcement can slip to Sprint 10")** — [`docs/ontology/CI_DESIGN.md`](../ontology/CI_DESIGN.md) documents the check; [`scripts/ontology/check_crosswalk_conformance.py`](../../scripts/ontology/check_crosswalk_conformance.py) implements the parser + comparator (stdlib-only, verified locally with 0 WARN / 0 FAIL against Sprint 09 skeleton); [`.github/workflows/ontology-conformance.yml`](../../.github/workflows/ontology-conformance.yml) runs it on any PR touching `docs/ontology/**` or `scripts/ontology/**`. Sprint 10 strict-mode flip documented in CI_DESIGN.md. | Governance + Data Platform | [AMA §11.1 H-05](../reviews/2026-07-01-ama-hcc-northstar-review.md#11-sprint-09-implementation-handoff); [ADR-0014 §4](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#4-governance-model-obo-inspired) |
@@ -398,6 +398,55 @@ No PII exposure — all visuals use aggregated operational data only.
 
 ---
 
+### Track 5 — Minimum Viable Ontology (MVO)
+
+Added 2026-07-02 (RB-05, v1.3.0) per [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo) and [AMA §11.2](../reviews/2026-07-01-ama-hcc-northstar-review.md#112-mvo-scope-for-sprint-09-proposed). Realises `FR-ONT-001..007` + `NFR-ONT-001` from [PRD §H](../PRD.md#h-semantic-ontology).
+
+**Scope guardrails (per ADR-0014):**
+
+- Operational layer (Fabric IQ) lives in the **`westus2` demo scope only** — gate G-B, [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md), synthetic data only, no PHI.
+- Regulated `switzerlandnorth` PROD paths carrying PHI are **not** in scope for Sprint 09 — gated on gate G-C (Fabric IQ Switzerland-region GA + DPA equivalence). See [OPS-RISK-01](../OPERATIONS.md#live-risk-register-new).
+- Reference layer (OWL/RDF) is portable and lives in `docs/ontology/` — already delivered via RB-11.
+
+#### 5.1 Entity types (11 total)
+
+Auto-generated from the Track 4 semantic model, bound to the reference-layer classes per [`docs/ontology/crosswalk.md`](../ontology/crosswalk.md):
+
+| MVO entity | Reference class | Data contract | Source table |
+| ---------- | --------------- | ------------- | ------------ |
+| `Hospital` | *(from OOSTT)* | `DC-MASTER-01` | `dim_hospital` |
+| `Specialty` | *(from OMRSE)* | `DC-MASTER-02` | `dim_specialty` |
+| `HospitalService` | *(from OMRSE / OOSTT)* | `DC-MASTER-03` | `dim_hospital_service` |
+| **`Ward`** *(new)* | *(pending Phase 3 OMRSE placement)* | `DC-MASTER-07` (ward rollup) | `dim_ward_capacityunit` |
+| **`Room`** *(new)* | `hcp:Room` | *(no contract yet — inferred from ward-rollup)* | `dim_ward_capacityunit` |
+| **`Bed`** *(new)* | `hcp:Bed` | future `DC-BED-STATE-v1` | `dim_ward_capacityunit` (bed rollup) |
+| `Encounter` | *(from OGMS)* | `DC-DEMAND-ENCOUNTER-v1` | `gold.demand_encounter` (Sprint 00 baseline) |
+| `Patient` role | *(from OGMS — patient role class)* | attached to `Encounter` (pseudonymised) | — |
+| `CareTeam` | *(KTH pattern)* | *(new; deferred to Sprint 10)* | — |
+| `Equipment` | `hcp:Device` | future `DC-DEVICE-STATE-v1` | future `dim_device` |
+| **`ORSlot`** *(new — OR steering anchor)* | `hcp:ORSlot` | [`DC-OR-SCHEDULE-v1`](../../data/synthetic/schema/dc-or-schedule-v1.schema.json) + [`DC-OR-CASE-v1`](../../data/synthetic/schema/dc-or-case-v1.schema.json) *(drafted via RB-10; ingestion Sprint 10)* | future `dim_or_slot` |
+
+#### 5.2 Time-series binding (first target)
+
+**Bed state changes** — `occupied` / `available` / `blocked` / `cleaning`. Bound to `hcp:CapacityState` via `hcp:hasState`.
+
+Source for Sprint 09 demo: synthesised bed-state events from the extended simulation (Track 3, `apps/sim-capacity/`). OR-status and monitoring-device time series follow in Sprint 10/11 per [AMA §11.2](../reviews/2026-07-01-ama-hcc-northstar-review.md#112-mvo-scope-for-sprint-09-proposed).
+
+#### 5.3 Reference-layer skeleton (parallel; already delivered)
+
+- [`docs/ontology/README.md`](../ontology/README.md) — purpose, structure, versioning, contribution workflow.
+- [`docs/ontology/reference-layer.ttl`](../ontology/reference-layer.ttl) — Turtle/OWL: BFO/OMRSE/OGMS/OOSTT imports + `hcp:CapacityUnit` + 5 subtypes + `hcp:CapacityState` vocabulary.
+- [`docs/ontology/crosswalk.md`](../ontology/crosswalk.md) — reference class ↔ Fabric IQ entity ↔ data contract.
+- [`docs/ontology/CI_DESIGN.md`](../ontology/CI_DESIGN.md) — conformance check spec + Sprint 10 flip procedure.
+- [`scripts/ontology/check_crosswalk_conformance.py`](../../scripts/ontology/check_crosswalk_conformance.py) — executable check (WARN-only in Sprint 09).
+- [`.github/workflows/ontology-conformance.yml`](../../.github/workflows/ontology-conformance.yml) — GH Actions integration.
+
+#### 5.4 Fallback (if Fabric IQ preview cannot be validated in-sprint)
+
+Per [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo): if the Fabric IQ demo-scope generation is blocked (preview quota, API instability, or the semantic model isn't published yet), the MVO can fall back to an **equivalent property-graph representation on GA Fabric services** (e.g. Cosmos Gremlin against the same semantic model export). The reference layer is unchanged; only the operational realisation differs. Decision point at Sprint mid-point.
+
+---
+
 ## Deliverables
 
 | # | Deliverable | Track | Definition of Done |
@@ -411,6 +460,11 @@ No PII exposure — all visuals use aggregated operational data only.
 | D7 | `CapacityPlatform.SemanticModel` published to Fabric | T4 | Direct Lake connected; all measures calculable |
 | D8 | 4-page Power BI Capacity Dashboard | T4 | All 4 pages render with real data; data quality badges visible |
 | D9 | Sprint 09 SIT pipeline green | All | SIT run passes all gates including reference load and report smoke test |
+| D10 | Fabric IQ MVO generated in `westus2` demo scope (11 entity types per §5.1) | T5 | Entities visible in Fabric IQ portal; static bindings resolve; ADR-0014 gate G-A met |
+| D11 | Bed-state time-series binding on `hcp:Bed` (per §5.2) | T5 | Simulation emits bed-state events; eventhouse binding refreshes; sample query returns state changes |
+| D12 | `docs/ontology/` skeleton kept consistent with the MVO | T5 | Any MVO change lands with matching `reference-layer.ttl` + `crosswalk.md` updates; ontology-conformance CI check passes (WARN-only) |
+| D13 | ADR-0014 gate G-A signed off (Sprint acceptance evidence per [AMA §11.3](../reviews/2026-07-01-ama-hcc-northstar-review.md#113-sprint-09-acceptance-evidence-proposed)) | T5 | Semantic / ontology owner + Data platform lead approve the MVO delivery evidence in a merged PR |
+| D14 | Fabric IQ Switzerland-GA go/no-go entry updated in [OPERATIONS.md `OPS-RISK-01`](../OPERATIONS.md#live-risk-register-new) at Sprint close | T5 | Row includes latest status + next-review date |
 
 ---
 
@@ -424,7 +478,9 @@ No PII exposure — all visuals use aggregated operational data only.
    with live data from the semantic model, including data quality badges.
 4. All 9 data contracts are registered in `docs/DATA.md`.
 5. No PII is present in any `gold/reference/` table (validated by pipeline gate).
-6. All CI checks pass: markdown lint, Bicep validate, Python unit tests.
+6. All CI checks pass: markdown lint, Bicep validate, Python unit tests, **ontology-conformance (WARN-only)**.
+7. **MVO generated in Fabric IQ demo scope (`westus2`)** with 11 entity types per §5.1 and a working bed-state time-series binding; ADR-0014 gate G-A signed off.
+8. **Ontology skeleton stays in sync** with the MVO: every MVO change lands with matching `reference-layer.ttl` + `crosswalk.md` updates in the same PR.
 
 ---
 
@@ -472,12 +528,14 @@ The following items are intentionally deferred:
 
 ## Definition of Done (Sprint)
 
-- [ ] All 9 deliverables (D1–D9) completed and verified
+- [ ] All 14 deliverables (D1–D14) completed and verified
 - [ ] `docs/DATA.md` updated with 9 new data contracts (version 0.6.0)
 - [ ] Simulation unit + integration tests pass in CI (`python -m pytest apps/sim-capacity/tests/ -q`)
 - [ ] Power BI dashboard deployed to Fabric workspace and accessible to viewer role
 - [ ] Validation script `validate_reference_load.py` exits 0 against SIT data
-- [ ] SIT pipeline run passes all gates (markdown lint, Bicep validate, reference load gate, simulation smoke test)
+- [ ] MVO generated in Fabric IQ (`westus2` demo scope) with bed-state time-series binding; ADR-0014 gate G-A signed off by semantic / ontology owner
+- [ ] Ontology conformance CI check passes (WARN-only mode; strict mode remains deferred to Sprint 10)
+- [ ] SIT pipeline run passes all gates (markdown lint, Bicep validate, reference load gate, simulation smoke test, ontology conformance)
 - [ ] Sprint 09 document version updated to reflect completion status
 - [ ] PR merged to `main` with full PR output contract fields populated
 
@@ -511,3 +569,10 @@ Work packages are executed track-by-track. Recommended execution order:
 | Data quality transparency | NFR-GOV-003, NFR-GOV-006 |
 | nDSG compliance (no PII) | NFR-SEC-002, NFR-COMP-001 |
 | Data contracts | NFR-DAT-001 |
+| **Track 5 — MVO reference ontology** | [`FR-ONT-001`](../PRD.md#h-semantic-ontology), [`FR-ONT-003`](../PRD.md#h-semantic-ontology), [`FR-ONT-007`](../PRD.md#h-semantic-ontology) |
+| **Track 5 — MVO operational ontology (Fabric IQ, `westus2` demo scope)** | [`FR-ONT-002`](../PRD.md#h-semantic-ontology) *(GA-gated per [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) gate G-C)*, [`FR-ONT-004`](../PRD.md#h-semantic-ontology) |
+| **Track 5 — FHIR / SNOMED CT crosswalk** | [`FR-ONT-006`](../PRD.md#h-semantic-ontology) *(scaffolded via [crosswalk.md](../ontology/crosswalk.md); full concept-level crosswalk in Phase 3)* |
+| **Track 5 — Semantic governance** | [`FR-GOV-ONT-001`](../PRD.md#h-semantic-ontology), [`FR-GOV-ONT-002`](../PRD.md#h-semantic-ontology), [`FR-GOV-ONT-003`](../PRD.md#h-semantic-ontology), [`NFR-ONT-001`](../PRD.md#h-semantic-ontology-sprint-9) |
+| **OR steering data contracts** | AMA `FR-OR-001`, `FR-OR-002`, `FR-OR-006` *(drafted via [DC-OR-SCHEDULE-v1](../../data/synthetic/schema/dc-or-schedule-v1.schema.json) + [DC-OR-CASE-v1](../../data/synthetic/schema/dc-or-case-v1.schema.json); PRD extension deferred to a future sprint)* |
+
+> **Note on legacy IDs (2026-07-02).** The Sprint 09 v1.0.0 draft referenced `FR-DAT-001`, `FR-SIM-001`, `FR-VIZ-001`, `NFR-DAT-001` — these do not exist in [PRD.md](../PRD.md) v1.4.0 as-is. They correspond to `FR-DATA-*` and the `FR-SIM-*` / `NFR-KPI-*` families proposed by the [AMA HCC/North Star review](../reviews/2026-07-01-ama-hcc-northstar-review.md#5-new--emerging-requirements) but not yet added to the PRD. Cleaning up the legacy IDs is out of scope for RB-05; open a follow-up PR when the `FR-SIM-*` / `FR-VIZ-*` families are proposed in the PRD.
