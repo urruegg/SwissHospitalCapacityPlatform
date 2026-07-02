@@ -2,7 +2,7 @@
 # Walking-skeleton: silver.episode -> gold.demand_encounter (DC envelope assertion)
 # Spec: docs/superpowers/specs/2026-06-14-sprint-08-data-platform-design.md §8.1
 # Implements: FR-DATA-005 (capacity demand as DC), NFR-GOV-006 (purpose tags + residency envelope)
-# Lakehouse: lh_chhealthpf_sit
+# Lakehouse: lh_ihzhhpf_sit
 
 # COMMAND ----------
 
@@ -12,7 +12,7 @@ from _lib import io, transforms
 
 # COMMAND ----------
 
-LAKEHOUSE = "lh_chhealthpf_sit"
+LAKEHOUSE = "lh_ihzhhpf_sit"
 SILVER_TABLE = f"{LAKEHOUSE}.silver.episode"
 BRONZE_EVENTS_TABLE = f"{LAKEHOUSE}.bronze.events_demand_encounter"
 GOLD_TABLE = f"{LAKEHOUSE}.gold.demand_encounter"

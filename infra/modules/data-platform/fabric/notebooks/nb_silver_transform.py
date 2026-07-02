@@ -2,7 +2,7 @@
 # Walking-skeleton: kis.Episode (mirror landing) -> silver.episode (+ silver.quarantine_episode)
 # Spec: docs/superpowers/specs/2026-06-14-sprint-08-data-platform-design.md §8.1
 # Implements: FR-DATA-001 (Episode as control unit), FR-DATA-003 (pseudonymisation invariant)
-# Lakehouse: lh_chhealthpf_sit (enableSchemas=true; mirror lands source dbo schema as `kis`).
+# Lakehouse: lh_ihzhhpf_sit (enableSchemas=true; mirror lands source dbo schema as `kis`).
 # Spec uses `bronze.kis_*` naming; the W1.2 mirror lands at `kis.Episode` — this notebook
 # bridges that gap for the walking skeleton (no separate bronze rename layer yet).
 
@@ -12,7 +12,7 @@ from _lib import io, transforms
 
 # COMMAND ----------
 
-LAKEHOUSE = "lh_chhealthpf_sit"
+LAKEHOUSE = "lh_ihzhhpf_sit"
 BRONZE_TABLE = f"{LAKEHOUSE}.kis.Episode"
 SILVER_TABLE = f"{LAKEHOUSE}.silver.episode"
 QUARANTINE_TABLE = f"{LAKEHOUSE}.silver.quarantine_episode"
