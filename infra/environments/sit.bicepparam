@@ -39,8 +39,9 @@ param sourceSqlPrivateDnsZoneId = ''
 
 // Sprint 08 W1.2 / Sprint 00 Slice 1 — Fabric foundation submodule (F2 capacity + workspace/lakehouse/mirror).
 // Enabled for the Sprint 00 demo scope on the new tenant per ADR-0013.
-// Capacity admin is the operator's Entra user OID in the new tenant (see W1.4 evidence).
+// Capacity admin is the operator's Entra UPN (email) in the new tenant.
+// NB: Fabric API rejects object IDs here — must be UPN (email format).
 param enableFabricFoundationModule = true
 param fabricCapacityAdmins = [
-    '7b9830a6-989b-4edd-b720-0d4bff7ffb2e'
+    'admin@mngenvmcap164444.onmicrosoft.com'
 ]

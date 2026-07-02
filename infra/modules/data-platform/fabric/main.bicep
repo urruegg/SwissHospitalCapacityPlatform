@@ -13,7 +13,7 @@ param location string
 @description('Resource tags applied to all resources.')
 param tags object
 
-@description('Object ID(s) of Fabric capacity administrators.')
+@description('UPN(s) of Fabric capacity administrators (email format per Fabric API, e.g. admin@contoso.onmicrosoft.com). Object IDs are not accepted.')
 @minLength(1)
 param capacityAdmins array
 
