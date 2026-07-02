@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.3.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
+| **Previous Version** | 1.4.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
 
 ## Purpose
 
@@ -33,6 +33,10 @@ Implemented module domains:
 - data-platform
 - ai-platform
 - integration
+
+## Data platform
+
+> **SQL-optional posture (2026-07-02, ADR-0015):** For the MVP demo scope, SQL Server is skipped entirely. Ingestion runs via direct-to-lakehouse (reference/master data) + Event Hubs → Fabric Eventstream (simulator events) → Fabric Spark bronze/silver/gold notebook chain. The `source-sql` Bicep module stays in the tree behind `enableSourceSqlModule=false`; enable when a customer PROD deployment requires KIS integration. See [ADR-0015](adr/0015-skip-sql-for-mvp-demo.md).
 
 ## Implemented Topology Snapshot
 
