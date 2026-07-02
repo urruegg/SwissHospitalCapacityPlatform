@@ -1,0 +1,16 @@
+﻿disease_id,name_de,name_en,icd10,synonyms,primary_specialty_id,body_system,acuity,emergency_relevant
+DIS_BRCA,Brustkrebs,Breast cancer,C50,Mammakarzinom,SPEC_ONKO,oncology,chronic,N
+DIS_STROKE,Hirnschlag,Stroke,I63,Schlaganfall;ischämischer Insult,SPEC_NEURO,neuro,acute,Y
+DIS_DISCHERN,Bandscheibenvorfall,Disc herniation,M51.1,Diskushernie,SPEC_WIRBEL,spine,acute,N
+DIS_COPD,COPD,COPD,J44,COLD;chronische Bronchitis;Lungenemphysem,SPEC_PNEUMO,respiratory,chronic,Y
+DIS_HTN,Bluthochdruck,Hypertension,I10,Hypertonie;arterielle Hypertonie,SPEC_KARDIO,cardio,chronic,N
+DIS_AML,Akute Leukämie,Acute leukaemia,C92.0,AML;ALL;Blutkrebs,SPEC_HAEM,haem-onc,acute,Y
+DIS_PANCR,Pankreatitis,Pancreatitis,K85,Bauchspeicheldrüsenentzündung,SPEC_GASTRO,gi,acute,Y
+DIS_ILEUS,Darmverschluss,Bowel obstruction,K56,Ileus;Darmobstruktion,SPEC_CHIR,gi-surg,acute,Y
+DIS_CONJ,Bindehautentzündung,Conjunctivitis,H10,Konjunktivitis,SPEC_OPHT,eye,acute,N
+DIS_BIRTH,Geburt,Childbirth,O80,Spontangeburt,SPEC_GEBH,obstetrics,acute,N
+DIS_HIPFX,Hüftfraktur,Hip fracture,S72,Schenkelhalsfraktur,SPEC_TRAUMA,trauma,acute,Y
+DIS_ESRD,Niereninsuffizienz (terminal),End-stage renal disease,N18.5,Dialysepflicht;ESRD,SPEC_NEPHRO,renal,chronic,N
+DIS_APP,Blinddarmentzündung,Appendicitis,K35,Appendizitis,SPEC_CHIR,gi-surg,acute,Y
+DIS_PNEU,Lungenentzündung,Pneumonia,J18,Pneumonie,SPEC_PNEUMO,respiratory,acute,Y
+DIS_AMI,Herzinfarkt,Acute myocardial infarction,I21,Myokardinfarkt;Herzinfarkt,SPEC_KARDIO,cardio,acute,Y

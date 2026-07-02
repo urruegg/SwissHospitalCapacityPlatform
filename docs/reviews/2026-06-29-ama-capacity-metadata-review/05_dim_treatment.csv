@@ -1,0 +1,17 @@
+﻿treatment_id,name_de,name_en,chop,modality,setting,disease_id
+TRT_MASTECT,Mastektomie,Mastectomy,85.4,surgical,inpatient,DIS_BRCA
+TRT_CHEMO,Chemotherapie,Chemotherapy,99.25,conservative,outpatient,DIS_BRCA
+TRT_THROMB,Thrombolyse,Thrombolysis,99.10,interventional,inpatient,DIS_STROKE
+TRT_DISCSURG,Diskektomie,Discectomy,80.51,surgical,inpatient,DIS_DISCHERN
+TRT_COPDMGT,COPD-Exazerbationsbehandlung,COPD exacerbation mgmt,93.96,conservative,inpatient,DIS_COPD
+TRT_ANTIHTN,Blutdruckeinstellung,Antihypertensive therapy,99.29,conservative,outpatient,DIS_HTN
+TRT_INDUCTION,Induktionschemo,Induction chemotherapy,99.25,conservative,inpatient,DIS_AML
+TRT_ERCP,ERCP,ERCP,51.10,interventional,inpatient,DIS_PANCR
+TRT_LAPAROT,Laparotomie,Laparotomy,54.11,surgical,inpatient,DIS_ILEUS
+TRT_EYEDROP,Lokaltherapie Auge,Topical eye therapy,99.29,conservative,outpatient,DIS_CONJ
+TRT_DELIVERY,Spontangeburt,Vaginal delivery,73.59,interventional,inpatient,DIS_BIRTH
+TRT_HIPNAIL,Hüft-Osteosynthese,Hip osteosynthesis,79.15,surgical,inpatient,DIS_HIPFX
+TRT_DIALYSIS,Hämodialyse,Haemodialysis,39.95,conservative,day-case,DIS_ESRD
+TRT_APPEND,Appendektomie,Appendectomy,47.0,surgical,inpatient,DIS_APP
+TRT_ABX,Antibiotikatherapie,Antibiotic therapy,99.21,conservative,inpatient,DIS_PNEU
+TRT_PCI,Koronarintervention,PCI,36.06,interventional,inpatient,DIS_AMI

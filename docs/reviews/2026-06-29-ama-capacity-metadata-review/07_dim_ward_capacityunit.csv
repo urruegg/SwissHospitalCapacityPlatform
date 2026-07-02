@@ -1,0 +1,20 @@
+﻿ward_id,hospital_id,name,unit_type,specialty_id,bed_count,bed_count_quality
+WARD_001,H_LUKS,Innere Medizin Station,normal,SPEC_INNERE,120,inferred
+WARD_002,H_LUKS,Chirurgie Station,normal,SPEC_CHIR,110,inferred
+WARD_003,H_LUKS,Intensivstation,ICU,SPEC_INTENSIV,36,inferred
+WARD_004,H_LUKS,Notfallzentrum,ED,SPEC_NOTFALL,30,inferred
+WARD_005,H_LUKS,Onkologie Station,normal,SPEC_ONKO,60,inferred
+WARD_006,H_LUKS,Stroke Unit,monitored,SPEC_NEURO,12,inferred
+WARD_007,H_SZB,Innere Medizin Station,normal,SPEC_INNERE,60,inferred
+WARD_008,H_SZB,Chirurgie Station,normal,SPEC_CHIR,45,inferred
+WARD_009,H_SZB,Intensivstation,ICU,SPEC_INTENSIV,8,inferred
+WARD_010,H_SZB,Geburtshilfe/Wochenbett,normal,SPEC_GEBH,24,inferred
+WARD_011,H_SZB,Notfallzentrum,ED,SPEC_NOTFALL,10,inferred
+WARD_012,H_USZ,Medizinische Klinik Station,normal,SPEC_INNERE,150,inferred
+WARD_013,H_USZ,Chirurgische Klinik Station,normal,SPEC_CHIR,140,inferred
+WARD_014,H_USZ,Interdisziplinäre IPS,ICU,SPEC_INTENSIV,64,inferred
+WARD_015,H_USZ,Notfallzentrum,ED,SPEC_NOTFALL,40,inferred
+WARD_016,H_HSL,General Internal Medicine Unit,normal,SPEC_INNERE,60,inferred
+WARD_017,H_HSL,Surgery Unit,normal,SPEC_CHIR,55,inferred
+WARD_018,H_HSL,Intensive Care,ICU,SPEC_INTENSIV,16,inferred
+WARD_019,H_HSL,A&E Unit,ED,SPEC_NOTFALL,12,inferred

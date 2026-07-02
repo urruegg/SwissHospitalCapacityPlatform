@@ -1,0 +1,21 @@
+﻿hospital_id,metric,value,unit,method,data_quality
+H_USZ,ed_visits_yr,45000,visits,published,explicit
+H_USZ,ed_visits_day,123.3,visits/day,45000/365,inferred
+H_USZ,ed_visits_hour,5.1,visits/hour,45000/365/24,inferred
+H_USZ,stationary_discharges_yr,41138,cases,published,explicit
+H_USZ,stationary_discharges_day,112.7,cases/day,41138/365,inferred
+H_USZ,active_inpatient_census,547,patients,41138*4.85/365,inferred
+H_LUKS,stationary_cases_yr,50000,cases,published (>50000),explicit
+H_LUKS,ambulatory_contacts_yr,926000,contacts,published,explicit
+H_LUKS,beds,839,beds,published,explicit
+H_LUKS,stationary_discharges_day,137.0,cases/day,>50000/365,inferred
+H_LUKS,active_inpatient_census,658,patients,>50000*4.8/365,inferred
+H_LUKS,or_birth_rooms,55,rooms,published,explicit
+H_SZB,beds,174,beds,published,explicit
+H_SZB,stationary_cases_yr,11000,cases,published,explicit
+H_SZB,ambulatory_contacts_yr,65000,contacts,published (~60-70k),explicit
+H_SZB,stationary_discharges_day,30.1,cases/day,11000/365,inferred
+H_SZB,active_inpatient_census,145,patients,11000*4.8/365,inferred
+H_HSL,centres_count,33,centres,published (clinic),explicit
+H_HSL,beds,0,beds,not published,missing
+H_HSL,service_breadth_index,33,centres,#centres proxy,inferred
