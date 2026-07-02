@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "17689888277026048301"
+      "templateHash": "15310719745635415823"
     }
   },
   "parameters": {
@@ -148,6 +148,32 @@
         "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally."
       }
     },
+    "sourceSqlAadAdminLogin": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Entra ID login (UPN or group displayName) of the source-SQL AAD admin. Required by tenant AAD-only auth policy when enableSourceSqlModule = true."
+      }
+    },
+    "sourceSqlAadAdminObjectId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID (SID) of the source-SQL AAD admin principal. Required when enableSourceSqlModule = true."
+      }
+    },
+    "sourceSqlAadAdminPrincipalType": {
+      "type": "string",
+      "defaultValue": "User",
+      "allowedValues": [
+        "User",
+        "Group",
+        "ServicePrincipal"
+      ],
+      "metadata": {
+        "description": "Principal type of the source-SQL AAD admin."
+      }
+    },
     "enableFabricFoundationModule": {
       "type": "bool",
       "defaultValue": false,
@@ -253,7 +279,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "13539215258498175816"
+              "templateHash": "14867181992881763059"
             }
           },
           "parameters": {
@@ -317,6 +343,7 @@
                 "enableRbacAuthorization": true,
                 "enableSoftDelete": true,
                 "enablePurgeProtection": true,
+                "enabledForTemplateDeployment": true,
                 "publicNetworkAccess": "Enabled",
                 "softDeleteRetentionInDays": 90
               }
@@ -727,6 +754,15 @@
           "sourceSqlPrivateDnsZoneId": {
             "value": "[parameters('sourceSqlPrivateDnsZoneId')]"
           },
+          "sourceSqlAadAdminLogin": {
+            "value": "[parameters('sourceSqlAadAdminLogin')]"
+          },
+          "sourceSqlAadAdminObjectId": {
+            "value": "[parameters('sourceSqlAadAdminObjectId')]"
+          },
+          "sourceSqlAadAdminPrincipalType": {
+            "value": "[parameters('sourceSqlAadAdminPrincipalType')]"
+          },
           "enableFabricFoundationModule": {
             "value": "[parameters('enableFabricFoundationModule')]"
           },
@@ -741,7 +777,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "12083855336619399185"
+              "templateHash": "18386186445432428824"
             }
           },
           "parameters": {
@@ -796,6 +832,32 @@
               "defaultValue": "",
               "metadata": {
                 "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally."
+              }
+            },
+            "sourceSqlAadAdminLogin": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Entra ID login (UPN or group displayName) of the source-SQL AAD admin. Required by tenant policy."
+              }
+            },
+            "sourceSqlAadAdminObjectId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID (SID) of the source-SQL AAD admin principal."
+              }
+            },
+            "sourceSqlAadAdminPrincipalType": {
+              "type": "string",
+              "defaultValue": "User",
+              "allowedValues": [
+                "User",
+                "Group",
+                "ServicePrincipal"
+              ],
+              "metadata": {
+                "description": "Principal type of the source-SQL AAD admin."
               }
             },
             "enableFabricFoundationModule": {
@@ -901,6 +963,15 @@
                   },
                   "privateDnsZoneId": {
                     "value": "[parameters('sourceSqlPrivateDnsZoneId')]"
+                  },
+                  "aadAdminLogin": {
+                    "value": "[parameters('sourceSqlAadAdminLogin')]"
+                  },
+                  "aadAdminObjectId": {
+                    "value": "[parameters('sourceSqlAadAdminObjectId')]"
+                  },
+                  "aadAdminPrincipalType": {
+                    "value": "[parameters('sourceSqlAadAdminPrincipalType')]"
                   }
                 },
                 "template": {
@@ -910,7 +981,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "720226389797260471"
+                      "templateHash": "7918110393759686766"
                     }
                   },
                   "parameters": {
@@ -952,7 +1023,7 @@
                       "type": "string",
                       "defaultValue": "sqladmin",
                       "metadata": {
-                        "description": "SQL admin login."
+                        "description": "SQL admin login. Retained for API compatibility; SQL authentication is disabled when azureADOnlyAuthentication=true."
                       }
                     },
                     "privateDnsZoneId": {
@@ -960,6 +1031,30 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone. Leave empty to wire DNS externally (e.g. via hub network)."
+                      }
+                    },
+                    "aadAdminLogin": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Entra ID login (UPN or group displayName) of the SQL server AAD admin. Required to satisfy tenant policy AzureSQL_WithoutAzureADOnlyAuthentication_Deny."
+                      }
+                    },
+                    "aadAdminObjectId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Object ID (SID) of the AAD admin principal (user or group)."
+                      }
+                    },
+                    "aadAdminPrincipalType": {
+                      "type": "string",
+                      "defaultValue": "User",
+                      "allowedValues": [
+                        "User",
+                        "Group",
+                        "ServicePrincipal"
+                      ],
+                      "metadata": {
+                        "description": "Principal type of the AAD admin."
                       }
                     }
                   },
@@ -984,7 +1079,15 @@
                         "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
                         "publicNetworkAccess": "Disabled",
                         "minimalTlsVersion": "1.2",
-                        "version": "12.0"
+                        "version": "12.0",
+                        "administrators": {
+                          "administratorType": "ActiveDirectory",
+                          "azureADOnlyAuthentication": true,
+                          "principalType": "[parameters('aadAdminPrincipalType')]",
+                          "login": "[parameters('aadAdminLogin')]",
+                          "sid": "[parameters('aadAdminObjectId')]",
+                          "tenantId": "[subscription().tenantId]"
+                        }
                       }
                     },
                     {

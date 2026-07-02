@@ -22,6 +22,20 @@ param sourceSqlAdminPasswordSecretName string = ''
 @description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone for the source-SQL private endpoint. Leave empty to wire DNS externally.')
 param sourceSqlPrivateDnsZoneId string = ''
 
+@description('Entra ID login (UPN or group displayName) of the source-SQL AAD admin. Required by tenant policy.')
+param sourceSqlAadAdminLogin string = ''
+
+@description('Object ID (SID) of the source-SQL AAD admin principal.')
+param sourceSqlAadAdminObjectId string = ''
+
+@description('Principal type of the source-SQL AAD admin.')
+@allowed([
+  'User'
+  'Group'
+  'ServicePrincipal'
+])
+param sourceSqlAadAdminPrincipalType string = 'User'
+
 @description('Enable the Fabric foundation submodule (capacity).')
 param enableFabricFoundationModule bool = false
 
@@ -89,6 +103,9 @@ tags: tags
 dataSubnetId: sourceSqlDataSubnetId
 sqlAdminPassword: sourceSqlKeyVault.getSecret(sourceSqlAdminPasswordSecretName)
 privateDnsZoneId: sourceSqlPrivateDnsZoneId
+aadAdminLogin: sourceSqlAadAdminLogin
+aadAdminObjectId: sourceSqlAadAdminObjectId
+aadAdminPrincipalType: sourceSqlAadAdminPrincipalType
 }
 }
 

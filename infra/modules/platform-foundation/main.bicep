@@ -41,6 +41,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enableRbacAuthorization: true
     enableSoftDelete: true
     enablePurgeProtection: true
+    // Required so ARM can resolve keyVault.getSecret() parameter references at deploy time (Sprint 00 source-SQL enable).
+    enabledForTemplateDeployment: true
     publicNetworkAccess: 'Enabled'
     softDeleteRetentionInDays: 90
   }

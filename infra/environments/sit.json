@@ -74,6 +74,15 @@
     "sourceSqlAdminPasswordSecretName": {
       "value": "sql-admin-password"
     },
+    "sourceSqlAadAdminLogin": {
+      "value": "admin@mngenvmcap164444.onmicrosoft.com"
+    },
+    "sourceSqlAadAdminObjectId": {
+      "value": "7b9830a6-989b-4edd-b720-0d4bff7ffb2e"
+    },
+    "sourceSqlAadAdminPrincipalType": {
+      "value": "User"
+    },
     "sourceSqlPrivateDnsZoneId": {
       "value": ""
     },

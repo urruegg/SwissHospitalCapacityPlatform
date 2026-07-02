@@ -20,11 +20,25 @@ param dataSubnetId string
 @description('SQL admin password. Pass via keyVault.getSecret() from the caller.')
 param sqlAdminPassword string
 
-@description('SQL admin login.')
+@description('SQL admin login. Retained for API compatibility; SQL authentication is disabled when azureADOnlyAuthentication=true.')
 param sqlAdminLogin string = 'sqladmin'
 
 @description('Optional. Resource ID of the existing privatelink.database.windows.net private DNS zone. Leave empty to wire DNS externally (e.g. via hub network).')
 param privateDnsZoneId string = ''
+
+@description('Entra ID login (UPN or group displayName) of the SQL server AAD admin. Required to satisfy tenant policy AzureSQL_WithoutAzureADOnlyAuthentication_Deny.')
+param aadAdminLogin string
+
+@description('Object ID (SID) of the AAD admin principal (user or group).')
+param aadAdminObjectId string
+
+@description('Principal type of the AAD admin.')
+@allowed([
+  'User'
+  'Group'
+  'ServicePrincipal'
+])
+param aadAdminPrincipalType string = 'User'
 
 // SQL server names are globally unique DNS-wide (<name>.database.windows.net). Add per-(subscription, RG) suffix.
 var globalUniquenessSuffix = take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)
@@ -33,7 +47,6 @@ var databaseName = 'kis'
 var privateEndpointName = 'pe-${serverName}'
 
 // TODO(ADR-0006): swap to GA Microsoft.Sql/servers API before PROD enables.
-// TODO: add 'administrators' block for Entra group SQL admin once platform-identity slice is in place.
 resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   name: serverName
   location: location
@@ -47,6 +60,15 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
     publicNetworkAccess: 'Disabled'
     minimalTlsVersion: '1.2'
     version: '12.0'
+    // Tenant policy AzureSQL_WithoutAzureADOnlyAuthentication_Deny requires AAD-only auth.
+    administrators: {
+      administratorType: 'ActiveDirectory'
+      azureADOnlyAuthentication: true
+      principalType: aadAdminPrincipalType
+      login: aadAdminLogin
+      sid: aadAdminObjectId
+      tenantId: subscription().tenantId
+    }
   }
 }
 

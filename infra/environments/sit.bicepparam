@@ -29,10 +29,14 @@ param networkAppSubnetPrefix = '10.60.1.0/24'
 // Sprint 08 W1.1 / Sprint 00 Slice 2 — source-SQL submodule (synthetic KIS feed).
 // Enabled for the Sprint 00 demo scope on the new tenant.
 // Empty strings for subnet + KV IDs — main.bicep auto-wires from network + platform-foundation module outputs.
+// AAD admin uses the operator's Entra user in the new tenant (required by tenant AAD-only auth deny policy).
 param enableSourceSqlModule = true
 param sourceSqlDataSubnetId = ''
 param sourceSqlKeyVaultId = ''
 param sourceSqlAdminPasswordSecretName = 'sql-admin-password'
+param sourceSqlAadAdminLogin = 'admin@mngenvmcap164444.onmicrosoft.com'
+param sourceSqlAadAdminObjectId = '7b9830a6-989b-4edd-b720-0d4bff7ffb2e'
+param sourceSqlAadAdminPrincipalType = 'User'
 
 // Private DNS zone for SQL private endpoint. Owned by a separate platform-foundation slice
 // (hub-spoke DNS). Leave empty here and wire post-deploy; do not invent a resource ID.
