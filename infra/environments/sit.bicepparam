@@ -37,9 +37,10 @@ param sourceSqlAdminPasswordSecretName = 'sql-admin-password'
 // (hub-spoke DNS). Leave empty here and wire post-deploy; do not invent a resource ID.
 param sourceSqlPrivateDnsZoneId = ''
 
-// Sprint 08 W1.2 — Fabric foundation submodule (F2 capacity + workspace/lakehouse/mirror).
-// Temporarily disabled until real Fabric capacity admin object IDs are supplied.
-param enableFabricFoundationModule = false
+// Sprint 08 W1.2 / Sprint 00 Slice 1 — Fabric foundation submodule (F2 capacity + workspace/lakehouse/mirror).
+// Enabled for the Sprint 00 demo scope on the new tenant per ADR-0013.
+// Capacity admin is the operator's Entra user OID in the new tenant (see W1.4 evidence).
+param enableFabricFoundationModule = true
 param fabricCapacityAdmins = [
-    '<ADMIN_OBJECT_ID>'
+    '7b9830a6-989b-4edd-b720-0d4bff7ffb2e'
 ]

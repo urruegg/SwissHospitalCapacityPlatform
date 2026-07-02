@@ -78,11 +78,11 @@
       "value": ""
     },
     "enableFabricFoundationModule": {
-      "value": false
+      "value": true
     },
     "fabricCapacityAdmins": {
       "value": [
-        "<ADMIN_OBJECT_ID>"
+        "7b9830a6-989b-4edd-b720-0d4bff7ffb2e"
       ]
     }
   }
