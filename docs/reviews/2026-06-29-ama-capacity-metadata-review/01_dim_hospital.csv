@@ -1,0 +1,5 @@
+﻿hospital_id,name,short_name,type,care_level,canton,city,beds,beds_quality,staff,staff_quality,stationary_cases_yr,ambulatory_yr,ed_visits_yr,org_axis,residency_tag,source
+H_USZ,Universitätsspital Zürich,USZ,public_university,tertiary/university,ZH,Zürich,,missing,,inferred,41151,high,45000,disease_led,CH-North,usz.ch/diseases
+H_LUKS,Luzerner Kantonsspital,LUKS,public_cantonal,tertiary/university-teaching,LU,Luzern,839,explicit,8628,explicit,>50000,926000,,disease_led,CH-North,>100 Kliniken/Zentren; luks.ch
+H_HSL,Klinik Hirslanden Zürich,HSL,private_acute,specialised/acute,ZH,Zürich,,missing,,inferred,,,,center_led,CH-North,33 centres; hirslanden.ch
+H_SZB,Spital Zollikerberg,SZB,private_public-mandate,regional/acute,ZH,Zollikerberg,174,explicit,1200,explicit,11000,65000,,specialty_led,CH-North,spitalzollikerberg.ch

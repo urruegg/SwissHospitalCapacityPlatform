@@ -1,0 +1,109 @@
+﻿specialty_hospital_id,hospital_id,specialty_id,name_de,name_en,fmh_discipline,data_quality
+H_USZ__SPEC_INNERE,H_USZ,SPEC_INNERE,Innere Medizin,Internal Medicine,Allgemeine Innere Medizin,explicit
+H_LUKS__SPEC_INNERE,H_LUKS,SPEC_INNERE,Innere Medizin,Internal Medicine,Allgemeine Innere Medizin,explicit
+H_HSL__SPEC_INNERE,H_HSL,SPEC_INNERE,Innere Medizin,Internal Medicine,Allgemeine Innere Medizin,explicit
+H_SZB__SPEC_INNERE,H_SZB,SPEC_INNERE,Innere Medizin,Internal Medicine,Allgemeine Innere Medizin,explicit
+H_USZ__SPEC_CHIR,H_USZ,SPEC_CHIR,Chirurgie,Surgery,Chirurgie,explicit
+H_LUKS__SPEC_CHIR,H_LUKS,SPEC_CHIR,Chirurgie,Surgery,Chirurgie,explicit
+H_HSL__SPEC_CHIR,H_HSL,SPEC_CHIR,Chirurgie,Surgery,Chirurgie,explicit
+H_SZB__SPEC_CHIR,H_SZB,SPEC_CHIR,Chirurgie,Surgery,Chirurgie,explicit
+H_USZ__SPEC_ORTHO,H_USZ,SPEC_ORTHO,Orthopädie,Orthopaedics,Orthopädische Chirurgie,explicit
+H_LUKS__SPEC_ORTHO,H_LUKS,SPEC_ORTHO,Orthopädie,Orthopaedics,Orthopädische Chirurgie,explicit
+H_HSL__SPEC_ORTHO,H_HSL,SPEC_ORTHO,Orthopädie,Orthopaedics,Orthopädische Chirurgie,explicit
+H_SZB__SPEC_ORTHO,H_SZB,SPEC_ORTHO,Orthopädie,Orthopaedics,Orthopädische Chirurgie,explicit
+H_USZ__SPEC_GYN,H_USZ,SPEC_GYN,Gynäkologie,Gynaecology,Gynäkologie & Geburtshilfe,explicit
+H_LUKS__SPEC_GYN,H_LUKS,SPEC_GYN,Gynäkologie,Gynaecology,Gynäkologie & Geburtshilfe,explicit
+H_HSL__SPEC_GYN,H_HSL,SPEC_GYN,Gynäkologie,Gynaecology,Gynäkologie & Geburtshilfe,explicit
+H_SZB__SPEC_GYN,H_SZB,SPEC_GYN,Gynäkologie,Gynaecology,Gynäkologie & Geburtshilfe,explicit
+H_USZ__SPEC_GEBH,H_USZ,SPEC_GEBH,Geburtshilfe,Obstetrics,Gynäkologie & Geburtshilfe,explicit
+H_LUKS__SPEC_GEBH,H_LUKS,SPEC_GEBH,Geburtshilfe,Obstetrics,Gynäkologie & Geburtshilfe,explicit
+H_HSL__SPEC_GEBH,H_HSL,SPEC_GEBH,Geburtshilfe,Obstetrics,Gynäkologie & Geburtshilfe,explicit
+H_SZB__SPEC_GEBH,H_SZB,SPEC_GEBH,Geburtshilfe,Obstetrics,Gynäkologie & Geburtshilfe,explicit
+H_USZ__SPEC_NEONAT,H_USZ,SPEC_NEONAT,Neonatologie,Neonatology,Pädiatrie/Neonatologie,explicit
+H_LUKS__SPEC_NEONAT,H_LUKS,SPEC_NEONAT,Neonatologie,Neonatology,Pädiatrie/Neonatologie,explicit
+H_HSL__SPEC_NEONAT,H_HSL,SPEC_NEONAT,Neonatologie,Neonatology,Pädiatrie/Neonatologie,explicit
+H_SZB__SPEC_NEONAT,H_SZB,SPEC_NEONAT,Neonatologie,Neonatology,Pädiatrie/Neonatologie,explicit
+H_USZ__SPEC_ONKO,H_USZ,SPEC_ONKO,Onkologie,Oncology,Medizinische Onkologie,explicit
+H_LUKS__SPEC_ONKO,H_LUKS,SPEC_ONKO,Onkologie,Oncology,Medizinische Onkologie,explicit
+H_HSL__SPEC_ONKO,H_HSL,SPEC_ONKO,Onkologie,Oncology,Medizinische Onkologie,explicit
+H_SZB__SPEC_ONKO,H_SZB,SPEC_ONKO,Onkologie,Oncology,Medizinische Onkologie,explicit
+H_USZ__SPEC_HAEM,H_USZ,SPEC_HAEM,Hämatologie,Haematology,Hämatologie,explicit
+H_LUKS__SPEC_HAEM,H_LUKS,SPEC_HAEM,Hämatologie,Haematology,Hämatologie,explicit
+H_HSL__SPEC_HAEM,H_HSL,SPEC_HAEM,Hämatologie,Haematology,Hämatologie,explicit
+H_SZB__SPEC_HAEM,H_SZB,SPEC_HAEM,Hämatologie,Haematology,Hämatologie,inferred
+H_USZ__SPEC_KARDIO,H_USZ,SPEC_KARDIO,Kardiologie,Cardiology,Kardiologie,explicit
+H_LUKS__SPEC_KARDIO,H_LUKS,SPEC_KARDIO,Kardiologie,Cardiology,Kardiologie,explicit
+H_HSL__SPEC_KARDIO,H_HSL,SPEC_KARDIO,Kardiologie,Cardiology,Kardiologie,explicit
+H_SZB__SPEC_KARDIO,H_SZB,SPEC_KARDIO,Kardiologie,Cardiology,Kardiologie,inferred
+H_USZ__SPEC_NEURO,H_USZ,SPEC_NEURO,Neurologie,Neurology,Neurologie,explicit
+H_LUKS__SPEC_NEURO,H_LUKS,SPEC_NEURO,Neurologie,Neurology,Neurologie,explicit
+H_HSL__SPEC_NEURO,H_HSL,SPEC_NEURO,Neurologie,Neurology,Neurologie,explicit
+H_SZB__SPEC_NEURO,H_SZB,SPEC_NEURO,Neurologie,Neurology,Neurologie,inferred
+H_USZ__SPEC_NEPHRO,H_USZ,SPEC_NEPHRO,Nephrologie,Nephrology,Nephrologie,explicit
+H_LUKS__SPEC_NEPHRO,H_LUKS,SPEC_NEPHRO,Nephrologie,Nephrology,Nephrologie,explicit
+H_HSL__SPEC_NEPHRO,H_HSL,SPEC_NEPHRO,Nephrologie,Nephrology,Nephrologie,inferred
+H_SZB__SPEC_NEPHRO,H_SZB,SPEC_NEPHRO,Nephrologie,Nephrology,Nephrologie,explicit
+H_USZ__SPEC_PNEUMO,H_USZ,SPEC_PNEUMO,Pneumologie,Pneumology,Pneumologie,explicit
+H_LUKS__SPEC_PNEUMO,H_LUKS,SPEC_PNEUMO,Pneumologie,Pneumology,Pneumologie,explicit
+H_HSL__SPEC_PNEUMO,H_HSL,SPEC_PNEUMO,Pneumologie,Pneumology,Pneumologie,explicit
+H_SZB__SPEC_PNEUMO,H_SZB,SPEC_PNEUMO,Pneumologie,Pneumology,Pneumologie,inferred
+H_USZ__SPEC_GASTRO,H_USZ,SPEC_GASTRO,Gastroenterologie,Gastroenterology,Gastroenterologie,explicit
+H_LUKS__SPEC_GASTRO,H_LUKS,SPEC_GASTRO,Gastroenterologie,Gastroenterology,Gastroenterologie,explicit
+H_HSL__SPEC_GASTRO,H_HSL,SPEC_GASTRO,Gastroenterologie,Gastroenterology,Gastroenterologie,explicit
+H_SZB__SPEC_GASTRO,H_SZB,SPEC_GASTRO,Gastroenterologie,Gastroenterology,Gastroenterologie,inferred
+H_USZ__SPEC_URO,H_USZ,SPEC_URO,Urologie,Urology,Urologie,explicit
+H_LUKS__SPEC_URO,H_LUKS,SPEC_URO,Urologie,Urology,Urologie,explicit
+H_HSL__SPEC_URO,H_HSL,SPEC_URO,Urologie,Urology,Urologie,explicit
+H_SZB__SPEC_URO,H_SZB,SPEC_URO,Urologie,Urology,Urologie,inferred
+H_USZ__SPEC_OPHT,H_USZ,SPEC_OPHT,Ophthalmologie,Ophthalmology,Ophthalmologie,explicit
+H_LUKS__SPEC_OPHT,H_LUKS,SPEC_OPHT,Ophthalmologie,Ophthalmology,Ophthalmologie,explicit
+H_HSL__SPEC_OPHT,H_HSL,SPEC_OPHT,Ophthalmologie,Ophthalmology,Ophthalmologie,inferred
+H_SZB__SPEC_OPHT,H_SZB,SPEC_OPHT,Ophthalmologie,Ophthalmology,Ophthalmologie,explicit
+H_USZ__SPEC_HNO,H_USZ,SPEC_HNO,Hals-Nasen-Ohren,ENT,Oto-Rhino-Laryngologie,explicit
+H_LUKS__SPEC_HNO,H_LUKS,SPEC_HNO,Hals-Nasen-Ohren,ENT,Oto-Rhino-Laryngologie,explicit
+H_HSL__SPEC_HNO,H_HSL,SPEC_HNO,Hals-Nasen-Ohren,ENT,Oto-Rhino-Laryngologie,explicit
+H_SZB__SPEC_HNO,H_SZB,SPEC_HNO,Hals-Nasen-Ohren,ENT,Oto-Rhino-Laryngologie,inferred
+H_USZ__SPEC_RADIO,H_USZ,SPEC_RADIO,Radiologie,Radiology,Radiologie,explicit
+H_LUKS__SPEC_RADIO,H_LUKS,SPEC_RADIO,Radiologie,Radiology,Radiologie,explicit
+H_HSL__SPEC_RADIO,H_HSL,SPEC_RADIO,Radiologie,Radiology,Radiologie,explicit
+H_SZB__SPEC_RADIO,H_SZB,SPEC_RADIO,Radiologie,Radiology,Radiologie,explicit
+H_USZ__SPEC_RADONK,H_USZ,SPEC_RADONK,Radio-Onkologie,Radiotherapy,Radio-Onkologie,explicit
+H_LUKS__SPEC_RADONK,H_LUKS,SPEC_RADONK,Radio-Onkologie,Radiotherapy,Radio-Onkologie,explicit
+H_HSL__SPEC_RADONK,H_HSL,SPEC_RADONK,Radio-Onkologie,Radiotherapy,Radio-Onkologie,explicit
+H_SZB__SPEC_RADONK,H_SZB,SPEC_RADONK,Radio-Onkologie,Radiotherapy,Radio-Onkologie,inferred
+H_USZ__SPEC_PLAST,H_USZ,SPEC_PLAST,Plastische Chirurgie,Plastic Surgery,Plastische Chirurgie,explicit
+H_LUKS__SPEC_PLAST,H_LUKS,SPEC_PLAST,Plastische Chirurgie,Plastic Surgery,Plastische Chirurgie,explicit
+H_HSL__SPEC_PLAST,H_HSL,SPEC_PLAST,Plastische Chirurgie,Plastic Surgery,Plastische Chirurgie,explicit
+H_SZB__SPEC_PLAST,H_SZB,SPEC_PLAST,Plastische Chirurgie,Plastic Surgery,Plastische Chirurgie,explicit
+H_USZ__SPEC_WIRBEL,H_USZ,SPEC_WIRBEL,Wirbelsäulenchirurgie,Spinal Surgery,Wirbelsäulenchirurgie,explicit
+H_LUKS__SPEC_WIRBEL,H_LUKS,SPEC_WIRBEL,Wirbelsäulenchirurgie,Spinal Surgery,Wirbelsäulenchirurgie,explicit
+H_HSL__SPEC_WIRBEL,H_HSL,SPEC_WIRBEL,Wirbelsäulenchirurgie,Spinal Surgery,Wirbelsäulenchirurgie,explicit
+H_SZB__SPEC_WIRBEL,H_SZB,SPEC_WIRBEL,Wirbelsäulenchirurgie,Spinal Surgery,Wirbelsäulenchirurgie,explicit
+H_USZ__SPEC_NOTFALL,H_USZ,SPEC_NOTFALL,Notfallmedizin,Emergency Medicine,Notfallmedizin,explicit
+H_LUKS__SPEC_NOTFALL,H_LUKS,SPEC_NOTFALL,Notfallmedizin,Emergency Medicine,Notfallmedizin,explicit
+H_HSL__SPEC_NOTFALL,H_HSL,SPEC_NOTFALL,Notfallmedizin,Emergency Medicine,Notfallmedizin,explicit
+H_SZB__SPEC_NOTFALL,H_SZB,SPEC_NOTFALL,Notfallmedizin,Emergency Medicine,Notfallmedizin,explicit
+H_USZ__SPEC_INTENSIV,H_USZ,SPEC_INTENSIV,Intensivmedizin,Intensive Care,Intensivmedizin,explicit
+H_LUKS__SPEC_INTENSIV,H_LUKS,SPEC_INTENSIV,Intensivmedizin,Intensive Care,Intensivmedizin,explicit
+H_HSL__SPEC_INTENSIV,H_HSL,SPEC_INTENSIV,Intensivmedizin,Intensive Care,Intensivmedizin,explicit
+H_SZB__SPEC_INTENSIV,H_SZB,SPEC_INTENSIV,Intensivmedizin,Intensive Care,Intensivmedizin,explicit
+H_USZ__SPEC_RHEUMA,H_USZ,SPEC_RHEUMA,Rheumatologie,Rheumatology,Rheumatologie,explicit
+H_LUKS__SPEC_RHEUMA,H_LUKS,SPEC_RHEUMA,Rheumatologie,Rheumatology,Rheumatologie,explicit
+H_HSL__SPEC_RHEUMA,H_HSL,SPEC_RHEUMA,Rheumatologie,Rheumatology,Rheumatologie,explicit
+H_SZB__SPEC_RHEUMA,H_SZB,SPEC_RHEUMA,Rheumatologie,Rheumatology,Rheumatologie,inferred
+H_USZ__SPEC_INFEKT,H_USZ,SPEC_INFEKT,Infektiologie,Infectious Diseases,Infektiologie,explicit
+H_LUKS__SPEC_INFEKT,H_LUKS,SPEC_INFEKT,Infektiologie,Infectious Diseases,Infektiologie,explicit
+H_HSL__SPEC_INFEKT,H_HSL,SPEC_INFEKT,Infektiologie,Infectious Diseases,Infektiologie,explicit
+H_SZB__SPEC_INFEKT,H_SZB,SPEC_INFEKT,Infektiologie,Infectious Diseases,Infektiologie,inferred
+H_USZ__SPEC_PSYCH,H_USZ,SPEC_PSYCH,Psychiatrie/Psychische Gesundheit,Psychiatry,Psychiatrie & Psychotherapie,explicit
+H_LUKS__SPEC_PSYCH,H_LUKS,SPEC_PSYCH,Psychiatrie/Psychische Gesundheit,Psychiatry,Psychiatrie & Psychotherapie,explicit
+H_HSL__SPEC_PSYCH,H_HSL,SPEC_PSYCH,Psychiatrie/Psychische Gesundheit,Psychiatry,Psychiatrie & Psychotherapie,inferred
+H_SZB__SPEC_PSYCH,H_SZB,SPEC_PSYCH,Psychiatrie/Psychische Gesundheit,Psychiatry,Psychiatrie & Psychotherapie,explicit
+H_USZ__SPEC_ANAES,H_USZ,SPEC_ANAES,Anästhesie,Anaesthesia,Anästhesiologie,explicit
+H_LUKS__SPEC_ANAES,H_LUKS,SPEC_ANAES,Anästhesie,Anaesthesia,Anästhesiologie,explicit
+H_HSL__SPEC_ANAES,H_HSL,SPEC_ANAES,Anästhesie,Anaesthesia,Anästhesiologie,explicit
+H_SZB__SPEC_ANAES,H_SZB,SPEC_ANAES,Anästhesie,Anaesthesia,Anästhesiologie,explicit
+H_USZ__SPEC_TRAUMA,H_USZ,SPEC_TRAUMA,Traumatologie,Traumatology,Chirurgie/Traumatologie,explicit
+H_LUKS__SPEC_TRAUMA,H_LUKS,SPEC_TRAUMA,Traumatologie,Traumatology,Chirurgie/Traumatologie,explicit
+H_HSL__SPEC_TRAUMA,H_HSL,SPEC_TRAUMA,Traumatologie,Traumatology,Chirurgie/Traumatologie,explicit
+H_SZB__SPEC_TRAUMA,H_SZB,SPEC_TRAUMA,Traumatologie,Traumatology,Chirurgie/Traumatologie,explicit

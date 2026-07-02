@@ -1,0 +1,42 @@
+﻿service_id,hospital_id,name,service_type,specialty_id,data_quality,source
+SRV_HSL_001,H_HSL,Accident & Emergency Unit,center,SPEC_NOTFALL,explicit,hirslanden.ch/centers
+SRV_HSL_002,H_HSL,Cardiac Centre Hirslanden Zurich,center,SPEC_KARDIO,explicit,hirslanden.ch/centers
+SRV_HSL_003,H_HSL,Centre for neuroradiology,institute,SPEC_RADIO,explicit,hirslanden.ch/centers
+SRV_HSL_004,H_HSL,Centre for Surgery Zurich,center,SPEC_CHIR,explicit,hirslanden.ch/centers
+SRV_HSL_005,H_HSL,Clinic for Hematology & Oncology,center,SPEC_ONKO,explicit,hirslanden.ch/centers
+SRV_HSL_006,H_HSL,Division of Infectious Diseases & Hospital Epidemiology,institute,SPEC_INFEKT,explicit,hirslanden.ch/centers
+SRV_HSL_007,H_HSL,ENT and plastic surgery centre,center,SPEC_HNO,explicit,hirslanden.ch/centers
+SRV_HSL_008,H_HSL,Gastroenterology centre,center,SPEC_GASTRO,explicit,hirslanden.ch/centers
+SRV_HSL_009,H_HSL,Institute for radiotherapy,institute,SPEC_RADONK,explicit,hirslanden.ch/centers
+SRV_HSL_010,H_HSL,Institute of Physicians for anaesthesia & intensive care,institute,SPEC_ANAES,explicit,hirslanden.ch/centers
+SRV_HSL_011,H_HSL,Maternity Unit,center,SPEC_GEBH,explicit,hirslanden.ch/centers
+SRV_HSL_012,H_HSL,Pneumology Centre Hirslanden,center,SPEC_PNEUMO,explicit,hirslanden.ch/centers
+SRV_HSL_013,H_HSL,Rheumatology Centre Hirslanden,center,SPEC_RHEUMA,explicit,hirslanden.ch/centers
+SRV_HSL_014,H_HSL,Spine medicine and pain therapy centre,center,SPEC_WIRBEL,explicit,hirslanden.ch/centers
+SRV_HSL_015,H_HSL,Stroke Center Hirslanden,center,SPEC_NEURO,explicit,hirslanden.ch/centers
+SRV_HSL_016,H_HSL,Traumatology Centre Hirslanden,center,SPEC_TRAUMA,explicit,hirslanden.ch/centers
+SRV_HSL_017,H_HSL,Tumour Centre Hirslanden Zurich,center,SPEC_ONKO,explicit,hirslanden.ch/centers
+SRV_HSL_018,H_HSL,Unit of General Internal Medicine,center,SPEC_INNERE,explicit,hirslanden.ch/centers
+SRV_HSL_019,H_HSL,Urology Centre Hirslanden,center,SPEC_URO,explicit,hirslanden.ch/centers
+SRV_SZB_001,H_SZB,Augenzentrum Zollikerberg,center,SPEC_OPHT,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_002,H_SZB,Brustzentrum Zollikerberg,center,SPEC_ONKO,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_003,H_SZB,Chirurgie,department,SPEC_CHIR,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_004,H_SZB,Operationssäle und Intensivstation,department,SPEC_INTENSIV,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_005,H_SZB,Frauen-Permanence Zürich,department,SPEC_GYN,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_006,H_SZB,Geburtshilfe,department,SPEC_GEBH,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_007,H_SZB,Gynäkologie,department,SPEC_GYN,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_008,H_SZB,Innere Medizin,department,SPEC_INNERE,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_009,H_SZB,Interdisziplinäres Notfallzentrum,department,SPEC_NOTFALL,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_010,H_SZB,Kinder-Permanence,department,SPEC_NEONAT,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_011,H_SZB,Neonatologie,department,SPEC_NEONAT,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_012,H_SZB,Nephrologie und Dialysezentrum,center,SPEC_NEPHRO,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_013,H_SZB,Onkologiepraxis,department,SPEC_ONKO,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_014,H_SZB,Orthopädie,department,SPEC_ORTHO,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_015,H_SZB,Plastische Chirurgie Zürich,department,SPEC_PLAST,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_016,H_SZB,Radiologie,department,SPEC_RADIO,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_017,H_SZB,Wirbelsäulenchirurgie,department,SPEC_WIRBEL,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_SZB_018,H_SZB,Zentrum für psychische Gesundheit,center,SPEC_PSYCH,explicit,spitalzollikerberg.ch/fachbereiche
+SRV_USZ_001,H_USZ,Comprehensive Cancer Center Zurich,center,SPEC_ONKO,explicit,usz.ch
+SRV_USZ_002,H_USZ,Universitäres Herzzentrum,center,SPEC_KARDIO,explicit,usz.ch
+SRV_LUKS_001,H_LUKS,Tumorzentrum LUKS,center,SPEC_ONKO,explicit,luks.ch
+SRV_LUKS_002,H_LUKS,Neurozentrum,center,SPEC_NEURO,explicit,luks.ch

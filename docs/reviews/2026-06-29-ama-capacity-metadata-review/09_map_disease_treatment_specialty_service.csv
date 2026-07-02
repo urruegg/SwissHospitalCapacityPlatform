@@ -1,0 +1,61 @@
+﻿map_id,hospital_id,disease_id,icd10,treatment_id,drg_code,specialty_id,hospital_service,capacity_unit_ward_id,capacity_unit_name,data_quality
+MAP_0001,H_USZ,DIS_BRCA,C50,TRT_MASTECT,J23Z,SPEC_ONKO,Comprehensive Cancer Center Zurich,WARD_012,Medizinische Klinik Station,explicit
+MAP_0002,H_LUKS,DIS_BRCA,C50,TRT_MASTECT,J23Z,SPEC_ONKO,Tumorzentrum LUKS,WARD_005,Onkologie Station,explicit
+MAP_0003,H_HSL,DIS_BRCA,C50,TRT_MASTECT,J23Z,SPEC_ONKO,Clinic for Hematology & Oncology,WARD_016,General Internal Medicine Unit,explicit
+MAP_0004,H_SZB,DIS_BRCA,C50,TRT_MASTECT,J23Z,SPEC_ONKO,Brustzentrum Zollikerberg,WARD_007,Innere Medizin Station,explicit
+MAP_0005,H_USZ,DIS_STROKE,I63,TRT_THROMB,B70A,SPEC_NEURO,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0006,H_LUKS,DIS_STROKE,I63,TRT_THROMB,B70A,SPEC_NEURO,Neurozentrum,WARD_006,Stroke Unit,explicit
+MAP_0007,H_HSL,DIS_STROKE,I63,TRT_THROMB,B70A,SPEC_NEURO,Stroke Center Hirslanden,WARD_016,General Internal Medicine Unit,explicit
+MAP_0008,H_SZB,DIS_STROKE,I63,TRT_THROMB,B70A,SPEC_NEURO,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred
+MAP_0009,H_USZ,DIS_DISCHERN,M51.1,TRT_DISCSURG,I10A,SPEC_WIRBEL,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0010,H_LUKS,DIS_DISCHERN,M51.1,TRT_DISCSURG,I10A,SPEC_WIRBEL,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0011,H_HSL,DIS_DISCHERN,M51.1,TRT_DISCSURG,I10A,SPEC_WIRBEL,Spine medicine and pain therapy centre,WARD_016,General Internal Medicine Unit,explicit
+MAP_0012,H_SZB,DIS_DISCHERN,M51.1,TRT_DISCSURG,I10A,SPEC_WIRBEL,Wirbelsäulenchirurgie,WARD_007,Innere Medizin Station,explicit
+MAP_0013,H_USZ,DIS_COPD,J44,TRT_COPDMGT,E65B,SPEC_PNEUMO,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0014,H_LUKS,DIS_COPD,J44,TRT_COPDMGT,E65B,SPEC_PNEUMO,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0015,H_HSL,DIS_COPD,J44,TRT_COPDMGT,E65B,SPEC_PNEUMO,Pneumology Centre Hirslanden,WARD_016,General Internal Medicine Unit,explicit
+MAP_0016,H_SZB,DIS_COPD,J44,TRT_COPDMGT,E65B,SPEC_PNEUMO,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred
+MAP_0017,H_USZ,DIS_HTN,I10,TRT_ANTIHTN,F67B,SPEC_KARDIO,Universitäres Herzzentrum,WARD_012,Medizinische Klinik Station,explicit
+MAP_0018,H_LUKS,DIS_HTN,I10,TRT_ANTIHTN,F67B,SPEC_KARDIO,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0019,H_HSL,DIS_HTN,I10,TRT_ANTIHTN,F67B,SPEC_KARDIO,Cardiac Centre Hirslanden Zurich,WARD_016,General Internal Medicine Unit,explicit
+MAP_0020,H_SZB,DIS_HTN,I10,TRT_ANTIHTN,F67B,SPEC_KARDIO,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred
+MAP_0021,H_USZ,DIS_AML,C92.0,TRT_INDUCTION,R61A,SPEC_HAEM,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0022,H_LUKS,DIS_AML,C92.0,TRT_INDUCTION,R61A,SPEC_HAEM,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0023,H_HSL,DIS_AML,C92.0,TRT_INDUCTION,R61A,SPEC_HAEM,(specialty mapped to general ward),WARD_016,General Internal Medicine Unit,inferred
+MAP_0024,H_SZB,DIS_AML,C92.0,TRT_INDUCTION,R61A,SPEC_HAEM,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred
+MAP_0025,H_USZ,DIS_PANCR,K85,TRT_ERCP,H62A,SPEC_GASTRO,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0026,H_LUKS,DIS_PANCR,K85,TRT_ERCP,H62A,SPEC_GASTRO,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0027,H_HSL,DIS_PANCR,K85,TRT_ERCP,H62A,SPEC_GASTRO,Gastroenterology centre,WARD_016,General Internal Medicine Unit,explicit
+MAP_0028,H_SZB,DIS_PANCR,K85,TRT_ERCP,H62A,SPEC_GASTRO,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred
+MAP_0029,H_USZ,DIS_ILEUS,K56,TRT_LAPAROT,G18A,SPEC_CHIR,(specialty mapped to general ward),WARD_013,Chirurgische Klinik Station,inferred
+MAP_0030,H_LUKS,DIS_ILEUS,K56,TRT_LAPAROT,G18A,SPEC_CHIR,(specialty mapped to general ward),WARD_002,Chirurgie Station,inferred
+MAP_0031,H_HSL,DIS_ILEUS,K56,TRT_LAPAROT,G18A,SPEC_CHIR,Centre for Surgery Zurich,WARD_017,Surgery Unit,explicit
+MAP_0032,H_SZB,DIS_ILEUS,K56,TRT_LAPAROT,G18A,SPEC_CHIR,Chirurgie,WARD_008,Chirurgie Station,explicit
+MAP_0033,H_USZ,DIS_CONJ,H10,TRT_EYEDROP,C61Z,SPEC_OPHT,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0034,H_LUKS,DIS_CONJ,H10,TRT_EYEDROP,C61Z,SPEC_OPHT,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0035,H_HSL,DIS_CONJ,H10,TRT_EYEDROP,C61Z,SPEC_OPHT,(specialty mapped to general ward),WARD_016,General Internal Medicine Unit,inferred
+MAP_0036,H_SZB,DIS_CONJ,H10,TRT_EYEDROP,C61Z,SPEC_OPHT,Augenzentrum Zollikerberg,WARD_007,Innere Medizin Station,explicit
+MAP_0037,H_USZ,DIS_BIRTH,O80,TRT_DELIVERY,O60D,SPEC_GEBH,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0038,H_LUKS,DIS_BIRTH,O80,TRT_DELIVERY,O60D,SPEC_GEBH,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0039,H_HSL,DIS_BIRTH,O80,TRT_DELIVERY,O60D,SPEC_GEBH,Maternity Unit,WARD_016,General Internal Medicine Unit,explicit
+MAP_0040,H_SZB,DIS_BIRTH,O80,TRT_DELIVERY,O60D,SPEC_GEBH,Geburtshilfe,WARD_010,Geburtshilfe/Wochenbett,explicit
+MAP_0041,H_USZ,DIS_HIPFX,S72,TRT_HIPNAIL,I08C,SPEC_TRAUMA,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0042,H_LUKS,DIS_HIPFX,S72,TRT_HIPNAIL,I08C,SPEC_TRAUMA,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0043,H_HSL,DIS_HIPFX,S72,TRT_HIPNAIL,I08C,SPEC_TRAUMA,Traumatology Centre Hirslanden,WARD_016,General Internal Medicine Unit,explicit
+MAP_0044,H_SZB,DIS_HIPFX,S72,TRT_HIPNAIL,I08C,SPEC_TRAUMA,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred
+MAP_0045,H_USZ,DIS_ESRD,N18.5,TRT_DIALYSIS,L60C,SPEC_NEPHRO,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0046,H_LUKS,DIS_ESRD,N18.5,TRT_DIALYSIS,L60C,SPEC_NEPHRO,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0047,H_HSL,DIS_ESRD,N18.5,TRT_DIALYSIS,L60C,SPEC_NEPHRO,(specialty mapped to general ward),WARD_016,General Internal Medicine Unit,inferred
+MAP_0048,H_SZB,DIS_ESRD,N18.5,TRT_DIALYSIS,L60C,SPEC_NEPHRO,Nephrologie und Dialysezentrum,WARD_007,Innere Medizin Station,explicit
+MAP_0049,H_USZ,DIS_APP,K35,TRT_APPEND,G23B,SPEC_CHIR,(specialty mapped to general ward),WARD_013,Chirurgische Klinik Station,inferred
+MAP_0050,H_LUKS,DIS_APP,K35,TRT_APPEND,G23B,SPEC_CHIR,(specialty mapped to general ward),WARD_002,Chirurgie Station,inferred
+MAP_0051,H_HSL,DIS_APP,K35,TRT_APPEND,G23B,SPEC_CHIR,Centre for Surgery Zurich,WARD_017,Surgery Unit,explicit
+MAP_0052,H_SZB,DIS_APP,K35,TRT_APPEND,G23B,SPEC_CHIR,Chirurgie,WARD_008,Chirurgie Station,explicit
+MAP_0053,H_USZ,DIS_PNEU,J18,TRT_ABX,E79B,SPEC_PNEUMO,(specialty mapped to general ward),WARD_012,Medizinische Klinik Station,inferred
+MAP_0054,H_LUKS,DIS_PNEU,J18,TRT_ABX,E79B,SPEC_PNEUMO,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0055,H_HSL,DIS_PNEU,J18,TRT_ABX,E79B,SPEC_PNEUMO,Pneumology Centre Hirslanden,WARD_016,General Internal Medicine Unit,explicit
+MAP_0056,H_SZB,DIS_PNEU,J18,TRT_ABX,E79B,SPEC_PNEUMO,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred
+MAP_0057,H_USZ,DIS_AMI,I21,TRT_PCI,F60A,SPEC_KARDIO,Universitäres Herzzentrum,WARD_012,Medizinische Klinik Station,explicit
+MAP_0058,H_LUKS,DIS_AMI,I21,TRT_PCI,F60A,SPEC_KARDIO,(specialty mapped to general ward),WARD_001,Innere Medizin Station,inferred
+MAP_0059,H_HSL,DIS_AMI,I21,TRT_PCI,F60A,SPEC_KARDIO,Cardiac Centre Hirslanden Zurich,WARD_016,General Internal Medicine Unit,explicit
+MAP_0060,H_SZB,DIS_AMI,I21,TRT_PCI,F60A,SPEC_KARDIO,(specialty mapped to general ward),WARD_007,Innere Medizin Station,inferred

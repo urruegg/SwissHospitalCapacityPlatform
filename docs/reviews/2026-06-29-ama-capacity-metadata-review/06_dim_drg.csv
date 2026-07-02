@@ -1,0 +1,16 @@
+﻿drg_code,description,system,cost_weight,mean_los_norm,disease_id
+J23Z,Grosse Eingriffe an der Mamma bei bösartiger Neubildung,SwissDRG,1.10,5.0,DIS_BRCA
+B70A,Apoplexie mit komplexer Behandlung,SwissDRG,1.85,9.5,DIS_STROKE
+I10A,Eingriffe Wirbelsäule,SwissDRG,2.10,6.0,DIS_DISCHERN
+E65B,COPD,SwissDRG,0.95,6.5,DIS_COPD
+F67B,Hypertonie,SwissDRG,0.70,3.5,DIS_HTN
+R61A,Akute Leukämie mit Chemotherapie,SwissDRG,4.20,20.0,DIS_AML
+H62A,Erkrankungen Pankreas,SwissDRG,1.30,7.0,DIS_PANCR
+G18A,Eingriffe Dünn-/Dickdarm,SwissDRG,2.40,9.0,DIS_ILEUS
+C61Z,Erkrankungen Konjunktiva,SwissDRG,0.40,1.0,DIS_CONJ
+O60D,Vaginale Entbindung,SwissDRG,0.60,2.8,DIS_BIRTH
+I08C,Hüftfraktur-Osteosynthese,SwissDRG,2.05,9.5,DIS_HIPFX
+L60C,Niereninsuffizienz mit Dialyse,SwissDRG,1.15,6.0,DIS_ESRD
+G23B,Appendektomie,SwissDRG,0.90,3.5,DIS_APP
+E79B,Pneumonie,SwissDRG,0.95,6.0,DIS_PNEU
+F60A,AMI mit PCI,SwissDRG,1.95,5.5,DIS_AMI
