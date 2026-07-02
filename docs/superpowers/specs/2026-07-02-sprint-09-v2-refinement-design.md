@@ -264,6 +264,7 @@ flowchart LR
 **Total worst-case per hospital:** ~305/hr; × 3 hospitals = ~915/hr ≈ **15 events/min**.
 
 All events share an envelope:
+
 ```json
 { "eventKind": "encounter.admitted", "eventId": "...", "hospitalId": "USZ",
   "simulatedAt": "2027-01-15T10:23:00Z", "emittedAt": "2026-07-XX...",
@@ -552,7 +553,7 @@ flowchart LR
 
 ### 7.2 Deliverables (35 items)
 
-**T1 — Foundation (7)**
+#### T1 — Foundation (7)
 
 | # | Deliverable | DoD |
 |---|---|---|
@@ -564,7 +565,7 @@ flowchart LR
 | D1.6 | Ontology conformance CI strict-mode flip | `docs/ontology/CI_DESIGN.md` v1.0.0; `--strict` enabled in workflow; 0 WARN, 0 FAIL against v0.2.0 |
 | D1.7 | `.github/CODEOWNERS` update | `agents/**` → semantic/ontology owner + AI governance lead (2-of-2 for prompt changes per `FR-GOV-ONT-002`) |
 
-**T2 — Ingestion (8)**
+#### T2 — Ingestion (8)
 
 | # | Deliverable | DoD |
 |---|---|---|
@@ -577,7 +578,7 @@ flowchart LR
 | D2.7 | `02_silver_eventstream.ipynb` | 7-eventKind schema validation + PHI regex gate + FK integrity check pass |
 | D2.8 | `03_gold_eventstream.ipynb` | 6 `gold/patient-flow/*` tables populated; time-series shape verified against §4.7 conformance test |
 
-**T3 — Simulator (7)**
+#### T3 — Simulator (7)
 
 | # | Deliverable | DoD |
 |---|---|---|
@@ -589,7 +590,7 @@ flowchart LR
 | D3.6 | Test: `test_no_phi.py` (ADR-0016 gate) | Regex sweep returns 0 hits over 10 000 simulated events |
 | D3.7 | Bicep: `infra/modules/apps/sim-capacity/main.bicep` | ACA hosting; MI + `EH Data Sender` on EH; scales 1-3 replicas; `@allowed` region-pinned |
 
-**T4 — Semantic Model + Agents (7)**
+#### T4 — Semantic Model + Agents (7)
 
 | # | Deliverable | DoD |
 |---|---|---|
@@ -601,7 +602,7 @@ flowchart LR
 | D4.6 | `data-platform/scripts/deploy_fabric_data_agent.py` | Fabric REST-API authoring; region-agnostic via workspace ID |
 | D4.7 | `docs/AI.md` § Agent Registry (new subsection) | 3 agent rows with grounding, ceiling, refusal, host, region-pin |
 
-**T5 — Dashboard (6)**
+#### T5 — Dashboard (6)
 
 | # | Deliverable | DoD |
 |---|---|---|
@@ -612,7 +613,7 @@ flowchart LR
 | D5.5 | `04_load_or_samples.ipynb` | Direct-upload path; lands in `gold/patient-flow/or_schedule` + `or_case` |
 | D5.6 | Workspace-level RLS: PHI-tagged columns → empty-set filter | Verified per role; 0 rows for all roles on PHI columns (ADR-0016 gate 4) |
 
-**Cross-cutting (4)**
+#### Cross-cutting (4)
 
 | # | Deliverable | DoD |
 |---|---|---|
