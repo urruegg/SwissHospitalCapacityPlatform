@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 0.5.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.3.1 (Sprint 05 policy-as-code and DSR/incident evidence pointers) |
+| **Previous Version** | 0.4.0 (Sprint 05 CAF/WAF baseline pointers — policy-as-code, DSR, control-effectiveness telemetry) |
 
 ## Purpose
 
@@ -115,6 +115,10 @@ application, data, and operations layers.
 	customer-managed key controls.
 2. Encrypt data in transit with modern TLS.
 3. Maintain immutable or protected backups for critical recovery scope.
+
+## Data Plane
+
+> **PHI Row-Level Security (2026-07-02, ADR-0016):** Workspace-level Row-Level Security enforces the ADR-0016 gate 4 policy: any semantic-model column tagged `phi=true` returns empty-set for all roles. See [ADR-0016 §Gate 4 — Dashboard gate](adr/0016-no-phi-in-mvp-demo-scope.md#gate-4-dashboard-gate).
 
 ## Threat Detection and Response
 
