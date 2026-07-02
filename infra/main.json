@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "5845789575308375628"
+      "templateHash": "5905080689532585485"
     }
   },
   "parameters": {
@@ -22,7 +22,7 @@
     },
     "solutionShortName": {
       "type": "string",
-      "defaultValue": "chhealthpf",
+      "defaultValue": "ihzhhpf",
       "metadata": {
         "description": "Solution short name used in Azure resource names."
       }

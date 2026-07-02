@@ -1,11 +1,11 @@
 using '../main.bicep'
 
 param environmentName = 'prod'
-param solutionShortName = 'chhealthpf'
+param solutionShortName = 'ihzhhpf'
 param location = 'switzerlandnorth'
 
 param owner = 'platform-team'
-param costCenter = 'chhealthpf-prod'
+param costCenter = 'ihzhhpf-prod'
 param workload = 'hospital-capacity'
 
 param logAnalyticsRetentionInDays = 180

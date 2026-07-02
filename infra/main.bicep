@@ -11,7 +11,7 @@ targetScope = 'resourceGroup'
 param environmentName string
 
 @description('Solution short name used in Azure resource names.')
-param solutionShortName string = 'chhealthpf'
+param solutionShortName string = 'ihzhhpf'
 
 @description('Location for all resources. Defaults to resource group location.')
 param location string = resourceGroup().location
