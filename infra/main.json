@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "8560991661682448539"
+      "templateHash": "77771533043704478"
     }
   },
   "parameters": {
@@ -711,7 +711,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "12185296377270705497"
+              "templateHash": "2345959628000021485"
             }
           },
           "parameters": {
@@ -784,7 +784,7 @@
             }
           },
           "variables": {
-            "storageAccountName": "[toLower(format('stdp{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "storageAccountName": "[toLower(format('stdp{0}{1}', replace(parameters('nameSuffix'), '-', ''), take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)))]",
             "sourceSqlKvIdParts": "[split(parameters('sourceSqlKeyVaultId'), '/')]"
           },
           "resources": [
@@ -1778,7 +1778,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "13319949822591053965"
+              "templateHash": "2181231043339027451"
             }
           },
           "parameters": {
@@ -1803,7 +1803,7 @@
             }
           },
           "variables": {
-            "storageAccountName": "[toLower(format('stdp{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "storageAccountName": "[toLower(format('stdp{0}{1}', replace(parameters('nameSuffix'), '-', ''), take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)))]",
             "containerRegistryName": "[toLower(format('cr{0}', uniqueString(resourceGroup().id, parameters('nameSuffix'))))]"
           },
           "resources": [

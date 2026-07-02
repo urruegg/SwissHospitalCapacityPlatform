@@ -28,7 +28,9 @@ param enableFabricFoundationModule bool = false
 @description('Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true.')
 param fabricCapacityAdmins array = []
 
-var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}')
+// Storage account names must be globally unique across all Azure. Add a short, deterministic
+// per-(subscription, RG) suffix so ihzhhpf-based names don't collide with unrelated tenants.
+var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}${take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)}')
 
 var sourceSqlKvIdParts = split(sourceSqlKeyVaultId, '/')
 

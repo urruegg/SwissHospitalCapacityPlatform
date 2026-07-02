@@ -8,7 +8,8 @@ param nameSuffix string
 @description('Resource tags applied to all resources.')
 param tags object
 
-var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}')
+// Must match the expression in data-platform/main.bicep so the existing reference resolves.
+var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}${take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)}')
 var containerRegistryName = toLower('cr${uniqueString(resourceGroup().id, nameSuffix)}')
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
