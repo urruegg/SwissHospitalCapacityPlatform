@@ -1,6 +1,6 @@
 targetScope = 'resourceGroup'
 
-@description('Suffix appended to resource names (e.g. chhealthpf-sit).')
+@description('Suffix appended to resource names (e.g. ihzhhpf-sit).')
 param nameSuffix string
 
 @description('Deployment region. Must be switzerlandnorth (ADR-0003).')
