@@ -71,8 +71,8 @@ def parse_crosswalk_classes(md_text: str) -> set[str]:
 def check_conformance(reference: set[str], crosswalk: set[str]) -> list[Finding]:
     findings: list[Finding] = []
 
-    # Every reference class should have a crosswalk row (except the abstract root).
-    ABSTRACT_ROOT = {"hcp:CapacityUnit", "hcp:CapacityState"}
+    # Every reference class should have a crosswalk row (except the abstract roots).
+    ABSTRACT_ROOT = {"hcp:CapacityUnit", "hcp:CapacityState", "hcp:InformationContent"}
     ref_gap = reference - crosswalk - ABSTRACT_ROOT
     for cls in sorted(ref_gap):
         findings.append(

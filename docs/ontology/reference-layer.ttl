@@ -14,6 +14,7 @@
 @prefix omrse:  <http://purl.obolibrary.org/obo/OMRSE_> .
 @prefix ogms:   <http://purl.obolibrary.org/obo/OGMS_> .
 @prefix oostt:  <http://purl.obolibrary.org/obo/OOSTT_> .
+@prefix iao:    <http://purl.obolibrary.org/obo/IAO_> .
 @prefix obo:    <http://purl.obolibrary.org/obo/> .
 
 # ---------------------------------------------------------------------------
@@ -29,7 +30,7 @@
     dcterms:description "Reference layer of the two-layer ontology per ADR-0014. Skeleton only — full axiomatic content is Phase 3."@en ;
     dcterms:creator     "Urs Rüegg"@en ;
     dcterms:issued      "2026-07-02"^^xsd:date ;
-    owl:versionInfo     "0.1.0" ;
+    owl:versionInfo     "0.2.0" ;
     rdfs:comment        "Sprint 09 RB-11 deliverable. See docs/ontology/README.md for scope discipline and versioning."@en ;
 
     # Imports declared but not loaded axiomatically in this skeleton.
@@ -38,7 +39,8 @@
         <http://purl.obolibrary.org/obo/bfo.owl> ,      # BFO (ISO/IEC 21838-2:2021)
         <http://purl.obolibrary.org/obo/omrse.owl> ,    # OMRSE — health-care facility function typology
         <http://purl.obolibrary.org/obo/ogms.owl> ,     # OGMS — clinical-encounter terms
-        <http://purl.obolibrary.org/obo/oostt.owl> .    # OOSTT — organisational structure of care sites
+        <http://purl.obolibrary.org/obo/oostt.owl> ,    # OOSTT — organisational structure of care sites
+        <http://purl.obolibrary.org/obo/iao.owl> .      # IAO — Information Artifact Ontology
 
 # ===========================================================================
 # hcp:CapacityUnit — the platform's integral abstraction (per ADR-0014 §1).
@@ -107,6 +109,19 @@ hcp:Planned a hcp:CapacityState ;
     rdfs:comment "Unit is scheduled for future use (typical for ORSlot; also used for bed pre-assignment)."@en .
 
 # ===========================================================================
+# Skeleton class stubs for range targets (declared here to avoid dangling
+# references; full axiomatic content is Phase 3 per ADR-0014 §3).
+# ===========================================================================
+
+hcp:Encounter a owl:Class ;
+    rdfs:label   "Encounter"@en ;
+    rdfs:comment "A hospitalisation episode (control unit per AMA SD Core Solution Pattern). Aligns to ogms:Encounter in Phase 3. Range target for hcp:appliesTo, hcp:assignsEncounter; crosswalked to DC-DEMAND-ENCOUNTER-v1 in T1.4."@en .
+
+hcp:Specialty a owl:Class ;
+    rdfs:label   "Specialty"@en ;
+    rdfs:comment "A medical specialty (FMH discipline). Aligns to omrse:Specialty in Phase 3. Range target for hcp:covers; source table is dim_specialty (DC-MASTER-02)."@en .
+
+# ===========================================================================
 # Basic relations (skeleton). Full property chains + inverse properties are
 # Phase 3 material.
 # ===========================================================================
@@ -118,6 +133,73 @@ hcp:hasState a owl:ObjectProperty ;
 hcp:isPartOf a owl:ObjectProperty ;
     rdfs:label   "is part of"@en ;
     rdfs:comment "Compositional relation. Bed ⊑ Room ⊑ Ward ⊑ Hospital. Subject to Phase 3 alignment with bfo:part-of."@en .
+
+# ===========================================================================
+# Information Content Entity abstract root (aligns to iao:InformationContentEntity in Phase 3)
+# ===========================================================================
+hcp:InformationContent a owl:Class ;
+    rdfs:label   "Information Content"@en ;
+    rdfs:comment "Abstract superclass for scores, forecasts, recommendations, and matching outputs. Aligns to iao:InformationContentEntity in Phase 3."@en .
+
+# --- Four new ICE classes ---
+
+hcp:BedAssignment a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Bed Assignment"@en ;
+    rdfs:comment    "The matching output linking one Encounter to one Bed for a time window. Carries assignedAt, unassignedAt, assignmentReason, matchScore, explanationTokens. Grounds AMA SD Core Solution Pattern 'Matching Demand -> Supply'."@en .
+
+hcp:DischargeReadinessScore a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Discharge Readiness Score"@en ;
+    rdfs:comment    "A score [0..1] produced by the discharge-scoring pipeline with feature attribution. Grounds FR-DC-001, FR-DC-006."@en .
+
+hcp:DischargeRecommendation a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Discharge Recommendation"@en ;
+    rdfs:comment    "Ranked candidate action derived from a DischargeReadinessScore, including blockers and recommendedAction. Advisory/HITL per NFR-AI-001. Grounds FR-DC-002, FR-DC-003, FR-DC-005."@en .
+
+hcp:ForecastOutput a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Forecast Output"@en ;
+    rdfs:comment    "A 72h forecast covering one Specialty for a time window. Carries covers, validFor, refreshCadence, producedBy. Grounds FR-FC-001..006."@en .
+
+# ===========================================================================
+# Seven new object/datatype properties for the ICE classes
+# ===========================================================================
+hcp:appliesTo a owl:ObjectProperty ;
+    rdfs:label  "applies to"@en ;
+    rdfs:domain hcp:InformationContent ;
+    rdfs:range  hcp:Encounter .
+
+hcp:assignsBed a owl:ObjectProperty ;
+    rdfs:label  "assigns bed"@en ;
+    rdfs:domain hcp:BedAssignment ;
+    rdfs:range  hcp:Bed .
+
+hcp:assignsEncounter a owl:ObjectProperty ;
+    rdfs:label  "assigns encounter"@en ;
+    rdfs:domain hcp:BedAssignment ;
+    rdfs:range  hcp:Encounter .
+
+hcp:covers a owl:ObjectProperty ;
+    rdfs:label  "covers"@en ;
+    rdfs:domain hcp:ForecastOutput ;
+    rdfs:range  hcp:Specialty .
+
+hcp:validFor a owl:DatatypeProperty ;
+    rdfs:label  "valid for (time window)"@en ;
+    rdfs:domain hcp:ForecastOutput ;
+    rdfs:range  xsd:duration .
+
+hcp:producedBy a owl:DatatypeProperty ;
+    rdfs:label  "produced by (model run id)"@en ;
+    rdfs:domain hcp:InformationContent ;
+    rdfs:range  xsd:string .
+
+hcp:hasExplanation a owl:DatatypeProperty ;
+    rdfs:label  "has explanation tokens"@en ;
+    rdfs:domain hcp:InformationContent ;
+    rdfs:range  xsd:string .
 
 # ===========================================================================
 # Provider-extension pattern (per FR-ONT-007).
