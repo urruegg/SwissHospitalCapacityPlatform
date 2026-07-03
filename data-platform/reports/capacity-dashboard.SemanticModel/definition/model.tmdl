@@ -95,3 +95,49 @@ table Beds Occupied
     measure 'Beds Occupied' =
         CALCULATE(COUNT(fact_bed_state[bedId]), fact_bed_state[state]="occupied")
         annotation Grounds = "hcp:Bed + hcp:hasState=Occupied"
+
+/// --- ADR-0016 Gate 4: Row-Level Security PHI gate (Sprint 09 v2 — T5.6)
+/// Every role blocks any column with annotation [phi]="true" (empty set on query).
+/// The scaffold filter `IF([_data_quality]="phi", FALSE, TRUE)` is deliberately
+/// non-matching (silver values ∈ {explicit, inferred, missing} per notebook 02);
+/// portal-authored TMDL export replaces it with per-column PHI-tag filters.
+/// See docs/superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md §6.5.
+
+role BedOps
+    modelPermission: read
+    /// PHI columns return empty via table filter on _data_quality != 'phi'
+    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission fact_encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    annotation PurposeLimitation = "Bed operations — no PHI exposure per ADR-0016 gate 4"
+
+role ORPlanner
+    modelPermission: read
+    tablePermission or_case = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission or_schedule = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    annotation PurposeLimitation = "OR planning — no PHI exposure per ADR-0016 gate 4"
+
+role Analyst
+    modelPermission: read
+    /// Broadest read scope but still blocks PHI-tagged rows
+    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission fact_encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission fact_bed_state = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission fact_bed_assignment = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission fact_forecast_output = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission fact_or_schedule = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    tablePermission fact_or_case = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    annotation PurposeLimitation = "Broad analytics — no PHI exposure per ADR-0016 gate 4"
+
+role SemanticOwner
+    modelPermission: read
+    /// Even model owner sees no PHI rows
+    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
+    annotation PurposeLimitation = "Semantic model steward — no PHI exposure per ADR-0016 gate 4"
+
+/// Manual step for portal-authored model:
+/// 1. Tag every PHI column with annotation [phi]="true".
+/// 2. Convert the IF([_data_quality]="phi", ...) filter above to iterate PHI columns:
+///    e.g. NOT(ISBLANK(FIND(SELECTEDVALUE(columnannotation), "phi=true", 1, 0)))
+/// 3. Or use per-column DAX filters if TMDL syntax permits.
+

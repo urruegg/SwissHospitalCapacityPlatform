@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pages/1.0.0/schema.json",
+  "pageOrder": [
+    "page1-capacity",
+    "page2-or"
+  ],
+  "activePageName": "page1-capacity"
+}
