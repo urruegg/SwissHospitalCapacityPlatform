@@ -1,6 +1,6 @@
 # `fabric-eventstream` Bicep module
 
-**Sprint 09 v2.0.0 · T2.2 · scaffold-only + REST-API post-deploy**
+> Sprint 09 v2.0.0 · T2.2 · scaffold-only + REST-API post-deploy
 
 ## Purpose
 
