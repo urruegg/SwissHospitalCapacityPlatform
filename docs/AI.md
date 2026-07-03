@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.5.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 0.6.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.4.1 (Sprint 05 runtime pattern decision matrix alignment) |
+| **Previous Version** | 0.5.0 (pre §Agent Registry) |
 
 ## Purpose
 
@@ -179,3 +179,27 @@ Related architecture decisions:
 3. Run burst test at 180 concurrent users for 10-minute windows.
 4. Verify degradation behavior and queue backpressure handling.
 5. Tune autoscale thresholds and minimum replica counts from observed P95/P99.
+
+## Agent Registry (Runtime, Data-Plane)
+
+Registers **runtime, user-facing agents** that serve bed managers, planners, and clinical stewards. Distinct from [AGENTS.md](../AGENTS.md), which lists **coding agents** operating on this repository.
+
+All 3 runtime agents obey design-spec §1.4 demo-scope guardrails, ADR-0016 four-gate PHI enforcement, and ADR-0013 westus2 region pin (Swiss GA target: switzerlandnorth).
+
+| Agent | Host (westus2 today / Swiss GA target) | Role | Ceiling | Primary grounding | Refusal rules | Pack |
+| ----- | -------------------------------------- | ---- | ------- | ----------------- | ------------- | ---- |
+| **BM-Copilot** *(existing)* | Foundry `ai-ihzhhpf-sit` westus2 → `switzerlandnorth` on Fabric IQ GA | Bed-management conversational copilot (advisory, HITL) | `read` | `gold/patient-flow/*` + MVO semantic model | Refuses: authoritative clinical direction, patient identity emission, clinical dosing / diagnosis Qs | [agents/bm-copilot/](../agents/bm-copilot/AGENT.md) |
+| **Fabric Data Agent** *(new)* | Fabric IQ (westus2 demo) → switzerlandnorth on GA | Natural-language MVO ontology query (query-only) | `read` | MVO ontology + semantic model (Direct Lake) | Refuses: synthetic data generation, semantic model / ontology mutation, cross-hospital re-identification | [agents/fabric-data-agent/](../agents/fabric-data-agent/AGENT.md) |
+| **CSA** — Capacity Simulation Agent *(new)* | Foundry `ai-ihzhhpf-sit` westus2 → `switzerlandnorth` on Fabric IQ GA | Advisory what-if capacity planning ("cut ward W by 4 beds → 7-day impact?") | `read` | `gold/patient-flow/*` + simulator `simRunId` history + `gold/forecast_output` | Refuses: real-data execution, clinical recommendation framing, confidence claims without `simRunId` evidence | [agents/csa-agent/](../agents/csa-agent/AGENT.md) |
+
+**Auth model:** all 3 agents auth via User-Assigned Managed Identity (attached to Foundry / Fabric hosts) with least-privilege role assignments — no long-lived secrets. Bicep: [infra/modules/agents/foundry-hosted/](../infra/modules/agents/foundry-hosted/main.bicep).
+
+**MCP allow-list:** no changes. Runtime agents consume Azure services via MI, not MCP. The [`.github/copilot/mcp.json`](../.github/copilot/mcp.json) allow-list is scoped to the coding agent only.
+
+**Governance:**
+
+- Agent packs (`agents/<name>/`) versioned per §9 Document Versioning.
+- Golden-task fixtures under each pack; ≥3 per agent (happy / failure / PHI refusal) per design spec §5.5.
+- Region-pin path documented in each `AGENT.md §8` for Swiss GA migration.
+
+Refer to [design spec §5](superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md) for full architecture rationale.
