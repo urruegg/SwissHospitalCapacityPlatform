@@ -55,6 +55,23 @@ param fabricCapacityAdmins = [
     'admin@mngenvmcap164444.onmicrosoft.com'
 ]
 
+// Sprint 09 v2.0.0 T4.5 — Foundry-hosted runtime agents (BM-Copilot + CSA).
+// Attaches Managed Identities + RBAC to the already-provisioned Foundry
+// resource `ai-ihzhhpf-sit` in westus2 per ADR-0013.
+//
+// Event Hub namespace/hub names are placeholders here because T2
+// (data-foundation Event Hubs) lives on branch `sprint-09-v2/t2-ingestion`
+// and has not merged yet. On this branch the Event Hub role assignments
+// will surface as unresolvable during `what-if` — expected until T2 merges.
+// Once T2 merges and the data-foundation module exposes hub outputs,
+// switch these to `readEnvironmentVariable`/module-output wiring.
+param enableFoundryHostedAgents = true
+param foundryHostedAgentsLocation = 'westus2'
+param foundryHostedAgentsEventHubNamespace = 'evh-ihzhhpf-sit'
+param foundryHostedAgentsEventHubName = 'evh-capacity-events-sit'
+param foundryHostedAgentsBmCopilotConsumerGroup = 'cg-bm-copilot-agent'
+param foundryHostedAgentsCsaConsumerGroup = 'cg-csa-agent'
+
 // Sprint 09 v2 T3.7 — sim-capacity ACA producer. Enabled in SIT for the demo path.
 // EH namespace resolves from data-foundation module output when enableDataFoundationModule=true.
 param enableSimCapacityModule = true

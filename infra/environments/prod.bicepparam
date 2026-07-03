@@ -32,6 +32,17 @@ param enableSourceSqlModule = false
 // Sprint 08 W1.2 — Fabric foundation submodule remains opt-out in PROD until separately approved.
 param enableFabricFoundationModule = false
 
+// Sprint 09 v2.0.0 T4.5 — Foundry-hosted runtime agents.
+// Deferred in PROD until Fabric IQ reaches Swiss GA and the ADR-0013 westus2
+// demo scope is retired. Keep values documented so the flip is a param-only
+// change when PROD readiness gates pass.
+param enableFoundryHostedAgents = false
+param foundryHostedAgentsLocation = 'westus2'
+param foundryHostedAgentsEventHubNamespace = 'evh-ihzhhpf-prod'
+param foundryHostedAgentsEventHubName = 'evh-capacity-events-prod'
+param foundryHostedAgentsBmCopilotConsumerGroup = 'cg-bm-copilot-agent'
+param foundryHostedAgentsCsaConsumerGroup = 'cg-csa-agent'
+
 // Sprint 09 v2 T3.7 — sim-capacity ACA producer remains opt-out in PROD until Sprint 09 promotes it.
 param enableSimCapacityModule = false
 

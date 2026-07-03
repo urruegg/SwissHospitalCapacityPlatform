@@ -125,6 +125,28 @@ param enableAiMlFoundationModule bool = false
 @description('Enable integration orchestration foundation module deployment.')
 param enableIntegrationOrchestrationModule bool = false
 
+@description('Enable Foundry-hosted runtime agents module (BM-Copilot + CSA UAMIs + RBAC). Sprint 09 v2.0.0 T4.5.')
+param enableFoundryHostedAgents bool = false
+
+@description('Location for the Foundry-hosted agents UAMIs. Must match the Foundry account region — westus2 for the demo scope per ADR-0013.')
+@allowed([
+  'switzerlandnorth'
+  'westus2'
+])
+param foundryHostedAgentsLocation string = 'westus2'
+
+@description('Event Hub namespace name that BM-Copilot/CSA MIs receive from. Placeholder wiring while T2 (data-foundation Event Hubs) lives on a separate branch.')
+param foundryHostedAgentsEventHubNamespace string = ''
+
+@description('Event Hub name that BM-Copilot/CSA MIs receive from. Placeholder wiring while T2 (data-foundation Event Hubs) lives on a separate branch.')
+param foundryHostedAgentsEventHubName string = ''
+
+@description('Consumer group name for BM-Copilot.')
+param foundryHostedAgentsBmCopilotConsumerGroup string = 'cg-bm-copilot-agent'
+
+@description('Consumer group name for CSA.')
+param foundryHostedAgentsCsaConsumerGroup string = 'cg-csa-agent'
+
 @description('Enable the sim-capacity ACA module (Sprint 09 v2 T3.7). Default true in SIT, false in PROD.')
 param enableSimCapacityModule bool = false
 
@@ -284,6 +306,24 @@ module integrationOrchestration './modules/integration-orchestration/main.bicep'
   }
 }
 
+// Sprint 09 v2.0.0 T4.5 — Foundry-hosted runtime agents (BM-Copilot + CSA).
+// Attaches Managed Identities + RBAC to the already-provisioned Foundry
+// resource `ai-<solutionShortName>-<env>`. Does NOT create the Foundry
+// resource itself (owned by ai-platform/main.bicep).
+module foundryHostedAgents './modules/agents/foundry-hosted/main.bicep' = if (enableFoundryHostedAgents) {
+  name: 'foundry-hosted-agents-${environmentName}'
+  params: {
+    location: foundryHostedAgentsLocation
+    environment: environmentName
+    solutionShortName: solutionShortName
+    eventHubNamespaceName: foundryHostedAgentsEventHubNamespace
+    eventHubName: foundryHostedAgentsEventHubName
+    bmCopilotConsumerGroup: foundryHostedAgentsBmCopilotConsumerGroup
+    csaConsumerGroup: foundryHostedAgentsCsaConsumerGroup
+    tags: tags
+  }
+}
+
 // Sprint 09 v2 — T3.7: sim-capacity ACA producer. Only deploys when a target Event Hub namespace is known
 // (either passed explicitly via simCapacityEventHubNamespace or produced by the data-foundation module).
 var simCapacityHasEhSource = !empty(simCapacityEventHubNamespace) || enableDataFoundationModule
@@ -354,6 +394,12 @@ output moduleStatuses object = {
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'
 }
+
+output foundryHostedAgentsStatus string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.moduleStatus : 'foundry-hosted-agents-disabled'
+output bmCopilotPrincipalId string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.bmCopilotPrincipalId : ''
+output bmCopilotClientId string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.bmCopilotClientId : ''
+output csaPrincipalId string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.csaPrincipalId : ''
+output csaClientId string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.csaClientId : ''
 
 // Exposed for T2.1 EH module wiring — read by the parent deployment to feed Azure Event Hubs Data Sender RBAC.
 output simCapacityPrincipalId string = (enableSimCapacityModule && simCapacityHasEhSource)

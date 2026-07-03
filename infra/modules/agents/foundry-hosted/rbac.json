@@ -1,0 +1,103 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.8.12551",
+      "templateHash": "788889626278574832"
+    }
+  },
+  "parameters": {
+    "bmCopilotPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal ID (object ID) of the BM-Copilot managed identity."
+      }
+    },
+    "csaPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal ID (object ID) of the CSA managed identity."
+      }
+    },
+    "eventHubNamespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hub namespace name (existing)."
+      }
+    },
+    "eventHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hub name (existing, child of the namespace)."
+      }
+    },
+    "bmCopilotConsumerGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "BM-Copilot consumer group name. Reserved for T2-merge scope narrowing."
+      }
+    },
+    "csaConsumerGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "CSA consumer group name. Reserved for T2-merge scope narrowing."
+      }
+    }
+  },
+  "variables": {
+    "storageBlobDataReaderRoleId": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1",
+    "eventHubsDataReceiverRoleId": "a638d3c7-ab3a-418d-83e6-5f17a39d4fde"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(resourceGroup().id, parameters('bmCopilotPrincipalId'), variables('storageBlobDataReaderRoleId'))]",
+      "properties": {
+        "principalId": "[parameters('bmCopilotPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleId'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName'))]",
+      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName')), parameters('bmCopilotPrincipalId'), variables('eventHubsDataReceiverRoleId'))]",
+      "properties": {
+        "principalId": "[parameters('bmCopilotPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(resourceGroup().id, parameters('csaPrincipalId'), variables('storageBlobDataReaderRoleId'))]",
+      "properties": {
+        "principalId": "[parameters('csaPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleId'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName'))]",
+      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName')), parameters('csaPrincipalId'), variables('eventHubsDataReceiverRoleId'))]",
+      "properties": {
+        "principalId": "[parameters('csaPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]"
+      }
+    }
+  ],
+  "outputs": {
+    "moduleStatus": {
+      "type": "string",
+      "value": "foundry-hosted-agents-rbac-implemented"
+    }
+  }
+}

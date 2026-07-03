@@ -1,0 +1,97 @@
+// capacity-dashboard semantic model — SKELETON
+// Full model is portal-authored. This file contains pre-authored DAX measures per design spec §6.3.
+// See README.md for the manual authoring workflow.
+
+model Model
+    culture: 'en-US'
+    defaultPowerBIDataSourceVersion: powerBI_V3
+    discourageImplicitMeasures
+
+/// --- Bed / capacity (Page 1) — grounds on hcp:Bed, hcp:hasState, hcp:CapacityState, hcp:Ward, hcp:ForecastOutput
+table Measures
+    partition Measures = calculated
+        source = ...
+
+    // FR-CX-001 — grounds on hcp:Bed + hcp:hasState=Occupied
+    measure 'Occupancy %' = DIVIDE([Beds Occupied], [Beds Total]) * 100
+        formatString: 0.0"%"
+        annotation Grounds = "hcp:Bed + hcp:hasState=Occupied"
+
+    // FR-CX-001 — grounds on hcp:Bed + hcp:CapacityState
+    measure 'Beds Free' = [Beds Total] - [Beds Occupied]
+        formatString: 0
+        annotation Grounds = "hcp:Bed + hcp:CapacityState"
+
+    // FR-CX-001 — grounds on hcp:Ward.bedCount
+    measure 'Beds Total' = SUM(dim_ward_capacityunit[bed_count])
+        formatString: 0
+        annotation Grounds = "hcp:Ward.bedCount"
+
+    // FR-FC-005 — grounds on hcp:ForecastOutput.expected_demand
+    measure 'Required Capacity' = AVERAGE(gold_forecast_output[expected_demand])
+        formatString: 0.0
+        annotation Grounds = "hcp:ForecastOutput.expected_demand"
+
+    // FR-CX-002 — grounds on hcp:Encounter.admissionType
+    measure 'ED Arrivals/hr' = DIVIDE(CALCULATE(COUNT(encounter[eventId]), encounter[admissionType]="emergency"), 24)
+        formatString: 0.0
+        annotation Grounds = "hcp:Encounter.admissionType"
+
+    // FR-FC-006 — grounds on hcp:ForecastOutput (72h window)
+    measure 'Forecast Peak (72h)' = MAXX(FILTER(gold_forecast_output, [validFor] BETWEEN NOW() AND NOW()+72), [expected_demand])
+        formatString: 0.0
+        annotation Grounds = "hcp:ForecastOutput"
+
+    // NFR-DQ-002 — grounds on _data_quality field
+    measure 'Data Quality Score' = DIVIDE(CALCULATE(COUNT([id]), [_data_quality]="explicit"), COUNT([id])) * 100
+        formatString: 0.0"%"
+        annotation Grounds = "_data_quality"
+
+    // --- OR (Page 2) — grounds on hcp:ORSlot, hcp:BedAssignment
+    // FR-CX-004 — grounds on hcp:ORSlot
+    measure 'First-Case On-Time %' =
+        DIVIDE(
+            CALCULATE(COUNT(or_case[caseId]), or_case[isFirstCase]=TRUE, or_case[actualStart] <= or_case[plannedStart]),
+            CALCULATE(COUNT(or_case[caseId]), or_case[isFirstCase]=TRUE)
+        ) * 100
+        formatString: 0.0"%"
+        annotation Grounds = "hcp:ORSlot"
+
+    // FR-CX-004 — grounds on hcp:ORSlot cancellation
+    measure 'Short-Notice Cancellation %' =
+        DIVIDE(
+            CALCULATE(COUNT(or_case[caseId]), or_case[cancellationLeadTimeHours] < 24),
+            COUNT(or_case[caseId])
+        ) * 100
+        formatString: 0.0"%"
+        annotation Grounds = "hcp:ORSlot.cancellation"
+
+    // FR-CX-004 — grounds on hcp:ORSlot turnover
+    measure 'Avg Turnover Minutes' = AVERAGE(or_case[turnoverMinutes])
+        formatString: 0
+        annotation Grounds = "hcp:ORSlot.turnover"
+
+    // FR-CX-004 — grounds on hcp:ORSlot idle time
+    measure 'Idle Slot Minutes' = SUM(or_slot[idleMinutes])
+        formatString: 0
+        annotation Grounds = "hcp:ORSlot.idle"
+
+    // FR-CX-004 — grounds on hcp:ORSlot overrun
+    measure 'Over-Run Minutes' = SUM(or_case[overRunMinutes])
+        formatString: 0
+        annotation Grounds = "hcp:ORSlot.overrun"
+
+    // FR-CX-004 — grounds on hcp:ORSlot utilization
+    measure 'OR Utilization %' =
+        DIVIDE(
+            SUM(or_case[actualDurationMinutes]),
+            SUM(or_slot[plannedMinutes])
+        ) * 100
+        formatString: 0.0"%"
+        annotation Grounds = "hcp:ORSlot.utilization"
+
+table Beds Occupied
+    // Helper measure — used by Occupancy %
+    measure 'Beds Occupied' =
+        CALCULATE(COUNT(fact_bed_state[bedId]), fact_bed_state[state]="occupied")
+        annotation Grounds = "hcp:Bed + hcp:hasState=Occupied"
