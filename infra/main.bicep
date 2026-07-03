@@ -86,6 +86,15 @@ param enableFabricFoundationModule bool = false
 @description('Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true.')
 param fabricCapacityAdmins array = []
 
+@description('Enable Fabric Eventstream module (Sprint 09 v2.0.0 T2.2). Requires enableDataFoundationModule=true (event hub source) and enableDataPlatformModule + enableFabricFoundationModule (workspace/lakehouse destination). Scaffold-only Bicep + REST-API post-deploy; see modules/data-platform/fabric-eventstream/README.md.')
+param enableFabricEventstreamModule bool = false
+
+@description('Fabric workspace ID that hosts the Eventstream. Required when enableFabricEventstreamModule=true. Obtain via configure-fabric.ps1 post-deploy output.')
+param fabricEventstreamWorkspaceId string = ''
+
+@description('Optional Fabric Lakehouse ID for the Eventstream destination. Empty defers destination wiring (Eventstream created source-only). Optional at Bicep composition time; required at post-deploy time for full wiring.')
+param fabricEventstreamDestinationLakehouseId string = ''
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -100,6 +109,15 @@ param enableApiRuntimeModule bool = false
 
 @description('Enable data foundation module deployment.')
 param enableDataFoundationModule bool = false
+
+@description('Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped.')
+param eventHubsSimulatorMiPrincipalId string = ''
+
+@description('Object ID of the BM-Copilot managed identity that reads from cg-bm-copilot-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped.')
+param eventHubsBmCopilotMiPrincipalId string = ''
+
+@description('Object ID of the CSA (Capacity Simulation Agent) managed identity that reads from cg-csa-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped.')
+param eventHubsCsaAgentMiPrincipalId string = ''
 
 @description('Enable AI/ML foundation module deployment.')
 param enableAiMlFoundationModule bool = false
@@ -242,6 +260,9 @@ module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFou
     location: location
     nameSuffix: resourceSuffix
     tags: tags
+    simulatorMiPrincipalId: eventHubsSimulatorMiPrincipalId
+    bmCopilotMiPrincipalId: eventHubsBmCopilotMiPrincipalId
+    csaAgentMiPrincipalId: eventHubsCsaAgentMiPrincipalId
   }
 }
 
@@ -285,6 +306,22 @@ module simCapacity './modules/apps/sim-capacity/main.bicep' = if (enableSimCapac
   }
 }
 
+// Sprint 09 v2.0.0 T2.2 — Fabric Eventstream scaffold. See modules/data-platform/fabric-eventstream/README.md.
+// Region is constrained to switzerlandnorth | westus2 to keep Bicep type-safe; falls back to westus2 for the
+// ADR-0013 demo-scope carve-out when the RG location is something else.
+module fabricEventstream './modules/data-platform/fabric-eventstream/main.bicep' = if (enableFabricEventstreamModule) {
+  name: 'fabric-eventstream-${environmentName}'
+  params: {
+    workspaceId: fabricEventstreamWorkspaceId
+    eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
+    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
+    eventHubConsumerGroup: 'cg-fabric-eventstream'
+    location: location == 'switzerlandnorth' ? 'switzerlandnorth' : 'westus2'
+    demoScope: location != 'switzerlandnorth'
+    destinationLakehouseId: fabricEventstreamDestinationLakehouseId
+  }
+}
+
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
 output sourceSqlGatingWarning string = enableSourceSqlModule && !enableDataPlatformModule
@@ -295,6 +332,13 @@ output fabricFoundationGatingWarning string = enableFabricFoundationModule && !e
   : (enableFabricFoundationModule && empty(fabricCapacityAdmins))
     ? 'WARN: enableFabricFoundationModule=true but fabricCapacityAdmins is empty; deploy will fail.'
     : 'ok'
+output fabricEventstreamGatingWarning string = enableFabricEventstreamModule && !enableDataFoundationModule
+  ? 'WARN: enableFabricEventstreamModule=true requires enableDataFoundationModule=true; Eventstream module will fail.'
+  : (enableFabricEventstreamModule && empty(fabricEventstreamWorkspaceId))
+    ? 'WARN: enableFabricEventstreamModule=true but fabricEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output.'
+    : (enableFabricEventstreamModule && empty(fabricEventstreamDestinationLakehouseId))
+      ? 'INFO: fabricEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.'
+      : 'ok'
 output moduleStatuses object = {
   identity: enableIdentityModule ? identity!.outputs.moduleStatus : 'identity-disabled'
   network: enableNetworkModule ? network!.outputs.moduleStatus : 'network-disabled'
@@ -308,6 +352,7 @@ output moduleStatuses object = {
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
+  fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'
 }
 
 // Exposed for T2.1 EH module wiring — read by the parent deployment to feed Azure Event Hubs Data Sender RBAC.

@@ -34,3 +34,13 @@ param enableFabricFoundationModule = false
 
 // Sprint 09 v2 T3.7 — sim-capacity ACA producer remains opt-out in PROD until Sprint 09 promotes it.
 param enableSimCapacityModule = false
+
+// Sprint 09 v2.0.0 T2.2 — Fabric Eventstream module deferred in PROD until Sprint 09 promotes.
+param enableFabricEventstreamModule = false
+param fabricEventstreamWorkspaceId = ''
+param fabricEventstreamDestinationLakehouseId = ''
+
+// Sprint 09 v2.0.0 T2.1 — Event Hubs consumer group RBAC. MIs not provisioned in PROD yet.
+param eventHubsSimulatorMiPrincipalId = ''
+param eventHubsBmCopilotMiPrincipalId = ''
+param eventHubsCsaAgentMiPrincipalId = ''
