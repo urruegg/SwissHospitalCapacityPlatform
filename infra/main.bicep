@@ -125,6 +125,28 @@ param enableAiMlFoundationModule bool = false
 @description('Enable integration orchestration foundation module deployment.')
 param enableIntegrationOrchestrationModule bool = false
 
+@description('Enable the sim-capacity ACA module (Sprint 09 v2 T3.7). Default true in SIT, false in PROD.')
+param enableSimCapacityModule bool = false
+
+@description('Region for the sim-capacity ACA module. Pinned to the ADR-0013 demo-scope variant path.')
+@allowed([
+  'switzerlandnorth'
+  'westus2'
+])
+param simCapacityLocation string = 'westus2'
+
+@description('Container image the sim-capacity Container App runs. Placeholder until the sim-capacity image is published.')
+param simCapacityContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Event Hub namespace the sim-capacity producer emits to. When empty and enableDataFoundationModule=true, the sim-capacity module is skipped (no namespace to target).')
+param simCapacityEventHubNamespace string = ''
+
+@description('Event Hub entity name the sim-capacity producer emits to.')
+param simCapacityEventHubName string = 'demand-encounters'
+
+@description('When true, the sim-capacity deployment is scoped to the Sprint 09 v2 demo path (synthetic data only per ADR-0013 / ADR-0016).')
+param simCapacityDemoScope bool = true
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -262,6 +284,28 @@ module integrationOrchestration './modules/integration-orchestration/main.bicep'
   }
 }
 
+// Sprint 09 v2 — T3.7: sim-capacity ACA producer. Only deploys when a target Event Hub namespace is known
+// (either passed explicitly via simCapacityEventHubNamespace or produced by the data-foundation module).
+var simCapacityHasEhSource = !empty(simCapacityEventHubNamespace) || enableDataFoundationModule
+var resolvedSimEventHubNamespace = !empty(simCapacityEventHubNamespace)
+  ? simCapacityEventHubNamespace
+  : (enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceName : '')
+
+module simCapacity './modules/apps/sim-capacity/main.bicep' = if (enableSimCapacityModule && simCapacityHasEhSource) {
+  name: 'sim-capacity-${environmentName}'
+  params: {
+    location: simCapacityLocation
+    containerAppName: 'ca-sim-capacity-${resourceSuffix}'
+    containerAppEnvironmentName: 'cae-sim-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: simCapacityContainerImage
+    eventHubNamespace: resolvedSimEventHubNamespace
+    eventHubName: simCapacityEventHubName
+    demoScope: simCapacityDemoScope
+    tags: tags
+  }
+}
+
 // Sprint 09 v2.0.0 T2.2 — Fabric Eventstream scaffold. See modules/data-platform/fabric-eventstream/README.md.
 // Region is constrained to switzerlandnorth | westus2 to keep Bicep type-safe; falls back to westus2 for the
 // ADR-0013 demo-scope carve-out when the RG location is something else.
@@ -310,3 +354,13 @@ output moduleStatuses object = {
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'
 }
+
+// Exposed for T2.1 EH module wiring — read by the parent deployment to feed Azure Event Hubs Data Sender RBAC.
+output simCapacityPrincipalId string = (enableSimCapacityModule && simCapacityHasEhSource)
+  ? simCapacity!.outputs.principalId
+  : ''
+output simCapacityStatus string = enableSimCapacityModule
+  ? (!simCapacityHasEhSource
+      ? 'WARN: enableSimCapacityModule=true but no Event Hub namespace resolved (set simCapacityEventHubNamespace or enable data-foundation module).'
+      : simCapacity!.outputs.moduleStatus)
+  : 'sim-capacity-disabled'

@@ -55,6 +55,13 @@ param fabricCapacityAdmins = [
     'admin@mngenvmcap164444.onmicrosoft.com'
 ]
 
+// Sprint 09 v2 T3.7 — sim-capacity ACA producer. Enabled in SIT for the demo path.
+// EH namespace resolves from data-foundation module output when enableDataFoundationModule=true.
+param enableSimCapacityModule = true
+param simCapacityLocation = 'westus2'
+param simCapacityEventHubName = 'demand-encounters'
+param simCapacityDemoScope = true
+
 // Sprint 09 v2.0.0 T2.2 — Fabric Eventstream module (scaffold-only Bicep + REST-API post-deploy).
 // Enabled in SIT per design spec §4.2 (EH → Eventstream → bronze/eventstream/).
 // workspaceId and destinationLakehouseId are populated post-deploy from configure-fabric.ps1
