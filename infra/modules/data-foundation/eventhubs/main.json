@@ -1,0 +1,217 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.8.12551",
+      "templateHash": "8114534258550419492"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Resource tags applied to all resources."
+      }
+    },
+    "eventHubName": {
+      "type": "string",
+      "defaultValue": "events",
+      "metadata": {
+        "description": "Name of the event hub within the namespace. Matches design spec §4.2 (single-hub topology, routing by eventKind message property)."
+      }
+    },
+    "simulatorMiPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the simulator managed identity. When set, receives Azure Event Hubs Data Sender on the namespace. Wired from apps/sim-capacity (Sprint 09 T3.7)."
+      }
+    },
+    "bmCopilotMiPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the BM-Copilot managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-bm-copilot-agent. Wired from Foundry module (Sprint 09 T4.5)."
+      }
+    },
+    "csaAgentMiPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-csa-agent. Wired from Foundry module (Sprint 09 T4.5)."
+      }
+    }
+  },
+  "variables": {
+    "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]",
+    "eventHubsDataSenderRoleId": "2b629674-e913-4c01-ae53-ef4638d8f975",
+    "eventHubsDataReceiverRoleId": "a638d3c7-ab3a-418d-83e6-5f17a39d4fde"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.EventHub/namespaces",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard",
+        "capacity": 1
+      },
+      "properties": {
+        "minimumTlsVersion": "1.2",
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces/eventhubs",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('{0}/{1}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+      "properties": {
+        "partitionCount": 4,
+        "messageRetentionInDays": 1
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'), 'cg-fabric-eventstream')]",
+      "properties": {
+        "userMetadata": "Sprint 09 v2.0.0 — consumed by Fabric Eventstream (T2.2). Drives bronze/eventstream/ Delta append."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'), 'cg-bm-copilot-agent')]",
+      "properties": {
+        "userMetadata": "Sprint 09 v2.0.0 — consumed by BM-Copilot (Foundry) for bed-management context (T4.5)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'), 'cg-csa-agent')]",
+      "properties": {
+        "userMetadata": "Sprint 09 v2.0.0 — consumed by CSA (Capacity Simulation Agent, Foundry) for advisory what-if (T4.5)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('simulatorMiPrincipalId')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName')), parameters('simulatorMiPrincipalId'), variables('eventHubsDataSenderRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]",
+        "principalId": "[parameters('simulatorMiPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 09 v2.0.0 T2.1 — simulator MI publishes events per design spec §4.2."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('bmCopilotMiPrincipalId')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName')), parameters('bmCopilotMiPrincipalId'), variables('eventHubsDataReceiverRoleId'), 'cg-bm-copilot-agent')]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]",
+        "principalId": "[parameters('bmCopilotMiPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 09 v2.0.0 T2.1 — BM-Copilot MI receives from cg-bm-copilot-agent (client-enforced binding)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('csaAgentMiPrincipalId')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName')), parameters('csaAgentMiPrincipalId'), variables('eventHubsDataReceiverRoleId'), 'cg-csa-agent')]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]",
+        "principalId": "[parameters('csaAgentMiPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 09 v2.0.0 T2.1 — CSA MI receives from cg-csa-agent (client-enforced binding)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "eventHubNamespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hub namespace name."
+      },
+      "value": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
+    },
+    "eventHubNamespaceEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Fully qualified Event Hub namespace endpoint (<name>.servicebus.windows.net)."
+      },
+      "value": "[replace(replace(reference(resourceId('Microsoft.EventHub/namespaces', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))), '2022-10-01-preview').serviceBusEndpoint, 'https://', ''), ':443/', '')]"
+    },
+    "eventHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hub name inside the namespace."
+      },
+      "value": "[parameters('eventHubName')]"
+    },
+    "consumerGroupNames": {
+      "type": "object",
+      "metadata": {
+        "description": "Names of the three Sprint 09 v2.0.0 consumer groups."
+      },
+      "value": {
+        "fabricEventstream": "cg-fabric-eventstream",
+        "bmCopilotAgent": "cg-bm-copilot-agent",
+        "csaAgent": "cg-csa-agent"
+      }
+    },
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hubs submodule implementation marker."
+      },
+      "value": "eventhubs-implemented"
+    }
+  }
+}
