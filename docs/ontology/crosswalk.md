@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.1.0 |
+| **Version** | 0.2.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft — Sprint 09 skeleton (RB-11) |
-| **Previous Version** | — (new file) |
+| **Previous Version** | 0.1.0 (initial MVO skeleton — 5 CapacityUnit subtypes + facility hierarchy) |
 | **Governance** | Every PR that touches [reference-layer.ttl](reference-layer.ttl) OR the operational-layer semantic model MUST update this file in the same PR. Reviewed by semantic / ontology owner per [FR-GOV-ONT-002](../PRD.md#h-semantic-ontology). |
 | **Enforcement** | Manual review today; CI conformance check delivered by follow-up PR (RB-08) per [FR-GOV-ONT-003](../PRD.md#h-semantic-ontology). |
 
@@ -27,6 +27,12 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:Room` | `Room` | *(no contract yet — inferred from `dim_ward_capacityunit`)* | Deferred to Sprint 10/11 (`DC-ROOM-STATE-v1`) | Ontological placement pending Phase 3 (`omrse` facility part-of alignment). |
 | `hcp:StaffShift` | `StaffShift` *(deferred)* | Future `DC-STAFF-ROSTER-v1` + `DC-STAFF-DEMAND-v1` per AMA §5.3 | Deferred to Sprint 10/11 | Not in Sprint 09 MVO — reserved slot only. |
 | `hcp:Device` | `Device` *(deferred)* | Future `DC-DEVICE-STATE-v1` per AMA §5.4 | Deferred to Sprint 10/11 (monitoring-device feed) | Not in Sprint 09 MVO — reserved slot only. |
+| `hcp:Encounter` | `Encounter` | **[`DC-DEMAND-ENCOUNTER-v1`](../../data/synthetic/schema/dc-demand-encounter-v1.schema.json)** *(existing — reuse)* | Time-series binding on Encounter timeline (status transitions) | AMA SD Core Solution Pattern control unit; stub class added in T1.3 code-review fix. |
+| `hcp:Specialty` | `Specialty` | `DC-MASTER-02` *(dim_specialty; no `.schema.json` file yet — see [Reference-layer-exempt entities](#reference-layer-exempt-entities))* | N/A (static reference) | Grounds MVO facility hierarchy per design spec §3.3; stub class added in T1.3 code-review fix. |
+| `hcp:BedAssignment` | `BedAssignment` | **[`DC-MATCH-RECOMMENDATION-v1`](../../data/synthetic/schema/dc-match-recommendation-v1.schema.json)** *(existing — reuse)* | Time-series binding on assign/unassign events (eventhouse) | Matches AMA SD Core Solution Pattern; links Encounter ↔ Bed. |
+| `hcp:DischargeReadinessScore` | `DischargeReadinessScore` | **new** `DC-DISCHARGE-SCORE-v1` *(T1.5)* | Time-series binding on Encounter timeline (hourly refresh) | Grounds `FR-DC-001`, `FR-DC-006`. |
+| `hcp:DischargeRecommendation` | `DischargeRecommendation` | **new** `DC-DISCHARGE-RECOMMENDATION-v1` *(T1.5)* | Deferred | Grounds `FR-DC-002`, `FR-DC-003`, `FR-DC-005`. |
+| `hcp:ForecastOutput` | `ForecastOutput` | **new** `DC-DEMAND-FORECAST-v1` *(T1.5)* | Time-series binding (hourly refresh per `NFR-PERF-002`) | Grounds `FR-FC-001..006`. |
 
 ### Reference-layer relations mapped to Fabric IQ relationships
 
@@ -47,6 +53,22 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `Patient` role | *(from OGMS — patient role class)* | *(attached to `Encounter`; pseudonymised)* |
 | `CareTeam` | *(KTH pattern — object aggregate of health workers)* | *(new; deferred to Sprint 10)* |
 | `Equipment` | `hcp:Device` *(same subtype as MVO device)* | *(from `dim_device` extension in AMA §5.4)* |
+
+### Base-spec traceability
+
+Anchors every MVO reference-layer class to a base-spec (PRD / AMA SD) requirement per design spec §3.4.
+
+| Base-spec requirement | Ontology anchor |
+| --- | --- |
+| `FR-DATA-005` (governed semantic model) | Every MVO entity surfaces via semantic model with reference-layer grounding |
+| `FR-FC-001` (72h demand forecast) | `hcp:ForecastOutput` |
+| `FR-FC-002` (segmented by specialty × time window) | `hcp:ForecastOutput.covers=Specialty, .validFor=TimeWindow` |
+| `FR-FC-005` (grounding for BM-Copilot) | `hcp:ForecastOutput` consumed by BM-Copilot |
+| `FR-DC-001` (identify near-discharge inpatients) | `hcp:DischargeReadinessScore.appliesTo=Encounter` |
+| `FR-DC-002` (ranked candidates + explanatory factors) | `hcp:DischargeRecommendation` with `hcp:hasExplanation` |
+| `FR-DC-005` (discharge blockers surfaced) | `hcp:DischargeRecommendation.blockers[]` |
+| `FR-CX-001..002` (copilot grounded answers) | Grounded on all above via BM-Copilot + Fabric Data Agent |
+| AMA SD "Matching Demand↔Supply" | `hcp:BedAssignment` + `DC-MATCH-RECOMMENDATION-v1` |
 
 ## Reference-layer-exempt entities
 
