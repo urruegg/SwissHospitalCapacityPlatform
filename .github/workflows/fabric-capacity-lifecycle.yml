@@ -60,7 +60,9 @@ jobs:
         if: always()
         shell: bash
         run: |
-          echo "## Fabric F2 lifecycle" >> $GITHUB_STEP_SUMMARY
-          echo "- Action: **${{ inputs.action }}**" >> $GITHUB_STEP_SUMMARY
-          echo "- Environment: **${{ inputs.environment }}**" >> $GITHUB_STEP_SUMMARY
-          echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Fabric F2 lifecycle"
+            echo "- Action: **${{ inputs.action }}**"
+            echo "- Environment: **${{ inputs.environment }}**"
+            echo "- Status: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"
