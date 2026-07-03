@@ -50,3 +50,4 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
 
 output keyVaultName string = keyVault.name
 output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
+output logAnalyticsWorkspaceResourceId string = logAnalyticsWorkspace.id

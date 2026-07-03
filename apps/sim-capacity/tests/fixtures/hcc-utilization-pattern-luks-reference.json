@@ -1,0 +1,10 @@
+{
+  "hospital": "LUKS",
+  "monthly_relative_demand": [1.20, 1.18, 1.05, 1.00, 0.95, 0.90, 0.85, 0.85, 0.95, 1.00, 1.15, 1.22],
+  "month_weekday_rag_distribution": {
+    "red_ratio_expected": 0.20,
+    "amber_ratio_expected": 0.40,
+    "green_ratio_expected": 0.40
+  },
+  "note": "Hand-authored from HCC utilization pattern PNG. Monthly = 12 relative values (sum ~ 12; peak in Nov-Feb winter, dip in Jul-Aug summer). RAG = expected distribution of Occupancy% ratings across Month x Weekday matrix (R > 90%, A 75-90%, G < 75%)."
+}
