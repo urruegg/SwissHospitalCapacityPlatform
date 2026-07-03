@@ -28,6 +28,9 @@
 /agents/                                @urruegg
 /evals/                                 @urruegg
 
+# Runtime user-facing agents (BM-Copilot, Fabric Data Agent, CSA) — 2-of-2 review per FR-GOV-ONT-002
+agents/**                               @urruegg
+
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg
 /samples/                               @urruegg

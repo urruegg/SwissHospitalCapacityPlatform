@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.0 |
+| **Version** | 0.7.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.5.0 (added Sprint 00 westus2 demo-scope carve-out reference — see ADR-0013) |
+| **Previous Version** | 0.6.0 (added Sprint 00 westus2 demo-scope carve-out reference — see ADR-0013) |
 
 ## Purpose
 
@@ -156,6 +156,17 @@ The enforcement point is the synthesized-data gate
 run in CI by [`.github/workflows/data-contracts.yml`](../.github/workflows/data-contracts.yml).
 Formal re-identification risk acceptance (`RV-06-04`) remains a Phase 2 legal /
 security sign-off item; Phase 1 establishes the enforced minimization baseline.
+
+### Demo-scope no-PHI baseline (2026-07-02)
+
+Per [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md), the MVP demo scope carries **no PHI** — no personal health information, no direct patient identifiers, no re-identifying combinations. Enforced at four gates:
+
+1. **Schema gate** — CI check on `data/synthetic/schema/dc-*.schema.json`
+2. **Ingestion gate** — Silver notebook PHI regex sweep (email, phone, DOB, CH AHV-13)
+3. **Agent gate** — Every runtime agent prompt refuses PHI tokens; evals include a refusal fixture
+4. **Dashboard gate** — Workspace RLS empty-set filter on any `phi=true` column
+
+This ADR applies only to the demo scope defined by [ADR-0013](adr/0013-temporary-us-region-demo-scope.md). Future PROD Swiss deployments remain governed by [ADR-0003](adr/0003-swiss-regional-inference-for-phi.md) + [ADR-0004](adr/0004-block-global-and-data-zone-for-phi.md) + [ADR-0006](adr/0006-preview-features-non-production-rule.md).
 
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 
