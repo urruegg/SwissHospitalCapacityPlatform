@@ -38,3 +38,12 @@ from design spec §6.3 that must be wired into the portal-authored model.
 ## Grounding contract
 
 Every measure grounds on MVO ontology entities per [design spec §6.3](../../../docs/superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md#63-dax-measures) and [crosswalk](../../../docs/ontology/crosswalk.md).
+
+## Row-Level Security (T5.6 — ADR-0016 gate 4)
+
+`definition/model.tmdl` also carries four pre-authored RLS role scaffolds — `BedOps`,
+`ORPlanner`, `Analyst`, `SemanticOwner` — per plan §T5.6 and design spec §6.5. Each
+role declares `modelPermission: read` plus a table-filter placeholder
+(`IF([_data_quality]="phi", FALSE, TRUE)`) that will be finalised on portal-authored
+TMDL export once individual PHI columns carry the `[phi]="true"` annotation. See the
+"Manual step" block at the bottom of `model.tmdl` for the conversion recipe.
