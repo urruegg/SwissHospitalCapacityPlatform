@@ -1,0 +1,3 @@
+# Cached artifacts from portal editing
+*.cache
+.pbi/
