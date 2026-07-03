@@ -31,3 +31,13 @@ param enableSourceSqlModule = false
 
 // Sprint 08 W1.2 — Fabric foundation submodule remains opt-out in PROD until separately approved.
 param enableFabricFoundationModule = false
+
+// Sprint 09 v2.0.0 T2.2 — Fabric Eventstream module deferred in PROD until Sprint 09 promotes.
+param enableFabricEventstreamModule = false
+param fabricEventstreamWorkspaceId = ''
+param fabricEventstreamDestinationLakehouseId = ''
+
+// Sprint 09 v2.0.0 T2.1 — Event Hubs consumer group RBAC. MIs not provisioned in PROD yet.
+param eventHubsSimulatorMiPrincipalId = ''
+param eventHubsBmCopilotMiPrincipalId = ''
+param eventHubsCsaAgentMiPrincipalId = ''

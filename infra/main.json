@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "15310719745635415823"
+      "templateHash": "3000884059883682037"
     }
   },
   "parameters": {
@@ -188,6 +188,27 @@
         "description": "Object ID(s) of Fabric capacity administrators. Required when enableFabricFoundationModule = true."
       }
     },
+    "enableFabricEventstreamModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable Fabric Eventstream module (Sprint 09 v2.0.0 T2.2). Requires enableDataFoundationModule=true (event hub source) and enableDataPlatformModule + enableFabricFoundationModule (workspace/lakehouse destination). Scaffold-only Bicep + REST-API post-deploy; see modules/data-platform/fabric-eventstream/README.md."
+      }
+    },
+    "fabricEventstreamWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Fabric workspace ID that hosts the Eventstream. Required when enableFabricEventstreamModule=true. Obtain via configure-fabric.ps1 post-deploy output."
+      }
+    },
+    "fabricEventstreamDestinationLakehouseId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric Lakehouse ID for the Eventstream destination. Empty defers destination wiring (Eventstream created source-only). Optional at Bicep composition time; required at post-deploy time for full wiring."
+      }
+    },
     "enableAiPlatformModule": {
       "type": "bool",
       "defaultValue": false,
@@ -221,6 +242,27 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable data foundation module deployment."
+      }
+    },
+    "eventHubsSimulatorMiPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped."
+      }
+    },
+    "eventHubsBmCopilotMiPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the BM-Copilot managed identity that reads from cg-bm-copilot-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped."
+      }
+    },
+    "eventHubsCsaAgentMiPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity that reads from cg-csa-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped."
       }
     },
     "enableAiMlFoundationModule": {
@@ -1824,6 +1866,15 @@
           },
           "tags": {
             "value": "[variables('tags')]"
+          },
+          "simulatorMiPrincipalId": {
+            "value": "[parameters('eventHubsSimulatorMiPrincipalId')]"
+          },
+          "bmCopilotMiPrincipalId": {
+            "value": "[parameters('eventHubsBmCopilotMiPrincipalId')]"
+          },
+          "csaAgentMiPrincipalId": {
+            "value": "[parameters('eventHubsCsaAgentMiPrincipalId')]"
           }
         },
         "template": {
@@ -1833,7 +1884,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "15610456190073515092"
+              "templateHash": "7767886535085981969"
             }
           },
           "parameters": {
@@ -1855,26 +1906,276 @@
               "metadata": {
                 "description": "Resource tags applied to all resources."
               }
+            },
+            "simulatorMiPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the simulator managed identity for Event Hubs Data Sender (Sprint 09 T3.7 wiring)."
+              }
+            },
+            "bmCopilotMiPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the BM-Copilot managed identity for Event Hubs Data Receiver (Sprint 09 T4.5 wiring)."
+              }
+            },
+            "csaAgentMiPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the CSA managed identity for Event Hubs Data Receiver (Sprint 09 T4.5 wiring)."
+              }
             }
-          },
-          "variables": {
-            "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]"
           },
           "resources": [
             {
-              "type": "Microsoft.EventHub/namespaces",
-              "apiVersion": "2022-10-01-preview",
-              "name": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
-              "sku": {
-                "name": "Standard",
-                "tier": "Standard",
-                "capacity": 1
-              },
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "[format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))]",
               "properties": {
-                "minimumTlsVersion": "1.2",
-                "publicNetworkAccess": "Enabled"
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "nameSuffix": {
+                    "value": "[parameters('nameSuffix')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "simulatorMiPrincipalId": {
+                    "value": "[parameters('simulatorMiPrincipalId')]"
+                  },
+                  "bmCopilotMiPrincipalId": {
+                    "value": "[parameters('bmCopilotMiPrincipalId')]"
+                  },
+                  "csaAgentMiPrincipalId": {
+                    "value": "[parameters('csaAgentMiPrincipalId')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.43.8.12551",
+                      "templateHash": "8114534258550419492"
+                    }
+                  },
+                  "parameters": {
+                    "location": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Location for all resources."
+                      }
+                    },
+                    "nameSuffix": {
+                      "type": "string",
+                      "minLength": 3,
+                      "metadata": {
+                        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Resource tags applied to all resources."
+                      }
+                    },
+                    "eventHubName": {
+                      "type": "string",
+                      "defaultValue": "events",
+                      "metadata": {
+                        "description": "Name of the event hub within the namespace. Matches design spec §4.2 (single-hub topology, routing by eventKind message property)."
+                      }
+                    },
+                    "simulatorMiPrincipalId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Object ID of the simulator managed identity. When set, receives Azure Event Hubs Data Sender on the namespace. Wired from apps/sim-capacity (Sprint 09 T3.7)."
+                      }
+                    },
+                    "bmCopilotMiPrincipalId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Object ID of the BM-Copilot managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-bm-copilot-agent. Wired from Foundry module (Sprint 09 T4.5)."
+                      }
+                    },
+                    "csaAgentMiPrincipalId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-csa-agent. Wired from Foundry module (Sprint 09 T4.5)."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]",
+                    "eventHubsDataSenderRoleId": "2b629674-e913-4c01-ae53-ef4638d8f975",
+                    "eventHubsDataReceiverRoleId": "a638d3c7-ab3a-418d-83e6-5f17a39d4fde"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.EventHub/namespaces",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "sku": {
+                        "name": "Standard",
+                        "tier": "Standard",
+                        "capacity": 1
+                      },
+                      "properties": {
+                        "minimumTlsVersion": "1.2",
+                        "publicNetworkAccess": "Enabled"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.EventHub/namespaces/eventhubs",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+                      "properties": {
+                        "partitionCount": 4,
+                        "messageRetentionInDays": 1
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'), 'cg-fabric-eventstream')]",
+                      "properties": {
+                        "userMetadata": "Sprint 09 v2.0.0 — consumed by Fabric Eventstream (T2.2). Drives bronze/eventstream/ Delta append."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'), 'cg-bm-copilot-agent')]",
+                      "properties": {
+                        "userMetadata": "Sprint 09 v2.0.0 — consumed by BM-Copilot (Foundry) for bed-management context (T4.5)."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'), 'cg-csa-agent')]",
+                      "properties": {
+                        "userMetadata": "Sprint 09 v2.0.0 — consumed by CSA (Capacity Simulation Agent, Foundry) for advisory what-if (T4.5)."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[not(empty(parameters('simulatorMiPrincipalId')))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName')), parameters('simulatorMiPrincipalId'), variables('eventHubsDataSenderRoleId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]",
+                        "principalId": "[parameters('simulatorMiPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 09 v2.0.0 T2.1 — simulator MI publishes events per design spec §4.2."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[not(empty(parameters('bmCopilotMiPrincipalId')))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName')), parameters('bmCopilotMiPrincipalId'), variables('eventHubsDataReceiverRoleId'), 'cg-bm-copilot-agent')]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]",
+                        "principalId": "[parameters('bmCopilotMiPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 09 v2.0.0 T2.1 — BM-Copilot MI receives from cg-bm-copilot-agent (client-enforced binding)."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[not(empty(parameters('csaAgentMiPrincipalId')))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName')), parameters('csaAgentMiPrincipalId'), variables('eventHubsDataReceiverRoleId'), 'cg-csa-agent')]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]",
+                        "principalId": "[parameters('csaAgentMiPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 09 v2.0.0 T2.1 — CSA MI receives from cg-csa-agent (client-enforced binding)."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "eventHubNamespaceName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Event Hub namespace name."
+                      },
+                      "value": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
+                    },
+                    "eventHubNamespaceEndpoint": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Fully qualified Event Hub namespace endpoint (<name>.servicebus.windows.net)."
+                      },
+                      "value": "[replace(replace(reference(resourceId('Microsoft.EventHub/namespaces', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))), '2022-10-01-preview').serviceBusEndpoint, 'https://', ''), ':443/', '')]"
+                    },
+                    "eventHubName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Event Hub name inside the namespace."
+                      },
+                      "value": "[parameters('eventHubName')]"
+                    },
+                    "consumerGroupNames": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Names of the three Sprint 09 v2.0.0 consumer groups."
+                      },
+                      "value": {
+                        "fabricEventstream": "cg-fabric-eventstream",
+                        "bmCopilotAgent": "cg-bm-copilot-agent",
+                        "csaAgent": "cg-csa-agent"
+                      }
+                    },
+                    "moduleStatus": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Event Hubs submodule implementation marker."
+                      },
+                      "value": "eventhubs-implemented"
+                    }
+                  }
+                }
               }
             }
           ],
@@ -1891,7 +2192,28 @@
               "metadata": {
                 "description": "Event Hub namespace name."
               },
-              "value": "[format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.eventHubNamespaceName.value]"
+            },
+            "eventHubNamespaceEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Fully qualified Event Hub namespace endpoint (<name>.servicebus.windows.net)."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value]"
+            },
+            "eventHubName": {
+              "type": "string",
+              "metadata": {
+                "description": "Event Hub name inside the namespace."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.eventHubName.value]"
+            },
+            "eventHubConsumerGroupNames": {
+              "type": "object",
+              "metadata": {
+                "description": "Sprint 09 v2.0.0 consumer group names."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.consumerGroupNames.value]"
             }
           }
         }
@@ -2088,6 +2410,178 @@
           }
         }
       }
+    },
+    {
+      "condition": "[parameters('enableFabricEventstreamModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('fabric-eventstream-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "workspaceId": {
+            "value": "[parameters('fabricEventstreamWorkspaceId')]"
+          },
+          "eventHubNamespace": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value), createObject('value', ''))]",
+          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value), createObject('value', ''))]",
+          "eventHubConsumerGroup": {
+            "value": "cg-fabric-eventstream"
+          },
+          "location": "[if(equals(parameters('location'), 'switzerlandnorth'), createObject('value', 'switzerlandnorth'), createObject('value', 'westus2'))]",
+          "demoScope": {
+            "value": "[not(equals(parameters('location'), 'switzerlandnorth'))]"
+          },
+          "destinationLakehouseId": {
+            "value": "[parameters('fabricEventstreamDestinationLakehouseId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "9317988615084303477"
+            }
+          },
+          "parameters": {
+            "workspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Fabric workspace ID (GUID) that will host the Eventstream. Obtain via GET /v1/workspaces after workspace creation (configure-fabric.ps1 output). Left empty at Bicep composition time when workspace is provisioned in a post-deploy step; the companion PS1 will refuse to run until this is populated in the manifest."
+              }
+            },
+            "eventHubNamespace": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Fully-qualified Event Hubs namespace hostname (e.g. evh-ihzhhpf-sit-xxxx.servicebus.windows.net). Passed from data-foundation/eventhubs module output."
+              }
+            },
+            "eventHubName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Event Hub name within the namespace. Design spec §4.2 uses a single hub with routing by eventKind message property."
+              }
+            },
+            "eventHubConsumerGroup": {
+              "type": "string",
+              "defaultValue": "cg-fabric-eventstream",
+              "metadata": {
+                "description": "Consumer group the Eventstream subscribes to. Sprint 09 v2.0.0 T2.1 provisions cg-fabric-eventstream for this purpose."
+              }
+            },
+            "location": {
+              "type": "string",
+              "allowedValues": [
+                "switzerlandnorth",
+                "westus2"
+              ],
+              "metadata": {
+                "description": "Deployment region. switzerlandnorth (ADR-0003 default) or westus2 (ADR-0013 demo-scope carve-out)."
+              }
+            },
+            "demoScope": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "True when the module deploys under the ADR-0013 demo-scope carve-out (US region, synthetic data only, no PHI). Documented in output manifest so post-deploy can enforce PHI-gate."
+              }
+            },
+            "eventstreamDisplayName": {
+              "type": "string",
+              "defaultValue": "es-ihzhhpf-events",
+              "metadata": {
+                "description": "Display name for the Eventstream item in the Fabric workspace."
+              }
+            },
+            "eventstreamDescription": {
+              "type": "string",
+              "defaultValue": "Sprint 09 v2.0.0 — receives simulator envelopes from Event Hubs (cg-fabric-eventstream), routes by eventKind, appends to bronze/eventstream/ Delta.",
+              "metadata": {
+                "description": "Description for the Eventstream item."
+              }
+            },
+            "destinationLakehouseId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Destination Lakehouse ID (GUID) that will receive Delta append writes at bronze/eventstream/. Obtain via GET /v1/workspaces/{workspaceId}/lakehouses after lakehouse creation. Leave empty to defer destination wiring to a follow-up post-deploy pass."
+              }
+            },
+            "destinationTablePrefix": {
+              "type": "string",
+              "defaultValue": "bronze_eventstream",
+              "metadata": {
+                "description": "Destination Lakehouse table prefix under bronze/. Design spec §4.6 uses eventstream/ as the bronze subfolder."
+              }
+            }
+          },
+          "variables": {
+            "eventstreamManifest": {
+              "provisioningMode": "fabric-rest-api-post-deploy",
+              "workspaceId": "[parameters('workspaceId')]",
+              "eventstream": {
+                "displayName": "[parameters('eventstreamDisplayName')]",
+                "description": "[parameters('eventstreamDescription')]"
+              },
+              "source": {
+                "kind": "EventHub",
+                "namespaceHost": "[parameters('eventHubNamespace')]",
+                "eventHubName": "[parameters('eventHubName')]",
+                "consumerGroup": "[parameters('eventHubConsumerGroup')]",
+                "routingProperty": "eventKind",
+                "authMode": "fabric-managed-connection"
+              },
+              "destination": {
+                "kind": "Lakehouse",
+                "lakehouseId": "[parameters('destinationLakehouseId')]",
+                "tablePrefix": "[parameters('destinationTablePrefix')]",
+                "lakehousePath": "Files/bronze/eventstream/"
+              },
+              "guardrails": {
+                "location": "[parameters('location')]",
+                "demoScope": "[parameters('demoScope')]",
+                "phiGateEnforcedBy": "silver-eventstream-notebook (T2.3)",
+                "residencyTag": "[if(equals(parameters('location'), 'switzerlandnorth'), 'CH-North', 'US-West')]"
+              }
+            }
+          },
+          "resources": [],
+          "outputs": {
+            "eventstreamManifest": {
+              "type": "object",
+              "metadata": {
+                "description": "Fabric Eventstream configuration manifest consumed by post-deploy/configure-eventstream.ps1."
+              },
+              "value": "[variables('eventstreamManifest')]"
+            },
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Human-readable status for the parent orchestration."
+              },
+              "value": "fabric-eventstream-scaffold-only-see-post-deploy-script"
+            },
+            "postDeployScriptPath": {
+              "type": "string",
+              "metadata": {
+                "description": "Path (repo-relative) to the companion post-deploy script that materialises the Eventstream via Fabric REST API."
+              },
+              "value": "infra/modules/data-platform/fabric-eventstream/post-deploy/configure-eventstream.ps1"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName')))]"
+      ]
     }
   ],
   "outputs": {
@@ -2107,6 +2601,10 @@
       "type": "string",
       "value": "[if(and(parameters('enableFabricFoundationModule'), not(parameters('enableDataPlatformModule'))), 'WARN: enableFabricFoundationModule=true requires enableDataPlatformModule=true; fabric module will NOT deploy.', if(and(parameters('enableFabricFoundationModule'), empty(parameters('fabricCapacityAdmins'))), 'WARN: enableFabricFoundationModule=true but fabricCapacityAdmins is empty; deploy will fail.', 'ok'))]"
     },
+    "fabricEventstreamGatingWarning": {
+      "type": "string",
+      "value": "[if(and(parameters('enableFabricEventstreamModule'), not(parameters('enableDataFoundationModule'))), 'WARN: enableFabricEventstreamModule=true requires enableDataFoundationModule=true; Eventstream module will fail.', if(and(parameters('enableFabricEventstreamModule'), empty(parameters('fabricEventstreamWorkspaceId'))), 'WARN: enableFabricEventstreamModule=true but fabricEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output.', if(and(parameters('enableFabricEventstreamModule'), empty(parameters('fabricEventstreamDestinationLakehouseId'))), 'INFO: fabricEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.', 'ok')))]"
+    },
     "moduleStatuses": {
       "type": "object",
       "value": {
@@ -2121,7 +2619,8 @@
         "apiRuntime": "[if(parameters('enableApiRuntimeModule'), reference(resourceId('Microsoft.Resources/deployments', format('api-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'api-runtime-disabled')]",
         "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
-        "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]"
+        "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]",
+        "fabricEventstream": "[if(parameters('enableFabricEventstreamModule'), reference(resourceId('Microsoft.Resources/deployments', format('fabric-eventstream-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'fabric-eventstream-disabled')]"
       }
     }
   }

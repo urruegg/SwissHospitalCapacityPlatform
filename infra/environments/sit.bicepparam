@@ -54,3 +54,18 @@ param enableFabricFoundationModule = true
 param fabricCapacityAdmins = [
     'admin@mngenvmcap164444.onmicrosoft.com'
 ]
+
+// Sprint 09 v2.0.0 T2.2 — Fabric Eventstream module (scaffold-only Bicep + REST-API post-deploy).
+// Enabled in SIT per design spec §4.2 (EH → Eventstream → bronze/eventstream/).
+// workspaceId and destinationLakehouseId are populated post-deploy from configure-fabric.ps1
+// outputs; leave empty until Sprint 09 T2 execution wires them.
+param enableFabricEventstreamModule = true
+param fabricEventstreamWorkspaceId = ''
+param fabricEventstreamDestinationLakehouseId = ''
+
+// Sprint 09 v2.0.0 T2.1 — Event Hubs consumer group RBAC.
+// Simulator MI (T3.7) and agent MIs (T4.5) don't exist yet; leaving empty means the three
+// role assignments are conditionally skipped. Populate as those Sprint 09 v2.0.0 tasks land.
+param eventHubsSimulatorMiPrincipalId = ''
+param eventHubsBmCopilotMiPrincipalId = ''
+param eventHubsCsaAgentMiPrincipalId = ''
