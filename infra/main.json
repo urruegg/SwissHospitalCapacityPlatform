@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "15310719745635415823"
+      "templateHash": "2981660024765017678"
     }
   },
   "parameters": {
@@ -235,6 +235,52 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable integration orchestration foundation module deployment."
+      }
+    },
+    "enableFoundryHostedAgents": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable Foundry-hosted runtime agents module (BM-Copilot + CSA UAMIs + RBAC). Sprint 09 v2.0.0 T4.5."
+      }
+    },
+    "foundryHostedAgentsLocation": {
+      "type": "string",
+      "defaultValue": "westus2",
+      "allowedValues": [
+        "switzerlandnorth",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Location for the Foundry-hosted agents UAMIs. Must match the Foundry account region — westus2 for the demo scope per ADR-0013."
+      }
+    },
+    "foundryHostedAgentsEventHubNamespace": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Event Hub namespace name that BM-Copilot/CSA MIs receive from. Placeholder wiring while T2 (data-foundation Event Hubs) lives on a separate branch."
+      }
+    },
+    "foundryHostedAgentsEventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Event Hub name that BM-Copilot/CSA MIs receive from. Placeholder wiring while T2 (data-foundation Event Hubs) lives on a separate branch."
+      }
+    },
+    "foundryHostedAgentsBmCopilotConsumerGroup": {
+      "type": "string",
+      "defaultValue": "cg-bm-copilot-agent",
+      "metadata": {
+        "description": "Consumer group name for BM-Copilot."
+      }
+    },
+    "foundryHostedAgentsCsaConsumerGroup": {
+      "type": "string",
+      "defaultValue": "cg-csa-agent",
+      "metadata": {
+        "description": "Consumer group name for CSA."
       }
     }
   },
@@ -2088,6 +2134,315 @@
           }
         }
       }
+    },
+    {
+      "condition": "[parameters('enableFoundryHostedAgents')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('foundry-hosted-agents-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('foundryHostedAgentsLocation')]"
+          },
+          "environment": {
+            "value": "[parameters('environmentName')]"
+          },
+          "solutionShortName": {
+            "value": "[parameters('solutionShortName')]"
+          },
+          "eventHubNamespaceName": {
+            "value": "[parameters('foundryHostedAgentsEventHubNamespace')]"
+          },
+          "eventHubName": {
+            "value": "[parameters('foundryHostedAgentsEventHubName')]"
+          },
+          "bmCopilotConsumerGroup": {
+            "value": "[parameters('foundryHostedAgentsBmCopilotConsumerGroup')]"
+          },
+          "csaConsumerGroup": {
+            "value": "[parameters('foundryHostedAgentsCsaConsumerGroup')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "373540922563257154"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "westus2",
+              "allowedValues": [
+                "switzerlandnorth",
+                "westus2"
+              ],
+              "metadata": {
+                "description": "Location for the Managed Identities. Region-pinned per ADR-0013."
+              }
+            },
+            "environment": {
+              "type": "string",
+              "allowedValues": [
+                "dev",
+                "sit",
+                "prod"
+              ],
+              "metadata": {
+                "description": "Environment tag: dev | sit | prod. Only sit/prod are provisioned in Sprint 09 v2.0.0 T4.5; dev is accepted for parent-type compatibility."
+              }
+            },
+            "solutionShortName": {
+              "type": "string",
+              "defaultValue": "ihzhhpf",
+              "metadata": {
+                "description": "Solution short name (per AGENTS.md tenant migration note)."
+              }
+            },
+            "eventHubNamespaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Event Hub namespace name (from data-foundation module output when available)."
+              }
+            },
+            "eventHubName": {
+              "type": "string",
+              "metadata": {
+                "description": "Event Hub name (from data-foundation module output when available). Note: on the sprint-09-v2/t4-semantic-agents branch, T2 data-foundation only creates the namespace, not the hub itself — the hub role assignment will be a no-op until T2 merges."
+              }
+            },
+            "bmCopilotConsumerGroup": {
+              "type": "string",
+              "defaultValue": "cg-bm-copilot-agent",
+              "metadata": {
+                "description": "BM-Copilot consumer group name."
+              }
+            },
+            "csaConsumerGroup": {
+              "type": "string",
+              "defaultValue": "cg-csa-agent",
+              "metadata": {
+                "description": "CSA consumer group name."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Common resource tags."
+              }
+            }
+          },
+          "variables": {
+            "bmCopilotIdentityName": "[format('id-bm-copilot-{0}-{1}', parameters('solutionShortName'), parameters('environment'))]",
+            "csaIdentityName": "[format('id-csa-{0}-{1}', parameters('solutionShortName'), parameters('environment'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[variables('bmCopilotIdentityName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[variables('csaIdentityName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "[format('foundry-agents-rbac-{0}', parameters('environment'))]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "bmCopilotPrincipalId": {
+                    "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('bmCopilotIdentityName')), '2023-01-31').principalId]"
+                  },
+                  "csaPrincipalId": {
+                    "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('csaIdentityName')), '2023-01-31').principalId]"
+                  },
+                  "eventHubNamespaceName": {
+                    "value": "[parameters('eventHubNamespaceName')]"
+                  },
+                  "eventHubName": {
+                    "value": "[parameters('eventHubName')]"
+                  },
+                  "bmCopilotConsumerGroup": {
+                    "value": "[parameters('bmCopilotConsumerGroup')]"
+                  },
+                  "csaConsumerGroup": {
+                    "value": "[parameters('csaConsumerGroup')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.43.8.12551",
+                      "templateHash": "788889626278574832"
+                    }
+                  },
+                  "parameters": {
+                    "bmCopilotPrincipalId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Principal ID (object ID) of the BM-Copilot managed identity."
+                      }
+                    },
+                    "csaPrincipalId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Principal ID (object ID) of the CSA managed identity."
+                      }
+                    },
+                    "eventHubNamespaceName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Event Hub namespace name (existing)."
+                      }
+                    },
+                    "eventHubName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Event Hub name (existing, child of the namespace)."
+                      }
+                    },
+                    "bmCopilotConsumerGroup": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "BM-Copilot consumer group name. Reserved for T2-merge scope narrowing."
+                      }
+                    },
+                    "csaConsumerGroup": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "CSA consumer group name. Reserved for T2-merge scope narrowing."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "storageBlobDataReaderRoleId": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1",
+                    "eventHubsDataReceiverRoleId": "a638d3c7-ab3a-418d-83e6-5f17a39d4fde"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "name": "[guid(resourceGroup().id, parameters('bmCopilotPrincipalId'), variables('storageBlobDataReaderRoleId'))]",
+                      "properties": {
+                        "principalId": "[parameters('bmCopilotPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleId'))]"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName')), parameters('bmCopilotPrincipalId'), variables('eventHubsDataReceiverRoleId'))]",
+                      "properties": {
+                        "principalId": "[parameters('bmCopilotPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "name": "[guid(resourceGroup().id, parameters('csaPrincipalId'), variables('storageBlobDataReaderRoleId'))]",
+                      "properties": {
+                        "principalId": "[parameters('csaPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleId'))]"
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('eventHubNamespaceName'), parameters('eventHubName')), parameters('csaPrincipalId'), variables('eventHubsDataReceiverRoleId'))]",
+                      "properties": {
+                        "principalId": "[parameters('csaPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataReceiverRoleId'))]"
+                      }
+                    }
+                  ],
+                  "outputs": {
+                    "moduleStatus": {
+                      "type": "string",
+                      "value": "foundry-hosted-agents-rbac-implemented"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('bmCopilotIdentityName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('csaIdentityName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "bmCopilotPrincipalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('bmCopilotIdentityName')), '2023-01-31').principalId]"
+            },
+            "bmCopilotClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('bmCopilotIdentityName')), '2023-01-31').clientId]"
+            },
+            "bmCopilotIdentityResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('bmCopilotIdentityName'))]"
+            },
+            "bmCopilotIdentityName": {
+              "type": "string",
+              "value": "[variables('bmCopilotIdentityName')]"
+            },
+            "csaPrincipalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('csaIdentityName')), '2023-01-31').principalId]"
+            },
+            "csaClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('csaIdentityName')), '2023-01-31').clientId]"
+            },
+            "csaIdentityResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('csaIdentityName'))]"
+            },
+            "csaIdentityName": {
+              "type": "string",
+              "value": "[variables('csaIdentityName')]"
+            },
+            "moduleStatus": {
+              "type": "string",
+              "value": "foundry-hosted-agents-implemented"
+            }
+          }
+        }
+      }
     }
   ],
   "outputs": {
@@ -2123,6 +2478,26 @@
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
         "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]"
       }
+    },
+    "foundryHostedAgentsStatus": {
+      "type": "string",
+      "value": "[if(parameters('enableFoundryHostedAgents'), reference(resourceId('Microsoft.Resources/deployments', format('foundry-hosted-agents-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'foundry-hosted-agents-disabled')]"
+    },
+    "bmCopilotPrincipalId": {
+      "type": "string",
+      "value": "[if(parameters('enableFoundryHostedAgents'), reference(resourceId('Microsoft.Resources/deployments', format('foundry-hosted-agents-{0}', parameters('environmentName'))), '2025-04-01').outputs.bmCopilotPrincipalId.value, '')]"
+    },
+    "bmCopilotClientId": {
+      "type": "string",
+      "value": "[if(parameters('enableFoundryHostedAgents'), reference(resourceId('Microsoft.Resources/deployments', format('foundry-hosted-agents-{0}', parameters('environmentName'))), '2025-04-01').outputs.bmCopilotClientId.value, '')]"
+    },
+    "csaPrincipalId": {
+      "type": "string",
+      "value": "[if(parameters('enableFoundryHostedAgents'), reference(resourceId('Microsoft.Resources/deployments', format('foundry-hosted-agents-{0}', parameters('environmentName'))), '2025-04-01').outputs.csaPrincipalId.value, '')]"
+    },
+    "csaClientId": {
+      "type": "string",
+      "value": "[if(parameters('enableFoundryHostedAgents'), reference(resourceId('Microsoft.Resources/deployments', format('foundry-hosted-agents-{0}', parameters('environmentName'))), '2025-04-01').outputs.csaClientId.value, '')]"
     }
   }
 }
