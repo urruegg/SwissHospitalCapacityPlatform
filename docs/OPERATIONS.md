@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.3.0 (added Sprint 00 tenant migration callout — authoritative tenant is now MngEnvMCAP164444; westus2 demo scope per ADR-0013) |
+| **Previous Version** | 1.4.0 (pre OPS-RISK-03/04/05 — Sprint 09 v2.0.0 additions per [ADR-0017](adr/0017-sprint-09-v2-track-restructure.md)) |
 
 ## Purpose
 
@@ -237,6 +237,9 @@ Added 2026-07-02 (v1.4.0) per [ADR-0014](adr/0014-fabric-iq-ontology-target-back
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | OPS-RISK-01 | **Fabric IQ Ontology Switzerland-region GA + DPA equivalence** — gates the regulated-path operational ontology layer per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) §5 gate G-C | Technical / Vendor | **H** | Microsoft publishes firm GA date for `switzerlandnorth` + DPA equivalence with GA Fabric components. Review monthly; escalate if no update by 2026-Q4. | Semantic / ontology owner (RACI table above) | Regulated operational layer runs on GA property-graph fallback per [ADR-0014 §3](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo); demo scope continues on Fabric IQ preview in `westus2` per [ADR-0013](adr/0013-temporary-us-region-demo-scope.md) | [AMA review R-01](reviews/2026-07-01-ama-hcc-northstar-review.md#11-key-risks-h--high-m--medium-l--low), [ADR-0014 gate G-C](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#5-explicit-go-no-go-gates) |
 | OPS-RISK-02 | **ADR-0013 westus2 demo exception expiry** (`EX-2026-07-02-westus2-demo`) — 90-day window per [`policy/exceptions.json`](../policy/exceptions.json) | Compliance / Governance | **M** | Expiry 2026-09-30. Renewal review required by 2026-09-15. | Compliance lead | Migrate demo workloads back to `switzerlandnorth` (subject to service GA); alternatively renew exception with fresh 90-day window via [ADR-0010](adr/0010-policy-as-code-and-release-evidence-gates.md) mechanism | [ADR-0013](adr/0013-temporary-us-region-demo-scope.md), [`policy/exceptions.json`](../policy/exceptions.json) |
+| OPS-RISK-03 | **Direct Lake preview stability** — semantic model refresh or Direct Lake query returns stale/inconsistent results during Fabric preview volatility in `westus2` demo scope | Technical / Vendor | **M** | Sustained Direct Lake query anomaly (>1 recurrence in a review cycle) or Microsoft preview-flag toggle. Review monthly with T4 owner; escalate if regressions block Sprint 09 dashboard smoke test. | Semantic / ontology owner | Fall back to Import mode with 15-min scheduled refresh (RB-03 fallback pattern validated in Sprint 00); monitor Fabric release notes; long-term path per [ADR-0014 §3](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo) | [Design spec §7.5](superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md#75-risk-register), [ADR-0013](adr/0013-temporary-us-region-demo-scope.md) |
+| OPS-RISK-04 | **Fabric F2 forgot-to-pause** — SIT capacity `fabricihzhhpfsit` left Active over weekend/off-hours, accruing unnecessary Fabric CU cost | Cost / Operational hygiene | **L-M** | Any weekend SIT-capacity-active >8 h without an open sprint-execution window, or Azure Budget alert firing at 50% MTD. | Platform ops | [DX.2 `Suspend-FabricCapacity.ps1`](../infra/scripts/Suspend-FabricCapacity.ps1) + [`fabric-capacity-lifecycle.yml`](../.github/workflows/fabric-capacity-lifecycle.yml) `workflow_dispatch` + Azure Budget alert at 50% MTD; runbook [`fabric-capacity-lifecycle.md`](runbooks/fabric-capacity-lifecycle.md) | [Design spec §7.5](superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md#75-risk-register), [DX.2 runbook](runbooks/fabric-capacity-lifecycle.md) |
+| OPS-RISK-05 | **3-hospital calibration realism drift** — synthetic simulator patterns (USZ / LUKS / SZB presets) diverge from HCC LUKS reference over time (MAPE > 15%) | Data / Quality | **M** | MAPE > 15% on any weekly HCC pattern conformance replay, or reference-fixture rebase against updated HCC PNG. | Semantic / ontology owner | Sprint 08 HCC pattern conformance test [`test_seasonal_profile.py`](../apps/sim-capacity/tests/test_seasonal_profile.py) enforces MAPE < 15% in CI (blocking); nightly re-validation harness deferred to Sprint 10 | [Design spec §7.5](superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md#75-risk-register), [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) |
 
 ### Risk Register Discipline
 
