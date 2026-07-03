@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import csv
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -31,21 +31,30 @@ class _AcuityEntry:
     weight: float  # cost_weight; used as sampling weight proxy
 
 
-@dataclass
 class AcuitySampler:
-    hospital_short: str
-    specialty_id: Optional[str]
-    entries: List[_AcuityEntry] = field(default_factory=list)
+    def __init__(
+        self,
+        hospital_short: str,
+        specialty_id: Optional[str],
+        entries: Optional[List[_AcuityEntry]] = None,
+        seed: Optional[int] = None,
+    ) -> None:
+        self.hospital_short = hospital_short
+        self.specialty_id = specialty_id
+        self.entries: List[_AcuityEntry] = entries if entries is not None else []
+        self._rng = random.Random(seed)
 
-    def sample(self, seed: Optional[int] = None) -> Tuple[str, str, float]:
+    def reseed(self, seed: Optional[int]) -> None:
+        self._rng = random.Random(seed)
+
+    def sample(self) -> Tuple[str, str, float]:
         if not self.entries:
             raise ValueError(
                 f"No acuity entries for hospital={self.hospital_short!r} "
                 f"specialty={self.specialty_id!r}"
             )
-        rng = random.Random(seed)
         weights = [e.weight for e in self.entries]
-        chosen = rng.choices(self.entries, weights=weights, k=1)[0]
+        chosen = self._rng.choices(self.entries, weights=weights, k=1)[0]
         return (chosen.disease_id, chosen.drg_code, chosen.mean_los_norm)
 
 
@@ -67,6 +76,7 @@ def _load_drg_lookup() -> Dict[str, Tuple[float, float]]:
 def build_acuity_sampler(
     hospital_short: str,
     specialty_id: Optional[str] = None,
+    seed: Optional[int] = None,
 ) -> AcuitySampler:
     """Build an acuity sampler for a hospital (optionally filtered by specialty)."""
     target_hid = f"H_{hospital_short.upper()}"
@@ -97,4 +107,5 @@ def build_acuity_sampler(
         hospital_short=hospital_short.upper(),
         specialty_id=specialty_id,
         entries=entries,
+        seed=seed,
     )
