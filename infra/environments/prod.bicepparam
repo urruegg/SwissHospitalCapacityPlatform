@@ -31,3 +31,6 @@ param enableSourceSqlModule = false
 
 // Sprint 08 W1.2 — Fabric foundation submodule remains opt-out in PROD until separately approved.
 param enableFabricFoundationModule = false
+
+// Sprint 09 v2 T3.7 — sim-capacity ACA producer remains opt-out in PROD until Sprint 09 promotes it.
+param enableSimCapacityModule = false

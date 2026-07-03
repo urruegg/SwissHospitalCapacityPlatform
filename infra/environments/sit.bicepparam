@@ -54,3 +54,10 @@ param enableFabricFoundationModule = true
 param fabricCapacityAdmins = [
     'admin@mngenvmcap164444.onmicrosoft.com'
 ]
+
+// Sprint 09 v2 T3.7 — sim-capacity ACA producer. Enabled in SIT for the demo path.
+// EH namespace resolves from data-foundation module output when enableDataFoundationModule=true.
+param enableSimCapacityModule = true
+param simCapacityLocation = 'westus2'
+param simCapacityEventHubName = 'demand-encounters'
+param simCapacityDemoScope = true
