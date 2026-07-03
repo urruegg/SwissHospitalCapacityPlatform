@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-discharge-score-v1.schema.json",
+  "title": "Discharge Readiness Score Contract (DC-DISCHARGE-SCORE-v1)",
+  "description": "Discharge-readiness score contract (Sprint 09 v2 draft per design spec §3.3 / FR-DC-001, FR-DC-006). Contract only; ingestion in a later sprint. Follows the dc-demand-encounter-v1 envelope pattern. Extends the reference ontology hcp:DischargeReadinessScore ICE (bound to Encounter timeline; producedBy=ModelRunId; explanationTokens[]) — see docs/ontology/reference-layer.ttl and docs/ontology/crosswalk.md v0.2.0. ADR-0013 westus2 demo-scope exception applies at the ingestion layer for synthetic data only; PROD PHI paths remain gated on Swiss residency per ADR-0003/0004. ADR-0016 gate 1: _pseudonymisation_flag=true is explicit at the dataset envelope for demo-scope contracts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId", "contractId", "contractVersion",
+    "classification", "residency", "purposeTags",
+    "_pseudonymisation_flag", "records"
+  ],
+  "properties": {
+    "datasetId":              { "type": "string", "pattern": "^DS-DISCHARGE-SCORE-[a-z0-9-]+$" },
+    "contractId":             { "type": "string", "enum": ["DC-DISCHARGE-SCORE-v1"] },
+    "contractVersion":        { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":         { "type": "string", "enum": ["operational-confidential"] },
+    "residency":              { "type": "string", "enum": ["CH"] },
+    "purposeTags": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["discharge-planning", "capacity-planning"]
+      }
+    },
+    "_pseudonymisation_flag": {
+      "type": "boolean",
+      "const": true,
+      "description": "ADR-0016 gate 1: demo-scope dc-*.schema.json contracts must explicitly declare that all record identifiers are pseudonymised (no PHI). Enforced by policy_gate.py in the demo-scope profile."
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractId", "scoreId", "encounterId", "hospitalId",
+          "score", "producedBy", "scoredAt",
+          "explanationTokens", "contributingFactors",
+          "purposeTag", "dataResidencyRegion", "asOfTimestamp"
+        ],
+        "properties": {
+          "contractId":          { "type": "string", "enum": ["DC-DISCHARGE-SCORE-v1"] },
+          "scoreId":             { "type": "string", "pattern": "^DSC-[A-Z0-9-]+$", "description": "Unique discharge-score identifier. Maps to hcp:DischargeReadinessScore in the reference ontology." },
+          "encounterId":         { "type": "string", "pattern": "^ENC-[0-9]{4}-[0-9]{4,}$", "description": "Link back to DC-DEMAND-ENCOUNTER-v1 (appliesTo=Encounter per crosswalk v0.2.0)." },
+          "hospitalId":          { "type": "string", "enum": ["H_USZ", "H_LUKS", "H_SZB"], "description": "Hospital identifier from dim_hospital (H_USZ / H_LUKS / H_SZB)." },
+          "score":               { "type": "number", "minimum": 0, "maximum": 1, "description": "Discharge-readiness score in [0..1] from the discharge-scoring pipeline." },
+          "producedBy":          { "type": "string", "pattern": "^MRUN-[A-Z0-9-]+$", "description": "Model run identifier (producedBy=ModelRunId per design spec §3.3)." },
+          "scoredAt":            { "type": "string", "format": "date-time" },
+          "explanationTokens": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Model explanation tokens for the score (design spec §3.3)."
+          },
+          "contributingFactors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["factor", "weight"],
+              "properties": {
+                "factor":  { "type": "string", "description": "Human-readable factor name (e.g., 'mobility-restored', 'social-support-confirmed')." },
+                "weight":  { "type": "number", "minimum": -1, "maximum": 1, "description": "Signed contribution weight; positive raises score, negative lowers it." }
+              }
+            }
+          },
+          "purposeTag":          { "type": "string", "enum": ["discharge-planning", "capacity-planning"] },
+          "dataResidencyRegion": { "type": "string", "enum": ["switzerlandnorth", "switzerlandwest"] },
+          "asOfTimestamp":       { "type": "string", "format": "date-time" },
+          "extensions":          { "type": "object" }
+        }
+      }
+    }
+  }
+}
