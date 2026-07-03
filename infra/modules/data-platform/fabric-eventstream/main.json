@@ -1,0 +1,140 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.8.12551",
+      "templateHash": "9317988615084303477"
+    }
+  },
+  "parameters": {
+    "workspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Fabric workspace ID (GUID) that will host the Eventstream. Obtain via GET /v1/workspaces after workspace creation (configure-fabric.ps1 output). Left empty at Bicep composition time when workspace is provisioned in a post-deploy step; the companion PS1 will refuse to run until this is populated in the manifest."
+      }
+    },
+    "eventHubNamespace": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Fully-qualified Event Hubs namespace hostname (e.g. evh-ihzhhpf-sit-xxxx.servicebus.windows.net). Passed from data-foundation/eventhubs module output."
+      }
+    },
+    "eventHubName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Event Hub name within the namespace. Design spec §4.2 uses a single hub with routing by eventKind message property."
+      }
+    },
+    "eventHubConsumerGroup": {
+      "type": "string",
+      "defaultValue": "cg-fabric-eventstream",
+      "metadata": {
+        "description": "Consumer group the Eventstream subscribes to. Sprint 09 v2.0.0 T2.1 provisions cg-fabric-eventstream for this purpose."
+      }
+    },
+    "location": {
+      "type": "string",
+      "allowedValues": [
+        "switzerlandnorth",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Deployment region. switzerlandnorth (ADR-0003 default) or westus2 (ADR-0013 demo-scope carve-out)."
+      }
+    },
+    "demoScope": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "True when the module deploys under the ADR-0013 demo-scope carve-out (US region, synthetic data only, no PHI). Documented in output manifest so post-deploy can enforce PHI-gate."
+      }
+    },
+    "eventstreamDisplayName": {
+      "type": "string",
+      "defaultValue": "es-ihzhhpf-events",
+      "metadata": {
+        "description": "Display name for the Eventstream item in the Fabric workspace."
+      }
+    },
+    "eventstreamDescription": {
+      "type": "string",
+      "defaultValue": "Sprint 09 v2.0.0 — receives simulator envelopes from Event Hubs (cg-fabric-eventstream), routes by eventKind, appends to bronze/eventstream/ Delta.",
+      "metadata": {
+        "description": "Description for the Eventstream item."
+      }
+    },
+    "destinationLakehouseId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Destination Lakehouse ID (GUID) that will receive Delta append writes at bronze/eventstream/. Obtain via GET /v1/workspaces/{workspaceId}/lakehouses after lakehouse creation. Leave empty to defer destination wiring to a follow-up post-deploy pass."
+      }
+    },
+    "destinationTablePrefix": {
+      "type": "string",
+      "defaultValue": "bronze_eventstream",
+      "metadata": {
+        "description": "Destination Lakehouse table prefix under bronze/. Design spec §4.6 uses eventstream/ as the bronze subfolder."
+      }
+    }
+  },
+  "variables": {
+    "eventstreamManifest": {
+      "provisioningMode": "fabric-rest-api-post-deploy",
+      "workspaceId": "[parameters('workspaceId')]",
+      "eventstream": {
+        "displayName": "[parameters('eventstreamDisplayName')]",
+        "description": "[parameters('eventstreamDescription')]"
+      },
+      "source": {
+        "kind": "EventHub",
+        "namespaceHost": "[parameters('eventHubNamespace')]",
+        "eventHubName": "[parameters('eventHubName')]",
+        "consumerGroup": "[parameters('eventHubConsumerGroup')]",
+        "routingProperty": "eventKind",
+        "authMode": "fabric-managed-connection"
+      },
+      "destination": {
+        "kind": "Lakehouse",
+        "lakehouseId": "[parameters('destinationLakehouseId')]",
+        "tablePrefix": "[parameters('destinationTablePrefix')]",
+        "lakehousePath": "Files/bronze/eventstream/"
+      },
+      "guardrails": {
+        "location": "[parameters('location')]",
+        "demoScope": "[parameters('demoScope')]",
+        "phiGateEnforcedBy": "silver-eventstream-notebook (T2.3)",
+        "residencyTag": "[if(equals(parameters('location'), 'switzerlandnorth'), 'CH-North', 'US-West')]"
+      }
+    }
+  },
+  "resources": [],
+  "outputs": {
+    "eventstreamManifest": {
+      "type": "object",
+      "metadata": {
+        "description": "Fabric Eventstream configuration manifest consumed by post-deploy/configure-eventstream.ps1."
+      },
+      "value": "[variables('eventstreamManifest')]"
+    },
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Human-readable status for the parent orchestration."
+      },
+      "value": "fabric-eventstream-scaffold-only-see-post-deploy-script"
+    },
+    "postDeployScriptPath": {
+      "type": "string",
+      "metadata": {
+        "description": "Path (repo-relative) to the companion post-deploy script that materialises the Eventstream via Fabric REST API."
+      },
+      "value": "infra/modules/data-platform/fabric-eventstream/post-deploy/configure-eventstream.ps1"
+    }
+  }
+}
