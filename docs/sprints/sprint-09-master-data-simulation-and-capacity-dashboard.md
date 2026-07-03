@@ -55,6 +55,10 @@ in-place (bump to 1.2.0 for MINOR additions, 2.0.0 for MAJOR — e.g. adding
 the MVO track) or spins off into its own ADR / PRD change. Do not start
 Sprint 09 execution while §0 has open rows.
 
+### §0.5 T1 Foundation delivered
+
+T1 Foundation was delivered on 2026-07-02 as commits `43a99ee` (T1.1 ADR-0015) through `d16ab85` (T1.6 strict-mode CI flip) on branch `sprint-09-v2/t1-foundation`. Full sprint doc v2.0.0 rewrite (per DX.1 in [design spec §7.2](../superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md)) is pending until sprint close, once all 35 deliverables land.
+
 ---
 
 ## Sprint Goal
