@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "artifacts": [
+    {
+      "report": {
+        "path": "capacity-dashboard.Report"
+      }
+    },
+    {
+      "semanticModel": {
+        "path": "capacity-dashboard.SemanticModel"
+      }
+    }
+  ],
+  "settings": {
+    "enableAutoRecovery": true
+  }
+}
