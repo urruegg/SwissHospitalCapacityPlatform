@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 0.7.0 |
+| **Date** | 2026-07-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.5.0 (legacy pack archive alignment for compatibility validation) |
+| **Previous Version** | 0.6.0 (pre § Sprint 09 evidence subsection) |
 
 ## Purpose
 
@@ -169,6 +169,58 @@ blocking step on the SIT and PROD deploy workflows. Validate locally with
 `python3 policy/policy_gate.py --scope sit` and `python3 -m unittest discover -s policy/tests`.
 The Phase 2 SIT gate evidence is recorded in
 [`docs/sprints/sprint-05/phase-2-policy-gate.md`\](sprints/sprint-05/phase-2-policy-gate.md).
+
+### Sprint 09 evidence
+
+Test artefacts and CI gates introduced by Sprint 09 v2.0.0 (see [sprint doc](sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md)).
+
+#### HCC pattern conformance test
+
+1. **Location:** [`apps/sim-capacity/tests/test_seasonal_profile.py`](../apps/sim-capacity/tests/test_seasonal_profile.py)
+2. **Purpose:** Verify simulator's LUKS preset reproduces the HCC utilization pattern reference fixture within MAPE < 15%.
+3. **Current MAPE:** 2.42% (well below threshold).
+4. **Reference fixture:** [`apps/sim-capacity/tests/fixtures/hcc-utilization-pattern-luks-reference.json`](../apps/sim-capacity/tests/fixtures/hcc-utilization-pattern-luks-reference.json)
+5. **Evidence location:** `docs/sprints/sprint-09/evidence/hcc-conformance-report.md` (populate at sprint close).
+
+#### PHI regex sweep test (ADR-0016 gate 1)
+
+1. **Location:** [`apps/sim-capacity/tests/test_no_phi.py`](../apps/sim-capacity/tests/test_no_phi.py)
+2. **Purpose:** [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) gate 1 — simulator produces no PHI-shaped tokens across all 6 generators × 3 hospitals.
+3. **Coverage:** 10 000+ envelopes swept; 4 PHI patterns (email / phone / DOB / CH AHV-13); 18 no-hit tests + 4 self-check positives.
+4. **Assertion:** 0 hits.
+5. **Evidence location:** `docs/sprints/sprint-09/evidence/phi-sweep-report.md`.
+
+#### 9 agent eval fixtures (design spec §5.5)
+
+1. **Location:** `agents/bm-copilot/golden-tasks.md`, `agents/fabric-data-agent/golden-tasks.md`, `agents/csa-agent/golden-tasks.md`.
+2. **Coverage:** 3 fixtures per agent (happy path / out-of-scope refusal / PHI refusal) = 9 total.
+3. **Replay:** manual today; automated harness deferred to Sprint 10.
+4. **Evidence location:** `docs/sprints/sprint-09/evidence/agent-eval-replay.md`.
+
+#### Ontology conformance CI (design spec §3.5)
+
+1. **Location:** [`.github/workflows/ontology-conformance.yml`](../.github/workflows/ontology-conformance.yml) STRICT step.
+2. **Purpose:** Every `hcp:*` reference in [`docs/ontology/crosswalk.md`](ontology/crosswalk.md) must exist in [`docs/ontology/reference-layer.ttl`](ontology/reference-layer.ttl) and be marked concrete or deferred.
+3. **Enforcement:** Blocking PR check.
+4. **Evidence:** CI badge on every PR touching `docs/ontology/**`.
+
+#### RLS PHI gate verification (ADR-0016 gate 4)
+
+1. **Location:** [`data-platform/reports/capacity-dashboard.SemanticModel/definition/model.tmdl`](../data-platform/reports/capacity-dashboard.SemanticModel/definition/model.tmdl) roles.
+2. **Roles covered:** BedOps, ORPlanner, Analyst, SemanticOwner.
+3. **Verification approach:** manual query per role on portal-authored TMDL export; assert 0 rows returned on PHI-tagged columns.
+4. **Evidence location:** `docs/sprints/sprint-09/evidence/rls-phi-verification.md`.
+
+#### Sprint close checklist
+
+Per [plan § Sprint close](superpowers/plans/2026-07-02-sprint-09-v2-refinement-plan.md#sprint-close-after-all-35-deliverables):
+
+1. Full CI pipeline green on Sprint 09 v2.0.0 PRs.
+2. HCC pattern conformance test locally (MAPE < 15%).
+3. PHI regex sweep (0 hits over 10 000 events).
+4. 9 agent eval fixtures replay green.
+5. RLS PHI gate returns 0 rows for all 4 roles on PHI columns.
+6. Suspend Fabric F2 SIT via `Suspend-FabricCapacity.ps1 -Environment sit` ([DX.2 runbook](runbooks/fabric-capacity-lifecycle.md)).
 
 ## Defect and Risk Handling
 
