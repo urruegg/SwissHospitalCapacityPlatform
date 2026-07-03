@@ -33,6 +33,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TTL_PATH = REPO_ROOT / "docs" / "ontology" / "reference-layer.ttl"
 CROSSWALK_PATH = REPO_ROOT / "docs" / "ontology" / "crosswalk.md"
+SCHEMA_DIR = REPO_ROOT / "data" / "synthetic" / "schema"
 
 TTL_CLASS_RX = re.compile(
     r"^(hcp:[A-Za-z_][A-Za-z0-9_]*)\s+a\s+owl:Class\s*[;.]",
@@ -50,6 +51,10 @@ CROSSWALK_ROW_RX = re.compile(
     re.MULTILINE,
 )
 
+# Match data-contract references in crosswalk backticks such as `DC-DISCHARGE-SCORE-v1`.
+# Captures the base name without the `-vN` suffix; normalisation reattaches `-V1`.
+CONTRACT_RX = re.compile(r"`(DC-[A-Z0-9-]+)-v\d+`")
+
 
 @dataclass
 class Finding:
@@ -66,6 +71,30 @@ def parse_reference_classes(ttl_text: str) -> set[str]:
 def parse_crosswalk_classes(md_text: str) -> set[str]:
     """Extract every `hcp:*` class referenced from the MVO crosswalk rows."""
     return set(CROSSWALK_ROW_RX.findall(md_text))
+
+
+def parse_crosswalk_contracts(md_text: str) -> set[str]:
+    """Extract every `DC-*-vN` data-contract ID referenced in the crosswalk."""
+    return set(CONTRACT_RX.findall(md_text))
+
+
+def check_contracts(contracts: set[str], schema_dir: Path) -> list[Finding]:
+    """Every contract ID mentioned in the crosswalk must have a matching schema."""
+    findings: list[Finding] = []
+    existing = {
+        p.stem.replace(".schema", "").upper() for p in schema_dir.glob("*.schema.json")
+    }
+    for c in sorted(contracts):
+        normalised = c.upper() + "-V1"
+        if normalised not in existing:
+            findings.append(
+                Finding(
+                    "FAIL",
+                    f"crosswalk contract {c}-v1 has no schema under "
+                    f"data/synthetic/schema/",
+                )
+            )
+    return findings
 
 
 def check_conformance(reference: set[str], crosswalk: set[str]) -> list[Finding]:
@@ -123,11 +152,14 @@ def main() -> int:
 
     reference = parse_reference_classes(ttl_text)
     crosswalk = parse_crosswalk_classes(crosswalk_text)
+    contracts = parse_crosswalk_contracts(crosswalk_text)
 
     print(f"[ontology-check] reference classes:  {len(reference):3d}  {sorted(reference)}")
     print(f"[ontology-check] crosswalk classes:  {len(crosswalk):3d}  {sorted(crosswalk)}")
+    print(f"[ontology-check] crosswalk contracts:{len(contracts):3d}  {sorted(contracts)}")
 
     findings = check_conformance(reference, crosswalk)
+    findings.extend(check_contracts(contracts, SCHEMA_DIR))
 
     warn_count = sum(1 for f in findings if f.severity == "WARN")
     fail_count = sum(1 for f in findings if f.severity == "FAIL")

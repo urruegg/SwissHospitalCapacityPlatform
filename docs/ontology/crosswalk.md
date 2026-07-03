@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.2.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 0.2.1 |
+| **Date** | 2026-07-03 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft — Sprint 09 skeleton (RB-11) |
-| **Previous Version** | 0.1.0 (initial MVO skeleton — 5 CapacityUnit subtypes + facility hierarchy) |
+| **Previous Version** | 0.2.0 (added Encounter, Specialty, BedAssignment, DischargeReadinessScore, DischargeRecommendation, ForecastOutput rows) |
 | **Governance** | Every PR that touches [reference-layer.ttl](reference-layer.ttl) OR the operational-layer semantic model MUST update this file in the same PR. Reviewed by semantic / ontology owner per [FR-GOV-ONT-002](../PRD.md#h-semantic-ontology). |
 | **Enforcement** | Manual review today; CI conformance check delivered by follow-up PR (RB-08) per [FR-GOV-ONT-003](../PRD.md#h-semantic-ontology). |
 
@@ -22,11 +22,11 @@ Single source of truth for the mapping between the **three artefact planes** the
 
 | Reference-layer class | Fabric IQ entity type | Data contract(s) | Time-series binding | Notes |
 | --- | --- | --- | --- | --- |
-| `hcp:Bed` | `Bed` | `DC-MASTER-07` *(dim_ward_capacityunit — bed rollup, Sprint 9 baseline)*; future `DC-BED-STATE-v1` for the eventhouse feed | **`bed-state` (eventhouse, first target)** — occupied / available / blocked / cleaning per [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo) | Sprint 09 delivers this first (MVO gate G-A). |
+| `hcp:Bed` | `Bed` | `DC-MASTER-07` *(dim_ward_capacityunit — bed rollup, Sprint 9 baseline)*; future DC-BED-STATE-v1 for the eventhouse feed | **`bed-state` (eventhouse, first target)** — occupied / available / blocked / cleaning per [ADR-0014 §3](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md#3-sprint-09-delivers-the-minimum-viable-ontology-mvo) | Sprint 09 delivers this first (MVO gate G-A). |
 | `hcp:ORSlot` | `ORSlot` | [`DC-OR-SCHEDULE-v1`](../../data/synthetic/schema/dc-or-schedule-v1.schema.json) *(drafted 2026-07-02, RB-10; ingestion in Sprint 10 per AMA H-07)*; [`DC-OR-CASE-v1`](../../data/synthetic/schema/dc-or-case-v1.schema.json) *(drafted 2026-07-02, RB-10)* | Deferred to Sprint 10/11 (OR-status feed) | New entity in MVO; the OR steering anchor per AMA F-A-06. |
-| `hcp:Room` | `Room` | *(no contract yet — inferred from `dim_ward_capacityunit`)* | Deferred to Sprint 10/11 (`DC-ROOM-STATE-v1`) | Ontological placement pending Phase 3 (`omrse` facility part-of alignment). |
-| `hcp:StaffShift` | `StaffShift` *(deferred)* | Future `DC-STAFF-ROSTER-v1` + `DC-STAFF-DEMAND-v1` per AMA §5.3 | Deferred to Sprint 10/11 | Not in Sprint 09 MVO — reserved slot only. |
-| `hcp:Device` | `Device` *(deferred)* | Future `DC-DEVICE-STATE-v1` per AMA §5.4 | Deferred to Sprint 10/11 (monitoring-device feed) | Not in Sprint 09 MVO — reserved slot only. |
+| `hcp:Room` | `Room` | *(no contract yet — inferred from `dim_ward_capacityunit`)* | Deferred to Sprint 10/11 (DC-ROOM-STATE-v1) | Ontological placement pending Phase 3 (`omrse` facility part-of alignment). |
+| `hcp:StaffShift` | `StaffShift` *(deferred)* | Future DC-STAFF-ROSTER-v1 + DC-STAFF-DEMAND-v1 per AMA §5.3 | Deferred to Sprint 10/11 | Not in Sprint 09 MVO — reserved slot only. |
+| `hcp:Device` | `Device` *(deferred)* | Future DC-DEVICE-STATE-v1 per AMA §5.4 | Deferred to Sprint 10/11 (monitoring-device feed) | Not in Sprint 09 MVO — reserved slot only. |
 | `hcp:Encounter` | `Encounter` | **[`DC-DEMAND-ENCOUNTER-v1`](../../data/synthetic/schema/dc-demand-encounter-v1.schema.json)** *(existing — reuse)* | Time-series binding on Encounter timeline (status transitions) | AMA SD Core Solution Pattern control unit; stub class added in T1.3 code-review fix. |
 | `hcp:Specialty` | `Specialty` | `DC-MASTER-02` *(dim_specialty; no `.schema.json` file yet — see [Reference-layer-exempt entities](#reference-layer-exempt-entities))* | N/A (static reference) | Grounds MVO facility hierarchy per design spec §3.3; stub class added in T1.3 code-review fix. |
 | `hcp:BedAssignment` | `BedAssignment` | **[`DC-MATCH-RECOMMENDATION-v1`](../../data/synthetic/schema/dc-match-recommendation-v1.schema.json)** *(existing — reuse)* | Time-series binding on assign/unassign events (eventhouse) | Matches AMA SD Core Solution Pattern; links Encounter ↔ Bed. |
