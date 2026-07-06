@@ -434,3 +434,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Python setuptools build artefacts (added Sprint 10 kickoff PR #2)
+**/*.egg-info/
+
+# Power BI Desktop local caches - backstop; per-folder .gitignore files inside
+# each .SemanticModel/ and .Report/ already exclude .pbi/, this catches leaks.
+**/.pbi/cache.abf
