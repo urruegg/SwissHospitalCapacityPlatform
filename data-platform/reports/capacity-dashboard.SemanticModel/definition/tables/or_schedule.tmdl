@@ -1,0 +1,219 @@
+table or_schedule
+	lineageTag: 02660326-be9c-4160-aeaf-fc7711d99123
+	sourceLineageTag: [gold].[or_schedule]
+
+	measure 'Idle-Slot Minutes' = CALCULATE(SUM(or_schedule[plannedDurationMinutes]), or_schedule[status] = "blocked")
+		formatString: #,0
+		lineageTag: d5fa3c6c-4875-4aa7-ada8-330bb0bab5c7
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	column _data_quality
+		dataType: string
+		lineageTag: 2732c1fb-6d2b-4928-9a5c-d2099a6f570e
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _ingested_at
+		dataType: string
+		lineageTag: 37563039-64af-45b2-9d10-686c9b9e3975
+		sourceLineageTag: _ingested_at
+		summarizeBy: none
+		sourceColumn: _ingested_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: aab2e9e6-5a9b-4729-9770-b39e37ec3c4d
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 541fa247-3585-40e2-b889-03bb64187730
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _source_system
+		dataType: string
+		lineageTag: 79d198ce-8ec9-434d-99ad-a4e7a7fa0f3a
+		sourceLineageTag: _source_system
+		summarizeBy: none
+		sourceColumn: _source_system
+
+		annotation SummarizationSetBy = Automatic
+
+	column asOfTimestamp
+		dataType: string
+		lineageTag: b1e61695-ef23-4393-b5af-39f1b09f7241
+		sourceLineageTag: asOfTimestamp
+		summarizeBy: none
+		sourceColumn: asOfTimestamp
+
+		annotation SummarizationSetBy = Automatic
+
+	column blockReason
+		dataType: string
+		lineageTag: ed72c779-8a0f-4cde-9119-00125a71ef50
+		sourceLineageTag: blockReason
+		summarizeBy: none
+		sourceColumn: blockReason
+
+		annotation SummarizationSetBy = Automatic
+
+	column contractId
+		dataType: string
+		lineageTag: 72ff007a-5a96-4a6c-a873-b0e17acfa0f9
+		sourceLineageTag: contractId
+		summarizeBy: none
+		sourceColumn: contractId
+
+		annotation SummarizationSetBy = Automatic
+
+	column dataResidencyRegion
+		dataType: string
+		lineageTag: 63eecafa-5016-4a0c-a18d-c29001d9a68a
+		sourceLineageTag: dataResidencyRegion
+		summarizeBy: none
+		sourceColumn: dataResidencyRegion
+
+		annotation SummarizationSetBy = Automatic
+
+	column encounterId
+		dataType: string
+		lineageTag: 60d60d69-f124-4ba3-990b-b919139bf48c
+		sourceLineageTag: encounterId
+		summarizeBy: none
+		sourceColumn: encounterId
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospitalId
+		dataType: string
+		lineageTag: d4bd72cf-04ef-460e-b766-59db66c205a4
+		sourceLineageTag: hospitalId
+		summarizeBy: none
+		sourceColumn: hospitalId
+
+		annotation SummarizationSetBy = Automatic
+
+	column orSlotId
+		dataType: string
+		lineageTag: 0cbb7346-4444-499f-9bd9-1a831d59491e
+		sourceLineageTag: orSlotId
+		summarizeBy: none
+		sourceColumn: orSlotId
+
+		annotation SummarizationSetBy = Automatic
+
+	column plannedCaseId
+		dataType: string
+		lineageTag: 3fed65de-ea01-4ae2-b072-9018e531be98
+		sourceLineageTag: plannedCaseId
+		summarizeBy: none
+		sourceColumn: plannedCaseId
+
+		annotation SummarizationSetBy = Automatic
+
+	column plannedDurationMinutes
+		dataType: int64
+		formatString: 0
+		lineageTag: 7877a6bd-7778-471c-8f54-7757d6969bf1
+		sourceLineageTag: plannedDurationMinutes
+		summarizeBy: sum
+		sourceColumn: plannedDurationMinutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column primarySurgeonRoleId
+		dataType: string
+		lineageTag: 5645b359-19ac-4814-a11a-702f8a349fbb
+		sourceLineageTag: primarySurgeonRoleId
+		summarizeBy: none
+		sourceColumn: primarySurgeonRoleId
+
+		annotation SummarizationSetBy = Automatic
+
+	column purposeTag
+		dataType: string
+		lineageTag: d9892150-9f6d-4e85-87eb-09123353d4f3
+		sourceLineageTag: purposeTag
+		summarizeBy: none
+		sourceColumn: purposeTag
+
+		annotation SummarizationSetBy = Automatic
+
+	column requiredAnaesthesiaType
+		dataType: string
+		lineageTag: 85f1cd57-6f0b-457a-9043-81990b21de5d
+		sourceLineageTag: requiredAnaesthesiaType
+		summarizeBy: none
+		sourceColumn: requiredAnaesthesiaType
+
+		annotation SummarizationSetBy = Automatic
+
+	column slotEnd
+		dataType: string
+		lineageTag: 6e41ef36-eb06-48d4-a75b-6fb808c8747c
+		sourceLineageTag: slotEnd
+		summarizeBy: none
+		sourceColumn: slotEnd
+
+		annotation SummarizationSetBy = Automatic
+
+	column slotStart
+		dataType: string
+		lineageTag: 241da975-9415-4a47-a453-49de88d8fda6
+		sourceLineageTag: slotStart
+		summarizeBy: none
+		sourceColumn: slotStart
+
+		annotation SummarizationSetBy = Automatic
+
+	column specialtyServiceId
+		dataType: string
+		lineageTag: 037db198-54b6-4f63-bb98-a9eb42e426be
+		sourceLineageTag: specialtyServiceId
+		summarizeBy: none
+		sourceColumn: specialtyServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: 396f1bf3-4297-4315-b7cf-91169692b8c8
+		sourceLineageTag: status
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column theatreId
+		dataType: string
+		lineageTag: dab0c694-885c-4887-95b5-f55bd4c0de28
+		sourceLineageTag: theatreId
+		summarizeBy: none
+		sourceColumn: theatreId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition or_schedule = entity
+		mode: directLake
+		source
+			entityName: or_schedule
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

@@ -1,0 +1,174 @@
+table map_disease_treatment_specialty_service
+	lineageTag: de254f7c-9d0d-40cf-b386-2fce1487c2dc
+	sourceLineageTag: [gold].[map_disease_treatment_specialty_service]
+
+	column map_id
+		dataType: string
+		lineageTag: e77681b5-1d68-4b04-b596-3412c2215a74
+		sourceLineageTag: map_id
+		summarizeBy: none
+		sourceColumn: map_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_id
+		dataType: string
+		lineageTag: 07adf51b-dacd-4e75-9511-d6e1f8346b68
+		sourceLineageTag: hospital_id
+		summarizeBy: none
+		sourceColumn: hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column disease_id
+		dataType: string
+		lineageTag: 0ac0aca9-4d73-4708-a6cd-74a8dcb992cc
+		sourceLineageTag: disease_id
+		summarizeBy: none
+		sourceColumn: disease_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column icd10
+		dataType: string
+		lineageTag: 13940af6-49d4-401d-84fe-44a601a5b854
+		sourceLineageTag: icd10
+		summarizeBy: none
+		sourceColumn: icd10
+
+		annotation SummarizationSetBy = Automatic
+
+	column treatment_id
+		dataType: string
+		lineageTag: f0eac348-218f-48bd-a5a2-e23337e09856
+		sourceLineageTag: treatment_id
+		summarizeBy: none
+		sourceColumn: treatment_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column drg_code
+		dataType: string
+		lineageTag: d99cb657-a773-4437-856a-a450c4e13f3b
+		sourceLineageTag: drg_code
+		summarizeBy: none
+		sourceColumn: drg_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column specialty_id
+		dataType: string
+		lineageTag: d144e767-53d2-497b-bf87-0e383841e28d
+		sourceLineageTag: specialty_id
+		summarizeBy: none
+		sourceColumn: specialty_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_service
+		dataType: string
+		lineageTag: 68dd4fe4-d6df-48a2-a6b6-e7134ba378d9
+		sourceLineageTag: hospital_service
+		summarizeBy: none
+		sourceColumn: hospital_service
+
+		annotation SummarizationSetBy = Automatic
+
+	column capacity_unit_ward_id
+		dataType: string
+		lineageTag: d826bc0e-6012-4ac6-aae9-09dbcf5250a7
+		sourceLineageTag: capacity_unit_ward_id
+		summarizeBy: none
+		sourceColumn: capacity_unit_ward_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column capacity_unit_name
+		dataType: string
+		lineageTag: 1ae9439a-e0ab-419e-8c9c-a9b1a0fc306c
+		sourceLineageTag: capacity_unit_name
+		summarizeBy: none
+		sourceColumn: capacity_unit_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_quality
+		dataType: string
+		lineageTag: 89e97bee-c916-47c8-a1db-70164bd986c5
+		sourceLineageTag: data_quality
+		summarizeBy: none
+		sourceColumn: data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: c5c333be-b411-4176-bea0-c921eb8f91bd
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 1451de34-5e21-4f47-87e5-91b79f6d2306
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: 39d0e99f-5dce-4497-bbb0-02b9c076bc5f
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: 3c557e2f-4f91-498a-b988-bda93e035f64
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: f475eb12-8249-405e-935f-8a4c07ab6d6e
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: 39bfbce4-d52c-4464-b4a3-6f35d7ce8a27
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5bdfa2ba-6634-4a68-bd1f-09524dbacf36
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition map_disease_treatment_specialty_service = entity
+		mode: directLake
+		source
+			entityName: map_disease_treatment_specialty_service
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

@@ -1,0 +1,149 @@
+table dim_ward_capacityunit
+	lineageTag: 0272fc84-df9a-4eb8-ad6a-89f571236327
+	sourceLineageTag: [gold].[dim_ward_capacityunit]
+
+	measure 'Beds Total' = SUM(dim_ward_capacityunit[bed_count])
+		formatString: #,0
+		lineageTag: ccc3a031-772f-462c-967a-c1d6d86f1dee
+
+		changedProperty = Name
+
+		changedProperty = IsHidden
+
+		changedProperty = FormatString
+
+	column ward_id
+		dataType: string
+		lineageTag: 409f62f7-4091-45ec-8fc4-44eb72f7b6a8
+		sourceLineageTag: ward_id
+		summarizeBy: none
+		sourceColumn: ward_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_id
+		dataType: string
+		lineageTag: 78a4a3f7-1758-4f76-8887-f7fdc68defd8
+		sourceLineageTag: hospital_id
+		summarizeBy: none
+		sourceColumn: hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 8cf23c54-7db6-4d14-bd98-e1ef31fe04ae
+		sourceLineageTag: name
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_type
+		dataType: string
+		lineageTag: 493400eb-99ae-48ae-8fe3-7c865cccfc83
+		sourceLineageTag: unit_type
+		summarizeBy: none
+		sourceColumn: unit_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column specialty_id
+		dataType: string
+		lineageTag: 3d139dbe-42cb-4ca7-8879-cda0828436d1
+		sourceLineageTag: specialty_id
+		summarizeBy: none
+		sourceColumn: specialty_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column bed_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 7fd8ed39-e96b-420c-a7ff-ce5d883413ca
+		sourceLineageTag: bed_count
+		summarizeBy: sum
+		sourceColumn: bed_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column bed_count_quality
+		dataType: string
+		lineageTag: cc34fdef-5e24-4298-82e3-9c34785efa61
+		sourceLineageTag: bed_count_quality
+		summarizeBy: none
+		sourceColumn: bed_count_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: 9ba07aba-0cc7-4590-a47c-694eaef45aa2
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 5df8d63f-dae7-4424-96c8-61eb3bae9d8e
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: 9e00ea7a-6150-4bbe-bcb7-c3e587f4743d
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: a54329d4-bcf8-4f24-a1dd-5a6ae02b2445
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: cd483d48-1a71-47cc-b0a6-281c77656a4c
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: 4cf3c094-9d31-47f3-b18b-a6169d12a65b
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c4ee09ca-b344-4294-8ecd-af759bbda897
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_ward_capacityunit = entity
+		mode: directLake
+		source
+			entityName: dim_ward_capacityunit
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

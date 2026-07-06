@@ -1,0 +1,156 @@
+table dim_disease
+	lineageTag: 0b28d43d-76c8-4b62-ad05-24b432d1658c
+	sourceLineageTag: [gold].[dim_disease]
+
+	column disease_id
+		dataType: string
+		lineageTag: bbaac9df-1f8a-40db-9161-a6b047bf411a
+		sourceLineageTag: disease_id
+		summarizeBy: none
+		sourceColumn: disease_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name_de
+		dataType: string
+		lineageTag: e66f4e75-85b2-4aff-8fd8-e34f9c74b61e
+		sourceLineageTag: name_de
+		summarizeBy: none
+		sourceColumn: name_de
+
+		annotation SummarizationSetBy = Automatic
+
+	column name_en
+		dataType: string
+		lineageTag: 05857076-bb16-4f4d-a4b4-1699fb287c80
+		sourceLineageTag: name_en
+		summarizeBy: none
+		sourceColumn: name_en
+
+		annotation SummarizationSetBy = Automatic
+
+	column icd10
+		dataType: string
+		lineageTag: 554b74fa-c2d0-4384-ab34-07626afad80f
+		sourceLineageTag: icd10
+		summarizeBy: none
+		sourceColumn: icd10
+
+		annotation SummarizationSetBy = Automatic
+
+	column synonyms
+		dataType: string
+		lineageTag: d9889eb2-62f7-4a56-9821-ec72712ff72e
+		sourceLineageTag: synonyms
+		summarizeBy: none
+		sourceColumn: synonyms
+
+		annotation SummarizationSetBy = Automatic
+
+	column primary_specialty_id
+		dataType: string
+		lineageTag: 15e43dcc-b842-404e-867b-abdde2105317
+		sourceLineageTag: primary_specialty_id
+		summarizeBy: none
+		sourceColumn: primary_specialty_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column body_system
+		dataType: string
+		lineageTag: b9434b4c-83e4-4555-8509-ac97fc492bac
+		sourceLineageTag: body_system
+		summarizeBy: none
+		sourceColumn: body_system
+
+		annotation SummarizationSetBy = Automatic
+
+	column acuity
+		dataType: string
+		lineageTag: 94ab0993-b66b-4c9e-a32c-b2ffc299e581
+		sourceLineageTag: acuity
+		summarizeBy: none
+		sourceColumn: acuity
+
+		annotation SummarizationSetBy = Automatic
+
+	column emergency_relevant
+		dataType: string
+		lineageTag: cd95812f-a1eb-49e6-90b4-1eac190a819d
+		sourceLineageTag: emergency_relevant
+		summarizeBy: none
+		sourceColumn: emergency_relevant
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: a2d5375a-3650-44f8-91e1-a46e6d01c6dc
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 623895ff-3677-4e34-b92d-fd51eff115a4
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: d3f0d490-4c76-4935-9597-23ccb2849245
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: 220a420e-df20-4fc9-aef3-8f2c96c0475f
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: 5ef8c2da-098d-40e1-8466-af3bd3d658a1
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: bb2ba6e2-c645-4398-98bb-8d158f433311
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 210dc945-5254-4374-abe4-22a00e530737
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_disease = entity
+		mode: directLake
+		source
+			entityName: dim_disease
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

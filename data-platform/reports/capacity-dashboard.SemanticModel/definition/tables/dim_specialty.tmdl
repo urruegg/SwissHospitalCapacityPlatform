@@ -1,0 +1,138 @@
+table dim_specialty
+	lineageTag: bef63090-4b72-4153-acc0-afa22594cb40
+	sourceLineageTag: [gold].[dim_specialty]
+
+	column specialty_hospital_id
+		dataType: string
+		lineageTag: 26742e1e-9e1a-4b71-bbc6-003089bc00cf
+		sourceLineageTag: specialty_hospital_id
+		summarizeBy: none
+		sourceColumn: specialty_hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_id
+		dataType: string
+		lineageTag: 8fdf4bfb-e683-4d81-861f-60da014c5829
+		sourceLineageTag: hospital_id
+		summarizeBy: none
+		sourceColumn: hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column specialty_id
+		dataType: string
+		lineageTag: e9d3242a-e931-40ee-8ff2-3259febc432e
+		sourceLineageTag: specialty_id
+		summarizeBy: none
+		sourceColumn: specialty_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name_de
+		dataType: string
+		lineageTag: fe379532-81e9-48bc-ad5a-36160878b440
+		sourceLineageTag: name_de
+		summarizeBy: none
+		sourceColumn: name_de
+
+		annotation SummarizationSetBy = Automatic
+
+	column name_en
+		dataType: string
+		lineageTag: 6f87b798-b7bf-462d-b4c5-0e637aa9cc04
+		sourceLineageTag: name_en
+		summarizeBy: none
+		sourceColumn: name_en
+
+		annotation SummarizationSetBy = Automatic
+
+	column fmh_discipline
+		dataType: string
+		lineageTag: c4c33bac-954e-42da-bf9d-86206c6fea4f
+		sourceLineageTag: fmh_discipline
+		summarizeBy: none
+		sourceColumn: fmh_discipline
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_quality
+		dataType: string
+		lineageTag: 1b7eff86-f5f8-4480-a4d8-53363ccd83e2
+		sourceLineageTag: data_quality
+		summarizeBy: none
+		sourceColumn: data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: 1a214306-6483-48ee-a966-133281c721d8
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 29f64517-f74a-430d-890b-f6b32013039d
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: 0da47c01-fb8e-4680-88a7-5f206c019ae2
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: 206f2ba5-0596-4254-8f49-233b91938596
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: e05c1495-8648-4367-a341-ae8eae5a0003
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: 198dfdde-ee7a-4645-926f-3b063b9a0ed7
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a7f01f64-face-4b10-91bc-6591e7bd544e
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_specialty = entity
+		mode: directLake
+		source
+			entityName: dim_specialty
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

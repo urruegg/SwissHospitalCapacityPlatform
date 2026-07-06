@@ -1,0 +1,231 @@
+table dim_hospital
+	lineageTag: 4fa1f80f-7073-402c-8980-c092f6546ede
+	sourceLineageTag: [gold].[dim_hospital]
+
+	column hospital_id
+		dataType: string
+		lineageTag: f54c0005-9cb3-4e6b-8c8c-c7ee074052a0
+		sourceLineageTag: hospital_id
+		summarizeBy: none
+		sourceColumn: hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: dbb4a01e-2599-4cee-8110-d8c75bd2f95d
+		sourceLineageTag: name
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column short_name
+		dataType: string
+		lineageTag: b81b3e1f-97f5-4deb-bbd7-9de080520822
+		sourceLineageTag: short_name
+		summarizeBy: none
+		sourceColumn: short_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column type
+		dataType: string
+		lineageTag: c4e4572d-53d7-4d59-ae75-dc5accf4935b
+		sourceLineageTag: type
+		summarizeBy: none
+		sourceColumn: type
+
+		annotation SummarizationSetBy = Automatic
+
+	column care_level
+		dataType: string
+		lineageTag: 4b1dbf9f-4f1c-4f7d-8daa-7424d57726dc
+		sourceLineageTag: care_level
+		summarizeBy: none
+		sourceColumn: care_level
+
+		annotation SummarizationSetBy = Automatic
+
+	column canton
+		dataType: string
+		lineageTag: d125a11a-4460-4095-aaf8-3bd8002f9bf2
+		sourceLineageTag: canton
+		summarizeBy: none
+		sourceColumn: canton
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: 8729c7ec-3ccf-40f6-b72d-292c2ecf7231
+		sourceLineageTag: city
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column beds
+		dataType: int64
+		formatString: 0
+		lineageTag: e5aae5b1-c739-4338-9c33-1ad9dc26faf5
+		sourceLineageTag: beds
+		summarizeBy: sum
+		sourceColumn: beds
+
+		annotation SummarizationSetBy = Automatic
+
+	column beds_quality
+		dataType: string
+		lineageTag: e5cd2553-c5a7-44a3-b4fc-5fc4bf5c0c8f
+		sourceLineageTag: beds_quality
+		summarizeBy: none
+		sourceColumn: beds_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column staff
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a89b893-9c00-4b0f-ac5b-0c37b9dabefa
+		sourceLineageTag: staff
+		summarizeBy: sum
+		sourceColumn: staff
+
+		annotation SummarizationSetBy = Automatic
+
+	column staff_quality
+		dataType: string
+		lineageTag: 321f10f6-af6a-41cd-8bd8-d147f09bed37
+		sourceLineageTag: staff_quality
+		summarizeBy: none
+		sourceColumn: staff_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column stationary_cases_yr
+		dataType: string
+		lineageTag: 2f11477f-96c7-4f13-a544-c5009ce9cd69
+		sourceLineageTag: stationary_cases_yr
+		summarizeBy: none
+		sourceColumn: stationary_cases_yr
+
+		annotation SummarizationSetBy = Automatic
+
+	column ambulatory_yr
+		dataType: string
+		lineageTag: c631cb42-4515-4c5e-8ffd-960d468ff758
+		sourceLineageTag: ambulatory_yr
+		summarizeBy: none
+		sourceColumn: ambulatory_yr
+
+		annotation SummarizationSetBy = Automatic
+
+	column ed_visits_yr
+		dataType: int64
+		formatString: 0
+		lineageTag: 7000c596-d2b0-489f-977a-85eae762705f
+		sourceLineageTag: ed_visits_yr
+		summarizeBy: sum
+		sourceColumn: ed_visits_yr
+
+		annotation SummarizationSetBy = Automatic
+
+	column org_axis
+		dataType: string
+		lineageTag: 6c997c2b-d7be-43c0-9fd2-75a727dafc52
+		sourceLineageTag: org_axis
+		summarizeBy: none
+		sourceColumn: org_axis
+
+		annotation SummarizationSetBy = Automatic
+
+	column residency_tag
+		dataType: string
+		lineageTag: 968a5ab3-561f-4aab-94ca-981669e46207
+		sourceLineageTag: residency_tag
+		summarizeBy: none
+		sourceColumn: residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column source
+		dataType: string
+		lineageTag: 0a305c88-6222-4131-9e9e-d0a85b01ed01
+		sourceLineageTag: source
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: 62e69278-c72c-4a0a-94a7-37e7e6caf227
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 03cd7b9c-7edd-4dd0-a6e9-f3e2612382de
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: b9066c4e-9ca1-4904-91b9-5636ec2d18c5
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: cc9441e3-3428-49e8-80a3-47e1f15cf8ba
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: f07333fe-5240-4484-ae5f-1cc88337fc6a
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: 58fd546e-6206-48fb-b0c5-08ca1c2372c5
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 39c3a035-d719-4694-b136-3630a3f83393
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_hospital = entity
+		mode: directLake
+		source
+			entityName: dim_hospital
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

@@ -1,0 +1,58 @@
+relationship f7aeef89-8ff3-424b-4459-d2724f184f98
+	fromColumn: fact_capacity_baseline.hospital_id
+	toColumn: dim_hospital.hospital_id
+
+relationship 0c6c1009-87fc-cf40-ad78-73a365101644
+	isActive: false
+	fromColumn: dim_specialty.hospital_id
+	toColumn: dim_hospital.hospital_id
+
+relationship dae76344-f11b-deab-8428-2a8cc0eb61f5
+	fromColumn: dim_hospital_service.hospital_id
+	toColumn: dim_hospital.hospital_id
+
+relationship 4298bb25-a1f1-7d2e-623d-cd6a247a9a83
+	fromColumn: dim_ward_capacityunit.hospital_id
+	toColumn: dim_hospital.hospital_id
+
+relationship 66604fa0-b4a2-5fc0-e166-ec1138be4e61
+	fromColumn: map_disease_treatment_specialty_service.hospital_id
+	toColumn: dim_hospital.hospital_id
+
+relationship e5163607-023e-0575-9f11-b38e3e9a50cf
+	fromColumn: or_schedule.hospitalId
+	toColumn: dim_hospital.hospital_id
+
+relationship dc8e40e0-90a3-86b6-3068-22a75054dbbf
+	fromColumn: or_case.hospitalId
+	toColumn: dim_hospital.hospital_id
+
+relationship 5dd6daff-005b-bf44-6c7b-869f63b6e6e1
+	fromColumn: dim_hospital_service.specialty_id
+	toColumn: dim_specialty.specialty_id
+
+relationship f35fbfed-a930-275a-233a-288a012e0943
+	fromColumn: dim_ward_capacityunit.specialty_id
+	toColumn: dim_specialty.specialty_id
+
+relationship de5b757c-df23-a32b-ca3d-2082cc456e26
+	fromColumn: map_disease_treatment_specialty_service.specialty_id
+	toColumn: dim_specialty.specialty_id
+
+relationship 6567d94a-ac78-83e1-9258-ec8266cafdc0
+	fromColumn: map_disease_treatment_specialty_service.disease_id
+	toColumn: dim_disease.disease_id
+
+relationship 1fd4c6df-dd77-9d2a-f44c-5c1120581982
+	fromColumn: map_disease_treatment_specialty_service.treatment_id
+	toColumn: dim_treatment.treatment_id
+
+relationship 01add3d5-b965-71ff-8b47-a5eb6cd981db
+	fromColumn: map_disease_treatment_specialty_service.drg_code
+	toColumn: dim_drg.drg_code
+
+relationship 88bd2daa-cfc4-8f9e-e15a-2a829b3e9608
+	isActive: false
+	fromColumn: or_case.orSlotId
+	toColumn: or_schedule.orSlotId
+
