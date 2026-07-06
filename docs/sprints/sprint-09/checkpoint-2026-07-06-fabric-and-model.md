@@ -31,7 +31,7 @@ The Direct Lake semantic model **`capacity-dashboard`** (id `08245059-a6e7-489f-
 
 ### 2.1 Azure ARM properties (via `az resource show`)
 
-```
+```text
 name        : fabricihzhhpfsit
 location    : West US 2 (ADR-0013 demo scope; Swiss-region GA target = switzerlandnorth)
 sku.name    : F2
@@ -66,7 +66,7 @@ The PROD F2 capacity is not yet deployed. When it is (currently `enableFoundryHo
 
 ### 3.1 ARM shape
 
-```
+```text
 name             : fabricihzhhpfprod
 location         : westus2 (deferred to switzerlandnorth once Fabric IQ GA lands)
 sku.name         : F2         (can scale up to F4/F8 for real prod loads)
@@ -237,7 +237,7 @@ Author these 14 relationships in Model view — all **1:*, cross-filter Single, 
 | 9 | `dim_ward_capacityunit` | `specialty_id` | Active |
 | 10 | `map_disease_treatment_specialty_service` | `specialty_id` | Active |
 
-**Cross-domain map — 3 dims → map**
+#### Cross-domain map — 3 dims → map
 
 | # | From (dim) → | To (map) FK | Status |
 | --- | ----------------------- | ---------------- | ------ |
@@ -245,7 +245,7 @@ Author these 14 relationships in Model view — all **1:*, cross-filter Single, 
 | 12 | `dim_treatment[treatment_id]` → | `treatment_id` | Active |
 | 13 | `dim_drg[drg_code]` → | `drg_code` | Active |
 
-**OR self-join**
+#### OR self-join
 
 | # | From (fact) → | To (fact) FK | Status |
 | --- | -------------------- | ------------- | ------ |
