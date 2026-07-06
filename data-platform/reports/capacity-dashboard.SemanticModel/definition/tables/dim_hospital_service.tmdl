@@ -1,0 +1,138 @@
+table dim_hospital_service
+	lineageTag: f7e6f2cf-c68a-4e84-926f-6cf65bbf3169
+	sourceLineageTag: [gold].[dim_hospital_service]
+
+	column service_id
+		dataType: string
+		lineageTag: 8aa5ccf8-f773-4286-a44c-da4a53dd54ea
+		sourceLineageTag: service_id
+		summarizeBy: none
+		sourceColumn: service_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_id
+		dataType: string
+		lineageTag: e4d6d35e-6b04-4df5-882e-5aa0877b1d3c
+		sourceLineageTag: hospital_id
+		summarizeBy: none
+		sourceColumn: hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 2338fe96-16da-48c8-a13b-8b5dca1b32ed
+		sourceLineageTag: name
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column service_type
+		dataType: string
+		lineageTag: 92a5dc23-6aa8-4a39-b699-3aded1870617
+		sourceLineageTag: service_type
+		summarizeBy: none
+		sourceColumn: service_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column specialty_id
+		dataType: string
+		lineageTag: e226c3f5-007c-42db-95d9-eda6f8119eec
+		sourceLineageTag: specialty_id
+		summarizeBy: none
+		sourceColumn: specialty_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_quality
+		dataType: string
+		lineageTag: 94464780-b012-423e-a6b1-fa6952833a9c
+		sourceLineageTag: data_quality
+		summarizeBy: none
+		sourceColumn: data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column source
+		dataType: string
+		lineageTag: ff6c6f87-b4d6-44ff-8042-48b469c1b1f1
+		sourceLineageTag: source
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: e89f38cd-e791-4f0c-bc27-cd7b74a31d11
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 4c7353b4-d87d-433e-a893-097ec9ddf4cf
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: 0785cc3e-ffda-4c22-b5e4-958969d5d848
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: b8c04ba3-0d39-457d-9c5d-8854910eadc9
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: f147ca79-1626-4751-8816-9b4d30452814
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: 3ce82c79-7944-46ca-94b8-95f9d6c79aa1
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c5cfe4af-8717-4cd6-b758-cb1c9077aa14
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_hospital_service = entity
+		mode: directLake
+		source
+			entityName: dim_hospital_service
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

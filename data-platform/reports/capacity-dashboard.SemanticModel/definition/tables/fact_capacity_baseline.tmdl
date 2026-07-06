@@ -1,0 +1,131 @@
+table fact_capacity_baseline
+	lineageTag: a8105d54-8402-4236-a0bd-60287846babc
+	sourceLineageTag: [gold].[fact_capacity_baseline]
+
+	column hospital_id
+		dataType: string
+		lineageTag: eabce407-8241-44e8-962b-a52f60812252
+		sourceLineageTag: hospital_id
+		summarizeBy: none
+		sourceColumn: hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column metric
+		dataType: string
+		lineageTag: dcb065b0-429c-4052-8c45-4c09dc8b1ff0
+		sourceLineageTag: metric
+		summarizeBy: none
+		sourceColumn: metric
+
+		annotation SummarizationSetBy = Automatic
+
+	column value
+		dataType: double
+		lineageTag: fe82c905-e577-4e08-9200-5f7da4273259
+		sourceLineageTag: value
+		summarizeBy: sum
+		sourceColumn: value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column unit
+		dataType: string
+		lineageTag: 666f832f-03f5-47a2-8589-8ce1d1f1f471
+		sourceLineageTag: unit
+		summarizeBy: none
+		sourceColumn: unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column method
+		dataType: string
+		lineageTag: 3dd84f2b-62ab-4a35-a880-63ae0c4502e1
+		sourceLineageTag: method
+		summarizeBy: none
+		sourceColumn: method
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_quality
+		dataType: string
+		lineageTag: 67bee5a9-5f60-4633-8c5b-17c0a07f3405
+		sourceLineageTag: data_quality
+		summarizeBy: none
+		sourceColumn: data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: efd08250-561c-4e34-8e59-068c12307b92
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 9eeda574-3c5d-4ecb-a968-45e20bcb0f4e
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: af53e4ef-1204-4ae8-816e-852db61f4f32
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: 2963526c-4d9a-4262-9d2d-5a605a679cff
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: e2ddcb16-2fd1-44bf-97f4-b9d777265a72
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: 433556c2-9b6d-47fa-b7ef-061ddf1a16d0
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8e9be8f5-0cec-4b1b-883b-1c4e67ce976d
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_capacity_baseline = entity
+		mode: directLake
+		source
+			entityName: fact_capacity_baseline
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

@@ -1,143 +1,26 @@
-// capacity-dashboard semantic model — SKELETON
-// Full model is portal-authored. This file contains pre-authored DAX measures per design spec §6.3.
-// See README.md for the manual authoring workflow.
-
 model Model
-    culture: 'en-US'
-    defaultPowerBIDataSourceVersion: powerBI_V3
-    discourageImplicitMeasures
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-CH
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
 
-/// --- Bed / capacity (Page 1) — grounds on hcp:Bed, hcp:hasState, hcp:CapacityState, hcp:Ward, hcp:ForecastOutput
-table Measures
-    partition Measures = calculated
-        source = ...
+annotation PBI_QueryOrder = ["DirectLake - lh_ihzhhpf_sit"]
 
-    // FR-CX-001 — grounds on hcp:Bed + hcp:hasState=Occupied
-    measure 'Occupancy %' = DIVIDE([Beds Occupied], [Beds Total]) * 100
-        formatString: 0.0"%"
-        annotation Grounds = "hcp:Bed + hcp:hasState=Occupied"
+annotation __PBI_TimeIntelligenceEnabled = 1
 
-    // FR-CX-001 — grounds on hcp:Bed + hcp:CapacityState
-    measure 'Beds Free' = [Beds Total] - [Beds Occupied]
-        formatString: 0
-        annotation Grounds = "hcp:Bed + hcp:CapacityState"
+annotation PBI_ProTooling = ["RemoteModeling","DirectLakeOnOneLakeCreatedInDesktop"]
 
-    // FR-CX-001 — grounds on hcp:Ward.bedCount
-    measure 'Beds Total' = SUM(dim_ward_capacityunit[bed_count])
-        formatString: 0
-        annotation Grounds = "hcp:Ward.bedCount"
-
-    // FR-FC-005 — grounds on hcp:ForecastOutput.expected_demand
-    measure 'Required Capacity' = AVERAGE(gold_forecast_output[expected_demand])
-        formatString: 0.0
-        annotation Grounds = "hcp:ForecastOutput.expected_demand"
-
-    // FR-CX-002 — grounds on hcp:Encounter.admissionType
-    measure 'ED Arrivals/hr' = DIVIDE(CALCULATE(COUNT(encounter[eventId]), encounter[admissionType]="emergency"), 24)
-        formatString: 0.0
-        annotation Grounds = "hcp:Encounter.admissionType"
-
-    // FR-FC-006 — grounds on hcp:ForecastOutput (72h window)
-    measure 'Forecast Peak (72h)' = MAXX(FILTER(gold_forecast_output, [validFor] BETWEEN NOW() AND NOW()+72), [expected_demand])
-        formatString: 0.0
-        annotation Grounds = "hcp:ForecastOutput"
-
-    // NFR-DQ-002 — grounds on _data_quality field
-    measure 'Data Quality Score' = DIVIDE(CALCULATE(COUNT([id]), [_data_quality]="explicit"), COUNT([id])) * 100
-        formatString: 0.0"%"
-        annotation Grounds = "_data_quality"
-
-    // --- OR (Page 2) — grounds on hcp:ORSlot, hcp:BedAssignment
-    // FR-CX-004 — grounds on hcp:ORSlot
-    measure 'First-Case On-Time %' =
-        DIVIDE(
-            CALCULATE(COUNT(or_case[caseId]), or_case[isFirstCase]=TRUE, or_case[actualStart] <= or_case[plannedStart]),
-            CALCULATE(COUNT(or_case[caseId]), or_case[isFirstCase]=TRUE)
-        ) * 100
-        formatString: 0.0"%"
-        annotation Grounds = "hcp:ORSlot"
-
-    // FR-CX-004 — grounds on hcp:ORSlot cancellation
-    measure 'Short-Notice Cancellation %' =
-        DIVIDE(
-            CALCULATE(COUNT(or_case[caseId]), or_case[cancellationLeadTimeHours] < 24),
-            COUNT(or_case[caseId])
-        ) * 100
-        formatString: 0.0"%"
-        annotation Grounds = "hcp:ORSlot.cancellation"
-
-    // FR-CX-004 — grounds on hcp:ORSlot turnover
-    measure 'Avg Turnover Minutes' = AVERAGE(or_case[turnoverMinutes])
-        formatString: 0
-        annotation Grounds = "hcp:ORSlot.turnover"
-
-    // FR-CX-004 — grounds on hcp:ORSlot idle time
-    measure 'Idle Slot Minutes' = SUM(or_slot[idleMinutes])
-        formatString: 0
-        annotation Grounds = "hcp:ORSlot.idle"
-
-    // FR-CX-004 — grounds on hcp:ORSlot overrun
-    measure 'Over-Run Minutes' = SUM(or_case[overRunMinutes])
-        formatString: 0
-        annotation Grounds = "hcp:ORSlot.overrun"
-
-    // FR-CX-004 — grounds on hcp:ORSlot utilization
-    measure 'OR Utilization %' =
-        DIVIDE(
-            SUM(or_case[actualDurationMinutes]),
-            SUM(or_slot[plannedMinutes])
-        ) * 100
-        formatString: 0.0"%"
-        annotation Grounds = "hcp:ORSlot.utilization"
-
-table Beds Occupied
-    // Helper measure — used by Occupancy %
-    measure 'Beds Occupied' =
-        CALCULATE(COUNT(fact_bed_state[bedId]), fact_bed_state[state]="occupied")
-        annotation Grounds = "hcp:Bed + hcp:hasState=Occupied"
-
-/// --- ADR-0016 Gate 4: Row-Level Security PHI gate (Sprint 09 v2 — T5.6)
-/// Every role blocks any column with annotation [phi]="true" (empty set on query).
-/// The scaffold filter `IF([_data_quality]="phi", FALSE, TRUE)` is deliberately
-/// non-matching (silver values ∈ {explicit, inferred, missing} per notebook 02);
-/// portal-authored TMDL export replaces it with per-column PHI-tag filters.
-/// See docs/superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md §6.5.
-
-role BedOps
-    modelPermission: read
-    /// PHI columns return empty via table filter on _data_quality != 'phi'
-    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission fact_encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    annotation PurposeLimitation = "Bed operations — no PHI exposure per ADR-0016 gate 4"
-
-role ORPlanner
-    modelPermission: read
-    tablePermission or_case = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission or_schedule = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    annotation PurposeLimitation = "OR planning — no PHI exposure per ADR-0016 gate 4"
-
-role Analyst
-    modelPermission: read
-    /// Broadest read scope but still blocks PHI-tagged rows
-    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission fact_encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission fact_bed_state = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission fact_bed_assignment = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission fact_forecast_output = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission fact_or_schedule = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    tablePermission fact_or_case = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    annotation PurposeLimitation = "Broad analytics — no PHI exposure per ADR-0016 gate 4"
-
-role SemanticOwner
-    modelPermission: read
-    /// Even model owner sees no PHI rows
-    tablePermission encounter = "IF([_data_quality]=\"phi\", FALSE, TRUE)"
-    annotation PurposeLimitation = "Semantic model steward — no PHI exposure per ADR-0016 gate 4"
-
-/// Manual step for portal-authored model:
-/// 1. Tag every PHI column with annotation [phi]="true".
-/// 2. Convert the IF([_data_quality]="phi", ...) filter above to iterate PHI columns:
-///    e.g. NOT(ISBLANK(FIND(SELECTEDVALUE(columnannotation), "phi=true", 1, 0)))
-/// 3. Or use per-column DAX filters if TMDL syntax permits.
+ref table or_schedule
+ref table or_case
+ref table dim_hospital
+ref table dim_specialty
+ref table dim_ward_capacityunit
+ref table map_disease_treatment_specialty_service
+ref table dim_treatment
+ref table fact_capacity_baseline
+ref table dim_hospital_service
+ref table dim_disease
+ref table dim_drg
 

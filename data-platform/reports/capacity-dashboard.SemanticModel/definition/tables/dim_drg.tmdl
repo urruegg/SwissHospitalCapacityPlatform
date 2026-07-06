@@ -1,0 +1,133 @@
+table dim_drg
+	lineageTag: a4305ebb-f82d-47de-8b33-5f45a31ccc9e
+	sourceLineageTag: [gold].[dim_drg]
+
+	column drg_code
+		dataType: string
+		lineageTag: bc2b68ef-ef7a-4e4a-8482-d46d13a614ed
+		sourceLineageTag: drg_code
+		summarizeBy: none
+		sourceColumn: drg_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column description
+		dataType: string
+		lineageTag: 3adfe323-1e83-4d56-b93a-7bb2885e1b30
+		sourceLineageTag: description
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = Automatic
+
+	column system
+		dataType: string
+		lineageTag: 5457cff0-e04d-43fb-b396-36d6895141d5
+		sourceLineageTag: system
+		summarizeBy: none
+		sourceColumn: system
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_weight
+		dataType: double
+		lineageTag: 7d325bd2-d66c-467e-884f-44f89ca8cd9b
+		sourceLineageTag: cost_weight
+		summarizeBy: none
+		sourceColumn: cost_weight
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column mean_los_norm
+		dataType: double
+		lineageTag: 3956e8af-2b3c-4544-aa7b-7c788de5f6cf
+		sourceLineageTag: mean_los_norm
+		summarizeBy: none
+		sourceColumn: mean_los_norm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column disease_id
+		dataType: string
+		lineageTag: 5e4af0af-2546-4838-9f2f-772aceef129d
+		sourceLineageTag: disease_id
+		summarizeBy: none
+		sourceColumn: disease_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: 9f141a77-2b45-48a3-ac70-46d32d6dbb59
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 605597a7-0476-4d99-b9b9-db224ba63668
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: 339a62fc-4a08-4a17-a845-2b1cffb1fc20
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: d61a7702-ad34-4121-a18d-a4bcf645cc73
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: a9479327-194d-4422-a6e0-8d9f30ea3201
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: 6a5ab396-6731-4425-9d57-2805b31e4323
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: bfad722d-a731-4cd2-8b42-6ce6bcc44229
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_drg = entity
+		mode: directLake
+		source
+			entityName: dim_drg
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

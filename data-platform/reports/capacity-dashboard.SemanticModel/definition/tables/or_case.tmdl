@@ -1,0 +1,226 @@
+table or_case
+	lineageTag: 61b127d2-cebe-4eb4-bf45-d2a7c61a7f47
+	sourceLineageTag: [gold].[or_case]
+
+	measure 'Over-Run Minutes' = SUM(or_case[overrunMinutes])
+		formatString: 0
+		lineageTag: e2ad3711-a3a7-4a16-ab36-40a5f7280065
+
+		changedProperty = Name
+
+	measure 'OR Utilization %' = DIVIDE(SUM(or_case[actualDurationMinutes]), SUM(or_schedule[plannedDurationMinutes])) * 100
+		formatString: 0.0
+		lineageTag: 37bcabc1-57c6-4e49-9042-f854e8d04d75
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure 'Data Quality Score (Cases)' = DIVIDE(CALCULATE(COUNTROWS(or_case), or_case[_data_quality] = "explicit"), COUNTROWS(or_case)) * 100
+		formatString: 0.0
+		lineageTag: 3055c3ef-79fc-4329-a4ae-3d7d094d0087
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	column _data_quality
+		dataType: string
+		lineageTag: 9b09e3bb-5c9c-4346-80b9-e074c010ff63
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column _ingested_at
+		dataType: string
+		lineageTag: 76941331-df7f-419d-9800-7c923fa16c9a
+		sourceLineageTag: _ingested_at
+		summarizeBy: none
+		sourceColumn: _ingested_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f11e82d5-ed33-4b7c-ac3c-743481613f2f
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: 3fa74554-a29b-426f-888c-d2410a4e7de0
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _source_system
+		dataType: string
+		lineageTag: 76f293c0-aabc-42f7-ad3c-ef8eaa2ba7c1
+		sourceLineageTag: _source_system
+		summarizeBy: none
+		sourceColumn: _source_system
+
+		annotation SummarizationSetBy = Automatic
+
+	column actualDurationMinutes
+		dataType: int64
+		formatString: 0
+		lineageTag: 6196fab7-9fd5-4ccc-a86b-da59c051116d
+		sourceLineageTag: actualDurationMinutes
+		summarizeBy: sum
+		sourceColumn: actualDurationMinutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column asOfTimestamp
+		dataType: string
+		lineageTag: 224fd745-b677-470e-858e-108c5f44b86d
+		sourceLineageTag: asOfTimestamp
+		summarizeBy: none
+		sourceColumn: asOfTimestamp
+
+		annotation SummarizationSetBy = Automatic
+
+	column cancellationReason
+		dataType: string
+		lineageTag: 56caf378-4b6c-4b14-9166-576360b9292b
+		sourceLineageTag: cancellationReason
+		summarizeBy: none
+		sourceColumn: cancellationReason
+
+		annotation SummarizationSetBy = Automatic
+
+	column caseEventId
+		dataType: string
+		lineageTag: 4226983a-1be4-44f9-9b62-c9aa96839829
+		sourceLineageTag: caseEventId
+		summarizeBy: none
+		sourceColumn: caseEventId
+
+		annotation SummarizationSetBy = Automatic
+
+	column caseId
+		dataType: string
+		lineageTag: 97b9e0e1-0238-4f02-a2ab-83a3567506b5
+		sourceLineageTag: caseId
+		summarizeBy: none
+		sourceColumn: caseId
+
+		annotation SummarizationSetBy = Automatic
+
+	column contractId
+		dataType: string
+		lineageTag: 4700e225-e64e-441b-9ed4-8a8ca35dbb9d
+		sourceLineageTag: contractId
+		summarizeBy: none
+		sourceColumn: contractId
+
+		annotation SummarizationSetBy = Automatic
+
+	column dataResidencyRegion
+		dataType: string
+		lineageTag: b2c57a51-977f-46b0-8a14-fef832c09311
+		sourceLineageTag: dataResidencyRegion
+		summarizeBy: none
+		sourceColumn: dataResidencyRegion
+
+		annotation SummarizationSetBy = Automatic
+
+	column encounterId
+		dataType: string
+		lineageTag: a2eed9d4-d324-4e24-a309-c5eccdec1375
+		sourceLineageTag: encounterId
+		summarizeBy: none
+		sourceColumn: encounterId
+
+		annotation SummarizationSetBy = Automatic
+
+	column eventTimestamp
+		dataType: string
+		lineageTag: 85bc95f5-2dfe-4332-93d8-90ada8dad5e4
+		sourceLineageTag: eventTimestamp
+		summarizeBy: none
+		sourceColumn: eventTimestamp
+
+		annotation SummarizationSetBy = Automatic
+
+	column eventType
+		dataType: string
+		lineageTag: 1e844720-4fc3-4ab1-a12c-e6a864da62ec
+		sourceLineageTag: eventType
+		summarizeBy: none
+		sourceColumn: eventType
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospitalId
+		dataType: string
+		lineageTag: ca4cc01f-0c8c-43b0-a0ca-5b9f622ff897
+		sourceLineageTag: hospitalId
+		summarizeBy: none
+		sourceColumn: hospitalId
+
+		annotation SummarizationSetBy = Automatic
+
+	column orSlotId
+		dataType: string
+		lineageTag: 0bceadc3-ddde-445e-88f6-a7dbd2112348
+		sourceLineageTag: orSlotId
+		summarizeBy: none
+		sourceColumn: orSlotId
+
+		annotation SummarizationSetBy = Automatic
+
+	column overrunMinutes
+		dataType: int64
+		formatString: 0
+		lineageTag: d3fb03cb-a595-44a0-827c-3baa49acdfae
+		sourceLineageTag: overrunMinutes
+		summarizeBy: sum
+		sourceColumn: overrunMinutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column plannedDurationMinutes
+		dataType: int64
+		formatString: 0
+		lineageTag: 7e1cf9c2-cfce-4bdf-9601-a30654fb5f32
+		sourceLineageTag: plannedDurationMinutes
+		summarizeBy: sum
+		sourceColumn: plannedDurationMinutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column purposeTag
+		dataType: string
+		lineageTag: ec1efd8c-133b-41d3-9255-5a1630ee55c7
+		sourceLineageTag: purposeTag
+		summarizeBy: none
+		sourceColumn: purposeTag
+
+		annotation SummarizationSetBy = Automatic
+
+	column turnoverPredecessorCaseId
+		dataType: string
+		lineageTag: 08ed01dc-5dd9-447f-9783-c2f4fc63b729
+		sourceLineageTag: turnoverPredecessorCaseId
+		summarizeBy: none
+		sourceColumn: turnoverPredecessorCaseId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition or_case = entity
+		mode: directLake
+		source
+			entityName: or_case
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+
