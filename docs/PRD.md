@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.5.0 |
+| **Date** | 2026-07-06 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.3.0 (Sprint 05 CAF/WAF baseline cross-references) |
+| **Previous Version** | 1.4.0 (added `FR-VIZ-*` + `NFR-GOV-*` per ADR-0018) |
 
 ## Purpose
 
@@ -138,6 +138,15 @@ Sprint 09 deltas per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-g
 | `FR-GOV-ONT-002` | Ontology changes shall follow an **OBO-inspired semantic change workflow** (proposal → domain-owner review → versioned release → downstream impact check), mirroring the data-contract breaking-change control in `NFR-MAINT-002`. |
 | `FR-GOV-ONT-003` | The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build. |
 
+### I) Visualization And Dashboards (Sprint 09 T5)
+
+Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-ids.md). Referenced from [Sprint 09 v2 design spec §7.7](superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md#77-traceability).
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-VIZ-001` | The platform shall provide an operational **bed-capacity dashboard page** exposing current occupancy, forecast pressure windows, and data-quality signals, aligned with `FR-CX-005`. |
+| `FR-VIZ-002` | The platform shall provide an operational **OR-steering dashboard page** exposing case-level utilisation, first-case on-time performance, cancellation, and idle-slot metrics, aligned with `FR-CX-005`. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -222,6 +231,19 @@ Sprint 09 deltas per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-g
 | -- | ----------- |
 | `NFR-ONT-001` | The ontology (reference layer OWL/RDF + operational layer Fabric IQ + crosswalk) shall be **versioned, governed and promoted as a first-class asset** with DEV/SIT/PROD gates, an explicit reference↔operational crosswalk artefact (`docs/ontology/crosswalk.md`), and a **CI conformance check** enforcing `FR-GOV-ONT-003`. Extends `NFR-MAINT-002`. |
 
+### I) Governance And Audit (Sprint 09 T5)
+
+Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-ids.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-GOV-001` | The platform shall record change-management traceability for semantic-model, dashboard, and agent artefacts (aligns with `FR-GOV-001`). |
+| `NFR-GOV-002` | The platform shall support audit-review workflows for governance evidence artefacts (aligns with `FR-GOV-004`). |
+| `NFR-GOV-003` | The dashboard consumption path shall enforce role-scoped filtering that prevents PHI-tagged column exposure to any non-owner role (extends [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) gate 4). |
+| `NFR-GOV-004` | Semantic-model and dashboard artefacts shall be round-trippable to source-controlled TMDL/PBIP such that any deployed state can be replayed from repository content alone. |
+| `NFR-GOV-005` | Governance evidence artefacts shall be co-located with the sprint or ADR that produced them under `docs/sprints/*/evidence/` or `docs/adr/*.md`. |
+| `NFR-GOV-006` | Every dashboard visual shall carry per-visual traceability back to its underlying semantic-model measure and its ontology-grounded source (`hcp:*` entities), aligned with `FR-CX-006` and `FR-ONT-004`. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -243,6 +265,8 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md`](adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md) *(supersedes [`0002`](adr/0002-defer-fabric-iq-ontology-from-mvp.md))* | `FR-ONT-001` to `FR-ONT-007`, `FR-GOV-ONT-001` to `FR-GOV-ONT-003`, `NFR-ONT-001` |
 | [`docs/reviews/2026-07-01-ama-hcc-northstar-review.md`](reviews/2026-07-01-ama-hcc-northstar-review.md) *(source review, §5.1 and §5.8)* | `FR-ONT-001` to `FR-ONT-007`, `FR-GOV-ONT-001` to `FR-GOV-ONT-003`, `NFR-ONT-001` |
 | [`docs/OPERATIONS.md`](OPERATIONS.md) *(v1.4.0 semantic-owner RACI + Live Risk Register)* | `FR-GOV-ONT-001`, `NFR-ONT-001` (partial — owner named; workflow + CI implementation pending) |
+| [`docs/sprints/sprint-10-e2e-pipeline-and-dashboard-completion.md`](sprints/sprint-10-e2e-pipeline-and-dashboard-completion.md) *(Sprint 10 charter)* | `FR-VIZ-001` to `FR-VIZ-002`, `NFR-GOV-001` to `NFR-GOV-006`, `FR-CX-005`, `FR-DATA-005`, `FR-DATA-008`, `FR-GOV-001`, `FR-GOV-004`, `FR-ONT-004`, `FR-ONT-006` |
+| [`docs/adr/0018-add-fr-viz-and-nfr-gov-ids.md`](adr/0018-add-fr-viz-and-nfr-gov-ids.md) *(formalises drift from Sprint 09 v2 design spec §7.7)* | `FR-VIZ-001` to `FR-VIZ-002`, `NFR-GOV-001` to `NFR-GOV-006` |
 | [`docs/sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md`](sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md) *(recovered draft — pre-refresh)* | `FR-ONT-001` to `FR-ONT-007` (MVO scope), `NFR-ONT-001` (target implementation slot) |
 
 ## Assumptions To Validate In Implementation Planning

@@ -678,6 +678,8 @@ flowchart LR
 | T5 Dashboard | `FR-CX-005`, `FR-VIZ-001..002`, `NFR-GOV-003`, `NFR-GOV-006`, ADR-0016 gate 4 |
 | Cross-cutting | `NFR-MAINT-002`, `NFR-MAINT-005`, `NFR-COMP-004..010`, `NFR-SEC-001..004` |
 
+> **Provenance for `FR-VIZ-*` and `NFR-GOV-*` IDs.** These IDs were originally referenced here without corresponding PRD entries. They were formalised in [`docs/PRD.md`](../../PRD.md) v1.5.0 per [ADR-0018](../../adr/0018-add-fr-viz-and-nfr-gov-ids.md). See ADR for semantic content and rationale.
+
 ### 7.8 Sprint execution model
 
 1. `brainstorming` → this design spec (**complete**)
