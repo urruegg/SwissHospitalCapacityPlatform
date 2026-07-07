@@ -59,16 +59,18 @@ param fabricCapacityAdmins = [
 // Attaches Managed Identities + RBAC to the already-provisioned Foundry
 // resource `ai-ihzhhpf-sit` in westus2 per ADR-0013.
 //
-// Event Hub namespace/hub names are placeholders here because T2
-// (data-foundation Event Hubs) lives on branch `sprint-09-v2/t2-ingestion`
-// and has not merged yet. On this branch the Event Hub role assignments
-// will surface as unresolvable during `what-if` — expected until T2 merges.
-// Once T2 merges and the data-foundation module exposes hub outputs,
-// switch these to `readEnvironmentVariable`/module-output wiring.
+// Event Hub namespace + hub names updated 2026-07-07 per S10.15 root-cause
+// investigation. Previous placeholder values (`evh-ihzhhpf-sit` /
+// `evh-capacity-events-sit`) did not match the actual deployed resources
+// (the eventhubs module uses `uniqueString(sub, RG.id)` for the namespace
+// name and default `events` for the hub inside). Wiring via module output
+// (recommended long-term) requires a `main.bicep` refactor to conditionally
+// resolve the namespace name from the `data-foundation` module output when
+// `enableDataFoundationModule=true` — deferred to a future PR.
 param enableFoundryHostedAgents = true
 param foundryHostedAgentsLocation = 'westus2'
-param foundryHostedAgentsEventHubNamespace = 'evh-ihzhhpf-sit'
-param foundryHostedAgentsEventHubName = 'evh-capacity-events-sit'
+param foundryHostedAgentsEventHubNamespace = 'evh-ihzhhpf-sit-y26y'
+param foundryHostedAgentsEventHubName = 'events'
 param foundryHostedAgentsBmCopilotConsumerGroup = 'cg-bm-copilot-agent'
 param foundryHostedAgentsCsaConsumerGroup = 'cg-csa-agent'
 
