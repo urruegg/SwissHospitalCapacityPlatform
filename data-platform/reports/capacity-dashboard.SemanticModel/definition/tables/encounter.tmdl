@@ -1,0 +1,177 @@
+table encounter
+	lineageTag: 4e1b8a20-1e5c-4e2c-9df1-a4c39a2b7de1
+	sourceLineageTag: [gold].[encounter]
+
+	measure 'Active Encounters' = DISTINCTCOUNT(encounter[eventId])
+		formatString: #,0
+		lineageTag: 8f0aa3d0-c30b-4d64-b3e1-2c1c4a3d9e01
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	column eventKind
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d02
+		sourceLineageTag: eventKind
+		summarizeBy: none
+		sourceColumn: eventKind
+
+		annotation SummarizationSetBy = Automatic
+
+	column eventId
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d03
+		sourceLineageTag: eventId
+		summarizeBy: none
+		sourceColumn: eventId
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospitalId
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d04
+		sourceLineageTag: hospitalId
+		summarizeBy: none
+		sourceColumn: hospitalId
+
+		annotation SummarizationSetBy = Automatic
+
+	column simulatedAt
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d05
+		sourceLineageTag: simulatedAt
+		summarizeBy: none
+		sourceColumn: simulatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	column emittedAt
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d06
+		sourceLineageTag: emittedAt
+		summarizeBy: none
+		sourceColumn: emittedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	column simRunId
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d07
+		sourceLineageTag: simRunId
+		summarizeBy: none
+		sourceColumn: simRunId
+
+		annotation SummarizationSetBy = Automatic
+
+	column seed
+		dataType: int64
+		formatString: 0
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d08
+		sourceLineageTag: seed
+		summarizeBy: sum
+		sourceColumn: seed
+
+		annotation SummarizationSetBy = Automatic
+
+	column EventProcessedUtcTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d09
+		sourceLineageTag: EventProcessedUtcTime
+		summarizeBy: none
+		sourceColumn: EventProcessedUtcTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column PartitionId
+		dataType: int64
+		formatString: 0
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0a
+		sourceLineageTag: PartitionId
+		summarizeBy: sum
+		sourceColumn: PartitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column EventEnqueuedUtcTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0b
+		sourceLineageTag: EventEnqueuedUtcTime
+		summarizeBy: none
+		sourceColumn: EventEnqueuedUtcTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column _lineage_ref
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0c
+		sourceLineageTag: _lineage_ref
+		summarizeBy: none
+		sourceColumn: _lineage_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column _classification
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0d
+		sourceLineageTag: _classification
+		summarizeBy: none
+		sourceColumn: _classification
+
+		annotation SummarizationSetBy = Automatic
+
+	column _legal_basis
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0e
+		sourceLineageTag: _legal_basis
+		summarizeBy: none
+		sourceColumn: _legal_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column _retention_class
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0f
+		sourceLineageTag: _retention_class
+		summarizeBy: none
+		sourceColumn: _retention_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column _pseudonymisation_flag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d10
+		sourceLineageTag: _pseudonymisation_flag
+		summarizeBy: none
+		sourceColumn: _pseudonymisation_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _residency_tag
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d11
+		sourceLineageTag: _residency_tag
+		summarizeBy: none
+		sourceColumn: _residency_tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column _data_quality
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d12
+		sourceLineageTag: _data_quality
+		summarizeBy: none
+		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	partition encounter = entity
+		mode: directLake
+		source
+			entityName: encounter
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
+

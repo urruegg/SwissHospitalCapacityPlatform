@@ -23,4 +23,6 @@ ref table fact_capacity_baseline
 ref table dim_hospital_service
 ref table dim_disease
 ref table dim_drg
+ref table encounter
+ref table bed_assignment
 
