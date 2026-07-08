@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-08 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a |
+| **Previous Version** | 1.0.0 (added Sprint 10 T1 keep-alive override section) |
 
 Runbook for pausing and resuming Fabric F2 capacities in SIT and PROD environments per Sprint 09 v2.0.0 DX.2 and design spec [§4.8](../superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md).
 
@@ -79,6 +79,17 @@ await expect(page.getByText('Active')).toBeVisible({ timeout: 30_000 });
 ## GitHub Actions
 
 Manual dispatch via [`fabric-capacity-lifecycle.yml`](../../.github/workflows/fabric-capacity-lifecycle.yml) — pick action (`resume` / `suspend`) and environment (`sit` / `prod`). The workflow authenticates via OIDC using repo secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`.
+
+### Sprint 10 T1 keep-alive override (temporary)
+
+During Sprint 10 Track 1 (Eventstream + Custom Endpoint work under issue #108 / S10.1), SIT F2 must stay Active continuously so Fabric portal flows do not fail with `capacity is currently paused`.
+
+- Workflow: [`fabric-sit-keepalive.yml`](../../.github/workflows/fabric-sit-keepalive.yml)
+- Cadence: every 15 minutes (`*/15 * * * *`)
+- Behaviour: runs `Resume-FabricCapacity.ps1 -Environment sit` (idempotent — no-op when already Active)
+- Cost: F2 24×7 for ~4 weeks ≈ USD 200 max, acceptable per [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md) demo scope
+- Sunset: disable and delete this workflow when Sprint 10 T1 closes; tracked by the removal issue linked from the workflow header
+- Rollback: return to the default "resume → run → suspend" cost hygiene pattern documented in the *Cost hygiene expectations per environment* table above
 
 ## Verification checklist
 
