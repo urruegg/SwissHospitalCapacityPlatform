@@ -75,10 +75,18 @@ param foundryHostedAgentsBmCopilotConsumerGroup = 'cg-bm-copilot-agent'
 param foundryHostedAgentsCsaConsumerGroup = 'cg-csa-agent'
 
 // Sprint 09 v2 T3.7 — sim-capacity ACA producer. Enabled in SIT for the demo path.
-// EH namespace resolves from data-foundation module output when enableDataFoundationModule=true.
+// Sprint 10 T1 (ADR-0019): producer retargeted from Azure EH `evh-ihzhhpf-sit-y26y` /
+// `demand-encounters` to the Fabric Eventstream Custom Endpoint. The MCAPS tenant Modify
+// policy keeps `disableLocalAuth=true` on Azure EH namespaces, and Fabric's Azure EH
+// source connector only supports SAS today — so ingest via that path is impossible.
+// Values below come from workspace f3af9733-9503-4e92-98f9-a901d96f1c87 →
+// eventstream 7b65dfa1-c523-412f-93b2-a78eaa2788fa → source `capacity-events-source`.
+// Producer identity: id-ca-sim-capacity-ihzhhpf-sit (Entra objectId
+// b646f093-cbbc-496f-8a65-376b39ff04d3), Contributor on the workspace.
 param enableSimCapacityModule = true
 param simCapacityLocation = 'westus2'
-param simCapacityEventHubName = 'demand-encounters'
+param simCapacityEventHubNamespace = 'esehmwhyivddgq8acv3ghwv.servicebus.windows.net'
+param simCapacityEventHubName = 'esehmwhyivddgq8acv3ghwv_eh'
 param simCapacityDemoScope = true
 
 // Sprint 09 v2.0.0 T2.2 — Fabric Eventstream module (scaffold-only Bicep + REST-API post-deploy).
