@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.13.0 |
+| **Version** | 1.14.0 |
 | **Date** | 2026-07-08 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.12.0 (added 2 skills for silver-hardening M1.5: `e2e-medallion-architecture` + `spark-operations`) |
+| **Previous Version** | 1.13.0 (added §Skill discovery rule of engagement — trigger conditions, discovery order, evaluation checklist, PR shape, decision gate) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -92,6 +92,62 @@ git diff --stat .github/skills/
 ```
 
 Diff any changes and PR them like normal repo edits.
+
+## Skill discovery — rule of engagement (v1.14.0, 2026-07-08)
+
+When the agent hits a task poorly covered by the workspace skills catalog above (or by user-scoped Superpowers skills), the agent **discovers and proposes new skills** rather than reinventing patterns. New skills are never auto-installed — every install goes through a user-reviewed PR.
+
+### Trigger conditions (any one)
+
+1. Task requires domain expertise beyond what installed `SKILL.md` files cover (e.g. Fabric Real-Time Intelligence, Direct Lake optimisation, agent evaluation patterns)
+2. A failure pattern surfaces that a specialised skill would have prevented or diagnosed faster (e.g. today's `System_Cancelled_Session_Statements_Failed` on silver notebook → `spark-operations` skill installed via [PR #134](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/134))
+3. A public best-practice source (Microsoft Learn, ADR, GitHub best-practice repo) references a skill / plugin the agent doesn't have loaded
+4. User explicitly asks about additional skills
+
+### Discovery order (stop at first useful match)
+
+1. [`microsoft/skills-for-fabric`](https://github.com/microsoft/skills-for-fabric) — Fabric + Power BI + Real-Time Intelligence + Data Engineering
+2. [`PBI-Guy/Power-BI-Optimization-Skill`](https://github.com/PBI-Guy/Power-BI-Optimization-Skill) — DAX + model + report + Power Query + RLS deep dive
+3. User global skills at `~/.agents/skills/` and Superpowers marketplace at `~/.copilot/installed-plugins/superpowers-marketplace/superpowers/skills/`
+4. Microsoft's [`skills-for-*`](https://github.com/microsoft?q=skills-for) naming pattern on GitHub for additional catalogs
+5. Bundled agent-rule files in target repos (`.cursorrules`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) that may reference skills we haven't loaded
+
+### Evaluation checklist (before proposing install)
+
+- [ ] Skill directly targets the trigger problem OR upcoming milestone in the active sprint
+- [ ] Skill has a `SKILL.md` file with clear description + triggers + steps
+- [ ] Maturity is stable (not draft / experimental) OR the trigger is severe enough to accept preview risk
+- [ ] License is compatible with our MIT posture
+- [ ] No meaningful overlap with already-installed skills (or the PR body documents the reason for overlap)
+- [ ] Fits the current sprint scope (e.g. Sprint 10 M1..M4) — don't install skills for future sprints speculatively
+
+### PR shape for a proposed install
+
+- **Branch:** `sprint-XX/skill-<name>-install` (single) or `sprint-XX/skills-<theme>` (bundle)
+- **Files:** `.github/skills/<name>/*` + `AGENTS.md` row in the *Workspace-scoped skills* table + optional strategy spec entry
+- **Title:** `feat(skills): install <name> for <problem or milestone>`
+- **Body must include:**
+  - Source repo URL(s) with commit SHA / release tag pinned
+  - Trigger condition that surfaced the need
+  - Evaluation checklist all ticked with brief rationale per box
+  - Refresh command line snippet added to the *Skill refresh procedure* block in AGENTS.md
+- **Label:** `sprint-XX` plus (optional) `skills`
+
+### User decision gate
+
+- Every skill install requires user review + merge — the agent **does not** auto-install even when the trigger condition is clear
+- User may reject with reasons; agent then documents the non-install in AGENTS.md *NOT installed* list with rationale
+- **Emergency skip** allowed only when the missing skill blocks a live outage AND user pre-approves in the same thread with the phrase `approved-to-apply`
+
+### Removal / sunset
+
+- Skills that fall out of relevance move to the AGENTS.md *NOT installed* list at sprint retrospective
+- Physical deletion of `.github/skills/<name>/` is destructive and requires `approved-to-apply` in a dedicated hygiene PR
+
+### Precedent from this repo
+
+- [PR #133](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/133) — 5-skill install for Sprint 10 M1..M4 (proactive at user's request)
+- [PR #134](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/134) — 2-skill follow-up after failure trigger (silver `System_Cancelled_Session_Statements_Failed`) surfaced the need for `spark-operations` + `e2e-medallion-architecture`
 
 ---
 
