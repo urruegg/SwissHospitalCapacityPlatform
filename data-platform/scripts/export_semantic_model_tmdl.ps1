@@ -63,12 +63,20 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 # --- Contract constants (edit here if the model design changes; keep in sync with checkpoint doc) ---
-$script:ExpectedTotal    = 14
+$script:ExpectedTotal    = 16    # Sprint 09: 14; +2 from M2 (encounter→dim_hospital, bed_assignment→dim_hospital)
 $script:ExpectedInactive = 2
 $script:ExpectedInactivePairs = @(
     @{ Left = 'dim_specialty'; Right = 'dim_hospital' },
     @{ Left = 'or_case';       Right = 'or_schedule' }
 )
+
+# --- S10.11 verifier extension (Sprint 10 M4-A) ---
+# Measure count = sum of `measure` blocks across tables/*.tmdl
+# Role count    = number of role blocks under roles/*.tmdl (one per file, per TMDL convention)
+$script:ExpectedMeasures = 11   # Beds Total, Over-Run Minutes, OR Utilization %, Data Quality Score (Cases),
+                                # Idle-Slot Minutes, Active Encounters, Admissions, Discharged,
+                                # Currently In Hospital, Currently Assigned Beds, Occupancy %
+$script:ExpectedRoles    = 4    # BedOps, ORPlanner, Analyst, SemanticOwner (M3-A)
 
 # --- Fabric REST helpers -------------------------------------------------------------------------
 
@@ -360,7 +368,56 @@ function Test-RelationshipContract {
         exit 4
     }
 
-    Write-Host "OK: 14/12-Active/2-Inactive contract holds." -ForegroundColor Green
+    Write-Host "OK: 16/14-Active/2-Inactive contract holds." -ForegroundColor Green
+}
+
+function Test-MeasureAndRoleContract {
+    <#
+      S10.11 verifier extension (Sprint 10 M4-A).
+      Counts `measure` blocks across tables/*.tmdl and role files under roles/*.tmdl,
+      then asserts against the expected constants. Catches drift like the Sprint 09
+      portal round-trip that silently dropped 4 role scaffolds.
+    #>
+    param([Parameter(Mandatory)][string]$Path)
+
+    Write-Host ""
+    Write-Host "Verifying measure + role contract under: $Path" -ForegroundColor Cyan
+
+    $tablesDir = Join-Path $Path 'definition/tables'
+    $rolesDir  = Join-Path $Path 'definition/roles'
+
+    $measureCount = 0
+    if (Test-Path $tablesDir) {
+        $measureCount = (Get-ChildItem $tablesDir -Filter '*.tmdl' -File | ForEach-Object {
+            @(Select-String -Path $_.FullName -Pattern '^\s*measure\s+').Count
+        } | Measure-Object -Sum).Sum
+        if (-not $measureCount) { $measureCount = 0 }
+    }
+
+    $roleCount = 0
+    if (Test-Path $rolesDir) {
+        $roleCount = (Get-ChildItem $rolesDir -Filter '*.tmdl' -File).Count
+    }
+
+    Write-Host "  Measures: $measureCount  (expected $script:ExpectedMeasures)"
+    Write-Host "  Roles:    $roleCount  (expected $script:ExpectedRoles)"
+
+    $failures = @()
+    if ($measureCount -ne $script:ExpectedMeasures) {
+        $failures += "Measure count $measureCount != expected $script:ExpectedMeasures"
+    }
+    if ($roleCount -ne $script:ExpectedRoles) {
+        $failures += "Role count $roleCount != expected $script:ExpectedRoles"
+    }
+
+    if ($failures.Count -gt 0) {
+        Write-Host ""
+        Write-Host "MEASURE/ROLE CONTRACT FAILED:" -ForegroundColor Red
+        $failures | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+        exit 5
+    }
+
+    Write-Host "OK: $script:ExpectedMeasures measures + $script:ExpectedRoles roles contract holds." -ForegroundColor Green
 }
 
 # --- Entry point ---------------------------------------------------------------------------------
@@ -371,4 +428,5 @@ if (-not $VerifyOnly) {
 
 if (-not $SkipVerify) {
     Test-RelationshipContract -Path $OutputPath
+    Test-MeasureAndRoleContract -Path $OutputPath
 }

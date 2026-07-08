@@ -1,0 +1,95 @@
+name: ci-build-sim-capacity
+
+# T7 H4 (Sprint 10 M4-A) — rebuild + push the sim-capacity container image on
+# `apps/sim-capacity/**` changes.
+#
+# Scope: build + push only. The Bicep param `simCapacityContainerImage` in
+# `infra/environments/sit.bicepparam` is NOT bumped by this workflow — image
+# tag bumps are a deliberate manual review step, then the standard
+# `cd-infra-deploy-sit.yml` picks up the new tag.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/sim-capacity/**'
+      - '.github/workflows/ci-build-sim-capacity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  ACR_LOGIN_SERVER: 'cri75lbu5sj4hza.azurecr.io'
+  IMAGE_NAME: 'sim-capacity'
+
+jobs:
+  build-and-push:
+    name: Build + push sim-capacity image
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ACR login
+        shell: bash
+        run: |
+          set -euo pipefail
+          registry_name="${ACR_LOGIN_SERVER%.azurecr.io}"
+          az acr login --name "$registry_name"
+
+      - name: Compute image tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          short_sha="${GITHUB_SHA::7}"
+          echo "sha_tag=$short_sha" >> "$GITHUB_OUTPUT"
+          echo "full_sha=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${short_sha}" >> "$GITHUB_OUTPUT"
+          echo "full_latest=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest" >> "$GITHUB_OUTPUT"
+
+      - name: Docker build
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            -f apps/sim-capacity/Dockerfile \
+            -t "${{ steps.tags.outputs.full_sha }}" \
+            -t "${{ steps.tags.outputs.full_latest }}" \
+            .
+
+      - name: Docker push
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker push "${{ steps.tags.outputs.full_sha }}"
+          docker push "${{ steps.tags.outputs.full_latest }}"
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## sim-capacity image build"
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Commit: ${{ github.sha }} (short: ${{ steps.tags.outputs.sha_tag }})"
+            echo "- Registry: ${ACR_LOGIN_SERVER}"
+            echo "- Tags pushed:"
+            echo "  - \`${{ steps.tags.outputs.full_sha }}\`"
+            echo "  - \`${{ steps.tags.outputs.full_latest }}\`"
+            echo "- Status: ${{ job.status }}"
+            echo ""
+            echo "Bump \`simCapacityContainerImage\` in \`infra/environments/sit.bicepparam\` to \`${{ steps.tags.outputs.full_sha }}\` and merge to trigger \`cd-infra-deploy-sit.yml\` deploy."
+          } >> "$GITHUB_STEP_SUMMARY"
