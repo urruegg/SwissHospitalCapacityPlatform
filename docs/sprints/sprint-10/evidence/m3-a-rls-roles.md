@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-07-08 |
 | **Author** | Urs Rüegg |
 | **Status** | PASS (verification methodology gaps deferred to M3-B) |
-| **Previous Version** | n/a (initial) |
+| **Previous Version** | 1.0.0 (initial release) |
 
 **Milestone:** M3-A of the [Sprint 10 completion strategy](../../../superpowers/specs/2026-07-08-sprint-10-completion-strategy.md#m3--governance-in-parallel).
 **Charter deliverable:** S10.6 (partial — 4 RLS roles + column `[phi]` annotations authored + persisted).
