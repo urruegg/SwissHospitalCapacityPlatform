@@ -50,7 +50,7 @@ IF([_data_quality] = "phi", FALSE, TRUE)
 
 Sprint 09 v2.0.0's blocker was: role scaffolds authored in the skeleton TMDL were dropped during Fabric web-modeling portal round-trip. M3-A resolves this by pushing TMDL via `updateDefinition` and re-fetching via `getDefinition`:
 
-```
+```text
 Roles round-tripped:
   definition/roles/BedOps.tmdl
   definition/roles/ORPlanner.tmdl
