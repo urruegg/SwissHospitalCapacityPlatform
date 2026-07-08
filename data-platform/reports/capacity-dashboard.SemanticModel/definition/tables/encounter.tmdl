@@ -201,6 +201,8 @@ table encounter
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation phi = true
+
 	column status
 		dataType: string
 		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d41
