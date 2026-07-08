@@ -1,0 +1,65 @@
+name: verify-semantic-model
+
+# S10.12 CI merge gate (Sprint 10 M4-C) — runs the S10.11 verifier on any PR
+# touching the capacity-dashboard semantic model definition. Blocks merge if
+# the relationship / measure / role contract drifts.
+#
+# The verifier itself lives in data-platform/scripts/export_semantic_model_tmdl.ps1
+# and is exercised in -VerifyOnly mode so no Fabric REST access is required —
+# runs against the TMDL as committed on the PR branch.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data-platform/reports/capacity-dashboard.SemanticModel/**'
+      - 'data-platform/scripts/export_semantic_model_tmdl.ps1'
+      - '.github/workflows/verify-semantic-model.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'data-platform/reports/capacity-dashboard.SemanticModel/**'
+      - 'data-platform/scripts/export_semantic_model_tmdl.ps1'
+      - '.github/workflows/verify-semantic-model.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify semantic model contract
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure PowerShell available
+        shell: bash
+        run: |
+          if ! command -v pwsh &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y powershell
+          fi
+          pwsh --version
+
+      - name: Run verifier (VerifyOnly)
+        shell: pwsh
+        run: |
+          Write-Host "Running export_semantic_model_tmdl.ps1 -VerifyOnly"
+          ./data-platform/scripts/export_semantic_model_tmdl.ps1 -VerifyOnly
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Semantic model contract verify"
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Contracts: 16 relationships (14 Active / 2 Inactive) + 11 measures + 4 roles"
+            echo "- Status: ${{ job.status }}"
+            if [ "${{ job.status }}" != "success" ]; then
+              echo "- **Blocks merge** — inspect the run log for the failing assertion, then either bump the expected constants in export_semantic_model_tmdl.ps1 (with justification) or restore the missing TMDL entities."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
