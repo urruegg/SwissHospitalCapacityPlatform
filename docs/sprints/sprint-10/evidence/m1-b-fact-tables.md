@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-08 |
 | **Author** | Urs Rüegg |
-| **Status** | PASS (with in-flight M1 pivot documented) |
-| **Previous Version** | n/a (initial) |
+| **Status** | PASS (corrected — gold_root override added; metastore registration proven; see §Correction) |
+| **Previous Version** | 1.0.0 (initial — physical path and metastore registration incorrect) |
 
 **Milestone:** M1 of the [Sprint 10 completion strategy](../../../superpowers/specs/2026-07-08-sprint-10-completion-strategy.md).
 **Task:** M1-B — Slice of S10.3 (fact tables landed via gold notebook, bronze-source pivot per M1 in-flight decision).
@@ -41,11 +41,22 @@
 
 **5 of 6 gold tables landed.** The `bed_state` table did not materialise because `bed.state_changed` envelopes are not currently emitted by the simulator (`apps/sim-capacity/src/producer_sim.py`). Not blocking M1 — none of the 2 M1 measures target `bed_state`.
 
-## Physical path (schema-enabled lakehouse quirk)
+## Correction (v1.1.0, applied during M1-C)
 
-Gold tables physically live at `Tables/Tables/gold/patient-flow/{entity}/` in the schema-enabled lakehouse — the double `Tables/` prefix is an artefact of how the notebook builds paths (`gold_root = 'Tables/gold/patient-flow'`) combined with the lakehouse's default `Tables/` root. Fabric's SQL endpoint auto-discovers these Delta directories and surfaces them as first-class tables via the metastore.
+The v1.0.0 report was factually wrong on two counts, both surfaced when M1-C tried to bind measures to the tables:
 
-For M1-C measure authoring, the semantic model references them via `sourceLineageTag: [gold].[encounter]` (same pattern already used by existing dim tables — see `data-platform/reports/capacity-dashboard.SemanticModel/definition/tables/dim_disease.tmdl` for reference).
+1. **Physical path** — was reported as `Tables/Tables/gold/patient-flow/{entity}/hospitalId=H_*`. That was a **DFS listing artifact** — OneLake returned virtual-mount top-level content (`Files`, `Functions`, `TableMaintenance`, `Tables`) when the recursive lister was given a nonexistent nested path. The **actual** location was `Tables/gold/patient-flow/{entity}/hospitalId=H_*`.
+2. **Metastore registration** — was reported as ready for Direct Lake reference. In reality the tables were **not registered** because Fabric's schema-enabled lakehouse only auto-surfaces Delta directories at `Tables/{schema}/{table}` — the `patient-flow/` intermediate folder broke that convention.
+
+**Remediation (applied in the same PR that shipped M1-C):**
+
+- Gold notebook re-triggered with a second runtime override `gold_root=Tables/gold` (drops the `patient-flow/` intermediate) — job `f0bf73e2-42b7-4bae-9cb7-8ee747c3b24c`, 55s under F16, Completed.
+- Metastore auto-registered all 5 gold tables at `gold.encounter`, `gold.bed_assignment`, `gold.forecast_output`, `gold.discharge_score`, `gold.discharge_recommendation`. Proven via `INFORMATION_SCHEMA.TABLES` query.
+- Row counts (SQL analytics endpoint): `encounter=2467/3h`, `bed_assignment=539/3h`, `forecast_output=765/3h`, `discharge_score=10/2h`, `discharge_recommendation=10/2h`.
+
+**Semantic model binding** (used by M1-C): `sourceLineageTag: [gold].[encounter]` and `[gold].[bed_assignment]` — same pattern as `dim_disease.tmdl`.
+
+**Orphan cleanup:** Prior `Tables/gold/patient-flow/{entity}/` Delta directories are now unreferenced by the metastore but still consume storage. Deletion requires `approved-to-apply` and is tracked as **T7 H7** (new hygiene item) for Sprint 10 close.
 
 ## Steps executed
 
