@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-07-08 |
 | **Author** | Urs Rüegg |
 | **Status** | PASS |
-| **Previous Version** | n/a (initial) |
+| **Previous Version** | 1.0.0 (initial) |
 
 **Milestone:** M1 (final task) of the [Sprint 10 completion strategy](../../../superpowers/specs/2026-07-08-sprint-10-completion-strategy.md).
 **Task:** M1-D — 2 KPI card visuals on Page 1 + M1 close.
@@ -99,7 +99,7 @@ Sprint 09 §4 DoD item 4 was carry-over ("full pipeline end-to-end"). Flipped to
 
 **Full path proven in one live pipeline as of 2026-07-08 15:00 CET:**
 
-```
+```text
 sim-capacity (Container App, MI-authenticated)
    ↓ AMQP writes to
 Fabric Custom Endpoint (id 6e2e833f-...) — SAS-less Entra ID auth per ADR-0019
