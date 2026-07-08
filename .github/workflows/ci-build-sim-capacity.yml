@@ -56,9 +56,11 @@ jobs:
         run: |
           set -euo pipefail
           short_sha="${GITHUB_SHA::7}"
-          echo "sha_tag=$short_sha" >> "$GITHUB_OUTPUT"
-          echo "full_sha=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${short_sha}" >> "$GITHUB_OUTPUT"
-          echo "full_latest=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest" >> "$GITHUB_OUTPUT"
+          {
+            echo "sha_tag=$short_sha"
+            echo "full_sha=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${short_sha}"
+            echo "full_latest=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Docker build
         shell: bash
