@@ -1,5 +1,54 @@
 # Sprint 10 T1 — Eventstream + Facts Implementation Plan
 
+| Field | Value |
+| ----- | ----- |
+| **Status** | **Superseded (2026-07-08)** — see supersession notice below |
+| **Superseded by** | [`docs/superpowers/specs/2026-07-08-sprint-10-completion-strategy.md`](../specs/2026-07-08-sprint-10-completion-strategy.md) (design) + [`docs/superpowers/plans/2026-07-08-sprint-10-m1-vertical-slice-plan.md`](2026-07-08-sprint-10-m1-vertical-slice-plan.md) (execution) |
+
+## Supersession notice — 2026-07-08
+
+This plan was authored on 2026-07-06 for the **Fabric Azure Event Hubs source connector** ingest path. Between 2026-07-06 and 2026-07-08 the architecture pivoted to **Fabric Custom Endpoint + Entra ID** per [ADR-0019](../../adr/0019-fabric-eventstream-custom-endpoint-entra-id.md). The original plan is retained below for audit purposes; do **not** follow its steps.
+
+### What was achieved (Task 1 equivalent — S10.1 delivered under the new architecture)
+
+- Fabric Eventstream `es-capacity-events-sit` (id `7b65dfa1-c523-412f-93b2-a78eaa2788fa`) provisioned in workspace `ws-ihzhhpf-sit-data` (`f3af9733-9503-4e92-98f9-a901d96f1c87`)
+- Custom Endpoint source `capacity-events-source` published — endpoint FQDN `esehmwhyivddgq8acv3ghwv.servicebus.windows.net`, hub `esehmwhyivddgq8acv3ghwv_eh`
+- Producer identity `id-ca-sim-capacity-ihzhhpf-sit` (Entra objectId `b646f093-cbbc-496f-8a65-376b39ff04d3`) assigned Contributor on the workspace via Fabric REST
+- sim-capacity Container App revision `--0000002` running the real Python producer image (`cri75lbu5sj4hza.azurecr.io/sim-capacity:sprint10-t1`) with MI-based ACR pull
+- Envelopes verified end-to-end in Fabric Data preview 2026-07-08 08:03Z: `forecast.published`, `bed.assigned`, `encounter.transition`, `encounter.admitted` for hospital `H_SZB` (sim run `run-bee8588bac3c`)
+- Fabric SIT keep-alive workflow live and running green (Sprint 10 T1 temporary override per [runbook §Sprint 10 T1](../../runbooks/fabric-capacity-lifecycle.md#sprint-10-t1-keep-alive-override-temporary))
+
+### What pivoted (why this plan is now superseded)
+
+- **MCAPS tenant Modify policy** auto-reverts `disableLocalAuth=true` on all Event Hubs namespaces. Confirmed via activity log; cannot be exempted (Microsoft owns the definition).
+- **Fabric Azure EH source connector** only supports Shared Access Key auth today (verified against [Microsoft Learn](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/add-source-azure-event-hubs) and portal testing with hub-scope Data Receiver + admin OAuth token).
+- Intersection: SAS impossible in this tenant, OAuth unsupported by the connector → only viable path is **Fabric Custom Endpoint** with Entra ID producer auth.
+- Steps 3–9 of this plan's Task 1 (bicepparam fill, Azure-EH portal connection, post-deploy REST script) are no longer applicable. Replacement work: [`PR #128`](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/128), [`PR #129`](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/129), [`PR #130`](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/130).
+
+### Where the remaining work goes
+
+Task 2 (S10.2 — notebook import) and Task 3 (S10.3 — fact-table validation) of this plan are **partially superseded** — they still need to happen, but under the Custom Endpoint architecture and re-sequenced into the vertical-slice M1..M4 approach documented in [`2026-07-08-sprint-10-completion-strategy.md`](../specs/2026-07-08-sprint-10-completion-strategy.md).
+
+Execution instructions for the M1 slice (which covers `bed.assigned` + `encounter.admitted` end-to-end): [`2026-07-08-sprint-10-m1-vertical-slice-plan.md`](2026-07-08-sprint-10-m1-vertical-slice-plan.md).
+
+Remaining charter deliverables map as follows:
+
+| Charter ID | Status | Where |
+| ---------- | ------ | ----- |
+| S10.1 Eventstream provisioning | ✅ done under ADR-0019 architecture | PR #128, #129, #130 + this file's *What was achieved* section |
+| S10.2 Eventstream notebooks | Pending — M1 sub-slice covers import; M2 covers full validation | M1 plan Task 1 |
+| S10.3 4 fact tables | Pending — M1 validates 2 of 4 (bed_assignment + encounter); M2 validates the remaining 2 | M1 plan Task 2; M2 covers the rest |
+
+### Cleanup
+
+- Local branch `sprint-10/t1-s10.1-eventstream-deploy` has dangling commits `40cfc61` + `d35ce00` from mid-session workflow issues; tracked as **T7 H1** in the completion strategy — requires `approved-to-apply` before deletion.
+
+---
+
+> **Historical content below — do not follow these steps.** Retained for audit trail per [copilot-instructions §9](../../../.github/copilot-instructions.md#9-document-versioning). All active guidance moved to the M1 plan linked above.
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ship deliverables **S10.1 + S10.2 + S10.3** — operationalise the Sprint 09 T2.2 Eventstream scaffolding so 4 gold fact tables (`fact_encounter`, `fact_bed_state`, `fact_bed_assignment`, `fact_forecast_output`) are queryable via Direct Lake from the capacity-dashboard semantic model.
