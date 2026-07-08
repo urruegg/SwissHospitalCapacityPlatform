@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "4160828f42ffef90d6c1",
+  "position": { "x": 24, "y": 196, "z": 1002, "height": 80, "width": 200, "tabOrder": 1002 },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [{
+            "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dim_hospital" } }, "Property": "short_name" } },
+            "queryRef": "dim_hospital.short_name",
+            "nativeQueryRef": "short_name"
+          }]
+        }
+      }
+    },
+    "objects": {
+      "data": [{ "properties": { "mode": { "expr": { "Literal": { "Value": "'Dropdown'" } } } } }],
+      "header": [{
+        "properties": {
+          "show": { "expr": { "Literal": { "Value": "true" } } },
+          "text": { "expr": { "Literal": { "Value": "'Hospital'" } } }
+        }
+      }]
+    },
+    "visualContainerObjects": {
+      "padding": [{
+        "properties": {
+          "top":    { "expr": { "Literal": { "Value": "8D" } } },
+          "bottom": { "expr": { "Literal": { "Value": "8D" } } },
+          "left":   { "expr": { "Literal": { "Value": "8D" } } },
+          "right":  { "expr": { "Literal": { "Value": "8D" } } }
+        }
+      }]
+    }
+  }
+}

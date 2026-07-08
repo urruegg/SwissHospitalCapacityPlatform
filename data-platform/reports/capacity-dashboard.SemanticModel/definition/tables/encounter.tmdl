@@ -10,6 +10,30 @@ table encounter
 
 		changedProperty = FormatString
 
+	measure 'Admissions' = CALCULATE(COUNTROWS(encounter), encounter[status] = "arrived")
+		formatString: #,0
+		lineageTag: 8f0aa3d0-c30b-4d64-b3e1-2c1c4a3d9e30
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure 'Discharged' = CALCULATE(COUNTROWS(encounter), encounter[status] = "finished")
+		formatString: #,0
+		lineageTag: 8f0aa3d0-c30b-4d64-b3e1-2c1c4a3d9e31
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure 'Currently In Hospital' = CALCULATE(COUNTROWS(encounter), encounter[status] IN {"arrived", "triaged", "in-progress", "onleave"})
+		formatString: #,0
+		lineageTag: 8f0aa3d0-c30b-4d64-b3e1-2c1c4a3d9e32
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
 	column eventKind
 		dataType: string
 		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d02
@@ -165,6 +189,100 @@ table encounter
 		sourceLineageTag: _data_quality
 		summarizeBy: none
 		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column encounterId
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d40
+		sourceLineageTag: encounterId
+		summarizeBy: none
+		sourceColumn: encounterId
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d41
+		sourceLineageTag: status
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column previousStatus
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d42
+		sourceLineageTag: previousStatus
+		summarizeBy: none
+		sourceColumn: previousStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column admissionType
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d43
+		sourceLineageTag: admissionType
+		summarizeBy: none
+		sourceColumn: admissionType
+
+		annotation SummarizationSetBy = Automatic
+
+	column class
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d44
+		sourceLineageTag: class
+		summarizeBy: none
+		sourceColumn: class
+
+		annotation SummarizationSetBy = Automatic
+
+	column requestedSpecialtyServiceId
+		dataType: string
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d45
+		sourceLineageTag: requestedSpecialtyServiceId
+		summarizeBy: none
+		sourceColumn: requestedSpecialtyServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column expectedLOSDays
+		dataType: int64
+		formatString: 0
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d46
+		sourceLineageTag: expectedLOSDays
+		summarizeBy: sum
+		sourceColumn: expectedLOSDays
+
+		annotation SummarizationSetBy = Automatic
+
+	column simulatedDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d47
+		sourceLineageTag: simulatedDate
+		summarizeBy: none
+		sourceColumn: simulatedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column simulatedMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d48
+		sourceLineageTag: simulatedMonth
+		summarizeBy: none
+		sourceColumn: simulatedMonth
+
+		annotation SummarizationSetBy = Automatic
+
+	column simulatedWeekday
+		dataType: int64
+		formatString: 0
+		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d49
+		sourceLineageTag: simulatedWeekday
+		summarizeBy: none
+		sourceColumn: simulatedWeekday
 
 		annotation SummarizationSetBy = Automatic
 

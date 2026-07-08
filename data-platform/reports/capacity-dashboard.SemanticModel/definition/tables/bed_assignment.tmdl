@@ -10,6 +10,14 @@ table bed_assignment
 
 		changedProperty = FormatString
 
+	measure 'Occupancy %' = DIVIDE([Currently Assigned Beds], [Beds Total]) * 100
+		formatString: 0.0"%"
+		lineageTag: 9e1bb4d1-d41c-4e75-c4f2-3d2d5b4e0f30
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
 	column eventKind
 		dataType: string
 		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e13
@@ -165,6 +173,70 @@ table bed_assignment
 		sourceLineageTag: _data_quality
 		summarizeBy: none
 		sourceColumn: _data_quality
+
+		annotation SummarizationSetBy = Automatic
+
+	column encounterId
+		dataType: string
+		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e50
+		sourceLineageTag: encounterId
+		summarizeBy: none
+		sourceColumn: encounterId
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e51
+		sourceLineageTag: status
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column previousStatus
+		dataType: string
+		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e52
+		sourceLineageTag: previousStatus
+		summarizeBy: none
+		sourceColumn: previousStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column admissionType
+		dataType: string
+		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e53
+		sourceLineageTag: admissionType
+		summarizeBy: none
+		sourceColumn: admissionType
+
+		annotation SummarizationSetBy = Automatic
+
+	column class
+		dataType: string
+		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e54
+		sourceLineageTag: class
+		summarizeBy: none
+		sourceColumn: class
+
+		annotation SummarizationSetBy = Automatic
+
+	column requestedSpecialtyServiceId
+		dataType: string
+		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e55
+		sourceLineageTag: requestedSpecialtyServiceId
+		summarizeBy: none
+		sourceColumn: requestedSpecialtyServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column expectedLOSDays
+		dataType: int64
+		formatString: 0
+		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e56
+		sourceLineageTag: expectedLOSDays
+		summarizeBy: sum
+		sourceColumn: expectedLOSDays
 
 		annotation SummarizationSetBy = Automatic
 
