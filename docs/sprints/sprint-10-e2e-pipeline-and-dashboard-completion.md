@@ -240,12 +240,13 @@ Sprint 10 execution follows a **four-milestone vertical-slice-first** approach, 
 
 | Milestone | Scope | Charter deliverables | Exit criterion |
 | --------- | ----- | -------------------- | -------------- |
-| **M1** Vertical slice E2E | 2 event kinds (`bed.assigned` + `encounter.admitted`) through the whole spine | Slice of S10.2, S10.3, S10.4, S10.8 | Sprint 09 v2 DoD item 4 closed; Page 1 KPI cards render live values |
+| **M1** Vertical slice E2E | 2 event kinds through the whole spine (with in-flight silver bypass per 2026-07-08 finding) | Slice of S10.2, S10.3, S10.4, S10.8 | Sprint 09 v2 DoD item 4 closed; Page 1 KPI cards render live |
+| **M1.5** Silver hardening | Close silver-notebook debt from M1 pivot; restore bronze → silver → gold flow | S10.2 hardening (in-sprint, not deferred) | `02_silver_eventstream` completes green; gold re-authored to read silver |
 | **M2** Thicken the spine | Complete T1 + T2 remainder | Rest of S10.2, S10.3, S10.4, plus S10.5, S10.8 remainder | All 13 measures render on both dashboard pages |
 | **M3** Governance in parallel | RLS + PHI fixture + agent eval | S10.6, S10.7, S10.9, S10.10 | Sprint 09 v2 DoD items 6 + 8 closed |
-| **M4** Tooling + close-out + T7 | Verifier + CI + hygiene + retrospective | S10.11, S10.12, T7 H1..H5, T6 | Sprint 10 charter §9 checklist all green |
+| **M4** Tooling + close-out + T7 | Verifier + CI + hygiene + retrospective | S10.11, S10.12, T7 H1..H6, T6 | Sprint 10 charter §9 checklist all green |
 
-**Sequencing:** M1 → M2 → (M3 ∥ M4). M3 spec authoring (S10.7 + S10.9) begins in parallel with M1 execution to compress the critical path.
+**Sequencing:** M1 → M1.5 → M2 → (M3 ∥ M4). M3 spec authoring (S10.7 + S10.9) begins in parallel with M1 execution to compress the critical path.
 
 **Cross-cutting guardrails** (applied to every PR in M1..M4):
 
