@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.11.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.12.0 |
+| **Date** | 2026-07-08 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.10.0 (Sprint 00 tenant migration completed; new tenant is now authoritative) |
+| **Previous Version** | 1.11.0 (added §Workspace-scoped skills for Sprint 10 M1..M4 acceleration) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -51,6 +51,44 @@ Core skills that must always be considered for applicable work:
 Compliance requirement:
 
 1. Work that skips applicable mandatory skills is non-compliant and must be corrected before PR completion.
+
+## Workspace-scoped skills (v1.12.0, 2026-07-08)
+
+Five domain skills installed under [`.github/skills/`](.github/skills/) to speed up M1..M4 execution per the [Sprint 10 completion strategy](docs/superpowers/specs/2026-07-08-sprint-10-completion-strategy.md). All are workspace-scoped (travel with the repo, git-tracked).
+
+| Skill | Source | Trigger examples | When to use |
+| ----- | ------ | ---------------- | ----------- |
+| [`eventstream-authoring`](.github/skills/eventstream-authoring/SKILL.md) | [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric) fabric-authoring | "create eventstream", "add source to eventstream", "eventstream destination", "wire eventstream" | Any Eventstream topology work — sources, operators, destinations, `updateDefinition` REST |
+| [`spark-authoring`](.github/skills/spark-authoring/SKILL.md) | microsoft/skills-for-fabric fabric-authoring | "run notebook", "spark session", "notebook job", "lakehouse Delta table" | Fabric notebook orchestration + Spark patterns — M1-B (bronze/silver/gold runs) |
+| [`fabric-semantic-model-authoring`](.github/skills/fabric-semantic-model-authoring/SKILL.md) | microsoft/skills-for-fabric fabric-authoring | "semantic model", "measure", "relationship", "TMDL", "Direct Lake" | Semantic model authoring via Fabric REST — M1-C measures + relationship contract |
+| [`powerbi-report-authoring`](.github/skills/powerbi-report-authoring/SKILL.md) | microsoft/skills-for-fabric powerbi-authoring | "PBIP", "visual container", "page layout", "KPI card", "Power BI report" | Report / visual authoring — M1-D KPI tiles + M2 remaining visuals |
+| [`powerbi-optimization`](.github/skills/powerbi-optimization/SKILL.md) + [specialists/](.github/skills/powerbi-optimization/specialists/) | [PBI-Guy/Power-BI-Optimization-Skill](https://github.com/PBI-Guy/Power-BI-Optimization-Skill) | "optimize DAX", "slow measure", "RLS performance", "storage mode", "BPA" | DAX + model + RLS optimization — M2-M3 measure tuning + M3 RLS re-authoring |
+
+The `powerbi-optimization` skill ships with 5 specialists (`dax-mastery`, `model-design`, `report-performance`, `powerquery-m`, `security-rls`) plus BPA and MCP integration guides under `.github/skills/powerbi-optimization/`. The MCP integration is optional and requires a separate Power BI Modeling MCP server install; skip it unless we need automated DAX benchmarking.
+
+Additional skills evaluated and **NOT installed** (available in the source repos if needed later):
+
+- `microsoft/skills-for-fabric` `fabric-consumption` — read-only query workflows (we already have those covered)
+- `microsoft/skills-for-fabric` `fabric-operations` — capacity diagnostics; **candidate for Sprint 11 install** given the F2-CU-exhaustion pattern we hit in M1-B
+- `microsoft/skills-for-fabric` `fabric-authoring/{activator,dataflows,eventhouse,fabriciq-ontology,sqldw}-authoring-cli` — not part of the M1..M4 critical path
+- `microsoft/skills-for-fabric` `powerbi-authoring/{powerbi-report-design,powerbi-report-management,powerbi-report-planning,check-updates}` — mostly workflow orchestration, not needed for direct M1..M4 deliverables
+
+Skill refresh procedure — run once per sprint or on-demand:
+
+```powershell
+$tmp = "$env:TEMP\skills-install-refresh"
+Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
+git clone --depth 1 https://github.com/microsoft/skills-for-fabric.git $tmp\skills-for-fabric
+git clone --depth 1 https://github.com/PBI-Guy/Power-BI-Optimization-Skill.git $tmp\pbi-optimization
+Copy-Item "$tmp\skills-for-fabric\plugins\fabric-authoring\skills\eventstream-authoring-cli\*" ".github\skills\eventstream-authoring\" -Recurse -Force
+Copy-Item "$tmp\skills-for-fabric\plugins\fabric-authoring\skills\spark-authoring-cli\*" ".github\skills\spark-authoring\" -Recurse -Force
+Copy-Item "$tmp\skills-for-fabric\plugins\fabric-authoring\skills\semantic-model-authoring\*" ".github\skills\fabric-semantic-model-authoring\" -Recurse -Force
+Copy-Item "$tmp\skills-for-fabric\plugins\powerbi-authoring\skills\powerbi-report-authoring\*" ".github\skills\powerbi-report-authoring\" -Recurse -Force
+Copy-Item "$tmp\pbi-optimization\skills\powerbi-optimization\*" ".github\skills\powerbi-optimization\" -Recurse -Force
+git diff --stat .github/skills/
+```
+
+Diff any changes and PR them like normal repo edits.
 
 ---
 

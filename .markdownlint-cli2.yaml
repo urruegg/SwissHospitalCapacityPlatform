@@ -25,3 +25,9 @@ config:
 
   # Imported baseline docs contain intentional visual section spacing.
   MD012: false
+
+ignores:
+  # Skills are imported verbatim from external repositories
+  # (microsoft/skills-for-fabric, PBI-Guy/Power-BI-Optimization-Skill).
+  # They must not be modified for style compliance; exclude from linting.
+  - ".github/skills/**"

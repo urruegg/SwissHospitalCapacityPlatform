@@ -164,6 +164,7 @@ Add T7 to the charter §4 track structure between T5 and T6. Executed inside M4.
 | **H3** | Fix `.github/workflows/fabric-capacity-lifecycle.yml` OIDC — same env-scope + `secrets.*` vs `vars.*` bug PR #130 fixed for the keep-alive | Session finding | Plan: trivial (mirror PR #130) |
 | **H4** | Add `.github/workflows/ci-build-sim-capacity.yml` that rebuilds+pushes the sim-capacity image on `apps/sim-capacity/**` changes | ADR-0019 follow-up | Plan: brief |
 | **H5** | Vestigial Azure EH decision — delete `evh-ihzhhpf-sit-y26y` + hub + 4 consumer groups + agent MI role assignments, OR raise Sprint 11 tracking issue with the delete/repurpose decision documented | ADR-0019 sunset criteria | Plan: brief; **destruction requires `approved-to-apply`** |
+| **H6** | **Downscale Fabric F16 SIT capacity → F2** (or suspend for weekends) at Sprint 10 close. F16 was raised 2026-07-08 to unblock M1-B notebook queueing; ~USD 1,730/month at 24×7 vs F2 ~USD 216/month. Consider `az fabric capacity update --sku {name:F2,tier:Fabric}` or scheduled downscale workflow | This session (F2→F16 upgrade) | Plan: trivial; **downscale is reversible but validate no jobs in-flight first** |
 
 **Not in T7 (already resolved):**
 
