@@ -41,19 +41,22 @@ The T1 plan file (`2026-07-06-sprint-10-t1-eventstream-plan.md`) is now architec
 
 ## 3. Milestone breakdown (M1..M4)
 
-Four milestones executed in strict dependency order M1 → M2 → (M3 ∥ M4). M3 (governance) and M4 (tooling + hygiene + close-out) may parallelise once M2 completes.
+Four milestones executed in strict dependency order M1 → M1.5 → M2 → (M3 ∥ M4). M3 (governance) and M4 (tooling + hygiene + close-out) may parallelise once M2 completes. M1.5 is a small in-sprint interstitial that closes silver-hardening debt from an M1 pragmatic pivot (see §M1 in-flight pivot below).
 
 ```mermaid
 flowchart LR
     M1[M1 Vertical slice E2E<br/>Closes Sprint 09 DoD item 4]
+    M15[M1.5 Silver hardening<br/>closes silver debt]
     M2[M2 Thicken the spine<br/>Full T1 + T2 remainder]
     M3[M3 Governance in parallel<br/>RLS/PHI + agent-eval]
     M4[M4 Tooling + close-out + T7<br/>hygiene + retrospective]
 
-    M1 --> M2
+    M1 --> M15
+    M15 --> M2
     M2 --> M3
     M2 --> M4
     style M1 fill:#e1f5ff
+    style M15 fill:#fff4d6
 ```
 
 ### M1 — Vertical slice E2E
@@ -89,6 +92,28 @@ Both event kinds are already flowing (verified in Fabric Data preview 2026-07-08
 - `fact_bed_state` and `fact_forecast_output` validation (they may land but are not measured)
 - OR loader schema extension (S10.5)
 - Anything RLS, PHI, agent-related, or CI-verifier
+
+**M1 in-flight pivot (2026-07-08, session finding):** Silver notebook (`02_silver_eventstream`) failed at Spark statement level (`System_Cancelled_Session_Statements_Failed`) after schema-file upload — root cause requires interactive cell-by-cell debugging in Fabric UI. To preserve the M1 vertical-slice tempo and satisfy the M1 exit criteria (spine-proof), the gold notebook (`03_gold_eventstream`) is re-scoped to read **directly from bronze folders** (`Tables/bronze/eventstream/{eventKind}/`) rather than silver's cleansed layer. Justification: per [ADR-0016](../../adr/0016-no-phi-in-mvp-demo-scope.md) synthetic-data-only, silver's PHI gate has nothing to catch in M1; per [ADR-0015](../../adr/0015-skip-sql-for-mvp-demo.md) MVP-demo scope. Silver hardening is folded into **M1.5** below (in-sprint task, not Sprint 11 backlog).
+
+### M1.5 — Silver hardening (in-sprint task, closes silver debt from M1 pivot)
+
+**Goal:** Get `02_silver_eventstream` running green end-to-end. Restore the intended bronze → silver → gold flow before M3 governance work depends on it (S10.6 RLS + S10.7 synthetic PHI fixture assume silver is functional).
+
+**Scope:**
+
+- Debug the silver notebook cell-by-cell via Fabric UI + [`spark-operations`](../../../.github/skills/spark-operations/SKILL.md) skill (installed 2026-07-08 for exactly this purpose)
+- Fix whatever cell-level Spark statement is throwing (candidates: schema file resolution path, PHI regex false-positive on structural fields, FK check against absent silver_master output, residency-tag missing on envelopes)
+- Re-run silver + gold; confirm gold reads from silver (not bronze bypass) with matching row counts
+- Update M1 evidence report noting silver hardening happened in M1.5 and the M1 bypass was temporary
+- No charter deliverable renumbering — this closes S10.2 (eventstream notebooks) hardening debt
+
+**Exit criteria:**
+
+- `02_silver_eventstream` completes green with row counts logged per event kind
+- `03_gold_eventstream` re-authored (or re-parameterised) to read from silver again; row counts match M1 bypass output
+- Evidence report `docs/sprints/sprint-10/evidence/m1-5-silver-hardening.md` v1.0.0 committed with root cause + fix
+
+**Estimated effort:** 30-60 min of interactive Fabric UI debugging + one small PR.
 
 ### M2 — Thicken the spine
 
@@ -141,7 +166,7 @@ Both event kinds are already flowing (verified in Fabric Data preview 2026-07-08
 **Exit criteria:**
 
 - Sprint 10 charter §9 sprint-close checklist all green
-- All 5 T7 hygiene items completed or explicitly deferred with a Sprint 11 tracking issue
+- All 6 T7 hygiene items completed or explicitly deferred with a Sprint 11 tracking issue
 - `docs/sprints/sprint-10/retrospective.md` v1.0.0 committed
 - Sprint 10 PR merged to `main` with full PR output contract fields populated
 

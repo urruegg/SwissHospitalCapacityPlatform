@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.12.0 |
+| **Version** | 1.13.0 |
 | **Date** | 2026-07-08 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.11.0 (added §Workspace-scoped skills for Sprint 10 M1..M4 acceleration) |
+| **Previous Version** | 1.12.0 (added 2 skills for silver-hardening M1.5: `e2e-medallion-architecture` + `spark-operations`) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -52,9 +52,9 @@ Compliance requirement:
 
 1. Work that skips applicable mandatory skills is non-compliant and must be corrected before PR completion.
 
-## Workspace-scoped skills (v1.12.0, 2026-07-08)
+## Workspace-scoped skills (v1.13.0, 2026-07-08)
 
-Five domain skills installed under [`.github/skills/`](.github/skills/) to speed up M1..M4 execution per the [Sprint 10 completion strategy](docs/superpowers/specs/2026-07-08-sprint-10-completion-strategy.md). All are workspace-scoped (travel with the repo, git-tracked).
+Seven domain skills installed under [`.github/skills/`](.github/skills/) to speed up M1..M4 execution per the [Sprint 10 completion strategy](docs/superpowers/specs/2026-07-08-sprint-10-completion-strategy.md). All are workspace-scoped (travel with the repo, git-tracked).
 
 | Skill | Source | Trigger examples | When to use |
 | ----- | ------ | ---------------- | ----------- |
@@ -63,13 +63,16 @@ Five domain skills installed under [`.github/skills/`](.github/skills/) to speed
 | [`fabric-semantic-model-authoring`](.github/skills/fabric-semantic-model-authoring/SKILL.md) | microsoft/skills-for-fabric fabric-authoring | "semantic model", "measure", "relationship", "TMDL", "Direct Lake" | Semantic model authoring via Fabric REST — M1-C measures + relationship contract |
 | [`powerbi-report-authoring`](.github/skills/powerbi-report-authoring/SKILL.md) | microsoft/skills-for-fabric powerbi-authoring | "PBIP", "visual container", "page layout", "KPI card", "Power BI report" | Report / visual authoring — M1-D KPI tiles + M2 remaining visuals |
 | [`powerbi-optimization`](.github/skills/powerbi-optimization/SKILL.md) + [specialists/](.github/skills/powerbi-optimization/specialists/) | [PBI-Guy/Power-BI-Optimization-Skill](https://github.com/PBI-Guy/Power-BI-Optimization-Skill) | "optimize DAX", "slow measure", "RLS performance", "storage mode", "BPA" | DAX + model + RLS optimization — M2-M3 measure tuning + M3 RLS re-authoring |
+| [`e2e-medallion-architecture`](.github/skills/e2e-medallion-architecture/SKILL.md) *(v1.13.0)* | microsoft/skills-for-fabric fabric-authoring | "medallion architecture", "bronze silver gold", "multi-layer lakehouse", "PHI gate", "data quality enforcement" | Bronze/silver/gold design + PHI/FK/schema gate patterns — M1.5 silver-hardening + M2 gold refinement |
+| [`spark-operations`](.github/skills/spark-operations/SKILL.md) *(v1.13.0)* | microsoft/skills-for-fabric fabric-operations | "Spark session", "notebook logs", "Spark statement failure", "Spark diagnostics", `System_Cancelled_Session_Statements_Failed` | Diagnose Fabric Spark session errors + notebook runtime failures — M1.5 silver debugging + future notebook failure triage |
 
 The `powerbi-optimization` skill ships with 5 specialists (`dax-mastery`, `model-design`, `report-performance`, `powerquery-m`, `security-rls`) plus BPA and MCP integration guides under `.github/skills/powerbi-optimization/`. The MCP integration is optional and requires a separate Power BI Modeling MCP server install; skip it unless we need automated DAX benchmarking.
 
 Additional skills evaluated and **NOT installed** (available in the source repos if needed later):
 
 - `microsoft/skills-for-fabric` `fabric-consumption` — read-only query workflows (we already have those covered)
-- `microsoft/skills-for-fabric` `fabric-operations` — capacity diagnostics; **candidate for Sprint 11 install** given the F2-CU-exhaustion pattern we hit in M1-B
+- `microsoft/skills-for-fabric` `fabric-operations/mlv-operations-cli` — Materialized Lake View ops; candidate for M2 if gold uses MLVs
+- `microsoft/skills-for-fabric` `fabric-operations/sqldw-operations-cli` — not our path (we use lakehouse per ADR-0015)
 - `microsoft/skills-for-fabric` `fabric-authoring/{activator,dataflows,eventhouse,fabriciq-ontology,sqldw}-authoring-cli` — not part of the M1..M4 critical path
 - `microsoft/skills-for-fabric` `powerbi-authoring/{powerbi-report-design,powerbi-report-management,powerbi-report-planning,check-updates}` — mostly workflow orchestration, not needed for direct M1..M4 deliverables
 
