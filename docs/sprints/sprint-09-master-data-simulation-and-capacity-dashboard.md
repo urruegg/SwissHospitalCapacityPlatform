@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.1.0 |
+| **Version** | 2.2.0 |
 | **Date** | 2026-07-06 |
 | **Author** | @urruegg |
-| **Status** | Closed — 3 carry-over items to Sprint 10 (see retrospective §5) |
-| **Previous Version** | 2.0.0 (ticked DoD 2/3/5/7/10; annotated 4/6/8 as Sprint 10 carry-over; added retrospective + evidence-pack pointers) |
+| **Status** | Closed — 2 carry-over items remaining (agent evals + RLS PHI gate) |
+| **Previous Version** | 2.1.0 (initial retrospective + evidence pack) |
 
 > **What changed vs. v1.3.0.** Full MAJOR rewrite per [ADR-0017](../adr/0017-sprint-09-v2-track-restructure.md). Track boundaries, deliverable IDs, and DoD are restructured to align 1:1 with the 2026-07-02 design spec ([`docs/superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md`](../superpowers/specs/2026-07-02-sprint-09-v2-refinement-design.md)) and its implementation plan ([`docs/superpowers/plans/2026-07-02-sprint-09-v2-refinement-plan.md`](../superpowers/plans/2026-07-02-sprint-09-v2-refinement-plan.md)). The v1.x §0 Refresh Backlog is superseded; its RB-01…RB-14 outcomes are now folded into the design spec §1 context and the tracks below.
 >
@@ -59,7 +59,7 @@ Copied from [design spec §7.3](../superpowers/specs/2026-07-02-sprint-09-v2-ref
 - [x] All 35 deliverables (D1.1..DX.4) completed and verified. **Actual: 32 delivered (91%) + 3 formal carry-over** (D2.2 Eventstream Bicep, D2.6–D2.8 eventstream notebooks partial, D5.1–D5.2 PBIP visuals partial — see [retrospective §3](sprint-09/retrospective.md#3-deliverable-outcome)).
 - [x] [ADR-0015](../adr/0015-skip-sql-for-mvp-demo.md) + [ADR-0016](../adr/0016-no-phi-in-mvp-demo-scope.md) merged.
 - [x] Ontology conformance CI in **strict mode**; 0 WARN, 0 FAIL against `reference-layer.ttl` v0.2.0 — [evidence](sprint-09/evidence/ontology-conformance.md).
-- [ ] **CARRY-OVER → Sprint 10:** Fabric F2 SIT runs the full pipeline end-to-end: simulator → EH → Eventstream → bronze → silver → gold → semantic model → Page 1 + Page 2. **Blocked by:** Fabric-managed EH connection (portal step) + 4 fact tables not materialised. Documented in [checkpoint §9.1](sprint-09/checkpoint-2026-07-06-fabric-and-model.md#91-sprint-10-handoff--capacity-dashboard-measures-option-d) + [retrospective §5](sprint-09/retrospective.md#5-follow-ups-sprint-10).
+- [x] **CLOSED in Sprint 10 M1 (2026-07-08):** Fabric F16 SIT (upgraded from F2 per T7 H6) runs full pipeline end-to-end: simulator → Fabric Custom Endpoint → Eventstream → bronze → gold → semantic model → Page 1 (2 KPI tiles rendering live: Active Encounters=2467, Currently Assigned Beds=539). Silver bypassed in M1 via bronze-source override (folded into M1.5 hardening). Architecture pivoted per ADR-0019 (SAS-less Custom Endpoint + Entra ID). Evidence: [M1-A](sprint-10/evidence/m1-a-notebook-import.md), [M1-B](sprint-10/evidence/m1-b-fact-tables.md), [M1-C](sprint-10/evidence/m1-c-measures.md), [M1-D](sprint-10/evidence/m1-d-kpi-tiles.md).
 - [x] HCC utilization-pattern conformance test passes: MAPE < 15% for LUKS preset. **Actual: MAPE 2.44%** — [evidence](sprint-09/evidence/hcc-conformance-report.md).
 - [ ] **CARRY-OVER → Sprint 10:** All 9 agent eval fixtures (3 per agent) replay green. **Blocked by:** 3 agent runtime hosts not deployed + no automated replay harness — [evidence](sprint-09/evidence/agent-eval-replay.md).
 - [x] PHI regex sweep test (D3.6) reports 0 hits over 10 000 events — [evidence](sprint-09/evidence/phi-sweep-report.md).
