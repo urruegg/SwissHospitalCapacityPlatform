@@ -78,7 +78,7 @@ Cost: Basic tier EH namespace ≈ USD 11/mo — negligible, but not zero.
 
 Open a Sprint 11 tracking issue with body:
 
-```
+```text
 Title: T7 H5 sunset — delete evh-ihzhhpf-sit-y26y after ADR-0019 30-day observation
 
 Body:
