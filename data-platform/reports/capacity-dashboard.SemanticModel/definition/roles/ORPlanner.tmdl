@@ -1,0 +1,14 @@
+/// OR planning — no PHI exposure per ADR-0016 gate 4.
+/// Sees or_case, or_schedule, and encounter (surgical patient context) but the
+/// PHI filter prevents any row where silver Gate 2 tagged `_data_quality = "phi"`
+/// from reaching this role.
+role ORPlanner
+	modelPermission: read
+
+	tablePermission encounter = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_case = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_schedule = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	member 'admin@mngenvmcap164444.onmicrosoft.com'

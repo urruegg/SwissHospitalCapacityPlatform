@@ -26,3 +26,8 @@ ref table dim_drg
 ref table encounter
 ref table bed_assignment
 
+ref role BedOps
+ref role ORPlanner
+ref role Analyst
+ref role SemanticOwner
+

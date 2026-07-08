@@ -1,0 +1,18 @@
+/// Broad analytics — no PHI exposure per ADR-0016 gate 4.
+/// Broadest read scope across fact tables; strictest need for the PHI filter
+/// because this role's queries feed downstream analytics that may leave the
+/// tenant boundary via export.
+role Analyst
+	modelPermission: read
+
+	tablePermission encounter = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission bed_assignment = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission fact_capacity_baseline = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_case = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_schedule = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	member 'admin@mngenvmcap164444.onmicrosoft.com'

@@ -1,0 +1,10 @@
+/// Semantic model steward — no PHI exposure per ADR-0016 gate 4.
+/// Read-only access to the operational encounter table for measure design
+/// verification. Model-level structure changes still require workspace-admin
+/// role (not modelled here — that's a Fabric workspace RBAC concern).
+role SemanticOwner
+	modelPermission: read
+
+	tablePermission encounter = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	member 'admin@mngenvmcap164444.onmicrosoft.com'

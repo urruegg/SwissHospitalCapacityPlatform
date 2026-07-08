@@ -185,6 +185,8 @@ table bed_assignment
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation phi = true
+
 	column status
 		dataType: string
 		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e51
