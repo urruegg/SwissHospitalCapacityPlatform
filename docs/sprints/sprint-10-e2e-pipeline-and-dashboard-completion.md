@@ -145,8 +145,9 @@ Total: 12 deliverables + evidence/retro close-out. Full retrospective §5 backlo
 | **T7** | **H3** | Fix `.github/workflows/fabric-capacity-lifecycle.yml` OIDC env-scope + secrets-vs-vars (mirror PR #130) | v1.1.0 T7 | Plan: trivial |
 | **T7** | **H4** | Add `.github/workflows/ci-build-sim-capacity.yml` for auto-rebuild on `apps/sim-capacity/**` changes | v1.1.0 T7 | Plan: brief |
 | **T7** | **H5** | Vestigial Azure EH decision (delete `evh-ihzhhpf-sit-y26y` + consumer groups OR raise Sprint 11 tracking) | ADR-0019 sunset | Plan: brief; deletion requires `approved-to-apply` |
+| **T7** | **H6** | Downscale Fabric F16 → F2 at Sprint 10 close (F16 raised 2026-07-08 for M1-B dev velocity; ~USD 1,730/mo at 24×7) | This session | Plan: trivial |
 
-**Total: 12 deliverables (S10.1..S10.12) + 5 hygiene items (H1..H5) = 17 units.** S10.1 delivered under [ADR-0019](../adr/0019-fabric-eventstream-custom-endpoint-entra-id.md) architecture. Compare to Sprint 09 v2 (35 deliverables) — still a scoped follow-up sprint.
+**Total: 12 deliverables (S10.1..S10.12) + 6 hygiene items (H1..H6) = 18 units.** S10.1 delivered under [ADR-0019](../adr/0019-fabric-eventstream-custom-endpoint-entra-id.md) architecture. Compare to Sprint 09 v2 (35 deliverables) — still a scoped follow-up sprint.
 
 ---
 
