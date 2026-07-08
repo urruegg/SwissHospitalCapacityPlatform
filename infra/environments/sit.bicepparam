@@ -85,6 +85,9 @@ param foundryHostedAgentsCsaConsumerGroup = 'cg-csa-agent'
 // b646f093-cbbc-496f-8a65-376b39ff04d3), Contributor on the workspace.
 param enableSimCapacityModule = true
 param simCapacityLocation = 'westus2'
+param simCapacityContainerImage = 'cri75lbu5sj4hza.azurecr.io/sim-capacity:sprint10-t1'
+param simCapacityContainerRegistryLoginServer = 'cri75lbu5sj4hza.azurecr.io'
+param simCapacityContainerRegistryResourceId = '/subscriptions/66a9953a-df37-4c51-856c-9971b9bf3e03/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.ContainerRegistry/registries/cri75lbu5sj4hza'
 param simCapacityEventHubNamespace = 'esehmwhyivddgq8acv3ghwv.servicebus.windows.net'
 param simCapacityEventHubName = 'esehmwhyivddgq8acv3ghwv_eh'
 param simCapacityDemoScope = true

@@ -160,6 +160,12 @@ param simCapacityLocation string = 'westus2'
 @description('Container image the sim-capacity Container App runs. Placeholder until the sim-capacity image is published.')
 param simCapacityContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
+@description('Optional ACR login server (e.g. \'cri75lbu5sj4hza.azurecr.io\') for pulling simCapacityContainerImage. Together with simCapacityContainerRegistryResourceId enables MI-based pull (no admin creds).')
+param simCapacityContainerRegistryLoginServer string = ''
+
+@description('Optional resource ID of the ACR that hosts simCapacityContainerImage. Required together with simCapacityContainerRegistryLoginServer.')
+param simCapacityContainerRegistryResourceId string = ''
+
 @description('Event Hub namespace the sim-capacity producer emits to. When empty and enableDataFoundationModule=true, the sim-capacity module is skipped (no namespace to target).')
 param simCapacityEventHubNamespace string = ''
 
@@ -339,6 +345,8 @@ module simCapacity './modules/apps/sim-capacity/main.bicep' = if (enableSimCapac
     containerAppEnvironmentName: 'cae-sim-${resourceSuffix}'
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
     containerImage: simCapacityContainerImage
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
     eventHubNamespace: resolvedSimEventHubNamespace
     eventHubName: simCapacityEventHubName
     demoScope: simCapacityDemoScope

@@ -1,0 +1,17 @@
+# Repo-root .dockerignore
+# Currently only apps/sim-capacity/Dockerfile builds from this context.
+# Allowlist approach: exclude everything, then explicitly re-include what the
+# Dockerfile needs. Keeps ACR build context small (seconds vs minutes).
+
+*
+
+# sim-capacity image build
+!apps/sim-capacity/Dockerfile
+!apps/sim-capacity/pyproject.toml
+!apps/sim-capacity/src/
+apps/sim-capacity/src/**/__pycache__
+apps/sim-capacity/src/**/*.pyc
+apps/sim-capacity/src/**/*.egg-info
+
+# Review CSVs consumed by calibration modules at runtime
+!docs/reviews/2026-06-29-ama-capacity-metadata-review/*.csv
