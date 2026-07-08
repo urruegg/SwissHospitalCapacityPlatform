@@ -28,6 +28,12 @@ param logAnalyticsWorkspaceResourceId string = ''
 @description('Container image the simulator runs. Defaults to a placeholder; the actual sim-capacity image is published in a later sprint.')
 param containerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
+@description('Optional ACR login server (e.g. \'cri75lbu5sj4hza.azurecr.io\') the Container App pulls containerImage from. When set together with containerRegistryResourceId, the module wires MI-based image pull (no admin creds, no secrets).')
+param containerRegistryLoginServer string = ''
+
+@description('Optional resource ID of the ACR (Microsoft.ContainerRegistry/registries) that hosts containerImage. Required together with containerRegistryLoginServer to enable MI-based pull + AcrPull role assignment.')
+param containerRegistryResourceId string = ''
+
 @description('Event Hub namespace (fully qualified DNS suffix appended in-container) the simulator emits to.')
 param eventHubNamespace string
 
@@ -80,6 +86,11 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = if 
 
 var effectiveEnvironmentId = !empty(containerAppEnvironmentId) ? containerAppEnvironmentId : managedEnvironment.id
 
+var useAcrMiPull = !empty(containerRegistryLoginServer) && !empty(containerRegistryResourceId)
+
+// AcrPull role definition id (built-in, verified against Azure docs).
+var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
   location: location
@@ -95,6 +106,12 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       activeRevisionsMode: 'Single'
       ingress: null
+      registries: useAcrMiPull ? [
+        {
+          server: containerRegistryLoginServer
+          identity: simulatorIdentity.id
+        }
+      ] : []
     }
     template: {
       containers: [
@@ -130,6 +147,24 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         maxReplicas: maxReplicas
       }
     }
+  }
+}
+
+// AcrPull role assignment scoped to the ACR (least privilege for image pull).
+// Uses an existing-resource reference so the scope resolves to the actual registry
+// resource, not just its resource id string.
+resource acr 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' existing = if (useAcrMiPull) {
+  name: last(split(containerRegistryResourceId, '/'))
+}
+
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (useAcrMiPull) {
+  scope: acr
+  name: guid(containerRegistryResourceId, simulatorIdentity.id, acrPullRoleId)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
+    principalId: simulatorIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    description: 'Sprint 10 T1 (ADR-0019) — sim-capacity MI pulls containerImage from ACR.'
   }
 }
 

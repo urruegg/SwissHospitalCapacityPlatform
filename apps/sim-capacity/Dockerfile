@@ -1,10 +1,18 @@
 FROM python:3.11-slim
 
-WORKDIR /app
+WORKDIR /repo
 
-COPY src/ /app/src/
+# Preserve the repo directory layout so calibration modules can resolve
+# _REPO_ROOT via Path(__file__).parents[4]. See
+# apps/sim-capacity/src/calibration/*.py.
+COPY apps/sim-capacity/pyproject.toml /repo/apps/sim-capacity/
+COPY apps/sim-capacity/src/ /repo/apps/sim-capacity/src/
+COPY docs/reviews/2026-06-29-ama-capacity-metadata-review/*.csv /repo/docs/reviews/2026-06-29-ama-capacity-metadata-review/
 
-ENV PYTHONPATH=/app/src
+RUN pip install --no-cache-dir /repo/apps/sim-capacity
 
-# Thin-slice runtime emits one envelope payload and exits.
-CMD ["python", "/app/src/producer.py"]
+ENV PYTHONPATH=/repo/apps/sim-capacity/src
+
+# Continuous streaming producer. --duration-hours 0 loops forever; --rate 30 = 30 wall-clock
+# seconds per simulated hour (120x accel). Runs until Container App restart or SIGTERM.
+CMD ["python", "/repo/apps/sim-capacity/src/producer_sim.py", "--duration-hours", "0", "--rate", "30"]

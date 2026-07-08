@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "6235020900246999387"
+      "templateHash": "3898168545101535434"
     }
   },
   "parameters": {
@@ -348,6 +348,20 @@
       "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
       "metadata": {
         "description": "Container image the sim-capacity Container App runs. Placeholder until the sim-capacity image is published."
+      }
+    },
+    "simCapacityContainerRegistryLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR login server (e.g. 'cri75lbu5sj4hza.azurecr.io') for pulling simCapacityContainerImage. Together with simCapacityContainerRegistryResourceId enables MI-based pull (no admin creds)."
+      }
+    },
+    "simCapacityContainerRegistryResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional resource ID of the ACR that hosts simCapacityContainerImage. Required together with simCapacityContainerRegistryLoginServer."
       }
     },
     "simCapacityEventHubNamespace": {
@@ -2843,6 +2857,12 @@
           "containerImage": {
             "value": "[parameters('simCapacityContainerImage')]"
           },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('simCapacityContainerRegistryResourceId')]"
+          },
           "eventHubNamespace": "[if(not(empty(parameters('simCapacityEventHubNamespace'))), createObject('value', parameters('simCapacityEventHubNamespace')), if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceName.value), createObject('value', '')))]",
           "eventHubName": {
             "value": "[parameters('simCapacityEventHubName')]"
@@ -2861,7 +2881,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "4820132787754363338"
+              "templateHash": "11167454995027817185"
             }
           },
           "parameters": {
@@ -2913,6 +2933,20 @@
                 "description": "Container image the simulator runs. Defaults to a placeholder; the actual sim-capacity image is published in a later sprint."
               }
             },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server (e.g. 'cri75lbu5sj4hza.azurecr.io') the Container App pulls containerImage from. When set together with containerRegistryResourceId, the module wires MI-based image pull (no admin creds, no secrets)."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional resource ID of the ACR (Microsoft.ContainerRegistry/registries) that hosts containerImage. Required together with containerRegistryLoginServer to enable MI-based pull + AcrPull role assignment."
+              }
+            },
             "eventHubNamespace": {
               "type": "string",
               "metadata": {
@@ -2960,7 +2994,9 @@
           },
           "variables": {
             "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
-            "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]"
+            "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+            "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d"
           },
           "resources": [
             {
@@ -2998,7 +3034,8 @@
                 "environmentId": "[variables('effectiveEnvironmentId')]",
                 "configuration": {
                   "activeRevisionsMode": "Single",
-                  "ingress": null
+                  "ingress": null,
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('containerAppName'))))), createArray())]"
                 },
                 "template": {
                   "containers": [
@@ -3037,6 +3074,22 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('containerAppName')))]"
+              ]
+            },
+            {
+              "condition": "[variables('useAcrMiPull')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('containerAppName'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('containerAppName'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 10 T1 (ADR-0019) — sim-capacity MI pulls containerImage from ACR."
+              },
+              "dependsOn": [
                 "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('containerAppName')))]"
               ]
             }
