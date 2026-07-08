@@ -35,7 +35,7 @@ Existing relationship contract (14 → **16**) was also bumped for the 2 new M2 
 
 Verifier run locally (`./export_semantic_model_tmdl.ps1 -VerifyOnly`):
 
-```
+```text
 Verifying relationship contract under: ./data-platform/reports/capacity-dashboard.SemanticModel
   Total:    16  (expected 16)
   Active:   14
