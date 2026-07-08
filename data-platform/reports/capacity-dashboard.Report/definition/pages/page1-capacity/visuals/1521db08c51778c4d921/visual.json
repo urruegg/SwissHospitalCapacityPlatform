@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "1521db08c51778c4d921",
+  "position": { "x": 24, "y": 292, "z": 1005, "height": 400, "width": 900, "tabOrder": 1005 },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [{
+            "field": { "Column": { "Expression": { "SourceRef": { "Entity": "encounter" } }, "Property": "simulatedMonth" } },
+            "queryRef": "encounter.simulatedMonth",
+            "nativeQueryRef": "simulatedMonth"
+          }]
+        },
+        "Columns": {
+          "projections": [{
+            "field": { "Column": { "Expression": { "SourceRef": { "Entity": "encounter" } }, "Property": "simulatedWeekday" } },
+            "queryRef": "encounter.simulatedWeekday",
+            "nativeQueryRef": "simulatedWeekday"
+          }]
+        },
+        "Values": {
+          "projections": [{
+            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "encounter" } }, "Property": "Admissions" } },
+            "queryRef": "encounter.Admissions",
+            "nativeQueryRef": "Admissions"
+          }]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [{
+        "properties": {
+          "columnAdjustment": { "expr": { "Literal": { "Value": "'growToFit'" } } },
+          "autoSizeColumnWidth": { "expr": { "Literal": { "Value": "true" } } }
+        }
+      }]
+    },
+    "visualContainerObjects": {
+      "padding": [{
+        "properties": {
+          "top":    { "expr": { "Literal": { "Value": "8D" } } },
+          "bottom": { "expr": { "Literal": { "Value": "8D" } } },
+          "left":   { "expr": { "Literal": { "Value": "8D" } } },
+          "right":  { "expr": { "Literal": { "Value": "8D" } } }
+        }
+      }]
+    }
+  }
+}
