@@ -23,7 +23,7 @@ The M1 silver failure `System_Cancelled_Session_Statements_Failed` masked three 
 
 **Diagnostic path:** Spark Advisor returned `Spark_User_NonJvmUserApp_TypeError`. Driver stdout showed:
 
-```
+```text
 TypeError: cannot pickle 'rpds.HashTrieMap' object
 PicklingError: Could not serialize object: TypeError: cannot pickle 'rpds.HashTrieMap' object
 Cell In[20], line 40, in gate1_schema(df, eventKind, schema_doc)
