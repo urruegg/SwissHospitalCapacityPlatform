@@ -1,0 +1,59 @@
+name: agent-host-build
+
+# Sprint 13 T5 — build + unit/integration-test the Container Apps agent-host and
+# validate its Bicep (UC1-output) modules on any change under the host or its
+# infra. Keeps the platform-control lane green per design spec §7.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hcc-agent-host/**'
+      - 'infra/modules/agent-host/**'
+      - '.github/workflows/agent-host-build.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/hcc-agent-host/**'
+      - 'infra/modules/agent-host/**'
+      - '.github/workflows/agent-host-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    name: hcc-agent-host — pytest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hcc-agent-host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install (test deps only)
+        run: pip install ".[dev]"
+
+      - name: Run tests
+        run: python -m pytest
+
+  bicep:
+    name: agent-host Bicep — build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Bicep modules
+        run: |
+          for f in infra/modules/agent-host/*.bicep; do
+            echo "== $f =="
+            az bicep build --file "$f" --stdout > /dev/null
+          done
