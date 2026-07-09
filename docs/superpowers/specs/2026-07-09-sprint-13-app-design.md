@@ -2,14 +2,15 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
-| **Author** | Urs Rüegg |
+| **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (initial — added the Container Apps agent-host backend as MVP scope, per ADR-0008) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md](../ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md) |
 | **Brandkit** | [docs/brandkit/Helvion-Brand-Guide.md](../../brandkit/Helvion-Brand-Guide.md) |
+| **Runtime posture** | Frontend on Azure Static Web Apps or App Service; **agent-host backend on Azure Container Apps** per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md); Redis + Cosmos wiring per [ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md) |
 
 ---
 
@@ -66,6 +67,15 @@ The Fluent baseline delivers:
 - Copilot Drawer skeleton invoking BMCA.
 - Multilingual UI framework in place (DE default, EN fallback); FR/IT wired in follow-up.
 - Accessibility baseline (WCAG 2.1 AA) via axe-core.
+- **Container Apps agent-host backend (new in v1.1.0 per ADR-0008 + ADR-0007)** — lightweight service under `apps/hcc-agent-host/` that:
+  - loads Sprint 11 prompt manifests + tool contracts at startup;
+  - authenticates the caller (MSAL server-side token validation);
+  - composes system prompt + tools, dispatches to a Microsoft Foundry chat model;
+  - enforces HITL-01..HITL-05 gates per ADR-0007 §3 before any downstream side-effect;
+  - reads/writes grounding + session cache in **Azure Cache for Redis** per ADR-0007 §1;
+  - persists conversation, audit, and approval events in **Azure Cosmos DB** per ADR-0007 §2 (schema from ADR-0007 §Implementation Notes);
+  - exposes one HTTP endpoint per agent (`/agents/<name>/chat`, `/agents/<name>/tools/<tool>`);
+  - MVP wires **one agent end-to-end (BMCA)**; the other five user-facing agents can load via the same manifest pipeline but their happy-paths remain fixture-only until follow-up sprints.
 
 ### 2.2 Parallel PoC scope (Rayfin)
 
@@ -101,7 +111,7 @@ apps/
 │  │  │     └─ tabs/roles/          # the reference Backstage tab
 │  │  ├─ whiteboard/      # reusable component (React Flow or tldraw)
 │  │  ├─ cards/           # 6 card types: PowerBI, Agent, KPI, LiveStream, Responsible, Scenario
-│  │  ├─ copilot-drawer/  # right-side agent drawer
+│  │  ├─ copilot-drawer/  # right-side agent drawer (calls the agent-host)
 │  │  ├─ theme/           # Fluent v9 theme built from Brandkit tokens
 │  │  └─ i18n/            # DE default + EN fallback
 │  ├─ tests/
@@ -109,8 +119,21 @@ apps/
 │  │  └─ e2e/             # Playwright smoke
 │  ├─ Dockerfile
 │  └─ package.json
-└─ hcc-app-rayfin/        # parallel PoC (structure follows Rayfin conventions)
-   └─ (generated)
+├─ hcc-app-rayfin/        # parallel PoC (structure follows Rayfin conventions)
+│  └─ (generated)
+└─ hcc-agent-host/        # NEW in v1.1.0 - Container Apps backend per ADR-0008
+   ├─ src/
+   │  ├─ manifests/       # loads Sprint 11 agents-archive/<name>/manifest.yaml
+   │  ├─ orchestrator/    # composes system prompt + tools; dispatches to Foundry
+   │  ├─ tools/           # MCP tool adapters (fabric, cosmos, github)
+   │  ├─ hitl/            # HITL-01..HITL-05 gate enforcement per ADR-0007
+   │  ├─ cache/           # Redis client (grounding + session cache)
+   │  ├─ persistence/     # Cosmos client (conversation, audit, approval-event)
+   │  ├─ auth/            # MSAL server-side token validation + OBO
+   │  └─ http/            # /agents/<name>/chat + /agents/<name>/tools/<tool>
+   ├─ tests/
+   ├─ Dockerfile
+   └─ pyproject.toml OR package.json (language TBD in Sprint 13 kickoff brainstorm)
 ```
 
 **Component boundaries.**
@@ -150,7 +173,8 @@ The parallel PoC produces a decision memo at Sprint 13 exit: `docs/adr/00XX-flue
 | --- | --- | --- |
 | Fluent baseline | `writing-plans`, `subagent-driven-development` (per-component subagents), `test-driven-development`, `verification-before-completion` | (evaluate installing `react-fluent-authoring` if it exists per [AGENTS.md skill-discovery rule](../../../AGENTS.md#skill-discovery--rule-of-engagement-v1140-2026-07-08); else user-scoped) |
 | Rayfin PoC | Same Superpowers cycle | Rayfin's own CLI / skill if bundled |
-| Copilot Drawer wiring | Same | (Foundry agent client patterns) |
+| **Container Apps agent-host backend** (new in v1.1.0) | Same | Container Apps + Foundry chat-completion client + Semantic-Kernel-style tool-orchestration harness; Redis + Cosmos SDK; MSAL server-side token validation |
+| Copilot Drawer wiring | Same | Backend proxy pattern — Drawer calls the Container Apps agent-host; agent-host dispatches to Foundry chat model with tool calls |
 
 ---
 
@@ -214,11 +238,15 @@ The parallel PoC produces a decision memo at Sprint 13 exit: `docs/adr/00XX-flue
 
 ## 11. Definition of done
 
-- [ ] `apps/hcc-app-fluent/` and `apps/hcc-app-rayfin/` both build in CI.
+- [ ] `apps/hcc-app-fluent/`, `apps/hcc-app-rayfin/`, and `apps/hcc-agent-host/` all build in CI.
 - [ ] Fluent app deployed to Container Apps SIT slot with MSAL sign-in verified.
+- [ ] `hcc-agent-host` deployed to Container Apps SIT slot; loads BMCA manifest at startup.
 - [ ] BedManager whiteboard renders 6 card types with mock data.
 - [ ] Backstage Roles tab renders live app-role list from Entra Graph (read-only).
-- [ ] Copilot Drawer invokes BMCA and shows a grounded reply for one canonical prompt.
+- [ ] Copilot Drawer invokes BMCA **via the agent-host** and shows a grounded reply for one canonical prompt.
+- [ ] Redis cache instance provisioned; agent-host reads/writes grounding entries per ADR-0007.
+- [ ] Cosmos DB `conversations`, `audit`, `approval-events` containers provisioned per ADR-0007 §Implementation Notes.
+- [ ] HITL-01..HITL-05 gate scaffolding in place (gate-check middleware; enforcement bodies stubbed with a deny-by-default posture; positive gate wiring lands per agent in follow-up sprints).
 - [ ] `app-build.yml`, `app-e2e.yml`, `app-a11y.yml` workflows green.
 - [ ] Decision ADR (`docs/adr/00XX-fluent-vs-rayfin-decision.md`) merged and recommends one stack for Sprint 14+.
 - [ ] Sprint 13 retro entry in [docs/sprints/superpowers-checkpoint-matrix.md](../../sprints/superpowers-checkpoint-matrix.md).
