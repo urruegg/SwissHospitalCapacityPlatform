@@ -1,6 +1,6 @@
 name: Eval Goldens (Legacy Compatibility)
 
-# Structural validator for `agents-archive/<name>/golden-tasks.md` files.
+# Structural validator for `agents/<name>/golden-tasks.md` files.
 #
 # Migration note: Superpowers is the default execution model for new work.
 # This workflow remains as a legacy compatibility validator for retained
@@ -11,7 +11,7 @@ name: Eval Goldens (Legacy Compatibility)
 # `docs/sprints/sprint-01-orchestrator-mvp.md` §3.1 Runtime Amendment).
 #
 # What it does:
-#   1. Confirms every `agents-archive/<name>/AGENT.md` has a sibling `golden-tasks.md`.
+#   1. Confirms every `agents/<name>/AGENT.md` has a sibling `golden-tasks.md`.
 #   2. Confirms every `golden-tasks.md` has at least one happy-path fixture
 #      and at least one failure-mode fixture (heuristic: at least two H2
 #      sections starting with `Fixture:` and at least one of them mentions
@@ -22,16 +22,20 @@ name: Eval Goldens (Legacy Compatibility)
 #
 # Triggers: PRs touching `agents/**` or this workflow itself, and manual
 # `workflow_dispatch` for compatibility replay.
+#
+# Retired: `agents-archive/` was consolidated into `agents/` in the 2.0.0
+# folder restructure. Any historical references to `agents-archive/` in
+# archived docs point to git history.
 
 on:
   pull_request:
     paths:
-      - "agents-archive/**"
+      - "agents/**"
       - ".github/workflows/eval-goldens.yml"
   workflow_dispatch:
     inputs:
       agent:
-        description: "Agent name (folder under agents-archive/) to validate. Leave blank for all."
+        description: "Agent name (folder under agents/) to validate. Leave blank for all."
         required: false
         default: ""
 
@@ -58,14 +62,14 @@ jobs:
 
           AGENT_INPUT="${{ github.event.inputs.agent }}"
           if [[ -n "${AGENT_INPUT}" ]]; then
-            agent_dirs=("agents-archive/${AGENT_INPUT}")
+            agent_dirs=("agents/${AGENT_INPUT}")
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Validate only touched archived agent folders on PRs to avoid failing on
+            # Validate only touched agent folders on PRs to avoid failing on
             # unrelated placeholder fixtures while still enforcing quality on
             # the changed scope.
             mapfile -t changed_agent_dirs < <(
               git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
-                | grep -E '^agents-archive/[^/]+/' \
+                | grep -E '^agents/[^/]+/' \
                 | cut -d/ -f1-2 \
                 | sort -u || true
             )
@@ -76,11 +80,13 @@ jobs:
               exit 0
             fi
           else
-            agent_dirs=(agents-archive/*/)
+            # Skip fabric-data-agent — Sprint 09 v2 read-only pack without a
+            # Sprint 11-shape golden-tasks.md yet (see AGENTS.md §1 note).
+            agent_dirs=($(ls -d agents/*/ | grep -v '^agents/fabric-data-agent/$' || true))
           fi
 
           if [[ ${#agent_dirs[@]} -eq 0 ]]; then
-            echo "::notice::No agent folders under agents-archive/ — nothing to validate."
+            echo "::notice::No agent folders under agents/ — nothing to validate."
             exit 0
           fi
 

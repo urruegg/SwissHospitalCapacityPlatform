@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.3.0 |
-| **Date** | 2026-06-12 |
+| **Version** | 2.4.0 |
+| **Date** | 2026-07-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.2.0 (Superpowers execution playbook baseline) |
+| **Previous Version** | 2.3.0 (updated Cutover Status narrative for the 2.0.0 `agents-archive/` → `agents/` restructure) |
 
 ## Purpose
 
@@ -56,8 +56,11 @@ Core skills to always consider:
 ## Cutover Status
 
 1. Default mode is Superpowers-driven execution.
-2. Canonical legacy per-agent prompt folders are archived under
-	`agents-archive/`; compatibility stubs remain under `agents/`.
+2. All agent packs (prompts, runtime manifests, golden tasks) live under
+	`agents/<name>/` as the **single source of truth**. The `agents-archive/`
+	folder was retired in the 2.0.0 restructure — see
+	[`LEGACY-STATUS.md`](LEGACY-STATUS.md) for the changelog and `git log` for
+	historical Sprint 09 bodies (`bm-copilot`, `csa-agent` Sprint 09 v2 body).
 3. Governance controls remain source-of-truth in:
 	- [AGENTS.md](../AGENTS.md)
 	- [.github/copilot/mcp.json](../.github/copilot/mcp.json)

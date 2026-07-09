@@ -67,7 +67,7 @@
         "Fabric workspace Viewer (query Gold Delta tables, read semantic models)",
         "Fabric item Contributor scoped to the data-quality notebook (data-quality-agent only)"
       ],
-      "_golden_task": "agents-archive/data-quality-agent/golden-tasks.md",
+      "_golden_task": "agents/data-quality-agent/golden-tasks.md",
       "type": "remote",
       "enabled": true,
       "_enabled_in_sprint": "S11 (user-facing + data agents)"
@@ -80,7 +80,7 @@
       "_required_permissions": [
         "Directory.AuditLog.Read.All (application permission, consent-gated, revocable)"
       ],
-      "_golden_task": "agents-archive/onboarding-agent/golden-tasks.md",
+      "_golden_task": "agents/onboarding-agent/golden-tasks.md",
       "type": "remote",
       "enabled": true,
       "_enabled_in_sprint": "S11 (onboarding stretch)"

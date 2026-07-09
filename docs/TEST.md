@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 0.8.0 |
+| **Date** | 2026-07-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.6.0 (pre § Sprint 09 evidence subsection) |
+| **Previous Version** | 0.7.0 (updated Agent control lane row for the 2.0.0 `agents-archive/` → `agents/` restructure) |
 
 ## Purpose
 
@@ -45,7 +45,7 @@ This document is aligned to:
 | ----- | ----- | ----- |
 | Governance docs | PRD, ARCHITECTURE, AI, SECURITY, COMPLIANCE, DATA, BVA, README, sprint docs | Markdown lint, link check, traceability review |
 | Superpowers execution lane | Superpowers-driven issue intake, planning, execution, and completion evidence | Execution-mode declaration, plan/verification evidence, PR contract conformance |
-| Agent control lane | agents-archive/*/AGENT.md and golden tasks (with stubs in agents/*) | Golden-task compatibility replay, refusal and side-effect checks |
+| Agent control lane | agents/*/AGENT.md, agents/*/manifest.yaml, and agents/*/golden-tasks.md (single source of truth after the 2.0.0 folder restructure) | Golden-task compatibility replay, refusal and side-effect checks |
 | Infrastructure lane | infra/**/*.bicep and environment parameters (when present) | Bicep build, what-if validation, policy baseline checks |
 | Delivery lane | .github workflows, issue templates, PR templates | Workflow lint, branch and approval rule checks |
 | Future data/AI/app lanes | data-platform, ai-models, apps, integrations (when populated) | Lane-specific tests and evaluation packs defined in lane-local READMEs |
@@ -71,7 +71,7 @@ Required for any change under docs/, docs/sprints/, AGENTS.md, or README.md.
 ### Gate 2: Execution Method Safety
 
 Required for execution-workflow changes under issue templates, PR templates,
-agents-archive/, agents/ stubs, or AGENTS.md.
+agents/ or AGENTS.md.
 
 1. Superpowers execution mode is declared for new work unless compatibility mode
 	is explicitly required.
