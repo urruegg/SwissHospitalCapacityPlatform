@@ -18,6 +18,9 @@ venv/
 # Tenant migration local snapshot files (per-run rollback artefacts, per operator machine)
 tenant-migration-github-env-snapshot-*.json
 
+# Per-operator scratch folder for PR/issue body drafts, ad-hoc scripts, and other transient artefacts
+.tmp/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
