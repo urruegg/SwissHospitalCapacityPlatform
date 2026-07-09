@@ -1,0 +1,68 @@
+name: adoption-refresh
+
+# Sprint 12 T5 — nightly export of Entra sign-in logs into Fabric Bronze
+# (Bronze/adoption/YYYY-MM-DD/) feeding the Sprint 15 BVA adoption KPI. Runs the
+# Fabric ingest notebook `data-platform/notebooks/adoption/01_adoption_ingest.ipynb`
+# via the Fabric REST job API using workload identity federation (no secrets).
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC daily
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  refresh:
+    name: Trigger adoption ingest notebook
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required environment configuration
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          FABRIC_WORKSPACE_ID: ${{ vars.FABRIC_WORKSPACE_ID }}
+          FABRIC_ADOPTION_NOTEBOOK_ID: ${{ vars.FABRIC_ADOPTION_NOTEBOOK_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$AZURE_CLIENT_ID"
+          test -n "$AZURE_TENANT_ID"
+          test -n "$FABRIC_WORKSPACE_ID"
+          test -n "$FABRIC_ADOPTION_NOTEBOOK_ID"
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Run Fabric adoption ingest notebook
+        shell: bash
+        env:
+          FABRIC_WORKSPACE_ID: ${{ vars.FABRIC_WORKSPACE_ID }}
+          FABRIC_ADOPTION_NOTEBOOK_ID: ${{ vars.FABRIC_ADOPTION_NOTEBOOK_ID }}
+        run: |
+          set -euo pipefail
+          token="$(az account get-access-token \
+            --resource https://api.fabric.microsoft.com \
+            --query accessToken -o tsv)"
+          http_status="$(curl -sS -o response.json -w '%{http_code}' \
+            -X POST \
+            --oauth2-bearer "$token" \
+            -H 'Content-Type: application/json' \
+            "https://api.fabric.microsoft.com/v1/workspaces/${FABRIC_WORKSPACE_ID}/items/${FABRIC_ADOPTION_NOTEBOOK_ID}/jobs/instances?jobType=RunNotebook")"
+          echo "Fabric job submit HTTP ${http_status}"
+          cat response.json || true
+          case "${http_status}" in
+            2*) echo 'Notebook run accepted.' ;;
+            *) echo 'Notebook run submission failed.'; exit 1 ;;
+          esac

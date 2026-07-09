@@ -1,0 +1,80 @@
+name: entra-whatif
+
+# Sprint 12 T6 — posts an `az deployment sub what-if` plan as a PR comment for
+# any change to the Entra provisioning modules. The what-if is the artefact the
+# reviewer inspects before posting `approved-to-apply` (AGENTS.md §4). This
+# workflow never applies — apply is a manual, gated step.
+
+on:
+  pull_request:
+    paths:
+      - 'infra/modules/entra/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  what-if:
+    name: What-if (SIT)
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Ensure Bicep is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          az bicep version || az bicep install
+
+      - name: What-if (SIT)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # temporaryPassword is a throwaway value used only to satisfy the
+          # secure parameter during planning; no user is created by what-if.
+          az deployment sub what-if \
+            --location westus2 \
+            --template-file infra/modules/entra/main.bicep \
+            --parameters infra/modules/entra/parameters/sit.bicepparam \
+            --parameters temporaryPassword="WhatIf-Plan-Only-$(date +%s)!" \
+            > whatif.txt 2>&1 || {
+              echo "what-if failed:"; cat whatif.txt; exit 1;
+            }
+          cat whatif.txt
+
+      - name: Post what-if as PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('whatif.txt', 'utf8').slice(0, 60000);
+            const body = [
+              '## Entra `what-if` (SIT)',
+              '',
+              'Reviewer: inspect this plan, then reply with `approved-to-apply`',
+              'referencing it before any apply (AGENTS.md §4).',
+              '',
+              '```',
+              plan,
+              '```'
+            ].join('\n');
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
