@@ -30,7 +30,7 @@ _AVAILABLE = ("GA", "Preview")
 
 
 def _availability_index(availability: Iterable[dict]) -> dict[tuple[str, str], str]:
-    """Map ``(bomId, region) -> maturity`` (last write wins, then sorted input)."""
+    """Map ``(bomId, region) -> maturity`` (last write wins on duplicates)."""
     index: dict[tuple[str, str], str] = {}
     for fact in availability:
         index[(fact["bomId"], fact["region"])] = fact["maturity"]

@@ -66,8 +66,12 @@ def build_gold_facts(spark) -> None:
 
     bom = spark.read.table(f"{SILVER_SCHEMA}.evidence_bom")
     req_bridge = (
-        bom.select(F.col("id").alias("resource_key"), F.explode_outer("realisesRequirements").alias("requirement_key"),
-                   "sourcePath", "sourceCommit")
+        bom.select(
+            F.col("id").alias("resource_key"),
+            F.explode_outer("realisesRequirements").alias("requirement_key"),
+            "sourcePath",
+            "sourceCommit",
+        )
         .filter(F.col("requirement_key").isNotNull())
     )
     _write(req_bridge, "bridge_requirement_resource")
