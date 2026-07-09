@@ -1,7 +1,7 @@
 // Sprint 12 — Entra demo org: PROD parameters.
 //
 // Users are shared across SIT and PROD (design spec D-6); only the redirect URIs
-// and the friendly env tag differ between this file and prod.bicepparam.
+// and the friendly env tag differ between sit.bicepparam and this file.
 // temporaryPassword is intentionally NOT set here — it is provided securely at
 // apply time (az deployment sub create --parameters temporaryPassword=<value>)
 // and must never be committed (T4 refusal rule).

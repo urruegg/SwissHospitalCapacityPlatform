@@ -25,6 +25,10 @@ param temporaryPassword string
 // Refusal guard: fail the build/deployment if any UPN uses a non-approved domain.
 var offendingUpns = filter(personas, persona => !endsWith(toLower(persona.upn), '@${allowedUpnDomain}'))
 
+// Enforce the refusal rule at deploy time: if any persona uses a domain other than
+// allowedUpnDomain this assertion fails and no users are created (T4 refusal rule).
+assert noForeignUpnDomains = length(offendingUpns) == 0
+
 resource users 'Microsoft.Graph/users@v1.0' = [
   for persona in personas: {
     accountEnabled: true

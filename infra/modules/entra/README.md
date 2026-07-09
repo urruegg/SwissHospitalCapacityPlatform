@@ -87,13 +87,17 @@ comment (T4 refusal rule).
 ## Role-count reconciliation note
 
 The design spec §1 prose reads "15 Entra app roles (13 operational/governance +
-2 super)", but the persona catalog in spec §6 references **15** distinct
-operational/governance role values (`HCC.OperationsLead`, `HCC.BedManager`,
+2 super)" — i.e. a **15** headline total. However, the persona catalog in spec §6
+actually references **15** distinct operational/governance role values
+(`HCC.OperationsLead`, `HCC.BedManager`,
 `HCC.FlowManager`, `HCC.EDLead`, `HCC.ORCoordinator`, `HCC.StaffingCoordinator`,
 `HCC.DischargeCoordinator`, `HCC.CrisisManager`, `HCC.Executive`,
 `HCC.CantonalViewer`, `HCC.PlatformAdmin`, `HCC.OntologySteward`,
 `HCC.AIGovernance`, `HCC.DemoOperator`, `HCC.Auditor`) plus the 2 super roles —
-**17 total**. `app-roles.bicep` provisions all 17 so every persona maps to an
-existing role and group (internal consistency). Reviewer action: confirm whether
-to keep 17 or collapse two operational roles to hit the "15" headline, and update
-the spec prose accordingly at the approval gate.
+**17 total**. In other words the spec §1 "13 operational" count is inconsistent
+with its own §6 catalog, which enumerates 15. `app-roles.bicep` provisions all 17
+so every persona maps to an existing role and group (internal consistency).
+Reviewer action: confirm whether the §6 catalog (15 operational) or the §1 headline
+(13 operational) is authoritative — either collapse two operational roles to hit the
+"15 total" headline, or correct spec §1 to "15 operational + 2 super = 17" — and
+update the spec prose accordingly at the approval gate.
