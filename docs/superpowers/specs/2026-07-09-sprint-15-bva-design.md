@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
-| **Author** | Urs Rüegg |
+| **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (initial — stretch `bva-agent` reworded from Foundry-hosted to application-hosted per ADR-0008) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/Swiss-Hospital-Capacity-Live-Business-Value-Assessment-(BVA)-Dashboard.md](../ideas/Swiss-Hospital-Capacity-Live-Business-Value-Assessment-(BVA)-Dashboard.md) |
 | **ROM baseline** | [docs/BVA.md](../../BVA.md) v1.0.1 |
@@ -63,7 +63,7 @@ The live BVA data product is operating on **synthetic** Azure-consumption data t
 
 ### 2.3 Stretch — only if MVP lands early
 
-- **`bva-agent`** — monthly narrative summary (Foundry agent) that drafts a Markdown board pack into `docs/board-packs/YYYY-MM/`.
+- **`bva-agent`** — monthly narrative summary (application-hosted agent per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md), loaded by the Sprint 13 Container Apps agent-host, dispatched to a Foundry chat model) that drafts a Markdown board pack into `docs/board-packs/YYYY-MM/`.
 
 ---
 
@@ -169,7 +169,7 @@ Enforced in the Fabric semantic model via DAX RLS roles.
 
 ## 9. Stretch — `bva-agent`
 
-Only if MVP lands early. Foundry agent that:
+Only if MVP lands early. **Application-hosted** agent (per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md); loaded by the Sprint 13 Container Apps agent-host; dispatched to a Foundry chat model) that:
 
 - runs on the first business day of each month;
 - reads the previous month's KPIs from the semantic model;
@@ -189,7 +189,7 @@ MCP servers: `github-mcp`, `fabric-mcp`. Ceiling: `write`. Model selection follo
 | Medallion + semantic model | Same + `subagent-driven-development` | `spark-authoring`, `fabric-semantic-model-authoring`, `powerbi-optimization` |
 | C-suite Power BI pages | Same | `powerbi-report-authoring`, `powerbi-optimization` |
 | BVA cards (React components) | Same | (from Sprint 13 decision stack) |
-| Stretch `bva-agent` | Same | Foundry agent authoring |
+| Stretch `bva-agent` | Same | Application-hosted agent authoring (prompt + tool contract + HITL declaration); Foundry chat-completion client |
 
 ---
 

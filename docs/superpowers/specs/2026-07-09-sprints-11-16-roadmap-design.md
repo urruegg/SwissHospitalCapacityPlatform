@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
-| **Author** | Urs Rüegg |
+| **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (initial — added decision D-11 clarifying agent runtime posture is application-hosted per ADR-0008; sibling specs 11/13/15/16 updated to match) |
 
 > **Purpose.** Master roadmap for the demo-showcase programme spanning Sprints 11–16. Anchors the per-sprint design specs, records the brainstorm decisions, and defines the Superpowers-first orchestration pattern used to delegate work to the GitHub Copilot coding agent.
 >
@@ -166,6 +166,7 @@ Decisions made during the 2026-07-09 brainstorm session with the user. Each deci
 | D-8 | Sprint 16 CSA persistence = Cosmos DB for NoSQL + Fabric Mirroring | Microsoft best practice: [Cosmos for AI agent memory](https://learn.microsoft.com/azure/cosmos-db/ai-agents), [Fabric Mirroring for analytical replica](https://learn.microsoft.com/fabric/mirroring/azure-cosmos-db) | Vector search (DiskANN), change feed, HTAP; superior to SQL for agent knowledge |
 | D-9 | Sprint 16 CSA guidance = dedicated `csa-agent` | User selected Option B (with hybrid persistence per D-8) | `csa-agent` owns Prepare → Run → Evaluate → Recommend wizard |
 | D-10 | Two super roles = `HCC.SuperAdmin` + `HCC.GuestReadOnly` | User's brief | Provisioned in Sprint 12; used by demo operator and external stakeholders |
+| D-11 | Agent runtime posture = application-hosted per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md); Foundry provides the model only. Redis + Cosmos wiring per [ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md). | Follow-up correction after user question on 2026-07-09; roadmap v1.0.0 and Sprint 11/13/15/16 specs at 1.0.0 had mistakenly implied Foundry Agent Service as the runtime | Sprint 11 delivers prompt manifests + tool contracts + HITL declarations only; Sprint 13 builds the Container Apps agent-host that loads them |
 
 ---
 

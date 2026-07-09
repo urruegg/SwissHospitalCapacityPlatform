@@ -2,13 +2,14 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
-| **Author** | Urs Rüegg |
+| **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (initial — mis-wrote Foundry Agent Service as the runtime; corrected here to application-hosted per ADR-0008) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/reviews/2026-06-09-ama-sd-review.md](../../reviews/2026-06-09-ama-sd-review.md) §2.4 Baseline Architecture; [docs/superpowers/ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md](../ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md) §4.1 |
+| **Runtime posture** | Application-hosted agents dispatched from the Sprint 13 Container Apps agent-host to a Microsoft Foundry chat model, per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md) + [ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md) |
 
 ---
 
@@ -35,9 +36,19 @@ Eight agents are addressable in the repo. Each has:
 - an `agents-archive/<name>/golden-tasks.md` with at least one happy-path and one failure-mode fixture;
 - a compatibility stub under `agents/<name>/`;
 - a row in [AGENTS.md §1](../../../AGENTS.md#1-registry);
-- for the six user-facing operational agents: a Microsoft Foundry agent definition + connection ready to be wired to the Sprint 13 app shell.
+- for the six user-facing operational agents: a **prompt manifest + tool contract + HITL gate declaration** ready to be *loaded* by the Sprint 13 Container Apps agent-host and dispatched against a Foundry chat model.
 
 Sprint 11 does **not** yet invoke agents from a real app UI — that is Sprint 13. Sprint 11 does **not** yet fill out the CSA body — that is Sprint 16.
+
+### Runtime posture (per ADR-0008 + ADR-0007)
+
+- **Control plane (agent orchestration, tool routing, HITL enforcement)** — application-hosted in **Azure Container Apps** (the agent-host built in Sprint 13). This is the ADR-0008 default; Foundry Agent Service is a permitted exception with a boundary contract, which Sprint 11 does not use.
+- **Chat model** — **Microsoft Foundry** deployment (region + SKU pinned by the Sprint 11 model-selection ADR).
+- **Cache (grounding + session state)** — **Azure Cache for Redis** (per ADR-0007 §1).
+- **Persistence (conversation, audit, approval events)** — **Azure Cosmos DB** with the ADR-0007 §Implementation-Notes schema. This is separate from the Sprint 16 CSA scenario Cosmos.
+- **HITL gates HITL-01..HITL-05** (per ADR-0007 §3) — mandatory before any side-effecting downstream action. Sprint 11 agents are all `write` ceiling (advisory), so they do not fire HITL gates themselves; they must declare which HITL gate governs the downstream action they recommend.
+
+**What Sprint 11 delivers.** Prompt manifests + tool contracts + goldens + HITL declarations only — no Container Apps agent-host code (Sprint 13 builds that) and no Foundry Agent Service deployment (posture forbids it by default).
 
 ---
 
@@ -125,9 +136,9 @@ Follow [AGENTS.md skill-discovery rule of engagement](../../../AGENTS.md#skill-d
 | --- | --- | --- |
 | Issue template — agent build | `.github/ISSUE_TEMPLATE/agent-build.yml` | New agent build — one issue per agent |
 | Issue template — sprint kickoff | `.github/ISSUE_TEMPLATE/sprint-kickoff.yml` | Sprint 11 kickoff |
-| Workflow — eval goldens | `.github/workflows/eval-goldens.yml` | On PR to `agents-archive/**` — replays fixtures via a Foundry test client |
+| Workflow — eval goldens | `.github/workflows/eval-goldens.yml` | On PR to `agents-archive/**` — replays fixtures against the Foundry chat-completion API (no Foundry Agent Service involved) |
 | Labels | `sprint-11`, `agent-build`, `model-adr-required`, `superpowers-brainstorm`, `superpowers-plan`, `superpowers-execute` | Applied by templates |
-| MCP allow-list | `.github/copilot/mcp.json` | Add `fabric-mcp` entry for Foundry agent definitions |
+| MCP allow-list | `.github/copilot/mcp.json` | Add `fabric-mcp` entry so the Sprint 13 agent-host can dispatch Fabric tool calls on behalf of the loaded agents |
 | CODEOWNERS | `.github/CODEOWNERS` | `agents-archive/**` → @urruegg |
 
 **Delegation flow.** Kickoff issue opens → Copilot coding agent reads the roadmap + this design spec → uses `brainstorming` to confirm no gaps → invokes `writing-plans` to produce `plan.md` → invokes `subagent-driven-development` to build the 8 agents in parallel subagents (one per agent).
@@ -139,10 +150,11 @@ Follow [AGENTS.md skill-discovery rule of engagement](../../../AGENTS.md#skill-d
 | Action | Ceiling | Gate |
 | --- | --- | --- |
 | Prompt file changes (`agents-archive/**`) | `write` | Standard PR review |
-| Foundry agent definitions (deploy of agent to Foundry) | `deploy` | `approved-to-apply` per agent |
 | Model deployment (if new SKU or region) | `deploy` | `approved-to-apply` + ADR |
 | `onboarding-agent` reading Entra audit log | `read` | Consent gate — `AuditLog.Read.All` app permission granted once, revocable |
 | Any deletion (agent, model, definition) | `delete` | Blocked in Sprint 11 |
+
+> **Note.** No Foundry Agent Service deployments in Sprint 11 — per ADR-0008 the runtime is application-hosted. The Sprint 13 Container Apps agent-host loads the prompt manifests at runtime; Sprint 11 delivers the manifests, not the runtime.
 
 ---
 
@@ -184,5 +196,5 @@ Follow [AGENTS.md skill-discovery rule of engagement](../../../AGENTS.md#skill-d
 - [ ] `eval-goldens.yml` workflow green.
 - [ ] `agent-build.yml` and `sprint-kickoff.yml` issue templates in place.
 - [ ] `fabric-mcp` entry added to `.github/copilot/mcp.json`.
-- [ ] For each user-facing agent: Foundry agent definition created (deploy gated by `approved-to-apply`).
+- [ ] For each user-facing agent: prompt manifest + tool contract + HITL gate declaration ready for Sprint 13 runtime loading (no Foundry Agent Service deployment; agent-host runtime is Sprint 13 scope).
 - [ ] Sprint 11 retro entry in [docs/sprints/superpowers-checkpoint-matrix.md](../../sprints/superpowers-checkpoint-matrix.md).

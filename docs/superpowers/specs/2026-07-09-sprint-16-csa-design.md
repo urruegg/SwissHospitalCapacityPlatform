@@ -2,13 +2,14 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
-| **Author** | Urs Rüegg |
+| **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (initial — `csa-agent` reworded from Foundry-hosted to application-hosted per ADR-0008; Cosmos schema unchanged) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/CSA-WhatIf-Scenario-Research-and-Catalogue.md](../ideas/CSA-WhatIf-Scenario-Research-and-Catalogue.md) |
+| **Runtime posture** | Application-hosted per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md); loaded by the Sprint 13 Container Apps agent-host; chat model = Microsoft Foundry |
 | **Best-practice references** | [Azure Cosmos DB — AI agents](https://learn.microsoft.com/azure/cosmos-db/ai-agents); [Agent memories in Azure Cosmos DB for NoSQL](https://learn.microsoft.com/azure/cosmos-db/gen-ai/agentic-memories); [Fabric Mirroring — Azure Cosmos DB](https://learn.microsoft.com/fabric/mirroring/azure-cosmos-db); [Agent Memory Toolkit for Azure Cosmos DB (preview)](https://learn.microsoft.com/azure/cosmos-db/gen-ai/agent-memory-toolkit) |
 
 ---
@@ -52,7 +53,7 @@ The CSA is a working what-if system:
 
 - **Cosmos DB for NoSQL** provisioned via Bicep (`infra/modules/cosmos/csa.bicep`) with four containers (see §4).
 - **Fabric Mirroring** enabled from Cosmos to OneLake (`fabric-mirrored-csa` Fabric item).
-- **Dedicated `csa-agent`** — Foundry agent, body written now (scaffold shipped in Sprint 11).
+- **Dedicated `csa-agent`** — **application-hosted** agent (per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md); loaded by the Sprint 13 Container Apps agent-host; dispatched to a Foundry chat model), body written now (scaffold shipped in Sprint 11).
 - **Tier classifier** — rules layer grounded on the Swiss Lage doctrine.
 - **Response-lever library** — served from Cosmos as a reference container.
 - **App wizard** — new page in Sprint 13 app (`apps/hcc-app-fluent/src/workspaces/main/wizards/csa/`) rendering the four phases with the `csa-agent` in the Copilot Drawer.
@@ -81,10 +82,12 @@ The CSA is a working what-if system:
                     └──────────┬───────────────────────────────────┘
                                │
                                ▼
-                    ┌────────────────────────┐
-                    │  csa-agent (Foundry)  │
-                    │  MCP: cosmos, fabric  │
-                    └──────┬──────┬─────────┘
+                    ┌────────────────────────────────────┐
+                    │  Container Apps agent-host (S13)  │
+                    │  loads csa-agent prompt manifest  │
+                    │  dispatches to Foundry chat model │
+                    │  MCP: cosmos, fabric              │
+                    └──────┬──────┬──────────────────────┘
                            │      │
               Read/write   │      │  Trigger notebook
                            ▼      ▼
@@ -131,7 +134,7 @@ Microsoft-recommended shape for agent memory + catalog. Four containers:
 
 ## 5. `csa-agent` — Prepare → Run → Evaluate → Recommend
 
-Foundry agent, MCP servers: `github-mcp`, `fabric-mcp`, `cosmos-mcp`. Ceiling: `write` (for scenarios / recommendations), `deploy` for simulation-run trigger (gated).
+**Application-hosted** agent per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md), loaded by the Sprint 13 Container Apps agent-host at runtime. Dispatches to a **Microsoft Foundry** chat model. MCP servers: `github-mcp`, `fabric-mcp`, `cosmos-mcp`. Ceiling: `write` (for scenarios / recommendations), `deploy` for simulation-run trigger (gated).
 
 **Phase 1 — Prepare.** Agent interviews the user (via Copilot Drawer), retrieves similar scenarios from Cosmos via vector search, proposes parameters (magnitude, duration, cascade). User confirms.
 
