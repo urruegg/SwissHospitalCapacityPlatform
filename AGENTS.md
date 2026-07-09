@@ -220,6 +220,7 @@ tool.
 | Work IQ | `work-iq-mcp` | Read Microsoft 365 meeting context and transcript content for review-session intake | Least-privilege transcript and meeting read scopes |
 | Fabric | `fabric-mcp` | Read Fabric workspace items (lakehouses, semantic models); query synthetic Gold Delta tables; trigger data-quality notebooks — dispatched by the Sprint 13 agent-host on behalf of the Sprint 11 application-hosted agents | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
 | Entra | `entra-mcp` | Read Microsoft Entra audit-log new-sign-in events for the `onboarding-agent` (read-only; the only write is a welcome PR into the repo) | `Directory.AuditLog.Read.All` application permission (consent-gated, revocable) |
+| Cosmos | `cosmos-mcp` | Read/write the CSA Cosmos DB for NoSQL (scenarios, agent-memory, response-levers, simulation-runs); vector + hybrid search; per-run agent memory — dispatched by the Sprint 13 agent-host on behalf of the `csa-agent` (Sprint 16) | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered. `Cosmos DB Built-in Data Contributor` scoped to the `cosmos-csa-ihzhhpf-sit` account |
 | Repo-managed markdown specs | `github-mcp` | Read canonical source material from `docs/` and `docs/specs/` for planning and review flows | GitHub Copilot coding-agent identity |
 
 ---

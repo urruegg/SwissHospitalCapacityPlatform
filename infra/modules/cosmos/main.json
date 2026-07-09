@@ -1,0 +1,457 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.44.1.10279",
+      "templateHash": "6495798305532304544"
+    }
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "allowedValues": [
+        "dev",
+        "sit",
+        "prod"
+      ],
+      "metadata": {
+        "description": "Deployment environment name."
+      }
+    },
+    "solutionShortName": {
+      "type": "string",
+      "defaultValue": "ihzhhpf",
+      "metadata": {
+        "description": "Solution short name used in Azure resource names."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources. Defaults to resource group location."
+      }
+    },
+    "owner": {
+      "type": "string",
+      "defaultValue": "platform-team",
+      "metadata": {
+        "description": "Owner tag value."
+      }
+    },
+    "costCenter": {
+      "type": "string",
+      "defaultValue": "tbd",
+      "metadata": {
+        "description": "Cost center tag value."
+      }
+    },
+    "workload": {
+      "type": "string",
+      "defaultValue": "hospital-capacity",
+      "metadata": {
+        "description": "Workload tag value."
+      }
+    },
+    "agentHostMiPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the Sprint 13 agent-host managed identity for Cosmos DB Built-in Data Contributor. Empty string skips the assignment."
+      }
+    }
+  },
+  "variables": {
+    "nameSuffix": "[format('{0}-{1}', parameters('solutionShortName'), parameters('environmentName'))]",
+    "tags": {
+      "env": "[parameters('environmentName')]",
+      "owner": "[parameters('owner')]",
+      "costCenter": "[parameters('costCenter')]",
+      "workload": "[parameters('workload')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('cosmos-csa-{0}', variables('nameSuffix'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('nameSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "agentHostMiPrincipalId": {
+            "value": "[parameters('agentHostMiPrincipalId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.44.1.10279",
+              "templateHash": "1627100030729662134"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the Cosmos account. Demo scope is westus2 per ADR-0013."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "databaseName": {
+              "type": "string",
+              "defaultValue": "csa",
+              "metadata": {
+                "description": "Cosmos SQL database name."
+              }
+            },
+            "agentHostMiPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the Sprint 13 agent-host managed identity. When set, receives Cosmos DB Built-in Data Contributor scoped to this account (least privilege). Empty string skips the assignment."
+              }
+            },
+            "databaseMaxThroughput": {
+              "type": "int",
+              "defaultValue": 1000,
+              "minValue": 1000,
+              "maxValue": 10000,
+              "metadata": {
+                "description": "Total shared throughput (RU/s) for the database in autoscale max mode. Small demo default."
+              }
+            }
+          },
+          "variables": {
+            "accountName": "[toLower(format('cosmos-csa-{0}', parameters('nameSuffix')))]",
+            "vectorDimensions": 1536,
+            "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[variables('accountName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "GlobalDocumentDB",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "databaseAccountOfferType": "Standard",
+                "disableLocalAuth": true,
+                "minimalTlsVersion": "Tls12",
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": [
+                  {
+                    "locationName": "[parameters('location')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ],
+                "capabilities": [
+                  {
+                    "name": "EnableNoSQLVectorSearch"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', variables('accountName'), parameters('databaseName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('databaseName')]"
+                },
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('databaseMaxThroughput')]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'scenarios')]",
+              "properties": {
+                "resource": {
+                  "id": "scenarios",
+                  "partitionKey": {
+                    "paths": [
+                      "/scenarioId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "vectorEmbeddingPolicy": {
+                    "vectorEmbeddings": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "dataType": "float32",
+                        "distanceFunction": "cosine",
+                        "dimensions": "[variables('vectorDimensions')]"
+                      }
+                    ]
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/descriptionEmbedding/*"
+                      }
+                    ],
+                    "vectorIndexes": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "type": "diskANN"
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'agent-memory')]",
+              "properties": {
+                "resource": {
+                  "id": "agent-memory",
+                  "partitionKey": {
+                    "paths": [
+                      "/threadId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "vectorEmbeddingPolicy": {
+                    "vectorEmbeddings": [
+                      {
+                        "path": "/contentEmbedding",
+                        "dataType": "float32",
+                        "distanceFunction": "cosine",
+                        "dimensions": "[variables('vectorDimensions')]"
+                      }
+                    ]
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/contentEmbedding/*"
+                      }
+                    ],
+                    "vectorIndexes": [
+                      {
+                        "path": "/contentEmbedding",
+                        "type": "diskANN"
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'response-levers')]",
+              "properties": {
+                "resource": {
+                  "id": "response-levers",
+                  "partitionKey": {
+                    "paths": [
+                      "/leverId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "vectorEmbeddingPolicy": {
+                    "vectorEmbeddings": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "dataType": "float32",
+                        "distanceFunction": "cosine",
+                        "dimensions": "[variables('vectorDimensions')]"
+                      }
+                    ]
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/descriptionEmbedding/*"
+                      }
+                    ],
+                    "vectorIndexes": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "type": "quantizedFlat"
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'simulation-runs')]",
+              "properties": {
+                "resource": {
+                  "id": "simulation-runs",
+                  "partitionKey": {
+                    "paths": [
+                      "/runId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": []
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('agentHostMiPrincipalId')))]",
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', variables('accountName'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName')), parameters('agentHostMiPrincipalId'), variables('cosmosDataContributorRoleId')))]",
+              "properties": {
+                "roleDefinitionId": "[format('{0}/sqlRoleDefinitions/{1}', resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName')), variables('cosmosDataContributorRoleId'))]",
+                "principalId": "[parameters('agentHostMiPrincipalId')]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "accountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos account name."
+              },
+              "value": "[variables('accountName')]"
+            },
+            "documentEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos account document endpoint."
+              },
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName')), '2024-12-01-preview').documentEndpoint]"
+            },
+            "databaseName": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos SQL database name."
+              },
+              "value": "[parameters('databaseName')]"
+            },
+            "containerNames": {
+              "type": "array",
+              "metadata": {
+                "description": "Container names provisioned by this module."
+              },
+              "value": [
+                "scenarios",
+                "agent-memory",
+                "response-levers",
+                "simulation-runs"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "accountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos account name."
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('cosmos-csa-{0}', variables('nameSuffix'))), '2025-04-01').outputs.accountName.value]"
+    },
+    "documentEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos account document endpoint."
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('cosmos-csa-{0}', variables('nameSuffix'))), '2025-04-01').outputs.documentEndpoint.value]"
+    },
+    "containerNames": {
+      "type": "array",
+      "metadata": {
+        "description": "Container names provisioned."
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('cosmos-csa-{0}', variables('nameSuffix'))), '2025-04-01').outputs.containerNames.value]"
+    }
+  }
+}

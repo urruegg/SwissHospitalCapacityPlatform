@@ -37,4 +37,9 @@ agents/**                               @urruegg
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg
 /infra/modules/entra/                   @urruegg
+/infra/modules/cosmos/                  @urruegg
 /samples/                               @urruegg
+
+# Sprint 16 — CSA scenario data + recommendation runs
+/data/csa/                              @urruegg
+/docs/csa/                              @urruegg
