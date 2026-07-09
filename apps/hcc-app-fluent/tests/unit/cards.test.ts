@@ -10,10 +10,22 @@ const EXPECTED: CardType[] = [
   'LiveStreamCard',
   'ResponsibleCard',
   'ScenarioCard',
+  'BvaHeadlineKpiCard',
+  'BvaPlanVsActualCard',
+  'BvaTrendCard',
+];
+
+const OPERATIONAL: CardType[] = [
+  'PowerBITile',
+  'AgentPanel',
+  'KpiCard',
+  'LiveStreamCard',
+  'ResponsibleCard',
+  'ScenarioCard',
 ];
 
 describe('CardRegistry', () => {
-  it('registers all 6 card types (design spec §5.2)', () => {
+  it('registers all card types (design spec §5.2 + BVA T7)', () => {
     expect(registeredCardTypes.sort()).toEqual([...EXPECTED].sort());
   });
 
@@ -30,9 +42,9 @@ describe('CardRegistry', () => {
 });
 
 describe('BedManager mock data', () => {
-  it('exercises all 6 card types', () => {
+  it('exercises all 6 operational card types', () => {
     const used = new Set(bedManagerCards.map((c) => c.type));
-    expect([...used].sort()).toEqual([...EXPECTED].sort());
+    expect([...used].sort()).toEqual([...OPERATIONAL].sort());
   });
 
   it('contains no obvious PHI identifiers', () => {

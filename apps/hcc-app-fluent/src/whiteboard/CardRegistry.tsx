@@ -6,6 +6,9 @@ import { KpiCard } from '../cards/KpiCard';
 import { LiveStreamCard } from '../cards/LiveStreamCard';
 import { ResponsibleCard } from '../cards/ResponsibleCard';
 import { ScenarioCard } from '../cards/ScenarioCard';
+import { BvaHeadlineKpiCard } from '../cards/bva/BvaHeadlineKpiCard';
+import { BvaPlanVsActualCard } from '../cards/bva/BvaPlanVsActualCard';
+import { BvaTrendCard } from '../cards/bva/BvaTrendCard';
 
 /**
  * Sprint 13 T3 — card registry.
@@ -23,6 +26,9 @@ export const cardRegistry: Record<CardType, AnyCardComponent> = {
   LiveStreamCard,
   ResponsibleCard,
   ScenarioCard,
+  BvaHeadlineKpiCard,
+  BvaPlanVsActualCard,
+  BvaTrendCard,
 };
 
 export function resolveCard(type: CardType): AnyCardComponent {
