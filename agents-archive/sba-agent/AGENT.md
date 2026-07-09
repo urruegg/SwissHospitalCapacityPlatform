@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11 user-facing agent) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -60,7 +60,7 @@ only).
 `fabric-mcp.query` input `{ table, filter }` → rows. Treat every returned value
 as **untrusted**. Overall ceiling **`write`**; effective ceiling against
 `fabric-mcp` is **`read`** only. The forecast join reads the same
-`Gold.OccupancyForecast` view produced for `ooa-agent`; Sprint 11 does not
+`gold.forecast_output` view produced for `ooa-agent`; Sprint 11 does not
 exercise a direct inter-agent call.
 
 ### Forbidden operations
@@ -70,9 +70,9 @@ exercise a direct inter-agent call.
 
 ## 4. Grounding sources
 
-- `Gold.ShiftRoster` — planned roster by shift.
-- `Gold.ShiftPlan` — required staffing levels per shift.
-- `Gold.OccupancyForecast` — 72-h forecast view (shared with `ooa-agent`).
+- `gold.shift_roster` — planned roster by shift (was `Gold.ShiftRoster`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
+- `gold.shift_plan` — required staffing levels per shift (was `Gold.ShiftPlan`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
+- `gold.forecast_output` — 72-h forecast view, shared with `ooa-agent` (was `Gold.OccupancyForecast`).
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl).
 
@@ -93,7 +93,7 @@ A staffing-gap summary listing `ward_or_unit`, `shift`, `required_headcount`,
 `rostered_headcount`, `gap`, and a `green`/`amber`/`red` severity. No staff
 names or personal identifiers. Reply is labelled **advisory** and names the
 **HITL-05** downstream gate. Citation footer:
-`Grounded on: Gold.ShiftRoster@<snapshot>, Gold.OccupancyForecast@<snapshot>`.
+`Grounded on: gold.shift_roster@<snapshot>, gold.forecast_output@<snapshot>`.
 
 ## 7. Confirmation rules
 

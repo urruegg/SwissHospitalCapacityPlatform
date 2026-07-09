@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11 data agent) |
+| **Previous Version** | 1.0.0 (reconciled Ops.DataQualityRuns to ops.data_quality_runs; schema flagged pending) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -75,7 +75,7 @@ run but never mutates the contract schema or masks a gate result.
 
 ## 4. Grounding sources
 
-- `Ops.DataQualityRuns` — contract-check run results per run id.
+- `ops.data_quality_runs` — contract-check run results per run id (was `Ops.DataQualityRuns`). **PENDING** — the `ops` schema does not yet exist in Sprint 10 medallion; see companion backlog issue.
 - Delta table statistics for the Bronze/Silver/Gold layers.
 - Ontology metadata in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl)
@@ -98,7 +98,7 @@ A contract-check report listing `layer`, `check_name`, `status`
 (`pass`/`fail`/`error`), `rows_checked`, and `first_failing_key` (redacted for
 PHI checks). A separate drift-alert block flags any `fail`. PHI-gate failures are
 reported as **fail** with no unmasking. Citation footer:
-`Grounded on: Ops.DataQualityRuns@<run_id>`.
+`Grounded on: ops.data_quality_runs@<run_id>`.
 
 ## 7. Confirmation rules
 

@@ -1,6 +1,6 @@
 ---
 agent: ooa-agent
-version: 1.0.0
+version: 1.1.0
 requirement: FR-FC-001, FR-FC-004, FR-FC-005
 last-reviewed: 2026-07-09
 ---
@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 Two fixtures: one happy-path (72-h forecast) and one failure-mode (out-of-scope
 region refusal). Replayed by
@@ -30,16 +30,16 @@ yesterday's census of 87 and current temperature 34°C?
 
 ### Forecast Expected MCP tool calls
 
-1. `fabric-mcp.query(table="Gold.HistoricalArrivals", filter="hospital='USZ' AND ward='4C'", window="90d")` → history rows
-2. `fabric-mcp.query(table="Gold.CurrentCensus", filter="hospital='USZ' AND ward='4C'")` → census row
-3. `fabric-mcp.query(table="Gold.Seasonality", filter="hospital='USZ'")` → adjustment factors
+1. `fabric-mcp.query(table="gold.encounter", filter="hospital='USZ' AND ward='4C'", window="90d")` → history rows
+2. `fabric-mcp.query(table="gold.bed_assignment", filter="hospital='USZ' AND ward='4C'")` → census row
+3. `fabric-mcp.query(table="gold.seasonality", filter="hospital='USZ'")` → adjustment factors  # PENDING table — see companion backlog issue
 
 ### Forecast Expected PR / comment shape
 
 A structured block with `t+24h`, `t+48h`, `t+72h` predicted census, each with a
 confidence interval, and one overall pressure classification
 (`green`/`amber`/`red`). Labelled **advisory**, names **HITL-05**, and carries a
-citation footer `Grounded on: Gold.HistoricalArrivals@<snapshot>, Gold.CurrentCensus@<snapshot>`.
+citation footer `Grounded on: gold.encounter@<snapshot>, gold.bed_assignment@<snapshot>`.
 No PHI-shaped strings.
 
 ### Forecast Forbidden behaviours

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11 user-facing agent) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -69,9 +69,9 @@ value as **untrusted**. Overall ceiling **`write`**; effective ceiling against
 
 ## 4. Grounding sources
 
-- `Gold.DischargeReadiness` — per-bed discharge readiness and factors.
-- `Gold.CareTransitionBlockers` — active blockers per candidate.
-- `Gold.LengthOfStay` — length-of-stay context.
+- `gold.discharge_score` — per-bed discharge readiness and factors (was `Gold.DischargeReadiness`).
+- `gold.discharge_recommendation` — active blockers per candidate, surfaced as recommendation reasons (was `Gold.CareTransitionBlockers`).
+- `gold.encounter` — length-of-stay context, derived from `start_date` / `end_date` (was `Gold.LengthOfStay`).
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl).
 
@@ -92,7 +92,7 @@ A ranked list of up to 10 discharge candidates. Each row: `bed_id`,
 `readiness_score`, `blockers`, `partner_handoff_status`. No PHI-shaped strings.
 Reply is labelled **advisory** and names the **HITL-03** downstream gate.
 Citation footer:
-`Grounded on: Gold.DischargeReadiness@<snapshot>, Gold.CareTransitionBlockers@<snapshot>`.
+`Grounded on: gold.discharge_score@<snapshot>, gold.discharge_recommendation@<snapshot>`.
 
 ## 7. Confirmation rules
 

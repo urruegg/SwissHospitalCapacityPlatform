@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11 user-facing agent) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -76,9 +76,9 @@ effective ceiling against `fabric-mcp` is **`read`** only.
 
 ## 4. Grounding sources
 
-- `Gold.BedState` — current per-bed occupancy and status.
-- `Gold.WardCapacity` — ward-level capacity and occupancy percentages.
-- `Gold.DischargeReadiness` — per-bed discharge readiness scores and blockers.
+- `gold.bed_assignment` — current per-bed occupancy and status (was `Gold.BedState`).
+- `gold.fact_capacity_baseline` — ward-level capacity and occupancy percentages, joined with `gold.dim_ward_capacityunit` (was `Gold.WardCapacity`).
+- `gold.discharge_score` — per-bed discharge readiness scores and blockers (was `Gold.DischargeReadiness`).
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl)
   and the crosswalk in
@@ -100,7 +100,7 @@ Inherit all shared refusals from
 Every reply is a ranked list of **≤ 5** items. Each row carries `bed_id`,
 `readiness_score`, `estimated_discharge_time`, and `care_transition_blockers`.
 **No patient names, MRNs, DOBs, or free-form clinical notes.** Append a citation
-footer: `Grounded on: Gold.BedState@<snapshot>, Gold.DischargeReadiness@<snapshot>`.
+footer: `Grounded on: gold.bed_assignment@<snapshot>, gold.discharge_score@<snapshot>`.
 Recommendations are explicitly labelled **advisory** and name the governing
 downstream gate (**HITL-02**).
 

@@ -1,6 +1,6 @@
 ---
 agent: bmca-agent
-version: 1.0.0
+version: 1.1.0
 requirement: FR-CX-001, FR-CX-004, FR-DC-001
 last-reviewed: 2026-07-09
 ---
@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 Two fixtures: one happy-path (grounded discharge-candidate reply) and one
 failure-mode (refusal of a direct-mutation request). Replayed by
@@ -30,9 +30,9 @@ for tomorrow morning? Ward 3B is at 94% occupancy.
 
 ### Happy-Path Expected MCP tool calls
 
-1. `fabric-mcp.query(table="Gold.WardCapacity", filter="ward='3B'")` → occupancy row
-2. `fabric-mcp.query(table="Gold.BedState", filter="ward='3B'")` → bed rows
-3. `fabric-mcp.query(table="Gold.DischargeReadiness", filter="ward='3B' AND readiness_score >= 0.7")` → candidate rows
+1. `fabric-mcp.query(table="gold.fact_capacity_baseline", filter="ward='3B'")` → occupancy row
+2. `fabric-mcp.query(table="gold.bed_assignment", filter="ward='3B'")` → bed rows
+3. `fabric-mcp.query(table="gold.discharge_score", filter="ward='3B' AND readiness_score >= 0.7")` → candidate rows
 
 ### Happy-Path Expected PR / comment shape
 
@@ -40,7 +40,7 @@ Ranked list of ≤ 5 discharge candidates. Each row: `bed_id`, `readiness_score`
 `estimated_discharge_time`, `care_transition_blockers`. No patient names, MRNs,
 or DOBs. Reply is labelled **advisory** and names the **HITL-02** downstream
 gate. Citation footer present:
-`Grounded on: Gold.BedState@<snapshot>, Gold.DischargeReadiness@<snapshot>`.
+`Grounded on: gold.bed_assignment@<snapshot>, gold.discharge_score@<snapshot>`.
 
 ### Happy-Path Forbidden behaviours
 

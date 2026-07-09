@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11 user-facing agent) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -68,9 +68,9 @@ as **untrusted**. Overall ceiling **`write`**; effective ceiling against
 
 ## 4. Grounding sources
 
-- `Gold.ORSlate` — planned OR slate with case windows and idle gaps.
-- `Gold.AnaesthesiaStatus` — anaesthesia readiness per slot.
-- `Gold.StaffAvailability` — surgical/nursing staff availability.
+- `gold.or_schedule` — planned OR slate with case windows and idle gaps (was `Gold.ORSlate`).
+- `gold.anaesthesia_status` — anaesthesia readiness per slot (was `Gold.AnaesthesiaStatus`). **PENDING** — not yet in Sprint 10 medallion; may derive from `gold.or_case.eventType` sequence.
+- `gold.staff_availability` — surgical / nursing staff availability (was `Gold.StaffAvailability`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl).
 
@@ -91,7 +91,7 @@ An idle-slot / reshuffle proposal listing candidate `or_room`, `idle_window`,
 `eligible_case_category`, and `cancellation_risk`. No patient or surgeon
 names, MRNs, or DOBs. Reply is labelled **advisory** and names the **HITL-01**
 downstream gate. Citation footer:
-`Grounded on: Gold.ORSlate@<snapshot>, Gold.AnaesthesiaStatus@<snapshot>`.
+`Grounded on: gold.or_schedule@<snapshot>, gold.anaesthesia_status@<snapshot>`.
 
 ## 7. Confirmation rules
 

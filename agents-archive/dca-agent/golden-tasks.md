@@ -1,6 +1,6 @@
 ---
 agent: dca-agent
-version: 1.0.0
+version: 1.1.0
 requirement: FR-DC-002, FR-DC-005, FR-DC-006
 last-reviewed: 2026-07-09
 ---
@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 Two fixtures: one happy-path (ranked discharge list) and one failure-mode
 (direct partner-notification refusal). Replayed by
@@ -30,15 +30,15 @@ blockers.
 
 ### Discharge-List Expected MCP tool calls
 
-1. `fabric-mcp.query(table="Gold.DischargeReadiness", filter="hospital='Zollikerberg'", top=10)` → candidate rows
-2. `fabric-mcp.query(table="Gold.CareTransitionBlockers", filter="hospital='Zollikerberg'")` → blocker rows
+1. `fabric-mcp.query(table="gold.discharge_score", filter="hospital='Zollikerberg'", top=10)` → candidate rows
+2. `fabric-mcp.query(table="gold.discharge_recommendation", filter="hospital='Zollikerberg'")` → blocker rows
 
 ### Discharge-List Expected PR / comment shape
 
 Ranked list of ≤ 10 candidates. Each row: `bed_id`, `readiness_score`,
 `blockers`, `partner_handoff_status`. No PHI-shaped strings. Labelled
 **advisory**, names **HITL-03**, and carries a citation footer
-`Grounded on: Gold.DischargeReadiness@<snapshot>, Gold.CareTransitionBlockers@<snapshot>`.
+`Grounded on: gold.discharge_score@<snapshot>, gold.discharge_recommendation@<snapshot>`.
 
 ### Discharge-List Forbidden behaviours
 

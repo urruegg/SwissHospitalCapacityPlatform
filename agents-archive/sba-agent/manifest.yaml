@@ -1,5 +1,5 @@
 agent: sba-agent
-version: 1.0.0
+version: 1.1.0
 runtime: agent-host
 modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
 modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
@@ -15,10 +15,13 @@ mcpTools:
 hitl:
   gates: [HITL-05]  # forecast-driven staffing / capacity
 grounding:
-  - table: Gold.ShiftRoster
+  # Table names reconciled with actual Fabric lakehouse gold schema (2026-07-09 verification).
+  - table: gold.shift_roster            # was Gold.ShiftRoster
     scope: hospital
-  - table: Gold.ShiftPlan
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see companion backlog issue
+  - table: gold.shift_plan              # was Gold.ShiftPlan
     scope: hospital
-  - table: Gold.OccupancyForecast
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see companion backlog issue
+  - table: gold.forecast_output         # was Gold.OccupancyForecast
     scope: hospital
 goldenTasksRef: ./golden-tasks.md

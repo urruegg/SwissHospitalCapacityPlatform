@@ -1,5 +1,5 @@
 agent: data-quality-agent
-version: 1.0.0
+version: 1.1.0
 runtime: agent-host
 invocation: workflow-scheduled  # not directly user-invoked; agent-host loads it for scheduled runs
 modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
@@ -16,6 +16,8 @@ mcpTools:
 hitl:
   gates: [HITL-04]  # policy exception on PHI mask
 grounding:
-  - table: Ops.DataQualityRuns
+  # Table names reconciled with actual Fabric lakehouse schema (2026-07-09 verification).
+  - table: ops.data_quality_runs        # was Ops.DataQualityRuns
     scope: aggregated
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; the ops schema does not exist — see companion backlog issue
 goldenTasksRef: ./golden-tasks.md
