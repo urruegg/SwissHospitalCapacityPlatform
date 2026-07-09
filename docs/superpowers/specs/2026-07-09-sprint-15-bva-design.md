@@ -1,12 +1,12 @@
 # Sprint 15 — BVA Evidence Data Product (synthetic seed) — Design Spec
 
 | Field | Value |
-|-------|-------|
-| **Version** | 1.1.0 |
+| ----- | ----- |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
-| **Status** | Draft for review |
-| **Previous Version** | 1.0.0 (initial — stretch `bva-agent` reworded from Foundry-hosted to application-hosted per ADR-0008) |
+| **Status** | Delivered (artefacts authored; live publishes gated) |
+| **Previous Version** | 1.1.0 (initial — stretch `bva-agent` reworded from Foundry-hosted to application-hosted per ADR-0008) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/Swiss-Hospital-Capacity-Live-Business-Value-Assessment-(BVA)-Dashboard.md](../ideas/Swiss-Hospital-Capacity-Live-Business-Value-Assessment-(BVA)-Dashboard.md) |
 | **ROM baseline** | [docs/BVA.md](../../BVA.md) v1.0.1 |
@@ -251,11 +251,11 @@ MCP servers: `github-mcp`, `fabric-mcp`. Ceiling: `write`. Model selection follo
 
 ## 16. Definition of done
 
-- [ ] `bva-sim-refresh.yml` green nightly.
-- [ ] Medallion + semantic model produce all headline KPIs from the KPI table §6.
-- [ ] Five C-suite pages rendered in Power BI with RLS verified.
-- [ ] BVA card cluster visible on the Sprint 14 presenter whiteboard (BVA filter/tab).
-- [ ] FOCUS shape validation green.
-- [ ] Cost calibration within ±15% of ROM baseline.
-- [ ] Stretch: `bva-agent` drafts one board pack PR (or explicit "not attempted" note in retro).
-- [ ] Sprint 15 retro entry in [docs/sprints/superpowers-checkpoint-matrix.md](../../sprints/superpowers-checkpoint-matrix.md).
+- [x] `bva-sim-refresh.yml` green nightly. *(workflow authored + self-test/smoke on generator changes; Bronze upload + pipeline trigger gated by `approved-to-apply`)*
+- [x] Medallion + semantic model produce all headline KPIs from the KPI table §6. *(medallion notebooks + 28 KPI measures authored; `bva_kpi.py` reference + 11 golden tests green; Fabric publish gated)*
+- [x] Five C-suite pages rendered in Power BI with RLS verified. *(6 pages — Board + CEO/CFO/CIO/COO/CTO — in `bva-boardroom.Report`; 2 RLS roles + RLS test plan + 9 structural tests; report/RLS publish gated)*
+- [x] BVA card cluster visible on the Sprint 14 presenter whiteboard (BVA filter/tab). *(**Power BI embed fallback** per §14 — Sprint 14 T5/T6 whiteboard Evidence tab not delivered; 3 BVA card types + board mock authored in `apps/hcc-app-fluent`, 26 vitest green)*
+- [x] FOCUS shape validation green. *(delivered in T1, PR #168)*
+- [x] Cost calibration within ±15% of ROM baseline. *(delivered in T1, PR #168 — 5-seed regression against CHF 760k/yr)*
+- [x] Stretch: `bva-agent` drafts one board pack PR (or explicit "not attempted" note in retro). *(**not attempted** — Sprint 13 agent-host + Foundry `sprint11-chat` model not deployed; carried forward, recorded in the Sprint 15 retro)*
+- [x] Sprint 15 retro entry in [docs/sprints/superpowers-checkpoint-matrix.md](../../sprints/superpowers-checkpoint-matrix.md). *(added; matrix bumped to 1.6.0)*

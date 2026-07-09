@@ -64,3 +64,41 @@ relationship a1b2c3d4-e5f6-7890-abcd-ef1234567890
 relationship b2c3d4e5-f6a7-8901-bcde-f23456789012
 	fromColumn: bed_assignment.hospitalId
 	toColumn: dim_hospital.hospital_id
+
+// --- BVA relationships (Sprint 15 T5) ---
+
+relationship d9c4669e-313f-4b49-8761-97907cb5b0fa
+	fromColumn: bva_fact_azure_consumption.capability_key
+	toColumn: bva_dim_capability.capability_key
+
+relationship baf50d89-93bc-4130-9600-284330569d44
+	fromColumn: bva_fact_azure_consumption.env_key
+	toColumn: bva_dim_environment.env_key
+
+relationship f6ce1421-efd5-459d-8cbd-51f875103f02
+	fromColumn: bva_fact_azure_consumption.hospital_key
+	toColumn: bva_dim_hospital.hospital_key
+
+relationship b00f5060-d180-4ac0-97fd-641940da44e3
+	fromColumn: bva_fact_azure_consumption.date_key
+	toColumn: bva_dim_date.date_key
+
+relationship 6f2ad6d5-1b4b-4a1e-88e3-4a810c2505a4
+	fromColumn: bva_fact_budget.capability_key
+	toColumn: bva_dim_capability.capability_key
+
+relationship a51039fe-6579-482c-a0ce-918c5ef09f50
+	fromColumn: bva_fact_budget.env_key
+	toColumn: bva_dim_environment.env_key
+
+relationship f3e829c2-acec-4a8c-a607-057ca19bb618
+	fromColumn: bva_fact_value_realization.capability_key
+	toColumn: bva_dim_capability.capability_key
+
+relationship e6184523-a628-4b9d-8332-225c6c3f0514
+	fromColumn: bva_fact_value_realization.hospital_key
+	toColumn: bva_dim_hospital.hospital_key
+
+relationship 19a7df51-a630-498e-8ff8-6afe91e76c26
+	fromColumn: bva_dim_exec_role.capability_key
+	toColumn: bva_dim_capability.capability_key

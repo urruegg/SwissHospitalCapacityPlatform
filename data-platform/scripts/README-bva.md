@@ -84,3 +84,59 @@ Covers determinism, FOCUS-shape conformance, ±15% cost calibration (across
 multiple seeds), top-3 cost distribution, tag completeness, partitioning, and
 the CLI. Enforced in CI by
 [`.github/workflows/bva-generator.yml`](../../.github/workflows/bva-generator.yml).
+
+## Nightly refresh (Sprint 15 · T2)
+
+[`.github/workflows/bva-sim-refresh.yml`](../../.github/workflows/bva-sim-refresh.yml)
+runs at **02:00 UTC** (one hour ahead of the 03:00 adoption refresh and the
+03:00 CET Fabric pipeline). Each run:
+
+1. regenerates a 90-day slice with a date-derived seed (`date -u +%Y%j`), so the
+   nightly dataset is reproducible from its date;
+2. uploads every partition to `Files/Bronze/consumption/` in the SIT lakehouse
+   via [`bva_upload_bronze.py`](bva_upload_bronze.py), **preserving** the
+   `BillingPeriod=…/ChargePeriodStart=…/` partition path;
+3. triggers the Fabric BVA medallion pipeline (`FABRIC_BVA_PIPELINE_ID`,
+   published in T3).
+
+Identity is workload-identity federation (OIDC) — no secrets. The pipeline
+*run* is automated; **publishing** the pipeline (T3), the semantic model (T5),
+and the report + RLS roles (T6) each remain gated by `approved-to-apply`
+(AGENTS.md §4).
+
+`bva_upload_bronze.py` keeps its partition-walking logic (`plan_uploads`) pure
+and unit-tested (`tests/test_bva_upload_bronze.py`); the OneLake REST layer only
+runs inside the workflow. Dry-run the plan locally:
+
+```bash
+cd data-platform/scripts
+python3 bva_synth_focus.py --seed 42 --days 3 --out-dir /tmp/bva --format jsonl
+python3 bva_upload_bronze.py --src /tmp/bva --dry-run
+```
+
+### Required workflow configuration
+
+The refresh workflow reads these repo/environment settings (all non-secret
+except the OIDC client id):
+
+| Setting | Kind | Purpose |
+| --- | --- | --- |
+| `AZURE_CLIENT_ID` | secret | OIDC federated identity for `azure/login`. |
+| `AZURE_TENANT_ID` | var | SIT tenant (`MngEnvMCAP164444`, per ADR-0012). |
+| `FABRIC_WORKSPACE_ID` | var | `ws-ihzhhpf-sit-data`. |
+| `FABRIC_BVA_PIPELINE_ID` | var | The BVA medallion pipeline item id (set after the T3 `approved-to-apply` publish). |
+
+### Labels
+
+The BVA issue templates ([`bva-kpi.yml`](../../.github/ISSUE_TEMPLATE/bva-kpi.yml),
+[`bva-report-page.yml`](../../.github/ISSUE_TEMPLATE/bva-report-page.yml)) apply
+the Sprint 15 label set. Create them once with:
+
+```bash
+gh label create sprint-15 --color 1D76DB --description "Sprint 15 — BVA Evidence data product" || true
+gh label create bva       --color 0E8A16 --description "Business Value Assessment data product" || true
+gh label create focus-sim --color 5319E7 --description "Synthetic FOCUS-shaped consumption seed" || true
+gh label create dax       --color FBCA04 --description "DAX measure change (BVA semantic model)" || true
+gh label create rls       --color D93F0B --description "Row-level security (BVA report/model)" || true
+```
+

@@ -1,0 +1,7 @@
+/// BVA exec/board full-scope read role (Sprint 15 · T6). C-suite members
+/// (CEO/CFO/CIO/COO/CTO) see every hospital in the BVA data product. BVA Gold is
+/// synthetic, non-PHI Azure-consumption + value data, so no PHI predicate is
+/// needed here; exec segregation is by report page, not by RLS. Assignable to
+/// HCC.ExecBoard in SIT and PROD (design spec §8).
+role BvaExecFull
+	modelPermission: read

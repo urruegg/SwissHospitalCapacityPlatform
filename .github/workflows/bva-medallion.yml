@@ -1,0 +1,70 @@
+name: bva-medallion
+
+# Sprint 15 · T3–T4 — self-test gate for the BVA medallion transforms and the
+# gated pipeline deploy helper. Runs the dependency-free unit tests for the pure
+# Bronze → Silver → Gold transforms (data-platform/notebooks/bva/) and the
+# medallion publish plan / approval gate (data-platform/scripts/bva/).
+
+on:
+  pull_request:
+    paths:
+      - 'data-platform/notebooks/bva/**'
+      - 'data-platform/scripts/bva/**'
+      - 'data-platform/reports/tests/**'
+      - 'data-platform/reports/capacity-dashboard.SemanticModel/**'
+      - 'data-platform/scripts/bva_synth_focus.py'
+      - '.github/workflows/bva-medallion.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data-platform/notebooks/bva/**'
+      - 'data-platform/scripts/bva/**'
+      - 'data-platform/reports/tests/**'
+      - 'data-platform/reports/capacity-dashboard.SemanticModel/**'
+      - 'data-platform/scripts/bva_synth_focus.py'
+      - '.github/workflows/bva-medallion.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bva-medallion-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bva-medallion-selftest:
+    name: BVA medallion self-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run medallion transform tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data-platform/notebooks/bva/tests -v
+
+      - name: Run pipeline deploy-helper tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data-platform/scripts/bva/tests -v
+
+      - name: Run KPI golden tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data-platform/reports/tests -v
+
+      - name: Medallion publish plan (dry-run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 data-platform/scripts/bva/deploy_pipeline.py --dry-run

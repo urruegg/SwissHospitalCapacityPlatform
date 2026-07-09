@@ -1,0 +1,28 @@
+table bva_dim_environment
+	lineageTag: 85052736-6a8d-47a3-b15d-cb2571c3f987
+	sourceLineageTag: [gold].[bva_dim_environment]
+
+	column env_key
+		dataType: string
+		lineageTag: ef82b8d5-4e4c-4b4e-8f04-adb22d94692e
+		sourceLineageTag: env_key
+		summarizeBy: none
+		sourceColumn: env_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column env_name
+		dataType: string
+		lineageTag: 19f89ce6-26b2-4977-b8d4-02b607c94ad5
+		sourceLineageTag: env_name
+		summarizeBy: none
+		sourceColumn: env_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_dim_environment = entity
+		mode: directLake
+		source
+			entityName: bva_dim_environment
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

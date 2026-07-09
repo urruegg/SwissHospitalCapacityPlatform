@@ -1,0 +1,103 @@
+table bva_fact_azure_consumption
+	lineageTag: 562ab393-dda6-4976-9f8e-7d5b913f010a
+	sourceLineageTag: [gold].[bva_fact_azure_consumption]
+
+	column resource_key
+		dataType: string
+		lineageTag: fabe6d61-6b6a-4e9b-bba8-3a073e678059
+		sourceLineageTag: resource_key
+		summarizeBy: none
+		sourceColumn: resource_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column meter_key
+		dataType: string
+		lineageTag: 7210f5f6-b845-495e-b41d-7f6a642adebc
+		sourceLineageTag: meter_key
+		summarizeBy: none
+		sourceColumn: meter_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: string
+		lineageTag: 05ca15bf-d38b-4aa0-a334-97eb9a0338b4
+		sourceLineageTag: date_key
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column env_key
+		dataType: string
+		lineageTag: 98c26d07-20e9-481b-9763-c619729f93b5
+		sourceLineageTag: env_key
+		summarizeBy: none
+		sourceColumn: env_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_key
+		dataType: string
+		lineageTag: b064981a-b64d-49ca-b855-4dc0d1f821ed
+		sourceLineageTag: hospital_key
+		summarizeBy: none
+		sourceColumn: hospital_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column capability_key
+		dataType: string
+		lineageTag: cd112125-d42f-4f6c-9809-6a0e9fa7fa7c
+		sourceLineageTag: capability_key
+		summarizeBy: none
+		sourceColumn: capability_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column effective_cost
+		dataType: double
+		lineageTag: e301b8c4-f6b5-46d2-8f42-dc965a4ff2e2
+		sourceLineageTag: effective_cost
+		summarizeBy: sum
+		sourceColumn: effective_cost
+		formatString: \#,0.00
+
+		annotation SummarizationSetBy = Automatic
+
+	column billed_cost
+		dataType: double
+		lineageTag: 5569ad93-45e4-4f40-a1b4-09c7f0fbcd0c
+		sourceLineageTag: billed_cost
+		summarizeBy: sum
+		sourceColumn: billed_cost
+		formatString: \#,0.00
+
+		annotation SummarizationSetBy = Automatic
+
+	column list_cost
+		dataType: double
+		lineageTag: 4e3a1a50-f526-4db1-8527-7d3018e66974
+		sourceLineageTag: list_cost
+		summarizeBy: sum
+		sourceColumn: list_cost
+		formatString: \#,0.00
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity
+		dataType: double
+		lineageTag: ee47006a-031d-4c31-90f2-c391fb9b37be
+		sourceLineageTag: quantity
+		summarizeBy: sum
+		sourceColumn: quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_fact_azure_consumption = entity
+		mode: directLake
+		source
+			entityName: bva_fact_azure_consumption
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
