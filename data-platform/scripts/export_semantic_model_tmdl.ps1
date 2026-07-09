@@ -73,11 +73,15 @@ $script:ExpectedInactivePairs = @(
 # --- S10.11 verifier extension (Sprint 10 M4-A) ---
 # Measure count = sum of `measure` blocks across tables/*.tmdl
 # Role count    = number of role blocks under roles/*.tmdl (one per file, per TMDL convention)
-$script:ExpectedMeasures = 15   # Beds Total, Over-Run Minutes, OR Utilization %, Data Quality Score (Cases),
-                                # Idle-Slot Minutes, Active Encounters, Admissions, Discharged,
-                                # Currently In Hospital, Currently Assigned Beds, Occupancy %,
-                                # Effective Identity UPN, Effective Role Label,
-                                # Effective Hospital, Effective Viewing Label (M1-RLS persona, Sprint 10)
+$script:ExpectedMeasures = 27   # M1 (15): Beds Total, Over-Run Minutes, OR Utilization %, Data Quality Score (Cases),
+                                #   Idle-Slot Minutes, Active Encounters, Admissions, Discharged,
+                                #   Currently In Hospital, Currently Assigned Beds, Occupancy %,
+                                #   Effective Identity UPN, Effective Role Label,
+                                #   Effective Hospital, Effective Viewing Label (M1-RLS persona, Sprint 10)
+                                # M2 (+3): First-Case On-Time %, Short-Notice Cancellation %, Avg Turnover Minutes
+                                # M5 (+7): Beds Free, Forecast Peak 72h, Actual vs Forecast, Turnover,
+                                #   Narrative — Bed Manager, Narrative — Ops Lead, Narrative — OR Coordinator
+                                # M6 (+2): Benchmark — Cold, Benchmark — Warm
 $script:ExpectedRoles    = 6    # BedOps, ORPlanner, Analyst, SemanticOwner (M3-A),
                                 # GuestAggregated, SITDemoOperator (M1-RLS, Sprint 10)
 

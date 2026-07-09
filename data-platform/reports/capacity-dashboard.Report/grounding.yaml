@@ -1,0 +1,107 @@
+# Grounding map for capacity-dashboard v2 (design spec §7, plan Task 6.1).
+# Human-readable source of truth for the `page-grounding` matrix. The
+# `grounding` calculated table in the SemanticModel mirrors these rows so the
+# matrix can render bound content; keep the two in sync when editing.
+#
+# Columns:
+#   requirement — FR-*/NFR-* ID from docs/PRD.md
+#   adr         — governing ADR under docs/adr/
+#   entity      — ontology entity (hcp:<Entity>) the row grounds against
+#   measure     — semantic-model measure the visual surfaces
+#   location    — page + visual where the requirement is demonstrated
+rows:
+  - requirement: FR-OM-001
+    adr: ADR-0015
+    entity: hcp:BedAssignment
+    measure: Occupancy %
+    location: page-bed-manager / KPI wall
+  - requirement: FR-OM-002
+    adr: ADR-0015
+    entity: hcp:WardCapacityUnit
+    measure: Beds Free
+    location: page-bed-manager / KPI wall
+  - requirement: FR-OM-003
+    adr: ADR-0015
+    entity: hcp:WardCapacityUnit
+    measure: Beds Total
+    location: page-bed-manager / capacity chart
+  - requirement: FR-OM-004
+    adr: ADR-0002
+    entity: hcp:Encounter
+    measure: Currently In Hospital
+    location: page-ops-lead / headline KPIs
+  - requirement: FR-OM-005
+    adr: ADR-0002
+    entity: hcp:Encounter
+    measure: Admissions
+    location: page-ops-lead / flow cards
+  - requirement: FR-OM-006
+    adr: ADR-0002
+    entity: hcp:Encounter
+    measure: Discharged
+    location: drill-discharge / status matrix
+  - requirement: FR-OM-010
+    adr: ADR-0015
+    entity: hcp:ORCase
+    measure: OR Utilization %
+    location: page-or-coordinator / KPI wall
+  - requirement: FR-OM-011
+    adr: ADR-0015
+    entity: hcp:ORCase
+    measure: First-Case On-Time %
+    location: page-or-coordinator / KPI wall
+  - requirement: FR-OM-012
+    adr: ADR-0015
+    entity: hcp:ORCase
+    measure: Short-Notice Cancellation %
+    location: page-or-coordinator / donut
+  - requirement: FR-OM-013
+    adr: ADR-0015
+    entity: hcp:ORCase
+    measure: Avg Turnover Minutes
+    location: drill-theatre / turnover card
+  - requirement: FR-OM-014
+    adr: ADR-0015
+    entity: hcp:ORSchedule
+    measure: Idle-Slot Minutes
+    location: page-or-coordinator / KPI wall
+  - requirement: FR-DATA-001
+    adr: ADR-0015
+    entity: hcp:CapacityBaseline
+    measure: Narrative — Bed Manager
+    location: page-bed-manager / smart narrative
+  - requirement: FR-DATA-002
+    adr: ADR-0015
+    entity: hcp:CapacityBaseline
+    measure: Narrative — Ops Lead
+    location: page-ops-lead / smart narrative
+  - requirement: FR-DATA-003
+    adr: ADR-0015
+    entity: hcp:ORCase
+    measure: Narrative — OR Coordinator
+    location: page-or-coordinator / smart narrative
+  - requirement: NFR-COMP-001
+    adr: ADR-0008
+    entity: hcp:Persona
+    measure: Effective Viewing Label
+    location: all pages / RLS-proof pill
+  - requirement: NFR-COMP-002
+    adr: ADR-0008
+    entity: hcp:Persona
+    measure: Effective Role Label
+    location: all pages / RLS-proof pill
+  - requirement: NFR-COMP-003
+    adr: ADR-0013
+    entity: hcp:Hospital
+    measure: Effective Hospital
+    location: all pages / RLS-proof pill
+  - requirement: NFR-PERF-001
+    adr: ADR-0002
+    entity: hcp:CapacityBaseline
+    measure: Benchmark — Cold
+    location: page-perf-benchmark / cold card
+  - requirement: NFR-PERF-002
+    adr: ADR-0002
+    entity: hcp:CapacityBaseline
+    measure: Benchmark — Warm
+    location: page-perf-benchmark / warm card
