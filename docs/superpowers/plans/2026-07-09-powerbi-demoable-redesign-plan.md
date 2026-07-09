@@ -404,7 +404,7 @@ Same pattern for `[OR Utilization Δ yesterday]`, `[OR Utilization Δ WoW]`, `[O
 
 - [ ] **Step 1.5.1: Create `roles/SITDemoOperator.tmdl`**
 
-```
+```tmdl
 role SITDemoOperator
     /// SIT-only role. No hospital predicate; grants soft-slicer path.
     modelPermission: read
@@ -412,7 +412,7 @@ role SITDemoOperator
 
 - [ ] **Step 1.5.2: Create `roles/GuestAggregated.tmdl`**
 
-```
+```tmdl
 role GuestAggregated
     /// Aggregated-only read role. Assignable to HCC.GuestReadOnly.
     modelPermission: read

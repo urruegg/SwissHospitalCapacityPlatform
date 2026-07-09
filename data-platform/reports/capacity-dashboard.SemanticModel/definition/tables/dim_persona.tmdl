@@ -1,0 +1,104 @@
+/// Persona directory for the RLS-proof pill and persona-anchored navigation.
+/// Import-mode table — one of two intentional Import exceptions in an otherwise
+/// Direct Lake model. Seeded from data/synthetic/personas.csv; Sprint 12 swaps
+/// the source to a Fabric mirror of Entra ID (see design spec §6.1). The CSV is
+/// the *temporary* source and must not be treated as a governed Sprint 6 dataset.
+table dim_persona
+	lineageTag: eb7098de-0ec6-494f-a906-db40e3f23eda
+
+	measure 'Effective Identity UPN' = USERPRINCIPALNAME()
+		lineageTag: b6d4e7f2-a440-440d-b155-076675069f31
+
+		changedProperty = Name
+
+	measure 'Effective Role Label' =
+			LOOKUPVALUE(
+			    dim_persona[app_role],
+			    dim_persona[upn], [Effective Identity UPN]
+			)
+		lineageTag: ea2dc7f8-2268-489d-8ad6-e7767900ccde
+
+		changedProperty = Name
+
+	measure 'Effective Hospital' =
+			VAR persona_hospital =
+			    LOOKUPVALUE(
+			        dim_persona[default_hospital],
+			        dim_persona[upn], [Effective Identity UPN]
+			    )
+			VAR selected_hospital = SELECTEDVALUE(dim_hospital[short_name], persona_hospital)
+			VAR is_demo = [Effective Role Label] IN { "HCC.DemoOperator", "HCC.SuperAdmin" }
+			RETURN
+			    IF(is_demo, selected_hospital, persona_hospital)
+		lineageTag: eca5bb08-0902-4d92-b427-15ad104a7cae
+
+		changedProperty = Name
+
+	measure 'Effective Viewing Label' =
+			VAR base = "Viewing: " & [Effective Hospital] & " • " & [Effective Role Label]
+			VAR is_demo = [Effective Role Label] IN { "HCC.DemoOperator", "HCC.SuperAdmin" }
+			RETURN
+			    IF(is_demo, base & " (SIT demo override)", base)
+		lineageTag: 6cde12e1-b057-4525-adc5-2588386637b5
+
+		changedProperty = Name
+
+	column upn
+		dataType: string
+		lineageTag: 51c6c3ec-7046-404b-88dd-2ea4abbfbf3a
+		summarizeBy: none
+		sourceColumn: upn
+
+		annotation SummarizationSetBy = Automatic
+
+	column display_name
+		dataType: string
+		lineageTag: 886438b3-0b50-40d5-a741-046b9b4a76e8
+		summarizeBy: none
+		sourceColumn: display_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column app_role
+		dataType: string
+		lineageTag: dd7ce73e-7e7f-4c00-a493-5321cd6ecb18
+		summarizeBy: none
+		sourceColumn: app_role
+
+		annotation SummarizationSetBy = Automatic
+
+	column default_hospital
+		dataType: string
+		lineageTag: cb27ca52-4d26-4b1c-933c-62bdd77f0f3c
+		summarizeBy: none
+		sourceColumn: default_hospital
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_persona = m
+		mode: import
+		source =
+				// NOTE: this relative File.Contents path is environment-specific and
+				// resolves only when the seed CSV is co-located with the model at
+				// author time. It will not resolve in a Fabric deployment context —
+				// Sprint 12 replaces this partition source with a Fabric mirror of
+				// Entra ID (design spec §6.1), which removes the local-path dependency.
+				let
+				    Source = Csv.Document(
+				        File.Contents("data/synthetic/personas.csv"),
+				        [Delimiter = ",", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(
+				        Promoted,
+				        {
+				            {"upn", type text},
+				            {"display_name", type text},
+				            {"app_role", type text},
+				            {"default_hospital", type text}
+				        }
+				    )
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

@@ -69,7 +69,7 @@ The live BVA data product is operating on **synthetic** Azure-consumption data t
 
 ## 3. Architecture and data flow
 
-```
+```text
 Sprint 12 adoption telemetry ──▶  Bronze/adoption/*.json  ┐
 Sprint 15 synthetic FOCUS gen ──▶  Bronze/consumption/*.parquet │
                                                                 ▼

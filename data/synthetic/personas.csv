@@ -1,0 +1,13 @@
+upn,display_name,app_role,default_hospital
+markus.frei@mngenvmcap164444.onmicrosoft.com,Markus Frei,HCC.BedManager,USZ
+lea.hofmann@mngenvmcap164444.onmicrosoft.com,Lea Hofmann,HCC.BedManager,LUKS
+peter.suter@mngenvmcap164444.onmicrosoft.com,Peter Suter,HCC.BedManager,Zollikerberg
+nicole.baumann@mngenvmcap164444.onmicrosoft.com,Nicole Baumann,HCC.ORCoordinator,USZ
+thomas.gerber@mngenvmcap164444.onmicrosoft.com,Thomas Gerber,HCC.ORCoordinator,LUKS
+sandra.roth@mngenvmcap164444.onmicrosoft.com,Sandra Roth,HCC.ORCoordinator,Zollikerberg
+dr.andrea.keller@mngenvmcap164444.onmicrosoft.com,Dr. Andrea Keller,HCC.OperationsLead,USZ
+daniel.widmer@mngenvmcap164444.onmicrosoft.com,Daniel Widmer,HCC.OperationsLead,LUKS
+claudia.meyer@mngenvmcap164444.onmicrosoft.com,Claudia Meyer,HCC.OperationsLead,Zollikerberg
+sophie.meier@mngenvmcap164444.onmicrosoft.com,Sophie Meier,HCC.DemoOperator,All
+super.admin@mngenvmcap164444.onmicrosoft.com,Super Admin,HCC.SuperAdmin,All
+demo.guest@mngenvmcap164444.onmicrosoft.com,Demo Guest,HCC.GuestReadOnly,Aggregated

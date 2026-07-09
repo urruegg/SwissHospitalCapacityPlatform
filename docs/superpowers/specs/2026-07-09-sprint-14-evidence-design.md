@@ -65,7 +65,7 @@ The showcase-evidence data product is live end-to-end:
 
 ## 3. Architecture and data flow
 
-```
+```text
 [repo edits] ─push→ evidence-publish.yml ─→ data/evidence/*.json
                                                     │
                                     OneLake shortcut / commit

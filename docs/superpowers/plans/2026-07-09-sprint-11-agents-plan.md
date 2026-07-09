@@ -521,12 +521,12 @@ if __name__ == "__main__":
 
 - [ ] **Step 9: Create `.github/workflows/eval-goldens-requirements.txt`**
 
-```
+```text
 # eval-goldens Python dependencies (pinned + hashed)
 # No external deps for the minimal validator.
 ```
 
-*(Intentionally minimal — the validator uses only stdlib. Full Foundry-invocation deps land in a follow-up.)*
+(Intentionally minimal — the validator uses only stdlib. Full Foundry-invocation deps land in a follow-up.)
 
 - [ ] **Step 10: Update `AGENTS.md` §2 (MCP allow-list)**
 

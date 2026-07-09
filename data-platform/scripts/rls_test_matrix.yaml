@@ -1,0 +1,18 @@
+# RLS-proof pill test matrix (design spec §7 / §10.2).
+# Six identities × expected [Effective Viewing Label] wording.
+# `slicer_selection` applies only to soft-slicer (demo) identities.
+matrix:
+  - upn: markus.frei@mngenvmcap164444.onmicrosoft.com
+    expected_pill: "Viewing: USZ • HCC.BedManager"
+  - upn: sophie.meier@mngenvmcap164444.onmicrosoft.com
+    expected_pill: "Viewing: USZ • HCC.DemoOperator (SIT demo override)"
+    slicer_selection: USZ
+  - upn: super.admin@mngenvmcap164444.onmicrosoft.com
+    expected_pill: "Viewing: All • HCC.SuperAdmin (SIT demo override)"
+    slicer_selection: All
+  - upn: demo.guest@mngenvmcap164444.onmicrosoft.com
+    expected_pill: "Viewing: Aggregated • HCC.GuestReadOnly"
+  - upn: nicole.baumann@mngenvmcap164444.onmicrosoft.com
+    expected_pill: "Viewing: USZ • HCC.ORCoordinator"
+  - upn: dr.andrea.keller@mngenvmcap164444.onmicrosoft.com
+    expected_pill: "Viewing: USZ • HCC.OperationsLead"

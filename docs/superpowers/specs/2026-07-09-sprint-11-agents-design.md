@@ -79,7 +79,7 @@ Sprint 11 does **not** yet invoke agents from a real app UI — that is Sprint 1
 
 Each user-facing agent follows the same shape:
 
-```
+```text
 agents-archive/<name>/
 ├─ AGENT.md              # Identity + Scope + Tools + Refusal + Output + Confirmation
 ├─ golden-tasks.md       # ≥1 happy-path + ≥1 failure fixture
