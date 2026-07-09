@@ -1,0 +1,301 @@
+# Region-availability facts — Swiss Hospital Capacity Platform
+#
+# Curated GA / Preview / NotAvailable facts per BOM item x region.
+# Parsed by scripts/evidence/parsers/region_availability_parser.py into
+# data/evidence/region_availability.json.
+#
+# Every fact MUST carry verifiedBy + asOf (design spec §3, §11 curation-drift
+# mitigation). Refresh via the ga-evidence-refresh issue template.
+#
+#   region     "Switzerland North" (T-PROD target) | "West Europe" (EU fallback)
+#   maturity   GA | Preview | NotAvailable
+#   asOf       ISO date the fact was verified
+#   verifiedBy who verified the fact
+
+version: 1.0.0
+facts:
+  # --- Fabric platform ---
+  - bomId: bom-fabric-capacity
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+    sourceUrl: https://learn.microsoft.com/fabric/enterprise/region-availability
+  - bomId: bom-fabric-capacity
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+    sourceUrl: https://learn.microsoft.com/fabric/enterprise/region-availability
+
+  - bomId: bom-fabric-workspace-data
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-fabric-workspace-data
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-onelake
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-onelake
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-lakehouse
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-lakehouse
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-eventstream
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-eventstream
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-eventhouse
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-eventhouse
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-semantic-model
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-semantic-model
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-powerbi-report
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-powerbi-report
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  # --- AI (mixed maturity) ---
+  - bomId: bom-fabric-iq-ontology
+    region: Switzerland North
+    maturity: NotAvailable
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+    sourceUrl: https://learn.microsoft.com/fabric/fundamentals/fabric-iq
+  - bomId: bom-fabric-iq-ontology
+    region: West Europe
+    maturity: Preview
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+    sourceUrl: https://learn.microsoft.com/fabric/fundamentals/fabric-iq
+
+  - bomId: bom-reference-ontology
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-reference-ontology
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-fabric-data-agent
+    region: Switzerland North
+    maturity: NotAvailable
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-fabric-data-agent
+    region: West Europe
+    maturity: Preview
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-azure-openai
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+    sourceUrl: https://learn.microsoft.com/azure/ai-services/openai/concepts/models
+  - bomId: bom-azure-openai
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-foundry-agent-service
+    region: Switzerland North
+    maturity: Preview
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-foundry-agent-service
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  # --- App ---
+  - bomId: bom-container-apps-agent-host
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-container-apps-agent-host
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-app-fluent
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-app-fluent
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  # --- Integration ---
+  - bomId: bom-logic-apps
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-logic-apps
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-fhir-service
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+    sourceUrl: https://learn.microsoft.com/azure/healthcare-apis/fhir/overview
+  - bomId: bom-fhir-service
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  # --- Security + platform + governance ---
+  - bomId: bom-storage-account
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-storage-account
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-key-vault
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-key-vault
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-managed-identity
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-managed-identity
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-entra-id
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-entra-id
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-log-analytics
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-log-analytics
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-purview
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-purview
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-policy-as-code
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-policy-as-code
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+
+  - bomId: bom-github-actions
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09
+  - bomId: bom-github-actions
+    region: West Europe
+    maturity: GA
+    verifiedBy: Urs Rüegg
+    asOf: 2026-07-09

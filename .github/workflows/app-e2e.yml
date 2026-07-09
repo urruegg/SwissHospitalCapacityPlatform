@@ -1,0 +1,48 @@
+name: app-e2e
+
+# Sprint 13 T1 — Playwright smoke + Copilot Drawer contract test for the Fluent
+# app. Runs the anonymous demo.guest flow (design spec §8) against a preview
+# build; no live Azure resources are needed (deterministic grounded mock).
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/hcc-app-fluent/**'
+      - '.github/workflows/app-e2e.yml'
+  pull_request:
+    paths:
+      - 'apps/hcc-app-fluent/**'
+      - '.github/workflows/app-e2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: hcc-app-fluent — Playwright smoke
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hcc-app-fluent
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/hcc-app-fluent/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke + drawer contract tests
+        run: npm run test:e2e

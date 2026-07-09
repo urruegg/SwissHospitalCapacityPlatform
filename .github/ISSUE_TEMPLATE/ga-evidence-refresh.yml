@@ -1,0 +1,77 @@
+name: "GA-evidence refresh (Showcase Evidence)"
+description: "Refresh region-availability (GA / Preview / Not-available) facts in docs/region-availability.yaml."
+title: "[GA-refresh] <resource-name> — <region>"
+labels: ["sprint-14", "evidence", "ga-refresh"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Refreshes curated availability facts in
+        > [`docs/region-availability.yaml`](../../docs/region-availability.yaml).
+        > Every fact MUST carry `verifiedBy` + `asOf` (design spec §11 —
+        > curation-drift mitigation). Parsed into
+        > `data/evidence/region_availability.json` by the `evidence-publish`
+        > workflow.
+
+  - type: input
+    id: bom-id
+    attributes:
+      label: BOM id (must exist in docs/bom.yaml)
+      placeholder: bom-fabric-iq-ontology
+    validations:
+      required: true
+
+  - type: dropdown
+    id: region
+    attributes:
+      label: Region
+      options:
+        - Switzerland North
+        - West Europe
+    validations:
+      required: true
+
+  - type: dropdown
+    id: maturity
+    attributes:
+      label: Maturity as-of verification
+      options:
+        - GA
+        - Preview
+        - NotAvailable
+    validations:
+      required: true
+
+  - type: input
+    id: as-of
+    attributes:
+      label: As-of date (YYYY-MM-DD)
+      placeholder: "2026-07-09"
+    validations:
+      required: true
+
+  - type: input
+    id: verified-by
+    attributes:
+      label: Verified by
+      placeholder: Urs Rüegg
+    validations:
+      required: true
+
+  - type: input
+    id: source-url
+    attributes:
+      label: Source URL (Microsoft Learn / product page)
+      placeholder: https://learn.microsoft.com/fabric/enterprise/region-availability
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Author checklist
+      options:
+        - label: Updated docs/region-availability.yaml with the fact above
+          required: true
+        - label: Ran `python -m scripts.evidence.publish` locally and the output validates
+          required: true

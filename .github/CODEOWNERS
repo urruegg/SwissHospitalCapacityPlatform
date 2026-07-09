@@ -34,11 +34,27 @@
 agents/**                               @urruegg
 /evals/                                 @urruegg
 
+# Sprint 15 BVA synthetic FOCUS-shaped seed generator
+/data-platform/scripts/bva_synth_focus.py  @urruegg
+
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg
 /infra/modules/entra/                   @urruegg
 /infra/modules/cosmos/                  @urruegg
 /samples/                               @urruegg
+
+# Sprint 13 App lane — Fluent baseline, Rayfin PoC, and Container Apps agent-host
+/apps/hcc-app-fluent/                   @urruegg
+/apps/hcc-app-rayfin/                   @urruegg
+/apps/hcc-agent-host/                   @urruegg
+/infra/modules/agent-host/              @urruegg
+
+# Showcase Evidence data product (Sprint 14) — parsers, schemas, curated catalogs
+/scripts/evidence/                      @urruegg
+/data/evidence/                         @urruegg
+/docs/bom.yaml                          @urruegg
+/docs/region-availability.yaml          @urruegg
+/docs/adr-requirement-map.yaml          @urruegg
 
 # Sprint 16 — CSA scenario data + recommendation runs
 /data/csa/                              @urruegg

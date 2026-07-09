@@ -1,0 +1,82 @@
+[
+  {
+    "blockingReason": null,
+    "bomId": "bom-capacity",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Ready",
+    "track": "T-PROD"
+  },
+  {
+    "blockingReason": null,
+    "bomId": "bom-capacity",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Ready",
+    "track": "T-SHOW"
+  },
+  {
+    "blockingReason": "bom-data-agent is NotAvailable (not GA) in Switzerland North",
+    "bomId": "bom-data-agent",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Blocked",
+    "track": "T-PROD"
+  },
+  {
+    "blockingReason": null,
+    "bomId": "bom-data-agent",
+    "region": "West Europe",
+    "showcaseOnly": true,
+    "status": "Ready",
+    "track": "T-SHOW"
+  },
+  {
+    "blockingReason": "bom-iq-ontology is NotAvailable (not GA) in Switzerland North",
+    "bomId": "bom-iq-ontology",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Blocked",
+    "track": "T-PROD"
+  },
+  {
+    "blockingReason": null,
+    "bomId": "bom-iq-ontology",
+    "region": "West Europe",
+    "showcaseOnly": true,
+    "status": "Ready",
+    "track": "T-SHOW"
+  },
+  {
+    "blockingReason": null,
+    "bomId": "bom-lakehouse",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Ready",
+    "track": "T-PROD"
+  },
+  {
+    "blockingReason": null,
+    "bomId": "bom-lakehouse",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Ready",
+    "track": "T-SHOW"
+  },
+  {
+    "blockingReason": "bom-orphan is NotAvailable (not GA) in Switzerland North",
+    "bomId": "bom-orphan",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Blocked",
+    "track": "T-PROD"
+  },
+  {
+    "blockingReason": "bom-orphan not available in Switzerland North or West Europe",
+    "bomId": "bom-orphan",
+    "region": "Switzerland North",
+    "showcaseOnly": false,
+    "status": "Blocked",
+    "track": "T-SHOW"
+  }
+]

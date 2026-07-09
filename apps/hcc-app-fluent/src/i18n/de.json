@@ -1,0 +1,40 @@
+{
+  "app": {
+    "title": "Helvion — Spitalkapazität",
+    "loading": "Wird geladen…"
+  },
+  "rail": {
+    "main": "Hauptbereich",
+    "backstage": "Backstage",
+    "home": "Start",
+    "askAgent": "Agent fragen",
+    "settings": "Einstellungen"
+  },
+  "topbar": {
+    "search": "Suchen",
+    "hospital": "Spital",
+    "roleSwitcher": "Rolle wechseln",
+    "signOut": "Abmelden",
+    "signIn": "Anmelden"
+  },
+  "hospitals": {
+    "usz": "USZ",
+    "luks": "LUKS",
+    "zollikerberg": "Zollikerberg",
+    "aggregated": "Aggregiert"
+  },
+  "backstage": {
+    "roles": "Rollen & RBAC",
+    "rolesDescription": "Live-Ansicht der App-Rollen aus Microsoft Entra (schreibgeschützt)."
+  },
+  "bedManager": {
+    "title": "Bettenmanagement — USZ",
+    "askBmca": "BMCA fragen"
+  },
+  "copilot": {
+    "title": "Copilot",
+    "placeholder": "Frage an den Agenten stellen…",
+    "send": "Senden",
+    "noPhiNotice": "Antworten enthalten keine Patientendaten (PHI)."
+  }
+}

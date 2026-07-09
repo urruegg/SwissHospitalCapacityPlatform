@@ -30,5 +30,5 @@ grounding:
   - cosmos:response-levers    # ~80-lever doctrine library
   - cosmos:agent-memory       # per-thread context
   - fabric:gold-capacity      # Gold capacity data + DC-SIM-RESULT
-  - adr:0021-csa-tier-classifier-rules
+  - adr:0024-csa-tier-classifier-rules
 goldenTasksRef: ./golden-tasks.md

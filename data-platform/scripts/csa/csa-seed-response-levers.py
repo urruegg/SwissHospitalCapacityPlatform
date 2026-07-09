@@ -141,7 +141,7 @@ def build_response_levers() -> list[dict]:
                 "description": description,
                 "appliesToResources": resources,
                 "advisoryOnly": True,
-                "doctrineRef": "Swiss Lage doctrine (VKSD); ADR-0021 tier classifier",
+                "doctrineRef": "Swiss Lage doctrine (VKSD); ADR-0024 tier classifier",
             }
         )
     return levers

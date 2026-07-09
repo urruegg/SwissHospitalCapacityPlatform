@@ -34,7 +34,7 @@ body:
   - type: dropdown
     id: default-tier
     attributes:
-      label: Default tier (Swiss Lage doctrine, ADR-0021)
+      label: Default tier (Swiss Lage doctrine, ADR-0024)
       options: ["1 — Normallage", "2 — Besondere Lage", "3 — Ausserordentliche Lage"]
     validations:
       required: true

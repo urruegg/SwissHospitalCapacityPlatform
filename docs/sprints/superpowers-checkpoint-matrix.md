@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.2.0 (added Sprint 16 execution-log rows 13–16, Sprint 16 retro notes, and the Sprints 11–16 program close-out) |
+| **Previous Version** | 1.4.0 (Sprint 15 in-flight row + Sprint 16 rows/retros + program close-out added) |
 
 ## Purpose
 
@@ -49,10 +49,10 @@ sprint executed under this matrix.
 | ------ | ----- | --- | ------ | -------------- | ----------- | ----------- | ---- |
 | 11 | 2026-07-09 | 2026-07-09 | Merged | 8/8 (7 MVP + 1 stretch) | Yes | [`../superpowers/specs/2026-07-09-sprint-11-agents-design.md`](../superpowers/specs/2026-07-09-sprint-11-agents-design.md) | [`../superpowers/plans/2026-07-09-sprint-11-agents-plan.md`](../superpowers/plans/2026-07-09-sprint-11-agents-plan.md) |
 | 12 | 2026-07-09 | — | Artefacts authored; SIT applies gated | 17 app roles + 17 groups + 23 personas (IaC authored) | n/a (IaC + telemetry) | [`../superpowers/specs/2026-07-09-sprint-12-org-design.md`](../superpowers/specs/2026-07-09-sprint-12-org-design.md) | [`../superpowers/plans/2026-07-09-sprint-12-org-plan.md`](../superpowers/plans/2026-07-09-sprint-12-org-plan.md) |
-| 13 | 2026-07-09 | — | In flight (issue #161 / PR #162) | Container Apps agent-host + whiteboard + Copilot Drawer | — | — | — |
-| 14 | 2026-07-09 | — | In flight (issue #164 / PR #165) | Evidence tab + presenter whiteboard | — | — | — |
-| 15 | 2026-07-09 | — | In flight (issue #167) | BVA (business-value analytics) | — | — | — |
-| 16 | 2026-07-09 | — | Foundation authored; live runs gated | `csa-agent` full body + Cosmos IaC + 8 scenarios + 3 MVP runs | Structural (eval-goldens) | [`../superpowers/specs/2026-07-09-sprint-16-csa-design.md`](../superpowers/specs/2026-07-09-sprint-16-csa-design.md) | [`../superpowers/plans/2026-07-09-sprint-16-csa-plan.md`](../superpowers/plans/2026-07-09-sprint-16-csa-plan.md) |
+| 13 | 2026-07-09 | 2026-07-09 | Merged | n/a (app tier) | Yes | [`../superpowers/specs/2026-07-09-sprint-13-app-design.md`](../superpowers/specs/2026-07-09-sprint-13-app-design.md) | [`../superpowers/plans/2026-07-09-sprint-13-app-plan.md`](../superpowers/plans/2026-07-09-sprint-13-app-plan.md) |
+| 14 | 2026-07-09 | 2026-07-09 | Merged (T1–T3 landed; T4–T7 follow-up) | n/a (workflow-only) | Yes (parsers + readiness golden) | [`../superpowers/specs/2026-07-09-sprint-14-evidence-design.md`](../superpowers/specs/2026-07-09-sprint-14-evidence-design.md) | [`../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md`](../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md) |
+| 15 | 2026-07-09 | — | In flight (issue #167 / PR #168) | BVA (business-value analytics) | — | [`../superpowers/specs/2026-07-09-sprint-15-bva-design.md`](../superpowers/specs/2026-07-09-sprint-15-bva-design.md) | [`../superpowers/plans/2026-07-09-sprint-15-bva-plan.md`](../superpowers/plans/2026-07-09-sprint-15-bva-plan.md) |
+| 16 | 2026-07-09 | 2026-07-09 | Foundation authored; live runs gated | `csa-agent` full body + Cosmos IaC + 8 scenarios + 3 MVP runs | Structural (eval-goldens) | [`../superpowers/specs/2026-07-09-sprint-16-csa-design.md`](../superpowers/specs/2026-07-09-sprint-16-csa-design.md) | [`../superpowers/plans/2026-07-09-sprint-16-csa-plan.md`](../superpowers/plans/2026-07-09-sprint-16-csa-plan.md) |
 
 ### Sprint 11 retro notes
 
@@ -102,6 +102,59 @@ sprint executed under this matrix.
   17 for internal consistency; reviewer to confirm the count at the gate (see
   `infra/modules/entra/README.md`).
 
+### Sprint 13 retro notes
+
+- **App tier delivered** across T1–T8: `apps/hcc-app-fluent/` (Fluent UI v9
+  baseline), `apps/hcc-agent-host/` (Python + FastAPI Container Apps agent-host,
+  [ADR-0022](../adr/0022-agent-host-language-python-fastapi.md)), and
+  `apps/hcc-app-rayfin/` (PoC placeholder).
+- **Fluent baseline** (T1–T4, T6): two-workspace shell, MSAL auth with
+  `roles`/`hospital`/`env` claim parsing + SIT-gated role switcher, BedManager
+  whiteboard with 6 card types over a custom canvas
+  ([ADR-0021](../adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md)),
+  Backstage Roles tab (read-only Entra Graph), Copilot Drawer wired to BMCA.
+  20 vitest unit tests + Playwright smoke/a11y/contract green; `app-build.yml`,
+  `app-e2e.yml`, `app-a11y.yml` added.
+- **Agent-host** (T5): manifest loader, orchestrator + Fabric grounding,
+  deny-by-default HITL gate (ADR-0007 §6 schema), redaction, tool adapters,
+  in-memory Cosmos/Redis stand-ins, FastAPI surface (`/agents`,
+  `/agents/<name>/chat`, `/agents/<name>/tools/<tool>`, `/healthz`). 31 pytest
+  tests green; `agent-host-build.yml` added; Bicep authored under
+  `infra/modules/agent-host/` (`az bicep build` clean, **not deployed**).
+- **Live deploys deferred**: T5's Container Apps + Redis + Cosmos provisioning is
+  a `deploy`-ceiling action requiring the AGENTS.md §4 `approved-to-apply` gate,
+  which was not exercised in this delivery. The Bicep is authored and validated
+  but no Azure resources were created; the app + agent-host run on deterministic
+  mocks + in-memory persistence in CI.
+- **Rayfin PoC — not evaluable in scope** (T7): the proprietary Rayfin generator
+  was not runnable in the environment. Recorded per the T7 time-box rule; the
+  exit decision ADR
+  [ADR-0023](../adr/0023-app-stack-fluent-vs-rayfin-decision.md) recommends the
+  **Fluent** baseline for Sprint 14+.
+
+### Sprint 14 retro notes
+
+- **T1–T3 landed** as the fully-verifiable data-product foundation:
+  - T1 — five evidence parsers (`prd`, `adr`, `bom`, `region_availability`,
+    `infra`) + publish orchestrator + 7 JSON Schemas + `evidence-publish.yml`
+    (publishes to the `evidence-latest` branch, never `main`). Byte-stable
+    output with provenance on every row. 25 parser tests green.
+  - T2 — seed catalogs: `docs/bom.yaml` (25 items), `docs/region-availability.yaml`
+    (50 facts), `docs/adr-requirement-map.yaml` (10 curated edges), `bom-item` +
+    `ga-evidence-refresh` issue templates, `docs/bom.schema.md`, CODEOWNERS.
+  - T3 (core) — readiness scoring pure module (`readiness_rules.py`) codified in
+    [`../adr/0021-readiness-scoring-rules.md`](../adr/0021-readiness-scoring-rules.md),
+    byte-stable golden regression (7 tests green), Bronze→Silver→Gold notebooks +
+    `docs/data-platform/evidence-gold-schema.md`.
+- **Deferred to follow-up** (per design spec §11 fallback):
+  - T3 Fabric pipeline **publish** and T4 semantic-model **publish** — both
+    `deploy`-ceiling, gated by `approved-to-apply`; not run in the cloud-agent
+    environment.
+  - T4 semantic-model TMDL extension.
+  - T5 (5 whiteboard card types) + T6 (Backstage Evidence tab) — **blocked** on
+    the unmerged Sprint 13 app framework (`apps/hcc-app-fluent/` does not yet
+    exist). Land in a follow-up mini-sprint once Sprint 13 T3/T4 merge (issue #161).
+
 ### Sprint 16 retro notes
 
 - **CSA foundation authored** (issue #170): `csa-agent` expanded from the
@@ -109,7 +162,8 @@ sprint executed under this matrix.
   Recommend** body (`deploy` ceiling, gated), Cosmos DB IaC
   (`infra/modules/cosmos/`, 4 vector containers), 4 JSON Schemas, ~80
   response-levers, 8 seeded scenarios (F1–F8), the version-pinned tier
-  classifier ([ADR-0021](../adr/0021-csa-tier-classifier-rules.md)), the pure
+  classifier ([ADR-0024](../adr/0024-csa-tier-classifier-rules.md); renumbered
+  from 0021 at merge to avoid collision with Sprint 13/14 ADRs), the pure
   shock-model simulation, and the `csa-scenario-sync` / `csa-run-followup`
   workflows + issue templates.
 - **3 MVP runs** captured under [`../csa/runs/`](../csa/runs/) — RSV surge
@@ -131,10 +185,10 @@ buildable artefact set**; every live-cloud apply remains behind its
 | ------ | ----- | ------------- | -------------- | ------ |
 | 11 | Agents (8 packs) | — | Sprint 11 design + plan; `agents/*` | Merged |
 | 12 | Identity (Entra org + roles) | — | `infra/modules/entra/`; PR #159 (MSAL) | Artefacts authored; SIT gated |
-| 13 | App + agent-host | #161 | PR #162 | In flight |
-| 14 | Evidence tab | #164 | PR #165 | In flight |
-| 15 | Business-value analytics | #167 | — | In flight |
-| 16 | CSA what-if catalogue | #170 | this PR | Foundation authored; live runs gated |
+| 13 | App + agent-host | #161 | PR #162 | Merged |
+| 14 | Evidence tab | #164 | PR #165 | Merged (T1–T3) |
+| 15 | Business-value analytics | #167 | PR #168 (T1) | In flight |
+| 16 | CSA what-if catalogue | #170 | this PR (#171) | Foundation authored; live runs gated |
 
 **Approved-to-apply gates used in this program run:** 0 executed in-sandbox — all
 `deploy`/`delete` steps across S12 (Entra applies), S13 (agent-host redeploy),

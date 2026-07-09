@@ -13,7 +13,7 @@ synthetic: true
 | **Scenario** | `summer-heatwave-demand-surge` (F8) |
 | **Requested by** | `crisis.manager` (`HCC.CrisisManager`) |
 | **Tier** | **2 — Besondere Lage** |
-| **Rules version** | ADR-0021 v1.0.0 |
+| **Rules version** | ADR-0024 v1.0.0 |
 | **Data** | Synthetic (ADR-0016) — computed via `csa-simulate.simulate()` |
 
 ## Tier classification
@@ -49,5 +49,5 @@ reallocation required.*
 
 ## Doctrine citations
 
-- Swiss *Lage* tiers per [ADR-0021](../../adr/0021-csa-tier-classifier-rules.md).
+- Swiss *Lage* tiers per [ADR-0024](../../adr/0024-csa-tier-classifier-rules.md).
 - Advisory only — no lever auto-executed (AGENTS.md §5).

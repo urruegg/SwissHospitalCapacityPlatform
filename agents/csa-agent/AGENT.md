@@ -91,7 +91,7 @@ re-validate at the next tool boundary.
 - **Cosmos `agent-memory` container** — prior thread context (per `threadId`).
 - **Fabric Gold capacity data** + `DC-SIM-RESULT` simulation output tables.
 - **Tier classifier rules** —
-  [ADR-0021](../../docs/adr/0021-csa-tier-classifier-rules.md) (version-pinned
+  [ADR-0024](../../docs/adr/0024-csa-tier-classifier-rules.md) (version-pinned
   *Lage* doctrine).
 
 ## 5. Refusal rules
@@ -114,7 +114,7 @@ Inherit all shared refusals from
 - **Run** — a "run started" acknowledgement echoing the `runId` and the
   `simulation-runs` document key; names the (now active) **HITL-01** gate.
 - **Evaluate** — the classified tier (1/2/3) with the rule that fired, the
-  ADR-0021 rules version, and the matching response levers.
+  ADR-0024 rules version, and the matching response levers.
 - **Recommend** — a draft PR into `docs/csa/runs/YYYY-MM-DD-<scenarioId>.md`
   whose body includes tier, key impacts, response levers, KPI expectations, and
   doctrine citations; names the **HITL-04** draft-PR gate.
@@ -144,7 +144,7 @@ must add or update at least one fixture in the same PR.
 Prepare ──► Run ──► Evaluate ──► Recommend
   │          │         │            │
   │          │         │            └─ draft PR into docs/csa/runs/ (HITL-04)
-  │          │         └─ tier classify (ADR-0021) + lever retrieval
+  │          │         └─ tier classify (ADR-0024) + lever retrieval
   │          └─ write simulation-runs doc + trigger csa-simulate (HITL-01 gate)
   └─ vector search Cosmos scenarios + propose params (user confirms)
 ```

@@ -1,4 +1,4 @@
-# ADR-0021 — CSA tier classifier rules (Swiss Lage doctrine)
+# ADR-0024 — CSA tier classifier rules (Swiss Lage doctrine)
 
 | Field | Value |
 | ----- | ----- |
@@ -6,6 +6,7 @@
 | **Date** | 2026-07-09 |
 | **Deciders** | @urruegg |
 | **Superseded by** | — |
+| **Renumber note** | Renumbered from 0021 during Sprint 16 merge — 0021 was already occupied by [ADR-0021 readiness scoring rules](0021-readiness-scoring-rules.md) (Sprint 14) and [ADR-0021 whiteboard base](0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md) (Sprint 13). |
 
 ## Context
 

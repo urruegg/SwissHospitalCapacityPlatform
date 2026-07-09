@@ -27,4 +27,4 @@ closes that parent run-tracking issue. The synthetic MVP demo docs below omit it
 | `2026-07-09-summer-heatwave-demand-surge.md` | Heatwave | 2 — Besondere Lage | 1.02 | 6 beds |
 
 Tier classification is version-pinned by
-[ADR-0021](../../adr/0021-csa-tier-classifier-rules.md).
+[ADR-0024](../../adr/0024-csa-tier-classifier-rules.md).

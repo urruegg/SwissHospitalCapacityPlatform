@@ -45,7 +45,7 @@ I am the on-call crisis manager (HCC.CrisisManager).
 
 An **advisory** recommendation classifying the scenario as **Tier 2 (Besondere
 Lage)** — pediatric-beds breach the 0.90 utilisation threshold but capacity is
-not exceeded after internal levers — citing ADR-0021 rules version, listing the
+not exceeded after internal levers — citing ADR-0024 rules version, listing the
 RSV response levers (overflow cohort, staff recall, accelerated discharge, defer
 electives) and the pediatric-bed-shortfall / occupancy KPIs. Delivered as a
 **draft PR** into `docs/csa/runs/YYYY-MM-DD-pediatric-virus-surge-rsv.md`
@@ -86,7 +86,7 @@ I am the operations lead (HCC.OperationsLead).
 
 An **advisory** recommendation classifying the scenario as **Tier 3
 (Ausserordentliche Lage)** — ICU capacity is exceeded after internal levers
-because of the systemic-IT capacity loss — citing ADR-0021, listing the
+because of the systemic-IT capacity loss — citing ADR-0024, listing the
 cyber-response levers (fail over to backup IT, downtime paper procedures, network
 isolation, cyber-IR retainer, protect critical care) and the throughput-reduction
 / ICU-shortfall KPIs. Delivered as a **draft PR** into

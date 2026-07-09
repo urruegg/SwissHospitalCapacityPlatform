@@ -13,7 +13,7 @@ into the Swiss Lage tiers:
   VKSD Art. 2.
 
 Rules are VERSION-PINNED. Any change requires an ADR reference
-(see docs/adr/0021-csa-tier-classifier-rules.md). Do not edit thresholds without
+(see docs/adr/0024-csa-tier-classifier-rules.md). Do not edit thresholds without
 bumping RULES_VERSION and citing a superseding ADR.
 """
 from __future__ import annotations
@@ -23,9 +23,9 @@ import json
 import sys
 from typing import Any
 
-# Version-pinned per ADR-0021. Bump only with a superseding ADR.
+# Version-pinned per ADR-0024. Bump only with a superseding ADR.
 RULES_VERSION = "1.0.0"
-RULES_ADR = "docs/adr/0021-csa-tier-classifier-rules.md"
+RULES_ADR = "docs/adr/0024-csa-tier-classifier-rules.md"
 
 # Utilization at/above which a resource dimension "breaches threshold" (Tier 2).
 TIER2_UTILIZATION_THRESHOLD = 0.90

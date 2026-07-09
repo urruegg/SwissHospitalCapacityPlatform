@@ -24,7 +24,7 @@ from typing import Any
 
 # Fraction of extra capacity that internal levers (Tier 2 reallocation) can add
 # before a scenario is deemed to exceed site capacity (→ Tier 3). Version-pinned
-# alongside ADR-0021.
+# alongside ADR-0024.
 DEFAULT_LEVER_HEADROOM = 0.15
 
 # Resources modelled as equipment/supply (capacity shrinks under supply-loss).

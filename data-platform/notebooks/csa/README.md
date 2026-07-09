@@ -14,11 +14,11 @@ unit-testable:
 | Module | Role |
 | ------ | ---- |
 | `shock_model.py` | Pure shock model — projects baseline capacity forward under a scenario's shock vector; computes utilization, shortfall, KPIs. |
-| `csa-simulate.py` | `simulate()` = shock → tier classification (ADR-0021) → KPIs → `simulation-runs` document. `run()` is the Fabric entrypoint. |
+| `csa-simulate.py` | `simulate()` = shock → tier classification (ADR-0024) → KPIs → `simulation-runs` document. `run()` is the Fabric entrypoint. |
 
 Tier classification is delegated to
 [`data-platform/scripts/csa/csa-tier-classifier.py`](../../scripts/csa/csa-tier-classifier.py)
-so the doctrine rules stay version-pinned (ADR-0021).
+so the doctrine rules stay version-pinned (ADR-0024).
 
 ## Golden test
 

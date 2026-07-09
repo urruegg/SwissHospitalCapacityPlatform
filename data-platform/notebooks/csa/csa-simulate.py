@@ -2,7 +2,7 @@
 
 Reads synthetic Gold capacity data, applies the scenario shock model
 (``shock_model``), classifies the projected state into a Swiss Lage tier
-(``csa-tier-classifier``, ADR-0021), writes a ``DC-SIM-RESULT`` row back to
+(``csa-tier-classifier``, ADR-0024), writes a ``DC-SIM-RESULT`` row back to
 Fabric, and returns a ``simulation-runs`` document for Cosmos.
 
 Synthetic-only (ADR-0016). No PHI. The heavy Spark I/O is isolated in ``run()``
