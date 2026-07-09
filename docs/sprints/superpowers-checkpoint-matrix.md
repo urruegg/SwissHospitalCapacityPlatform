@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-06-12 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 0.0.0 (new shared matrix baseline) |
+| **Previous Version** | 1.0.0 (new shared matrix baseline) |
 
 ## Purpose
 
@@ -39,3 +39,32 @@ Superpowers as mandatory operating mode.
 | Security impact | Security impact statement included | PR section |
 | Deploy/delete guardrail | `approved-to-apply` used where applicable | PR/issue comment |
 | Required checks | Lint/test/policy checks pass for scope | Command output links |
+
+## Sprint Execution Log
+
+Per-sprint closeout entries. Each row records the Superpowers-cycle outcome for a
+sprint executed under this matrix.
+
+| Sprint | Start | End | Status | Agents shipped | Evals green | Design spec | Plan |
+| ------ | ----- | --- | ------ | -------------- | ----------- | ----------- | ---- |
+| 11 | 2026-07-09 | 2026-07-09 | Merged | 8/8 (7 MVP + 1 stretch) | Yes | [`../superpowers/specs/2026-07-09-sprint-11-agents-design.md`](../superpowers/specs/2026-07-09-sprint-11-agents-design.md) | [`../superpowers/plans/2026-07-09-sprint-11-agents-plan.md`](../superpowers/plans/2026-07-09-sprint-11-agents-plan.md) |
+
+### Sprint 11 retro notes
+
+- All 8 agents (`bmca-agent`, `ooa-agent`, `dca-agent`, `orsa-agent`,
+  `sba-agent`, `csa-agent` scaffold, `data-quality-agent`, `onboarding-agent`
+  stretch) shipped with prompt file, ≥ 2 golden-task fixtures, runtime
+  `manifest.yaml`, `agents/` compatibility stub, and an `AGENTS.md` §1 row.
+- Model selection recorded in
+  [`../adr/0020-sprint11-agent-model-selection.md`](../adr/0020-sprint11-agent-model-selection.md)
+  and referenced by every agent.
+- `fabric-mcp` and `entra-mcp` (read-only) added to
+  [`../../.github/copilot/mcp.json`](../../.github/copilot/mcp.json) and
+  `AGENTS.md` §2.
+- Golden-task fixtures replayed structurally via
+  [`../../.github/workflows/eval-goldens.yml`](../../.github/workflows/eval-goldens.yml).
+- No Foundry Agent Service deployment (application-hosted per ADR-0008); the
+  Sprint 13 Container Apps agent-host loads the manifests at runtime.
+- `csa-agent` is a scaffold only — the Prepare phase is stubbed and the
+  Run/Evaluate/Recommend body lands in Sprint 16. The Sprint 09 runtime pack at
+  `agents/csa-agent/` was left intact.
