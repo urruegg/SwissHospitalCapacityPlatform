@@ -1,0 +1,60 @@
+name: bva-generator
+
+# Sprint 15 · T1 — self-test gate for the BVA synthetic FOCUS-shaped generator
+# (data-platform/scripts/bva_synth_focus.py).
+#
+# Runs the dependency-free unit tests (determinism, FOCUS-shape conformance,
+# ±15% cost calibration, top-3 cost distribution, tag completeness, CLI) and a
+# smoke run that generates a 90-day slice and asserts the calibration exit code.
+
+on:
+  pull_request:
+    paths:
+      - 'data-platform/scripts/bva_synth_focus.py'
+      - 'data-platform/scripts/tests/**'
+      - '.github/workflows/bva-generator.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data-platform/scripts/bva_synth_focus.py'
+      - 'data-platform/scripts/tests/**'
+      - '.github/workflows/bva-generator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bva-generator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bva-generator-selftest:
+    name: BVA generator self-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run generator unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data-platform/scripts/tests -v
+
+      - name: Smoke run — 90-day calibrated slice
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts
+          python3 bva_synth_focus.py \
+            --seed 42 --days 90 --end-date 2026-06-30 \
+            --out-dir "${RUNNER_TEMP}/bva" --format jsonl
+          partitions=$(find "${RUNNER_TEMP}/bva" -name 'part-00000.jsonl' | wc -l)
+          echo "Partitions written: ${partitions}"
+          test "${partitions}" -eq 90

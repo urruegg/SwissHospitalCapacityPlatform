@@ -1,0 +1,29 @@
+{
+  "$comment": "Sprint 15 BVA synthetic-seed FOCUS-shaped column contract. Mirrors the FinOps FOCUS export columns emitted by data-platform/scripts/bva_synth_focus.py (design spec 2026-07-09-sprint-15-bva-design.md §4) plus the three tag-derived custom columns. Types use the shape vocabulary understood by bva_synth_focus.validate_focus_shape: string, number, date (YYYY-MM-DD), and month (YYYY-MM).",
+  "currency": "CHF",
+  "columns": [
+    { "name": "ChargeType", "type": "string", "enum": ["Usage"] },
+    { "name": "ServiceCategory", "type": "string" },
+    { "name": "ServiceName", "type": "string" },
+    { "name": "ResourceId", "type": "string" },
+    { "name": "ResourceName", "type": "string" },
+    { "name": "ResourceType", "type": "string" },
+    { "name": "Region", "type": "string" },
+    { "name": "MeterName", "type": "string" },
+    { "name": "MeterCategory", "type": "string" },
+    { "name": "MeterSubCategory", "type": "string" },
+    { "name": "BillingPeriod", "type": "month" },
+    { "name": "ChargePeriodStart", "type": "date" },
+    { "name": "ChargePeriodEnd", "type": "date" },
+    { "name": "BilledCost", "type": "number" },
+    { "name": "EffectiveCost", "type": "number" },
+    { "name": "ListCost", "type": "number" },
+    { "name": "Quantity", "type": "number" },
+    { "name": "UnitPrice", "type": "number" },
+    { "name": "PricingUnit", "type": "string" },
+    { "name": "Currency", "type": "string", "enum": ["CHF"] },
+    { "name": "x_env", "type": "string", "enum": ["dev", "sit", "prod"] },
+    { "name": "x_hospital", "type": "string", "enum": ["USZ", "LUKS", "Zollikerberg", "Aggregated"] },
+    { "name": "x_capability", "type": "string", "enum": ["BMCA", "OOA", "DCA", "ORSA", "SBA", "CSA"] }
+  ]
+}

@@ -34,6 +34,9 @@
 agents/**                               @urruegg
 /evals/                                 @urruegg
 
+# Sprint 15 BVA synthetic FOCUS-shaped seed generator
+/data-platform/scripts/bva_synth_focus.py  @urruegg
+
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg
 /samples/                               @urruegg
