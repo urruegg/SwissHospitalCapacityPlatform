@@ -1,0 +1,83 @@
+name: csa-scenario-sync
+
+# Sprint 16 T8 — validates CSA scenario YAML against the T3 JSON Schema and,
+# on merge to main, upserts the catalogue into the Cosmos `scenarios` container.
+# The validate job is dependency-light and always runs; the upsert job only
+# runs on push to main and is a no-op unless the CSA_COSMOS_ENDPOINT secret is
+# configured (the seed script skips gracefully when creds are unset).
+
+on:
+  pull_request:
+    paths:
+      - 'data/csa/scenarios/**'
+      - 'data-platform/scripts/csa/schema/scenarios.schema.json'
+      - 'data-platform/scripts/csa/csa-seed-scenarios.py'
+      - '.github/workflows/csa-scenario-sync.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/csa/scenarios/**'
+      - '.github/workflows/csa-scenario-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: csa-scenario-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate scenario YAML against JSON Schema
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
+      - name: Validate scenarios (dry-run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 data-platform/scripts/csa/csa-seed-scenarios.py --dry-run
+
+  upsert:
+    name: Upsert scenarios into Cosmos (main only)
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: sit
+    permissions:
+      contents: read
+      id-token: write  # OIDC / Workload Identity Federation per AGENTS.md §2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
+      - name: Upsert scenarios
+        shell: bash
+        env:
+          CSA_COSMOS_ENDPOINT: ${{ secrets.CSA_COSMOS_ENDPOINT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CSA_COSMOS_ENDPOINT:-}" ]; then
+            echo "::notice::CSA_COSMOS_ENDPOINT not set — skipping Cosmos upsert (validate-only)."
+            exit 0
+          fi
+          python3 data-platform/scripts/csa/csa-seed-scenarios.py
