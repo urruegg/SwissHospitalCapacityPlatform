@@ -15,7 +15,7 @@ Power BI PBIP report for Sprint 09 v2.0.0 dashboard (design spec §6).
 
 1. Open [`../capacity-dashboard.pbip`](../capacity-dashboard.pbip) in Power BI Desktop.
 2. Confirm both pages in `pages/pages.json` load with empty canvas.
-3. Follow `pages/page1-capacity/README.md` and `pages/page2-or/README.md`.
+3. Follow `pages/page-bed-manager/README.md` and `pages/page-or-coordinator/README.md`.
 4. Publish to workspace `ws-ihzhhpf-<env>`.
 5. Export the finalized PBIP via `data-platform/scripts/deploy_report.ps1 -Region westus2 -WorkspaceId <id> -DryRun`.
 6. Commit the exported `page.json` files with populated `visualContainers[]`.

@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "position": {
-    "x": 24,
-    "y": 8,
+    "x": 448,
+    "y": 408,
     "z": 990,
-    "height": 28,
-    "width": 600,
+    "height": 40,
+    "width": 344,
     "tabOrder": 990
   },
   "visual": {
@@ -18,11 +18,11 @@
               {
                 "textRuns": [
                   {
-                    "value": "Sample data \u2014 live OR ingestion is Sprint 10 \u00b7 SIT \u2014 Synthetic data",
+                    "value": "Which theatres are idle? Cancellation risk?",
                     "textStyle": {
                       "fontFamily": "Segoe UI Semibold",
-                      "fontSize": "12px",
-                      "color": "#E30613"
+                      "fontSize": "11px",
+                      "color": "#6B7A88"
                     }
                   }
                 ],
@@ -34,7 +34,7 @@
       ]
     },
     "visualContainerObjects": {
-      "background": [
+      "border": [
         {
           "properties": {
             "show": {
@@ -47,7 +47,7 @@
           }
         }
       ],
-      "border": [
+      "background": [
         {
           "properties": {
             "show": {
@@ -62,5 +62,5 @@
       ]
     }
   },
-  "name": "aaecaf2e2b465e7387dc"
+  "name": "d0ce43825287c66845a7"
 }
