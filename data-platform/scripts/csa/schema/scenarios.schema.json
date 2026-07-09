@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/csa/scenarios.schema.json",
+  "title": "CSA scenario document",
+  "description": "Sprint 16 T3 — schema for the Cosmos `scenarios` container (PK /scenarioId).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "scenarioId",
+    "name",
+    "family",
+    "trigger",
+    "shockVector",
+    "affectedResources",
+    "magnitude",
+    "onset",
+    "duration",
+    "defaultTier",
+    "responseLevers",
+    "kpis",
+    "hospitalRelevance"
+  ],
+  "properties": {
+    "scenarioId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "name": { "type": "string", "minLength": 3 },
+    "family": {
+      "type": "string",
+      "pattern": "^F[1-8]$"
+    },
+    "trigger": { "type": "string", "minLength": 3 },
+    "shockVector": {
+      "type": "string",
+      "enum": ["demand-surge", "capacity-loss", "staff-loss", "supply-loss", "system-loss"]
+    },
+    "affectedResources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "magnitude": {
+      "type": "object",
+      "required": ["unit", "value"],
+      "properties": {
+        "unit": { "type": "string" },
+        "value": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "onset": {
+      "type": "string",
+      "enum": ["sudden", "rapid", "gradual"]
+    },
+    "duration": {
+      "type": "object",
+      "required": ["unit", "value"],
+      "properties": {
+        "unit": { "type": "string", "enum": ["hours", "days", "weeks"] },
+        "value": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "cascade": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "scarceCapability": {
+      "type": ["string", "null"]
+    },
+    "defaultTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "responseLevers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "kpis": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "hospitalRelevance": { "type": "string", "minLength": 3 },
+    "mvpRequired": { "type": "boolean" },
+    "descriptionEmbedding": {
+      "type": "array",
+      "items": { "type": "number" }
+    }
+  }
+}

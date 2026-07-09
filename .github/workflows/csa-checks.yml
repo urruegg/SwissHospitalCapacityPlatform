@@ -1,0 +1,69 @@
+name: csa-checks
+
+# Sprint 16 — CSA what-if tooling gate. Runs the dependency-free CSA seed/
+# validation/classifier/simulation tests and dry-run seeds on every PR that
+# touches the CSA scripts, schemas, notebooks, or scenario YAML.
+
+on:
+  pull_request:
+    paths:
+      - 'data-platform/scripts/csa/**'
+      - 'data-platform/notebooks/csa/**'
+      - 'data/csa/**'
+      - '.github/workflows/csa-checks.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data-platform/scripts/csa/**'
+      - 'data-platform/notebooks/csa/**'
+      - 'data/csa/**'
+      - '.github/workflows/csa-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: csa-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  csa-tests:
+    name: CSA scripts + schema tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run CSA script tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts/csa
+          python3 -m unittest discover -s tests -v
+
+      - name: Run CSA notebook pure-function tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d data-platform/notebooks/csa/tests ]; then
+            cd data-platform/notebooks/csa
+            python3 -m unittest discover -s tests -v
+          else
+            echo "::notice::No CSA notebook tests yet — skipping."
+          fi
+
+      - name: Dry-run seed scripts (validate only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts/csa
+          python3 csa-seed-response-levers.py --dry-run
+          if [ -f csa-seed-scenarios.py ]; then
+            python3 csa-seed-scenarios.py --dry-run
+          fi
