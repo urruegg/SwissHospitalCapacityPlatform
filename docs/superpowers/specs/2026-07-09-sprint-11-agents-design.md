@@ -79,13 +79,8 @@ Sprint 11 does **not** yet invoke agents from a real app UI — that is Sprint 1
 
 Each user-facing agent follows the same shape (single source of truth after the 2.0.0 folder restructure):
 
-<<<<<<< HEAD
-```
-agents/<name>/
-=======
 ```text
-agents-archive/<name>/
->>>>>>> origin/main
+agents/<name>/
 ├─ AGENT.md              # Identity + Scope + Tools + Refusal + Output + Confirmation
 ├─ manifest.yaml         # runtime manifest loaded by the Sprint 13 Container Apps agent-host
 ├─ golden-tasks.md       # ≥1 happy-path + ≥1 failure fixture
