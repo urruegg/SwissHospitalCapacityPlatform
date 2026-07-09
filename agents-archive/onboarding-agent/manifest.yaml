@@ -1,0 +1,20 @@
+agent: onboarding-agent
+version: 1.0.0
+runtime: workflow   # workflow-scheduled bot, not loaded by the Sprint 13 agent-host
+modelDeploymentRef: sprint11-chat  # resolved at deploy time per ADR-0020
+modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#5-refusal-rules
+mcpTools:
+  - server: entra-mcp
+    tools: [audit-log-list]
+    ceiling: read
+  - server: github-mcp
+    tools: [create-branch, create-or-update-file, create-pull-request, add-issue-comment]
+    ceiling: write
+hitl:
+  gates: []   # no clinical downstream — none
+grounding:
+  - source: entra-audit-log
+    scope: new-sign-in-events
+goldenTasksRef: ./golden-tasks.md
