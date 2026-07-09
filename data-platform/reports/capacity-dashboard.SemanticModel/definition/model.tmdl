@@ -42,4 +42,6 @@ ref role Analyst
 ref role SemanticOwner
 ref role SITDemoOperator
 ref role GuestAggregated
+ref role BvaExecFull
+ref role BvaBoardReadOnly
 

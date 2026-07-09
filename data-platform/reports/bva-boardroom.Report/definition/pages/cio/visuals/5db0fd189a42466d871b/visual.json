@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "5db0fd189a42466d871b",
+  "position": { "x": 24, "y": 120, "z": 1, "height": 140, "width": 280, "tabOrder": 1 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [{
+            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "bva_measures" } }, "Property": "Azure Run-Rate (Monthly)" } },
+            "queryRef": "bva_measures.Azure Run-Rate (Monthly)",
+            "nativeQueryRef": "Azure Run-Rate (Monthly)"
+          }]
+        }
+      }
+    },
+    "objects": {
+      "labels": [{ "properties": { "labelDisplayUnits": { "expr": { "Literal": { "Value": "0D" } } } } }],
+      "categoryLabels": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } }]
+    },
+    "visualContainerObjects": {
+      "title": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Azure run-rate (CHF/mo)'" } } } } }]
+    }
+  }
+}

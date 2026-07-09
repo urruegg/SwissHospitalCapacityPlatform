@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "c1d438c27cef4351a010",
+  "position": { "x": 320, "y": 288, "z": 1, "height": 140, "width": 280, "tabOrder": 1 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [{
+            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "bva_measures" } }, "Property": "Cost-to-Value Ratio" } },
+            "queryRef": "bva_measures.Cost-to-Value Ratio",
+            "nativeQueryRef": "Cost-to-Value Ratio"
+          }]
+        }
+      }
+    },
+    "objects": {
+      "labels": [{ "properties": { "labelDisplayUnits": { "expr": { "Literal": { "Value": "0D" } } } } }],
+      "categoryLabels": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } }]
+    },
+    "visualContainerObjects": {
+      "title": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Cost-to-value ratio'" } } } } }]
+    }
+  }
+}

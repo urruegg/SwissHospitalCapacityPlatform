@@ -1,0 +1,9 @@
+/// BVA board-summary guest read role (Sprint 15 · T6). Restricts the BVA
+/// hospital dimension to the synthetic "Aggregated" rollup so a guest identity
+/// can only ever see the blended, non-attributable board summary — never a
+/// specific hospital's cost/value rows (design spec §8, mirrors the operational
+/// GuestAggregated role). Assignable to HCC.GuestReadOnly in SIT and PROD.
+role BvaBoardReadOnly
+	modelPermission: read
+
+	tablePermission bva_dim_hospital = [hospital_key] = "Aggregated"

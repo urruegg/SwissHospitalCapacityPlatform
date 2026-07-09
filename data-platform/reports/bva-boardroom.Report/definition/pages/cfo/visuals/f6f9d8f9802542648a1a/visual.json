@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "f6f9d8f9802542648a1a",
+  "position": { "x": 320, "y": 120, "z": 1, "height": 140, "width": 280, "tabOrder": 1 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [{
+            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "bva_measures" } }, "Property": "Budget Variance %" } },
+            "queryRef": "bva_measures.Budget Variance %",
+            "nativeQueryRef": "Budget Variance %"
+          }]
+        }
+      }
+    },
+    "objects": {
+      "labels": [{ "properties": { "labelDisplayUnits": { "expr": { "Literal": { "Value": "0D" } } } } }],
+      "categoryLabels": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } }]
+    },
+    "visualContainerObjects": {
+      "title": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Budget variance %'" } } } } }]
+    }
+  }
+}
