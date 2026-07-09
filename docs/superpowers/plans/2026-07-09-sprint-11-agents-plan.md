@@ -42,11 +42,11 @@ Files created or modified across the 9 PRs. Paths follow [copilot-instructions.m
 
 Common per-agent file set:
 
-- Create: `agents-archive/<name>/AGENT.md`
-- Create: `agents-archive/<name>/manifest.yaml` (runtime manifest for the Sprint 13 agent-host)
-- Create: `agents-archive/<name>/golden-tasks.md`
-- Create: `agents-archive/<name>/fixtures/happy-path.md`
-- Create: `agents-archive/<name>/fixtures/failure-mode.md`
+- Create: `agents/<name>/AGENT.md`
+- Create: `agents/<name>/manifest.yaml` (runtime manifest for the Sprint 13 agent-host)
+- Create: `agents/<name>/golden-tasks.md`
+- Create: `agents/<name>/fixtures/happy-path.md`
+- Create: `agents/<name>/fixtures/failure-mode.md`
 - Create: `agents/<name>/AGENT.md` (compatibility stub, ≤ 10 lines)
 - Modify: `AGENTS.md` §1 — append registry row
 - **Not deployed to Foundry Agent Service in Sprint 11.** The runtime is application-hosted per ADR-0008; the Sprint 13 agent-host will load the manifest at startup.
@@ -57,7 +57,7 @@ Per-PR overrides in Tasks 2–8 below.
 
 - Same shape as PRs #2–#8, plus:
 - Modify: `.github/copilot/mcp.json` — add `entra-mcp` read-only entry
-- Add: `agents-archive/onboarding-agent/AGENT.md` — declares `Directory.AuditLog.Read.All` requirement in the Tools section
+- Add: `agents/onboarding-agent/AGENT.md` — declares `Directory.AuditLog.Read.All` requirement in the Tools section
 
 #### PR #10 — Retro
 
@@ -79,7 +79,7 @@ git switch main; git pull; git switch -c sprint-11/<agent-name>
 
 - [ ] **Sub-step B: Write the two failing golden-task fixtures**
 
-Create `agents-archive/<name>/fixtures/happy-path.md` and `agents-archive/<name>/fixtures/failure-mode.md`. Each fixture has:
+Create `agents/<name>/fixtures/happy-path.md` and `agents/<name>/fixtures/failure-mode.md`. Each fixture has:
 
 ```markdown
 ---
@@ -108,7 +108,7 @@ requirement: FR-<family>-<id>
 
 Same skeleton for `failure-mode.md` — the input should exercise a refusal path.
 
-- [ ] **Sub-step C: Create `agents-archive/<name>/golden-tasks.md`**
+- [ ] **Sub-step C: Create `agents/<name>/golden-tasks.md`**
 
 ```markdown
 # Golden Tasks — <agent-name>
@@ -126,9 +126,9 @@ gh workflow run eval-goldens.yml -f agent=<name>
 gh run watch --exit-status
 ```
 
-Expected: **FAIL** with "agent prompt file not found" (agents-archive/`<name>`/AGENT.md missing).
+Expected: **FAIL** with "agent prompt file not found" (agents/`<name>`/AGENT.md missing).
 
-- [ ] **Sub-step E: Create `agents-archive/<name>/AGENT.md`**
+- [ ] **Sub-step E: Create `agents/<name>/AGENT.md`**
 
 Follow the section order in Sprint 11 design spec §3.2:
 
@@ -146,7 +146,7 @@ Follow the section order in Sprint 11 design spec §3.2:
 ```markdown
 # `<name>` — compatibility stub
 
-Canonical prompt has moved to [`agents-archive/<name>/AGENT.md`](../../agents-archive/<name>/AGENT.md).
+Canonical prompt at [`agents/<name>/AGENT.md`](../../../agents/<name>/AGENT.md).
 
 This stub is retained for backwards compatibility with tooling that scans `agents/`.
 ```
@@ -156,7 +156,7 @@ This stub is retained for backwards compatibility with tooling that scans `agent
 Insert immediately before the `pr-review` row (or the last existing row):
 
 ```markdown
-| `<name>` | <purpose from spec §3.1> | @urruegg | <trigger> | `github-mcp`, `fabric-mcp` | `write` | [`agents-archive/<name>/AGENT.md`](agents-archive/<name>/AGENT.md) | [`agents-archive/<name>/golden-tasks.md`](agents-archive/<name>/golden-tasks.md) |
+| `<name>` | <purpose from spec §3.1> | @urruegg | <trigger> | `github-mcp`, `fabric-mcp` | `write` | [`agents/<name>/AGENT.md`](agents/<name>/AGENT.md) | [`agents/<name>/golden-tasks.md`](agents/<name>/golden-tasks.md) |
 ```
 
 Bump AGENTS.md version per §9 (MINOR — additive row).
@@ -172,7 +172,7 @@ Expected: **PASS**. If FAIL, iterate on the prompt until both fixtures pass; do 
 
 - [ ] **Sub-step I: Declare HITL gate + validate runtime manifest**
 
-Create or verify `agents-archive/<name>/manifest.yaml` — the file the Sprint 13 Container Apps agent-host will load at startup. Minimum contract:
+Create or verify `agents/<name>/manifest.yaml` — the file the Sprint 13 Container Apps agent-host will load at startup. Minimum contract:
 
 ```yaml
 agent: <name>
@@ -209,7 +209,7 @@ Run a manifest linter (`.github/workflows/eval-goldens.py --check-manifest`) to 
 - [ ] **Sub-step J: Commit and push**
 
 ```powershell
-git add agents-archive/<name>/ agents/<name>/ AGENTS.md
+git add agents/<name>/ AGENTS.md
 git commit -m "feat(agents): add <name> agent with goldens and registry row"
 git push -u origin sprint-11/<name>
 ```
@@ -409,7 +409,7 @@ on:
         default: all
   pull_request:
     paths:
-      - "agents-archive/**"
+      - "agents/**"
 
 jobs:
   replay-goldens:
@@ -440,9 +440,9 @@ jobs:
         id: discover
         run: |
           if [ "${{ inputs.agent }}" = "all" ] || [ -z "${{ inputs.agent }}" ]; then
-            find agents-archive -name 'happy-path.md' -o -name 'failure-mode.md' > fixtures.txt
+            find agents -name 'happy-path.md' -o -name 'failure-mode.md' > fixtures.txt
           else
-            find agents-archive/${{ inputs.agent }} -name '*.md' -path '*fixtures*' > fixtures.txt
+            find agents/${{ inputs.agent }} -name '*.md' -path '*fixtures*' > fixtures.txt
           fi
           cat fixtures.txt
 
@@ -487,7 +487,7 @@ def validate(fixture: Path) -> list[str]:
         errors.append("missing 'agent:' front-matter key")
     else:
         agent = front.group(1)
-        prompt = Path("agents-archive") / agent / "AGENT.md"
+        prompt = Path("agents") / agent / "AGENT.md"
         if not prompt.exists():
             errors.append(f"agent prompt file not found: {prompt}")
     return errors
@@ -597,10 +597,10 @@ Follow the [Common per-agent PR template](#common-per-agent-pr-template-referenc
 
 **Files:**
 
-- Create: `agents-archive/bmca-agent/AGENT.md`
-- Create: `agents-archive/bmca-agent/golden-tasks.md`
-- Create: `agents-archive/bmca-agent/fixtures/happy-path.md`
-- Create: `agents-archive/bmca-agent/fixtures/failure-mode.md`
+- Create: `agents/bmca-agent/AGENT.md`
+- Create: `agents/bmca-agent/golden-tasks.md`
+- Create: `agents/bmca-agent/fixtures/happy-path.md`
+- Create: `agents/bmca-agent/fixtures/failure-mode.md`
 - Create: `agents/bmca-agent/AGENT.md`
 - Modify: `AGENTS.md` §1 registry (append row)
 

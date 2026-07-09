@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | 1.0.0 (initial — added decision D-11 clarifying agent runtime posture is application-hosted per ADR-0008; sibling specs 11/13/15/16 updated to match) |
+| **Previous Version** | 1.1.0 (updated `agents-archive/<name>/` refs to `agents/<name>/` after the 2.0.0 folder restructure) |
 
 > **Purpose.** Master roadmap for the demo-showcase programme spanning Sprints 11–16. Anchors the per-sprint design specs, records the brainstorm decisions, and defines the Superpowers-first orchestration pattern used to delegate work to the GitHub Copilot coding agent.
 >
@@ -146,7 +146,7 @@ Locked here in the roadmap because every downstream sprint depends on it. Full d
 | 7 | `data-quality-agent` | Data | `github-mcp`, `fabric-mcp` | `write` | @urruegg |
 | 8 | `onboarding-agent` **(stretch)** | Onboarding | `github-mcp`, `entra-mcp` (read) | `write` | @urruegg |
 
-All eight get a compatibility stub under `agents/<name>/` plus canonical prompt + golden-tasks under `agents-archive/<name>/`. Table rows appended to [AGENTS.md §1](../../../AGENTS.md#1-registry).
+All eight get a canonical prompt + `manifest.yaml` + golden-tasks under `agents/<name>/` (single source of truth after the 2.0.0 folder restructure). Table rows appended to [AGENTS.md §1](../../../AGENTS.md#1-registry).
 
 ---
 
@@ -186,7 +186,7 @@ Seven files, versioned per [copilot-instructions.md §9](../../../.github/copilo
 
 **Not written now** (deferred to per-sprint kickoff, per decision D-1):
 - Per-sprint `plan.md` files (produced by the `writing-plans` skill *inside* each sprint kickoff).
-- Actual agent prompt bodies under `agents-archive/<name>/AGENT.md` (produced by Sprint 11 subagents).
+- Actual agent prompt bodies under `agents/<name>/AGENT.md` (produced by Sprint 11 subagents).
 - Bicep / IaC modules (produced by Sprint 12 + Sprint 16 subagents).
 - App source under `apps/**` (produced by Sprint 13 subagents).
 - Fabric notebooks / pipelines (produced by Sprint 14/15/16 subagents).

@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | 1.0.0 (initial — mis-wrote Foundry Agent Service as the runtime; corrected here to application-hosted per ADR-0008) |
+| **Previous Version** | 1.1.0 (rewrote all `agents-archive/<name>/` references to `agents/<name>/` after the 2.0.0 folder restructure) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/reviews/2026-06-09-ama-sd-review.md](../../reviews/2026-06-09-ama-sd-review.md) §2.4 Baseline Architecture; [docs/superpowers/ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md](../ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md) §4.1 |
 | **Runtime posture** | Application-hosted agents dispatched from the Sprint 13 Container Apps agent-host to a Microsoft Foundry chat model, per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md) + [ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md) |
@@ -32,8 +32,8 @@
 
 Eight agents are addressable in the repo. Each has:
 
-- an `agents-archive/<name>/AGENT.md` prompt file with Identity, Scope, Tools, Refusal Rules, Output Contract, Confirmation Rules;
-- an `agents-archive/<name>/golden-tasks.md` with at least one happy-path and one failure-mode fixture;
+- an `agents/<name>/AGENT.md` prompt file with Identity, Scope, Tools, Refusal Rules, Output Contract, Confirmation Rules;
+- an `agents/<name>/golden-tasks.md` with at least one happy-path and one failure-mode fixture;
 - a compatibility stub under `agents/<name>/`;
 - a row in [AGENTS.md §1](../../../AGENTS.md#1-registry);
 - for the six user-facing operational agents: a **prompt manifest + tool contract + HITL gate declaration** ready to be *loaded* by the Sprint 13 Container Apps agent-host and dispatched against a Foundry chat model.
@@ -77,16 +77,14 @@ Sprint 11 does **not** yet invoke agents from a real app UI — that is Sprint 1
 
 ## 3. Architecture and per-agent design
 
-Each user-facing agent follows the same shape:
+Each user-facing agent follows the same shape (single source of truth after the 2.0.0 folder restructure):
 
 ```
-agents-archive/<name>/
+agents/<name>/
 ├─ AGENT.md              # Identity + Scope + Tools + Refusal + Output + Confirmation
+├─ manifest.yaml         # runtime manifest loaded by the Sprint 13 Container Apps agent-host
 ├─ golden-tasks.md       # ≥1 happy-path + ≥1 failure fixture
 └─ (optional) prompts/   # Sub-prompts for phases if needed
-
-agents/<name>/           # Compatibility stub
-└─ AGENT.md              # 5-line pointer to agents-archive/<name>/AGENT.md
 ```
 
 ### 3.1 Agent-by-agent scope summary
@@ -136,10 +134,10 @@ Follow [AGENTS.md skill-discovery rule of engagement](../../../AGENTS.md#skill-d
 | --- | --- | --- |
 | Issue template — agent build | `.github/ISSUE_TEMPLATE/agent-build.yml` | New agent build — one issue per agent |
 | Issue template — sprint kickoff | `.github/ISSUE_TEMPLATE/sprint-kickoff.yml` | Sprint 11 kickoff |
-| Workflow — eval goldens | `.github/workflows/eval-goldens.yml` | On PR to `agents-archive/**` — replays fixtures against the Foundry chat-completion API (no Foundry Agent Service involved) |
+| Workflow — eval goldens | `.github/workflows/eval-goldens.yml` | On PR to `agents/**` — replays fixtures against the Foundry chat-completion API (no Foundry Agent Service involved) |
 | Labels | `sprint-11`, `agent-build`, `model-adr-required`, `superpowers-brainstorm`, `superpowers-plan`, `superpowers-execute` | Applied by templates |
 | MCP allow-list | `.github/copilot/mcp.json` | Add `fabric-mcp` entry so the Sprint 13 agent-host can dispatch Fabric tool calls on behalf of the loaded agents |
-| CODEOWNERS | `.github/CODEOWNERS` | `agents-archive/**` → @urruegg |
+| CODEOWNERS | `.github/CODEOWNERS` | `agents/**` → @urruegg |
 
 **Delegation flow.** Kickoff issue opens → Copilot coding agent reads the roadmap + this design spec → uses `brainstorming` to confirm no gaps → invokes `writing-plans` to produce `plan.md` → invokes `subagent-driven-development` to build the 8 agents in parallel subagents (one per agent).
 
@@ -149,7 +147,7 @@ Follow [AGENTS.md skill-discovery rule of engagement](../../../AGENTS.md#skill-d
 
 | Action | Ceiling | Gate |
 | --- | --- | --- |
-| Prompt file changes (`agents-archive/**`) | `write` | Standard PR review |
+| Prompt file changes (`agents/**`) | `write` | Standard PR review |
 | Model deployment (if new SKU or region) | `deploy` | `approved-to-apply` + ADR |
 | `onboarding-agent` reading Entra audit log | `read` | Consent gate — `AuditLog.Read.All` app permission granted once, revocable |
 | Any deletion (agent, model, definition) | `delete` | Blocked in Sprint 11 |
@@ -164,7 +162,7 @@ Follow [AGENTS.md skill-discovery rule of engagement](../../../AGENTS.md#skill-d
 - **Refusal-rule test** — each agent has one fixture that prompts out-of-scope behaviour and expects a refusal that cites the specific refusal rule.
 - **PHI/PII redaction test** — each agent has one fixture with synthetic PHI-shaped input; expected output redacts.
 - **Cross-agent hygiene** — automated check that no agent's MCP scope leaks into another agent's tool list.
-- **AGENTS.md consistency** — CI check that every agent under `agents-archive/**` has a matching row in AGENTS.md §1 with matching ceiling.
+- **AGENTS.md consistency** — CI check that every agent under `agents/**` has a matching row in AGENTS.md §1 with matching ceiling.
 
 ---
 
@@ -173,7 +171,7 @@ Follow [AGENTS.md skill-discovery rule of engagement](../../../AGENTS.md#skill-d
 | Risk | Mitigation |
 | --- | --- |
 | Foundry region drift (ADR-0013 westus2 demo scope) | ADR explicitly demo-only; model-selection ADR pins region per agent |
-| Golden-task drift as prompts evolve | `eval-goldens.yml` runs on every push to `agents-archive/**` |
+| Golden-task drift as prompts evolve | `eval-goldens.yml` runs on every push to `agents/**` |
 | Cross-agent behaviour contamination | Each agent gets distinct MCP scope + role claim; hygiene check in CI |
 | Onboarding-agent needing write to Entra | Kept read-only; welcome PRs are the only "write" (into the repo) |
 | `csa-agent` scaffold used before Sprint 16 body | Scaffold explicitly returns "not yet available" for Run/Evaluate/Recommend phases |

@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | 1.0.0 (initial — added the Container Apps agent-host backend as MVP scope, per ADR-0008) |
+| **Previous Version** | 1.1.0 (updated `agents-archive/<name>/manifest.yaml` ref in the hcc-agent-host `manifests/` comment to `agents/<name>/manifest.yaml` after the 2.0.0 folder restructure) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md](../ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md) |
 | **Brandkit** | [docs/brandkit/Helvion-Brand-Guide.md](../../brandkit/Helvion-Brand-Guide.md) |
@@ -123,7 +123,7 @@ apps/
 │  └─ (generated)
 └─ hcc-agent-host/        # NEW in v1.1.0 - Container Apps backend per ADR-0008
    ├─ src/
-   │  ├─ manifests/       # loads Sprint 11 agents-archive/<name>/manifest.yaml
+   │  ├─ manifests/       # loads Sprint 11 agents/<name>/manifest.yaml
    │  ├─ orchestrator/    # composes system prompt + tools; dispatches to Foundry
    │  ├─ tools/           # MCP tool adapters (fabric, cosmos, github)
    │  ├─ hitl/            # HITL-01..HITL-05 gate enforcement per ADR-0007

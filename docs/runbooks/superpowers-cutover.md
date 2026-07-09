@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-09 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (completed legacy pack archival and stub rollout) |
+| **Previous Version** | 1.1.0 (updated Cutover Status and Decommission narrative for the 2.0.0 `agents-archive/` → `agents/` restructure) |
 
 ## Purpose
 
@@ -45,7 +45,7 @@ The following controls remain authoritative after cutover:
 ## Target Operating Model
 
 1. Superpowers is the default execution mode.
-2. Legacy per-agent prompts are archived under `agents-archive/`; `agents/`
+2. All agent packs (prompt + manifest + golden-tasks) live under `agents/<name>/` as the single source of truth after the 2.0.0 folder restructure; historical `agents-archive/` bodies live in `git log`.
    now hosts compatibility stubs.
 3. Governance and policy files remain repository-native and mandatory.
 
@@ -81,7 +81,7 @@ copilot plugin install superpowers@superpowers-marketplace
 
 ### Phase 4: Decommission Legacy Paths (completed)
 
-1. Archive legacy per-agent prompt folders under `agents-archive/`.
+1. Move legacy per-agent prompt folders into `agents/<name>/` (historically under `agents-archive/`; consolidated in the 2.0.0 folder restructure).
 2. Keep and retarget the golden-task structural workflow as legacy compatibility validation.
 3. Maintain compatibility stubs under `agents/` to prevent broken references during transition.
 

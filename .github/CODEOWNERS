@@ -24,16 +24,15 @@
 /.github/ISSUE_TEMPLATE/                @urruegg
 /.github/workflows/                     @urruegg
 
-# Agent prompts and golden-task fixtures (created from Sprint 1 onward)
+# Agent prompts, runtime manifests, golden-task fixtures (single source of truth)
+# All agent packs live directly under /agents/ after the 2.0.0 restructure that
+# retired agents-archive/. Includes both platform-control-plane packs
+# (orchestrator, spec-parser-agent, ...) and Sprint 11 runtime packs
+# (bmca-agent, ooa-agent, ...). Includes fabric-data-agent (Sprint 09 v2 read-only
+# ontology query surface, retained per F1 decision in the restructure).
 /agents/                                @urruegg
-/evals/                                 @urruegg
-
-# Archived legacy + Sprint 11 agent packs (canonical prompts + golden-tasks)
-/agents-archive/                        @urruegg
-agents-archive/**                       @urruegg
-
-# Runtime user-facing agents (BM-Copilot, Fabric Data Agent, CSA) — 2-of-2 review per FR-GOV-ONT-002
 agents/**                               @urruegg
+/evals/                                 @urruegg
 
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft — awaiting user review |
-| **Previous Version** | 1.1.0 (added D9 westus2 demo-scope carve-out per ADR-0013 and known subscription 66a9953a-df37-4c51-856c-9971b9bf3e03 shared by SIT + PROD) |
+| **Previous Version** | 1.2.0 (updated §6.1 to reference `agents/` instead of `agents-archive/` after the 2.0.0 folder restructure) |
 
 ---
 
@@ -204,7 +204,7 @@ Live / authoritative — MUST rename:
 - `docs/sprints/sprint-01..09.md`
 - `docs/superpowers/specs/2026-06-14-sprint-08-data-platform-design.md`
 - `docs/superpowers/plans/2026-06-14-sprint-08-week-1-walking-skeleton.md`
-- All files under `agents-archive/`
+- All files under `agents/` (historically split between `agents-archive/` and `agents/` prior to the 2.0.0 restructure)
 - All prior review reports under `docs/reviews/`
 
 ---
