@@ -1,0 +1,13 @@
+version: 1.0.0
+facts:
+  - bomId: bom-sample-capacity
+    region: Switzerland North
+    maturity: GA
+    verifiedBy: Test Verifier
+    asOf: 2026-07-09
+    sourceUrl: https://example.test/capacity
+  - bomId: bom-sample-lakehouse
+    region: Switzerland North
+    maturity: Preview
+    verifiedBy: Test Verifier
+    asOf: 2026-07-09

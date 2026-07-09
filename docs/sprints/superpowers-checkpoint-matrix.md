@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (new shared matrix baseline) |
+| **Previous Version** | 1.1.0 (added Sprint 14 execution-log row + retro notes) |
 
 ## Purpose
 
@@ -48,6 +48,7 @@ sprint executed under this matrix.
 | Sprint | Start | End | Status | Agents shipped | Evals green | Design spec | Plan |
 | ------ | ----- | --- | ------ | -------------- | ----------- | ----------- | ---- |
 | 11 | 2026-07-09 | 2026-07-09 | Merged | 8/8 (7 MVP + 1 stretch) | Yes | [`../superpowers/specs/2026-07-09-sprint-11-agents-design.md`](../superpowers/specs/2026-07-09-sprint-11-agents-design.md) | [`../superpowers/plans/2026-07-09-sprint-11-agents-plan.md`](../superpowers/plans/2026-07-09-sprint-11-agents-plan.md) |
+| 14 | 2026-07-09 | 2026-07-09 | In progress (T1–T3 landed; T4–T7 follow-up) | n/a (workflow-only) | Yes (parsers + readiness golden) | [`../superpowers/specs/2026-07-09-sprint-14-evidence-design.md`](../superpowers/specs/2026-07-09-sprint-14-evidence-design.md) | [`../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md`](../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md) |
 
 ### Sprint 11 retro notes
 
@@ -68,3 +69,27 @@ sprint executed under this matrix.
 - `csa-agent` is a scaffold only — the Prepare phase is stubbed and the
   Run/Evaluate/Recommend body lands in Sprint 16. The Sprint 09 runtime pack at
   `agents/csa-agent/` was left intact.
+
+### Sprint 14 retro notes
+
+- **T1–T3 landed** as the fully-verifiable data-product foundation:
+  - T1 — five evidence parsers (`prd`, `adr`, `bom`, `region_availability`,
+    `infra`) + publish orchestrator + 7 JSON Schemas + `evidence-publish.yml`
+    (publishes to the `evidence-latest` branch, never `main`). Byte-stable
+    output with provenance on every row. 25 parser tests green.
+  - T2 — seed catalogs: `docs/bom.yaml` (25 items), `docs/region-availability.yaml`
+    (50 facts), `docs/adr-requirement-map.yaml` (10 curated edges), `bom-item` +
+    `ga-evidence-refresh` issue templates, `docs/bom.schema.md`, CODEOWNERS.
+  - T3 (core) — readiness scoring pure module (`readiness_rules.py`) codified in
+    [`../adr/0021-readiness-scoring-rules.md`](../adr/0021-readiness-scoring-rules.md),
+    byte-stable golden regression (7 tests green), Bronze→Silver→Gold notebooks +
+    `docs/data-platform/evidence-gold-schema.md`.
+- **Deferred to follow-up** (per design spec §11 fallback):
+  - T3 Fabric pipeline **publish** and T4 semantic-model **publish** — both
+    `deploy`-ceiling, gated by `approved-to-apply`; not run in the cloud-agent
+    environment.
+  - T4 semantic-model TMDL extension.
+  - T5 (5 whiteboard card types) + T6 (Backstage Evidence tab) — **blocked** on
+    the unmerged Sprint 13 app framework (`apps/hcc-app-fluent/` does not yet
+    exist). Land in a follow-up mini-sprint once Sprint 13 T3/T4 merge (issue #161).
+

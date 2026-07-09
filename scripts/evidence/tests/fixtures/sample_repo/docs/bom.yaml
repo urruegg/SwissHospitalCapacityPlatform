@@ -1,0 +1,18 @@
+version: 1.0.0
+items:
+  - id: bom-sample-capacity
+    name: Sample Fabric Capacity
+    type: Microsoft.Fabric/capacities
+    category: platform
+    sku: F2
+    realisesRequirements: [FR-DATA-001]
+    governedByAdrs: [ADR-0001]
+  - id: bom-sample-lakehouse
+    name: Sample Lakehouse
+    type: Microsoft.Fabric/lakehouse
+    category: data
+    realisesRequirements: [FR-DATA-001]
+    governedByAdrs: [ADR-0002]
+    dependsOn:
+      - to: bom-sample-capacity
+        type: hosts

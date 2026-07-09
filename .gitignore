@@ -444,3 +444,8 @@ FodyWeavers.xsd
 # Power BI Desktop local caches - backstop; per-folder .gitignore files inside
 # each .SemanticModel/ and .Report/ already exclude .pbi/, this catches leaks.
 **/.pbi/cache.abf
+
+# Showcase Evidence data product (Sprint 14) — generated evidence JSON is
+# published to the standalone `evidence-latest` branch, never committed to main.
+# The JSON Schemas under data/evidence/schema/ ARE tracked.
+/data/evidence/*.json

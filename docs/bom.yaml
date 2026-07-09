@@ -1,0 +1,250 @@
+# Bill of Materials (BOM) — Swiss Hospital Capacity Platform
+#
+# Seed catalog for the Sprint 14 Showcase Evidence data product.
+# Parsed by scripts/evidence/parsers/bom_parser.py into
+# data/evidence/bom.json + data/evidence/dependencies.json.
+#
+# Contract: docs/bom.schema.md (human-readable) + data/evidence/schema/bom.schema.json.
+#
+# Conventions:
+#   id                    kebab-case, prefixed "bom-"
+#   category              one of: data | ai | app | integration | security | platform | governance
+#   realisesRequirements  FR-*/NFR-* IDs from docs/PRD.md
+#   governedByAdrs        ADR-#### IDs from docs/adr/
+#   dependsOn[].type      one of: requires | hosts | grounds | binds | governs
+#
+# Region-availability facts for each item live in docs/region-availability.yaml.
+
+version: 1.0.0
+items:
+  - id: bom-fabric-capacity
+    name: Microsoft Fabric Capacity
+    type: Microsoft.Fabric/capacities
+    category: platform
+    sku: F64
+    realisesRequirements: [FR-DATA-003, FR-DATA-005]
+    governedByAdrs: [ADR-0012, ADR-0013, ADR-0015]
+
+  - id: bom-fabric-workspace-data
+    name: Fabric Data Workspace (ws-ihzhhpf-sit-data)
+    type: Microsoft.Fabric/workspaces
+    category: platform
+    realisesRequirements: [FR-DATA-003]
+    governedByAdrs: [ADR-0012]
+    dependsOn:
+      - to: bom-fabric-capacity
+        type: hosts
+
+  - id: bom-onelake
+    name: OneLake
+    type: Microsoft.Fabric/onelake
+    category: data
+    realisesRequirements: [FR-DATA-003, FR-DATA-008]
+    governedByAdrs: [ADR-0015]
+    dependsOn:
+      - to: bom-fabric-capacity
+        type: requires
+
+  - id: bom-lakehouse
+    name: Fabric Lakehouse (lh_ihzhhpf_sit)
+    type: Microsoft.Fabric/lakehouse
+    category: data
+    realisesRequirements: [FR-DATA-001, FR-DATA-003, FR-DATA-008]
+    governedByAdrs: [ADR-0015]
+    dependsOn:
+      - to: bom-fabric-workspace-data
+        type: hosts
+      - to: bom-onelake
+        type: requires
+
+  - id: bom-eventstream
+    name: Fabric Eventstream (custom endpoint, Entra ID)
+    type: Microsoft.Fabric/eventstream
+    category: integration
+    realisesRequirements: [FR-DATA-001, FR-DATA-004]
+    governedByAdrs: [ADR-0019]
+    dependsOn:
+      - to: bom-fabric-workspace-data
+        type: hosts
+
+  - id: bom-eventhouse
+    name: Fabric Eventhouse (time-series bindings)
+    type: Microsoft.Fabric/eventhouse
+    category: data
+    realisesRequirements: [FR-DATA-001, FR-FC-006]
+    governedByAdrs: [ADR-0014]
+    dependsOn:
+      - to: bom-eventstream
+        type: requires
+
+  - id: bom-semantic-model
+    name: Direct Lake Semantic Model (capacity-dashboard)
+    type: Microsoft.Fabric/semanticModel
+    category: data
+    realisesRequirements: [FR-DATA-005, FR-VIZ-001, FR-VIZ-002]
+    governedByAdrs: [ADR-0015]
+    dependsOn:
+      - to: bom-lakehouse
+        type: requires
+
+  - id: bom-powerbi-report
+    name: Power BI Operational Dashboards
+    type: Microsoft.PowerBI/reports
+    category: app
+    realisesRequirements: [FR-CX-005, FR-VIZ-001, FR-VIZ-002]
+    governedByAdrs: [ADR-0018]
+    dependsOn:
+      - to: bom-semantic-model
+        type: binds
+
+  - id: bom-fabric-iq-ontology
+    name: Fabric IQ Operational Ontology
+    type: Microsoft.Fabric/ontology
+    category: ai
+    realisesRequirements: [FR-ONT-002, FR-ONT-003, FR-ONT-004]
+    governedByAdrs: [ADR-0014, ADR-0002, ADR-0006]
+    dependsOn:
+      - to: bom-semantic-model
+        type: grounds
+
+  - id: bom-reference-ontology
+    name: Reference Ontology (OWL/RDF, BFO-aligned)
+    type: Platform/ontology-owl
+    category: governance
+    realisesRequirements: [FR-ONT-001, FR-ONT-005, FR-ONT-006]
+    governedByAdrs: [ADR-0014]
+
+  - id: bom-fabric-data-agent
+    name: Fabric Data Agent (read-only query surface)
+    type: Microsoft.Fabric/dataAgent
+    category: ai
+    realisesRequirements: [FR-ONT-004, FR-CX-002]
+    governedByAdrs: [ADR-0008, ADR-0014]
+    dependsOn:
+      - to: bom-fabric-iq-ontology
+        type: grounds
+      - to: bom-semantic-model
+        type: grounds
+
+  - id: bom-azure-openai
+    name: Azure OpenAI (grounded chat models)
+    type: Microsoft.CognitiveServices/accounts
+    category: ai
+    realisesRequirements: [FR-CX-001, FR-CX-002, FR-CX-003]
+    governedByAdrs: [ADR-0003, ADR-0005, ADR-0020]
+
+  - id: bom-foundry-agent-service
+    name: Azure AI Foundry Agent Service
+    type: Microsoft.MachineLearningServices/agents
+    category: ai
+    realisesRequirements: [FR-CX-002, FR-CX-004]
+    governedByAdrs: [ADR-0007, ADR-0008]
+    dependsOn:
+      - to: bom-azure-openai
+        type: requires
+
+  - id: bom-container-apps-agent-host
+    name: Container Apps Agent-Host (Sprint 13)
+    type: Microsoft.App/containerApps
+    category: app
+    realisesRequirements: [FR-CX-001, FR-CX-004]
+    governedByAdrs: [ADR-0008]
+    dependsOn:
+      - to: bom-managed-identity
+        type: binds
+      - to: bom-fabric-data-agent
+        type: grounds
+
+  - id: bom-app-fluent
+    name: HCC Operations App (hcc-app-fluent)
+    type: Microsoft.App/staticApp
+    category: app
+    realisesRequirements: [FR-CX-001, FR-CX-004, FR-VIZ-001]
+    governedByAdrs: [ADR-0008]
+    dependsOn:
+      - to: bom-container-apps-agent-host
+        type: requires
+      - to: bom-powerbi-report
+        type: binds
+
+  - id: bom-logic-apps
+    name: Logic Apps Integration Workflows
+    type: Microsoft.Logic/workflows
+    category: integration
+    realisesRequirements: [FR-DATA-007, FR-DC-003, FR-DC-004, FR-GOV-005]
+    governedByAdrs: [ADR-0010]
+
+  - id: bom-fhir-service
+    name: Azure Health Data Services FHIR Service
+    type: Microsoft.HealthcareApis/fhirServices
+    category: integration
+    realisesRequirements: [FR-DATA-002, FR-ONT-006]
+    governedByAdrs: [ADR-0016]
+    dependsOn:
+      - to: bom-logic-apps
+        type: binds
+
+  - id: bom-storage-account
+    name: Landing Storage Account (ADLS Gen2)
+    type: Microsoft.Storage/storageAccounts
+    category: data
+    realisesRequirements: [FR-DATA-001, NFR-COMP-004]
+    governedByAdrs: [ADR-0004, ADR-0009]
+
+  - id: bom-key-vault
+    name: Azure Key Vault
+    type: Microsoft.KeyVault/vaults
+    category: security
+    realisesRequirements: [NFR-SEC-001, NFR-SEC-002]
+    governedByAdrs: [ADR-0009]
+
+  - id: bom-managed-identity
+    name: Managed Identity / Workload Identity Federation
+    type: Microsoft.ManagedIdentity/userAssignedIdentities
+    category: security
+    realisesRequirements: [NFR-SEC-001, NFR-SEC-003]
+    governedByAdrs: [ADR-0007]
+    dependsOn:
+      - to: bom-entra-id
+        type: binds
+
+  - id: bom-entra-id
+    name: Microsoft Entra ID
+    type: Microsoft.AAD/tenant
+    category: security
+    realisesRequirements: [NFR-SEC-001, FR-GOV-002]
+    governedByAdrs: [ADR-0012]
+
+  - id: bom-log-analytics
+    name: Log Analytics Workspace
+    type: Microsoft.OperationalInsights/workspaces
+    category: platform
+    realisesRequirements: [NFR-REL-001, FR-GOV-001, FR-GOV-004]
+    governedByAdrs: [ADR-0009]
+
+  - id: bom-purview
+    name: Microsoft Purview (governance + lineage)
+    type: Microsoft.Purview/accounts
+    category: governance
+    realisesRequirements: [FR-GOV-001, FR-GOV-004, NFR-COMP-005]
+    governedByAdrs: [ADR-0010]
+
+  - id: bom-policy-as-code
+    name: Policy-as-Code Release Gate
+    type: Platform/policy-gate
+    category: governance
+    realisesRequirements: [FR-GOV-003, FR-GOV-004, NFR-GOV-001]
+    governedByAdrs: [ADR-0010]
+    dependsOn:
+      - to: bom-github-actions
+        type: hosts
+
+  - id: bom-github-actions
+    name: GitHub Actions Delivery Pipeline
+    type: GitHub/actions
+    category: platform
+    realisesRequirements: [FR-GOV-003, NFR-MAINT-001, NFR-GOV-006]
+    governedByAdrs: [ADR-0010]
+    dependsOn:
+      - to: bom-managed-identity
+        type: binds
