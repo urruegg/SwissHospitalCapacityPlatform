@@ -1,0 +1,21 @@
+agent: data-quality-agent
+version: 1.0.0
+runtime: agent-host
+invocation: workflow-scheduled  # not directly user-invoked; agent-host loads it for scheduled runs
+modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
+modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#5-refusal-rules
+mcpTools:
+  - server: fabric-mcp
+    tools: [notebook_run, query]
+    ceiling: write
+  - server: github-mcp
+    tools: [get-issue, add-issue-comment, create-branch, create-or-update-file]
+    ceiling: write
+hitl:
+  gates: [HITL-04]  # policy exception on PHI mask
+grounding:
+  - table: Ops.DataQualityRuns
+    scope: aggregated
+goldenTasksRef: ./golden-tasks.md

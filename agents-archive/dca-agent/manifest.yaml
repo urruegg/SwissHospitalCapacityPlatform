@@ -1,0 +1,24 @@
+agent: dca-agent
+version: 1.0.0
+runtime: agent-host
+modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
+modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#5-refusal-rules
+mcpTools:
+  - server: fabric-mcp
+    tools: [query]
+    ceiling: read
+  - server: github-mcp
+    tools: [get-issue, add-issue-comment, create-branch, create-or-update-file]
+    ceiling: write
+hitl:
+  gates: [HITL-03]  # cross-organisational handoff initiation
+grounding:
+  - table: Gold.DischargeReadiness
+    scope: hospital
+  - table: Gold.CareTransitionBlockers
+    scope: hospital
+  - table: Gold.LengthOfStay
+    scope: hospital
+goldenTasksRef: ./golden-tasks.md

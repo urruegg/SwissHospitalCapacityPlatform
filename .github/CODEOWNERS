@@ -28,6 +28,10 @@
 /agents/                                @urruegg
 /evals/                                 @urruegg
 
+# Archived legacy + Sprint 11 agent packs (canonical prompts + golden-tasks)
+/agents-archive/                        @urruegg
+agents-archive/**                       @urruegg
+
 # Runtime user-facing agents (BM-Copilot, Fabric Data Agent, CSA) — 2-of-2 review per FR-GOV-ONT-002
 agents/**                               @urruegg
 

@@ -1,0 +1,22 @@
+agent: csa-agent
+version: 0.1.0
+runtime: agent-host
+scaffold: true  # Prepare-phase stub only; Run/Evaluate/Recommend body in Sprint 16
+modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
+modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#5-refusal-rules
+mcpTools:
+  - server: github-mcp
+    tools: [get-issue, add-issue-comment]
+    ceiling: write
+  - server: fabric-mcp
+    tools: [query]   # reserved for Sprint 16; unused in the scaffold
+    ceiling: read
+hitl:
+  # declared but INERT until the Sprint 16 body lands; the agent-host HITL
+  # enforcer rejects any run/evaluate/recommend attempt until then.
+  gates: [HITL-01, HITL-04]
+  inert_until: sprint-16
+grounding: []  # wired in Sprint 16
+goldenTasksRef: ./golden-tasks.md
