@@ -1,0 +1,88 @@
+name: "BVA KPI (Sprint 15)"
+description: "Add or change a BVA headline/supporting DAX measure in the BVA semantic model."
+title: "[BVA-KPI] <persona> — <measure-name>"
+labels: ["sprint-15", "bva", "dax"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Adds or changes a DAX measure in the BVA semantic model
+        > (`data-platform/reports/capacity-dashboard.SemanticModel/definition/tables/bva/`).
+        > Every measure MUST carry a target constant, a cadence tag, and an RLS
+        > profile (design spec §6). Golden-value regression lives in
+        > `data-platform/reports/tests/test_bva_kpi_golden.py`. Semantic-model
+        > publish is a `deploy`-ceiling action gated by `approved-to-apply`
+        > (AGENTS.md §4).
+
+  - type: dropdown
+    id: persona
+    attributes:
+      label: C-suite persona
+      options:
+        - CEO
+        - CFO
+        - CIO
+        - COO
+        - CTO
+        - Board-summary (shared)
+    validations:
+      required: true
+
+  - type: input
+    id: measure-name
+    attributes:
+      label: Measure name (display-folder path OK, e.g. CFO/Payback months)
+      placeholder: "CFO/Payback months"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Headline or supporting?
+      options:
+        - Headline KPI
+        - Supporting KPI
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: Target constant (with unit)
+      placeholder: "<= 18 months"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cadence
+    attributes:
+      label: Cadence tag
+      options:
+        - daily
+        - monthly
+        - quarterly
+    validations:
+      required: true
+
+  - type: textarea
+    id: formula
+    attributes:
+      label: DAX formula sketch
+      placeholder: "DIVIDE( [TotalInvestment], [NetAnnualBenefit] ) * 12"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Author checklist
+      options:
+        - label: Added the measure under the KPI catalog ADR (docs/adr/0026-bva-kpi-catalog.md)
+          required: true
+        - label: Added a golden-value case in data-platform/reports/tests/test_bva_kpi_golden.py
+          required: true
+        - label: Declared the RLS profile (which exec role / hospital scope) for this measure
+          required: true

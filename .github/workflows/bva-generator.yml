@@ -11,12 +11,14 @@ on:
   pull_request:
     paths:
       - 'data-platform/scripts/bva_synth_focus.py'
+      - 'data-platform/scripts/bva_upload_bronze.py'
       - 'data-platform/scripts/tests/**'
       - '.github/workflows/bva-generator.yml'
   push:
     branches: [main]
     paths:
       - 'data-platform/scripts/bva_synth_focus.py'
+      - 'data-platform/scripts/bva_upload_bronze.py'
       - 'data-platform/scripts/tests/**'
       - '.github/workflows/bva-generator.yml'
   workflow_dispatch:
