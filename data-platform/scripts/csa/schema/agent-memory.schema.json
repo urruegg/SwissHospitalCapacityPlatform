@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/csa/agent-memory.schema.json",
+  "title": "CSA agent-memory document",
+  "description": "Sprint 16 T3 — schema for the Cosmos `agent-memory` container (PK /threadId). One document per turn per Microsoft agent-memory guidance.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "threadId",
+    "turnId",
+    "role",
+    "content",
+    "createdAt"
+  ],
+  "properties": {
+    "threadId": {
+      "type": "string",
+      "minLength": 3
+    },
+    "turnId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "role": {
+      "type": "string",
+      "enum": ["user", "assistant", "system", "tool"]
+    },
+    "content": { "type": "string" },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["prepare", "run", "evaluate", "recommend"]
+    },
+    "contentEmbedding": {
+      "type": "array",
+      "items": { "type": "number" }
+    }
+  }
+}

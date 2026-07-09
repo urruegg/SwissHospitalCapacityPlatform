@@ -1,0 +1,30 @@
+scenarioId: summer-heatwave-demand-surge
+name: Summer heatwave demand surge
+family: F8
+trigger: A prolonged heatwave drives a bed-pressure surge in elderly and cardiorespiratory admissions.
+shockVector: demand-surge
+affectedResources:
+  - beds
+  - ed-capacity
+magnitude:
+  unit: percent
+  value: 20
+onset: gradual
+duration:
+  unit: days
+  value: 7
+cascade:
+  - bed-pressure
+  - ed-crowding
+scarceCapability: null
+defaultTier: 2
+responseLevers:
+  - lever-accelerate-discharge-of-medically-fit-patients
+  - lever-activate-discharge-lounge
+  - lever-mobilise-spitex-for-discharge-support
+  - lever-redirect-walk-ins-to-urgent-care-partners
+kpis:
+  - bed-shortfall
+  - ed-occupancy-pct
+mvpRequired: true
+hospitalRelevance: Bed-pressure heatwave managed by flow levers and early discharge (Besondere Lage).

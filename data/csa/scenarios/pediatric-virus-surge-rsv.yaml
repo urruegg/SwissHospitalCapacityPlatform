@@ -1,0 +1,30 @@
+scenarioId: pediatric-virus-surge-rsv
+name: Pediatric virus surge (RSV)
+family: F6
+trigger: A seasonal RSV wave drives a surge in pediatric admissions, pressuring pediatric beds and staff.
+shockVector: demand-surge
+affectedResources:
+  - pediatric-beds
+  - nursing-staff
+magnitude:
+  unit: percent
+  value: 50
+onset: gradual
+duration:
+  unit: weeks
+  value: 4
+cascade:
+  - pediatric-bed-pressure
+  - staffing-strain
+scarceCapability: pediatric-beds
+defaultTier: 2
+responseLevers:
+  - lever-open-pediatric-overflow-cohort
+  - lever-recall-off-duty-clinical-staff
+  - lever-accelerate-discharge-of-medically-fit-patients
+  - lever-defer-non-urgent-elective-admissions
+kpis:
+  - pediatric-bed-shortfall
+  - pediatric-occupancy-pct
+mvpRequired: true
+hospitalRelevance: Canonical single-site seasonal surge managed by internal reallocation (Besondere Lage).

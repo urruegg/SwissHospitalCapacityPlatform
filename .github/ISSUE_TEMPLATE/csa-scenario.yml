@@ -1,0 +1,52 @@
+name: "CSA scenario (add / update)"
+description: "Propose a new CSA what-if scenario or update an existing one. Merged YAML is validated + upserted by csa-scenario-sync.yml."
+title: "[CSA scenario] <scenarioId>"
+labels: ["sprint-16", "csa", "csa-scenario"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Adds or updates a scenario under `data/csa/scenarios/`. The YAML must
+        > validate against
+        > `data-platform/scripts/csa/schema/scenarios.schema.json` (enforced by
+        > `csa-scenario-sync.yml`). Every `responseLevers` entry must reference
+        > a `leverId` seeded by `csa-seed-response-levers.py`. Synthetic only
+        > per ADR-0016 — no PHI.
+
+  - type: input
+    id: scenario-id
+    attributes:
+      label: scenarioId (kebab-case, matches YAML filename)
+      placeholder: pediatric-virus-surge-rsv
+    validations:
+      required: true
+
+  - type: dropdown
+    id: family
+    attributes:
+      label: Scenario family (F1–F8)
+      options: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: default-tier
+    attributes:
+      label: Default tier (Swiss Lage doctrine, ADR-0024)
+      options: ["1 — Normallage", "2 — Besondere Lage", "3 — Ausserordentliche Lage"]
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Author checklist
+      options:
+        - label: YAML validates against scenarios.schema.json (`csa-seed-scenarios.py --dry-run`)
+          required: true
+        - label: All responseLevers reference existing leverIds
+          required: true
+        - label: Synthetic only — no PHI
+          required: true

@@ -1,0 +1,72 @@
+name: csa-run-followup
+
+# Sprint 16 T8 — when a CSA recommendation run doc lands in docs/csa/runs/ on
+# main, close the parent run-tracking issue (referenced by the run doc's
+# `runIssue:` front-matter key) with a completion comment. No-op when a changed
+# run doc has no `runIssue:` key.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/csa/runs/*.md'
+  workflow_dispatch:
+    inputs:
+      run_doc:
+        description: 'Path to a run doc under docs/csa/runs/ to process'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: csa-run-followup-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  close-parent-issue:
+    name: Close parent run issue on run-doc merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Determine changed run docs
+        id: changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ github.event.inputs.run_doc }}" ]; then
+            echo "${{ github.event.inputs.run_doc }}" > changed_docs.txt
+          else
+            git diff --name-only --diff-filter=AM "${{ github.event.before }}" "${{ github.sha }}" \
+              -- 'docs/csa/runs/*.md' > changed_docs.txt || true
+          fi
+          echo "count=$(wc -l < changed_docs.txt)" >> "$GITHUB_OUTPUT"
+          cat changed_docs.txt
+
+      - name: Close parent issues
+        if: steps.changed.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r doc; do
+            [ -z "$doc" ] && continue
+            [ -f "$doc" ] || continue
+            # Extract the runIssue number from YAML front-matter (e.g. "runIssue: 123").
+            issue=$(sed -n 's/^runIssue:[[:space:]]*#\{0,1\}\([0-9][0-9]*\).*/\1/p' "$doc" | head -n1)
+            if [ -z "$issue" ]; then
+              echo "::notice::$doc has no runIssue: front-matter key — skipping."
+              continue
+            fi
+            echo "Closing parent run issue #$issue for $doc"
+            gh issue comment "$issue" \
+              --body "Recommendation run doc merged: \`$doc\`. Closing this run-tracking issue (csa-run-followup)." || true
+            gh issue close "$issue" --reason completed || true
+          done < changed_docs.txt

@@ -1,0 +1,29 @@
+scenarioId: helipad-elevator-failure
+name: Helipad elevator failure
+family: F1
+trigger: Rooftop helipad elevator fails, blocking rapid transfer of critical arrivals to the ED/OR.
+shockVector: capacity-loss
+affectedResources:
+  - ed-capacity
+  - or-slots
+magnitude:
+  unit: percent
+  value: 25
+onset: sudden
+duration:
+  unit: hours
+  value: 8
+cascade:
+  - delayed-critical-transfers
+  - ed-crowding
+scarceCapability: null
+defaultTier: 2
+responseLevers:
+  - lever-activate-hospital-emergency-operations-centre
+  - lever-divert-ambulances-to-partner-sites
+  - lever-prioritise-or-by-clinical-urgency
+kpis:
+  - critical-transfer-delay-minutes
+  - ed-occupancy-pct
+hospitalRelevance: Single-site logistics failure requiring internal reallocation and EMS diversion.
+mvpRequired: false

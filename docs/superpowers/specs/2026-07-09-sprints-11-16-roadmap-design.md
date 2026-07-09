@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | 1.1.0 (updated `agents-archive/<name>/` refs to `agents/<name>/` after the 2.0.0 folder restructure) |
+| **Previous Version** | 1.2.0 (updated `agents-archive/<name>/` refs to `agents/<name>/` after the 2.0.0 folder restructure); **program-complete** — Sprint 16 (CSA) foundation authored, closing the S11–S16 program |
 
 > **Purpose.** Master roadmap for the demo-showcase programme spanning Sprints 11–16. Anchors the per-sprint design specs, records the brainstorm decisions, and defines the Superpowers-first orchestration pattern used to delegate work to the GitHub Copilot coding agent.
 >

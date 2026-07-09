@@ -84,6 +84,20 @@
       "type": "remote",
       "enabled": true,
       "_enabled_in_sprint": "S11 (onboarding stretch)"
+    },
+    "cosmos-mcp": {
+      "_purpose": "Read/write the CSA Cosmos DB for NoSQL (scenarios, agent-memory, response-levers, simulation-runs). Vector + hybrid search over the scenario catalogue and response-lever library; per-run agent memory. Dispatched by the Sprint 13 agent-host on behalf of the csa-agent (Sprint 16).",
+      "_owners": "@urruegg",
+      "_used_by": ["csa-agent"],
+      "_side_effect_ceiling": "write",
+      "_confirmation_rule": "Cosmos provisioning + deletion are handled by Bicep (infra/modules/cosmos) and require `approved-to-apply` per AGENTS.md §4. Data-plane deletes are blocked during the MVP.",
+      "_required_permissions": [
+        "Cosmos DB Built-in Data Contributor scoped to the cosmos-csa-ihzhhpf-sit account (read/write items; no delete of the account or containers)"
+      ],
+      "_golden_task": "agents/csa-agent/golden-tasks.md",
+      "type": "remote",
+      "enabled": true,
+      "_enabled_in_sprint": "S16 (CSA what-if scenario catalogue + agent memory)"
     }
   }
 }

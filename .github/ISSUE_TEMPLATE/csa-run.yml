@@ -1,0 +1,58 @@
+name: "CSA scenario run"
+description: "Request an end-to-end CSA run (Prepare → Run → Evaluate → Recommend) for a seeded scenario. Yields a recommendation PR into docs/csa/runs/."
+title: "[CSA run] <scenarioId>"
+labels: ["sprint-16", "csa", "csa-scenario"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Triggers the `csa-agent` full body (Prepare → Run → Evaluate →
+        > Recommend). The **Run** phase triggers the `csa-simulate` Fabric
+        > notebook — a `deploy`-class step that requires an `approved-to-apply`
+        > comment from a repo-write human (HITL-01) per AGENTS.md §4. The
+        > **Recommend** phase opens a **draft** PR into `docs/csa/runs/` that a
+        > human marks ready (HITL-04). Requires one of `HCC.CrisisManager`,
+        > `HCC.OperationsLead`, `HCC.PlatformAdmin`, `HCC.SuperAdmin`.
+        > Synthetic only per ADR-0016.
+
+  - type: input
+    id: scenario-id
+    attributes:
+      label: scenarioId (must exist in data/csa/scenarios/)
+      placeholder: pediatric-virus-surge-rsv
+    validations:
+      required: true
+
+  - type: input
+    id: site
+    attributes:
+      label: Site (synthetic)
+      placeholder: USZ
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Requesting role (must be authorised)
+      options:
+        - HCC.CrisisManager
+        - HCC.OperationsLead
+        - HCC.PlatformAdmin
+        - HCC.SuperAdmin
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Run checklist
+      options:
+        - label: I hold an authorised crisis role for this run
+          required: true
+        - label: I will post `approved-to-apply` to release the Run (HITL-01) after reviewing the plan
+          required: true
+        - label: Synthetic only — no PHI in scenario inputs
+          required: true

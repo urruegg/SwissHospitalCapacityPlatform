@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/csa/simulation-runs.schema.json",
+  "title": "CSA simulation-run document",
+  "description": "Sprint 16 T3 — schema for the Cosmos `simulation-runs` container (PK /runId). No vector.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "runId",
+    "scenarioId",
+    "status",
+    "requestedBy",
+    "requestedAt"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 3
+    },
+    "scenarioId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["queued", "running", "succeeded", "failed", "cancelled"]
+    },
+    "requestedBy": { "type": "string", "minLength": 1 },
+    "requestedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "tier": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 3
+    },
+    "resultRef": {
+      "type": ["string", "null"],
+      "description": "Reference to the DC-SIM-RESULT Delta row in Fabric."
+    },
+    "kpis": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    }
+  }
+}

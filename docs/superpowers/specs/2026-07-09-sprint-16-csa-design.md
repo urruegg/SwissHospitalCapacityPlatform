@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | 1.0.0 (initial — `csa-agent` reworded from Foundry-hosted to application-hosted per ADR-0008; Cosmos schema unchanged) |
+| **Previous Version** | 1.1.0 (Sprint 16 T9 execution close-out: 4 Cosmos containers, 8 seeded scenarios, tier classifier ADR-0024, `csa-agent` full body, and 3 MVP runs delivered) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/CSA-WhatIf-Scenario-Research-and-Catalogue.md](../ideas/CSA-WhatIf-Scenario-Research-and-Catalogue.md) |
 | **Runtime posture** | Application-hosted per [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md); loaded by the Sprint 13 Container Apps agent-host; chat model = Microsoft Foundry |

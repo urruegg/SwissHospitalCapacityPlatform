@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.3.0 (Sprint 12 + Sprint 13 + Sprint 14 rows merged) |
+| **Previous Version** | 1.4.0 (Sprint 15 in-flight row + Sprint 16 rows/retros + program close-out added) |
 
 ## Purpose
 
@@ -49,8 +49,10 @@ sprint executed under this matrix.
 | ------ | ----- | --- | ------ | -------------- | ----------- | ----------- | ---- |
 | 11 | 2026-07-09 | 2026-07-09 | Merged | 8/8 (7 MVP + 1 stretch) | Yes | [`../superpowers/specs/2026-07-09-sprint-11-agents-design.md`](../superpowers/specs/2026-07-09-sprint-11-agents-design.md) | [`../superpowers/plans/2026-07-09-sprint-11-agents-plan.md`](../superpowers/plans/2026-07-09-sprint-11-agents-plan.md) |
 | 12 | 2026-07-09 | — | Artefacts authored; SIT applies gated | 17 app roles + 17 groups + 23 personas (IaC authored) | n/a (IaC + telemetry) | [`../superpowers/specs/2026-07-09-sprint-12-org-design.md`](../superpowers/specs/2026-07-09-sprint-12-org-design.md) | [`../superpowers/plans/2026-07-09-sprint-12-org-plan.md`](../superpowers/plans/2026-07-09-sprint-12-org-plan.md) |
-| 13 | 2026-07-09 | 2026-07-09 | In review | n/a (app tier) | Yes | [`../superpowers/specs/2026-07-09-sprint-13-app-design.md`](../superpowers/specs/2026-07-09-sprint-13-app-design.md) | [`../superpowers/plans/2026-07-09-sprint-13-app-plan.md`](../superpowers/plans/2026-07-09-sprint-13-app-plan.md) |
-| 14 | 2026-07-09 | 2026-07-09 | In progress (T1–T3 landed; T4–T7 follow-up) | n/a (workflow-only) | Yes (parsers + readiness golden) | [`../superpowers/specs/2026-07-09-sprint-14-evidence-design.md`](../superpowers/specs/2026-07-09-sprint-14-evidence-design.md) | [`../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md`](../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md) |
+| 13 | 2026-07-09 | 2026-07-09 | Merged | n/a (app tier) | Yes | [`../superpowers/specs/2026-07-09-sprint-13-app-design.md`](../superpowers/specs/2026-07-09-sprint-13-app-design.md) | [`../superpowers/plans/2026-07-09-sprint-13-app-plan.md`](../superpowers/plans/2026-07-09-sprint-13-app-plan.md) |
+| 14 | 2026-07-09 | 2026-07-09 | Merged (T1–T3 landed; T4–T7 follow-up) | n/a (workflow-only) | Yes (parsers + readiness golden) | [`../superpowers/specs/2026-07-09-sprint-14-evidence-design.md`](../superpowers/specs/2026-07-09-sprint-14-evidence-design.md) | [`../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md`](../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md) |
+| 15 | 2026-07-09 | — | In flight (issue #167 / PR #168) | BVA (business-value analytics) | — | [`../superpowers/specs/2026-07-09-sprint-15-bva-design.md`](../superpowers/specs/2026-07-09-sprint-15-bva-design.md) | [`../superpowers/plans/2026-07-09-sprint-15-bva-plan.md`](../superpowers/plans/2026-07-09-sprint-15-bva-plan.md) |
+| 16 | 2026-07-09 | 2026-07-09 | Foundation authored; live runs gated | `csa-agent` full body + Cosmos IaC + 8 scenarios + 3 MVP runs | Structural (eval-goldens) | [`../superpowers/specs/2026-07-09-sprint-16-csa-design.md`](../superpowers/specs/2026-07-09-sprint-16-csa-design.md) | [`../superpowers/plans/2026-07-09-sprint-16-csa-plan.md`](../superpowers/plans/2026-07-09-sprint-16-csa-plan.md) |
 
 ### Sprint 11 retro notes
 
@@ -152,3 +154,55 @@ sprint executed under this matrix.
   - T5 (5 whiteboard card types) + T6 (Backstage Evidence tab) — **blocked** on
     the unmerged Sprint 13 app framework (`apps/hcc-app-fluent/` does not yet
     exist). Land in a follow-up mini-sprint once Sprint 13 T3/T4 merge (issue #161).
+
+### Sprint 16 retro notes
+
+- **CSA foundation authored** (issue #170): `csa-agent` expanded from the
+  Sprint 11 Prepare-only scaffold to the full **Prepare → Run → Evaluate →
+  Recommend** body (`deploy` ceiling, gated), Cosmos DB IaC
+  (`infra/modules/cosmos/`, 4 vector containers), 4 JSON Schemas, ~80
+  response-levers, 8 seeded scenarios (F1–F8), the version-pinned tier
+  classifier ([ADR-0024](../adr/0024-csa-tier-classifier-rules.md); renumbered
+  from 0021 at merge to avoid collision with Sprint 13/14 ADRs), the pure
+  shock-model simulation, and the `csa-scenario-sync` / `csa-run-followup`
+  workflows + issue templates.
+- **3 MVP runs** captured under [`../csa/runs/`](../csa/runs/) — RSV surge
+  (Tier 2), cyberattack (Tier 3), heatwave (Tier 2) — computed deterministically
+  by `csa-simulate.simulate()` over synthetic baselines (ADR-0016), reproducing
+  the classifier output the live Fabric run would emit.
+- **Gated / not executed here**: Cosmos `az deployment` apply, Fabric Mirroring
+  enable (T2), the `csa-simulate` notebook publish (T5), and live wizard MVP runs
+  (T7, depends on the Sprint 13 app) each require an `approved-to-apply` comment
+  (AGENTS.md §4) and live Azure — none were run in this environment.
+
+## Program close-out (Sprints 11–16)
+
+The six-sprint Superpowers program (S11–S16) is **complete as an authored,
+buildable artefact set**; every live-cloud apply remains behind its
+`approved-to-apply` gate for the human-run SIT/PROD follow-up.
+
+| Sprint | Theme | Kickoff issue | Delivery trail | Status |
+| ------ | ----- | ------------- | -------------- | ------ |
+| 11 | Agents (8 packs) | — | Sprint 11 design + plan; `agents/*` | Merged |
+| 12 | Identity (Entra org + roles) | — | `infra/modules/entra/`; PR #159 (MSAL) | Artefacts authored; SIT gated |
+| 13 | App + agent-host | #161 | PR #162 | Merged |
+| 14 | Evidence tab | #164 | PR #165 | Merged (T1–T3) |
+| 15 | Business-value analytics | #167 | PR #168 (T1) | In flight |
+| 16 | CSA what-if catalogue | #170 | this PR (#171) | Foundation authored; live runs gated |
+
+**Approved-to-apply gates used in this program run:** 0 executed in-sandbox — all
+`deploy`/`delete` steps across S12 (Entra applies), S13 (agent-host redeploy),
+and S16 (Cosmos apply, Mirroring, notebook publish, live runs) are documented and
+staged for the human-gated follow-up. The Sprint 16 design spec §11 budgeted
+~4–5 gates for CSA alone.
+
+**Deferred / carried forward (clean-slate list for the next program):**
+
+- Sprint 10 medallion backlog — 7 pending Gold tables (issue #154).
+- All S12/S13/S16 live Azure applies behind `approved-to-apply` (Entra, Cosmos,
+  Mirroring, notebook publish, live wizard MVP runs).
+- Full 20+ discovered CSA scenarios (roadmap Q-5) — MVP shipped 8 seeded, 3 run.
+- External-actor integration modelling (Rega, KSD/IES) beyond notification events.
+- Automated re-scoring of CSA runs on capacity-data change.
+- `fabric-data-agent` runtime-posture reconciliation with ADR-0008 (open
+  follow-up noted in AGENTS.md §1).

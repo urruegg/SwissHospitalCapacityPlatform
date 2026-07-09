@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.0.0 |
+| **Version** | 2.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.15.0 (folder restructure: `agents-archive/` consolidated into `agents/` as single source of truth; MAJOR bump because registry link anchors change) |
+| **Previous Version** | 2.0.0 (Sprint 16: added `cosmos-mcp` to §2 allow-list and expanded the `csa-agent` §1 row to the full Prepare/Run/Evaluate/Recommend body with `deploy` ceiling) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -188,7 +188,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `dca-agent` | Discharge copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@dca-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/dca-agent/AGENT.md`](agents/dca-agent/AGENT.md) | [`agents/dca-agent/golden-tasks.md`](agents/dca-agent/golden-tasks.md) |
 | `orsa-agent` | OR-steering copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@orsa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/orsa-agent/AGENT.md`](agents/orsa-agent/AGENT.md) | [`agents/orsa-agent/golden-tasks.md`](agents/orsa-agent/golden-tasks.md) |
 | `sba-agent` | Staffing-balance copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@sba-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/sba-agent/AGENT.md`](agents/sba-agent/AGENT.md) | [`agents/sba-agent/golden-tasks.md`](agents/sba-agent/golden-tasks.md) |
-| `csa-agent` | Crisis / scenario copilot — **scaffold only** (S11; Prepare/Run/Evaluate/Recommend body in S16). Supersedes the Sprint 09 v2.0.0 Foundry-hosted CSA body per the 2.0.0 restructure (git log for the old body). | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@csa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` (S11; `deploy` in S16) | [`agents/csa-agent/AGENT.md`](agents/csa-agent/AGENT.md) | [`agents/csa-agent/golden-tasks.md`](agents/csa-agent/golden-tasks.md) |
+| `csa-agent` | Crisis / scenario copilot — full **Prepare/Run/Evaluate/Recommend** body (S16 T4; expanded from the S11 scaffold). Supersedes the Sprint 09 v2.0.0 Foundry-hosted CSA body per the 2.0.0 restructure (git log for the old body). | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@csa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp`, `cosmos-mcp` | `deploy` (gated by `approved-to-apply`; Run triggers the `csa-simulate` notebook) | [`agents/csa-agent/AGENT.md`](agents/csa-agent/AGENT.md) | [`agents/csa-agent/golden-tasks.md`](agents/csa-agent/golden-tasks.md) |
 | `data-quality-agent` | Bronze/Silver/Gold contract-check + drift alerts (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or workflow-scheduled invocation; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/data-quality-agent/AGENT.md`](agents/data-quality-agent/AGENT.md) | [`agents/data-quality-agent/golden-tasks.md`](agents/data-quality-agent/golden-tasks.md) |
 | `onboarding-agent` | Onboarding welcome-PR bot (S11 stretch) | @urruegg | Entra audit-log new-sign-in event via workflow; runs as a workflow-scheduled bot (not through the agent-host) | `github-mcp`, `entra-mcp` (read-only) | `write` (repo); `read` (entra-mcp) | [`agents/onboarding-agent/AGENT.md`](agents/onboarding-agent/AGENT.md) | [`agents/onboarding-agent/golden-tasks.md`](agents/onboarding-agent/golden-tasks.md) |
 | `fabric-data-agent` | Read-only ontology + semantic-model query surface (Sprint 09 v2). Retained through the 2.0.0 restructure as a Fabric IQ-hosted read-only agent; runtime posture reconciliation with ADR-0008 is a separate follow-up. | @urruegg | Runtime-only; not invoked from repo issues | Fabric IQ (Preview per ADR-0002) | `read` | [`agents/fabric-data-agent/AGENT.md`](agents/fabric-data-agent/AGENT.md) | *(none; Sprint 11 shape not yet applied)* |
@@ -220,6 +220,7 @@ tool.
 | Work IQ | `work-iq-mcp` | Read Microsoft 365 meeting context and transcript content for review-session intake | Least-privilege transcript and meeting read scopes |
 | Fabric | `fabric-mcp` | Read Fabric workspace items (lakehouses, semantic models); query synthetic Gold Delta tables; trigger data-quality notebooks — dispatched by the Sprint 13 agent-host on behalf of the Sprint 11 application-hosted agents | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
 | Entra | `entra-mcp` | Read Microsoft Entra audit-log new-sign-in events for the `onboarding-agent` (read-only; the only write is a welcome PR into the repo) | `Directory.AuditLog.Read.All` application permission (consent-gated, revocable) |
+| Cosmos | `cosmos-mcp` | Read/write the CSA Cosmos DB for NoSQL (scenarios, agent-memory, response-levers, simulation-runs); vector + hybrid search; per-run agent memory — dispatched by the Sprint 13 agent-host on behalf of the `csa-agent` (Sprint 16) | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered. `Cosmos DB Built-in Data Contributor` scoped to the `cosmos-csa-ihzhhpf-sit` account |
 | Repo-managed markdown specs | `github-mcp` | Read canonical source material from `docs/` and `docs/specs/` for planning and review flows | GitHub Copilot coding-agent identity |
 
 ---

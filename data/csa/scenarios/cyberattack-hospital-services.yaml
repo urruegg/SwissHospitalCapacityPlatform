@@ -1,0 +1,33 @@
+scenarioId: cyberattack-hospital-services
+name: Cyberattack on hospital services
+family: F4
+trigger: Ransomware disables clinical IT, degrading throughput across ED, wards, and critical care.
+shockVector: capacity-loss
+affectedResources:
+  - icu-beds
+  - beds
+  - it-systems
+magnitude:
+  unit: percent
+  value: 30
+onset: sudden
+duration:
+  unit: days
+  value: 4
+cascade:
+  - manual-workarounds
+  - throughput-collapse
+  - diagnostics-degraded
+scarceCapability: it-systems
+defaultTier: 3
+responseLevers:
+  - lever-fail-over-to-backup-clinical-it-systems
+  - lever-activate-downtime-paper-procedures
+  - lever-isolate-affected-network-segments
+  - lever-engage-cyber-incident-response-retainer
+  - lever-protect-critical-care-from-it-outage-impact
+kpis:
+  - throughput-reduction-pct
+  - icu-bed-shortfall
+mvpRequired: true
+hospitalRelevance: Systemic IT loss cascading to capacity — escalates beyond internal levers (Tier 2-3).
