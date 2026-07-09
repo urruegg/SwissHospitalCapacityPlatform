@@ -97,7 +97,7 @@ The Fluent baseline delivers:
 
 ## 3. Architecture — repo layout and component boundaries
 
-```
+```text
 apps/
 ├─ hcc-app-fluent/
 │  ├─ src/

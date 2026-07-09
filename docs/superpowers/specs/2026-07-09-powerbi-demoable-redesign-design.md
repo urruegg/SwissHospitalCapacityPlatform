@@ -83,7 +83,7 @@ Demo-only identities anchor the landing page:
 
 Six visible pages plus five hidden helper pages (tooltip + drill-through targets).
 
-```
+```text
 Visible pages (in navigation order):
   page-landing            (new)  — Helvion hero + 3 persona tiles + demo-mode banner + as-of pill
   page-bed-manager        (was page1-capacity)  — refined + discharge-candidate tile

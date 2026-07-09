@@ -1,0 +1,18 @@
+/// Aggregated-only read role. Restricts dim_hospital to the synthetic
+/// "Aggregated" rollup so a guest identity can never see a specific hospital's
+/// rows (design spec §7). Assignable to HCC.GuestReadOnly in both SIT and PROD.
+/// PHI gate retained on the fact tables for consistency with ADR-0016 gate 4.
+role GuestAggregated
+	modelPermission: read
+
+	tablePermission dim_hospital = [short_name] = "Aggregated"
+
+	tablePermission encounter = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission bed_assignment = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission fact_capacity_baseline = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_case = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_schedule = IF([_data_quality] = "phi", FALSE, TRUE)
