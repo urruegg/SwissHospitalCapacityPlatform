@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/evidence/adrs.schema.json",
+  "title": "Evidence — ADRs",
+  "description": "One row per Architecture Decision Record under docs/adr/.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "title", "status", "decisionSummary", "sourcePath", "sourceCommit"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^ADR-[0-9]{4}$" },
+      "title": { "type": "string", "minLength": 1 },
+      "status": { "type": "string", "enum": ["Proposed", "Accepted", "Superseded", "Deprecated", "Rejected"] },
+      "decisionSummary": { "type": "string" },
+      "supersedes": { "type": "array", "items": { "type": "string", "pattern": "^ADR-[0-9]{4}$" } },
+      "supersededBy": { "type": "array", "items": { "type": "string", "pattern": "^ADR-[0-9]{4}$" } },
+      "sourcePath": { "type": "string", "minLength": 1 },
+      "sourceCommit": { "type": "string", "minLength": 1 }
+    }
+  }
+}

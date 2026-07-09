@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evidence-parsers"
+version = "1.0.0"
+description = "Showcase Evidence parsers — parse repo sources (PRD, ADR, BOM, region-availability, infra) into byte-stable JSON with provenance."
+requires-python = ">=3.11"
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "jsonschema>=4.0",
+]
+
+[tool.setuptools]
+# Parsers are invoked as `python -m scripts.evidence.publish` from the repo
+# root; there is no installable package layout to declare here.
+py-modules = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

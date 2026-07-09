@@ -44,3 +44,10 @@ agents/**                               @urruegg
 /apps/hcc-app-rayfin/                   @urruegg
 /apps/hcc-agent-host/                   @urruegg
 /infra/modules/agent-host/              @urruegg
+
+# Showcase Evidence data product (Sprint 14) — parsers, schemas, curated catalogs
+/scripts/evidence/                      @urruegg
+/data/evidence/                         @urruegg
+/docs/bom.yaml                          @urruegg
+/docs/region-availability.yaml          @urruegg
+/docs/adr-requirement-map.yaml          @urruegg

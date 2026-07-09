@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/evidence/region_availability.schema.json",
+  "title": "Evidence — region availability facts",
+  "description": "One row per BOM item x region availability fact from docs/region-availability.yaml. Every fact carries verifiedBy + asOf provenance.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["bomId", "region", "maturity", "verifiedBy", "asOf", "sourcePath", "sourceCommit"],
+    "properties": {
+      "bomId": { "type": "string", "pattern": "^bom-[a-z0-9-]+$" },
+      "region": { "type": "string", "minLength": 1 },
+      "maturity": { "type": "string", "enum": ["GA", "Preview", "NotAvailable"] },
+      "verifiedBy": { "type": "string", "minLength": 1 },
+      "asOf": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+      "sourceUrl": { "type": ["string", "null"] },
+      "sourcePath": { "type": "string", "minLength": 1 },
+      "sourceCommit": { "type": "string", "minLength": 1 }
+    }
+  }
+}

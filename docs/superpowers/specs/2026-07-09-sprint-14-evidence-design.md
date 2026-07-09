@@ -1,12 +1,12 @@
 # Sprint 14 — Showcase Evidence Data Product (presenter whiteboard) — Design Spec
 
 | Field | Value |
-|-------|-------|
-| **Version** | 1.0.0 |
+| ----- | ----- |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft for review |
-| **Previous Version** | — (initial) |
+| **Status** | In execution (T1–T3 landed) |
+| **Previous Version** | 1.0.0 (initial design contract) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/SwissHospitalPlatformShowcaseEvidence.md](../ideas/SwissHospitalPlatformShowcaseEvidence.md) |
 
@@ -210,10 +210,12 @@ Implemented in Silver → Gold transform. Recomputed on every ingest.
 
 ## 13. Definition of done
 
-- [ ] `evidence-publish.yml` runs on push and produces `data/evidence/*.json` on `evidence-latest` branch (or OneLake).
-- [ ] Fabric medallion pipeline populated end-to-end from at least one publish cycle.
-- [ ] Semantic model returns `readiness score per BOM item × region × track` for Switzerland North × T-SHOW.
-- [ ] Backstage → Evidence tab renders the presenter whiteboard with ≥ 25 BOM cards + ≥ 10 ADR cards + 1 PRD-requirement card and their dependency edges.
-- [ ] Provenance visible on every card (`sourceUrl`, `asOf`).
-- [ ] Golden readiness-rule test green.
-- [ ] Sprint 14 retro entry in [docs/sprints/superpowers-checkpoint-matrix.md](../../sprints/superpowers-checkpoint-matrix.md).
+Status legend: `[x]` landed in this sprint's PR · `[~]` partial / authored-as-code but publish-gated · `[ ]` deferred to follow-up (see §11 fallback).
+
+- [x] `evidence-publish.yml` runs on push and produces `data/evidence/*.json` on `evidence-latest` branch (or OneLake).
+- [~] Fabric medallion pipeline populated end-to-end from at least one publish cycle. *(notebooks authored + readiness golden green; Fabric publish is `deploy`-gated by `approved-to-apply`.)*
+- [ ] Semantic model returns `readiness score per BOM item × region × track` for Switzerland North × T-SHOW. *(T4 — deferred; deploy-gated.)*
+- [ ] Backstage → Evidence tab renders the presenter whiteboard with ≥ 25 BOM cards + ≥ 10 ADR cards + 1 PRD-requirement card and their dependency edges. *(T5/T6 — blocked on unmerged Sprint 13 `apps/hcc-app-fluent/`; follow-up mini-sprint.)*
+- [ ] Provenance visible on every card (`sourceUrl`, `asOf`). *(T5 card contract — deferred with T5.)*
+- [x] Golden readiness-rule test green.
+- [x] Sprint 14 retro entry in [docs/sprints/superpowers-checkpoint-matrix.md](../../sprints/superpowers-checkpoint-matrix.md).
