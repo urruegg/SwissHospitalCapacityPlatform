@@ -1,0 +1,54 @@
+# ADR → requirement map (curated seed) — Swiss Hospital Capacity Platform
+#
+# 10 seed rows per design spec §8.1. Curated overlay that is merged with the
+# edges the ADR parser derives from ADR front-matter, producing
+# data/evidence/req_adr_map.json. A standalone file is used (rather than ADR
+# front-matter) to minimise merge friction on the ADR corpus.
+#
+#   requirementId  FR-*/NFR-* from docs/PRD.md
+#   adrId          ADR-#### from docs/adr/
+#   relationship   governs | realises | blocks
+#   note           short human context
+
+version: 1.0.0
+edges:
+  - requirementId: FR-ONT-002
+    adrId: ADR-0014
+    relationship: governs
+    note: Fabric IQ operational ontology is the GA-gated target backbone.
+  - requirementId: FR-ONT-002
+    adrId: ADR-0002
+    relationship: blocks
+    note: Preview posture defers PROD use for regulated data until Swiss GA.
+  - requirementId: NFR-COMP-004
+    adrId: ADR-0003
+    relationship: governs
+    note: Swiss regional inference for PHI.
+  - requirementId: NFR-COMP-004
+    adrId: ADR-0004
+    relationship: governs
+    note: Block global and data-zone deployment for PHI.
+  - requirementId: FR-CX-002
+    adrId: ADR-0005
+    relationship: governs
+    note: React channel approved as GA-safe for grounded copilot.
+  - requirementId: FR-ONT-002
+    adrId: ADR-0006
+    relationship: blocks
+    note: Preview features are non-production for regulated data.
+  - requirementId: FR-GOV-003
+    adrId: ADR-0010
+    relationship: governs
+    note: Policy-as-code and release-evidence gates for DEV→SIT→PROD.
+  - requirementId: FR-DATA-005
+    adrId: ADR-0015
+    relationship: governs
+    note: Skip SQL for the MVP demo; lakehouse Direct Lake path only.
+  - requirementId: NFR-COMP-002
+    adrId: ADR-0011
+    relationship: governs
+    note: Cantonal legal-applicability gate.
+  - requirementId: FR-DATA-002
+    adrId: ADR-0016
+    relationship: governs
+    note: No PHI in the MVP demo scope; synthetic FHIR only.

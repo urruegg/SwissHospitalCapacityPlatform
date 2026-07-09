@@ -1,0 +1,20 @@
+[
+  {
+    "readyCount": 2,
+    "readyPct": 40.0,
+    "total": 5,
+    "track": "T-PROD"
+  },
+  {
+    "readyCount": 4,
+    "readyPct": 80.0,
+    "total": 5,
+    "track": "T-SHOW"
+  },
+  {
+    "readyCount": 2,
+    "readyPct": 0.0,
+    "total": 0,
+    "track": "GA-parity-gap"
+  }
+]

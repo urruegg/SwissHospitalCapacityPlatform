@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/evidence/dependencies.schema.json",
+  "title": "Evidence — dependency edges",
+  "description": "Directed dependency edges derived from docs/bom.yaml.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["fromId", "toId", "type", "sourcePath", "sourceCommit"],
+    "properties": {
+      "fromId": { "type": "string", "pattern": "^bom-[a-z0-9-]+$" },
+      "toId": { "type": "string", "pattern": "^bom-[a-z0-9-]+$" },
+      "type": { "type": "string", "enum": ["requires", "hosts", "grounds", "binds", "governs"] },
+      "sourcePath": { "type": "string", "minLength": 1 },
+      "sourceCommit": { "type": "string", "minLength": 1 }
+    }
+  }
+}

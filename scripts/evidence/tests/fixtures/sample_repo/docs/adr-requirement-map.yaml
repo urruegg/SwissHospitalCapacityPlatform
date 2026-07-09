@@ -1,0 +1,6 @@
+version: 1.0.0
+edges:
+  - requirementId: FR-DATA-001
+    adrId: ADR-0002
+    relationship: governs
+    note: Sample curated edge.

@@ -1,0 +1,21 @@
+{
+  "bom_items": [
+    { "id": "bom-lakehouse", "dependsOn": [{ "to": "bom-capacity", "type": "hosts" }] },
+    { "id": "bom-capacity", "dependsOn": [] },
+    { "id": "bom-iq-ontology", "dependsOn": [{ "to": "bom-lakehouse", "type": "grounds" }] },
+    { "id": "bom-data-agent", "dependsOn": [{ "to": "bom-iq-ontology", "type": "grounds" }] },
+    { "id": "bom-orphan", "dependsOn": [] }
+  ],
+  "availability": [
+    { "bomId": "bom-capacity", "region": "Switzerland North", "maturity": "GA" },
+    { "bomId": "bom-capacity", "region": "West Europe", "maturity": "GA" },
+    { "bomId": "bom-lakehouse", "region": "Switzerland North", "maturity": "GA" },
+    { "bomId": "bom-lakehouse", "region": "West Europe", "maturity": "GA" },
+    { "bomId": "bom-iq-ontology", "region": "Switzerland North", "maturity": "NotAvailable" },
+    { "bomId": "bom-iq-ontology", "region": "West Europe", "maturity": "Preview" },
+    { "bomId": "bom-data-agent", "region": "Switzerland North", "maturity": "NotAvailable" },
+    { "bomId": "bom-data-agent", "region": "West Europe", "maturity": "Preview" },
+    { "bomId": "bom-orphan", "region": "Switzerland North", "maturity": "NotAvailable" },
+    { "bomId": "bom-orphan", "region": "West Europe", "maturity": "NotAvailable" }
+  ]
+}

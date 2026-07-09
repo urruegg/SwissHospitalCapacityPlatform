@@ -1,0 +1,90 @@
+name: "BOM item (Showcase Evidence)"
+description: "Add or update a Bill-of-Materials item in docs/bom.yaml for the Showcase Evidence data product."
+title: "[BOM] <resource-name>"
+labels: ["sprint-14", "evidence", "bom"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Adds or updates one BOM item in [`docs/bom.yaml`](../../docs/bom.yaml).
+        > Parsed into `data/evidence/bom.json` + `dependencies.json` by the
+        > `evidence-publish` workflow (Sprint 14 · T1). Also add matching
+        > region-availability facts via the **GA-evidence refresh** template.
+        > Contract: [`docs/bom.schema.md`](../../docs/bom.schema.md).
+
+  - type: input
+    id: bom-id
+    attributes:
+      label: BOM id (kebab-case, prefixed "bom-")
+      placeholder: bom-fabric-lakehouse
+    validations:
+      required: true
+
+  - type: input
+    id: name
+    attributes:
+      label: Display name
+      placeholder: Microsoft Fabric Lakehouse
+    validations:
+      required: true
+
+  - type: input
+    id: type
+    attributes:
+      label: Resource type
+      placeholder: Microsoft.Fabric/lakehouse
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - data
+        - ai
+        - app
+        - integration
+        - security
+        - platform
+        - governance
+    validations:
+      required: true
+
+  - type: input
+    id: sku
+    attributes:
+      label: SKU (optional)
+      placeholder: F64
+
+  - type: input
+    id: realises
+    attributes:
+      label: Realises requirements (comma-separated FR-*/NFR-* from docs/PRD.md)
+      placeholder: "FR-DATA-003, FR-DATA-005"
+
+  - type: input
+    id: governed-by
+    attributes:
+      label: Governed by ADRs (comma-separated ADR-#### from docs/adr/)
+      placeholder: "ADR-0015"
+
+  - type: textarea
+    id: depends-on
+    attributes:
+      label: Dependencies (one per line — "<toId> <type>", type = requires|hosts|grounds|binds|governs)
+      placeholder: |
+        bom-fabric-capacity hosts
+        bom-onelake requires
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Author checklist
+      options:
+        - label: Region-availability facts added/updated in docs/region-availability.yaml (with verifiedBy + asOf)
+          required: true
+        - label: Ran `python -m scripts.evidence.publish` locally and the output validates
+          required: true

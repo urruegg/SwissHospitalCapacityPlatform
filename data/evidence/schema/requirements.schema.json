@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/evidence/requirements.schema.json",
+  "title": "Evidence — requirements",
+  "description": "One row per FR-*/NFR-* requirement extracted from docs/PRD.md.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "family", "kind", "title", "mvp", "sourcePath", "sourceLine", "sourceCommit"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^(FR|NFR)-[A-Z-]+-[0-9]{3}$" },
+      "family": { "type": "string", "minLength": 1 },
+      "kind": { "type": "string", "enum": ["FR", "NFR"] },
+      "title": { "type": "string", "minLength": 1 },
+      "mvp": { "type": "boolean" },
+      "sourcePath": { "type": "string", "minLength": 1 },
+      "sourceLine": { "type": "integer", "minimum": 1 },
+      "sourceCommit": { "type": "string", "minLength": 1 }
+    }
+  }
+}
