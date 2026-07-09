@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "position": {
-    "x": 24,
-    "y": 176,
+    "x": 848,
+    "y": 192,
     "z": 1000,
-    "height": 100,
-    "width": 280,
+    "height": 120,
+    "width": 400,
     "tabOrder": 1000
   },
   "visual": {
@@ -19,14 +19,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "or_schedule"
+                      "Entity": "or_case"
                     }
                   },
-                  "Property": "Idle-Slot Minutes"
+                  "Property": "Over-Run Minutes"
                 }
               },
-              "queryRef": "or_schedule.Idle-Slot Minutes",
-              "nativeQueryRef": "Idle-Slot Minutes"
+              "queryRef": "or_case.Over-Run Minutes",
+              "nativeQueryRef": "Over-Run Minutes"
             }
           ]
         }
@@ -51,33 +51,6 @@
                       "Value": "'#FFFFFF'"
                     }
                   }
-                }
-              }
-            }
-          }
-        }
-      ],
-      "visualTooltip": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "type": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Canvas'"
-                }
-              }
-            },
-            "section": {
-              "expr": {
-                "Literal": {
-                  "Value": "'tooltip-kpi-delta'"
                 }
               }
             }
@@ -115,7 +88,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Idle-slot minutes'"
+                  "Value": "'Over-run minutes'"
                 }
               }
             },
@@ -192,7 +165,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#FF9A2E'"
+                      "Value": "'#E30613'"
                     }
                   }
                 }
@@ -206,5 +179,5 @@
       ]
     }
   },
-  "name": "1e11834048dadfad6f76"
+  "name": "51614a35e34ca51aebd7"
 }

@@ -1,15 +1,15 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "position": {
-    "x": 836,
-    "y": 156,
+    "x": 648,
+    "y": 56,
     "z": 1000,
-    "height": 548,
-    "width": 420,
+    "height": 400,
+    "width": 600,
     "tabOrder": 1000
   },
   "visual": {
-    "visualType": "funnel",
+    "visualType": "barChart",
     "query": {
       "queryState": {
         "Category": {
@@ -19,14 +19,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "or_case"
+                      "Entity": "dim_ward_capacityunit"
                     }
                   },
-                  "Property": "eventType"
+                  "Property": "name"
                 }
               },
-              "queryRef": "or_case.eventType",
-              "nativeQueryRef": "eventType"
+              "queryRef": "dim_ward_capacityunit.name",
+              "nativeQueryRef": "name"
             }
           ]
         },
@@ -34,22 +34,17 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "or_case"
-                        }
-                      },
-                      "Property": "caseId"
+                    "SourceRef": {
+                      "Entity": "bed_assignment"
                     }
                   },
-                  "Function": 2
+                  "Property": "Occupancy %"
                 }
               },
-              "queryRef": "CountNonNull(or_case.caseId)",
-              "nativeQueryRef": "Count of caseId"
+              "queryRef": "bed_assignment.Occupancy %",
+              "nativeQueryRef": "Occupancy %"
             }
           ]
         }
@@ -69,7 +64,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Anaesthesia consultation funnel'"
+                  "Value": "'Occupancy % by ward'"
                 }
               }
             },
@@ -86,35 +81,8 @@
             }
           }
         }
-      ],
-      "visualTooltip": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "type": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Canvas'"
-                }
-              }
-            },
-            "section": {
-              "expr": {
-                "Literal": {
-                  "Value": "'tooltip-contributor'"
-                }
-              }
-            }
-          }
-        }
       ]
     }
   },
-  "name": "0d0a9afab560dccaef7d"
+  "name": "7c381e3304e30bda4d18"
 }

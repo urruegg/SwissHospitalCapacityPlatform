@@ -1,18 +1,54 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "position": {
-    "x": 836,
-    "y": 156,
+    "x": 24,
+    "y": 56,
     "z": 1000,
-    "height": 548,
-    "width": 420,
+    "height": 400,
+    "width": 800,
     "tabOrder": 1000
   },
   "visual": {
-    "visualType": "funnel",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
         "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "or_case"
+                    }
+                  },
+                  "Property": "orSlotId"
+                }
+              },
+              "queryRef": "or_case.orSlotId",
+              "nativeQueryRef": "orSlotId"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "or_case"
+                    }
+                  },
+                  "Property": "OR Utilization %"
+                }
+              },
+              "queryRef": "or_case.OR Utilization %",
+              "nativeQueryRef": "OR Utilization %"
+            }
+          ]
+        },
+        "Series": {
           "projections": [
             {
               "field": {
@@ -27,29 +63,6 @@
               },
               "queryRef": "or_case.eventType",
               "nativeQueryRef": "eventType"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "or_case"
-                        }
-                      },
-                      "Property": "caseId"
-                    }
-                  },
-                  "Function": 2
-                }
-              },
-              "queryRef": "CountNonNull(or_case.caseId)",
-              "nativeQueryRef": "Count of caseId"
             }
           ]
         }
@@ -69,7 +82,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Anaesthesia consultation funnel'"
+                  "Value": "'Utilization by slot \u00d7 event'"
                 }
               }
             },
@@ -86,35 +99,8 @@
             }
           }
         }
-      ],
-      "visualTooltip": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "type": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Canvas'"
-                }
-              }
-            },
-            "section": {
-              "expr": {
-                "Literal": {
-                  "Value": "'tooltip-contributor'"
-                }
-              }
-            }
-          }
-        }
       ]
     }
   },
-  "name": "0d0a9afab560dccaef7d"
+  "name": "d808998cffd846279339"
 }

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "tooltip-contributor",
+  "displayName": "Contributor Tooltip",
+  "displayOption": "FitToPage",
+  "height": 320,
+  "width": 420,
+  "visibility": "HiddenInViewMode",
+  "pageBinding": {
+    "name": "Pod",
+    "type": "Tooltip"
+  }
+}

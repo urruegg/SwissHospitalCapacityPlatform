@@ -1,55 +1,64 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "position": {
-    "x": 836,
-    "y": 156,
+    "x": 8,
+    "y": 44,
     "z": 1000,
-    "height": 548,
-    "width": 420,
+    "height": 236,
+    "width": 404,
     "tabOrder": 1000
   },
   "visual": {
-    "visualType": "funnel",
+    "visualType": "matrix",
     "query": {
       "queryState": {
-        "Category": {
+        "Rows": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "or_case"
+                      "Entity": "dim_hospital"
                     }
                   },
-                  "Property": "eventType"
+                  "Property": "short_name"
                 }
               },
-              "queryRef": "or_case.eventType",
-              "nativeQueryRef": "eventType"
+              "queryRef": "dim_hospital.short_name",
+              "nativeQueryRef": "short_name"
             }
           ]
         },
-        "Y": {
+        "Values": {
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "or_case"
-                        }
-                      },
-                      "Property": "caseId"
+                    "SourceRef": {
+                      "Entity": "bed_assignment"
                     }
                   },
-                  "Function": 2
+                  "Property": "Occupancy %"
                 }
               },
-              "queryRef": "CountNonNull(or_case.caseId)",
-              "nativeQueryRef": "Count of caseId"
+              "queryRef": "bed_assignment.Occupancy %",
+              "nativeQueryRef": "Occupancy %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "or_case"
+                    }
+                  },
+                  "Property": "OR Utilization %"
+                }
+              },
+              "queryRef": "or_case.OR Utilization %",
+              "nativeQueryRef": "OR Utilization %"
             }
           ]
         }
@@ -69,7 +78,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Anaesthesia consultation funnel'"
+                  "Value": "'By hospital'"
                 }
               }
             },
@@ -86,35 +95,8 @@
             }
           }
         }
-      ],
-      "visualTooltip": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "type": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Canvas'"
-                }
-              }
-            },
-            "section": {
-              "expr": {
-                "Literal": {
-                  "Value": "'tooltip-contributor'"
-                }
-              }
-            }
-          }
-        }
       ]
     }
   },
-  "name": "0d0a9afab560dccaef7d"
+  "name": "13b3216239e7c3008981"
 }

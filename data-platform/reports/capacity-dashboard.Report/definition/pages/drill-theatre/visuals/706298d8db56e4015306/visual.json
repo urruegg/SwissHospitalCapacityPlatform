@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "position": {
-    "x": 24,
-    "y": 176,
+    "x": 848,
+    "y": 56,
     "z": 1000,
-    "height": 100,
-    "width": 280,
+    "height": 120,
+    "width": 400,
     "tabOrder": 1000
   },
   "visual": {
@@ -19,14 +19,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "or_schedule"
+                      "Entity": "or_case"
                     }
                   },
-                  "Property": "Idle-Slot Minutes"
+                  "Property": "Avg Turnover Minutes"
                 }
               },
-              "queryRef": "or_schedule.Idle-Slot Minutes",
-              "nativeQueryRef": "Idle-Slot Minutes"
+              "queryRef": "or_case.Avg Turnover Minutes",
+              "nativeQueryRef": "Avg Turnover Minutes"
             }
           ]
         }
@@ -51,33 +51,6 @@
                       "Value": "'#FFFFFF'"
                     }
                   }
-                }
-              }
-            }
-          }
-        }
-      ],
-      "visualTooltip": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "type": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Canvas'"
-                }
-              }
-            },
-            "section": {
-              "expr": {
-                "Literal": {
-                  "Value": "'tooltip-kpi-delta'"
                 }
               }
             }
@@ -115,7 +88,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Idle-slot minutes'"
+                  "Value": "'Avg turnover (min)'"
                 }
               }
             },
@@ -206,5 +179,5 @@
       ]
     }
   },
-  "name": "1e11834048dadfad6f76"
+  "name": "706298d8db56e4015306"
 }

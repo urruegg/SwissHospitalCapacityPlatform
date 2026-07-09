@@ -4,7 +4,12 @@
     "page-landing",
     "page-bed-manager",
     "page-or-coordinator",
-    "page-ops-lead"
+    "page-ops-lead",
+    "tooltip-kpi-delta",
+    "tooltip-contributor",
+    "drill-ward",
+    "drill-theatre",
+    "drill-discharge"
   ],
   "activePageName": "page-landing"
 }

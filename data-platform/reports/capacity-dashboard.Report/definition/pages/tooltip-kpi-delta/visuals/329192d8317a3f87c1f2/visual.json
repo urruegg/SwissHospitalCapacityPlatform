@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "position": {
-    "x": 24,
-    "y": 176,
+    "x": 8,
+    "y": 132,
     "z": 1000,
-    "height": 100,
-    "width": 280,
+    "height": 80,
+    "width": 150,
     "tabOrder": 1000
   },
   "visual": {
@@ -19,14 +19,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "or_schedule"
+                      "Entity": "encounter"
                     }
                   },
-                  "Property": "Idle-Slot Minutes"
+                  "Property": "Admissions"
                 }
               },
-              "queryRef": "or_schedule.Idle-Slot Minutes",
-              "nativeQueryRef": "Idle-Slot Minutes"
+              "queryRef": "encounter.Admissions",
+              "nativeQueryRef": "Admissions"
             }
           ]
         }
@@ -51,33 +51,6 @@
                       "Value": "'#FFFFFF'"
                     }
                   }
-                }
-              }
-            }
-          }
-        }
-      ],
-      "visualTooltip": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "type": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Canvas'"
-                }
-              }
-            },
-            "section": {
-              "expr": {
-                "Literal": {
-                  "Value": "'tooltip-kpi-delta'"
                 }
               }
             }
@@ -115,7 +88,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Idle-slot minutes'"
+                  "Value": "'Admissions'"
                 }
               }
             },
@@ -206,5 +179,5 @@
       ]
     }
   },
-  "name": "1e11834048dadfad6f76"
+  "name": "329192d8317a3f87c1f2"
 }
