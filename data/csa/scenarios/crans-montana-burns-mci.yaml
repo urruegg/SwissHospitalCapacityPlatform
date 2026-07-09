@@ -1,0 +1,31 @@
+scenarioId: crans-montana-burns-mci
+name: Crans-Montana burns MCI
+family: F3
+trigger: A mass-casualty incident produces a surge of severe burns requiring specialist burn and ICU capacity.
+shockVector: demand-surge
+affectedResources:
+  - burn-beds
+  - icu-beds
+  - or-slots
+magnitude:
+  unit: percent
+  value: 200
+onset: sudden
+duration:
+  unit: days
+  value: 5
+cascade:
+  - burn-icu-overwhelm
+  - inter-hospital-transfers
+scarceCapability: burn-beds
+defaultTier: 3
+responseLevers:
+  - lever-activate-burn-surge-protocol
+  - lever-stand-up-mass-casualty-reception-zone
+  - lever-request-rega-air-transfer-coordination
+  - lever-escalate-to-cantonal-medical-command
+kpis:
+  - burn-bed-shortfall
+  - inter-hospital-transfers-count
+hospitalRelevance: Special capability (burn ICU) overwhelmed — multi-site coordination (Ausserordentliche Lage).
+mvpRequired: false

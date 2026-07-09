@@ -1,0 +1,29 @@
+scenarioId: ventilator-supply-shortage
+name: Ventilator supply shortage
+family: F5
+trigger: A supply-chain disruption depletes the ventilator reserve during elevated respiratory demand.
+shockVector: supply-loss
+affectedResources:
+  - ventilators
+magnitude:
+  unit: percent
+  value: 40
+onset: rapid
+duration:
+  unit: weeks
+  value: 2
+cascade:
+  - ventilated-capacity-loss
+  - inter-site-reallocation
+scarceCapability: ventilators
+defaultTier: 3
+responseLevers:
+  - lever-draw-down-ventilator-reserve-stock
+  - lever-request-cantonal-stockpile-release
+  - lever-reallocate-ventilators-across-sites
+  - lever-switch-to-alternate-substitute-devices
+kpis:
+  - ventilator-shortfall
+  - ventilated-patient-days-at-risk
+hospitalRelevance: Scarce special capability (ventilators) — cantonal stockpile and reallocation required.
+mvpRequired: false

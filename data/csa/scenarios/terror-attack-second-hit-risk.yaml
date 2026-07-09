@@ -1,0 +1,33 @@
+scenarioId: terror-attack-second-hit-risk
+name: Terror attack with risk of second hit
+family: F7
+trigger: A terror attack produces a casualty surge while a credible risk of a second strike constrains response.
+shockVector: demand-surge
+affectedResources:
+  - ed-capacity
+  - or-slots
+  - icu-beds
+  - blood
+magnitude:
+  unit: percent
+  value: 150
+onset: sudden
+duration:
+  unit: days
+  value: 3
+cascade:
+  - mass-casualty-reception
+  - security-lockdown
+  - blood-demand-spike
+scarceCapability: icu-beds
+defaultTier: 3
+responseLevers:
+  - lever-stand-up-mass-casualty-reception-zone
+  - lever-prioritise-blood-product-allocation
+  - lever-escalate-to-cantonal-medical-command
+  - lever-activate-media-liaison-protocol
+kpis:
+  - casualty-throughput
+  - blood-units-consumed
+hospitalRelevance: Severe-consequence multi-agency event with second-hit risk (Ausserordentliche Lage).
+mvpRequired: false

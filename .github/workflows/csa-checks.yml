@@ -40,6 +40,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install PyYAML (scenario YAML loading)
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
       - name: Run CSA script tests
         shell: bash
         run: |

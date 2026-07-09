@@ -1,0 +1,29 @@
+scenarioId: ward-specialists-at-congress
+name: Ward specialists at congress
+family: F2
+trigger: A cohort of ward specialists is simultaneously absent at a medical congress, thinning senior cover.
+shockVector: staff-loss
+affectedResources:
+  - physician-staff
+  - nursing-staff
+magnitude:
+  unit: percent
+  value: 30
+onset: gradual
+duration:
+  unit: days
+  value: 3
+cascade:
+  - slower-decisions
+  - discharge-delays
+scarceCapability: null
+defaultTier: 2
+responseLevers:
+  - lever-recall-off-duty-clinical-staff
+  - lever-backfill-specialists-remotely-via-telemedicine
+  - lever-cross-deploy-staff-from-elective-areas
+kpis:
+  - senior-cover-ratio
+  - discharge-delay-hours
+hospitalRelevance: Planned staffing dip manageable with reinforced internal means (Besondere Lage).
+mvpRequired: false
