@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.14.0 |
-| **Date** | 2026-07-08 |
+| **Version** | 1.15.0 |
+| **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.13.0 (added §Skill discovery rule of engagement — trigger conditions, discovery order, evaluation checklist, PR shape, decision gate) |
+| **Previous Version** | 1.14.0 (skill discovery rule of engagement) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -175,6 +175,14 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `app-builder-agent` | App and integration implementation slices | @urruegg | Issue requesting app or integration implementation from approved architecture | `github-mcp` | `write` | [`agents-archive/app-builder-agent/AGENT.md`](agents-archive/app-builder-agent/AGENT.md) | [`agents-archive/app-builder-agent/golden-tasks.md`](agents-archive/app-builder-agent/golden-tasks.md) |
 | `test-verifier-agent` | Artefact validation across docs, IaC, app, and integration outputs | @urruegg | Issue requesting test plan, validation, or release readiness review | `github-mcp` | `write` | [`agents-archive/test-verifier-agent/AGENT.md`](agents-archive/test-verifier-agent/AGENT.md) | [`agents-archive/test-verifier-agent/golden-tasks.md`](agents-archive/test-verifier-agent/golden-tasks.md) |
 | `review-session-agent` | Review transcript evaluation and outcome reporting against repository artefacts | @urruegg | Issue requesting review-session transcript intake (for example Work IQ Teams Transcript) and evaluation report generation | `github-mcp`, `work-iq-mcp` (read-only) | `write` | [`agents-archive/review-session-agent/AGENT.md`](agents-archive/review-session-agent/AGENT.md) | [`agents-archive/review-session-agent/golden-tasks.md`](agents-archive/review-session-agent/golden-tasks.md) |
+| `bmca-agent` | Bed-management copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@bmca-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents-archive/bmca-agent/AGENT.md`](agents-archive/bmca-agent/AGENT.md) | [`agents-archive/bmca-agent/golden-tasks.md`](agents-archive/bmca-agent/golden-tasks.md) |
+| `ooa-agent` | Occupancy / 72-h forecast copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@ooa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents-archive/ooa-agent/AGENT.md`](agents-archive/ooa-agent/AGENT.md) | [`agents-archive/ooa-agent/golden-tasks.md`](agents-archive/ooa-agent/golden-tasks.md) |
+| `dca-agent` | Discharge copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@dca-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents-archive/dca-agent/AGENT.md`](agents-archive/dca-agent/AGENT.md) | [`agents-archive/dca-agent/golden-tasks.md`](agents-archive/dca-agent/golden-tasks.md) |
+| `orsa-agent` | OR-steering copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@orsa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents-archive/orsa-agent/AGENT.md`](agents-archive/orsa-agent/AGENT.md) | [`agents-archive/orsa-agent/golden-tasks.md`](agents-archive/orsa-agent/golden-tasks.md) |
+| `sba-agent` | Staffing-balance copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@sba-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents-archive/sba-agent/AGENT.md`](agents-archive/sba-agent/AGENT.md) | [`agents-archive/sba-agent/golden-tasks.md`](agents-archive/sba-agent/golden-tasks.md) |
+| `csa-agent` | Crisis / scenario copilot — **scaffold only** (S11; Prepare/Run/Evaluate/Recommend body in S16) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@csa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` (S11; `deploy` in S16) | [`agents-archive/csa-agent/AGENT.md`](agents-archive/csa-agent/AGENT.md) | [`agents-archive/csa-agent/golden-tasks.md`](agents-archive/csa-agent/golden-tasks.md) |
+| `data-quality-agent` | Bronze/Silver/Gold contract-check + drift alerts (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or workflow-scheduled invocation; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents-archive/data-quality-agent/AGENT.md`](agents-archive/data-quality-agent/AGENT.md) | [`agents-archive/data-quality-agent/golden-tasks.md`](agents-archive/data-quality-agent/golden-tasks.md) |
+| `onboarding-agent` | Onboarding welcome-PR bot (S11 stretch) | @urruegg | Entra audit-log new-sign-in event via workflow; runs as a workflow-scheduled bot (not through the agent-host) | `github-mcp`, `entra-mcp` (read-only) | `write` (repo); `read` (entra-mcp) | [`agents-archive/onboarding-agent/AGENT.md`](agents-archive/onboarding-agent/AGENT.md) | [`agents-archive/onboarding-agent/golden-tasks.md`](agents-archive/onboarding-agent/golden-tasks.md) |
 | `pr-review` | UC3 — PR Review | @urruegg | GitHub pull request or issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp` | `write` (GitHub review comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
 | `drift-analyzer` | Solution and Azure drift detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents-archive/drift-analyzer/AGENT.md` §2](agents-archive/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents-archive/drift-analyzer/AGENT.md`](agents-archive/drift-analyzer/AGENT.md) | [`agents-archive/drift-analyzer/golden-tasks.md`](agents-archive/drift-analyzer/golden-tasks.md) |
 
@@ -201,6 +209,8 @@ tool.
 | Azure | `azure-mcp` | Read Azure resources, run `what-if`, push UC1-output Bicep deployments to customer subscriptions | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
 | GitHub | `github-mcp` | Read/write this repo (issues, PRs, comments, branches) | GitHub Copilot coding-agent identity |
 | Work IQ | `work-iq-mcp` | Read Microsoft 365 meeting context and transcript content for review-session intake | Least-privilege transcript and meeting read scopes |
+| Fabric | `fabric-mcp` | Read Fabric workspace items (lakehouses, semantic models); query synthetic Gold Delta tables; trigger data-quality notebooks — dispatched by the Sprint 13 agent-host on behalf of the Sprint 11 application-hosted agents | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
+| Entra | `entra-mcp` | Read Microsoft Entra audit-log new-sign-in events for the `onboarding-agent` (read-only; the only write is a welcome PR into the repo) | `Directory.AuditLog.Read.All` application permission (consent-gated, revocable) |
 | Repo-managed markdown specs | `github-mcp` | Read canonical source material from `docs/` and `docs/specs/` for planning and review flows | GitHub Copilot coding-agent identity |
 
 ---

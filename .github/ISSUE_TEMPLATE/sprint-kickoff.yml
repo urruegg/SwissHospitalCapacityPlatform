@@ -1,0 +1,55 @@
+name: "Sprint kickoff"
+description: "Kickoff issue that triggers the Superpowers cycle for a sprint."
+title: "[Sprint <NN>] Kickoff"
+labels: ["superpowers-brainstorm"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Opens a sprint. The GitHub Copilot coding agent reads the roadmap +
+        > the design spec, confirms no scope gap, then runs `writing-plans`
+        > followed by execution. Deploy/delete steps require an
+        > `approved-to-apply` comment per AGENTS.md §4.
+
+  - type: input
+    id: sprint-number
+    attributes:
+      label: Sprint number (e.g., 12, 13, 14)
+    validations:
+      required: true
+
+  - type: input
+    id: design-spec
+    attributes:
+      label: Design spec path
+      placeholder: "docs/superpowers/specs/2026-<mm>-<dd>-sprint-<nn>-<topic>-design.md"
+    validations:
+      required: true
+
+  - type: input
+    id: roadmap
+    attributes:
+      label: Roadmap path
+      placeholder: "docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md"
+    validations:
+      required: true
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: Prerequisites (must hold before start)
+      placeholder: "Roadmap PR merged; design spec accepted; explicit go-ahead from @urruegg."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: gates
+    attributes:
+      label: Gates
+      options:
+        - label: "Design spec merged to main"
+          required: true
+        - label: "Explicit go-ahead from @urruegg in this thread"
+          required: true

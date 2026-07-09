@@ -1,0 +1,98 @@
+name: "Agent build (Sprint 11+)"
+description: "Trigger the GitHub Copilot coding agent to build one agent end-to-end (prompt + golden-tasks + manifest + registry row)."
+title: "[Agent] Build <agent-name>"
+labels: ["sprint-11", "agent-build", "superpowers-plan"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Builds one agent per the Sprint 11 design spec
+        > (`docs/superpowers/specs/2026-07-09-sprint-11-agents-design.md`).
+        > Application-hosted runtime per ADR-0008 — **no** Foundry Agent
+        > Service deployment. Any `deploy` / `delete` step still requires an
+        > `approved-to-apply` comment per AGENTS.md §4.
+
+  - type: input
+    id: agent-name
+    attributes:
+      label: Agent name (kebab-case, matches folder)
+      placeholder: bmca-agent
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bucket
+    attributes:
+      label: Bucket
+      options:
+        - user-facing
+        - data
+        - onboarding
+    validations:
+      required: true
+
+  - type: input
+    id: mcp-servers
+    attributes:
+      label: MCP servers (comma-separated, must exist in .github/copilot/mcp.json)
+      placeholder: "github-mcp, fabric-mcp"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ceiling
+    attributes:
+      label: Side-effect ceiling
+      options:
+        - read
+        - write
+        - deploy
+        - delete
+    validations:
+      required: true
+
+  - type: textarea
+    id: grounding
+    attributes:
+      label: Grounding scope (Fabric Gold tables + ontology entities)
+      placeholder: "Gold.BedState, Gold.DischargeReadiness"
+    validations:
+      required: true
+
+  - type: textarea
+    id: refusal-additions
+    attributes:
+      label: Per-agent refusal rule additions (in addition to AGENTS.md §5)
+      placeholder: "No PHI in outputs; no direct bed reassignment."
+    validations:
+      required: true
+
+  - type: input
+    id: model-adr
+    attributes:
+      label: Model-selection ADR reference
+      placeholder: "docs/adr/0020-sprint11-agent-model-selection.md"
+      value: "docs/adr/0020-sprint11-agent-model-selection.md"
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: PRD requirements verified
+      description: "List the `FR-*` / `NFR-*` IDs from `docs/PRD.md` this agent advances."
+      placeholder: "FR-CX-001, FR-CX-004"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acks
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: "Synthetic data only (ADR-0006 / ADR-0016). No real PHI."
+          required: true
+        - label: "Any deploy/delete step will use the approved-to-apply gate (AGENTS.md §4)."
+          required: true

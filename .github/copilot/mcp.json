@@ -57,6 +57,33 @@
       "type": "remote",
       "enabled": true,
       "_enabled_in_sprint": "S4 (review-session transcript intake)"
+    },
+    "fabric-mcp": {
+      "_purpose": "Read Fabric workspace items (lakehouses, semantic models); query synthetic Gold Delta tables; trigger data-quality notebooks. Dispatched by the Sprint 13 agent-host on behalf of the Sprint 11 application-hosted agents.",
+      "_owners": "@urruegg",
+      "_used_by": ["bmca-agent", "ooa-agent", "dca-agent", "orsa-agent", "sba-agent", "csa-agent", "data-quality-agent"],
+      "_side_effect_ceiling": "write",
+      "_required_permissions": [
+        "Fabric workspace Viewer (query Gold Delta tables, read semantic models)",
+        "Fabric item Contributor scoped to the data-quality notebook (data-quality-agent only)"
+      ],
+      "_golden_task": "agents-archive/data-quality-agent/golden-tasks.md",
+      "type": "remote",
+      "enabled": true,
+      "_enabled_in_sprint": "S11 (user-facing + data agents)"
+    },
+    "entra-mcp": {
+      "_purpose": "Read Microsoft Entra audit-log new-sign-in events for the onboarding-agent (stretch). Read-only — the only write is the welcome PR into the repo.",
+      "_owners": "@urruegg",
+      "_used_by": ["onboarding-agent"],
+      "_side_effect_ceiling": "read",
+      "_required_permissions": [
+        "Directory.AuditLog.Read.All (application permission, consent-gated, revocable)"
+      ],
+      "_golden_task": "agents-archive/onboarding-agent/golden-tasks.md",
+      "type": "remote",
+      "enabled": true,
+      "_enabled_in_sprint": "S11 (onboarding stretch)"
     }
   }
 }
