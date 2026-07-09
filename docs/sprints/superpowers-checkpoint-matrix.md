@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.2.0 (Sprint 12 + Sprint 14 rows merged) |
+| **Previous Version** | 1.3.0 (Sprint 12 + Sprint 13 + Sprint 14 rows merged) |
 
 ## Purpose
 
@@ -49,6 +49,7 @@ sprint executed under this matrix.
 | ------ | ----- | --- | ------ | -------------- | ----------- | ----------- | ---- |
 | 11 | 2026-07-09 | 2026-07-09 | Merged | 8/8 (7 MVP + 1 stretch) | Yes | [`../superpowers/specs/2026-07-09-sprint-11-agents-design.md`](../superpowers/specs/2026-07-09-sprint-11-agents-design.md) | [`../superpowers/plans/2026-07-09-sprint-11-agents-plan.md`](../superpowers/plans/2026-07-09-sprint-11-agents-plan.md) |
 | 12 | 2026-07-09 | — | Artefacts authored; SIT applies gated | 17 app roles + 17 groups + 23 personas (IaC authored) | n/a (IaC + telemetry) | [`../superpowers/specs/2026-07-09-sprint-12-org-design.md`](../superpowers/specs/2026-07-09-sprint-12-org-design.md) | [`../superpowers/plans/2026-07-09-sprint-12-org-plan.md`](../superpowers/plans/2026-07-09-sprint-12-org-plan.md) |
+| 13 | 2026-07-09 | 2026-07-09 | In review | n/a (app tier) | Yes | [`../superpowers/specs/2026-07-09-sprint-13-app-design.md`](../superpowers/specs/2026-07-09-sprint-13-app-design.md) | [`../superpowers/plans/2026-07-09-sprint-13-app-plan.md`](../superpowers/plans/2026-07-09-sprint-13-app-plan.md) |
 | 14 | 2026-07-09 | 2026-07-09 | In progress (T1–T3 landed; T4–T7 follow-up) | n/a (workflow-only) | Yes (parsers + readiness golden) | [`../superpowers/specs/2026-07-09-sprint-14-evidence-design.md`](../superpowers/specs/2026-07-09-sprint-14-evidence-design.md) | [`../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md`](../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md) |
 
 ### Sprint 11 retro notes
@@ -98,6 +99,36 @@ sprint executed under this matrix.
   catalog references 15 operational roles + 2 super = 17. The IaC provisions all
   17 for internal consistency; reviewer to confirm the count at the gate (see
   `infra/modules/entra/README.md`).
+
+### Sprint 13 retro notes
+
+- **App tier delivered** across T1–T8: `apps/hcc-app-fluent/` (Fluent UI v9
+  baseline), `apps/hcc-agent-host/` (Python + FastAPI Container Apps agent-host,
+  [ADR-0022](../adr/0022-agent-host-language-python-fastapi.md)), and
+  `apps/hcc-app-rayfin/` (PoC placeholder).
+- **Fluent baseline** (T1–T4, T6): two-workspace shell, MSAL auth with
+  `roles`/`hospital`/`env` claim parsing + SIT-gated role switcher, BedManager
+  whiteboard with 6 card types over a custom canvas
+  ([ADR-0021](../adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md)),
+  Backstage Roles tab (read-only Entra Graph), Copilot Drawer wired to BMCA.
+  20 vitest unit tests + Playwright smoke/a11y/contract green; `app-build.yml`,
+  `app-e2e.yml`, `app-a11y.yml` added.
+- **Agent-host** (T5): manifest loader, orchestrator + Fabric grounding,
+  deny-by-default HITL gate (ADR-0007 §6 schema), redaction, tool adapters,
+  in-memory Cosmos/Redis stand-ins, FastAPI surface (`/agents`,
+  `/agents/<name>/chat`, `/agents/<name>/tools/<tool>`, `/healthz`). 31 pytest
+  tests green; `agent-host-build.yml` added; Bicep authored under
+  `infra/modules/agent-host/` (`az bicep build` clean, **not deployed**).
+- **Live deploys deferred**: T5's Container Apps + Redis + Cosmos provisioning is
+  a `deploy`-ceiling action requiring the AGENTS.md §4 `approved-to-apply` gate,
+  which was not exercised in this delivery. The Bicep is authored and validated
+  but no Azure resources were created; the app + agent-host run on deterministic
+  mocks + in-memory persistence in CI.
+- **Rayfin PoC — not evaluable in scope** (T7): the proprietary Rayfin generator
+  was not runnable in the environment. Recorded per the T7 time-box rule; the
+  exit decision ADR
+  [ADR-0023](../adr/0023-app-stack-fluent-vs-rayfin-decision.md) recommends the
+  **Fluent** baseline for Sprint 14+.
 
 ### Sprint 14 retro notes
 

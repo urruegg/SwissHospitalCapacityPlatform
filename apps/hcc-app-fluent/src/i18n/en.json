@@ -1,0 +1,40 @@
+{
+  "app": {
+    "title": "Helvion — Hospital Capacity",
+    "loading": "Loading…"
+  },
+  "rail": {
+    "main": "Main",
+    "backstage": "Backstage",
+    "home": "Home",
+    "askAgent": "Ask Agent",
+    "settings": "Settings"
+  },
+  "topbar": {
+    "search": "Search",
+    "hospital": "Hospital",
+    "roleSwitcher": "Switch role",
+    "signOut": "Sign out",
+    "signIn": "Sign in"
+  },
+  "hospitals": {
+    "usz": "USZ",
+    "luks": "LUKS",
+    "zollikerberg": "Zollikerberg",
+    "aggregated": "Aggregated"
+  },
+  "backstage": {
+    "roles": "Roles & RBAC",
+    "rolesDescription": "Live view of app roles from Microsoft Entra (read-only)."
+  },
+  "bedManager": {
+    "title": "Bed Management — USZ",
+    "askBmca": "Ask BMCA"
+  },
+  "copilot": {
+    "title": "Copilot",
+    "placeholder": "Ask the agent…",
+    "send": "Send",
+    "noPhiNotice": "Replies contain no patient data (PHI)."
+  }
+}

@@ -39,6 +39,12 @@ agents/**                               @urruegg
 /infra/modules/entra/                   @urruegg
 /samples/                               @urruegg
 
+# Sprint 13 App lane — Fluent baseline, Rayfin PoC, and Container Apps agent-host
+/apps/hcc-app-fluent/                   @urruegg
+/apps/hcc-app-rayfin/                   @urruegg
+/apps/hcc-agent-host/                   @urruegg
+/infra/modules/agent-host/              @urruegg
+
 # Showcase Evidence data product (Sprint 14) — parsers, schemas, curated catalogs
 /scripts/evidence/                      @urruegg
 /data/evidence/                         @urruegg
