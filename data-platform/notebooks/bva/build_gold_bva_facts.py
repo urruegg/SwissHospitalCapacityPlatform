@@ -3,11 +3,11 @@
 # Sprint 15 · T3 — BVA medallion Gold facts. Aggregates Silver into the Gold
 # star-schema facts (design spec §5) via the pure, unit-tested `bva_transforms`.
 #
-# Gold facts: gold.fact_azure_consumption (resource × meter × day),
-#   gold.fact_budget (env × capability × month plan baseline),
-#   gold.fact_value_realization (capability × month × hospital)
+# Gold facts: gold.bva_fact_azure_consumption (resource × meter × day),
+#   gold.bva_fact_budget (env × capability × month plan baseline),
+#   gold.bva_fact_value_realization (capability × month × hospital)
 #
-# Adoption telemetry from Sprint 12 is joined into gold.fact_value_realization in
+# Adoption telemetry from Sprint 12 is joined into gold.bva_fact_value_realization in
 # T4 (see build_gold_bva_facts adoption-join block). Until then adoption_count is
 # 0 and benefit is cost-derived only.
 #
@@ -18,6 +18,7 @@ import bva_transforms as T
 
 SILVER_SCHEMA = "silver"
 GOLD_SCHEMA = "gold"
+BVA_PREFIX = "bva_"
 
 
 def _write(spark, rows, table: str) -> None:  # pragma: no cover - Fabric runtime only
@@ -26,9 +27,9 @@ def _write(spark, rows, table: str) -> None:  # pragma: no cover - Fabric runtim
         df.write.format("delta")
         .mode("overwrite")
         .option("overwriteSchema", "true")
-        .saveAsTable(f"{GOLD_SCHEMA}.{table}")
+        .saveAsTable(f"{GOLD_SCHEMA}.{BVA_PREFIX}{table}")
     )
-    print(f"gold: wrote {GOLD_SCHEMA}.{table} ({df.count()} rows)")
+    print(f"gold: wrote {GOLD_SCHEMA}.{BVA_PREFIX}{table} ({df.count()} rows)")
 
 
 def _persona_hospital(spark):  # pragma: no cover - Fabric runtime only

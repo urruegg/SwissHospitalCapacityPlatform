@@ -10,13 +10,13 @@ golden fixture — the same convention as
 
 Gold star schema (design spec §5, snake_case + ``gold.`` prefix per PR #153):
 
-* Facts: ``gold.fact_azure_consumption`` (resource × meter × day),
-  ``gold.fact_budget`` (env × capability × month, plan baseline),
-  ``gold.fact_value_realization`` (capability × month × hospital; adoption joined
+* Facts: ``gold.bva_fact_azure_consumption`` (resource × meter × day),
+  ``gold.bva_fact_budget`` (env × capability × month, plan baseline),
+  ``gold.bva_fact_value_realization`` (capability × month × hospital; adoption joined
   in T4).
-* Dims: ``gold.dim_service``, ``gold.dim_meter``, ``gold.dim_resource``,
-  ``gold.dim_environment``, ``gold.dim_hospital``, ``gold.dim_capability``,
-  ``gold.dim_date``, ``gold.dim_exec_role``.
+* Dims: ``gold.bva_dim_service``, ``gold.bva_dim_meter``, ``gold.bva_dim_resource``,
+  ``gold.bva_dim_environment``, ``gold.bva_dim_hospital``, ``gold.bva_dim_capability``,
+  ``gold.bva_dim_date``, ``gold.bva_dim_exec_role``.
 
 All aggregation output is returned **sorted** so JSON serialisation is
 byte-stable across runs for a fixed input (regression-testable).

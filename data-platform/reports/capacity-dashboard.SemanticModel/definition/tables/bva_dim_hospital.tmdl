@@ -1,0 +1,28 @@
+table bva_dim_hospital
+	lineageTag: 7eed8cdf-1fc2-4d6f-9279-988d3b77e698
+	sourceLineageTag: [gold].[bva_dim_hospital]
+
+	column hospital_key
+		dataType: string
+		lineageTag: 2b04632a-497f-4448-85a8-2948afc0b282
+		sourceLineageTag: hospital_key
+		summarizeBy: none
+		sourceColumn: hospital_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_name
+		dataType: string
+		lineageTag: c818271f-198a-4b5a-a6fb-1ced9dca34d8
+		sourceLineageTag: hospital_name
+		summarizeBy: none
+		sourceColumn: hospital_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_dim_hospital = entity
+		mode: directLake
+		source
+			entityName: bva_dim_hospital
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

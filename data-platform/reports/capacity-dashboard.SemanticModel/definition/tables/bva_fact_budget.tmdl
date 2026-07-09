@@ -1,0 +1,67 @@
+table bva_fact_budget
+	lineageTag: 7513a1f0-55b7-4a21-8c7c-200cbd237281
+	sourceLineageTag: [gold].[bva_fact_budget]
+
+	column env_key
+		dataType: string
+		lineageTag: 43a4507b-4ccf-4798-93d6-af1789b231f6
+		sourceLineageTag: env_key
+		summarizeBy: none
+		sourceColumn: env_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column capability_key
+		dataType: string
+		lineageTag: 03532620-963b-47b6-b1db-59e67fa33c0d
+		sourceLineageTag: capability_key
+		summarizeBy: none
+		sourceColumn: capability_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_key
+		dataType: string
+		lineageTag: b30b0f7f-a931-4195-bff5-ba1b060bf3e0
+		sourceLineageTag: month_key
+		summarizeBy: none
+		sourceColumn: month_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_cost
+		dataType: double
+		lineageTag: 11c44984-2d72-4b93-b54e-1ffdf624be26
+		sourceLineageTag: plan_cost
+		summarizeBy: sum
+		sourceColumn: plan_cost
+		formatString: \#,0.00
+
+		annotation SummarizationSetBy = Automatic
+
+	column actual_cost
+		dataType: double
+		lineageTag: 137b7223-c9e7-4fbc-a5ae-5175430e48ee
+		sourceLineageTag: actual_cost
+		summarizeBy: sum
+		sourceColumn: actual_cost
+		formatString: \#,0.00
+
+		annotation SummarizationSetBy = Automatic
+
+	column variance_cost
+		dataType: double
+		lineageTag: 88a4f462-aa80-4309-a480-5fa29eeea5c1
+		sourceLineageTag: variance_cost
+		summarizeBy: sum
+		sourceColumn: variance_cost
+		formatString: \#,0.00
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_fact_budget = entity
+		mode: directLake
+		source
+			entityName: bva_fact_budget
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

@@ -16,7 +16,7 @@ Naming is snake_case + `gold.` schema prefix (PR #153 reconciliation).
 
 ## Facts
 
-### `gold.fact_azure_consumption`
+### `gold.bva_fact_azure_consumption`
 
 Grain: **resource × meter × day**. Source of all cost/spend KPIs.
 
@@ -33,7 +33,7 @@ Grain: **resource × meter × day**. Source of all cost/spend KPIs.
 | `list_cost` | decimal | CHF, list cost |
 | `quantity` | decimal | metered quantity |
 
-### `gold.fact_budget`
+### `gold.bva_fact_budget`
 
 Grain: **env × capability × month**. Plan baseline for plan-vs-actual variance.
 
@@ -46,7 +46,7 @@ Grain: **env × capability × month**. Plan baseline for plan-vs-actual variance
 | `actual_cost` | decimal | that month's actual |
 | `variance_cost` | decimal | `actual_cost − plan_cost` |
 
-### `gold.fact_value_realization`
+### `gold.bva_fact_value_realization`
 
 Grain: **capability × month × hospital**. Value + adoption side of the BVA.
 
@@ -69,14 +69,14 @@ Grain: **capability × month × hospital**. Value + adoption side of the BVA.
 
 | Dimension | Key | Attributes |
 | --- | --- | --- |
-| `gold.dim_service` | `service_key` | `service_name`, `service_category` |
-| `gold.dim_meter` | `meter_key` | `meter_name`, `meter_category`, `meter_sub_category`, `pricing_unit` |
-| `gold.dim_resource` | `resource_key` | `resource_name`, `resource_type`, `region`, `service_key`, `env_key`, `hospital_key`, `capability_key` |
-| `gold.dim_environment` | `env_key` | dev / sit / prod |
-| `gold.dim_hospital` | `hospital_key` | USZ / LUKS / Zollikerberg / Aggregated |
-| `gold.dim_capability` | `capability_key` | BMCA / OOA / DCA / ORSA / SBA / CSA |
-| `gold.dim_date` | `date_key` | `month_key`, `year`, `month`, `day` |
-| `gold.dim_exec_role` | `exec_role_key` | CEO / CFO / CIO / COO / CTO / BOARD (RLS routing) |
+| `gold.bva_dim_service` | `service_key` | `service_name`, `service_category` |
+| `gold.bva_dim_meter` | `meter_key` | `meter_name`, `meter_category`, `meter_sub_category`, `pricing_unit` |
+| `gold.bva_dim_resource` | `resource_key` | `resource_name`, `resource_type`, `region`, `service_key`, `env_key`, `hospital_key`, `capability_key` |
+| `gold.bva_dim_environment` | `env_key` | dev / sit / prod |
+| `gold.bva_dim_hospital` | `hospital_key` | USZ / LUKS / Zollikerberg / Aggregated |
+| `gold.bva_dim_capability` | `capability_key` | BMCA / OOA / DCA / ORSA / SBA / CSA |
+| `gold.bva_dim_date` | `date_key` | `month_key`, `year`, `month`, `day` |
+| `gold.bva_dim_exec_role` | `exec_role_key` | CEO / CFO / CIO / COO / CTO / BOARD (RLS routing) |
 
 ## RLS surface
 

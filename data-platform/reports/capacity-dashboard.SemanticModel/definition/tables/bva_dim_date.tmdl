@@ -1,0 +1,58 @@
+table bva_dim_date
+	lineageTag: d81ee9e0-fb79-45a6-936c-b8495d83e817
+	sourceLineageTag: [gold].[bva_dim_date]
+
+	column date_key
+		dataType: string
+		lineageTag: e0f453b6-11fc-494a-88a9-f3a051cd23d5
+		sourceLineageTag: date_key
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_key
+		dataType: string
+		lineageTag: f6309572-709d-4030-b634-01d5fc7fec2e
+		sourceLineageTag: month_key
+		summarizeBy: none
+		sourceColumn: month_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column year
+		dataType: int64
+		lineageTag: 228327d0-af50-4fbc-b4c4-c5f87a72183e
+		sourceLineageTag: year
+		summarizeBy: none
+		sourceColumn: year
+		formatString: 0
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: int64
+		lineageTag: cdf429bf-4c38-49bb-98ae-f94264026fa9
+		sourceLineageTag: month
+		summarizeBy: none
+		sourceColumn: month
+		formatString: 0
+
+		annotation SummarizationSetBy = Automatic
+
+	column day
+		dataType: int64
+		lineageTag: b96a3a15-0f50-4db2-a34b-a5d022dfd20c
+		sourceLineageTag: day
+		summarizeBy: none
+		sourceColumn: day
+		formatString: 0
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_dim_date = entity
+		mode: directLake
+		source
+			entityName: bva_dim_date
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

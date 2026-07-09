@@ -38,8 +38,10 @@ agents/**                               @urruegg
 /data-platform/scripts/bva_synth_focus.py  @urruegg
 /data-platform/scripts/bva_upload_bronze.py  @urruegg
 /data-platform/notebooks/bva/           @urruegg
+/data-platform/scripts/bva/             @urruegg
 /data-platform/reports/bva-boardroom.Report/  @urruegg
 /data-platform/reports/tests/           @urruegg
+/docs/data-platform/bva-gold-schema.md  @urruegg
 
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg

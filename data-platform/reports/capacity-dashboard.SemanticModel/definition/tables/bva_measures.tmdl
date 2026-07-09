@@ -1,0 +1,134 @@
+/// BVA KPI catalogue (Sprint 15 · T5). Measures mirror the pure reference
+/// formulas in data-platform/notebooks/bva/bva_kpi.py one-for-one; the
+/// DAX↔Python mapping and the synthetic target constants are catalogued in
+/// docs/adr/0025-bva-kpi-catalog.md. Golden tests:
+/// data-platform/reports/tests/test_bva_kpi_golden.py.
+table bva_measures
+	lineageTag: e4060e83-c6e6-4a80-9b35-63fb3e0ccd08
+
+	column _kpi_home
+		isHidden
+		dataType: string
+		lineageTag: 7aef15ff-0f08-451c-a923-3430f481313b
+		summarizeBy: none
+		sourceColumn: _kpi_home
+
+		annotation SummarizationSetBy = Automatic
+
+	measure 'Effective Cost' = SUM(bva_fact_azure_consumption[effective_cost])
+		formatString: \#,0.00
+		lineageTag: 8a60eb31-b87d-4449-bc6c-5a8f311d4994
+
+	measure 'List Cost' = SUM(bva_fact_azure_consumption[list_cost])
+		formatString: \#,0.00
+		lineageTag: d2376fd6-5744-413b-9c55-748d8c247efc
+
+	measure 'Plan Cost' = SUM(bva_fact_budget[plan_cost])
+		formatString: \#,0.00
+		lineageTag: e1225a10-e362-4e0d-a028-72568774d29f
+
+	measure 'Budget Variance' = SUM(bva_fact_budget[variance_cost])
+		formatString: \#,0.00
+		lineageTag: f102f049-c8c6-4cea-94fe-d433e398f856
+
+	measure 'Benefit Realized' = SUM(bva_fact_value_realization[benefit_realized])
+		formatString: \#,0.00
+		lineageTag: c3896fd8-619b-4891-acd8-fa814977d2fd
+
+	measure 'Active Users' = SUM(bva_fact_value_realization[adoption_count])
+		formatString: 0
+		lineageTag: 3b4d621c-fa0f-464c-9c8e-5593d7ac8620
+
+	measure 'Decision Cycles' = SUM(bva_fact_value_realization[decision_cycles])
+		formatString: \#,0
+		lineageTag: 6ce6980e-94d7-481c-9677-4e1ff110d693
+
+	measure 'Months In Scope' = DISTINCTCOUNT(bva_dim_date[month_key])
+		formatString: 0
+		lineageTag: ea7ce1d1-6f43-43d0-b6fa-eeb649fbc1a9
+
+	measure 'Actual TCO (Annualized)' = DIVIDE([Effective Cost], [Months In Scope]) * 12
+		formatString: \#,0.00
+		lineageTag: 503f2830-0fd1-4000-b758-ab2ade55418e
+
+	measure 'Benefit Realized (Annualized)' = DIVIDE([Benefit Realized], [Months In Scope]) * 12
+		formatString: \#,0.00
+		lineageTag: c6489d95-c2a3-497d-a7d9-dbebcf2b7e55
+
+	measure 'Net Annual Benefit' = [Benefit Realized (Annualized)] - [Actual TCO (Annualized)]
+		formatString: \#,0.00
+		lineageTag: a662403b-5b84-4832-98b3-5ce7a557e549
+
+	measure 'Net Value Realized (3yr)' = [Net Annual Benefit] * 3
+		formatString: \#,0.00
+		lineageTag: 18838cc1-57ae-484f-8c46-6b8fa1413711
+
+	measure 'Benefit Realization %' = DIVIDE([Benefit Realized (Annualized)], 1200000)
+		formatString: 0.0%
+		lineageTag: 9482e7ad-af34-490a-ba9a-23eec3cfa501
+
+	measure 'ROI %' = DIVIDE([Net Annual Benefit], [Actual TCO (Annualized)])
+		formatString: 0.0%
+		lineageTag: 98eadcb8-85a4-4d74-ac1e-9de88247ab6a
+
+	measure 'Strategic Adoption %' = DIVIDE([Active Users], 120)
+		formatString: 0.0%
+		lineageTag: 01562fcc-8a86-45dd-a447-754a356a7521
+
+	measure 'Budget Variance %' = DIVIDE([Budget Variance], [Plan Cost])
+		formatString: 0.0%
+		lineageTag: 34bd9cc1-052c-402b-8fec-e766cdbcecda
+
+	measure 'Cost-to-Value Ratio' = DIVIDE([Actual TCO (Annualized)], [Benefit Realized (Annualized)])
+		formatString: 0.00
+		lineageTag: 1efd5b39-9a64-4fdd-8ca6-b936c43abc70
+
+	measure 'Azure Spend (Period)' = [Effective Cost]
+		formatString: \#,0.00
+		lineageTag: 3fb17483-a482-47ee-967c-8f29532d2a60
+
+	measure 'Payback (Months)' = DIVIDE([Actual TCO (Annualized)], [Net Annual Benefit]) * 12
+		formatString: 0.0
+		lineageTag: d447a874-c824-4bd5-b142-8c0156fac85f
+
+	measure 'Azure Run-Rate (Monthly)' = DIVIDE([Effective Cost], [Months In Scope])
+		formatString: \#,0.00
+		lineageTag: e92461ad-db14-49d1-814b-a2c3941d26fc
+
+	measure 'Cost Optimization Realized' = [List Cost] - [Effective Cost]
+		formatString: \#,0.00
+		lineageTag: 6a2d450e-7a31-44dc-8739-8080f853725d
+
+	measure 'Cost Avoidance %' = DIVIDE([List Cost] - [Effective Cost], [List Cost])
+		formatString: 0.0%
+		lineageTag: 73f5aca4-def5-4984-9651-c5ef7ed0704a
+
+	measure 'Avoidable Bed-Day Index' = [Decision Cycles] * 0.02
+		formatString: \#,0.0
+		lineageTag: d9c39d1c-266a-45b3-aa0f-403083cba6a1
+
+	measure 'Manual Touches Saved' = [Decision Cycles] * 0.5
+		formatString: \#,0
+		lineageTag: 08f788d7-58a0-40a9-bbcf-2ae241b5f329
+
+	measure 'Cost per Decision Cycle' = DIVIDE([Effective Cost], [Decision Cycles])
+		formatString: \#,0.00
+		lineageTag: 884840ef-ba37-4f5f-b0fc-8ada478d90c6
+
+	measure 'Cost per Copilot Turn' = DIVIDE([Effective Cost], [Active Users] * 144)
+		formatString: \#,0.00
+		lineageTag: 2cfb8cf7-a324-47d7-8d5d-76de14f7f752
+
+	measure 'Cost per Capability' = DIVIDE([Effective Cost], DISTINCTCOUNT(bva_dim_capability[capability_key]))
+		formatString: \#,0.00
+		lineageTag: d7401a8f-b4b5-40f2-8556-c6fd61d69c6a
+
+	measure 'Inference Efficiency (cycles/CHF)' = DIVIDE([Decision Cycles], [Effective Cost])
+		formatString: 0.00
+		lineageTag: 00bb18fa-34ef-4904-a08f-da328c0c03e9
+
+	partition bva_measures = calculated
+		mode: import
+		source = ROW("_kpi_home", "BVA")
+
+	annotation PBI_Id = bva_measures

@@ -1,0 +1,37 @@
+table bva_dim_exec_role
+	lineageTag: ad87d07f-70be-476f-94a2-bd91bba701db
+	sourceLineageTag: [gold].[bva_dim_exec_role]
+
+	column exec_role_key
+		dataType: string
+		lineageTag: 0691120f-29df-4b8a-bba4-15ac3fc02bcf
+		sourceLineageTag: exec_role_key
+		summarizeBy: none
+		sourceColumn: exec_role_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column exec_role_name
+		dataType: string
+		lineageTag: d2710ff2-1274-4602-91fb-2e662db330e5
+		sourceLineageTag: exec_role_name
+		summarizeBy: none
+		sourceColumn: exec_role_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column capability_key
+		dataType: string
+		lineageTag: b826dbf9-f736-4b0d-9bff-10adad7cf2da
+		sourceLineageTag: capability_key
+		summarizeBy: none
+		sourceColumn: capability_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_dim_exec_role = entity
+		mode: directLake
+		source
+			entityName: bva_dim_exec_role
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

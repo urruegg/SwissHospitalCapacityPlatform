@@ -14,8 +14,8 @@ by the semantic model (T5) and C-suite reports (T6).
 | `ingest_bronze_consumption.py` | Bronze | `bronze.bva_consumption` (raw FOCUS rows from `Files/Bronze/consumption/`) |
 | `ingest_bronze_adoption.py` | Bronze | `bronze.bva_adoption` (Sprint 12 sign-ins / synthetic backfill from `Files/Bronze/adoption/`) |
 | `build_silver_bva.py` | Silver | `silver.bva_consumption` (keys + `date_key`/`month_key` + provenance) |
-| `build_gold_bva_dims.py` | Gold | `gold.dim_{service,meter,resource,environment,hospital,capability,date,exec_role}` |
-| `build_gold_bva_facts.py` | Gold | `gold.fact_{azure_consumption,budget,value_realization}` |
+| `build_gold_bva_dims.py` | Gold | `gold.bva_dim_{service,meter,resource,environment,hospital,capability,date,exec_role}` |
+| `build_gold_bva_facts.py` | Gold | `gold.bva_fact_{azure_consumption,budget,value_realization}` |
 
 Naming is snake_case + `gold.` schema prefix (per PR #153 reconciliation).
 
@@ -32,7 +32,7 @@ implementation with no notebook/reference drift.
 ## Adoption join (T4)
 
 `build_gold_bva_facts.py` joins Sprint 12 adoption telemetry into
-`gold.fact_value_realization`:
+`gold.bva_fact_value_realization`:
 
 - `adoption_index_from_signins` counts **distinct successful** sign-ins per
   `(capability, month, hospital)`, mapping `appRole → capability` via
