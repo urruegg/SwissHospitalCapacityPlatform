@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (new shared matrix baseline) |
+| **Previous Version** | 1.1.0 (new shared matrix baseline) |
 
 ## Purpose
 
@@ -48,6 +48,7 @@ sprint executed under this matrix.
 | Sprint | Start | End | Status | Agents shipped | Evals green | Design spec | Plan |
 | ------ | ----- | --- | ------ | -------------- | ----------- | ----------- | ---- |
 | 11 | 2026-07-09 | 2026-07-09 | Merged | 8/8 (7 MVP + 1 stretch) | Yes | [`../superpowers/specs/2026-07-09-sprint-11-agents-design.md`](../superpowers/specs/2026-07-09-sprint-11-agents-design.md) | [`../superpowers/plans/2026-07-09-sprint-11-agents-plan.md`](../superpowers/plans/2026-07-09-sprint-11-agents-plan.md) |
+| 13 | 2026-07-09 | 2026-07-09 | In review | n/a (app tier) | Yes | [`../superpowers/specs/2026-07-09-sprint-13-app-design.md`](../superpowers/specs/2026-07-09-sprint-13-app-design.md) | [`../superpowers/plans/2026-07-09-sprint-13-app-plan.md`](../superpowers/plans/2026-07-09-sprint-13-app-plan.md) |
 
 ### Sprint 11 retro notes
 
@@ -68,3 +69,33 @@ sprint executed under this matrix.
 - `csa-agent` is a scaffold only — the Prepare phase is stubbed and the
   Run/Evaluate/Recommend body lands in Sprint 16. The Sprint 09 runtime pack at
   `agents/csa-agent/` was left intact.
+
+### Sprint 13 retro notes
+
+- **App tier delivered** across T1–T8: `apps/hcc-app-fluent/` (Fluent UI v9
+  baseline), `apps/hcc-agent-host/` (Python + FastAPI Container Apps agent-host,
+  [ADR-0022](../adr/0022-agent-host-language-python-fastapi.md)), and
+  `apps/hcc-app-rayfin/` (PoC placeholder).
+- **Fluent baseline** (T1–T4, T6): two-workspace shell, MSAL auth with
+  `roles`/`hospital`/`env` claim parsing + SIT-gated role switcher, BedManager
+  whiteboard with 6 card types over a custom canvas
+  ([ADR-0021](../adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md)),
+  Backstage Roles tab (read-only Entra Graph), Copilot Drawer wired to BMCA.
+  20 vitest unit tests + Playwright smoke/a11y/contract green; `app-build.yml`,
+  `app-e2e.yml`, `app-a11y.yml` added.
+- **Agent-host** (T5): manifest loader, orchestrator + Fabric grounding,
+  deny-by-default HITL gate (ADR-0007 §6 schema), redaction, tool adapters,
+  in-memory Cosmos/Redis stand-ins, FastAPI surface (`/agents`,
+  `/agents/<name>/chat`, `/agents/<name>/tools/<tool>`, `/healthz`). 31 pytest
+  tests green; `agent-host-build.yml` added; Bicep authored under
+  `infra/modules/agent-host/` (`az bicep build` clean, **not deployed**).
+- **Live deploys deferred**: T5's Container Apps + Redis + Cosmos provisioning is
+  a `deploy`-ceiling action requiring the AGENTS.md §4 `approved-to-apply` gate,
+  which was not exercised in this delivery. The Bicep is authored and validated
+  but no Azure resources were created; the app + agent-host run on deterministic
+  mocks + in-memory persistence in CI.
+- **Rayfin PoC — not evaluable in scope** (T7): the proprietary Rayfin generator
+  was not runnable in the environment. Recorded per the T7 time-box rule; the
+  exit decision ADR
+  [ADR-0023](../adr/0023-app-stack-fluent-vs-rayfin-decision.md) recommends the
+  **Fluent** baseline for Sprint 14+.

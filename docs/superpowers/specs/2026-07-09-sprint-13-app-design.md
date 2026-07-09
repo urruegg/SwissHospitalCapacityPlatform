@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft for review |
-| **Previous Version** | 1.1.0 (updated `agents-archive/<name>/manifest.yaml` ref in the hcc-agent-host `manifests/` comment to `agents/<name>/manifest.yaml` after the 2.0.0 folder restructure) |
+| **Previous Version** | 1.2.0 (Sprint 13 delivery: decision ADR-0023 + agent-host language ADR-0022 link populated in §4) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md](../ideas/Swiss-Hospital-Capacity-UX-Design-and-Roles.md) |
 | **Brandkit** | [docs/brandkit/Helvion-Brand-Guide.md](../../brandkit/Helvion-Brand-Guide.md) |
@@ -148,7 +148,12 @@ apps/
 
 ## 4. Rayfin PoC — comparison rubric and decision ADR
 
-The parallel PoC produces a decision memo at Sprint 13 exit: `docs/adr/00XX-fluent-vs-rayfin-decision.md`.
+The parallel PoC produces a decision memo at Sprint 13 exit:
+[`docs/adr/0023-app-stack-fluent-vs-rayfin-decision.md`](../../adr/0023-app-stack-fluent-vs-rayfin-decision.md)
+(**populated** — recommends the Fluent baseline; Rayfin recorded *not evaluable
+in scope*). The agent-host implementation-language choice is recorded in
+[`docs/adr/0022-agent-host-language-python-fastapi.md`](../../adr/0022-agent-host-language-python-fastapi.md)
+(Python + FastAPI).
 
 **Rubric (evenly weighted):**
 
