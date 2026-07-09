@@ -2,6 +2,39 @@ table fact_capacity_baseline
 	lineageTag: a8105d54-8402-4236-a0bd-60287846babc
 	sourceLineageTag: [gold].[fact_capacity_baseline]
 
+	/// M5 smart-narrative for the Bed Manager persona (design spec §6.3). Composes from
+	/// non-time capacity measures; delta phrasing deferred until Gold exposes a date
+	/// dimension. Returns >=40 chars of substantive text.
+	measure 'Narrative — Bed Manager' = ```
+			VAR occ = FORMAT([Occupancy %], "0.0") & "%"
+			VAR beds_free = FORMAT([Beds Free], "#,0")
+			VAR assigned = FORMAT([Currently Assigned Beds], "#,0")
+			VAR total = FORMAT([Beds Total], "#,0")
+			RETURN
+			    "Occupancy is at " & occ & " with " & assigned & " of " & total &
+			    " beds assigned and " & beds_free & " free. (Synthetic SIT snapshot; " &
+			    "trend deltas pending a Gold date dimension.)"
+		```
+		lineageTag: 22cb05c8-62b9-4226-8642-f0a2a64febb2
+
+		changedProperty = Name
+
+	/// M5 smart-narrative for the Ops Lead persona (design spec §6.3). Composes across the
+	/// capacity and OR domains from non-time measures. Returns >=40 chars of substantive text.
+	measure 'Narrative — Ops Lead' = ```
+			VAR occ = FORMAT([Occupancy %], "0.0") & "%"
+			VAR util = FORMAT([OR Utilization %], "0.0") & "%"
+			VAR beds_free = FORMAT([Beds Free], "#,0")
+			VAR inhouse = FORMAT([Currently In Hospital], "#,0")
+			RETURN
+			    "System-wide occupancy is " & occ & " with " & beds_free & " beds free and " &
+			    inhouse & " patients in house. Theatres are running at " & util &
+			    " utilization. (Synthetic SIT snapshot; cross-site deltas pending a Gold date dimension.)"
+		```
+		lineageTag: d006aabd-35b3-4e2b-924b-6a2a4982824b
+
+		changedProperty = Name
+
 	column hospital_id
 		dataType: string
 		lineageTag: eabce407-8241-44e8-962b-a52f60812252

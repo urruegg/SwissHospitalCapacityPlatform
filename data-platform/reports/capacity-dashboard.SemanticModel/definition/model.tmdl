@@ -26,6 +26,8 @@ ref table dim_drg
 ref table encounter
 ref table bed_assignment
 ref table dim_persona
+ref table param_capacity_measure
+ref table param_or_measure
 
 ref role BedOps
 ref role ORPlanner

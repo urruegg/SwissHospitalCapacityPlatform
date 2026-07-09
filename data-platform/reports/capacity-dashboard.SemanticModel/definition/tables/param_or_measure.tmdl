@@ -1,0 +1,47 @@
+/// M5 field-parameter table (design spec §6.2). Import-mode calculated table — the
+/// standard Power BI field-parameter shape. Lets the persona swap the driving metric
+/// on the page without editing the visual. Members reference existing measures only.
+table param_or_measure
+	lineageTag: 1d5c8c06-d02f-4eee-9b89-14b22a0d049f
+
+	column 'OR Metric'
+		lineageTag: ded6172c-be59-4291-833c-bbe49f4dfa94
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'OR Metric Order'
+
+		relatedColumnDetails
+			groupByColumn: 'OR Metric Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'OR Metric Fields'
+		lineageTag: c40a9898-873a-4d13-9ead-31ddcdf8eee6
+		summarizeBy: none
+		sourceColumn: [Value2]
+		isHidden
+
+		extendedProperty ParameterMetadata =
+				{"version":3,"kind":2}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'OR Metric Order'
+		lineageTag: 0f8e07cf-f8f2-4b02-bf50-eb175c8183b3
+		summarizeBy: sum
+		sourceColumn: [Value3]
+		isHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition param_or_measure = calculated
+		mode: import
+		source =
+				{
+					("First-Case On-Time %", NAMEOF('or_case'[First-Case On-Time %]), 0),
+					("Turnover", NAMEOF('or_case'[Turnover]), 1),
+					("Idle-Slot Minutes", NAMEOF('or_schedule'[Idle-Slot Minutes]), 2),
+					("OR Utilization %", NAMEOF('or_case'[OR Utilization %]), 3)
+				}
+
+	annotation PBI_Id = 3e17d787f0614adab48cfb39f2cedba1

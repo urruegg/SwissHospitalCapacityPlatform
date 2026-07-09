@@ -55,6 +55,32 @@ table or_case
 
 		changedProperty = FormatString
 
+	/// M5 alias exposing Avg Turnover Minutes under the field-parameter member name '[Turnover]'.
+	measure 'Turnover' = [Avg Turnover Minutes]
+		formatString: 0.0
+		lineageTag: 4a8734d5-813f-40e5-9359-f711b6b3dca7
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	/// M5 smart-narrative (design spec §6.3). Composes from non-time measures only — delta/
+	/// time-intelligence phrasing is deferred until Gold exposes a date dimension (see M1
+	/// advisory + check_gold_columns.py). Returns >=40 chars of substantive text.
+	measure 'Narrative — OR Coordinator' = ```
+			VAR util = FORMAT([OR Utilization %], "0.0") & "%"
+			VAR fcot = FORMAT([First-Case On-Time %], "0.0") & "%"
+			VAR cancel = FORMAT([Short-Notice Cancellation %], "0.0") & "%"
+			VAR turn = FORMAT([Avg Turnover Minutes], "0.0")
+			RETURN
+			    "OR utilization is running at " & util & " with first-case on-time at " & fcot &
+			    ". Short-notice cancellations sit at " & cancel & " and average turnover is " & turn &
+			    " minutes. (Synthetic SIT snapshot; trend deltas pending a Gold date dimension.)"
+		```
+		lineageTag: cfa7b5d3-0ee2-4af1-826b-2e2cc47a312f
+
+		changedProperty = Name
+
 	column _data_quality
 		dataType: string
 		lineageTag: 9b09e3bb-5c9c-4346-80b9-e074c010ff63
