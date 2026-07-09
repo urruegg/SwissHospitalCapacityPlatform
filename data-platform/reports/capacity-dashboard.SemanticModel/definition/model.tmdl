@@ -25,9 +25,12 @@ ref table dim_disease
 ref table dim_drg
 ref table encounter
 ref table bed_assignment
+ref table dim_persona
 
 ref role BedOps
 ref role ORPlanner
 ref role Analyst
 ref role SemanticOwner
+ref role SITDemoOperator
+ref role GuestAggregated
 

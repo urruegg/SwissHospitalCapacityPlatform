@@ -1,0 +1,17 @@
+/// SIT-only demo role. No hospital predicate — grants the soft-slicer path so a
+/// demo operator can flip the Hospital slicer at demo time (design spec §7, H3
+/// hybrid). Assignable only to HCC.DemoOperator and HCC.SuperAdmin in SIT.
+/// PHI never reaches this role's queries: rows tagged PHI by the silver Gate 2
+/// sweep are excluded, consistent with the other roles per ADR-0016 gate 4.
+role SITDemoOperator
+	modelPermission: read
+
+	tablePermission encounter = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission bed_assignment = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission fact_capacity_baseline = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_case = IF([_data_quality] = "phi", FALSE, TRUE)
+
+	tablePermission or_schedule = IF([_data_quality] = "phi", FALSE, TRUE)

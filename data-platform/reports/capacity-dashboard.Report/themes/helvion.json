@@ -1,0 +1,35 @@
+{
+  "name": "Helvion",
+  "dataColors": [
+    "#E30613",
+    "#365B7D",
+    "#FF9A2E",
+    "#FF5A4E",
+    "#F0398F",
+    "#9A4FF0",
+    "#3E7BF6",
+    "#23C57E"
+  ],
+  "background": "#FFFFFF",
+  "backgroundLight": "#F3F5F7",
+  "backgroundNeutral": "#DCE1E6",
+  "foreground": "#2E4C68",
+  "foregroundNeutralSecondary": "#6B7A88",
+  "foregroundNeutralTertiary": "#9BA7B2",
+  "tableAccent": "#365B7D",
+  "good": "#23C57E",
+  "neutral": "#FF9A2E",
+  "bad": "#E30613",
+  "maximum": "#365B7D",
+  "center": "#FF9A2E",
+  "minimum": "#DCE7F0",
+  "null": "#9BA7B2",
+  "hyperlink": "#365B7D",
+  "visitedHyperlink": "#9A4FF0",
+  "textClasses": {
+    "callout": { "fontFace": "Segoe UI", "fontSize": 45, "color": "#365B7D" },
+    "title": { "fontFace": "Segoe UI Semibold", "fontSize": 20, "color": "#2E4C68" },
+    "header": { "fontFace": "Segoe UI Semibold", "fontSize": 12, "color": "#6B7A88" },
+    "label": { "fontFace": "Segoe UI", "fontSize": 10, "color": "#6B7A88" }
+  }
+}
