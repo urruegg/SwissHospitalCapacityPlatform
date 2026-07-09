@@ -1,13 +1,24 @@
-upn,display_name,app_role,default_hospital
-markus.frei@mngenvmcap164444.onmicrosoft.com,Markus Frei,HCC.BedManager,USZ
-lea.hofmann@mngenvmcap164444.onmicrosoft.com,Lea Hofmann,HCC.BedManager,LUKS
-peter.suter@mngenvmcap164444.onmicrosoft.com,Peter Suter,HCC.BedManager,Zollikerberg
-nicole.baumann@mngenvmcap164444.onmicrosoft.com,Nicole Baumann,HCC.ORCoordinator,USZ
-thomas.gerber@mngenvmcap164444.onmicrosoft.com,Thomas Gerber,HCC.ORCoordinator,LUKS
-sandra.roth@mngenvmcap164444.onmicrosoft.com,Sandra Roth,HCC.ORCoordinator,Zollikerberg
-dr.andrea.keller@mngenvmcap164444.onmicrosoft.com,Dr. Andrea Keller,HCC.OperationsLead,USZ
-daniel.widmer@mngenvmcap164444.onmicrosoft.com,Daniel Widmer,HCC.OperationsLead,LUKS
-claudia.meyer@mngenvmcap164444.onmicrosoft.com,Claudia Meyer,HCC.OperationsLead,Zollikerberg
-sophie.meier@mngenvmcap164444.onmicrosoft.com,Sophie Meier,HCC.DemoOperator,All
-super.admin@mngenvmcap164444.onmicrosoft.com,Super Admin,HCC.SuperAdmin,All
-demo.guest@mngenvmcap164444.onmicrosoft.com,Demo Guest,HCC.GuestReadOnly,Aggregated
+upn,display_name,app_role,default_hospital,mail_nickname
+dr.andrea.keller@mngenvmcap164444.onmicrosoft.com,Dr. Andrea Keller,HCC.OperationsLead,USZ,dr.andrea.keller
+markus.frei@mngenvmcap164444.onmicrosoft.com,Markus Frei,HCC.BedManager,USZ,markus.frei
+sandra.huber@mngenvmcap164444.onmicrosoft.com,Sandra Huber,HCC.FlowManager,USZ,sandra.huber
+thomas.brunner@mngenvmcap164444.onmicrosoft.com,Dr. Thomas Brunner,HCC.EDLead,USZ,thomas.brunner
+nicole.baumann@mngenvmcap164444.onmicrosoft.com,Nicole Baumann,HCC.ORCoordinator,USZ,nicole.baumann
+peter.schmid@mngenvmcap164444.onmicrosoft.com,Peter Schmid,HCC.StaffingCoordinator,USZ,peter.schmid
+claudia.steiner@mngenvmcap164444.onmicrosoft.com,Claudia Steiner,HCC.DischargeCoordinator,USZ,claudia.steiner
+michael.weber@mngenvmcap164444.onmicrosoft.com,Dr. Michael Weber,HCC.CrisisManager,USZ,michael.weber
+regula.bucher@mngenvmcap164444.onmicrosoft.com,Dr. Regula Bucher,HCC.OperationsLead,LUKS,regula.bucher
+stefan.zuend@mngenvmcap164444.onmicrosoft.com,Stefan Zünd,HCC.BedManager,LUKS,stefan.zuend
+martina.achermann@mngenvmcap164444.onmicrosoft.com,Martina Achermann,HCC.DischargeCoordinator,LUKS,martina.achermann
+daniel.kaufmann@mngenvmcap164444.onmicrosoft.com,Daniel Kaufmann,HCC.ORCoordinator,LUKS,daniel.kaufmann
+barbara.widmer@mngenvmcap164444.onmicrosoft.com,Barbara Widmer,HCC.OperationsLead,Zollikerberg,barbara.widmer
+lukas.frei@mngenvmcap164444.onmicrosoft.com,Lukas Frei,HCC.FlowManager,Zollikerberg,lukas.frei
+christoph.vogt@mngenvmcap164444.onmicrosoft.com,Dr. Christoph Vogt,HCC.Executive,Aggregated,christoph.vogt
+isabelle.girard@mngenvmcap164444.onmicrosoft.com,Dr. Isabelle Girard,HCC.CantonalViewer,Aggregated,isabelle.girard
+urs.ruegg@mngenvmcap164444.onmicrosoft.com,Urs Rüegg,HCC.PlatformAdmin,All,urs.ruegg
+elena.fischer@mngenvmcap164444.onmicrosoft.com,Elena Fischer,HCC.OntologySteward,All,elena.fischer
+rafael.moser@mngenvmcap164444.onmicrosoft.com,Rafael Moser,HCC.AIGovernance,All,rafael.moser
+sophie.meier@mngenvmcap164444.onmicrosoft.com,Sophie Meier,HCC.DemoOperator,All,sophie.meier
+hans.meier@mngenvmcap164444.onmicrosoft.com,Hans Meier,HCC.Auditor,All,hans.meier
+super.admin@mngenvmcap164444.onmicrosoft.com,Super Admin,HCC.SuperAdmin,All,super.admin
+demo.guest@mngenvmcap164444.onmicrosoft.com,Demo Guest,HCC.GuestReadOnly,Aggregated,demo.guest

@@ -36,6 +36,7 @@ agents/**                               @urruegg
 
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg
+/infra/modules/entra/                   @urruegg
 /samples/                               @urruegg
 
 # Sprint 13 App lane — Fluent baseline, Rayfin PoC, and Container Apps agent-host
