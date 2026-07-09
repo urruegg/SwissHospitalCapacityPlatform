@@ -1,0 +1,53 @@
+name: app-build
+
+# Sprint 13 T1 — build + unit-test the Fluent app (and the Rayfin PoC when it
+# builds) on any change under apps/**. Keeps the app lane green per the design
+# spec §6 GitHub delegation.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hcc-app-fluent/**'
+      - 'apps/hcc-app-rayfin/**'
+      - '.github/workflows/app-build.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/hcc-app-fluent/**'
+      - 'apps/hcc-app-rayfin/**'
+      - '.github/workflows/app-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fluent:
+    name: hcc-app-fluent — lint + unit + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hcc-app-fluent
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/hcc-app-fluent/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint (tsc --noEmit)
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
