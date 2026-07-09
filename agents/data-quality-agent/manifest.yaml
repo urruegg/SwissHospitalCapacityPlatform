@@ -19,5 +19,5 @@ grounding:
   # Table names reconciled with actual Fabric lakehouse schema (2026-07-09 verification).
   - table: ops.data_quality_runs        # was Ops.DataQualityRuns
     scope: aggregated
-    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; the ops schema does not exist — see companion backlog issue
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; the ops schema does not exist — see docs/sprints/sprint-10/gold-medallion-pending-tables.md
 goldenTasksRef: ./golden-tasks.md

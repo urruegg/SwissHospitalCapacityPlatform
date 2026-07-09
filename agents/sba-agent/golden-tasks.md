@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
+| **Previous Version** | 1.1.0 (linked pending grounding sources to the Sprint 10 backlog tracker) |
 
 Two fixtures: one happy-path (staffing-gap heatmap) and one failure-mode (direct
 roster-edit refusal). Replayed by
@@ -30,8 +30,8 @@ current 72-h forecast.
 
 ### Staffing-Gap Expected MCP tool calls
 
-1. `fabric-mcp.query(table="gold.shift_roster", filter="hospital='LUKS' AND shift='night'")` → roster rows  # PENDING table — see companion backlog issue
-2. `fabric-mcp.query(table="gold.shift_plan", filter="hospital='LUKS' AND shift='night'")` → required-level rows  # PENDING table — see companion backlog issue
+1. `fabric-mcp.query(table="gold.shift_roster", filter="hospital='LUKS' AND shift='night'")` → roster rows  # PENDING table — see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md)
+2. `fabric-mcp.query(table="gold.shift_plan", filter="hospital='LUKS' AND shift='night'")` → required-level rows  # PENDING table — see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md)
 3. `fabric-mcp.query(table="gold.forecast_output", filter="hospital='LUKS'")` → forecast rows
 
 ### Staffing-Gap Expected PR / comment shape

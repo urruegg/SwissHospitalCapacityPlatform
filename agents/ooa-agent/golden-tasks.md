@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
+| **Previous Version** | 1.1.0 (linked pending grounding sources to the Sprint 10 backlog tracker) |
 
 Two fixtures: one happy-path (72-h forecast) and one failure-mode (out-of-scope
 region refusal). Replayed by
@@ -32,7 +32,7 @@ yesterday's census of 87 and current temperature 34°C?
 
 1. `fabric-mcp.query(table="gold.encounter", filter="hospital='USZ' AND ward='4C'", window="90d")` → history rows
 2. `fabric-mcp.query(table="gold.bed_assignment", filter="hospital='USZ' AND ward='4C'")` → census row
-3. `fabric-mcp.query(table="gold.seasonality", filter="hospital='USZ'")` → adjustment factors  # PENDING table — see companion backlog issue
+3. `fabric-mcp.query(table="gold.seasonality", filter="hospital='USZ'")` → adjustment factors  # PENDING table — see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md)
 
 ### Forecast Expected PR / comment shape
 

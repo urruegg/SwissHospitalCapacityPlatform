@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (reconciled Ops.DataQualityRuns to ops.data_quality_runs; schema flagged pending) |
+| **Previous Version** | 1.1.0 (linked pending grounding sources to the Sprint 10 backlog tracker) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -75,7 +75,7 @@ run but never mutates the contract schema or masks a gate result.
 
 ## 4. Grounding sources
 
-- `ops.data_quality_runs` — contract-check run results per run id (was `Ops.DataQualityRuns`). **PENDING** — the `ops` schema does not yet exist in Sprint 10 medallion; see companion backlog issue.
+- `ops.data_quality_runs` — contract-check run results per run id (was `Ops.DataQualityRuns`). **PENDING** — the `ops` schema does not yet exist in Sprint 10 medallion; see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md).
 - Delta table statistics for the Bronze/Silver/Gold layers.
 - Ontology metadata in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl)

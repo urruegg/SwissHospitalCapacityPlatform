@@ -18,10 +18,10 @@ grounding:
   # Table names reconciled with actual Fabric lakehouse gold schema (2026-07-09 verification).
   - table: gold.shift_roster            # was Gold.ShiftRoster
     scope: hospital
-    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see companion backlog issue
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see docs/sprints/sprint-10/gold-medallion-pending-tables.md
   - table: gold.shift_plan              # was Gold.ShiftPlan
     scope: hospital
-    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see companion backlog issue
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see docs/sprints/sprint-10/gold-medallion-pending-tables.md
   - table: gold.forecast_output         # was Gold.OccupancyForecast
     scope: hospital
 goldenTasksRef: ./golden-tasks.md

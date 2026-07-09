@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
+| **Previous Version** | 1.1.0 (linked pending grounding sources to the Sprint 10 backlog tracker) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -72,7 +72,7 @@ against `fabric-mcp` is **`read`** only.
 
 - `gold.encounter` — arrivals history for the trend window (was `Gold.HistoricalArrivals`; filter for ED-source arrivals).
 - `gold.bed_assignment` — current per-ward census (was `Gold.CurrentCensus`; filter status='occupied').
-- `gold.seasonality` — seasonal / calendar adjustment factors (was `Gold.Seasonality`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
+- `gold.seasonality` — seasonal / calendar adjustment factors (was `Gold.Seasonality`). **PENDING** — not yet in Sprint 10 medallion; see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md).
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl).
 
