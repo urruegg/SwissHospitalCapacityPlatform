@@ -36,4 +36,5 @@ agents/**                               @urruegg
 
 # UC1 output Bicep templates (created from Sprint 2 onward)
 /infra/                                 @urruegg
+/infra/modules/entra/                   @urruegg
 /samples/                               @urruegg

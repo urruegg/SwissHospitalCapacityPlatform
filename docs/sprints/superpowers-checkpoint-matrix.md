@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-09 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (new shared matrix baseline) |
+| **Previous Version** | 1.1.0 (new shared matrix baseline) |
 
 ## Purpose
 
@@ -48,6 +48,7 @@ sprint executed under this matrix.
 | Sprint | Start | End | Status | Agents shipped | Evals green | Design spec | Plan |
 | ------ | ----- | --- | ------ | -------------- | ----------- | ----------- | ---- |
 | 11 | 2026-07-09 | 2026-07-09 | Merged | 8/8 (7 MVP + 1 stretch) | Yes | [`../superpowers/specs/2026-07-09-sprint-11-agents-design.md`](../superpowers/specs/2026-07-09-sprint-11-agents-design.md) | [`../superpowers/plans/2026-07-09-sprint-11-agents-plan.md`](../superpowers/plans/2026-07-09-sprint-11-agents-plan.md) |
+| 12 | 2026-07-09 | — | Artefacts authored; SIT applies gated | 17 app roles + 17 groups + 23 personas (IaC authored) | n/a (IaC + telemetry) | [`../superpowers/specs/2026-07-09-sprint-12-org-design.md`](../superpowers/specs/2026-07-09-sprint-12-org-design.md) | [`../superpowers/plans/2026-07-09-sprint-12-org-plan.md`](../superpowers/plans/2026-07-09-sprint-12-org-plan.md) |
 
 ### Sprint 11 retro notes
 
@@ -68,3 +69,31 @@ sprint executed under this matrix.
 - `csa-agent` is a scaffold only — the Prepare phase is stubbed and the
   Run/Evaluate/Recommend body lands in Sprint 16. The Sprint 09 runtime pack at
   `agents/csa-agent/` was left intact.
+
+### Sprint 12 retro notes
+
+- **Entra demo-org IaC authored** under `infra/modules/entra/` (Microsoft Graph
+  Bicep extension): `app-roles` (17-role catalog), `app-registration` (+ service
+  principal), `security-groups` (one per role, membership from personas),
+  `users` (23 personas, secure-param password), `assignments` (group-based
+  app-role assignment), `adoption-telemetry` (tenant-scoped SignInLogs
+  diagnostic setting), `main` orchestrator, `sit`/`prod` param files, and
+  `bicepconfig.json` pinning the Graph extension.
+- **Adoption telemetry** (T5): `01_adoption_ingest.ipynb` Fabric notebook,
+  `adoption_seed_synthetic.py` (30-day × 23-persona ≈ 1.4k-row backfill), and
+  `.github/workflows/adoption-refresh.yml` (nightly 03:00 UTC).
+- **Delegation assets** (T6): `.github/workflows/entra-whatif.yml` (posts the
+  `what-if` plan as a PR comment) and `.github/ISSUE_TEMPLATE/entra-provisioning.yml`.
+- **Persona seed** `data/synthetic/personas.csv` extended to the full 23-persona
+  catalog (design spec §6) with a `mail_nickname` column; the six UPNs pinned by
+  `rls_test`/`dim_persona_check` are preserved so those checks stay green.
+- **Gated / not executed here**: every `az deployment` apply (app registration,
+  users, groups, assignments, diagnostic setting) is a `deploy`-ceiling action
+  requiring an `approved-to-apply` comment (AGENTS.md §4) and live Azure Graph
+  consent — none were run in this environment. SIT applies, super-role sign-in
+  verification, and the nightly-file DoD checks remain for the human-gated
+  follow-up. PROD is deferred to a `prod-batch` follow-up.
+- **Open reconciliation**: design spec §1 says "15 app roles" but the §6 persona
+  catalog references 15 operational roles + 2 super = 17. The IaC provisions all
+  17 for internal consistency; reviewer to confirm the count at the gate (see
+  `infra/modules/entra/README.md`).

@@ -1,0 +1,77 @@
+name: "Entra provisioning (Sprint 12)"
+description: "Request an Entra demo-org provisioning slice (app roles, groups, personas). Each deploy step is gated by approved-to-apply (AGENTS.md §4)."
+title: "[Entra] Provision <batch> — <env>"
+labels: ["sprint-12", "entra", "sit-batch", "superpowers-plan"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Provisions one Sprint 12 Entra slice per the design spec
+        > (`docs/superpowers/specs/2026-07-09-sprint-12-org-design.md`) and plan
+        > (`docs/superpowers/plans/2026-07-09-sprint-12-org-plan.md`).
+        > Users are **shared** between SIT and PROD (design decision D-6);
+        > environment scoping is in-app, not by cloning identities.
+        > Every `deploy` step requires an `approved-to-apply` comment
+        > referencing the specific `what-if` output (AGENTS.md §4).
+
+  - type: dropdown
+    id: batch
+    attributes:
+      label: Batch / task
+      options:
+        - T1 — foundation (app registration + 2 super roles)
+        - T2 — 13 operational + governance app roles
+        - T3 — 15 security groups
+        - T4 Batch A — super + demo operator + guest (3)
+        - T4 Batch B — USZ personas (8)
+        - T4 Batch C — LUKS personas (4)
+        - T4 Batch D — Zollikerberg personas (2)
+        - T4 Batch E — aggregated / cross-cutting (6)
+        - T5 — adoption telemetry pipeline
+    validations:
+      required: true
+
+  - type: dropdown
+    id: env
+    attributes:
+      label: Environment target
+      options:
+        - SIT
+        - PROD
+    validations:
+      required: true
+
+  - type: input
+    id: personas-count
+    attributes:
+      label: Expected personas count (0 for role/group-only slices)
+      placeholder: "3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: whatif-scope
+    attributes:
+      label: Expected what-if scope
+      description: "What the reviewer should see in the plan (e.g. 3 user creations + 3 group membership additions; no other changes)."
+      placeholder: "3 Microsoft.Graph/users creations; 3 group membership additions; no role/app changes."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acks
+    attributes:
+      label: Pre-check acknowledgements
+      options:
+        - label: "All UPNs use @mngenvmcap164444.onmicrosoft.com (refuse otherwise)."
+          required: true
+        - label: "No passwords will be committed or posted in PR comments (T4 refusal rule)."
+          required: true
+        - label: "PROD applies require an explicit prod-batch label + separate sign-off issue."
+          required: true
+        - label: "Every deploy step will use the approved-to-apply gate (AGENTS.md §4)."
+          required: true
+        - label: "Synthetic data only; sign-in telemetry carries UPN + IP (non-PHI) only."
+          required: true
