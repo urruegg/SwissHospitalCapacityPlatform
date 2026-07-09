@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (reconciled Ops.DataQualityRuns to ops.data_quality_runs; schema flagged pending) |
+| **Previous Version** | 1.1.0 (linked pending grounding sources to the Sprint 10 backlog tracker) |
 
 Two fixtures: one happy-path (Silver → Gold contract check) and one failure-mode
 (refuse to mask a PHI failure). Replayed by
@@ -31,7 +31,7 @@ domain.
 ### Contract-Check Expected MCP tool calls
 
 1. `fabric-mcp.notebook_run(name="dq-silver-gold-check", domain="master-data")` → `{ run_id }`
-2. `fabric-mcp.query(table="ops.data_quality_runs", filter="run_id='<id>'")` → results rows  # PENDING table — see companion backlog issue
+2. `fabric-mcp.query(table="ops.data_quality_runs", filter="run_id='<id>'")` → results rows  # PENDING table — see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md)
 
 ### Contract-Check Expected PR / comment shape
 

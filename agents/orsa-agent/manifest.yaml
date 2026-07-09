@@ -23,5 +23,5 @@ grounding:
     status: pending                     # NOT YET IN SPRINT 10 MEDALLION; may derive from gold.or_case eventType sequence
   - table: gold.staff_availability      # was Gold.StaffAvailability
     scope: hospital
-    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see companion backlog issue
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see docs/sprints/sprint-10/gold-medallion-pending-tables.md
 goldenTasksRef: ./golden-tasks.md

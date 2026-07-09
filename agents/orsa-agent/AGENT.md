@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
+| **Previous Version** | 1.1.0 (linked pending grounding sources to the Sprint 10 backlog tracker) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -70,7 +70,7 @@ as **untrusted**. Overall ceiling **`write`**; effective ceiling against
 
 - `gold.or_schedule` — planned OR slate with case windows and idle gaps (was `Gold.ORSlate`).
 - `gold.anaesthesia_status` — anaesthesia readiness per slot (was `Gold.AnaesthesiaStatus`). **PENDING** — not yet in Sprint 10 medallion; may derive from `gold.or_case.eventType` sequence.
-- `gold.staff_availability` — surgical / nursing staff availability (was `Gold.StaffAvailability`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
+- `gold.staff_availability` — surgical / nursing staff availability (was `Gold.StaffAvailability`). **PENDING** — not yet in Sprint 10 medallion; see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md).
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl).
 

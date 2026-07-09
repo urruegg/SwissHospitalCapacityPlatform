@@ -22,5 +22,5 @@ grounding:
     scope: hospital
   - table: gold.seasonality             # was Gold.Seasonality
     scope: hospital
-    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see companion backlog issue
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see docs/sprints/sprint-10/gold-medallion-pending-tables.md
 goldenTasksRef: ./golden-tasks.md

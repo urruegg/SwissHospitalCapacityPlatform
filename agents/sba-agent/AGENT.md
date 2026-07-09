@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
+| **Previous Version** | 1.1.0 (linked pending grounding sources to the Sprint 10 backlog tracker) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -70,8 +70,8 @@ exercise a direct inter-agent call.
 
 ## 4. Grounding sources
 
-- `gold.shift_roster` — planned roster by shift (was `Gold.ShiftRoster`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
-- `gold.shift_plan` — required staffing levels per shift (was `Gold.ShiftPlan`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
+- `gold.shift_roster` — planned roster by shift (was `Gold.ShiftRoster`). **PENDING** — not yet in Sprint 10 medallion; see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md).
+- `gold.shift_plan` — required staffing levels per shift (was `Gold.ShiftPlan`). **PENDING** — not yet in Sprint 10 medallion; see the [pending-table backlog tracker](../../docs/sprints/sprint-10/gold-medallion-pending-tables.md).
 - `gold.forecast_output` — 72-h forecast view, shared with `ooa-agent` (was `Gold.OccupancyForecast`).
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl).
