@@ -1,8 +1,10 @@
-"""Ensure dim_persona TMDL and CSV seed align with the Sprint 12 persona catalog.
+"""Ensure dim_persona TMDL and CSV seed align with the M1 synthetic persona contract.
 
 M1 regression test for the Power BI Demoable Redesign. Verifies the persona seed
 CSV exists, carries the required app roles, and that the dim_persona TMDL table
-is present.
+is present. The seed is the *temporary* M1 synthetic source that Sprint 12
+replaces with a Fabric mirror of Entra ID; this check pins the seed contract
+until that swap lands (design spec §6.1).
 
 Exit 0 = PASS, 1 = FAIL.
 """

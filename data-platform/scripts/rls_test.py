@@ -76,9 +76,10 @@ def _parse_matrix_minimal(text: str) -> list[dict[str, str]]:
 def simulate_pill(persona: dict[str, str], slicer_selection: str | None) -> str:
     """Replay the [Effective Viewing Label] DAX against a persona seed row.
 
-    TODO: wire live DAX exec — replace this simulation with a real evaluation of
-    the [Effective Viewing Label] measure via the semantic-model REST API once
-    Fabric DAX-exec credentials are available.
+    TODO (Sprint 11): wire live DAX exec — replace this simulation with a real
+    evaluation of the [Effective Viewing Label] measure via the semantic-model
+    REST API, once the Fabric DAX-exec service-principal credentials tracked by
+    the Sprint 11 kickoff (issue #146) are provisioned.
     """
     role = persona["app_role"]
     is_demo = role in DEMO_ROLES

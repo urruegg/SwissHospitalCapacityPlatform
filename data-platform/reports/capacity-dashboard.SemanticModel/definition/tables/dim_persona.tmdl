@@ -78,6 +78,11 @@ table dim_persona
 	partition dim_persona = m
 		mode: import
 		source =
+				// NOTE: this relative File.Contents path is environment-specific and
+				// resolves only when the seed CSV is co-located with the model at
+				// author time. It will not resolve in a Fabric deployment context —
+				// Sprint 12 replaces this partition source with a Fabric mirror of
+				// Entra ID (design spec §6.1), which removes the local-path dependency.
 				let
 				    Source = Csv.Document(
 				        File.Contents("data/synthetic/personas.csv"),
