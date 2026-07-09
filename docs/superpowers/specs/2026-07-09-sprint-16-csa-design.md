@@ -72,7 +72,7 @@ The CSA is a working what-if system:
 
 ## 3. Architecture and data flow
 
-```
+```text
                     ┌──────────────────────────────────────────────┐
                     │           React app (Sprint 13)              │
                     │  ┌────────────────────────────────────────┐  │

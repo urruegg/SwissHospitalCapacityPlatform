@@ -69,7 +69,7 @@ The migrated tenant `MngEnvMCAP164444.onmicrosoft.com` holds:
 
 ## 3. Architecture
 
-```
+```text
 infra/modules/entra/
 ├─ app-registration.bicep        # ihzhhpf-app registration (single, one URI per env)
 ├─ app-roles.bicep               # 15 appRoles (13 + 2 super)
@@ -82,7 +82,7 @@ infra/modules/entra/
 
 **Environment scoping (in-app, not in-tenant):**
 
-```
+```text
 Same identity ─▶ signs in at app URL (SIT slot or PROD slot)
              ─▶ app reads `env` from slot config
              ─▶ combines `roles` claim × hospital-context × `env`
@@ -152,7 +152,7 @@ Domain suffix is pinned to `@…mcap164444.onmicrosoft.com`; UPNs use `firstname
 
 Feeds the Sprint 15 BVA dashboard.
 
-```
+```text
 Entra sign-in logs ──(diagnostic setting)──▶ Log Analytics workspace
                                              │
                               Nightly export via Fabric Data Pipeline
