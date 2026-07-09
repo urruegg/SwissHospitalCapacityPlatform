@@ -1,5 +1,5 @@
 agent: ooa-agent
-version: 1.0.0
+version: 1.1.0
 runtime: agent-host
 modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
 modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
@@ -15,10 +15,12 @@ mcpTools:
 hitl:
   gates: [HITL-05]  # forecast-driven staffing / capacity
 grounding:
-  - table: Gold.HistoricalArrivals
+  # Table names reconciled with actual Fabric lakehouse gold schema (2026-07-09 verification).
+  - table: gold.encounter               # was Gold.HistoricalArrivals — filter for ED-source arrivals
     scope: hospital
-  - table: Gold.CurrentCensus
+  - table: gold.bed_assignment          # was Gold.CurrentCensus — filter status='occupied'
     scope: hospital
-  - table: Gold.Seasonality
+  - table: gold.seasonality             # was Gold.Seasonality
     scope: hospital
+    status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see companion backlog issue
 goldenTasksRef: ./golden-tasks.md

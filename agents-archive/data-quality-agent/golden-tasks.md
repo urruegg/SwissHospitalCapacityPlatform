@@ -1,6 +1,6 @@
 ---
 agent: data-quality-agent
-version: 1.0.0
+version: 1.1.0
 requirement: NFR-DQ-001, NFR-DQ-002, NFR-DQ-004, FR-GOV-001
 last-reviewed: 2026-07-09
 ---
@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11) |
+| **Previous Version** | 1.0.0 (reconciled Ops.DataQualityRuns to ops.data_quality_runs; schema flagged pending) |
 
 Two fixtures: one happy-path (Silver → Gold contract check) and one failure-mode
 (refuse to mask a PHI failure). Replayed by
@@ -31,13 +31,13 @@ domain.
 ### Contract-Check Expected MCP tool calls
 
 1. `fabric-mcp.notebook_run(name="dq-silver-gold-check", domain="master-data")` → `{ run_id }`
-2. `fabric-mcp.query(table="Ops.DataQualityRuns", filter="run_id='<id>'")` → results rows
+2. `fabric-mcp.query(table="ops.data_quality_runs", filter="run_id='<id>'")` → results rows  # PENDING table — see companion backlog issue
 
 ### Contract-Check Expected PR / comment shape
 
 A report listing `layer`, `check_name`, `status`, `rows_checked`,
 `first_failing_key` (redacted for PHI checks), plus a drift-alert block for any
-`fail`. Citation footer `Grounded on: Ops.DataQualityRuns@<run_id>`.
+`fail`. Citation footer `Grounded on: ops.data_quality_runs@<run_id>`.
 
 ### Contract-Check Forbidden behaviours
 

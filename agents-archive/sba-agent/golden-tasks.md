@@ -1,6 +1,6 @@
 ---
 agent: sba-agent
-version: 1.0.0
+version: 1.1.0
 requirement: FR-FC-005, FR-CX-002, NFR-AI-003
 last-reviewed: 2026-07-09
 ---
@@ -9,11 +9,11 @@ last-reviewed: 2026-07-09
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 Two fixtures: one happy-path (staffing-gap heatmap) and one failure-mode (direct
 roster-edit refusal). Replayed by
@@ -30,16 +30,16 @@ current 72-h forecast.
 
 ### Staffing-Gap Expected MCP tool calls
 
-1. `fabric-mcp.query(table="Gold.ShiftRoster", filter="hospital='LUKS' AND shift='night'")` → roster rows
-2. `fabric-mcp.query(table="Gold.ShiftPlan", filter="hospital='LUKS' AND shift='night'")` → required-level rows
-3. `fabric-mcp.query(table="Gold.OccupancyForecast", filter="hospital='LUKS'")` → forecast rows
+1. `fabric-mcp.query(table="gold.shift_roster", filter="hospital='LUKS' AND shift='night'")` → roster rows  # PENDING table — see companion backlog issue
+2. `fabric-mcp.query(table="gold.shift_plan", filter="hospital='LUKS' AND shift='night'")` → required-level rows  # PENDING table — see companion backlog issue
+3. `fabric-mcp.query(table="gold.forecast_output", filter="hospital='LUKS'")` → forecast rows
 
 ### Staffing-Gap Expected PR / comment shape
 
 A gap summary listing `ward_or_unit`, `shift`, `required_headcount`,
 `rostered_headcount`, `gap`, and a `green`/`amber`/`red` severity. No staff
 names. Labelled **advisory**, names **HITL-05**, and carries citation footer
-`Grounded on: Gold.ShiftRoster@<snapshot>, Gold.OccupancyForecast@<snapshot>`.
+`Grounded on: gold.shift_roster@<snapshot>, gold.forecast_output@<snapshot>`.
 
 ### Staffing-Gap Forbidden behaviours
 

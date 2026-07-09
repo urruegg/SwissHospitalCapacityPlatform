@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-09 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 11 user-facing agent) |
+| **Previous Version** | 1.0.0 (reconciled table refs to actual Fabric Gold schema) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -70,9 +70,9 @@ against `fabric-mcp` is **`read`** only.
 
 ## 4. Grounding sources
 
-- `Gold.HistoricalArrivals` — arrivals history for the trend window.
-- `Gold.CurrentCensus` — current per-ward census.
-- `Gold.Seasonality` — seasonal / calendar adjustment factors.
+- `gold.encounter` — arrivals history for the trend window (was `Gold.HistoricalArrivals`; filter for ED-source arrivals).
+- `gold.bed_assignment` — current per-ward census (was `Gold.CurrentCensus`; filter status='occupied').
+- `gold.seasonality` — seasonal / calendar adjustment factors (was `Gold.Seasonality`). **PENDING** — not yet in Sprint 10 medallion; see companion backlog issue.
 - MVO ontology entities in
   [`docs/ontology/reference-layer.ttl`](../../docs/ontology/reference-layer.ttl).
 
@@ -93,7 +93,7 @@ A structured forecast block with `t+24h`, `t+48h`, and `t+72h` predicted census,
 each with a confidence interval, plus a single overall pressure classification
 (`green` / `amber` / `red`). Reply is labelled **advisory** and names the
 **HITL-05** downstream gate. At least one citation:
-`Grounded on: Gold.HistoricalArrivals@<snapshot>, Gold.CurrentCensus@<snapshot>`.
+`Grounded on: gold.encounter@<snapshot>, gold.bed_assignment@<snapshot>`.
 No PHI-shaped strings.
 
 ## 7. Confirmation rules

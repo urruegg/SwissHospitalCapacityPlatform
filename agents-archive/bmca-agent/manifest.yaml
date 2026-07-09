@@ -1,5 +1,5 @@
 agent: bmca-agent
-version: 1.0.0
+version: 1.1.0
 runtime: agent-host
 modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
 modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
@@ -16,10 +16,11 @@ hitl:
   # per ADR-0007 §3 — the downstream gate governing actions this agent recommends
   gates: [HITL-02]  # bed transfer / reprioritisation
 grounding:
-  - table: Gold.BedState
+  # Table names reconciled with actual Fabric lakehouse gold schema (2026-07-09 verification).
+  - table: gold.bed_assignment          # was Gold.BedState — per-bed occupancy + status
     scope: hospital
-  - table: Gold.WardCapacity
+  - table: gold.fact_capacity_baseline  # was Gold.WardCapacity — join with dim_ward_capacityunit
     scope: hospital
-  - table: Gold.DischargeReadiness
+  - table: gold.discharge_score         # was Gold.DischargeReadiness — per-bed readiness score
     scope: hospital
 goldenTasksRef: ./golden-tasks.md
