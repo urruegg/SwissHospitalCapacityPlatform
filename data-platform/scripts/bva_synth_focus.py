@@ -292,17 +292,20 @@ def validate_focus_shape(rows: list[dict], schema: dict) -> list[str]:
                 continue
             value = row[name]
             col_type = column.get("type")
+            # Diagnostics deliberately report the column name and the offending
+            # value's *type* only — never the raw value — so validating an
+            # untrusted dataset cannot echo its contents into logs.
             if col_type == "string" and not isinstance(value, str):
                 errors.append(f"row {index}: '{name}' expected string, got {type(value).__name__}")
             elif col_type == "number" and (isinstance(value, bool) or not isinstance(value, (int, float))):
                 errors.append(f"row {index}: '{name}' expected number, got {type(value).__name__}")
             elif col_type == "date" and not _is_date(value):
-                errors.append(f"row {index}: '{name}' expected date (YYYY-MM-DD), got {value!r}")
+                errors.append(f"row {index}: '{name}' expected date (YYYY-MM-DD), got {type(value).__name__}")
             elif col_type == "month" and not _is_month(value):
-                errors.append(f"row {index}: '{name}' expected month (YYYY-MM), got {value!r}")
+                errors.append(f"row {index}: '{name}' expected month (YYYY-MM), got {type(value).__name__}")
             enum = column.get("enum")
             if enum is not None and value not in enum:
-                errors.append(f"row {index}: '{name}' value {value!r} not in enum {enum}")
+                errors.append(f"row {index}: '{name}' value not in enum {enum}")
     return errors
 
 
@@ -344,8 +347,10 @@ def _serialize_csv(rows: list[dict]) -> str:
 
 
 def _write_parquet(rows: list[dict], path: str) -> None:
-    import pyarrow as pa  # noqa: PLC0415 — optional dependency, guarded at call site
-    import pyarrow.parquet as pq  # noqa: PLC0415
+    # Guarded optional-dependency import: pyarrow is only needed for Parquet
+    # output; the generator falls back to jsonl/csv when it is absent.
+    import pyarrow as pa
+    import pyarrow.parquet as pq
 
     columns = {col: [row[col] for row in rows] for col in FOCUS_COLUMNS}
     table = pa.table(columns)
@@ -356,7 +361,9 @@ def _resolve_format(fmt: str) -> str:
     if fmt != "auto":
         return fmt
     try:
-        import pyarrow  # noqa: F401, PLC0415
+        # Guarded optional-dependency probe: prefer Parquet only when pyarrow
+        # is installed, otherwise fall back to jsonl.
+        import pyarrow  # noqa: F401
         return "parquet"
     except ImportError:
         return "jsonl"
