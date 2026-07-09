@@ -24,6 +24,37 @@ table or_case
 
 		changedProperty = FormatString
 
+	/// M2 synthetic proxy over DC-OR sample data (design spec §4.1 page-or-coordinator KPI wall).
+	/// On-time == did not over-run its planned duration. Replace with a scheduled-vs-actual
+	/// start-time comparison once Sprint 10 Gold exposes case start timestamps.
+	measure 'First-Case On-Time %' = DIVIDE(CALCULATE(COUNTROWS(or_case), or_case[overrunMinutes] <= 0), COUNTROWS(or_case)) * 100
+		formatString: 0.0
+		lineageTag: 00528ecb-2846-4bcc-a9d1-3c82f19cab04
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	/// M2 synthetic proxy: share of cases carrying a non-blank cancellationReason.
+	measure 'Short-Notice Cancellation %' = DIVIDE(CALCULATE(COUNTROWS(or_case), NOT ISBLANK(or_case[cancellationReason]) && or_case[cancellationReason] <> ""), COUNTROWS(or_case)) * 100
+		formatString: 0.0
+		lineageTag: 600ae3a4-39ed-4e0e-8a9a-0499f3c1e599
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	/// M2 synthetic proxy: average over-run minutes on cases that have a turnover
+	/// predecessor, standing in for theatre turnover time until a real gap-timing
+	/// column lands in Gold.
+	measure 'Avg Turnover Minutes' = AVERAGEX(FILTER(or_case, NOT ISBLANK(or_case[turnoverPredecessorCaseId]) && or_case[turnoverPredecessorCaseId] <> ""), or_case[overrunMinutes])
+		formatString: 0.0
+		lineageTag: 64153f60-9245-4258-ad1e-07c8427e650d
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
 	column _data_quality
 		dataType: string
 		lineageTag: 9b09e3bb-5c9c-4346-80b9-e074c010ff63
