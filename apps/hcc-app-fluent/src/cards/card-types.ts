@@ -11,7 +11,10 @@ export type CardType =
   | 'KpiCard'
   | 'LiveStreamCard'
   | 'ResponsibleCard'
-  | 'ScenarioCard';
+  | 'ScenarioCard'
+  | 'BvaHeadlineKpiCard'
+  | 'BvaPlanVsActualCard'
+  | 'BvaTrendCard';
 
 export interface CardPosition {
   x: number;

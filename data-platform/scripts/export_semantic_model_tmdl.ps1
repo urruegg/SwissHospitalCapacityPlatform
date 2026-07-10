@@ -63,7 +63,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 # --- Contract constants (edit here if the model design changes; keep in sync with checkpoint doc) ---
-$script:ExpectedTotal    = 16    # Sprint 09: 14; +2 from M2 (encounter→dim_hospital, bed_assignment→dim_hospital)
+$script:ExpectedTotal    = 25    # Sprint 09: 14; +2 from M2 (encounter→dim_hospital, bed_assignment→dim_hospital); +9 from Sprint 15 BVA
 $script:ExpectedInactive = 2
 $script:ExpectedInactivePairs = @(
     @{ Left = 'dim_specialty'; Right = 'dim_hospital' },
@@ -73,7 +73,7 @@ $script:ExpectedInactivePairs = @(
 # --- S10.11 verifier extension (Sprint 10 M4-A) ---
 # Measure count = sum of `measure` blocks across tables/*.tmdl
 # Role count    = number of role blocks under roles/*.tmdl (one per file, per TMDL convention)
-$script:ExpectedMeasures = 27   # M1 (15): Beds Total, Over-Run Minutes, OR Utilization %, Data Quality Score (Cases),
+$script:ExpectedMeasures = 55   # M1 (15): Beds Total, Over-Run Minutes, OR Utilization %, Data Quality Score (Cases),
                                 #   Idle-Slot Minutes, Active Encounters, Admissions, Discharged,
                                 #   Currently In Hospital, Currently Assigned Beds, Occupancy %,
                                 #   Effective Identity UPN, Effective Role Label,
@@ -82,8 +82,11 @@ $script:ExpectedMeasures = 27   # M1 (15): Beds Total, Over-Run Minutes, OR Util
                                 # M5 (+7): Beds Free, Forecast Peak 72h, Actual vs Forecast, Turnover,
                                 #   Narrative — Bed Manager, Narrative — Ops Lead, Narrative — OR Coordinator
                                 # M6 (+2): Benchmark — Cold, Benchmark — Warm
-$script:ExpectedRoles    = 6    # BedOps, ORPlanner, Analyst, SemanticOwner (M3-A),
-                                # GuestAggregated, SITDemoOperator (M1-RLS, Sprint 10)
+                                # Sprint 15 BVA (+28): all measures under bva_measures.tmdl (Azure consumption,
+                                #   budget, value-realization, plan-vs-actual, KPI headlines per persona)
+$script:ExpectedRoles    = 8    # BedOps, ORPlanner, Analyst, SemanticOwner (M3-A),
+                                # GuestAggregated, SITDemoOperator (M1-RLS, Sprint 10),
+                                # BvaExecFull, BvaBoardReadOnly (Sprint 15)
 
 # --- Fabric REST helpers -------------------------------------------------------------------------
 

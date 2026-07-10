@@ -30,6 +30,15 @@ ref table param_capacity_measure
 ref table param_or_measure
 ref table grounding
 ref table benchmark
+ref table bva_fact_azure_consumption
+ref table bva_fact_budget
+ref table bva_fact_value_realization
+ref table bva_dim_capability
+ref table bva_dim_environment
+ref table bva_dim_hospital
+ref table bva_dim_date
+ref table bva_dim_exec_role
+ref table bva_measures
 
 ref role BedOps
 ref role ORPlanner
@@ -37,4 +46,6 @@ ref role Analyst
 ref role SemanticOwner
 ref role SITDemoOperator
 ref role GuestAggregated
+ref role BvaExecFull
+ref role BvaBoardReadOnly
 

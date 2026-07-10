@@ -1,0 +1,28 @@
+table bva_dim_capability
+	lineageTag: 29d45081-4b17-4e23-af60-84fced7c9653
+	sourceLineageTag: [gold].[bva_dim_capability]
+
+	column capability_key
+		dataType: string
+		lineageTag: 22abb325-9542-47c9-b735-f45aaed5a115
+		sourceLineageTag: capability_key
+		summarizeBy: none
+		sourceColumn: capability_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column capability_name
+		dataType: string
+		lineageTag: a06882e2-2265-408c-bedc-66ccae3e6634
+		sourceLineageTag: capability_name
+		summarizeBy: none
+		sourceColumn: capability_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_dim_capability = entity
+		mode: directLake
+		source
+			entityName: bva_dim_capability
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "1c492df8e5bf4420aeae",
+  "position": { "x": 24, "y": 288, "z": 1, "height": 140, "width": 280, "tabOrder": 1 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [{
+            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "bva_measures" } }, "Property": "Payback (Months)" } },
+            "queryRef": "bva_measures.Payback (Months)",
+            "nativeQueryRef": "Payback (Months)"
+          }]
+        }
+      }
+    },
+    "objects": {
+      "labels": [{ "properties": { "labelDisplayUnits": { "expr": { "Literal": { "Value": "0D" } } } } }],
+      "categoryLabels": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } }]
+    },
+    "visualContainerObjects": {
+      "title": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Payback (months)'" } } } } }]
+    }
+  }
+}

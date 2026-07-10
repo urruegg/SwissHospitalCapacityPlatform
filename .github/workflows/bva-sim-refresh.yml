@@ -1,0 +1,123 @@
+name: bva-sim-refresh
+
+# Sprint 15 · T2 — nightly refresh of the BVA synthetic FOCUS-shaped consumption
+# seed. Regenerates a 90-day daily-partitioned slice with a date-derived seed,
+# uploads it to the SIT lakehouse Bronze zone (Files/Bronze/consumption/) via
+# OneLake, and triggers the Fabric BVA medallion pipeline (published in T3).
+#
+# Runs at 02:00 UTC — one hour ahead of the 03:00 adoption-refresh
+# (.github/workflows/adoption-refresh.yml) and the 03:00 CET Fabric pipeline, so
+# fresh consumption + adoption Bronze land before the medallion runs.
+#
+# Identity: workload identity federation (OIDC) — no secrets. The Fabric
+# pipeline trigger is a `deploy`-adjacent action, but this workflow only *runs*
+# an already-published pipeline; publishing the pipeline itself is gated by
+# `approved-to-apply` in T3 (AGENTS.md §4).
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # 02:00 UTC daily
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Days of synthetic history to generate'
+        required: false
+        default: '90'
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: bva-sim-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Generate + upload BVA consumption seed
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate synthetic FOCUS slice
+        id: generate
+        shell: bash
+        env:
+          BVA_DAYS: ${{ github.event.inputs.days || '90' }}
+        run: |
+          set -euo pipefail
+          # Date-derived seed keeps each nightly run reproducible from its date.
+          seed="$(date -u +%Y%j)"
+          out="${RUNNER_TEMP}/bva"
+          cd data-platform/scripts
+          python3 bva_synth_focus.py \
+            --seed "${seed}" --days "${BVA_DAYS}" \
+            --out-dir "${out}" --format parquet
+          partitions=$(find "${out}" -name 'part-00000.*' | wc -l)
+          echo "Generated ${partitions} partition(s) with seed ${seed}"
+          test "${partitions}" -eq "${BVA_DAYS}"
+          echo "out=${out}" >> "${GITHUB_OUTPUT}"
+
+      - name: Validate required environment configuration
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          FABRIC_WORKSPACE_ID: ${{ vars.FABRIC_WORKSPACE_ID }}
+          FABRIC_BVA_PIPELINE_ID: ${{ vars.FABRIC_BVA_PIPELINE_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$AZURE_CLIENT_ID"
+          test -n "$AZURE_TENANT_ID"
+          test -n "$FABRIC_WORKSPACE_ID"
+          test -n "$FABRIC_BVA_PIPELINE_ID"
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Install upload dependency
+        shell: bash
+        run: pip install --quiet requests
+
+      - name: Upload partitions to Bronze/consumption
+        shell: bash
+        env:
+          BVA_OUT: ${{ steps.generate.outputs.out }}
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts
+          python3 bva_upload_bronze.py --src "${BVA_OUT}" --remote-root Bronze/consumption
+
+      - name: Trigger Fabric BVA medallion pipeline
+        shell: bash
+        env:
+          FABRIC_WORKSPACE_ID: ${{ vars.FABRIC_WORKSPACE_ID }}
+          FABRIC_BVA_PIPELINE_ID: ${{ vars.FABRIC_BVA_PIPELINE_ID }}
+        run: |
+          set -euo pipefail
+          token="$(az account get-access-token \
+            --resource https://api.fabric.microsoft.com \
+            --query accessToken -o tsv)"
+          http_status="$(curl -sS -o response.json -w '%{http_code}' \
+            -X POST \
+            --oauth2-bearer "$token" \
+            -H 'Content-Type: application/json' \
+            "https://api.fabric.microsoft.com/v1/workspaces/${FABRIC_WORKSPACE_ID}/items/${FABRIC_BVA_PIPELINE_ID}/jobs/instances?jobType=Pipeline")"
+          echo "Fabric pipeline submit HTTP ${http_status}"
+          cat response.json || true
+          case "${http_status}" in
+            2*) echo 'Pipeline run accepted.' ;;
+            *) echo 'Pipeline run submission failed.'; exit 1 ;;
+          esac

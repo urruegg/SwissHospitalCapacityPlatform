@@ -51,7 +51,7 @@ sprint executed under this matrix.
 | 12 | 2026-07-09 | — | Artefacts authored; SIT applies gated | 17 app roles + 17 groups + 23 personas (IaC authored) | n/a (IaC + telemetry) | [`../superpowers/specs/2026-07-09-sprint-12-org-design.md`](../superpowers/specs/2026-07-09-sprint-12-org-design.md) | [`../superpowers/plans/2026-07-09-sprint-12-org-plan.md`](../superpowers/plans/2026-07-09-sprint-12-org-plan.md) |
 | 13 | 2026-07-09 | 2026-07-09 | Merged | n/a (app tier) | Yes | [`../superpowers/specs/2026-07-09-sprint-13-app-design.md`](../superpowers/specs/2026-07-09-sprint-13-app-design.md) | [`../superpowers/plans/2026-07-09-sprint-13-app-plan.md`](../superpowers/plans/2026-07-09-sprint-13-app-plan.md) |
 | 14 | 2026-07-09 | 2026-07-09 | Merged (T1–T3 landed; T4–T7 follow-up) | n/a (workflow-only) | Yes (parsers + readiness golden) | [`../superpowers/specs/2026-07-09-sprint-14-evidence-design.md`](../superpowers/specs/2026-07-09-sprint-14-evidence-design.md) | [`../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md`](../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md) |
-| 15 | 2026-07-09 | — | In flight (issue #167 / PR #168) | BVA (business-value analytics) | — | [`../superpowers/specs/2026-07-09-sprint-15-bva-design.md`](../superpowers/specs/2026-07-09-sprint-15-bva-design.md) | [`../superpowers/plans/2026-07-09-sprint-15-bva-plan.md`](../superpowers/plans/2026-07-09-sprint-15-bva-plan.md) |
+| 15 | 2026-07-09 | 2026-07-09 | Artefacts authored; live publishes gated | BVA evidence data product (generator + medallion + semantic model + 6 C-suite pages + 3 whiteboard cards) | Yes (Python golden + structural + vitest) | [`../superpowers/specs/2026-07-09-sprint-15-bva-design.md`](../superpowers/specs/2026-07-09-sprint-15-bva-design.md) | [`../superpowers/plans/2026-07-09-sprint-15-bva-plan.md`](../superpowers/plans/2026-07-09-sprint-15-bva-plan.md) |
 | 16 | 2026-07-09 | 2026-07-09 | Foundation authored; live runs gated | `csa-agent` full body + Cosmos IaC + 8 scenarios + 3 MVP runs | Structural (eval-goldens) | [`../superpowers/specs/2026-07-09-sprint-16-csa-design.md`](../superpowers/specs/2026-07-09-sprint-16-csa-design.md) | [`../superpowers/plans/2026-07-09-sprint-16-csa-plan.md`](../superpowers/plans/2026-07-09-sprint-16-csa-plan.md) |
 | PBI v2 | 2026-07-09 | 2026-07-09 | M1–M6 authored; publish gated | Capacity dashboard v2 (Helvion, persona-anchored) | Report `validate` clean + model contract (27 measures) | [`../superpowers/specs/2026-07-09-powerbi-demoable-redesign-design.md`](../superpowers/specs/2026-07-09-powerbi-demoable-redesign-design.md) | [`../superpowers/plans/2026-07-09-powerbi-demoable-redesign-plan.md`](../superpowers/plans/2026-07-09-powerbi-demoable-redesign-plan.md) |
 
@@ -156,7 +156,44 @@ sprint executed under this matrix.
     the unmerged Sprint 13 app framework (`apps/hcc-app-fluent/` does not yet
     exist). Land in a follow-up mini-sprint once Sprint 13 T3/T4 merge (issue #161).
 
-### Sprint 16 retro notes
+### Sprint 15 retro notes
+
+- **BVA evidence data product authored end-to-end** (issue #167; T1 merged as
+  PR #168, T2–T9 in the continuation PR). Delivered as a fully in-sandbox,
+  dependency-free, buildable artefact set:
+  - **T1** — deterministic synthetic Azure-consumption generator in FOCUS export
+    shape (`data-platform/scripts/bva_synth_focus.py`), calibrated to the
+    CHF 760k/yr ROM baseline ±15% (5-seed regression); 22 tests + `bva-generator.yml`.
+  - **T2** — nightly `bva-sim-refresh.yml` (generate → upload to
+    `Bronze/consumption/` → trigger pipeline) with a gated Bronze upload helper.
+  - **T3** — Fabric medallion Bronze→Silver→Gold with **`bva_`-prefixed** gold
+    tables (`gold.bva_dim_*`, `gold.bva_fact_*`) to avoid collision with the
+    operational dimensions and to de-conflict with concurrent PR #172; 23
+    notebook tests + `bva-medallion.yml` + `docs/data-platform/bva-gold-schema.md`.
+  - **T4** — adoption-telemetry join into `gold.bva_fact_value_realization` using
+    the documented **30-day synthetic backfill** (design spec §14 mitigation),
+    because Sprint 12 T5/T6 adoption emission has not landed; switchover point recorded.
+  - **T5** — Direct Lake semantic-model extension (`bva_` TMDL tables + 28 KPI
+    measures), a pure `bva_kpi.py` reference module as the single source of formula
+    truth, 11 golden tests, and the KPI-catalog [ADR-0025](../adr/0025-bva-kpi-catalog.md).
+  - **T6** — 6 C-suite Power BI pages (Board / CEO / CFO / CIO / COO / CTO) in the
+    `bva-boardroom.Report` PBIR, 2 RLS roles (`BvaExecFull`, `BvaBoardReadOnly`),
+    RLS test plan + 9 structural tests.
+  - **T7** — 3 BVA whiteboard card types (`BvaHeadlineKpiCard`,
+    `BvaPlanVsActualCard`, `BvaTrendCard`) in `apps/hcc-app-fluent` with a
+    provenance footer + BVA board mock; **Power BI embed fallback** per design
+    spec §14 because the Sprint 14 T5/T6 whiteboard Evidence tab was not delivered
+    (Sprint 14 stopped at T3). 26 vitest tests green; production build clean.
+- **T8 (stretch) — not attempted.** The application-hosted `bva-agent` per
+  ADR-0008 depends on the Sprint 13 T5 agent-host **and** a live Foundry model
+  (`sprint11-chat`); neither is deployed, so the monthly board-pack agent is
+  carried forward per plan §Task 8.
+- **Gated / not executed here** (AGENTS.md §4, all require `approved-to-apply` +
+  live Azure): T3 Fabric pipeline publish to `ws-ihzhhpf-sit-data`, T5 semantic
+  model publish, T6 Power BI report publish + RLS role assignment, and the
+  optional T8 agent-host redeploy. All are authored and staged; none were run.
+
+
 
 - **CSA foundation authored** (issue #170): `csa-agent` expanded from the
   Sprint 11 Prepare-only scaffold to the full **Prepare → Run → Evaluate →
@@ -212,7 +249,7 @@ buildable artefact set**; every live-cloud apply remains behind its
 | 12 | Identity (Entra org + roles) | — | `infra/modules/entra/`; PR #159 (MSAL) | Artefacts authored; SIT gated |
 | 13 | App + agent-host | #161 | PR #162 | Merged |
 | 14 | Evidence tab | #164 | PR #165 | Merged (T1–T3) |
-| 15 | Business-value analytics | #167 | PR #168 (T1) | In flight |
+| 15 | Business-value analytics | #167 | PR #168 (T1) + continuation (T2–T9) | Artefacts authored; live publishes gated |
 | 16 | CSA what-if catalogue | #170 | this PR (#171) | Foundation authored; live runs gated |
 
 **Approved-to-apply gates used in this program run:** 0 executed in-sandbox — all

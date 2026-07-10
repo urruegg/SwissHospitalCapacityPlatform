@@ -33,6 +33,15 @@ param workload string = 'hospital-capacity'
 @description('Object ID of the Sprint 13 agent-host managed identity for Cosmos DB Built-in Data Contributor. Empty string skips the assignment.')
 param agentHostMiPrincipalId string = ''
 
+@description('When true, provisions a private endpoint into the specified VNet subnet plus the Azure-managed `privatelink.documents.azure.com` private DNS zone. Required in SIT because MCAPSGov policies force Cosmos publicNetworkAccess=Disabled.')
+param enablePrivateEndpoint bool = false
+
+@description('Resource ID of the VNet that hosts the private endpoint subnet + will be linked to the private DNS zone.')
+param vnetResourceId string = ''
+
+@description('Subnet name inside vnetResourceId that hosts the Cosmos private endpoint.')
+param privateEndpointSubnetName string = 'snet-data'
+
 var nameSuffix = '${solutionShortName}-${environmentName}'
 
 var tags = {
@@ -49,6 +58,9 @@ module csa './csa.bicep' = {
     nameSuffix: nameSuffix
     tags: tags
     agentHostMiPrincipalId: agentHostMiPrincipalId
+    enablePrivateEndpoint: enablePrivateEndpoint
+    vnetResourceId: vnetResourceId
+    privateEndpointSubnetName: privateEndpointSubnetName
   }
 }
 

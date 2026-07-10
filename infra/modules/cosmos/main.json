@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.44.1.10279",
-      "templateHash": "6495798305532304544"
+      "version": "0.43.8.12551",
+      "templateHash": "6205106908589608777"
     }
   },
   "parameters": {
@@ -61,6 +61,27 @@
       "metadata": {
         "description": "Object ID of the Sprint 13 agent-host managed identity for Cosmos DB Built-in Data Contributor. Empty string skips the assignment."
       }
+    },
+    "enablePrivateEndpoint": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "When true, provisions a private endpoint into the specified VNet subnet plus the Azure-managed `privatelink.documents.azure.com` private DNS zone. Required in SIT because MCAPSGov policies force Cosmos publicNetworkAccess=Disabled."
+      }
+    },
+    "vnetResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the VNet that hosts the private endpoint subnet + will be linked to the private DNS zone."
+      }
+    },
+    "privateEndpointSubnetName": {
+      "type": "string",
+      "defaultValue": "snet-data",
+      "metadata": {
+        "description": "Subnet name inside vnetResourceId that hosts the Cosmos private endpoint."
+      }
     }
   },
   "variables": {
@@ -94,6 +115,15 @@
           },
           "agentHostMiPrincipalId": {
             "value": "[parameters('agentHostMiPrincipalId')]"
+          },
+          "enablePrivateEndpoint": {
+            "value": "[parameters('enablePrivateEndpoint')]"
+          },
+          "vnetResourceId": {
+            "value": "[parameters('vnetResourceId')]"
+          },
+          "privateEndpointSubnetName": {
+            "value": "[parameters('privateEndpointSubnetName')]"
           }
         },
         "template": {
@@ -102,8 +132,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.44.1.10279",
-              "templateHash": "1627100030729662134"
+              "version": "0.43.8.12551",
+              "templateHash": "16501000397027213258"
             }
           },
           "parameters": {
@@ -146,14 +176,46 @@
               "minValue": 1000,
               "maxValue": 10000,
               "metadata": {
-                "description": "Total shared throughput (RU/s) for the database in autoscale max mode. Small demo default."
+                "description": "Total shared throughput (RU/s) for the database in autoscale max mode. Small demo default. Applies to `simulation-runs` (no vector index)."
+              }
+            },
+            "vectorContainerMaxThroughput": {
+              "type": "int",
+              "defaultValue": 1000,
+              "minValue": 1000,
+              "maxValue": 10000,
+              "metadata": {
+                "description": "Dedicated per-container throughput (RU/s) in autoscale max mode for vector-indexed containers. Cosmos requires vector containers to use dedicated (not shared) throughput."
+              }
+            },
+            "enablePrivateEndpoint": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, provisions a private endpoint into the specified VNet subnet plus the Azure-managed `privatelink.documents.azure.com` private DNS zone. Required in SIT because MCAPSGov policies enforce publicNetworkAccess=Disabled on Cosmos."
+              }
+            },
+            "vnetResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the VNet that hosts the private endpoint subnet + will be linked to the private DNS zone. Ignored when enablePrivateEndpoint=false."
+              }
+            },
+            "privateEndpointSubnetName": {
+              "type": "string",
+              "defaultValue": "snet-data",
+              "metadata": {
+                "description": "Name of the subnet inside vnetResourceId that will host the Cosmos private endpoint. Ignored when enablePrivateEndpoint=false."
               }
             }
           },
           "variables": {
             "accountName": "[toLower(format('cosmos-csa-{0}', parameters('nameSuffix')))]",
             "vectorDimensions": 1536,
-            "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002"
+            "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002",
+            "privateEndpointName": "[format('pe-{0}', variables('accountName'))]",
+            "privateDnsZoneName": "privatelink.documents.azure.com"
           },
           "resources": [
             {
@@ -210,6 +272,11 @@
               "apiVersion": "2024-12-01-preview",
               "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'scenarios')]",
               "properties": {
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('vectorContainerMaxThroughput')]"
+                  }
+                },
                 "resource": {
                   "id": "scenarios",
                   "partitionKey": {
@@ -258,6 +325,11 @@
               "apiVersion": "2024-12-01-preview",
               "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'agent-memory')]",
               "properties": {
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('vectorContainerMaxThroughput')]"
+                  }
+                },
                 "resource": {
                   "id": "agent-memory",
                   "partitionKey": {
@@ -306,6 +378,11 @@
               "apiVersion": "2024-12-01-preview",
               "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'response-levers')]",
               "properties": {
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('vectorContainerMaxThroughput')]"
+                  }
+                },
                 "resource": {
                   "id": "response-levers",
                   "partitionKey": {
@@ -389,6 +466,78 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[variables('privateDnsZoneName')]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', variables('privateDnsZoneName'), format('{0}-link', last(split(parameters('vnetResourceId'), '/'))))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetResourceId')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-11-01",
+              "name": "[variables('privateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "subnet": {
+                  "id": "[format('{0}/subnets/{1}', parameters('vnetResourceId'), parameters('privateEndpointSubnetName'))]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('{0}-conn', variables('privateEndpointName'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]",
+                      "groupIds": [
+                        "Sql"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-11-01",
+              "name": "[format('{0}/{1}', variables('privateEndpointName'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "privatelink-documents-azure-com",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
               ]
             }
           ],

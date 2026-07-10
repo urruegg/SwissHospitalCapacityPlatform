@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "18b0d78b75d64e4db24c",
+  "position": { "x": 24, "y": 24, "z": 0, "height": 56, "width": 1232, "tabOrder": 0 },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [{ "properties": { "paragraphs": [{ "textRuns": [{ "value": "CFO — TCO vs budget & payback", "textStyle": { "fontSize": "24px", "fontWeight": "bold" } }] }] } }]
+    }
+  }
+}

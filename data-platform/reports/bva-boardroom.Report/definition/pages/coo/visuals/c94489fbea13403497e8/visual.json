@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "c94489fbea13403497e8",
+  "position": { "x": 320, "y": 120, "z": 1, "height": 140, "width": 280, "tabOrder": 1 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [{
+            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "bva_measures" } }, "Property": "Manual Touches Saved" } },
+            "queryRef": "bva_measures.Manual Touches Saved",
+            "nativeQueryRef": "Manual Touches Saved"
+          }]
+        }
+      }
+    },
+    "objects": {
+      "labels": [{ "properties": { "labelDisplayUnits": { "expr": { "Literal": { "Value": "0D" } } } } }],
+      "categoryLabels": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } } } }]
+    },
+    "visualContainerObjects": {
+      "title": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Manual touches saved'" } } } } }]
+    }
+  }
+}
