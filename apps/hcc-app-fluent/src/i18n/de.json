@@ -25,7 +25,15 @@
   },
   "backstage": {
     "roles": "Rollen & RBAC",
-    "rolesDescription": "Live-Ansicht der App-Rollen aus Microsoft Entra (schreibgeschützt)."
+    "rolesDescription": "Live-Ansicht der App-Rollen aus Microsoft Entra (schreibgeschützt).",
+    "evidence": "Nachweise",
+    "evidenceDescription": "Presenter-Whiteboard: BOM-, ADR-, Anforderungs-, GA-Nachweis- und Abhängigkeitskarten (synthetisch, keine PHI)."
+  },
+  "evidence": {
+    "readinessSummary": "Bereitschaftsübersicht",
+    "gaParityGap": "GA-Paritätslücke",
+    "presetChNorthTShow": "CH Nord × T-SHOW",
+    "presetGaParity": "GA-Paritätsansicht"
   },
   "bedManager": {
     "title": "Bettenmanagement — USZ",

@@ -13,6 +13,11 @@ const EXPECTED: CardType[] = [
   'BvaHeadlineKpiCard',
   'BvaPlanVsActualCard',
   'BvaTrendCard',
+  'BomCard',
+  'AdrCard',
+  'PrdRequirementCard',
+  'GaEvidenceCard',
+  'DependencyEdge',
 ];
 
 const OPERATIONAL: CardType[] = [

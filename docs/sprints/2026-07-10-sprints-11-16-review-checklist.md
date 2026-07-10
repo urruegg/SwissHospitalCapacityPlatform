@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-10 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft for review |
-| **Previous Version** | n/a (new — Phase 1b of the 2026-07-10 sprint-review push) |
+| **Previous Version** | 1.0.0 (marked S14.3-S14.5 done via the Sprint 14.1 mini-sprint: evidence.SemanticModel + Evidence tab + provenance contract) |
 | **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
 | **Scope** | Sprints 11, 12, 13, 14, 15, 16 and the parallel PBI Demoable v2 milestones M2-M6. Sprints 01-10 explicitly out of scope. |
 | **Related** | [`docs/sprints/superpowers-checkpoint-matrix.md`](superpowers-checkpoint-matrix.md); [`docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md`](../superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md) |
@@ -117,9 +117,9 @@ Phase 2 (subsequent PRs, one per sprint) fills the Status / Evidence / Gap colum
 |---|------|--------|----------|-----|
 | S14.1 | `evidence-publish.yml` runs on push and produces `data/evidence/*.json` on `evidence-latest` branch. | ⏳ audit-pending | `.github/workflows/evidence-publish.yml` | `gh run list --workflow evidence-publish.yml --limit 3` |
 | S14.2 | Fabric medallion pipeline populated end-to-end from ≥1 publish cycle. | ⏳ audit-pending | | Verify `evidence-latest` branch has ≥1 commit + Fabric side |
-| S14.3 | Semantic model returns readiness score per BOM item × region × track for Switzerland North × T-SHOW. | ⏳ audit-pending | Semantic model measures | Run DAX query via SQL endpoint |
-| S14.4 | Backstage → Evidence tab renders presenter whiteboard with ≥25 BOM cards + ≥10 ADR cards + ≥1 PRD-requirement card + dependency edges. | ⏳ audit-pending | `apps/hcc-app-fluent/src/workspaces/main/tabs/evidence/` (expected) | Find Evidence tab + run app |
-| S14.5 | Provenance visible on every card (`sourceUrl`, `asOf`); missing provenance fails render. | ⏳ audit-pending | | Read card component; check contract test |
+| S14.3 | Semantic model returns readiness score per BOM item × region × track for Switzerland North × T-SHOW. | ✅ done (S14.1) | `data-platform/reports/evidence.SemanticModel/` ([ADR-0026](../adr/0026-evidence-readiness-measure-ownership.md)) | `python3 -m unittest discover -s data-platform/reports/tests` |
+| S14.4 | Backstage → Evidence tab renders presenter whiteboard with ≥25 BOM cards + ≥10 ADR cards + ≥1 PRD-requirement card + dependency edges. | ✅ done (S14.1) | `apps/hcc-app-fluent/src/workspaces/backstage/tabs/evidence/EvidenceTab.tsx` | `cd apps/hcc-app-fluent && npm test` + `npx playwright test tests/e2e/evidence.spec.ts` |
+| S14.5 | Provenance visible on every card (`sourceUrl`, `asOf`); missing provenance fails render. | ✅ done (S14.1) | `apps/hcc-app-fluent/src/cards/evidence/_provenance.tsx` | `cd apps/hcc-app-fluent && npm test -- evidence-cards` |
 | S14.6 | Golden readiness-rule regression test green. | ⏳ audit-pending | `data-platform/notebooks/evidence/tests/` (expected) | Find + run pytest |
 | S14.7 | Sprint 14 retro entry in checkpoint matrix. | ⏳ audit-pending | | Grep matrix |
 
