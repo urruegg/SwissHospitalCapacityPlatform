@@ -72,7 +72,7 @@ class FieldMappingTests(unittest.TestCase):
         self.assertEqual(row["ipAddress"], "2001:db8::1")
 
     def test_timestamp_offset_normalised_to_z(self):
-        row = A.signin_to_bronze_row(_raw(TimeGenerated="2026-06-15T08:12:00+00:00"))
+        row = A.signin_to_bronze_row(_raw(TimeGenerated="2026-06-15T08:12:00+00:00"), PERSONA_ROLE)
         self.assertEqual(row["signInTimestamp"], "2026-06-15T08:12:00Z")
 
     def test_app_role_joined_from_persona_map(self):
@@ -82,6 +82,11 @@ class FieldMappingTests(unittest.TestCase):
     def test_unknown_user_gets_null_role(self):
         row = A.signin_to_bronze_row(_raw(UserPrincipalName="stranger@x"), PERSONA_ROLE)
         self.assertIsNone(row["appRole"])
+
+    def test_non_string_upn_is_safe(self):
+        row = A.signin_to_bronze_row(_raw(UserPrincipalName=None), PERSONA_ROLE)
+        self.assertIsNone(row["appRole"])
+        self.assertIsNone(row["upn"])
 
     def test_env_defaults_to_sit(self):
         self.assertEqual(A.signin_to_bronze_row(_raw())["env"], "sit")

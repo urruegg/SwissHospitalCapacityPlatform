@@ -2,8 +2,8 @@
 
 Bronze ingest of Entra sign-in telemetry that feeds the Sprint 15 BVA "adoption %"
 KPI. Nightly, the [`adoption-refresh.yml`](../../../.github/workflows/adoption-refresh.yml)
-workflow triggers the Fabric notebook below, which lands the last 24h of
-`ihzhhpf-app` sign-ins as raw JSON in the lakehouse Bronze layer.
+workflow triggers the Fabric notebook `01_adoption_ingest.ipynb`, which lands the
+last 24h of `ihzhhpf-app` sign-ins as raw JSON in the lakehouse Bronze layer.
 
 - Design contract: [`docs/superpowers/specs/2026-07-09-sprint-12-org-design.md`](../../../docs/superpowers/specs/2026-07-09-sprint-12-org-design.md) §7.
 - Diagnostic routing: [`infra/modules/entra/adoption-telemetry.bicep`](../../../infra/modules/entra/adoption-telemetry.bicep) (Entra `SignInLogs` → `log-ihzhhpf-sit`).

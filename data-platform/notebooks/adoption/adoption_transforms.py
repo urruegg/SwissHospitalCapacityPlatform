@@ -102,6 +102,8 @@ def signin_to_bronze_row(
     roles = persona_role or {}
     app_display_name = raw.get("AppDisplayName")
     upn = raw.get("UserPrincipalName")
+    result_type = raw.get("ResultType")
+    app_role = roles.get(upn.lower()) if isinstance(upn, str) and upn else None
     return {
         "userId": raw.get("UserId"),
         "upn": upn,
@@ -109,12 +111,12 @@ def signin_to_bronze_row(
         "appId": raw.get("AppId"),
         "signInTimestamp": _iso_z(raw.get("TimeGenerated")),
         "env": derive_env(app_display_name, default=default_env),
-        "resultType": str(raw.get("ResultType")) if raw.get("ResultType") is not None else None,
+        "resultType": str(result_type) if result_type is not None else None,
         "ipAddress": redact_ip_24(raw.get("IPAddress")),
         "clientAppUsed": raw.get("ClientAppUsed"),
         "deviceDetailTrustType": raw.get("DeviceDetail_TrustType"),
         "locationCountryOrRegion": raw.get("Location_CountryOrRegion"),
-        "appRole": roles.get(upn.lower()) if upn else None,
+        "appRole": app_role,
     }
 
 
