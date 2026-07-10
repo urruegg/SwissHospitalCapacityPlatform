@@ -29,10 +29,24 @@ param databaseName string = 'csa'
 @description('Object ID of the Sprint 13 agent-host managed identity. When set, receives Cosmos DB Built-in Data Contributor scoped to this account (least privilege). Empty string skips the assignment.')
 param agentHostMiPrincipalId string = ''
 
-@description('Total shared throughput (RU/s) for the database in autoscale max mode. Small demo default.')
+@description('Total shared throughput (RU/s) for the database in autoscale max mode. Small demo default. Applies to `simulation-runs` (no vector index).')
 @minValue(1000)
 @maxValue(10000)
 param databaseMaxThroughput int = 1000
+
+@description('Dedicated per-container throughput (RU/s) in autoscale max mode for vector-indexed containers. Cosmos requires vector containers to use dedicated (not shared) throughput.')
+@minValue(1000)
+@maxValue(10000)
+param vectorContainerMaxThroughput int = 1000
+
+@description('When true, provisions a private endpoint into the specified VNet subnet plus the Azure-managed `privatelink.documents.azure.com` private DNS zone. Required in SIT because MCAPSGov policies enforce publicNetworkAccess=Disabled on Cosmos.')
+param enablePrivateEndpoint bool = false
+
+@description('Resource ID of the VNet that hosts the private endpoint subnet + will be linked to the private DNS zone. Ignored when enablePrivateEndpoint=false.')
+param vnetResourceId string = ''
+
+@description('Name of the subnet inside vnetResourceId that will host the Cosmos private endpoint. Ignored when enablePrivateEndpoint=false.')
+param privateEndpointSubnetName string = 'snet-data'
 
 // Cosmos account names must be globally unique, 3-44 chars, lowercase.
 var accountName = toLower('cosmos-csa-${nameSuffix}')
@@ -94,6 +108,11 @@ resource scenariosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/
   parent: database
   name: 'scenarios'
   properties: {
+    options: {
+      autoscaleSettings: {
+        maxThroughput: vectorContainerMaxThroughput
+      }
+    }
     resource: {
       id: 'scenarios'
       partitionKey: {
@@ -139,6 +158,11 @@ resource agentMemoryContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabase
   parent: database
   name: 'agent-memory'
   properties: {
+    options: {
+      autoscaleSettings: {
+        maxThroughput: vectorContainerMaxThroughput
+      }
+    }
     resource: {
       id: 'agent-memory'
       partitionKey: {
@@ -184,6 +208,11 @@ resource responseLeversContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatab
   parent: database
   name: 'response-levers'
   properties: {
+    options: {
+      autoscaleSettings: {
+        maxThroughput: vectorContainerMaxThroughput
+      }
+    }
     resource: {
       id: 'response-levers'
       partitionKey: {
@@ -259,6 +288,76 @@ resource agentHostDataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRole
     roleDefinitionId: '${account.id}/sqlRoleDefinitions/${cosmosDataContributorRoleId}'
     principalId: agentHostMiPrincipalId
     scope: account.id
+  }
+}
+
+// ============================================================================
+// Private endpoint + private DNS zone (Concept 1 network plumbing).
+//
+// Required in SIT because MCAPSGov policies enforce publicNetworkAccess=Disabled
+// on all Cosmos accounts. Without this the account is unreachable from Fabric,
+// Container Apps, and any client outside the VNet.
+//
+// Zone name is Azure-managed and MUST be exactly privatelink.documents.azure.com
+// for the private-endpoint auto-registration to work.
+// ============================================================================
+
+var privateEndpointName = 'pe-${accountName}'
+var privateDnsZoneName = 'privatelink.documents.azure.com'
+
+resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateEndpoint) {
+  name: privateDnsZoneName
+  location: 'global'
+  tags: tags
+}
+
+resource privateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateEndpoint) {
+  parent: privateDnsZone
+  name: '${last(split(vnetResourceId, '/'))}-link'
+  location: 'global'
+  tags: tags
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: vnetResourceId
+    }
+  }
+}
+
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = if (enablePrivateEndpoint) {
+  name: privateEndpointName
+  location: location
+  tags: tags
+  properties: {
+    subnet: {
+      id: '${vnetResourceId}/subnets/${privateEndpointSubnetName}'
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${privateEndpointName}-conn'
+        properties: {
+          privateLinkServiceId: account.id
+          groupIds: [
+            'Sql'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = if (enablePrivateEndpoint) {
+  parent: privateEndpoint
+  name: 'default'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'privatelink-documents-azure-com'
+        properties: {
+          privateDnsZoneId: privateDnsZone.id
+        }
+      }
+    ]
   }
 }
 
