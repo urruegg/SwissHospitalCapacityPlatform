@@ -8,18 +8,16 @@ Run from the repository root:
 from __future__ import annotations
 
 import csv
-import importlib.util
+import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-MODULE_PATH = REPO_ROOT / "data" / "entra" / "validate_entra_master_data.py"
+# Make the gate module importable the same way data/synthetic/tests does.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-_spec = importlib.util.spec_from_file_location("validate_entra_master_data", MODULE_PATH)
-assert _spec and _spec.loader
-validator = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(validator)
+import validate_entra_master_data as validator  # noqa: E402
 
 
 def _rows(path: Path) -> list[dict[str, str]]:
