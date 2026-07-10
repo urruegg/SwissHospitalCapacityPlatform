@@ -1,0 +1,6 @@
+org_key,display_name,org_type,canton,scope
+USZ,Universitätsspital Zürich,acute-hospital,ZH,hospital
+LUKS,Luzerner Kantonsspital,acute-hospital,LU,hospital
+Zollikerberg,Spital Zollikerberg,acute-hospital,ZH,hospital
+Aggregated,Aggregated cross-hospital view,logical-scope,-,aggregate
+All,Platform-wide (all hospitals),logical-scope,-,platform

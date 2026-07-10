@@ -1,0 +1,24 @@
+upn_local,display_name,app_role,default_hospital,usage_location
+dr.andrea.keller,Dr. Andrea Keller,HCC.OperationsLead,USZ,CH
+markus.frei,Markus Frei,HCC.BedManager,USZ,CH
+sandra.huber,Sandra Huber,HCC.FlowManager,USZ,CH
+thomas.brunner,Dr. Thomas Brunner,HCC.EDLead,USZ,CH
+nicole.baumann,Nicole Baumann,HCC.ORCoordinator,USZ,CH
+peter.schmid,Peter Schmid,HCC.StaffingCoordinator,USZ,CH
+claudia.steiner,Claudia Steiner,HCC.DischargeCoordinator,USZ,CH
+michael.weber,Dr. Michael Weber,HCC.CrisisManager,USZ,CH
+regula.bucher,Dr. Regula Bucher,HCC.OperationsLead,LUKS,CH
+stefan.zuend,Stefan Zünd,HCC.BedManager,LUKS,CH
+martina.achermann,Martina Achermann,HCC.DischargeCoordinator,LUKS,CH
+daniel.kaufmann,Daniel Kaufmann,HCC.ORCoordinator,LUKS,CH
+barbara.widmer,Barbara Widmer,HCC.OperationsLead,Zollikerberg,CH
+lukas.frei,Lukas Frei,HCC.FlowManager,Zollikerberg,CH
+christoph.vogt,Dr. Christoph Vogt,HCC.Executive,Aggregated,CH
+isabelle.girard,Dr. Isabelle Girard,HCC.CantonalViewer,Aggregated,CH
+urs.ruegg,Urs Rüegg,HCC.PlatformAdmin,All,CH
+elena.fischer,Elena Fischer,HCC.OntologySteward,All,CH
+rafael.moser,Rafael Moser,HCC.AIGovernance,All,CH
+sophie.meier,Sophie Meier,HCC.DemoOperator,All,CH
+hans.meier,Hans Meier,HCC.Auditor,All,CH
+super.admin,Super Admin,HCC.SuperAdmin,All,CH
+demo.guest,Demo Guest,HCC.GuestReadOnly,Aggregated,CH

@@ -1,0 +1,18 @@
+group_name,mail_nickname,backing_role,env_scope,description
+HCC.SuperAdmin,HCC-SuperAdmin,HCC.SuperAdmin,shared,Security group backing the HCC.SuperAdmin app role (group-based assignment).
+HCC.GuestReadOnly,HCC-GuestReadOnly,HCC.GuestReadOnly,shared,Security group backing the HCC.GuestReadOnly app role (group-based assignment).
+HCC.OperationsLead,HCC-OperationsLead,HCC.OperationsLead,shared,Security group backing the HCC.OperationsLead app role (group-based assignment).
+HCC.BedManager,HCC-BedManager,HCC.BedManager,shared,Security group backing the HCC.BedManager app role (group-based assignment).
+HCC.FlowManager,HCC-FlowManager,HCC.FlowManager,shared,Security group backing the HCC.FlowManager app role (group-based assignment).
+HCC.EDLead,HCC-EDLead,HCC.EDLead,shared,Security group backing the HCC.EDLead app role (group-based assignment).
+HCC.ORCoordinator,HCC-ORCoordinator,HCC.ORCoordinator,shared,Security group backing the HCC.ORCoordinator app role (group-based assignment).
+HCC.StaffingCoordinator,HCC-StaffingCoordinator,HCC.StaffingCoordinator,shared,Security group backing the HCC.StaffingCoordinator app role (group-based assignment).
+HCC.DischargeCoordinator,HCC-DischargeCoordinator,HCC.DischargeCoordinator,shared,Security group backing the HCC.DischargeCoordinator app role (group-based assignment).
+HCC.CrisisManager,HCC-CrisisManager,HCC.CrisisManager,shared,Security group backing the HCC.CrisisManager app role (group-based assignment).
+HCC.Executive,HCC-Executive,HCC.Executive,shared,Security group backing the HCC.Executive app role (group-based assignment).
+HCC.CantonalViewer,HCC-CantonalViewer,HCC.CantonalViewer,shared,Security group backing the HCC.CantonalViewer app role (group-based assignment).
+HCC.PlatformAdmin,HCC-PlatformAdmin,HCC.PlatformAdmin,shared,Security group backing the HCC.PlatformAdmin app role (group-based assignment).
+HCC.OntologySteward,HCC-OntologySteward,HCC.OntologySteward,shared,Security group backing the HCC.OntologySteward app role (group-based assignment).
+HCC.AIGovernance,HCC-AIGovernance,HCC.AIGovernance,shared,Security group backing the HCC.AIGovernance app role (group-based assignment).
+HCC.DemoOperator,HCC-DemoOperator,HCC.DemoOperator,shared,Security group backing the HCC.DemoOperator app role (group-based assignment).
+HCC.Auditor,HCC-Auditor,HCC.Auditor,shared,Security group backing the HCC.Auditor app role (group-based assignment).
