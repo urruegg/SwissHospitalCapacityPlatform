@@ -1,0 +1,7 @@
+/// Evidence read-only role (Sprint 14.1 T4, ADR-0026). Showcase Evidence data is
+/// synthetic non-PHI (ADR-0016) so no row-level restriction is required; this
+/// role documents least-privilege read access for the presenter audience
+/// (HCC.Presenter, HCC.PlatformAdmin, HCC.OntologySteward, HCC.Auditor,
+/// HCC.GuestReadOnly). Row-scoped RLS is deferred (ADR-0026 §RLS decision).
+role EvidenceReadOnly
+	modelPermission: read
