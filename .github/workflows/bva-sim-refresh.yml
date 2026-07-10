@@ -47,6 +47,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install generator dependency
+        shell: bash
+        run: pip install --quiet pyarrow
+
       - name: Generate synthetic FOCUS slice
         id: generate
         shell: bash
