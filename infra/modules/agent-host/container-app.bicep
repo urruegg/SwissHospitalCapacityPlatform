@@ -10,12 +10,8 @@ param tags object
 @description('Container image reference for the agent-host (registry/repository:tag).')
 param agentHostImage string
 
-@description('Log Analytics workspace customer ID (GUID) for the Container Apps environment.')
-param logAnalyticsCustomerId string
-
-@description('Log Analytics shared key for the Container Apps environment.')
-@secure()
-param logAnalyticsSharedKey string
+@description('Log Analytics workspace resource ID for the Container Apps environment. customerId + sharedKey are resolved via reference/listKeys (deferred until the workspace exists).')
+param logAnalyticsWorkspaceResourceId string
 
 @description('Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2).')
 param cosmosEndpoint string
@@ -38,8 +34,8 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
-        customerId: logAnalyticsCustomerId
-        sharedKey: logAnalyticsSharedKey
+        customerId: reference(logAnalyticsWorkspaceResourceId, '2023-09-01').customerId
+        sharedKey: listKeys(logAnalyticsWorkspaceResourceId, '2023-09-01').primarySharedKey
       }
     }
   }

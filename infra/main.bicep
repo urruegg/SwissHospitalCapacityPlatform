@@ -175,6 +175,41 @@ param simCapacityEventHubName string = 'demand-encounters'
 @description('When true, the sim-capacity deployment is scoped to the Sprint 09 v2 demo path (synthetic data only per ADR-0013 / ADR-0016).')
 param simCapacityDemoScope bool = true
 
+@description('Enable the Sprint 13 agent-host module (Container App + Cosmos + Redis). Ceiling: deploy (AGENTS.md §3).')
+param enableAgentHostModule bool = false
+
+@description('Region for the Sprint 13 agent-host module. Pinned to the ADR-0013 demo-scope variant path.')
+@allowed([
+  'switzerlandnorth'
+  'westus2'
+])
+param agentHostLocation string = 'westus2'
+
+@description('Container image the agent-host Container App runs. Placeholder until the agent-host image is published (apps/hcc-agent-host/Dockerfile).')
+param agentHostContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Enable the Sprint 13 hcc-app-fluent Container App module (Fluent UI baseline app).')
+param enableAppFluentModule bool = false
+
+@description('Region for the Sprint 13 hcc-app-fluent module. Pinned to the ADR-0013 demo-scope variant path.')
+@allowed([
+  'switzerlandnorth'
+  'westus2'
+])
+param appFluentLocation string = 'westus2'
+
+@description('Container image the hcc-app-fluent Container App runs. Placeholder until the Fluent app image is published (apps/hcc-app-fluent/Dockerfile).')
+param appFluentContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Optional ACR login server for pulling appFluentContainerImage. Together with appFluentContainerRegistryResourceId enables MI-based pull (no admin creds).')
+param appFluentContainerRegistryLoginServer string = ''
+
+@description('Optional resource ID of the ACR that hosts appFluentContainerImage. Required together with appFluentContainerRegistryLoginServer.')
+param appFluentContainerRegistryResourceId string = ''
+
+@description('When true, the hcc-app-fluent deployment is scoped to the demo path (synthetic data only per ADR-0013).')
+param appFluentDemoScope bool = true
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -370,6 +405,38 @@ module fabricEventstream './modules/data-platform/fabric-eventstream/main.bicep'
   }
 }
 
+// Sprint 13 T5 / Sprint 13.1 — agent-host (Container App + Cosmos + Redis, ADR-0007).
+// Deploy-ceiling module: only provisions when enableAgentHostModule=true and gated by the
+// AGENTS.md §4 `approved-to-apply` control at the workflow level. The container-app submodule
+// resolves Log Analytics customerId / sharedKey from the always-deployed platform-foundation
+// workspace, mirroring the sim-capacity pattern.
+module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) {
+  name: 'agent-host-${environmentName}'
+  params: {
+    location: agentHostLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    agentHostImage: agentHostContainerImage
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+  }
+}
+
+// Sprint 13 T1 / Sprint 13.1 — hcc-app-fluent Fluent UI baseline app (external ingress).
+module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluentModule) {
+  name: 'app-fluent-${environmentName}'
+  params: {
+    location: appFluentLocation
+    containerAppName: 'ca-app-fluent-${resourceSuffix}'
+    containerAppEnvironmentName: 'cae-app-fluent-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: appFluentContainerImage
+    containerRegistryLoginServer: appFluentContainerRegistryLoginServer
+    containerRegistryResourceId: appFluentContainerRegistryResourceId
+    demoScope: appFluentDemoScope
+    tags: tags
+  }
+}
+
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
 output sourceSqlGatingWarning string = enableSourceSqlModule && !enableDataPlatformModule
@@ -401,6 +468,8 @@ output moduleStatuses object = {
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'
+  agentHost: enableAgentHostModule ? agentHost!.outputs.moduleStatus : 'agent-host-disabled'
+  appFluent: enableAppFluentModule ? appFluent!.outputs.moduleStatus : 'app-fluent-disabled'
 }
 
 output foundryHostedAgentsStatus string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.moduleStatus : 'foundry-hosted-agents-disabled'
@@ -418,3 +487,14 @@ output simCapacityStatus string = enableSimCapacityModule
       ? 'WARN: enableSimCapacityModule=true but no Event Hub namespace resolved (set simCapacityEventHubNamespace or enable data-foundation module).'
       : simCapacity!.outputs.moduleStatus)
   : 'sim-capacity-disabled'
+
+// Sprint 13.1 — agent-host + hcc-app-fluent surface outputs for post-deploy wiring
+// (Copilot Drawer VITE_AGENT_HOST_URL, validation, and follow-up RBAC).
+output agentHostStatus string = enableAgentHostModule ? agentHost!.outputs.moduleStatus : 'agent-host-disabled'
+output agentHostFqdn string = enableAgentHostModule ? agentHost!.outputs.agentHostFqdn : ''
+output agentHostPrincipalId string = enableAgentHostModule ? agentHost!.outputs.agentHostPrincipalId : ''
+output agentHostCosmosAccountName string = enableAgentHostModule ? agentHost!.outputs.cosmosAccountName : ''
+output agentHostRedisName string = enableAgentHostModule ? agentHost!.outputs.redisName : ''
+output appFluentStatus string = enableAppFluentModule ? appFluent!.outputs.moduleStatus : 'app-fluent-disabled'
+output appFluentFqdn string = enableAppFluentModule ? appFluent!.outputs.fqdn : ''
+output appFluentPrincipalId string = enableAppFluentModule ? appFluent!.outputs.principalId : ''

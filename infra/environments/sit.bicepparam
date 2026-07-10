@@ -106,3 +106,21 @@ param fabricEventstreamDestinationLakehouseId = ''
 param eventHubsSimulatorMiPrincipalId = ''
 param eventHubsBmCopilotMiPrincipalId = ''
 param eventHubsCsaAgentMiPrincipalId = ''
+
+// Sprint 13.1 — wire the Sprint 13 app tier into SIT (closes S13.2/S13.3/S13.6/S13.7/S13.8).
+// agent-host = Container App (ca-agent-host-ihzhhpf-sit) + Cosmos (cosmos-ihzhhpf-sit with
+// conversations/audit/approval-events containers) + Redis (redis-ihzhhpf-sit) per ADR-0007.
+// hcc-app-fluent = Container App (ca-app-fluent-ihzhhpf-sit) with external ingress.
+// Deploy ceiling = `deploy` (AGENTS.md §3): apply only after an `approved-to-apply` comment.
+//
+// Container images: both modules default to a public placeholder so provisioning is
+// deterministic before the private images are published. The real images
+// (apps/hcc-agent-host/Dockerfile and apps/hcc-app-fluent/Dockerfile) are built + published to
+// ACR cri75lbu5sj4hza by the Sprint 13 app-build CD track and swapped in via
+// `az containerapp update --image` (same sequence sim-capacity followed in Sprint 10 T1).
+param enableAgentHostModule = true
+param agentHostLocation = 'westus2'
+
+param enableAppFluentModule = true
+param appFluentLocation = 'westus2'
+param appFluentDemoScope = true
