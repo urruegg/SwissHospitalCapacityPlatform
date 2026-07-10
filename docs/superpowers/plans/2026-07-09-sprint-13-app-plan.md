@@ -474,7 +474,7 @@ Recommendation reasoning to weigh: Python has stronger Semantic Kernel + Foundry
 
 ## Parallelism map (for the cloud coding agent's subagent scheduling)
 
-```
+```text
 T1 (shell) ──┬──▶ T3 (whiteboard) ──┬──▶ T6 (drawer wiring)
              │                       │
              └──▶ T2 (MSAL auth) ────┴──▶ T4 (Backstage Roles)

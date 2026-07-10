@@ -377,7 +377,7 @@ PR body follows [copilot-instructions.md §6](../../../.github/copilot-instructi
 
 ## Parallelism map (for the cloud coding agent's subagent scheduling)
 
-```
+```text
 T1 (Cosmos + MCP) ──▶ T2 (Mirroring) ──┬──▶ T4 (csa-agent body) ──▶ T7 (wizard) ──┐
                                         │                                            │
                                         ├──▶ T3 (schema + levers) ──▶ T6 (scenarios) ┼─▶ T8 (workflows) ──▶ T9 (runs + retro)
