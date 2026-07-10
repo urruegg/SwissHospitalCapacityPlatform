@@ -1,0 +1,46 @@
+name: adoption-ingest
+
+# Sprint 12 · T5 — self-test gate for the adoption-telemetry Bronze ingest.
+# Runs the dependency-free unit tests for the pure sign-in → Bronze contract
+# transforms (data-platform/notebooks/adoption/) that feed the Sprint 15 BVA
+# adoption KPI.
+
+on:
+  pull_request:
+    paths:
+      - 'data-platform/notebooks/adoption/**'
+      - 'data-platform/notebooks/bva/bva_transforms.py'
+      - '.github/workflows/adoption-ingest.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data-platform/notebooks/adoption/**'
+      - 'data-platform/notebooks/bva/bva_transforms.py'
+      - '.github/workflows/adoption-ingest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: adoption-ingest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adoption-ingest-selftest:
+    name: Adoption ingest self-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run adoption transform tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data-platform/notebooks/adoption/tests -v
