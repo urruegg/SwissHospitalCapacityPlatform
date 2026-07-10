@@ -49,6 +49,10 @@ HIDDEN_PAGES = [
     "page-perf-benchmark",
 ]
 PILL_MEASURE = "Effective Viewing Label"
+# Fully-qualified queryRef used by the RLS-proof pill visual. Narrower than
+# the raw measure name — avoids false positives if another visual coincidentally
+# contains the string "Effective Viewing Label" (title, comment, unrelated field).
+PILL_QUERY_REF = "dim_persona.Effective Viewing Label"
 REQUIRED_MODEL_TABLES = [
     "param_capacity_measure",
     "param_or_measure",
@@ -70,12 +74,20 @@ def page_visual_files(page: str) -> list[str]:
 
 
 def page_has_pill(page: str) -> bool:
+    """Return True iff any visual on `page` binds the `dim_persona[Effective Viewing Label]` measure.
+
+    Uses a fully-qualified queryRef match (``dim_persona.Effective Viewing Label``)
+    so a stray occurrence of the measure name in unrelated text — a title, a
+    comment, another field's caption — does not falsely satisfy the RLS-proof
+    contract.
+    """
     for vjson in page_visual_files(page):
         try:
-            data = json.load(open(vjson, encoding="utf-8"))
+            with open(vjson, encoding="utf-8") as f:
+                data = json.load(f)
         except (OSError, json.JSONDecodeError):
             continue
-        if PILL_MEASURE in json.dumps(data):
+        if PILL_QUERY_REF in json.dumps(data):
             return True
     return False
 

@@ -12,7 +12,7 @@ JSON-schema warnings remain in the sandbox). Publishing to
 `ws-ihzhhpf-sit-data` is a `deploy`-ceiling action gated by an `approved-to-apply`
 comment per [AGENTS.md §4](../../../AGENTS.md) and is performed only after approval.
 
-## Page structure (6 visible + 5 hidden)
+## Page structure (5 visible + 6 hidden)
 
 Visible pages (in `pages/pages.json` navigation order):
 
