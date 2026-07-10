@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "3898168545101535434"
+      "templateHash": "2459426484332521614"
     }
   },
   "parameters": {
@@ -383,6 +383,34 @@
       "defaultValue": true,
       "metadata": {
         "description": "When true, the sim-capacity deployment is scoped to the Sprint 09 v2 demo path (synthetic data only per ADR-0013 / ADR-0016)."
+      }
+    },
+    "enableAgentHostModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 13 agent-host module (Container App + Cosmos + Redis per ADR-0007)."
+      }
+    },
+    "agentHostImage": {
+      "type": "string",
+      "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+      "metadata": {
+        "description": "Container image reference for the agent-host (registry/repository:tag). Placeholder matches sim-capacity pattern until agent-host CI pushes real images to ACR."
+      }
+    },
+    "enableAppFluentModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 13 hcc-app-fluent Container App module."
+      }
+    },
+    "appFluentImage": {
+      "type": "string",
+      "defaultValue": "nginxinc/nginx-unprivileged:1.27-alpine",
+      "metadata": {
+        "description": "Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR."
       }
     }
   },
@@ -3149,6 +3177,735 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableAgentHostModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('agent-host-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "agentHostImage": {
+            "value": "[parameters('agentHostImage')]"
+          },
+          "logAnalyticsWorkspaceResourceId": {
+            "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "1396762657814217695"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "agentHostImage": {
+              "type": "string",
+              "metadata": {
+                "description": "Container image reference for the agent-host (registry/repository:tag)."
+              }
+            },
+            "logAnalyticsWorkspaceResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Log Analytics workspace resource ID for the Container Apps environment. Keys are derived internally via reference()/listKeys() so no secret material crosses module boundaries."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "agent-host-cosmos",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "nameSuffix": {
+                    "value": "[parameters('nameSuffix')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.43.8.12551",
+                      "templateHash": "30923671365535976"
+                    }
+                  },
+                  "parameters": {
+                    "location": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Location for all resources."
+                      }
+                    },
+                    "nameSuffix": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Resource tags applied to all resources."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "containers": [
+                      {
+                        "name": "conversations",
+                        "partitionKey": "/conversationId"
+                      },
+                      {
+                        "name": "audit",
+                        "partitionKey": "/correlationId"
+                      },
+                      {
+                        "name": "approval-events",
+                        "partitionKey": "/correlationId"
+                      }
+                    ]
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.DocumentDB/databaseAccounts",
+                      "apiVersion": "2024-05-15",
+                      "name": "[format('cosmos-{0}', parameters('nameSuffix'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "kind": "GlobalDocumentDB",
+                      "properties": {
+                        "databaseAccountOfferType": "Standard",
+                        "enableAutomaticFailover": false,
+                        "disableLocalAuth": true,
+                        "publicNetworkAccess": "Enabled",
+                        "capabilities": [
+                          {
+                            "name": "EnableServerless"
+                          }
+                        ],
+                        "consistencyPolicy": {
+                          "defaultConsistencyLevel": "Session"
+                        },
+                        "locations": [
+                          {
+                            "locationName": "[parameters('location')]",
+                            "failoverPriority": 0,
+                            "isZoneRedundant": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+                      "apiVersion": "2024-05-15",
+                      "name": "[format('{0}/{1}', format('cosmos-{0}', parameters('nameSuffix')), 'agenthost')]",
+                      "properties": {
+                        "resource": {
+                          "id": "agenthost"
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix')))]"
+                      ]
+                    },
+                    {
+                      "copy": {
+                        "name": "containerResources",
+                        "count": "[length(variables('containers'))]"
+                      },
+                      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+                      "apiVersion": "2024-05-15",
+                      "name": "[format('{0}/{1}/{2}', format('cosmos-{0}', parameters('nameSuffix')), 'agenthost', variables('containers')[copyIndex()].name)]",
+                      "properties": {
+                        "resource": {
+                          "id": "[variables('containers')[copyIndex()].name]",
+                          "partitionKey": {
+                            "paths": [
+                              "[variables('containers')[copyIndex()].partitionKey]"
+                            ],
+                            "kind": "Hash"
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', format('cosmos-{0}', parameters('nameSuffix')), 'agenthost')]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "cosmosAccountName": {
+                      "type": "string",
+                      "value": "[format('cosmos-{0}', parameters('nameSuffix'))]"
+                    },
+                    "cosmosEndpoint": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix'))), '2024-05-15').documentEndpoint]"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "agent-host-redis",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "nameSuffix": {
+                    "value": "[parameters('nameSuffix')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.43.8.12551",
+                      "templateHash": "6846870946857569733"
+                    }
+                  },
+                  "parameters": {
+                    "location": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Location for all resources."
+                      }
+                    },
+                    "nameSuffix": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Resource tags applied to all resources."
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Cache/redis",
+                      "apiVersion": "2024-03-01",
+                      "name": "[format('redis-{0}', parameters('nameSuffix'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "sku": {
+                          "name": "Basic",
+                          "family": "C",
+                          "capacity": 0
+                        },
+                        "enableNonSslPort": false,
+                        "minimumTlsVersion": "1.2",
+                        "redisConfiguration": {
+                          "aad-enabled": "true"
+                        },
+                        "publicNetworkAccess": "Enabled"
+                      }
+                    }
+                  ],
+                  "outputs": {
+                    "redisName": {
+                      "type": "string",
+                      "value": "[format('redis-{0}', parameters('nameSuffix'))]"
+                    },
+                    "redisHostName": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Cache/redis', format('redis-{0}', parameters('nameSuffix'))), '2024-03-01').hostName]"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "agent-host-container-app",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "nameSuffix": {
+                    "value": "[parameters('nameSuffix')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "agentHostImage": {
+                    "value": "[parameters('agentHostImage')]"
+                  },
+                  "logAnalyticsCustomerId": {
+                    "value": "[reference(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').customerId]"
+                  },
+                  "logAnalyticsSharedKey": {
+                    "value": "[listKeys(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').primarySharedKey]"
+                  },
+                  "cosmosEndpoint": {
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosEndpoint.value]"
+                  },
+                  "redisHostName": {
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.43.8.12551",
+                      "templateHash": "11515790118920130084"
+                    }
+                  },
+                  "parameters": {
+                    "location": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Location for all resources."
+                      }
+                    },
+                    "nameSuffix": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Resource tags applied to all resources."
+                      }
+                    },
+                    "agentHostImage": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Container image reference for the agent-host (registry/repository:tag)."
+                      }
+                    },
+                    "logAnalyticsCustomerId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Log Analytics workspace customer ID (GUID) for the Container Apps environment."
+                      }
+                    },
+                    "logAnalyticsSharedKey": {
+                      "type": "securestring",
+                      "metadata": {
+                        "description": "Log Analytics shared key for the Container Apps environment."
+                      }
+                    },
+                    "cosmosEndpoint": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2)."
+                      }
+                    },
+                    "redisHostName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Redis host name for the grounding cache (ADR-0007 §1)."
+                      }
+                    },
+                    "targetPort": {
+                      "type": "int",
+                      "defaultValue": 8080,
+                      "metadata": {
+                        "description": "Target port the agent-host container listens on."
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.App/managedEnvironments",
+                      "apiVersion": "2024-03-01",
+                      "name": "[format('cae-{0}', parameters('nameSuffix'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "appLogsConfiguration": {
+                          "destination": "log-analytics",
+                          "logAnalyticsConfiguration": {
+                            "customerId": "[parameters('logAnalyticsCustomerId')]",
+                            "sharedKey": "[parameters('logAnalyticsSharedKey')]"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "Microsoft.App/containerApps",
+                      "apiVersion": "2024-03-01",
+                      "name": "[format('ca-agent-host-{0}', parameters('nameSuffix'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "identity": {
+                        "type": "SystemAssigned"
+                      },
+                      "properties": {
+                        "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]",
+                        "configuration": {
+                          "ingress": {
+                            "external": true,
+                            "targetPort": "[parameters('targetPort')]",
+                            "transport": "auto",
+                            "allowInsecure": false
+                          }
+                        },
+                        "template": {
+                          "containers": [
+                            {
+                              "name": "agent-host",
+                              "image": "[parameters('agentHostImage')]",
+                              "resources": {
+                                "cpu": "[json('0.5')]",
+                                "memory": "1Gi"
+                              },
+                              "env": [
+                                {
+                                  "name": "COSMOS_ENDPOINT",
+                                  "value": "[parameters('cosmosEndpoint')]"
+                                },
+                                {
+                                  "name": "REDIS_HOST",
+                                  "value": "[parameters('redisHostName')]"
+                                },
+                                {
+                                  "name": "AGENTS_ROOT",
+                                  "value": "/app/agents"
+                                }
+                              ]
+                            }
+                          ],
+                          "scale": {
+                            "minReplicas": 1,
+                            "maxReplicas": 3
+                          }
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "fqdn": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01').configuration.ingress.fqdn]"
+                    },
+                    "principalId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos')]",
+                "[resourceId('Microsoft.Resources/deployments', 'agent-host-redis')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "agentHostFqdn": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-container-app'), '2025-04-01').outputs.fqdn.value]"
+            },
+            "cosmosAccountName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosAccountName.value]"
+            },
+            "redisName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisName.value]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableAppFluentModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('app-fluent-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "appImage": {
+            "value": "[parameters('appFluentImage')]"
+          },
+          "logAnalyticsWorkspaceResourceId": {
+            "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.8.12551",
+              "templateHash": "5172592133799796196"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "appImage": {
+              "type": "string",
+              "defaultValue": "nginxinc/nginx-unprivileged:1.27-alpine",
+              "metadata": {
+                "description": "Container image the app runs (registry/repository:tag). Defaults to nginx-unprivileged placeholder; swap to the built app-fluent image once app-build.yml pushes to ACR."
+              }
+            },
+            "logAnalyticsWorkspaceResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Log Analytics workspace resource ID used by the ACA managed environment. Derived from platform-foundation at the top-level main.bicep."
+              }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable no-secrets pull once real images land."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
+              }
+            },
+            "minReplicas": {
+              "type": "int",
+              "defaultValue": 1,
+              "minValue": 0,
+              "maxValue": 10,
+              "metadata": {
+                "description": "Minimum replica count."
+              }
+            },
+            "maxReplicas": {
+              "type": "int",
+              "defaultValue": 3,
+              "minValue": 1,
+              "maxValue": 30,
+              "metadata": {
+                "description": "Maximum replica count."
+              }
+            },
+            "targetPort": {
+              "type": "int",
+              "defaultValue": 8080,
+              "metadata": {
+                "description": "Container target port. Fluent Dockerfile serves via nginx-unprivileged on 8080."
+              }
+            }
+          },
+          "variables": {
+            "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2024-03-01",
+              "name": "[format('cae-app-fluent-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[reference(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').customerId]",
+                    "sharedKey": "[listKeys(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').primarySharedKey]"
+                  }
+                },
+                "zoneRedundant": false
+              }
+            },
+            {
+              "type": "Microsoft.App/containerApps",
+              "apiVersion": "2024-03-01",
+              "name": "[format('ca-app-fluent-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]",
+                "configuration": {
+                  "ingress": {
+                    "external": true,
+                    "targetPort": "[parameters('targetPort')]",
+                    "transport": "auto",
+                    "allowInsecure": false
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', 'system')), createArray())]"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "app-fluent",
+                      "image": "[parameters('appImage')]",
+                      "resources": {
+                        "cpu": "[json('0.5')]",
+                        "memory": "1.0Gi"
+                      }
+                    }
+                  ],
+                  "scale": {
+                    "minReplicas": "[parameters('minReplicas')]",
+                    "maxReplicas": "[parameters('maxReplicas')]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]"
+              ]
+            },
+            {
+              "condition": "[variables('useAcrMiPull')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "appFluentFqdn": {
+              "type": "string",
+              "metadata": {
+                "description": "Container App FQDN (ingress URL host)."
+              },
+              "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01').configuration.ingress.fqdn]"
+            },
+            "appFluentName": {
+              "type": "string",
+              "metadata": {
+                "description": "Container App name."
+              },
+              "value": "[format('ca-app-fluent-{0}', parameters('nameSuffix'))]"
+            },
+            "appFluentPrincipalId": {
+              "type": "string",
+              "metadata": {
+                "description": "System-assigned MI principal ID (for OBO/Graph token wiring)."
+              },
+              "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
       ]
     },
