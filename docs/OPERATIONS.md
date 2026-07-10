@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-07-10 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.4.0 (pre OPS-RISK-03/04/05 — Sprint 09 v2.0.0 additions per [ADR-0017](adr/0017-sprint-09-v2-track-restructure.md)) |
+| **Previous Version** | 1.5.0 (added §Infra deploy governance runbook after the 2026-07-10 SIT auto-deploy incident) |
 
 ## Purpose
 
@@ -193,6 +193,36 @@ Required implementation controls:
 1. Standard changes: low-risk, pre-approved patterns.
 2. Normal changes: reviewed and approved with rollback plan.
 3. Emergency changes: time-critical, post-change review mandatory.
+
+### Infra deploy governance (2026-07-10)
+
+**Context.** The Sprint 13.1 SIT deploy (2026-07-10 11:51 CET) auto-fired on PR #189 merge because `cd-infra-deploy-sit.yml` triggers on `push` to `main`. This bypassed the AGENTS.md §4 `approved-to-apply` gate. The workflow already declares `environment: sit`, so the fix is a **repo-settings-only change** — no YAML edit.
+
+**Enforcement — one-time repo setup.** Repository admin (`@urruegg`) configures the `sit` and `prod` GitHub Environments with a **required-reviewer protection rule**:
+
+1. Repository → **Settings** → **Environments** → **`sit`** → **Edit**.
+2. Under *Deployment protection rules*, enable **Required reviewers** and add `@urruegg` (or a `deploy-approvers` team).
+3. Optionally add a **Wait timer** of 0-5 minutes to allow last-minute veto.
+4. Save.
+5. Repeat for the `prod` environment.
+
+Once configured, every deploy job that carries `environment: sit` (or `prod`) pauses at the `environment:` step and shows a "Waiting for review" state in the Actions UI. A designated reviewer clicks **Approve** to proceed, or **Reject** to abort. GitHub records the approval identity in the environment history.
+
+**PR conformance checklist** (for every PR that touches `infra/**`):
+
+- [ ] `az bicep build --file infra/main.bicep` clean locally.
+- [ ] `az deployment group what-if -g rg-ihzhhpf-sit --template-file infra/main.bicep --parameters infra/environments/sit.bicepparam` clean, no unexpected `~ Modify` or `- Delete`.
+- [ ] What-if output pasted into the PR description.
+- [ ] PR description ends with an explicit "Approval flow" section stating: `Merging this PR triggers cd-infra-deploy-sit.yml. The workflow will pause at the sit environment gate — approve via the Actions UI to complete the apply.`
+- [ ] If the change is destructive (`- Delete` in what-if), the PR carries a `destructive-infra` label and an explicit `approved-to-apply` reply from the approver *before* merge (not just at the gate).
+
+**Post-deploy validation** (mandatory after every gated apply):
+
+1. `az deployment group show -g rg-ihzhhpf-sit --name deploy-sit-<run-id>` confirms `provisioningState=Succeeded`.
+2. Spot-check the affected resource types via `az resource list -g rg-ihzhhpf-sit --resource-type <type>` to confirm expected count.
+3. If the deploy left the outer deployment `Failed` with partial resource landing, the recovery PR must include a `what-if` that captures the corrected state — see PR #190 (Redis migration recovery) as reference precedent.
+
+**Rollback**: `az deployment group create --mode Incremental --template-file infra/main.bicep --parameters infra/environments/sit.bicepparam` is idempotent — pushing a "revert" PR that reverts the offending Bicep changes will bring SIT back to the prior state on next apply. There is no separate rollback command.
 
 ## Capacity and Cost Operations
 
