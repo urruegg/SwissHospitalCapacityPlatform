@@ -93,6 +93,78 @@
       "value": [
         "admin@mngenvmcap164444.onmicrosoft.com"
       ]
+    },
+    "enableFoundryHostedAgents": {
+      "value": true
+    },
+    "foundryHostedAgentsLocation": {
+      "value": "westus2"
+    },
+    "foundryHostedAgentsEventHubNamespace": {
+      "value": "evh-ihzhhpf-sit-y26y"
+    },
+    "foundryHostedAgentsEventHubName": {
+      "value": "events"
+    },
+    "foundryHostedAgentsBmCopilotConsumerGroup": {
+      "value": "cg-bm-copilot-agent"
+    },
+    "foundryHostedAgentsCsaConsumerGroup": {
+      "value": "cg-csa-agent"
+    },
+    "enableSimCapacityModule": {
+      "value": true
+    },
+    "simCapacityLocation": {
+      "value": "westus2"
+    },
+    "simCapacityContainerImage": {
+      "value": "cri75lbu5sj4hza.azurecr.io/sim-capacity:sprint10-t1"
+    },
+    "simCapacityContainerRegistryLoginServer": {
+      "value": "cri75lbu5sj4hza.azurecr.io"
+    },
+    "simCapacityContainerRegistryResourceId": {
+      "value": "/subscriptions/66a9953a-df37-4c51-856c-9971b9bf3e03/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.ContainerRegistry/registries/cri75lbu5sj4hza"
+    },
+    "simCapacityEventHubNamespace": {
+      "value": "esehmwhyivddgq8acv3ghwv.servicebus.windows.net"
+    },
+    "simCapacityEventHubName": {
+      "value": "esehmwhyivddgq8acv3ghwv_eh"
+    },
+    "simCapacityDemoScope": {
+      "value": true
+    },
+    "enableFabricEventstreamModule": {
+      "value": true
+    },
+    "fabricEventstreamWorkspaceId": {
+      "value": ""
+    },
+    "fabricEventstreamDestinationLakehouseId": {
+      "value": ""
+    },
+    "eventHubsSimulatorMiPrincipalId": {
+      "value": ""
+    },
+    "eventHubsBmCopilotMiPrincipalId": {
+      "value": ""
+    },
+    "eventHubsCsaAgentMiPrincipalId": {
+      "value": ""
+    },
+    "enableAgentHostModule": {
+      "value": true
+    },
+    "agentHostImage": {
+      "value": "mcr.microsoft.com/dotnet/samples:aspnetapp"
+    },
+    "enableAppFluentModule": {
+      "value": true
+    },
+    "appFluentImage": {
+      "value": "nginxinc/nginx-unprivileged:1.27-alpine"
     }
   }
 }

@@ -10,12 +10,8 @@ param tags object
 @description('Container image reference for the agent-host (registry/repository:tag).')
 param agentHostImage string
 
-@description('Log Analytics workspace customer ID (GUID) for the Container Apps environment.')
-param logAnalyticsCustomerId string
-
-@description('Log Analytics shared key for the Container Apps environment.')
-@secure()
-param logAnalyticsSharedKey string
+@description('Log Analytics workspace resource ID for the Container Apps environment. Keys are derived internally via reference()/listKeys() so no secret material crosses module boundaries.')
+param logAnalyticsWorkspaceResourceId string
 
 // Sprint 13 T5 — Container Apps agent-host + Redis grounding cache + Cosmos DB
 // (ADR-0007). This is a UC1-style output template; it is NOT deployed by this
@@ -46,8 +42,8 @@ module containerApp 'container-app.bicep' = {
     nameSuffix: nameSuffix
     tags: tags
     agentHostImage: agentHostImage
-    logAnalyticsCustomerId: logAnalyticsCustomerId
-    logAnalyticsSharedKey: logAnalyticsSharedKey
+    logAnalyticsCustomerId: reference(logAnalyticsWorkspaceResourceId, '2023-09-01').customerId
+    logAnalyticsSharedKey: listKeys(logAnalyticsWorkspaceResourceId, '2023-09-01').primarySharedKey
     cosmosEndpoint: cosmos.outputs.cosmosEndpoint
     redisHostName: redis.outputs.redisHostName
   }
