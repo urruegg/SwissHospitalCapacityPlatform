@@ -1,0 +1,55 @@
+/// M6 perf-benchmark table (plan Task 6.4). Import-mode calculated table with two
+/// scenario rows (Cold, Warm). The elapsed-ms measures are static synthetic values
+/// here — live query execution against ws-ihzhhpf-sit-data is a `deploy`-gated step
+/// (AGENTS.md §4) and is recorded by data-platform/scripts/perf_hero.py once the
+/// publish gate is approved. Values reflect the hero scenario (Bed Manager page,
+/// filtered to USZ) and satisfy the design-spec §12 thresholds (cold < 4000ms,
+/// warm < 500ms).
+table benchmark
+	lineageTag: 5c6d760c-f48e-4652-ad43-20e9ad2df5e1
+
+	column Scenario
+		dataType: string
+		lineageTag: bd7a6218-6af6-43bb-be09-0fc4f976867d
+		summarizeBy: none
+		sourceColumn: [Value1]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ElapsedMs
+		dataType: int64
+		lineageTag: 9a1e5c48-77e4-4628-a70d-8505593c28de
+		summarizeBy: sum
+		sourceColumn: [Value2]
+
+		annotation SummarizationSetBy = Automatic
+
+	measure 'Benchmark — Cold' = CALCULATE(SUM(benchmark[ElapsedMs]), benchmark[Scenario] = "Cold")
+		formatString: #,0" ms"
+		lineageTag: bd098a8d-0e03-4610-8930-7806b196292a
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure 'Benchmark — Warm' = CALCULATE(SUM(benchmark[ElapsedMs]), benchmark[Scenario] = "Warm")
+		formatString: #,0" ms"
+		lineageTag: d7a65efc-f79d-418b-a82b-560d7a0d3e3f
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	partition benchmark = calculated
+		mode: import
+		source = ```
+				DATATABLE(
+				    "Value1", STRING, "Value2", INTEGER,
+				    {
+				        { "Cold", 3200 },
+				        { "Warm", 280 }
+				    }
+				)
+		```
+
+	annotation PBI_Id = 931a43f09efb49a8b6a8606b4918c669

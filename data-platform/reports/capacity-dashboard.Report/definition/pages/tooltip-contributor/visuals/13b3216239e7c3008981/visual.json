@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "position": {
+    "x": 8,
+    "y": 44,
+    "z": 1000,
+    "height": 236,
+    "width": 404,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "matrix",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_hospital"
+                    }
+                  },
+                  "Property": "short_name"
+                }
+              },
+              "queryRef": "dim_hospital.short_name",
+              "nativeQueryRef": "short_name"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "bed_assignment"
+                    }
+                  },
+                  "Property": "Occupancy %"
+                }
+              },
+              "queryRef": "bed_assignment.Occupancy %",
+              "nativeQueryRef": "Occupancy %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "or_case"
+                    }
+                  },
+                  "Property": "OR Utilization %"
+                }
+              },
+              "queryRef": "or_case.OR Utilization %",
+              "nativeQueryRef": "OR Utilization %"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'By hospital'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#2E4C68'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "name": "13b3216239e7c3008981"
+}

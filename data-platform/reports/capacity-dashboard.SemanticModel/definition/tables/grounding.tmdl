@@ -1,0 +1,77 @@
+/// M6 grounding table (design spec §7, plan Task 6.1). Import-mode calculated table
+/// mirroring data-platform/reports/capacity-dashboard.Report/grounding.yaml so the
+/// page-grounding matrix renders bound content (requirement -> ADR -> ontology entity
+/// -> measure -> visual location). Keep in sync with the YAML source of truth.
+table grounding
+	lineageTag: 8ee1e870-a40c-4d3a-abeb-38f3f5b4ffb4
+
+	column Requirement
+		dataType: string
+		lineageTag: 0e4ddde8-5f4a-436b-b404-e3541e68c9c0
+		summarizeBy: none
+		sourceColumn: [Value1]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ADR
+		dataType: string
+		lineageTag: ded9ce05-40e6-4ef0-bc31-00017de33bbc
+		summarizeBy: none
+		sourceColumn: [Value2]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Entity
+		dataType: string
+		lineageTag: 3a34012b-8708-4f02-8e54-8c6f9b2c5ceb
+		summarizeBy: none
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Measure
+		dataType: string
+		lineageTag: 53f01c46-ac20-4405-963a-c1fb8ff350b1
+		summarizeBy: none
+		sourceColumn: [Value4]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: bd65eb6d-f71a-4a2a-9a88-c24fe6f52378
+		summarizeBy: none
+		sourceColumn: [Value5]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition grounding = calculated
+		mode: import
+		source = ```
+				DATATABLE(
+				    "Value1", STRING, "Value2", STRING, "Value3", STRING, "Value4", STRING, "Value5", STRING,
+				    {
+				{ "FR-OM-001", "ADR-0015", "hcp:BedAssignment", "Occupancy %", "page-bed-manager / KPI wall" },
+				{ "FR-OM-002", "ADR-0015", "hcp:WardCapacityUnit", "Beds Free", "page-bed-manager / KPI wall" },
+				{ "FR-OM-003", "ADR-0015", "hcp:WardCapacityUnit", "Beds Total", "page-bed-manager / capacity chart" },
+				{ "FR-OM-004", "ADR-0002", "hcp:Encounter", "Currently In Hospital", "page-ops-lead / headline KPIs" },
+				{ "FR-OM-005", "ADR-0002", "hcp:Encounter", "Admissions", "page-ops-lead / flow cards" },
+				{ "FR-OM-006", "ADR-0002", "hcp:Encounter", "Discharged", "drill-discharge / status matrix" },
+				{ "FR-OM-010", "ADR-0015", "hcp:ORCase", "OR Utilization %", "page-or-coordinator / KPI wall" },
+				{ "FR-OM-011", "ADR-0015", "hcp:ORCase", "First-Case On-Time %", "page-or-coordinator / KPI wall" },
+				{ "FR-OM-012", "ADR-0015", "hcp:ORCase", "Short-Notice Cancellation %", "page-or-coordinator / donut" },
+				{ "FR-OM-013", "ADR-0015", "hcp:ORCase", "Avg Turnover Minutes", "drill-theatre / turnover card" },
+				{ "FR-OM-014", "ADR-0015", "hcp:ORSchedule", "Idle-Slot Minutes", "page-or-coordinator / KPI wall" },
+				{ "FR-DATA-001", "ADR-0015", "hcp:CapacityBaseline", "Narrative — Bed Manager", "page-bed-manager / smart narrative" },
+				{ "FR-DATA-002", "ADR-0015", "hcp:CapacityBaseline", "Narrative — Ops Lead", "page-ops-lead / smart narrative" },
+				{ "FR-DATA-003", "ADR-0015", "hcp:ORCase", "Narrative — OR Coordinator", "page-or-coordinator / smart narrative" },
+				{ "NFR-COMP-001", "ADR-0008", "hcp:Persona", "Effective Viewing Label", "all pages / RLS-proof pill" },
+				{ "NFR-COMP-002", "ADR-0008", "hcp:Persona", "Effective Role Label", "all pages / RLS-proof pill" },
+				{ "NFR-COMP-003", "ADR-0013", "hcp:Hospital", "Effective Hospital", "all pages / RLS-proof pill" },
+				{ "NFR-PERF-001", "ADR-0002", "hcp:CapacityBaseline", "Benchmark — Cold", "page-perf-benchmark / cold card" },
+				{ "NFR-PERF-002", "ADR-0002", "hcp:CapacityBaseline", "Benchmark — Warm", "page-perf-benchmark / warm card" }
+				    }
+				)
+		```
+
+	annotation PBI_Id = 25806e049ab849f0a90ac6653df91e3b

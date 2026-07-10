@@ -18,6 +18,37 @@ table bed_assignment
 
 		changedProperty = FormatString
 
+	/// M5 synthetic proxy (design spec §6.2 field-parameter member). Free beds = capacity minus
+	/// currently-assigned. Non-negative floor guards synthetic over-assignment edge cases.
+	measure 'Beds Free' = MAX(0, [Beds Total] - [Currently Assigned Beds])
+		formatString: #,0
+		lineageTag: 262f99e2-7b8e-4a32-920b-fcf15a9f1ace
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	/// M5 synthetic proxy: no forecast pipeline exists yet (Sprint 10 ML lane owns it).
+	/// Stands in with a deterministic +8% headroom over current assignment so the
+	/// field-parameter swap and Ops Lead tiles render. Replace with the real 72-h
+	/// forecast measure once the forecasting Gold table lands.
+	measure 'Forecast Peak 72h' = ROUND([Currently Assigned Beds] * 1.08, 0)
+		formatString: #,0
+		lineageTag: 3c10f894-db87-4c5f-8652-b01088561c2b
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	/// M5 synthetic proxy: variance of current assignment against the synthetic 72-h peak.
+	measure 'Actual vs Forecast' = [Currently Assigned Beds] - [Forecast Peak 72h]
+		formatString: +#,0;-#,0;0
+		lineageTag: 8393c20a-17c9-4203-b9e2-cb3f0693281a
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
 	column eventKind
 		dataType: string
 		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e13

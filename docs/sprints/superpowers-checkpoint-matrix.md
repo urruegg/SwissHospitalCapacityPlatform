@@ -53,6 +53,7 @@ sprint executed under this matrix.
 | 14 | 2026-07-09 | 2026-07-09 | Merged (T1–T3 landed; T4–T7 follow-up) | n/a (workflow-only) | Yes (parsers + readiness golden) | [`../superpowers/specs/2026-07-09-sprint-14-evidence-design.md`](../superpowers/specs/2026-07-09-sprint-14-evidence-design.md) | [`../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md`](../superpowers/plans/2026-07-09-sprint-14-evidence-plan.md) |
 | 15 | 2026-07-09 | 2026-07-09 | Artefacts authored; live publishes gated | BVA evidence data product (generator + medallion + semantic model + 6 C-suite pages + 3 whiteboard cards) | Yes (Python golden + structural + vitest) | [`../superpowers/specs/2026-07-09-sprint-15-bva-design.md`](../superpowers/specs/2026-07-09-sprint-15-bva-design.md) | [`../superpowers/plans/2026-07-09-sprint-15-bva-plan.md`](../superpowers/plans/2026-07-09-sprint-15-bva-plan.md) |
 | 16 | 2026-07-09 | 2026-07-09 | Foundation authored; live runs gated | `csa-agent` full body + Cosmos IaC + 8 scenarios + 3 MVP runs | Structural (eval-goldens) | [`../superpowers/specs/2026-07-09-sprint-16-csa-design.md`](../superpowers/specs/2026-07-09-sprint-16-csa-design.md) | [`../superpowers/plans/2026-07-09-sprint-16-csa-plan.md`](../superpowers/plans/2026-07-09-sprint-16-csa-plan.md) |
+| PBI v2 | 2026-07-09 | 2026-07-09 | M1–M6 authored; publish gated | Capacity dashboard v2 (Helvion, persona-anchored) | Report `validate` clean + model contract (27 measures) | [`../superpowers/specs/2026-07-09-powerbi-demoable-redesign-design.md`](../superpowers/specs/2026-07-09-powerbi-demoable-redesign-design.md) | [`../superpowers/plans/2026-07-09-powerbi-demoable-redesign-plan.md`](../superpowers/plans/2026-07-09-powerbi-demoable-redesign-plan.md) |
 
 ### Sprint 11 retro notes
 
@@ -211,6 +212,30 @@ sprint executed under this matrix.
   enable (T2), the `csa-simulate` notebook publish (T5), and live wizard MVP runs
   (T7, depends on the Sprint 13 app) each require an `approved-to-apply` comment
   (AGENTS.md §4) and live Azure — none were run in this environment.
+
+### Power BI Demoable Redesign (capacity dashboard v2) retro notes
+
+- **All six milestones (M1–M6) authored** for `data-platform/reports/capacity-dashboard.*`.
+  M1 landed on `main` (PR #152); M2–M6 delivered here as one PR (the sandbox cannot
+  open five separate milestone PRs). Each milestone validated with
+  `powerbi-report-author validate` (0 errors; only network-blocked remote-schema
+  warnings remain).
+- **Report shape**: 6 visible pages (`page-landing`, `page-bed-manager`,
+  `page-or-coordinator`, `page-ops-lead`, `page-grounding`) + 5 hidden helper pages
+  (2 tooltip, 3 drill-through) + a hidden `page-perf-benchmark`. RLS-proof pill on
+  every page; grounding-card strip on the 3 persona pages.
+- **Semantic model**: +12 measures over the M1 baseline (15 → 27), 2 field-parameter
+  tables (`param_capacity_measure`, `param_or_measure`), and `grounding` + `benchmark`
+  Import-mode calculated tables. The `verify-semantic-model.yml` contract constant was
+  bumped to 27 measures accordingly.
+- **Deferred by design**: delta / time-intelligence measures — the Direct Lake model
+  has no date dimension (see `check_gold_columns.py` advisory), so smart narratives and
+  KPIs compose from base measures only.
+- **Gated / not executed here**: publishing the semantic model + report to
+  `ws-ihzhhpf-sit-data` is a `deploy` action requiring an `approved-to-apply` comment
+  from @urruegg (AGENTS.md §4). `perf_hero.py` asserts the hero-scenario thresholds
+  (cold < 4000 ms, warm < 500 ms) against static benchmark values until the publish gate
+  records live ms.
 
 ## Program close-out (Sprints 11–16)
 

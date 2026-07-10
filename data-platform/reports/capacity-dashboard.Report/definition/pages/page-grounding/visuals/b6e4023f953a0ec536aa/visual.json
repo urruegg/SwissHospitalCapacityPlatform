@@ -1,0 +1,130 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "position": {
+    "x": 24,
+    "y": 156,
+    "z": 1000,
+    "height": 520,
+    "width": 1230,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "matrix",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "grounding"
+                    }
+                  },
+                  "Property": "Requirement"
+                }
+              },
+              "queryRef": "grounding.Requirement",
+              "nativeQueryRef": "Requirement"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "grounding"
+                    }
+                  },
+                  "Property": "Entity"
+                }
+              },
+              "queryRef": "grounding.Entity",
+              "nativeQueryRef": "Entity"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "grounding"
+                    }
+                  },
+                  "Property": "ADR"
+                }
+              },
+              "queryRef": "grounding.ADR",
+              "nativeQueryRef": "ADR"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "grounding"
+                    }
+                  },
+                  "Property": "Measure"
+                }
+              },
+              "queryRef": "grounding.Measure",
+              "nativeQueryRef": "Measure"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "grounding"
+                    }
+                  },
+                  "Property": "Location"
+                }
+              },
+              "queryRef": "grounding.Location",
+              "nativeQueryRef": "Location"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Traceability'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#2E4C68'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "name": "b6e4023f953a0ec536aa"
+}

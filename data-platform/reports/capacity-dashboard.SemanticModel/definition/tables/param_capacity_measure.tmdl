@@ -1,0 +1,47 @@
+/// M5 field-parameter table (design spec §6.2). Import-mode calculated table — the
+/// standard Power BI field-parameter shape. Lets the persona swap the driving metric
+/// on the page without editing the visual. Members reference existing measures only.
+table param_capacity_measure
+	lineageTag: 583e1864-d886-473d-abb3-1b79f3c4a9cf
+
+	column 'Capacity Metric'
+		lineageTag: 84c98302-cc77-4bdf-adb1-4f4ccb874805
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Capacity Metric Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Capacity Metric Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Capacity Metric Fields'
+		lineageTag: 193bd1eb-2759-48d6-a7ba-2c3d0bd09ecb
+		summarizeBy: none
+		sourceColumn: [Value2]
+		isHidden
+
+		extendedProperty ParameterMetadata =
+				{"version":3,"kind":2}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Capacity Metric Order'
+		lineageTag: 4a6e98e5-9df8-4cd4-bef5-9ac96895a318
+		summarizeBy: sum
+		sourceColumn: [Value3]
+		isHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition param_capacity_measure = calculated
+		mode: import
+		source =
+				{
+					("Occupancy %", NAMEOF('bed_assignment'[Occupancy %]), 0),
+					("Beds Free", NAMEOF('bed_assignment'[Beds Free]), 1),
+					("Forecast Peak 72h", NAMEOF('bed_assignment'[Forecast Peak 72h]), 2),
+					("Actual vs Forecast", NAMEOF('bed_assignment'[Actual vs Forecast]), 3)
+				}
+
+	annotation PBI_Id = 5164a7bfb87846f392d52c28ba65d4f4

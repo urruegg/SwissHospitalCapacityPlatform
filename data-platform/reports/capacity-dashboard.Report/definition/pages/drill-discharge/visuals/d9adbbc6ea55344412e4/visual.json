@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "position": {
+    "x": 24,
+    "y": 56,
+    "z": 1000,
+    "height": 500,
+    "width": 700,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "matrix",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_ward_capacityunit"
+                    }
+                  },
+                  "Property": "name"
+                }
+              },
+              "queryRef": "dim_ward_capacityunit.name",
+              "nativeQueryRef": "name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "encounter"
+                    }
+                  },
+                  "Property": "status"
+                }
+              },
+              "queryRef": "encounter.status",
+              "nativeQueryRef": "status"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "encounter"
+                    }
+                  },
+                  "Property": "Active Encounters"
+                }
+              },
+              "queryRef": "encounter.Active Encounters",
+              "nativeQueryRef": "Active Encounters"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Encounters by ward & status'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#2E4C68'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "name": "d9adbbc6ea55344412e4"
+}
