@@ -23,6 +23,9 @@ param cosmosEndpoint string
 @description('Redis host name for the grounding cache (ADR-0007 §1).')
 param redisHostName string
 
+@description('Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU).')
+param redisPort int = 10000
+
 @description('Target port the agent-host container listens on.')
 param targetPort int = 8080
 
@@ -79,6 +82,10 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'REDIS_HOST'
               value: redisHostName
+            }
+            {
+              name: 'REDIS_PORT'
+              value: string(redisPort)
             }
             {
               name: 'AGENTS_ROOT'

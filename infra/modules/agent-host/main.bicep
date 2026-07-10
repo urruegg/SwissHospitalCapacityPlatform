@@ -46,6 +46,7 @@ module containerApp 'container-app.bicep' = {
     logAnalyticsSharedKey: listKeys(logAnalyticsWorkspaceResourceId, '2023-09-01').primarySharedKey
     cosmosEndpoint: cosmos.outputs.cosmosEndpoint
     redisHostName: redis.outputs.redisHostName
+    redisPort: redis.outputs.redisPort
   }
 }
 
