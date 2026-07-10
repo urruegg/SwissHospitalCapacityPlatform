@@ -410,6 +410,8 @@ module fabricEventstream './modules/data-platform/fabric-eventstream/main.bicep'
 // AGENTS.md §4 `approved-to-apply` control at the workflow level. The container-app submodule
 // resolves Log Analytics customerId / sharedKey from the always-deployed platform-foundation
 // workspace, mirroring the sim-capacity pattern.
+var platformLogAnalyticsWorkspaceResourceId = resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+
 module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) {
   name: 'agent-host-${environmentName}'
   params: {
@@ -417,7 +419,7 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     nameSuffix: resourceSuffix
     tags: tags
     agentHostImage: agentHostContainerImage
-    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    logAnalyticsWorkspaceResourceId: platformLogAnalyticsWorkspaceResourceId
   }
 }
 
@@ -428,7 +430,7 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     location: appFluentLocation
     containerAppName: 'ca-app-fluent-${resourceSuffix}'
     containerAppEnvironmentName: 'cae-app-fluent-${resourceSuffix}'
-    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    logAnalyticsWorkspaceResourceId: platformLogAnalyticsWorkspaceResourceId
     containerImage: appFluentContainerImage
     containerRegistryLoginServer: appFluentContainerRegistryLoginServer
     containerRegistryResourceId: appFluentContainerRegistryResourceId

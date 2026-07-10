@@ -6,7 +6,7 @@
 | **Date** | 2026-07-10 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.5.0 (added Sprint 13.1 app-tier module domains: agent-host + hcc-app-fluent, and their provider registrations) |
+| **Previous Version** | 1.5.0 (SQL-optional MVP posture per ADR-0015; identity/network/observability/data-platform/ai-platform/integration module domains) |
 
 ## Purpose
 
