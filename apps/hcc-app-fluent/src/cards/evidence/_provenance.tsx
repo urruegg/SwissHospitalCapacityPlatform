@@ -10,6 +10,9 @@ import type { EvidenceProvenance } from '../../data/evidence/evidence-types';
  * assert; {@link EvidenceProvenanceFooter} renders the footer or the error.
  */
 
+/** Length of an ISO-8601 date prefix (`YYYY-MM-DD`) within an `asOf` timestamp. */
+const ISO_DATE_LENGTH = 10;
+
 /** Return a human-readable problem when provenance is incomplete, else null. */
 export function provenanceIssue(provenance: EvidenceProvenance | undefined | null): string | null {
   if (!provenance) return 'missing provenance';
@@ -31,7 +34,7 @@ export function EvidenceProvenanceFooter({ provenance }: { provenance: EvidenceP
       </Caption1>
     );
   }
-  const asOf = provenance.asOf.slice(0, 10);
+  const asOf = provenance.asOf.slice(0, ISO_DATE_LENGTH);
   return (
     <Caption1
       data-provenance="true"

@@ -7,9 +7,10 @@ Asserts the generated dataset that the Fluent app imports:
 * is byte-stable (regeneration is deterministic — the committed
   ``evidence-demo.json`` must match a fresh build).
 
-Dependency-free apart from PyYAML (already an evidence-parser dependency). Run::
+Dependency-free apart from PyYAML (already an evidence-parser dependency). Run
+from the repository root, mirroring the other evidence-lane suites::
 
-    python -m unittest scripts.evidence.tests.test_app_fixture
+    python3 -m unittest discover -s scripts/evidence/tests -t .
 """
 
 from __future__ import annotations
