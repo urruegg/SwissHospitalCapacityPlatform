@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-07-10 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.4.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
+| **Previous Version** | 1.5.0 (added Sprint 13.1 app-tier module domains: agent-host + hcc-app-fluent, and their provider registrations) |
 
 ## Purpose
 
@@ -33,6 +33,8 @@ Implemented module domains:
 - data-platform
 - ai-platform
 - integration
+- agent-host (Sprint 13.1 — Container App + Cosmos + Redis, ADR-0007; SIT via `enableAgentHostModule`)
+- apps/hcc-app-fluent (Sprint 13.1 — Fluent UI baseline Container App with external ingress; SIT via `enableAppFluentModule`)
 
 ## Data platform
 
@@ -79,6 +81,9 @@ Required providers for current module set:
 - Microsoft.Storage
 - Microsoft.CognitiveServices
 - Microsoft.ServiceBus
+- Microsoft.App (Container Apps — sim-capacity, agent-host, hcc-app-fluent)
+- Microsoft.Cache (Azure Cache for Redis — agent-host grounding cache, ADR-0007)
+- Microsoft.DocumentDB (Cosmos DB — agent-host conversations/audit/approval-events, ADR-0007)
 
 Owner-level bootstrap command:
 

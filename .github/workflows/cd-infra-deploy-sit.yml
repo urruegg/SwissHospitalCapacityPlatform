@@ -83,6 +83,9 @@ jobs:
             Microsoft.EventHub
             Microsoft.MachineLearningServices
             Microsoft.Logic
+            Microsoft.App
+            Microsoft.Cache
+            Microsoft.DocumentDB
           )
 
           for p in "${providers[@]}"; do

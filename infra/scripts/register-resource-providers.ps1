@@ -10,7 +10,10 @@ param(
     'Microsoft.Insights',
     'Microsoft.Storage',
     'Microsoft.CognitiveServices',
-    'Microsoft.ServiceBus'
+    'Microsoft.ServiceBus',
+    'Microsoft.App',
+    'Microsoft.Cache',
+    'Microsoft.DocumentDB'
   )
 )
 
