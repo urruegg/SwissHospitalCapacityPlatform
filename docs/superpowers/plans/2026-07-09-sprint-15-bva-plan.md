@@ -379,7 +379,7 @@ Follow the [Common per-task workflow](#common-per-task-workflow-referenced-by-t1
 
 ## Parallelism map (for the cloud coding agent's subagent scheduling)
 
-```
+```text
 T1 (generator) ──▶ T2 (workflow) ──▶ T3 (medallion) ──┬──▶ T4 (adoption join) ──┐
                                                        │                          │
                                                        └──▶ T5 (KPIs) ──▶ T6 (Power BI) ──┐
