@@ -82,7 +82,11 @@ jobs:
           else
             # Skip fabric-data-agent — Sprint 09 v2 read-only pack without a
             # Sprint 11-shape golden-tasks.md yet (see AGENTS.md §1 note).
-            agent_dirs=($(ls -d agents/*/ | grep -v '^agents/fabric-data-agent/$' || true))
+            agent_dirs=()
+            for d in agents/*/; do
+              [[ "$d" == "agents/fabric-data-agent/" ]] && continue
+              agent_dirs+=("$d")
+            done
           fi
 
           if [[ ${#agent_dirs[@]} -eq 0 ]]; then

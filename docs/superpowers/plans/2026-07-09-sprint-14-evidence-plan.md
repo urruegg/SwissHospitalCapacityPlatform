@@ -382,7 +382,7 @@ Follow the [Common per-task workflow](#common-per-task-workflow-referenced-by-t1
 
 ## Parallelism map (for the cloud coding agent's subagent scheduling)
 
-```
+```text
 T1 (parsers + workflow) ──▶ T2 (seed catalogs) ──▶ T3 (Fabric medallion) ──▶ T4 (semantic model) ──▶ T5 (cards) ──▶ T6 (Backstage tab) ──▶ T7 (retro)
                                                                                      
 Sprint 13 T3 (whiteboard framework) ────────────────────────────────────────┘         
