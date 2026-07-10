@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "2459426484332521614"
+      "templateHash": "17268874258086560292"
     }
   },
   "parameters": {
@@ -3214,7 +3214,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "1396762657814217695"
+              "templateHash": "5199452525710059034"
             }
           },
           "parameters": {
@@ -3423,7 +3423,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "6846870946857569733"
+                      "templateHash": "8005075735857793013"
                     }
                   },
                   "parameters": {
@@ -3448,34 +3448,60 @@
                   },
                   "resources": [
                     {
-                      "type": "Microsoft.Cache/redis",
-                      "apiVersion": "2024-03-01",
+                      "type": "Microsoft.Cache/redisEnterprise",
+                      "apiVersion": "2024-10-01",
                       "name": "[format('redis-{0}', parameters('nameSuffix'))]",
                       "location": "[parameters('location')]",
                       "tags": "[parameters('tags')]",
+                      "sku": {
+                        "name": "Balanced_B0"
+                      },
                       "properties": {
-                        "sku": {
-                          "name": "Basic",
-                          "family": "C",
-                          "capacity": 0
-                        },
-                        "enableNonSslPort": false,
-                        "minimumTlsVersion": "1.2",
-                        "redisConfiguration": {
-                          "aad-enabled": "true"
-                        },
-                        "publicNetworkAccess": "Enabled"
+                        "highAvailability": "Enabled",
+                        "minimumTlsVersion": "1.2"
                       }
+                    },
+                    {
+                      "type": "Microsoft.Cache/redisEnterprise/databases",
+                      "apiVersion": "2024-10-01",
+                      "name": "[format('{0}/{1}', format('redis-{0}', parameters('nameSuffix')), 'default')]",
+                      "properties": {
+                        "clientProtocol": "Encrypted",
+                        "port": 10000,
+                        "clusteringPolicy": "EnterpriseCluster",
+                        "evictionPolicy": "NoEviction",
+                        "persistence": {
+                          "aofEnabled": false,
+                          "rdbEnabled": false
+                        },
+                        "accessKeysAuthentication": "Disabled"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Cache/redisEnterprise', format('redis-{0}', parameters('nameSuffix')))]"
+                      ]
                     }
                   ],
                   "outputs": {
                     "redisName": {
                       "type": "string",
+                      "metadata": {
+                        "description": "Cluster resource name."
+                      },
                       "value": "[format('redis-{0}', parameters('nameSuffix'))]"
                     },
                     "redisHostName": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.Cache/redis', format('redis-{0}', parameters('nameSuffix'))), '2024-03-01').hostName]"
+                      "metadata": {
+                        "description": "Cluster host name (endpoint). Managed Redis uses port 10000 by default; ensure the agent-host client is configured for the enterprise cluster port + TLS."
+                      },
+                      "value": "[reference(resourceId('Microsoft.Cache/redisEnterprise', format('redis-{0}', parameters('nameSuffix'))), '2024-10-01').hostName]"
+                    },
+                    "redisPort": {
+                      "type": "int",
+                      "metadata": {
+                        "description": "Managed Redis port (fixed at 10000 for the Enterprise cluster)."
+                      },
+                      "value": 10000
                     }
                   }
                 }
@@ -3514,6 +3540,9 @@
                   },
                   "redisHostName": {
                     "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value]"
+                  },
+                  "redisPort": {
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value]"
                   }
                 },
                 "template": {
@@ -3523,7 +3552,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.43.8.12551",
-                      "templateHash": "11515790118920130084"
+                      "templateHash": "7585539027046446392"
                     }
                   },
                   "parameters": {
@@ -3573,6 +3602,13 @@
                       "type": "string",
                       "metadata": {
                         "description": "Redis host name for the grounding cache (ADR-0007 §1)."
+                      }
+                    },
+                    "redisPort": {
+                      "type": "int",
+                      "defaultValue": 10000,
+                      "metadata": {
+                        "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU)."
                       }
                     },
                     "targetPort": {
@@ -3636,6 +3672,10 @@
                                 {
                                   "name": "REDIS_HOST",
                                   "value": "[parameters('redisHostName')]"
+                                },
+                                {
+                                  "name": "REDIS_PORT",
+                                  "value": "[string(parameters('redisPort'))]"
                                 },
                                 {
                                   "name": "AGENTS_ROOT",
