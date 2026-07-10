@@ -45,15 +45,17 @@ Phase 2 (subsequent PRs, one per sprint) fills the Status / Evidence / Gap colum
 
 | # | DoD item (from plan §Definition of Sprint 11 done) | Status | Evidence | Gap |
 |---|------|--------|----------|-----|
-| S11.1 | Task 1 (foundation) merged. | ⏳ audit-pending | PR #149 (foundation Task 1 batched into agent PR per plan §Task 1) | |
-| S11.2 | Tasks 2-8 (7 MVP agents) merged, each with prompt file + golden-tasks + AGENTS.md row. | ⏳ audit-pending | PR #149 | Walk `agents/{bmca,ooa,dca,orsa,sba,csa,data-quality}-agent/` for AGENT.md + golden-tasks.md presence + AGENTS.md §1 row |
-| S11.3 | Model-selection ADR (0020-*) merged and referenced by each agent. | ⏳ audit-pending | `docs/adr/0020-sprint11-agent-model-selection.md` | Grep each `agents/*/AGENT.md` for `ADR-0020` reference |
-| S11.4 | `eval-goldens.yml` green across all fixtures. | ⏳ audit-pending | `.github/workflows/eval-goldens.yml` (post-PR-#177 hygiene) | Run `gh workflow run eval-goldens.yml` for each of the 7 agents; capture pass/fail |
-| S11.5 | `agent-build.yml` and `sprint-kickoff.yml` templates in place. | ⏳ audit-pending | `.github/ISSUE_TEMPLATE/agent-build.yml`, `sprint-kickoff.yml` | Check file presence |
-| S11.6 | `fabric-mcp` entry added to `.github/copilot/mcp.json` and `AGENTS.md` §2. | ⏳ audit-pending | | Read both files and grep for `fabric-mcp` |
-| S11.7 | For each user-facing agent: prompt manifest + tool contract + HITL gate declaration ready for Sprint 13 runtime loading. | ⏳ audit-pending | `agents/*/manifest.yaml` | Verify every user-facing agent folder has `manifest.yaml` |
-| S11.8 | Sprint 11 retro entry in `docs/sprints/superpowers-checkpoint-matrix.md`. | ⏳ audit-pending | | Grep matrix for "Sprint 11" |
-| S11.9 | Kickoff issue #146 closed with summary comment. | ⏳ audit-pending | | `gh issue view 146 --json state,comments` |
+| S11.1 | Task 1 (foundation) merged. | ✅ done | PR #149 (foundation Task 1 batched into agent PR per plan §Task 1) — verified via presence of all downstream artefacts | |
+| S11.2 | Tasks 2-8 (7 MVP agents) merged, each with prompt file + golden-tasks + AGENTS.md row. | ✅ done | All 8 folders under `agents/` (`bmca`, `ooa`, `dca`, `orsa`, `sba`, `csa`, `data-quality`, `onboarding`) have `AGENT.md` + `golden-tasks.md` + `manifest.yaml`; AGENTS.md §1 lists them | Actually 8 agents delivered (onboarding-agent is the stretch T9) — 1 more than the original "7 MVP agents" text |
+| S11.3 | Model-selection ADR (0020-*) merged and referenced by each agent. | ✅ done | `docs/adr/0020-sprint11-agent-model-selection.md`; all 8 agent `AGENT.md` files contain `ADR-0020` references | |
+| S11.4 | `eval-goldens.yml` green across all fixtures. | ✅ done | Latest 5 workflow runs all `conclusion=success` (most recent: run 29084781058 on 2026-07-10 on branch `sprint-17/ci-hygiene-md040-shellcheck`) | |
+| S11.5 | `agent-build.yml` and `sprint-kickoff.yml` templates in place. | ✅ done | Both files exist under `.github/ISSUE_TEMPLATE/` | |
+| S11.6 | `fabric-mcp` entry added to `.github/copilot/mcp.json` and `AGENTS.md` §2. | ✅ done | `fabric-mcp` matches in both `.github/copilot/mcp.json` and `AGENTS.md` | |
+| S11.7 | For each user-facing agent: prompt manifest + tool contract + HITL gate declaration ready for Sprint 13 runtime loading. | ✅ done | Every agent folder has `manifest.yaml` (verified for all 8 packs) | Runtime loading itself proven end-to-end in Sprint 13 T5 (audited under S13.3) |
+| S11.8 | Sprint 11 retro entry in `docs/sprints/superpowers-checkpoint-matrix.md`. | ✅ done | `docs/sprints/superpowers-checkpoint-matrix.md` line 58: "Sprint 11 retro notes" section | |
+| S11.9 | Kickoff issue #146 closed with summary comment. | ✅ done | Issue #146 CLOSED on 2026-07-09T07:58:37Z with 3 comments | |
+
+**Sprint 11 result: 9/9 ✅ done, 0 ⚠️ partial, 0 ❌ gap. Audited 2026-07-10.**
 
 ---
 
