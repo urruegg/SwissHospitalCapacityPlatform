@@ -194,6 +194,13 @@ param enableAppFluentModule bool = false
 @description('Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR.')
 param appFluentImage string = 'nginxinc/nginx-unprivileged:1.27-alpine'
 
+// Sprint 13.1 T-DNS — curavias.ch public custom hostname for the Fluent app (ADR-0030).
+@description('Public custom hostname for the hcc-app-fluent CA ingress. Empty string keeps the CA on its default *.azurecontainerapps.io hostname. Set to appsit.curavias.ch in SIT and app.curavias.ch in PROD per ADR-0030.')
+param appFluentCustomHostname string = ''
+
+@description('When true and appFluentCustomHostname is set, provision a managed cert + bind the CA to the custom hostname. Deploy is a two-step process: (1) merge with this false to create the DNS zone + records, (2) do GoDaddy NS delegation, (3) flip to true and redeploy so the CAE can validate ownership + issue a Let\'s Encrypt cert. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md.')
+param appFluentEnableCustomDomainCert bool = false
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -406,8 +413,49 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    // Sprint 13.1 T-DNS — public custom hostname per ADR-0030.
+    customHostname: appFluentCustomHostname
+    enableCustomDomainCert: appFluentEnableCustomDomainCert
   }
 }
+
+// Sprint 13.1 T-DNS — curavias.ch public DNS zone (ADR-0030).
+// Deployed when enableAppFluentModule is true AND appFluentCustomHostname is non-empty.
+// SIT owns the zone in rg-ihzhhpf-sit; PROD will reference via `existing` in a follow-up
+// PR when PROD RG is provisioned.
+//
+// Record names derived from the custom hostname's leftmost label (e.g. "appsit" from
+// "appsit.curavias.ch"). The CNAME target is the CA's Azure-provided ingress FQDN; the
+// TXT value is the CA's customDomainVerificationId. Both flow from the app-fluent
+// module output — no cross-boundary secrets.
+var appFluentSubdomainLabel = (enableAppFluentModule && !empty(appFluentCustomHostname))
+  ? substring(appFluentCustomHostname, 0, indexOf(appFluentCustomHostname, '.'))
+  : ''
+
+module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule && !empty(appFluentCustomHostname)) {
+  name: 'curavias-dns-${environmentName}'
+  params: {
+    zoneName: 'curavias.ch'
+    tags: tags
+    cnameRecords: [
+      {
+        name: appFluentSubdomainLabel
+        target: appFluent!.outputs.appFluentFqdn
+        ttl: 3600
+      }
+    ]
+    txtRecords: [
+      {
+        name: 'asuid.${appFluentSubdomainLabel}'
+        values: [ appFluent!.outputs.customDomainVerificationId ]
+        ttl: 3600
+      }
+    ]
+  }
+}
+
+@description('Azure DNS name servers for curavias.ch. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md.')
+output curaviasNameServers array = (enableAppFluentModule && !empty(appFluentCustomHostname)) ? curaviasDns!.outputs.nameServers : []
 
 // Sprint 09 v2.0.0 T2.2 — Fabric Eventstream scaffold. See modules/data-platform/fabric-eventstream/README.md.
 // Region is constrained to switzerlandnorth | westus2 to keep Bicep type-safe; falls back to westus2 for the

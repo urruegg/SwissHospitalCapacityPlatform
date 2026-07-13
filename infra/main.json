@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "6912252981811407758"
+      "templateHash": "6523723561942103234"
     }
   },
   "parameters": {
@@ -419,6 +419,20 @@
       "metadata": {
         "description": "Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR."
       }
+    },
+    "appFluentCustomHostname": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Public custom hostname for the hcc-app-fluent CA ingress. Empty string keeps the CA on its default *.azurecontainerapps.io hostname. Set to appsit.curavias.ch in SIT and app.curavias.ch in PROD per ADR-0030."
+      }
+    },
+    "appFluentEnableCustomDomainCert": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "When true and appFluentCustomHostname is set, provision a managed cert + bind the CA to the custom hostname. Deploy is a two-step process: (1) merge with this false to create the DNS zone + records, (2) do GoDaddy NS delegation, (3) flip to true and redeploy so the CAE can validate ownership + issue a Let's Encrypt cert. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md."
+      }
     }
   },
   "variables": {
@@ -430,7 +444,8 @@
       "costCenter": "[parameters('costCenter')]",
       "workload": "[parameters('workload')]"
     },
-    "simCapacityHasEhSource": "[or(not(empty(parameters('simCapacityEventHubNamespace'))), parameters('enableDataFoundationModule'))]"
+    "simCapacityHasEhSource": "[or(not(empty(parameters('simCapacityEventHubNamespace'))), parameters('enableDataFoundationModule'))]",
+    "appFluentSubdomainLabel": "[if(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), substring(parameters('appFluentCustomHostname'), 0, indexOf(parameters('appFluentCustomHostname'), '.')), '')]"
   },
   "resources": [
     {
@@ -3858,6 +3873,12 @@
           },
           "containerRegistryResourceId": {
             "value": "[parameters('simCapacityContainerRegistryResourceId')]"
+          },
+          "customHostname": {
+            "value": "[parameters('appFluentCustomHostname')]"
+          },
+          "enableCustomDomainCert": {
+            "value": "[parameters('appFluentEnableCustomDomainCert')]"
           }
         },
         "template": {
@@ -3867,7 +3888,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "6571318679961517210"
+              "templateHash": "7091315258363163511"
             }
           },
           "parameters": {
@@ -3940,6 +3961,20 @@
               "metadata": {
                 "description": "Container target port. Fluent Dockerfile serves via nginx-unprivileged on 8080."
               }
+            },
+            "customHostname": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030."
+              }
+            },
+            "enableCustomDomainCert": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true and customHostname is non-empty, provision a Managed Certificate on the CAE and bind it to the CA ingress. Set FALSE during the first deploy (or when curavias.ch NS delegation to Azure DNS is not yet propagated) to avoid managed-cert issuance failure. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md."
+              }
             }
           },
           "variables": {
@@ -3988,6 +4023,20 @@
               ]
             },
             {
+              "condition": "[and(parameters('enableCustomDomainCert'), not(empty(parameters('customHostname'))))]",
+              "type": "Microsoft.App/managedEnvironments/managedCertificates",
+              "apiVersion": "2024-03-01",
+              "name": "[format('{0}/{1}', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-')))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subjectName": "[parameters('customHostname')]",
+                "domainControlValidation": "CNAME"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]"
+              ]
+            },
+            {
               "type": "Microsoft.App/containerApps",
               "apiVersion": "2024-03-01",
               "name": "[format('ca-app-fluent-{0}', parameters('nameSuffix'))]",
@@ -4006,7 +4055,8 @@
                     "external": true,
                     "targetPort": "[parameters('targetPort')]",
                     "transport": "auto",
-                    "allowInsecure": false
+                    "allowInsecure": false,
+                    "customDomains": "[if(and(parameters('enableCustomDomainCert'), not(empty(parameters('customHostname')))), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'SniEnabled', 'certificateId', resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-'))))), createArray())]"
                   },
                   "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))))), createArray())]"
                 },
@@ -4030,6 +4080,7 @@
               "dependsOn": [
                 "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/'))), 'Microsoft.Authorization/roleAssignments', guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId')))]",
                 "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]",
+                "[resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-')))]",
                 "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]"
               ]
             }
@@ -4069,12 +4120,169 @@
                 "description": "User-assigned MI resource ID."
               },
               "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]"
+            },
+            "customDomainVerificationId": {
+              "type": "string",
+              "metadata": {
+                "description": "Container Apps custom-domain verification ID. Used to populate the asuid.<hostname> TXT record in the curavias.ch DNS zone so the CAE managedCertificate can validate ownership."
+              },
+              "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01').customDomainVerificationId]"
             }
           }
         }
       },
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname'))))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('curavias-dns-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "zoneName": {
+            "value": "curavias.ch"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "cnameRecords": {
+            "value": [
+              {
+                "name": "[variables('appFluentSubdomainLabel')]",
+                "target": "[reference(resourceId('Microsoft.Resources/deployments', format('app-fluent-{0}', parameters('environmentName'))), '2025-04-01').outputs.appFluentFqdn.value]",
+                "ttl": 3600
+              }
+            ]
+          },
+          "txtRecords": {
+            "value": [
+              {
+                "name": "[format('asuid.{0}', variables('appFluentSubdomainLabel'))]",
+                "values": [
+                  "[reference(resourceId('Microsoft.Resources/deployments', format('app-fluent-{0}', parameters('environmentName'))), '2025-04-01').outputs.customDomainVerificationId.value]"
+                ],
+                "ttl": 3600
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "7900345548352902027"
+            }
+          },
+          "parameters": {
+            "zoneName": {
+              "type": "string",
+              "defaultValue": "curavias.ch",
+              "metadata": {
+                "description": "DNS zone name. Fresh domain via GoDaddy (registrar)."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Resource tags."
+              }
+            },
+            "cnameRecords": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "CNAME records. Each item: { name: \"appsit\", target: \"ca-app-fluent-....azurecontainerapps.io\", ttl: 3600 }. Empty array creates the zone with no CNAME records."
+              }
+            },
+            "txtRecords": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "TXT records for Container Apps custom-domain validation. Each item: { name: \"asuid.appsit\", values: [\"<verificationId>\"], ttl: 3600 }. Empty array creates no TXT records."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/dnsZones",
+              "apiVersion": "2018-05-01",
+              "name": "[parameters('zoneName')]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "zoneType": "Public"
+              }
+            },
+            {
+              "copy": {
+                "name": "cnames",
+                "count": "[length(parameters('cnameRecords'))]"
+              },
+              "type": "Microsoft.Network/dnsZones/CNAME",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('zoneName'), parameters('cnameRecords')[copyIndex()].name)]",
+              "properties": {
+                "TTL": "[parameters('cnameRecords')[copyIndex()].ttl]",
+                "CNAMERecord": {
+                  "cname": "[parameters('cnameRecords')[copyIndex()].target]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "txts",
+                "count": "[length(parameters('txtRecords'))]"
+              },
+              "type": "Microsoft.Network/dnsZones/TXT",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('zoneName'), parameters('txtRecords')[copyIndex()].name)]",
+              "properties": {
+                "TTL": "[parameters('txtRecords')[copyIndex()].ttl]",
+                "TXTRecords": [
+                  {
+                    "value": "[parameters('txtRecords')[copyIndex()].values]"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "zoneName": {
+              "type": "string",
+              "metadata": {
+                "description": "Zone name (echo)."
+              },
+              "value": "[parameters('zoneName')]"
+            },
+            "nameServers": {
+              "type": "array",
+              "metadata": {
+                "description": "Azure DNS name servers. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md."
+              },
+              "value": "[reference(resourceId('Microsoft.Network/dnsZones', parameters('zoneName')), '2018-05-01').nameServers]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('app-fluent-{0}', parameters('environmentName')))]"
       ]
     },
     {
@@ -4251,6 +4459,13 @@
     }
   ],
   "outputs": {
+    "curaviasNameServers": {
+      "type": "array",
+      "metadata": {
+        "description": "Azure DNS name servers for curavias.ch. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md."
+      },
+      "value": "[if(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), reference(resourceId('Microsoft.Resources/deployments', format('curavias-dns-{0}', parameters('environmentName'))), '2025-04-01').outputs.nameServers.value, createArray())]"
+    },
     "keyVaultName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.keyVaultName.value]"
