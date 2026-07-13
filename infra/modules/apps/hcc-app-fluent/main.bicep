@@ -57,12 +57,42 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
+// User-assigned MI for the app-fluent CA. Created BEFORE the CA so the AcrPull
+// role assignment can land first — the CA then references an already-authorised
+// identity when it triggers its first (or updated) revision pull. Matches the
+// sim-capacity pattern.
+resource appFluentIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'id-ca-app-fluent-${nameSuffix}'
+  location: location
+  tags: tags
+}
+
+// AcrPull on the ACR when MI-based pull is enabled. Scoped to the ACR resource
+// so the identity has only pull rights on this one registry.
+resource acr 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' existing = if (useAcrMiPull) {
+  name: last(split(containerRegistryResourceId, '/'))
+}
+
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (useAcrMiPull) {
+  scope: acr
+  name: guid(containerRegistryResourceId, appFluentIdentity.id, acrPullRoleId)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
+    principalId: appFluentIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    description: 'Sprint 13 T1 — hcc-app-fluent CA pulls image from ACR via user-assigned MI.'
+  }
+}
+
 resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
   name: 'ca-app-fluent-${nameSuffix}'
   location: location
   tags: tags
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${appFluentIdentity.id}': {}
+    }
   }
   properties: {
     managedEnvironmentId: managedEnvironment.id
@@ -76,7 +106,7 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
       registries: useAcrMiPull ? [
         {
           server: containerRegistryLoginServer
-          identity: 'system'
+          identity: appFluentIdentity.id
         }
       ] : []
     }
@@ -97,17 +127,9 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
       }
     }
   }
-}
-
-// AcrPull role assignment on the ACR when MI-based pull is enabled.
-resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (useAcrMiPull) {
-  name: guid(containerRegistryResourceId, appFluent.id, acrPullRoleId)
-  scope: resourceGroup()
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
-    principalId: appFluent.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
+  dependsOn: [
+    acrPullRoleAssignment
+  ]
 }
 
 @description('Container App FQDN (ingress URL host).')
@@ -116,5 +138,11 @@ output appFluentFqdn string = appFluent.properties.configuration.ingress.fqdn
 @description('Container App name.')
 output appFluentName string = appFluent.name
 
-@description('System-assigned MI principal ID (for OBO/Graph token wiring).')
-output appFluentPrincipalId string = appFluent.identity.principalId
+@description('User-assigned MI principal ID (for OBO/Graph token wiring).')
+output appFluentPrincipalId string = appFluentIdentity.properties.principalId
+
+@description('User-assigned MI client ID.')
+output appFluentClientId string = appFluentIdentity.properties.clientId
+
+@description('User-assigned MI resource ID.')
+output appFluentIdentityResourceId string = appFluentIdentity.id

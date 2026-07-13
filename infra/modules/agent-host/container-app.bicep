@@ -29,14 +29,27 @@ param redisPort int = 10000
 @description('Target port the agent-host container listens on.')
 param targetPort int = 8080
 
-// Sprint 13 T5 — Container Apps environment + agent-host app. System-assigned
-// managed identity is used for all downstream auth (Cosmos, Redis, Foundry) so
-// no connection strings or keys are stored (copilot-instructions §4).
+@description('Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId. When empty, the CA uses no `registries` block and relies on public/anonymous pull.')
+param containerRegistryLoginServer string = ''
+
+@description('Optional ACR resource ID. Required together with containerRegistryLoginServer.')
+param containerRegistryResourceId string = ''
+
+// Sprint 13 T5 — Container Apps environment + agent-host app. Uses a
+// **user-assigned managed identity** (`id-ca-agent-host-<suffix>`) so the
+// AcrPull role assignment can be provisioned BEFORE the CA references the
+// identity, avoiding the chicken-and-egg problem that system-assigned MI hits
+// on the first ACR pull attempt. Matches the sim-capacity pattern
+// (`infra/modules/apps/sim-capacity/main.bicep`).
 //
 // REDIS_HOST/REDIS_PORT env vars are injected only when the parent module
 // supplies a non-empty redisHostName (ADR-0028). The agent-host runtime uses
 // an in-memory grounding cache today; the env vars only take effect if/when
 // a real Redis client is wired into apps/hcc-agent-host/src/cache/redis_client.py.
+
+// AcrPull role definition id (built-in).
+var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+var useAcrMiPull = !empty(containerRegistryLoginServer) && !empty(containerRegistryResourceId)
 
 var baseEnv = [
   {
@@ -75,12 +88,41 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
+// User-assigned MI for the agent-host CA. Created BEFORE the CA so the AcrPull
+// role assignment can land first — the CA then references an already-authorised
+// identity when it triggers its first (or updated) revision pull.
+resource agentHostIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'id-ca-agent-host-${nameSuffix}'
+  location: location
+  tags: tags
+}
+
+// AcrPull on the ACR when MI-based pull is enabled. Scoped to the ACR resource
+// so the identity has only pull rights on this one registry.
+resource acr 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' existing = if (useAcrMiPull) {
+  name: last(split(containerRegistryResourceId, '/'))
+}
+
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (useAcrMiPull) {
+  scope: acr
+  name: guid(containerRegistryResourceId, agentHostIdentity.id, acrPullRoleId)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
+    principalId: agentHostIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    description: 'Sprint 13 T5 — agent-host CA pulls image from ACR via user-assigned MI.'
+  }
+}
+
 resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
   name: 'ca-agent-host-${nameSuffix}'
   location: location
   tags: tags
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${agentHostIdentity.id}': {}
+    }
   }
   properties: {
     managedEnvironmentId: managedEnvironment.id
@@ -91,6 +133,12 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
         transport: 'auto'
         allowInsecure: false
       }
+      registries: useAcrMiPull ? [
+        {
+          server: containerRegistryLoginServer
+          identity: agentHostIdentity.id
+        }
+      ] : []
     }
     template: {
       containers: [
@@ -110,7 +158,16 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
       }
     }
   }
+  dependsOn: [
+    // Ensure the AcrPull role assignment lands before the CA revision attempts
+    // its first pull. Only meaningful when useAcrMiPull=true, but Bicep evaluates
+    // dependsOn statically — the array element resolves to the module-scope
+    // resource when the conditional is true and is silently ignored otherwise.
+    acrPullRoleAssignment
+  ]
 }
 
 output fqdn string = agentHost.properties.configuration.ingress.fqdn
-output principalId string = agentHost.identity.principalId
+output principalId string = agentHostIdentity.properties.principalId
+output identityResourceId string = agentHostIdentity.id
+output identityClientId string = agentHostIdentity.properties.clientId
