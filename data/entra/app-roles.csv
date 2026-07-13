@@ -1,0 +1,18 @@
+role_value,display_name,category,description
+HCC.SuperAdmin,HCC.SuperAdmin,super,"Full read/write across all roles, hospitals, and environments. Only 1-2 assignees; not used for daily ops; PIM planned in a hardening sprint."
+HCC.GuestReadOnly,HCC.GuestReadOnly,super,"Read-only across all roles for demo tours. Cannot invoke agents; cannot open the CSA wizard; cannot mutate state."
+HCC.OperationsLead,HCC.OperationsLead,operational,Hospital operations lead: cross-department capacity oversight for a single hospital context.
+HCC.BedManager,HCC.BedManager,operational,"Bed management copilot user: bed state, assignment, and occupancy actions."
+HCC.FlowManager,HCC.FlowManager,operational,"Patient-flow manager: transfers, admissions/discharge coordination across wards."
+HCC.EDLead,HCC.EDLead,operational,"Emergency department lead: ED census, boarding, and admission pressure."
+HCC.ORCoordinator,HCC.ORCoordinator,operational,Operating-room coordinator: OR schedule and steering copilot user.
+HCC.StaffingCoordinator,HCC.StaffingCoordinator,operational,Staffing balance coordinator: shift and staffing-to-demand balancing.
+HCC.DischargeCoordinator,HCC.DischargeCoordinator,operational,Discharge coordinator: discharge readiness and downstream placement.
+HCC.CrisisManager,HCC.CrisisManager,operational,Crisis / scenario manager: surge and crisis-scenario copilot user.
+HCC.Executive,HCC.Executive,governance,Executive: aggregated cross-hospital capacity and value reporting.
+HCC.CantonalViewer,HCC.CantonalViewer,governance,Cantonal viewer: read-only aggregated cross-provider view (B2B invite deferred post-sprint).
+HCC.PlatformAdmin,HCC.PlatformAdmin,governance,Platform administrator: platform configuration and operations (non-super).
+HCC.OntologySteward,HCC.OntologySteward,governance,Ontology steward: semantic model and ontology governance.
+HCC.AIGovernance,HCC.AIGovernance,governance,"AI governance: agent evaluation, safety, and responsible-AI oversight."
+HCC.DemoOperator,HCC.DemoOperator,operational,Demo operator: drives demo tours with a SIT demo override on hospital context.
+HCC.Auditor,HCC.Auditor,governance,Auditor: read-only access to governance evidence and audit trails.

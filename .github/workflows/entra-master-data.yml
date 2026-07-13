@@ -1,0 +1,59 @@
+name: entra-master-data
+
+# Sprint 12 follow-up (S12.10) — contract gate for the Entra demo-org master-data
+# CSV artefacts under data/entra (organisations, app roles, security groups,
+# users).
+#
+# Runs the dependency-free validator + unit tests, which check internal
+# consistency and reconcile the CSVs against the persona seed
+# (data/synthetic/personas.csv) and both Entra bicepparam files. This keeps the
+# portable master data in lock-step with the deploy source of truth so a tenant
+# migration is a domain swap, not a hand re-key.
+
+on:
+  pull_request:
+    paths:
+      - 'data/entra/**'
+      - 'data/synthetic/personas.csv'
+      - 'infra/modules/entra/parameters/**'
+      - '.github/workflows/entra-master-data.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/entra/**'
+      - 'data/synthetic/personas.csv'
+      - 'infra/modules/entra/parameters/**'
+      - '.github/workflows/entra-master-data.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: entra-master-data-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  entra-master-data:
+    name: Entra master-data contract gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run master-data unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data/entra/tests -v
+
+      - name: Validate master-data CSVs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 data/entra/validate_entra_master_data.py
