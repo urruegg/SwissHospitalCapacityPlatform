@@ -1,6 +1,10 @@
 # Repo-root .dockerignore
-# Currently only apps/sim-capacity/Dockerfile builds from this context.
-# Allowlist approach: exclude everything, then explicitly re-include what the
+# Applies to any docker build with context = repo root.
+# Currently: apps/sim-capacity/Dockerfile AND apps/hcc-agent-host/Dockerfile.
+# apps/hcc-app-fluent/Dockerfile builds from apps/hcc-app-fluent/ context, so
+# this file does not apply to that build.
+#
+# Allowlist approach: exclude everything, then explicitly re-include what each
 # Dockerfile needs. Keeps ACR build context small (seconds vs minutes).
 
 *
@@ -12,6 +16,18 @@
 apps/sim-capacity/src/**/__pycache__
 apps/sim-capacity/src/**/*.pyc
 apps/sim-capacity/src/**/*.egg-info
+
+# hcc-agent-host image build (Sprint 13 T5 — Container Apps agent-host)
+# The Dockerfile copies pyproject.toml + src/ (app source) + agents/ (runtime
+# prompt packs baked into the image at build time, per AGENTS.md).
+!apps/hcc-agent-host/Dockerfile
+!apps/hcc-agent-host/pyproject.toml
+!apps/hcc-agent-host/src/
+!agents/
+apps/hcc-agent-host/src/**/__pycache__
+apps/hcc-agent-host/src/**/*.pyc
+apps/hcc-agent-host/src/**/*.egg-info
+agents/**/__pycache__
 
 # Review CSVs consumed by calibration modules at runtime
 !docs/reviews/2026-06-29-ama-capacity-metadata-review/*.csv
