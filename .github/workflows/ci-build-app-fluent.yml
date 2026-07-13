@@ -1,0 +1,100 @@
+name: ci-build-app-fluent
+
+# Sprint 13 T1 — rebuild + push the hcc-app-fluent container image on
+# `apps/hcc-app-fluent/**` changes.
+#
+# Scope: build + push only. The Bicep param `appFluentImage` in
+# `infra/environments/sit.bicepparam` is NOT bumped by this workflow — image
+# tag bumps are a deliberate manual review step, then the standard
+# `cd-infra-deploy-sit.yml` picks up the new tag (approval-gated per
+# AGENTS.md §4).
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/hcc-app-fluent/**'
+      - '.github/workflows/ci-build-app-fluent.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  ACR_LOGIN_SERVER: 'cri75lbu5sj4hza.azurecr.io'
+  IMAGE_NAME: 'hcc-app-fluent'
+
+jobs:
+  build-and-push:
+    name: Build + push hcc-app-fluent image
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ACR login
+        shell: bash
+        run: |
+          set -euo pipefail
+          registry_name="${ACR_LOGIN_SERVER%.azurecr.io}"
+          az acr login --name "$registry_name"
+
+      - name: Compute image tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          short_sha="${GITHUB_SHA::7}"
+          {
+            echo "sha_tag=$short_sha"
+            echo "full_sha=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${short_sha}"
+            echo "full_latest=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Docker build
+        # Build context = apps/hcc-app-fluent/ so the Dockerfile's `COPY . .`
+        # only picks up the app source, not the whole repo.
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            -f apps/hcc-app-fluent/Dockerfile \
+            -t "${{ steps.tags.outputs.full_sha }}" \
+            -t "${{ steps.tags.outputs.full_latest }}" \
+            apps/hcc-app-fluent
+
+      - name: Docker push
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker push "${{ steps.tags.outputs.full_sha }}"
+          docker push "${{ steps.tags.outputs.full_latest }}"
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## hcc-app-fluent image build"
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Commit: ${{ github.sha }} (short: ${{ steps.tags.outputs.sha_tag }})"
+            echo "- Registry: ${ACR_LOGIN_SERVER}"
+            echo "- Tags pushed:"
+            echo "  - \`${{ steps.tags.outputs.full_sha }}\`"
+            echo "  - \`${{ steps.tags.outputs.full_latest }}\`"
+            echo "- Status: ${{ job.status }}"
+            echo ""
+            echo "Bump \`appFluentImage\` in \`infra/environments/sit.bicepparam\` to \`${{ steps.tags.outputs.full_sha }}\` and merge to trigger \`cd-infra-deploy-sit.yml\` (approval-gated per AGENTS.md §4)."
+          } >> "$GITHUB_STEP_SUMMARY"
