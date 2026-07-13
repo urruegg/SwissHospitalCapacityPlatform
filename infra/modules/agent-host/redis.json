@@ -1,0 +1,89 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.8.12551",
+      "templateHash": "8005075735857793013"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Resource tags applied to all resources."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Cache/redisEnterprise",
+      "apiVersion": "2024-10-01",
+      "name": "[format('redis-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Balanced_B0"
+      },
+      "properties": {
+        "highAvailability": "Enabled",
+        "minimumTlsVersion": "1.2"
+      }
+    },
+    {
+      "type": "Microsoft.Cache/redisEnterprise/databases",
+      "apiVersion": "2024-10-01",
+      "name": "[format('{0}/{1}', format('redis-{0}', parameters('nameSuffix')), 'default')]",
+      "properties": {
+        "clientProtocol": "Encrypted",
+        "port": 10000,
+        "clusteringPolicy": "EnterpriseCluster",
+        "evictionPolicy": "NoEviction",
+        "persistence": {
+          "aofEnabled": false,
+          "rdbEnabled": false
+        },
+        "accessKeysAuthentication": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cache/redisEnterprise', format('redis-{0}', parameters('nameSuffix')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "redisName": {
+      "type": "string",
+      "metadata": {
+        "description": "Cluster resource name."
+      },
+      "value": "[format('redis-{0}', parameters('nameSuffix'))]"
+    },
+    "redisHostName": {
+      "type": "string",
+      "metadata": {
+        "description": "Cluster host name (endpoint). Managed Redis uses port 10000 by default; ensure the agent-host client is configured for the enterprise cluster port + TLS."
+      },
+      "value": "[reference(resourceId('Microsoft.Cache/redisEnterprise', format('redis-{0}', parameters('nameSuffix'))), '2024-10-01').hostName]"
+    },
+    "redisPort": {
+      "type": "int",
+      "metadata": {
+        "description": "Managed Redis port (fixed at 10000 for the Enterprise cluster)."
+      },
+      "value": 10000
+    }
+  }
+}

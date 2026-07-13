@@ -175,6 +175,22 @@ param simCapacityEventHubName string = 'demand-encounters'
 @description('When true, the sim-capacity deployment is scoped to the Sprint 09 v2 demo path (synthetic data only per ADR-0013 / ADR-0016).')
 param simCapacityDemoScope bool = true
 
+// Sprint 13 T5 — Container Apps agent-host (loads BMCA/OOA/DCA/ORSA/SBA/CSA/data-quality
+// manifests at startup). Deploys Container App + Cosmos (conversations/audit/approval-events
+// per ADR-0007) + Redis (grounding cache).
+@description('Enable the Sprint 13 agent-host module (Container App + Cosmos + Redis per ADR-0007).')
+param enableAgentHostModule bool = false
+
+@description('Container image reference for the agent-host (registry/repository:tag). Placeholder matches sim-capacity pattern until agent-host CI pushes real images to ACR.')
+param agentHostImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
+@description('Enable the Sprint 13 hcc-app-fluent Container App module.')
+param enableAppFluentModule bool = false
+
+@description('Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR.')
+param appFluentImage string = 'nginxinc/nginx-unprivileged:1.27-alpine'
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -351,6 +367,35 @@ module simCapacity './modules/apps/sim-capacity/main.bicep' = if (enableSimCapac
     eventHubName: simCapacityEventHubName
     demoScope: simCapacityDemoScope
     tags: tags
+  }
+}
+
+// Sprint 13 T5 — Container Apps agent-host + Cosmos (conversations/audit/approval-events)
+// + Redis (grounding cache) per ADR-0007. Agent-host image lands via agent-host-build.yml
+// once CI push is wired; deploys with placeholder image today (parity with sim-capacity pattern).
+// Log Analytics resourceId passed in; module derives customerId/sharedKey internally via
+// reference()/listKeys() — same pattern as sim-capacity, no keys crossing module boundaries.
+module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) {
+  name: 'agent-host-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    agentHostImage: agentHostImage
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+  }
+}
+
+// Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle behind nginx on 8080).
+// Same reasoning as agent-host for the Log Analytics wiring.
+module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluentModule) {
+  name: 'app-fluent-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    appImage: appFluentImage
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
   }
 }
 

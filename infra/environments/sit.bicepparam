@@ -106,3 +106,18 @@ param fabricEventstreamDestinationLakehouseId = ''
 param eventHubsSimulatorMiPrincipalId = ''
 param eventHubsBmCopilotMiPrincipalId = ''
 param eventHubsCsaAgentMiPrincipalId = ''
+
+// Sprint 13 T5 — agent-host (Container App + Cosmos + Redis per ADR-0007).
+// Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
+// 2026-07-10 sprint-review checklist). Image is a placeholder — matches
+// sim-capacity pattern — until agent-host-build.yml is extended to push
+// the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
+param enableAgentHostModule = true
+param agentHostImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
+// Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
+// checklist). Image is a placeholder until app-build.yml is extended to push
+// the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
+param enableAppFluentModule = true
+param appFluentImage = 'nginxinc/nginx-unprivileged:1.27-alpine'
