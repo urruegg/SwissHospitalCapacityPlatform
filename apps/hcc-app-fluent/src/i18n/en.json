@@ -25,7 +25,15 @@
   },
   "backstage": {
     "roles": "Roles & RBAC",
-    "rolesDescription": "Live view of app roles from Microsoft Entra (read-only)."
+    "rolesDescription": "Live view of app roles from Microsoft Entra (read-only).",
+    "evidence": "Evidence",
+    "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI)."
+  },
+  "evidence": {
+    "readinessSummary": "Readiness summary",
+    "gaParityGap": "GA-parity gap",
+    "presetChNorthTShow": "CH North × T-SHOW",
+    "presetGaParity": "GA-parity view"
   },
   "bedManager": {
     "title": "Bed Management — USZ",

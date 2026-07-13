@@ -12,6 +12,7 @@ on:
       - 'data-platform/scripts/bva/**'
       - 'data-platform/reports/tests/**'
       - 'data-platform/reports/capacity-dashboard.SemanticModel/**'
+      - 'data-platform/reports/evidence.SemanticModel/**'
       - 'data-platform/scripts/bva_synth_focus.py'
       - '.github/workflows/bva-medallion.yml'
   push:
@@ -21,6 +22,7 @@ on:
       - 'data-platform/scripts/bva/**'
       - 'data-platform/reports/tests/**'
       - 'data-platform/reports/capacity-dashboard.SemanticModel/**'
+      - 'data-platform/reports/evidence.SemanticModel/**'
       - 'data-platform/scripts/bva_synth_focus.py'
       - '.github/workflows/bva-medallion.yml'
   workflow_dispatch:

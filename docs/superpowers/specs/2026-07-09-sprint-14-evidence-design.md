@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-09 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-10 |
 | **Author** | Urs Rüegg |
-| **Status** | In execution (T1–T3 landed) |
-| **Previous Version** | 1.0.0 (initial design contract) |
+| **Status** | In execution (T1–T6 landed; Fabric/SIT deploy gated) |
+| **Previous Version** | 1.1.0 (Sprint 14.1 mini-sprint: T4 evidence.SemanticModel, T5/T6 Evidence tab + provenance contract landed) |
 | **Roadmap** | [2026-07-09-sprints-11-16-roadmap-design.md](2026-07-09-sprints-11-16-roadmap-design.md) |
 | **Anchor idea** | [docs/superpowers/ideas/SwissHospitalPlatformShowcaseEvidence.md](../ideas/SwissHospitalPlatformShowcaseEvidence.md) |
 
@@ -214,8 +214,8 @@ Status legend: `[x]` landed in this sprint's PR · `[~]` partial / authored-as-c
 
 - [x] `evidence-publish.yml` runs on push and produces `data/evidence/*.json` on `evidence-latest` branch (or OneLake).
 - [~] Fabric medallion pipeline populated end-to-end from at least one publish cycle. *(notebooks authored + readiness golden green; Fabric publish is `deploy`-gated by `approved-to-apply`.)*
-- [ ] Semantic model returns `readiness score per BOM item × region × track` for Switzerland North × T-SHOW. *(T4 — deferred; deploy-gated.)*
-- [ ] Backstage → Evidence tab renders the presenter whiteboard with ≥ 25 BOM cards + ≥ 10 ADR cards + 1 PRD-requirement card and their dependency edges. *(T5/T6 — blocked on unmerged Sprint 13 `apps/hcc-app-fluent/`; follow-up mini-sprint.)*
-- [ ] Provenance visible on every card (`sourceUrl`, `asOf`). *(T5 card contract — deferred with T5.)*
+- [x] Semantic model returns `readiness score per BOM item × region × track` for Switzerland North × T-SHOW. *(T4 — Sprint 14.1: `data-platform/reports/evidence.SemanticModel/`, [ADR-0026](../../adr/0026-evidence-readiness-measure-ownership.md); Fabric deploy still gated on S17 T1 Git integration.)*
+- [x] Backstage → Evidence tab renders the presenter whiteboard with ≥ 25 BOM cards + ≥ 10 ADR cards + 1 PRD-requirement card and their dependency edges. *(T5/T6 — Sprint 14.1: `apps/hcc-app-fluent/src/workspaces/backstage/tabs/evidence/`; SIT re-deploy gated on S13.1.)*
+- [x] Provenance visible on every card (`sourceUrl`, `asOf`). *(T5 card contract — Sprint 14.1: `apps/hcc-app-fluent/src/cards/evidence/_provenance.tsx`, missing provenance fails render.)*
 - [x] Golden readiness-rule test green.
 - [x] Sprint 14 retro entry in [docs/sprints/superpowers-checkpoint-matrix.md](../../sprints/superpowers-checkpoint-matrix.md).
