@@ -55,3 +55,9 @@ param fabricEventstreamDestinationLakehouseId = ''
 param eventHubsSimulatorMiPrincipalId = ''
 param eventHubsBmCopilotMiPrincipalId = ''
 param eventHubsCsaAgentMiPrincipalId = ''
+
+// Sprint 13.1 T-DNS (ADR-0030) - dormant in PROD until PROD RG is provisioned + PROD deploy is approved.
+// When PROD comes online, this env must be refactored to use an existing reference on the
+// SIT-owned curavias.ch zone (or the zone moved to a shared RG) - see docs/adr/0030-*.md follow-ups.
+param appFluentCustomHostname = 'app.curavias.ch'
+param appFluentEnableCustomDomainCert = false

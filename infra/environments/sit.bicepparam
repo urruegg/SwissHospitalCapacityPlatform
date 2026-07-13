@@ -132,3 +132,17 @@ param agentHostEnableRedis = false
 // the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
 param enableAppFluentModule = true
 param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:27e410c'
+
+// Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
+// Deploy sequence:
+//   1. First deploy with `appFluentEnableCustomDomainCert = false` -> creates the
+//      Azure DNS zone for curavias.ch + the CNAME/TXT records. Cert issuance skipped.
+//   2. Follow the runbook `docs/runbooks/curavias-dns-godaddy-delegation.md` to set
+//      NS records at GoDaddy pointing at the Azure DNS name servers (from the
+//      `curaviasNameServers` deploy output). Wait for propagation (usually <1h).
+//   3. Verify propagation: `dig +short curavias.ch NS` returns the Azure name servers.
+//   4. Flip `appFluentEnableCustomDomainCert = true` and redeploy -> Managed
+//      Certificate resource issues a free Let's Encrypt cert (~15-30 min) + CA binds
+//      the custom domain via SNI.
+param appFluentCustomHostname = 'appsit.curavias.ch'
+param appFluentEnableCustomDomainCert = false

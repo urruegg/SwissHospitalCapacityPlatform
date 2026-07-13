@@ -37,6 +37,12 @@ param maxReplicas int = 3
 @description('Container target port. Fluent Dockerfile serves via nginx-unprivileged on 8080.')
 param targetPort int = 8080
 
+@description('Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030.')
+param customHostname string = ''
+
+@description('When true and customHostname is non-empty, provision a Managed Certificate on the CAE and bind it to the CA ingress. Set FALSE during the first deploy (or when curavias.ch NS delegation to Azure DNS is not yet propagated) to avoid managed-cert issuance failure. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md.')
+param enableCustomDomainCert bool = false
+
 // AcrPull role definition id (built-in).
 var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 var useAcrMiPull = !empty(containerRegistryLoginServer) && !empty(containerRegistryResourceId)
@@ -84,6 +90,21 @@ resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 }
 
+// Managed certificate for the custom hostname (Let's Encrypt via Azure Container Apps).
+// Provisioned only when the caller has confirmed DNS zone + records are live at Azure DNS
+// AND the GoDaddy NS delegation for curavias.ch has propagated (enableCustomDomainCert=true).
+// Cert issuance is synchronous — deploy will FAIL if DNS validation cannot complete, so keep
+// enableCustomDomainCert=false until the runbook confirms propagation.
+resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (enableCustomDomainCert && !empty(customHostname)) {
+  parent: managedEnvironment
+  name: 'cert-${replace(customHostname, '.', '-')}'
+  location: location
+  properties: {
+    subjectName: customHostname
+    domainControlValidation: 'CNAME'
+  }
+}
+
 resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
   name: 'ca-app-fluent-${nameSuffix}'
   location: location
@@ -102,6 +123,13 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: targetPort
         transport: 'auto'
         allowInsecure: false
+        customDomains: (enableCustomDomainCert && !empty(customHostname)) ? [
+          {
+            name: customHostname
+            bindingType: 'SniEnabled'
+            certificateId: managedCert!.id
+          }
+        ] : []
       }
       registries: useAcrMiPull ? [
         {
@@ -146,3 +174,6 @@ output appFluentClientId string = appFluentIdentity.properties.clientId
 
 @description('User-assigned MI resource ID.')
 output appFluentIdentityResourceId string = appFluentIdentity.id
+
+@description('Container Apps custom-domain verification ID. Used to populate the asuid.<hostname> TXT record in the curavias.ch DNS zone so the CAE managedCertificate can validate ownership.')
+output customDomainVerificationId string = appFluent.properties.customDomainVerificationId
