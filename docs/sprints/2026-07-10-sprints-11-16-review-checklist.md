@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-13 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (Phase 2 per-sprint audit); this bump marks S14.3-S14.5 done via the Sprint 14.1 mini-sprint: evidence.SemanticModel + Evidence tab + provenance contract |
+| **Previous Version** | 1.2.0 (2026-07-13 am — Phase 2 per-sprint audit; S14.3-S14.5 done via the Sprint 14.1 mini-sprint: evidence.SemanticModel + Evidence tab + provenance contract); this bump closes S12 with the MCAPS demo-user model per [ADR-0027](../adr/0027-mcaps-demo-users-full-group-membership.md) |
 | **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
 | **Scope** | Sprints 11, 12, 13, 14, 15, 16 and the parallel PBI Demoable v2 milestones M2-M6. Sprints 01-10 explicitly out of scope. |
 | **Related** | [`docs/sprints/superpowers-checkpoint-matrix.md`](superpowers-checkpoint-matrix.md); [`docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md`](../superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md) |
@@ -18,7 +18,7 @@
 | Track | ✅ done | ⚠️ partial | ❌ gap | ⏳ audit-pending | ➖ n/a | Total |
 |-------|--------|-----------|-------|-------------------|-------|-------|
 | **Sprint 11** — Agents | 9 | 0 | 0 | 0 | 0 | 9 |
-| **Sprint 12** — Org | 5 | 2 | 3 | 0 | 0 | 10 |
+| **Sprint 12** — Org | 6 | 2 | 0 | 2 | 0 | 10 |
 | **Sprint 13** — App | 6 | 0 | 4 | 2 | 0 | 12 |
 | **Sprint 14** — Evidence | 6 | 0 | 0 | 1 | 0 | 7 |
 | **Sprint 15** — BVA | 6 | 1 | 1 | 0 | 0 | 8 |
@@ -117,32 +117,35 @@ Phase 2 (subsequent PRs, one per sprint) fills the Status / Evidence / Gap colum
 | # | DoD item | Status | Evidence | Gap |
 |---|------|--------|----------|-----|
 | S12.1 | Tasks T1-T7 all merged. | ✅ done | PR #159 merged 2026-07-09 with 20 files spanning Bicep modules + workflows + tests | |
-| S12.2 | 15 app roles + 15 security groups + 23 personas provisioned in SIT (or documented deferral). | ❌ **CORRECTED 2026-07-13** | **Bicep source of truth is authored** (`infra/modules/entra/{app-registration,app-roles,security-groups,users,adoption-telemetry,assignments,main}.bicep` + `parameters/sit.bicepparam` + `parameters/prod.bicepparam` + persona seed `data/synthetic/personas.csv` + portable CSVs from PR #185 at `data/entra/{organizations,app-roles,security-groups,users}.csv`). **Correct count verified 2026-07-13:** 17 app roles + 17 security groups + 23 personas (the audit and DoD text under-counted by 2 — did not include the two super roles `HCC.SuperAdmin` and `HCC.GuestReadOnly` per D-10 in the sprints-11-16 roadmap). **Runtime state verified 2026-07-13:** Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` contains 0 HCC app registrations, 0 HCC security groups, and 3 total users (`admin@`, `ms-breakglass@`, `urruegg@` — none of the 23 personas). `az deployment sub create` against the Entra module has **never been run**. Original ✅ done was incorrect (checked Bicep presence, not runtime state). | **Substantive gap.** Requires a subscription-scope Bicep deployment of `infra/modules/entra/` against the target tenant with `approved-to-apply` gate. Tracked via [issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) (originally opened for PROD promotion; scope expanded to include the initial SIT provisioning gap). |
-| S12.3 | `super.admin` and `demo.guest` sign-in verified against Sprint 13 app shell (or dry auth callback). | ❌ **CORRECTED 2026-07-13** | Blocked by S12.2 — the identities do not exist in Entra. Cannot sign in with users who were never provisioned. Original ⏳ audit-pending was misleading; this is a hard blocker not a runtime-check-pending. | Blocked by S12.2 fix. |
+| S12.2 | 15 app roles + 15 security groups + 23 personas provisioned in SIT (or documented deferral). | ✅ **UPDATED 2026-07-13** — done (with MCAPS deferral) | **17 app roles + 17 security groups + 17 group-based app-role assignments deployed to SIT** on 2026-07-13 (deployment `entra-sit-groups-20260713104552`, provisioningState `Succeeded`). App registration `ihzhhpf-app (sit)` — appId `52681a08-c792-44b1-b6b5-01cb560d450f`; service principal id `667b8c54-c741-4832-b1e7-fe75eea5163c`. **Persona users deferred by design ([ADR-0027](../adr/0027-mcaps-demo-users-full-group-membership.md)):** `Microsoft.Graph/users@v1.0` is intentionally read-only in the Graph Bicep extension per [Microsoft Learn](https://learn.microsoft.com/graph/templates/bicep/reference/users?view=graph-bicep-1.0#property-values), and the MCAPS demo tenant does not need 23 real user objects. Instead `admin@` and `urruegg@` are members of **all 17** HCC.\* groups so every persona-role is demoable. Apply variant used: [`infra/modules/entra/parameters/sit-groups-only.bicepparam`](../../infra/modules/entra/parameters/sit-groups-only.bicepparam). Membership reproducer: [`scripts/entra/assign-demo-users-all-groups.ps1`](../../scripts/entra/assign-demo-users-all-groups.ps1). | Refactor of `users.bicep` to `existing` + Graph-REST provisioning script deferred to a future sprint (ADR-0027 follow-up 1). PROD promotion ([issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179)) requires the refactor. |
+| S12.3 | `super.admin` and `demo.guest` sign-in verified against Sprint 13 app shell (or dry auth callback). | ⏳ **UPDATED 2026-07-13** — unblocked, awaiting runtime test | Identities exist and hold every role: `admin@mngenvmcap164444.onmicrosoft.com` and `urruegg@MngEnvMCAP164444.onmicrosoft.com` are members of `HCC.SuperAdmin` + `HCC.GuestReadOnly` (and all 15 others). Interactive sign-in against Sprint 13 app shell still needs the shell running — depends on Sprint 13.1 recovery deploy (run 29101177996, waiting for env approval). | Requires the app shell deploy. |
 | S12.4 | Adoption telemetry pipeline emitting nightly files within 24h of T5 merge. | ⚠️ **UPDATED 2026-07-13** — partial | **PR #186 (merged 2026-07-10) authored the adoption notebook** — closes half of the S12.4 root cause. Remaining: (a) publish the notebook to `ws-ihzhhpf-sit-data` (Fabric-side action), (b) set the two GitHub Actions repo variables (`FABRIC_WORKSPACE_ID` + `FABRIC_ADOPTION_NOTEBOOK_ID`), (c) retrigger `adoption-refresh.yml` and confirm success. | Follow-up on [issue #180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180). |
-| S12.5 | `env`-scoping smoke test green (same identity, two slots, two Bronze paths). | ❌ **CORRECTED 2026-07-13** | Blocked by S12.2 (no test identities exist) and S12.4 (Bronze paths not populated). | Blocked by S12.2 + S12.4 fixes. |
-| S12.6 | `entra-whatif.yml` + `adoption-refresh.yml` operational. | ⚠️ partial | `entra-whatif.yml` last run **success** on 2026-07-09; `adoption-refresh.yml` last run **failure** (see S12.4) | Same fix as S12.4 clears the partial. |
+| S12.5 | `env`-scoping smoke test green (same identity, two slots, two Bronze paths). | ⏳ **UPDATED 2026-07-13** — unblocked, awaiting runtime test | Same identities as S12.3 available. Bronze paths still need to be populated (S12.4 remainder). | Requires S12.4 remainder + app shell deploy. |
+| S12.6 | `entra-whatif.yml` + `adoption-refresh.yml` operational. | ⚠️ partial | `entra-whatif.yml` last run **success** on 2026-07-09; `adoption-refresh.yml` last run **failure** (see S12.4). Note: `entra-whatif.yml` runs against `sit.bicepparam`, which will still fail on the `users-sit` sub-deployment until `users.bicep` is refactored per ADR-0027 follow-up 1. Whatif itself succeeds — only apply is blocked. | Same fix as S12.4 clears the partial; ADR-0027 follow-up 1 unblocks apply of `sit.bicepparam`. |
 | S12.7 | `entra-provisioning.yml` issue template selectable. | ✅ done | `.github/ISSUE_TEMPLATE/entra-provisioning.yml` present | |
 | S12.8 | Retro row in checkpoint matrix. | ✅ done | `docs/sprints/superpowers-checkpoint-matrix.md` line 78: "Sprint 12 retro notes" section | |
 | S12.9 | Kickoff issue closed. | ✅ done | Issue #158 CLOSED on 2026-07-09T11:50:43Z | |
 | S12.10 | PROD promotion tracked as follow-up issue. | ✅ **UPDATED 2026-07-13** — done | Closed via [PR #185](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/185) which extracted the Entra org as portable master-data CSVs (`data/entra/`) + drift-gate CI (`.github/workflows/entra-master-data.yml`) + validation script + 8 unit tests. This is bigger scope than [issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) asked for, but was accepted per user decision 2026-07-13 — CSVs are tenant-migration-ready and satisfy both the PROD promotion tracker and the AGENTS.md tenant-migration doctrine. | |
 
-**Sprint 12 result (revised 2026-07-13): 5/10 ✅ done, 2 ⚠️ partial, 3 ❌ gap. Runtime evidence added.**
+**Sprint 12 result (revised 2026-07-13 pm): 6/10 ✅ done, 2 ⚠️ partial, 2 ⏳ audit-pending (unblocked, awaiting Sprint 13.1 recovery deploy). 0 ❌ gap.**
 
-Score revised **down** from the original 6/10 ✅ after runtime verification revealed S12.2 was never actually provisioned to Entra. S12.3 and S12.5 downgraded to ❌ because they cascade from S12.2. S12.4 upgraded to ⚠️ partial because PR #186 authored the adoption notebook. S12.10 upgraded to ✅ done because PR #185 delivered a bigger scope (portable master-data CSVs + drift-gate CI) than the tracker issue asked for.
+Score revised **up** from the 2026-07-13 am run (5/10) after the second apply completed: `entra-sit-groups-20260713104552` provisioned the 17 groups + 17 group-based assignments; both `admin@` and `urruegg@` were then added to every HCC.\* group so both accounts carry the full role catalog for demo purposes. See [ADR-0027](../adr/0027-mcaps-demo-users-full-group-membership.md) for the MCAPS deferral of persona users.
 
 **Gaps requiring gap-fill PRs:**
 
-- **S12.2 (substantive, largest gap in the sprint):** deploy `infra/modules/entra/` against the target tenant (subscription-scope Bicep). Requires `approved-to-apply` per AGENTS.md §3. This is the real "close Sprint 12" work — everything downstream (S12.3, S12.5) unblocks the moment this apply succeeds. Tracked via [issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) (scope-expanded from just "PROD promotion tracker" to include the SIT provisioning apply).
 - **S12.4 / S12.6 (in flight):** adoption notebook now merged via PR #186; remaining: publish to Fabric + set repo vars + retrigger workflow. Tracked via [issue #180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180).
+- **ADR-0027 follow-up 1 (post-Sprint-12):** refactor `users.bicep` to `existing` + add a Graph-REST provisioning script under `scripts/entra/` for real per-persona users. Prerequisite for PROD promotion. Not blocking any Sprint 12 DoD item.
 
-**Runtime evidence — snapshot 2026-07-13:**
+**Runtime evidence — snapshot 2026-07-13 pm:**
 
-- Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` app registrations: 2 (`ws-ihzhhpf-sit-data`, `gh-oidc-ihzhhpf`) — **0 with HCC.\* app roles**
-- Entra tenant security groups matching `startsWith(displayName, 'HCC.')`: **0**
-- Entra tenant users: 3 (`admin@`, `ms-breakglass@`, `urruegg@`) — **0 of the 23 personas**
+- Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` app registrations: **3** (`ws-ihzhhpf-sit-data`, `gh-oidc-ihzhhpf`, **`ihzhhpf-app (sit)`** — new) with 17 embedded app roles
+- Service principal for `ihzhhpf-app (sit)`: id `667b8c54-c741-4832-b1e7-fe75eea5163c` — 17 group-based app-role assignments
+- Entra tenant security groups matching `startsWith(displayName, 'HCC.')`: **17** (all HCC.\*)
+- Group memberships: every HCC.\* group has exactly `admin@` + `urruegg@` (2 members)
+- Entra tenant users: 3 (`admin@`, `ms-breakglass@`, `urruegg@`) — persona users **not** provisioned per ADR-0027
 - `data/entra/*.csv` (added by PR #185): 17 roles + 17 groups + 23 users + 5 organisations — matches Bicep source of truth
 - `entra-master-data.yml` CI gate: green (from PR #185)
+- Failed deploy (v1) for evidence: `entra-sit-20260713103046` — `appRoles-sit` ✅ / `appReg-sit` ✅ / `users-sit` ❌ (23× `Resource 'users' is readonly`), which motivated ADR-0027
 
 ---
 
