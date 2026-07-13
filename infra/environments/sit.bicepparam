@@ -115,6 +115,17 @@ param eventHubsCsaAgentMiPrincipalId = ''
 param enableAgentHostModule = true
 param agentHostImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
+// ADR-0028: skip Azure Managed Redis in SIT demo scope.
+// Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`
+// for our MCAPS demo subscription (verified 2026-07-13 via the provider SKU
+// catalog: only Enterprise_E1..E400 and EnterpriseFlash_F300..F1500 are
+// available). The agent-host runtime (apps/hcc-agent-host/src/cache/redis_client.py)
+// already uses an in-memory grounding cache — no live Redis client is wired
+// — so the deploy loses nothing functionally for demo scope.
+// Reversibility: flip to `true` when PROD is provisioned in a region that
+// offers Balanced_B0 (or when a follow-up PR migrates the SKU to Enterprise_E1).
+param agentHostEnableRedis = false
+
 // Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image is a placeholder until app-build.yml is extended to push

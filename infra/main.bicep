@@ -177,12 +177,15 @@ param simCapacityDemoScope bool = true
 
 // Sprint 13 T5 — Container Apps agent-host (loads BMCA/OOA/DCA/ORSA/SBA/CSA/data-quality
 // manifests at startup). Deploys Container App + Cosmos (conversations/audit/approval-events
-// per ADR-0007) + Redis (grounding cache).
-@description('Enable the Sprint 13 agent-host module (Container App + Cosmos + Redis per ADR-0007).')
+// per ADR-0007) + optional Azure Managed Redis (grounding cache).
+@description('Enable the Sprint 13 agent-host module (Container App + Cosmos + optional Redis per ADR-0007).')
 param enableAgentHostModule bool = false
 
 @description('Container image reference for the agent-host (registry/repository:tag). Placeholder matches sim-capacity pattern until agent-host CI pushes real images to ACR.')
 param agentHostImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Enable Azure Managed Redis inside the agent-host module (grounding cache per ADR-0007 §1). Defaults to true (PROD behaviour); set to false in SIT per ADR-0028 (Balanced_B0 SKU not offered in westus2 for MCAPS demo sub; agent-host uses in-memory cache today).')
+param agentHostEnableRedis bool = true
 
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
 @description('Enable the Sprint 13 hcc-app-fluent Container App module.')
@@ -383,6 +386,7 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     tags: tags
     agentHostImage: agentHostImage
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    enableRedisModule: agentHostEnableRedis
   }
 }
 
