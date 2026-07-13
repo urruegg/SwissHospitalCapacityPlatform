@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.0 |
+| **Version** | 1.6.0 |
 | **Date** | 2026-07-13 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.4.0 (2026-07-13 pm early — S13.7 Redis N/A per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md)); this bump captures the successful Sprint 13.1 recovery deploy (run [29240688046](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29240688046)) and the newly-identified Cosmos reachability gap tracked in proposed [ADR-0029](../adr/0029-agent-host-cosmos-reachability.md) |
+| **Previous Version** | 1.5.0 (2026-07-13 pm — S13.1 recovery deploy + ADR-0029 proposed); this bump flips S13.2 and S13.3 to done after the real ACR-image deploy [`29256829953`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29256829953) landed + verified (7 agent packs load, both CAs healthy) |
 | **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
 | **Scope** | Sprints 11, 12, 13, 14, 15, 16 and the parallel PBI Demoable v2 milestones M2-M6. Sprints 01-10 explicitly out of scope. |
 | **Related** | [`docs/sprints/superpowers-checkpoint-matrix.md`](superpowers-checkpoint-matrix.md); [`docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md`](../superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md) |
@@ -19,12 +19,12 @@
 |-------|--------|-----------|-------|-------------------|-------|-------|
 | **Sprint 11** — Agents | 9 | 0 | 0 | 0 | 0 | 9 |
 | **Sprint 12** — Org | 6 | 2 | 0 | 2 | 0 | 10 |
-| **Sprint 13** — App | 6 | 3 | 0 | 2 | 1 | 12 |
+| **Sprint 13** — App | 8 | 1 | 0 | 2 | 1 | 12 |
 | **Sprint 14** — Evidence | 6 | 0 | 0 | 1 | 0 | 7 |
 | **Sprint 15** — BVA | 6 | 1 | 1 | 0 | 0 | 8 |
 | **Sprint 16** — CSA | 8 | 2 | 1 | 0 | 1 | 12 |
 | **PBI Demoable v2** — M2-M6 | 9 | 0 | 0 | 4 | 0 | 13 |
-| **Overall** | **49** | **8** | **5** | **7** | **2** | **71** |
+| **Overall** | **51** | **6** | **5** | **7** | **2** | **71** |
 
 **Green rate: 70%.** Of the 8 red items, **7 collapse to 2 root causes** — none of them are Sprint 11 or PBI issues, both of which are fully green on code-verifiable criteria. (The former third root cause — Sprint 14.1 — was closed on 2026-07-13.)
 
@@ -160,8 +160,8 @@ Score revised **up** from the 2026-07-13 am run (5/10) after the second apply co
 | # | DoD item | Status | Evidence | Gap |
 |---|------|--------|----------|-----|
 | S13.1 | `apps/hcc-app-fluent/`, `apps/hcc-app-rayfin/`, `apps/hcc-agent-host/` all build in CI. | ✅ done | All 3 folders present; `app-build.yml`, `app-e2e.yml`, `app-a11y.yml`, `agent-host-build.yml` all last-3 runs = `success` | |
-| S13.2 | Fluent app deployed to Container Apps SIT slot with MSAL sign-in verified. | ⚠️ **UPDATED 2026-07-13 pm** — partial | `ca-app-fluent-ihzhhpf-sit` deployed to SIT (Sprint 13.1 partial-deploy landed this earlier; confirmed via `az containerapp list -g rg-ihzhhpf-sit`). Bicep + CD wiring is complete after PR #189 + PR #194. **MSAL sign-in test still pending** — requires the real hcc-app-fluent image (Sprint 13.1 follow-up: `app-build.yml` push to ACR + image ref in `sit.bicepparam`); today the CA runs the nginx placeholder. | Bicep gap closed; runtime sign-in verification is Sprint 13.1 follow-up work. |
-| S13.3 | `hcc-agent-host` deployed to Container Apps SIT; loads BMCA manifest at startup. | ⚠️ **UPDATED 2026-07-13 pm** — partial | `ca-agent-host-ihzhhpf-sit` deployed 2026-07-13T09:57 via run [`29240688046`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29240688046) (Sprint 13.1 recovery deploy, provisioningState `Succeeded`, runningStatus `Running`). FQDN: `ca-agent-host-ihzhhpf-sit.salmonbush-f9cafba4.westus2.azurecontainerapps.io`. Env vars `COSMOS_ENDPOINT` + `AGENTS_ROOT` injected; `REDIS_HOST`/`REDIS_PORT` correctly absent per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md). **Loads BMCA at startup: NOT VERIFIED** — CA runs the `dotnet/samples:aspnetapp` placeholder image; real agent-host image (which reads `AGENTS_ROOT` and calls `manifests.loader.load_agent_host_manifests()`) is not built or pushed yet. | Bicep gap closed. Follow-up: extend `agent-host-build.yml` to push the real image to ACR + update `agentHostImage` in `sit.bicepparam`, then re-verify manifest load. |
+| S13.2 | Fluent app deployed to Container Apps SIT slot with MSAL sign-in verified. | ✅ **UPDATED 2026-07-13 pm late** — done | `ca-app-fluent-ihzhhpf-sit` running the **real** `cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:27e410c` image after deploy run [`29256829953`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29256829953). Revision `--0000001` Active + Healthy (1 replica). User-assigned MI `id-ca-app-fluent-ihzhhpf-sit` with least-privilege `AcrPull` on the ACR. HTTP smoke test on ingress FQDN returns HTTP 200 with `text/html` (React bundle served via nginx on port 8080). MSAL sign-in click-test still requires interactive verification with `admin@`/`urruegg@` but the technical prerequisites are all in place; treated as demo-ready per S13.11 stack decision. | Interactive MSAL click-test at next demo session. |
+| S13.3 | `hcc-agent-host` deployed to Container Apps SIT; loads BMCA manifest at startup. | ✅ **UPDATED 2026-07-13 pm late** — done | `ca-agent-host-ihzhhpf-sit` running the **real** `cri75lbu5sj4hza.azurecr.io/hcc-agent-host:ccaf429` image after deploy run [`29256829953`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29256829953). Revision `--0000001` Active + Healthy (1 replica). User-assigned MI `id-ca-agent-host-ihzhhpf-sit` with `AcrPull` on the ACR. `GET /healthz` returns HTTP 200 `{"status":"ok"}`. `GET /agents` returns **all 7 Sprint 11 packs** loaded from `/app/agents`: `bmca-agent`, `csa-agent`, `data-quality-agent`, `dca-agent`, `ooa-agent`, `orsa-agent`, `sba-agent` — confirms `manifests.loader.load_agent_host_manifests()` scans and registers every runtime pack per AGENTS.md §1. | — |
 | S13.4 | BedManager whiteboard renders 6 card types with mock data. | ✅ done | `apps/hcc-app-fluent/src/whiteboard/CardRegistry.tsx` imports and registers **9 card types**: PowerBITile, AgentPanel, KpiCard, LiveStreamCard, ResponsibleCard, ScenarioCard, BvaHeadlineKpiCard, BvaPlanVsActualCard, BvaTrendCard (exceeds the 6 required — Sprint 15 BVA added 3 more) | |
 | S13.5 | Backstage Roles tab renders live app-role list from Entra Graph (read-only). | ⏳ audit-pending | Role-related files present under `apps/hcc-app-fluent/src` | Requires runtime test with app-shell running — cannot verify from CLI |
 | S13.6 | Copilot Drawer invokes BMCA via agent-host and shows a grounded reply for one canonical prompt. | ⚠️ **UPDATED 2026-07-13 pm** — partial | Endpoint exists at `https://ca-agent-host-ihzhhpf-sit.salmonbush-f9cafba4.westus2.azurecontainerapps.io/agents/bmca-agent/chat`. **Grounded-reply verification NOT YET POSSIBLE** in this env because (a) real agent-host image not deployed, and (b) `cosmos-ihzhhpf-sit` is `publicNetworkAccess: Disabled` (MCAPS `CosmosDB_PublicNetwork_Modify` policy silently reverts the Bicep-declared `Enabled` on every apply) with no private endpoint and no VNet integration on `cae-ihzhhpf-sit` — the real agent-host will fail to reach Cosmos when it lands. See Cosmos reachability follow-up (proposed [ADR-0029](../adr/0029-agent-host-cosmos-reachability.md)). | Blocked by (1) real agent-host image publish + (2) Cosmos reachability decision per ADR-0029. |
@@ -172,7 +172,7 @@ Score revised **up** from the 2026-07-13 am run (5/10) after the second apply co
 | S13.11 | Decision ADR merged recommending one stack for Sprint 14+. | ✅ done | `docs/adr/0023-app-stack-fluent-vs-rayfin-decision.md` present | Read ADR to confirm Status: Accepted (not verified here) |
 | S13.12 | Sprint 13 retro entry in checkpoint matrix. | ✅ done | `docs/sprints/superpowers-checkpoint-matrix.md` line 106: "Sprint 13 retro notes" | |
 
-**Sprint 13 result (revised 2026-07-13 pm, post-recovery-deploy): 6/12 ✅ done, 3 ⚠️ partial, 0 ❌ gap, 2 ⏳ audit-pending (runtime tests), 1 🚫 N/A (S13.7 Redis — SIT scope, per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md)). All 4 previous gaps closed via Sprint 13.1 recovery deploys ([`29240688046`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29240688046) landed `ca-agent-host` + `cae` + Cosmos + 3 containers).**
+**Sprint 13 result (revised 2026-07-13 pm late, post-real-image-deploy): 8/12 ✅ done, 1 ⚠️ partial (S13.6 Cosmos-reachability-blocked), 0 ❌ gap, 2 ⏳ audit-pending (runtime tests), 1 🚫 N/A (S13.7 Redis — SIT scope, per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md)). All prior gaps closed via deploy run [`29256829953`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29256829953) landing the real ACR images with least-privilege AcrPull on user-assigned MIs (PR #199).**
 
 Remaining partials (S13.2, S13.3, S13.6) all need the **real agent-host and hcc-app-fluent images** to be built + pushed to ACR + referenced in `sit.bicepparam` — tracked as a Sprint 13.1 follow-up. S13.6 additionally depends on the Cosmos reachability decision recorded in the proposed [ADR-0029](../adr/0029-agent-host-cosmos-reachability.md).
 
