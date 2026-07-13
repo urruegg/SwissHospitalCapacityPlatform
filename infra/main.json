@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.43.8.12551",
-      "templateHash": "17268874258086560292"
+      "version": "0.45.6.27763",
+      "templateHash": "16226819346214650727"
     }
   },
   "parameters": {
@@ -389,7 +389,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable the Sprint 13 agent-host module (Container App + Cosmos + Redis per ADR-0007)."
+        "description": "Enable the Sprint 13 agent-host module (Container App + Cosmos + optional Redis per ADR-0007)."
       }
     },
     "agentHostImage": {
@@ -397,6 +397,13 @@
       "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
       "metadata": {
         "description": "Container image reference for the agent-host (registry/repository:tag). Placeholder matches sim-capacity pattern until agent-host CI pushes real images to ACR."
+      }
+    },
+    "agentHostEnableRedis": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Azure Managed Redis inside the agent-host module (grounding cache per ADR-0007 §1). Defaults to true (PROD behaviour); set to false in SIT per ADR-0028 (Balanced_B0 SKU not offered in westus2 for MCAPS demo sub; agent-host uses in-memory cache today)."
       }
     },
     "enableAppFluentModule": {
@@ -455,8 +462,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "17425736464061061212"
+              "version": "0.45.6.27763",
+              "templateHash": "6858679607564891496"
             }
           },
           "parameters": {
@@ -570,8 +577,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "3811996708201055185"
+              "version": "0.45.6.27763",
+              "templateHash": "11092665246856310223"
             }
           },
           "parameters": {
@@ -683,8 +690,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "16941282333936484545"
+              "version": "0.45.6.27763",
+              "templateHash": "17032074811652342278"
             }
           },
           "parameters": {
@@ -830,8 +837,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "4400855912289267788"
+              "version": "0.45.6.27763",
+              "templateHash": "11956369232816364156"
             }
           },
           "parameters": {
@@ -957,8 +964,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "18386186445432428824"
+              "version": "0.45.6.27763",
+              "templateHash": "1833113154266341724"
             }
           },
           "parameters": {
@@ -1161,8 +1168,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.43.8.12551",
-                      "templateHash": "7918110393759686766"
+                      "version": "0.45.6.27763",
+                      "templateHash": "10689296495622946629"
                     }
                   },
                   "parameters": {
@@ -1400,8 +1407,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.43.8.12551",
-                      "templateHash": "4037495517618174413"
+                      "version": "0.45.6.27763",
+                      "templateHash": "13645867721578398029"
                     }
                   },
                   "parameters": {
@@ -1563,8 +1570,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "9914729764631179646"
+              "version": "0.45.6.27763",
+              "templateHash": "14368032661601227617"
             }
           },
           "parameters": {
@@ -1667,8 +1674,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "11555118018075281392"
+              "version": "0.45.6.27763",
+              "templateHash": "16248653206385140613"
             }
           },
           "parameters": {
@@ -1775,8 +1782,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "2193840713404097178"
+              "version": "0.45.6.27763",
+              "templateHash": "1631660769778658010"
             }
           },
           "parameters": {
@@ -1900,8 +1907,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "789432715362171139"
+              "version": "0.45.6.27763",
+              "templateHash": "1619298565780961527"
             }
           },
           "parameters": {
@@ -2022,8 +2029,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "7767886535085981969"
+              "version": "0.45.6.27763",
+              "templateHash": "1765711980068583287"
             }
           },
           "parameters": {
@@ -2104,8 +2111,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.43.8.12551",
-                      "templateHash": "8114534258550419492"
+                      "version": "0.45.6.27763",
+                      "templateHash": "2157408807266904991"
                     }
                   },
                   "parameters": {
@@ -2385,8 +2392,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "9862980659449813882"
+              "version": "0.45.6.27763",
+              "templateHash": "16674682681449214876"
             }
           },
           "parameters": {
@@ -2485,8 +2492,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "10864217763978947671"
+              "version": "0.45.6.27763",
+              "templateHash": "16191629345100508003"
             }
           },
           "parameters": {
@@ -2592,8 +2599,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "373540922563257154"
+              "version": "0.45.6.27763",
+              "templateHash": "6335274266135485317"
             }
           },
           "parameters": {
@@ -2714,8 +2721,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.43.8.12551",
-                      "templateHash": "788889626278574832"
+                      "version": "0.45.6.27763",
+                      "templateHash": "14841147772701149684"
                     }
                   },
                   "parameters": {
@@ -2908,8 +2915,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "11167454995027817185"
+              "version": "0.45.6.27763",
+              "templateHash": "3518442302807315975"
             }
           },
           "parameters": {
@@ -3205,6 +3212,9 @@
           },
           "logAnalyticsWorkspaceResourceId": {
             "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
+          },
+          "enableRedisModule": {
+            "value": "[parameters('agentHostEnableRedis')]"
           }
         },
         "template": {
@@ -3213,8 +3223,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "5199452525710059034"
+              "version": "0.45.6.27763",
+              "templateHash": "5594776033510172743"
             }
           },
           "parameters": {
@@ -3247,6 +3257,13 @@
               "metadata": {
                 "description": "Log Analytics workspace resource ID for the Container Apps environment. Keys are derived internally via reference()/listKeys() so no secret material crosses module boundaries."
               }
+            },
+            "enableRedisModule": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable the Azure Managed Redis grounding cache (ADR-0007 §1). Default true for PROD; set to false in SIT per ADR-0028 (Managed Redis Balanced_B0 SKU is not offered in westus2 for the MCAPS demo subscription; the agent-host runtime already uses an in-memory cache so there is no functional loss for demo scope)."
+              }
             }
           },
           "resources": [
@@ -3276,8 +3293,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.43.8.12551",
-                      "templateHash": "30923671365535976"
+                      "version": "0.45.6.27763",
+                      "templateHash": "8328373282681718422"
                     }
                   },
                   "parameters": {
@@ -3397,6 +3414,7 @@
               }
             },
             {
+              "condition": "[parameters('enableRedisModule')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2025-04-01",
               "name": "agent-host-redis",
@@ -3422,8 +3440,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.43.8.12551",
-                      "templateHash": "8005075735857793013"
+                      "version": "0.45.6.27763",
+                      "templateHash": "15845063017917743907"
                     }
                   },
                   "parameters": {
@@ -3538,12 +3556,8 @@
                   "cosmosEndpoint": {
                     "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosEndpoint.value]"
                   },
-                  "redisHostName": {
-                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value]"
-                  },
-                  "redisPort": {
-                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value]"
-                  }
+                  "redisHostName": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value), createObject('value', ''))]",
+                  "redisPort": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value), createObject('value', 0))]"
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -3551,8 +3565,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.43.8.12551",
-                      "templateHash": "7585539027046446392"
+                      "version": "0.45.6.27763",
+                      "templateHash": "13558522603455617398"
                     }
                   },
                   "parameters": {
@@ -3600,15 +3614,16 @@
                     },
                     "redisHostName": {
                       "type": "string",
+                      "defaultValue": "",
                       "metadata": {
-                        "description": "Redis host name for the grounding cache (ADR-0007 §1)."
+                        "description": "Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope)."
                       }
                     },
                     "redisPort": {
                       "type": "int",
                       "defaultValue": 10000,
                       "metadata": {
-                        "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU)."
+                        "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU). Ignored when redisHostName is empty."
                       }
                     },
                     "targetPort": {
@@ -3618,6 +3633,19 @@
                         "description": "Target port the agent-host container listens on."
                       }
                     }
+                  },
+                  "variables": {
+                    "baseEnv": [
+                      {
+                        "name": "COSMOS_ENDPOINT",
+                        "value": "[parameters('cosmosEndpoint')]"
+                      },
+                      {
+                        "name": "AGENTS_ROOT",
+                        "value": "/app/agents"
+                      }
+                    ],
+                    "redisEnv": "[if(empty(parameters('redisHostName')), createArray(), createArray(createObject('name', 'REDIS_HOST', 'value', parameters('redisHostName')), createObject('name', 'REDIS_PORT', 'value', string(parameters('redisPort')))))]"
                   },
                   "resources": [
                     {
@@ -3664,24 +3692,7 @@
                                 "cpu": "[json('0.5')]",
                                 "memory": "1Gi"
                               },
-                              "env": [
-                                {
-                                  "name": "COSMOS_ENDPOINT",
-                                  "value": "[parameters('cosmosEndpoint')]"
-                                },
-                                {
-                                  "name": "REDIS_HOST",
-                                  "value": "[parameters('redisHostName')]"
-                                },
-                                {
-                                  "name": "REDIS_PORT",
-                                  "value": "[string(parameters('redisPort'))]"
-                                },
-                                {
-                                  "name": "AGENTS_ROOT",
-                                  "value": "/app/agents"
-                                }
-                              ]
+                              "env": "[concat(variables('baseEnv'), variables('redisEnv'))]"
                             }
                           ],
                           "scale": {
@@ -3724,7 +3735,11 @@
             },
             "redisName": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisName.value]"
+              "value": "[if(parameters('enableRedisModule'), reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisName.value, '')]"
+            },
+            "redisEnabled": {
+              "type": "bool",
+              "value": "[parameters('enableRedisModule')]"
             }
           }
         }
@@ -3766,8 +3781,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "5172592133799796196"
+              "version": "0.45.6.27763",
+              "templateHash": "3033338825325266110"
             }
           },
           "parameters": {
@@ -3982,8 +3997,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "9317988615084303477"
+              "version": "0.45.6.27763",
+              "templateHash": "6946668985564645552"
             }
           },
           "parameters": {

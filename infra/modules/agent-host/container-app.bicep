@@ -20,10 +20,10 @@ param logAnalyticsSharedKey string
 @description('Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2).')
 param cosmosEndpoint string
 
-@description('Redis host name for the grounding cache (ADR-0007 §1).')
-param redisHostName string
+@description('Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope).')
+param redisHostName string = ''
 
-@description('Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU).')
+@description('Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU). Ignored when redisHostName is empty.')
 param redisPort int = 10000
 
 @description('Target port the agent-host container listens on.')
@@ -32,6 +32,33 @@ param targetPort int = 8080
 // Sprint 13 T5 — Container Apps environment + agent-host app. System-assigned
 // managed identity is used for all downstream auth (Cosmos, Redis, Foundry) so
 // no connection strings or keys are stored (copilot-instructions §4).
+//
+// REDIS_HOST/REDIS_PORT env vars are injected only when the parent module
+// supplies a non-empty redisHostName (ADR-0028). The agent-host runtime uses
+// an in-memory grounding cache today; the env vars only take effect if/when
+// a real Redis client is wired into apps/hcc-agent-host/src/cache/redis_client.py.
+
+var baseEnv = [
+  {
+    name: 'COSMOS_ENDPOINT'
+    value: cosmosEndpoint
+  }
+  {
+    name: 'AGENTS_ROOT'
+    value: '/app/agents'
+  }
+]
+
+var redisEnv = empty(redisHostName) ? [] : [
+  {
+    name: 'REDIS_HOST'
+    value: redisHostName
+  }
+  {
+    name: 'REDIS_PORT'
+    value: string(redisPort)
+  }
+]
 
 resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: 'cae-${nameSuffix}'
@@ -74,24 +101,7 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: [
-            {
-              name: 'COSMOS_ENDPOINT'
-              value: cosmosEndpoint
-            }
-            {
-              name: 'REDIS_HOST'
-              value: redisHostName
-            }
-            {
-              name: 'REDIS_PORT'
-              value: string(redisPort)
-            }
-            {
-              name: 'AGENTS_ROOT'
-              value: '/app/agents'
-            }
-          ]
+          env: concat(baseEnv, redisEnv)
         }
       ]
       scale: {

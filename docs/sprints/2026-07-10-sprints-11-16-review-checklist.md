@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-13 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (2026-07-13 am — Phase 2 per-sprint audit; S14.3-S14.5 done via the Sprint 14.1 mini-sprint: evidence.SemanticModel + Evidence tab + provenance contract); this bump closes S12 with the MCAPS demo-user model per [ADR-0027](../adr/0027-mcaps-demo-users-full-group-membership.md) |
+| **Previous Version** | 1.3.0 (2026-07-13 pm — S12 MCAPS demo-user model per [ADR-0027](../adr/0027-mcaps-demo-users-full-group-membership.md)); this bump marks S13.7 as N/A for SIT scope per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md) (Managed Redis Balanced_B0 not offered in westus2; agent-host uses in-memory cache) |
 | **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
 | **Scope** | Sprints 11, 12, 13, 14, 15, 16 and the parallel PBI Demoable v2 milestones M2-M6. Sprints 01-10 explicitly out of scope. |
 | **Related** | [`docs/sprints/superpowers-checkpoint-matrix.md`](superpowers-checkpoint-matrix.md); [`docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md`](../superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md) |
@@ -19,12 +19,12 @@
 |-------|--------|-----------|-------|-------------------|-------|-------|
 | **Sprint 11** — Agents | 9 | 0 | 0 | 0 | 0 | 9 |
 | **Sprint 12** — Org | 6 | 2 | 0 | 2 | 0 | 10 |
-| **Sprint 13** — App | 6 | 0 | 4 | 2 | 0 | 12 |
+| **Sprint 13** — App | 5 | 0 | 4 | 2 | 1 | 12 |
 | **Sprint 14** — Evidence | 6 | 0 | 0 | 1 | 0 | 7 |
 | **Sprint 15** — BVA | 6 | 1 | 1 | 0 | 0 | 8 |
 | **Sprint 16** — CSA | 8 | 2 | 1 | 0 | 1 | 12 |
 | **PBI Demoable v2** — M2-M6 | 9 | 0 | 0 | 4 | 0 | 13 |
-| **Overall** | **49** | **5** | **9** | **7** | **1** | **71** |
+| **Overall** | **48** | **5** | **9** | **7** | **2** | **71** |
 
 **Green rate: 70%.** Of the 8 red items, **7 collapse to 2 root causes** — none of them are Sprint 11 or PBI issues, both of which are fully green on code-verifiable criteria. (The former third root cause — Sprint 14.1 — was closed on 2026-07-13.)
 
@@ -165,14 +165,14 @@ Score revised **up** from the 2026-07-13 am run (5/10) after the second apply co
 | S13.4 | BedManager whiteboard renders 6 card types with mock data. | ✅ done | `apps/hcc-app-fluent/src/whiteboard/CardRegistry.tsx` imports and registers **9 card types**: PowerBITile, AgentPanel, KpiCard, LiveStreamCard, ResponsibleCard, ScenarioCard, BvaHeadlineKpiCard, BvaPlanVsActualCard, BvaTrendCard (exceeds the 6 required — Sprint 15 BVA added 3 more) | |
 | S13.5 | Backstage Roles tab renders live app-role list from Entra Graph (read-only). | ⏳ audit-pending | Role-related files present under `apps/hcc-app-fluent/src` | Requires runtime test with app-shell running — cannot verify from CLI |
 | S13.6 | Copilot Drawer invokes BMCA via agent-host and shows a grounded reply for one canonical prompt. | ❌ gap (dependent) | Drawer component files exist. But S13.3 gap (no agent-host deployed) means the drawer has **no `/chat` endpoint to call**. Even if the drawer renders, the grounded-reply promise cannot be honoured. | Blocked by S13.3 fix. |
-| S13.7 | Redis cache instance provisioned; agent-host reads/writes grounding entries per ADR-0007. | ❌ gap | `az resource list --resource-type Microsoft.Cache/Redis --resource-group rg-ihzhhpf-sit` returns **empty** — no Redis in SIT. Bicep `infra/modules/agent-host/redis.bicep` exists but is never applied (same root cause as S13.3). | Blocked by S13.3 fix (Redis is deployed as part of agent-host module). |
+| S13.7 | Redis cache instance provisioned; agent-host reads/writes grounding entries per ADR-0007. | 🚫 **UPDATED 2026-07-13 pm** — N/A (SIT scope, per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md)) | Managed Redis (`Balanced_B0`) is not offered in `westus2` for the MCAPS demo subscription (verified via ARM provider SKU catalog). Sprint 13.1 recovery deploy `29101177996` failed at `agent-host-redis` with `AllocationFailed`. Per ADR-0028, Redis is skipped in SIT — the agent-host Python code uses an in-memory `RedisCache` (grep of `apps/hcc-agent-host/` for `import redis`/`REDIS_HOST` returns 0 hits), so the runtime behaviour is identical for single-replica demo. PROD retains Redis per ADR-0007. | Return to ✅ done in PROD when a region + SKU are available; SIT scope closes as N/A. |
 | S13.8 | Cosmos DB `conversations`, `audit`, `approval-events` containers provisioned per ADR-0007 §Implementation Notes. | ❌ gap | Only Cosmos account in `rg-ihzhhpf-sit` is `cosmos-csa-ihzhhpf-sit` (Sprint 16 CSA). No app-host Cosmos with the 3 required containers. Bicep `infra/modules/agent-host/cosmos.bicep` exists but is never applied. | Blocked by S13.3 fix. |
 | S13.9 | HITL-01..HITL-05 gate scaffolding in place with deny-by-default. | ⏳ audit-pending | | Read source under `apps/hcc-agent-host/src/gates/` if present |
 | S13.10 | `app-build.yml`, `app-e2e.yml`, `app-a11y.yml` green. | ✅ done | All three workflows last-3 runs = `success` on 2026-07-09 | |
 | S13.11 | Decision ADR merged recommending one stack for Sprint 14+. | ✅ done | `docs/adr/0023-app-stack-fluent-vs-rayfin-decision.md` present | Read ADR to confirm Status: Accepted (not verified here) |
 | S13.12 | Sprint 13 retro entry in checkpoint matrix. | ✅ done | `docs/sprints/superpowers-checkpoint-matrix.md` line 106: "Sprint 13 retro notes" | |
 
-**Sprint 13 result: 6/12 ✅ done, 0 ⚠️ partial, 4 ❌ gap (all blocked on the same root cause: agent-host Bicep module never wired into `infra/main.bicep`), 2 ⏳ audit-pending (runtime tests). Audited 2026-07-10.**
+**Sprint 13 result (revised 2026-07-13 pm): 5/12 ✅ done, 0 ⚠️ partial, 4 ❌ gap (S13.2 + S13.3 + S13.6 + S13.8 — all blocked on the Sprint 13.1 recovery deploy landing agent-host CA + CAE; agent-host image publish also pending), 2 ⏳ audit-pending (runtime tests), 1 🚫 N/A (S13.7 Redis — SIT scope, per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md)). (Row count pre-adjusted from prior audit off-by-1.)**
 
 **Gaps requiring gap-fill PRs:**
 
