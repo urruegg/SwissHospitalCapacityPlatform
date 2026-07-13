@@ -20,6 +20,12 @@ tenant-migration-github-env-snapshot-*.json
 
 # Per-operator scratch folder for PR/issue body drafts, ad-hoc scripts, and other transient artefacts
 .tmp/
+.scratch/
+
+# Sprint 12 apply evidence dumps (per-run, per-operator; land in repo root during deploy)
+entra-whatif*.json
+entra-deploy-*.json
+entra-deploy-*.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
