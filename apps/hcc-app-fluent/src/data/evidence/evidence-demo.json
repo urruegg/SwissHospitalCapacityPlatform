@@ -1,0 +1,3274 @@
+{
+  "adrs": [
+    {
+      "decisionSummary": "For MVP critical-path capabilities, only generally available Azure and Fabric services are permitted in production scope.",
+      "id": "ADR-0001",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0001-ga-only-mvp-critical-path.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0001-ga-only-mvp-critical-path.md"
+      },
+      "status": "Accepted",
+      "title": "GA-Only Services for MVP Critical Path"
+    },
+    {
+      "decisionSummary": "Fabric IQ Ontology is excluded from MVP critical-path scope and moved to a post-MVP feature wave after GA and regional validation.",
+      "id": "ADR-0002",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0002-defer-fabric-iq-ontology-from-mvp.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0002-defer-fabric-iq-ontology-from-mvp.md"
+      },
+      "status": "Superseded",
+      "title": "Defer Fabric IQ Ontology from MVP"
+    },
+    {
+      "decisionSummary": "PHI-sensitive copilot inference must use Azure OpenAI Standard or Regional Provisioned deployment types in Switzerland regions only.",
+      "id": "ADR-0003",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0003-swiss-regional-inference-for-phi.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0003-swiss-regional-inference-for-phi.md"
+      },
+      "status": "Accepted",
+      "title": "Swiss Regional Inference for PHI-Sensitive Copilot Traffic"
+    },
+    {
+      "decisionSummary": "Global, Data Zone, and Developer deployment types are prohibited for PHI-sensitive copilot traffic in MVP and production scope.",
+      "id": "ADR-0004",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0004-block-global-and-data-zone-for-phi.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0004-block-global-and-data-zone-for-phi.md"
+      },
+      "status": "Accepted",
+      "title": "Block Global and Data Zone Inference Modes for PHI Flows"
+    },
+    {
+      "decisionSummary": "A dedicated React web app is mandatory as the MVP copilot experience channel, provided backend data and AI services follow Swiss residency and governance constraints.",
+      "id": "ADR-0005",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0005-approve-react-channel-as-ga-safe.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0005-approve-react-channel-as-ga-safe.md"
+      },
+      "status": "Accepted",
+      "title": "Approve Dedicated React Web App as GA-Safe Copilot Channel"
+    },
+    {
+      "decisionSummary": "Any preview-only feature is classified as non-production for regulated data unless an explicit exception is approved through governance review.",
+      "id": "ADR-0006",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0006-preview-features-non-production-rule.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0006-preview-features-non-production-rule.md"
+      },
+      "status": "Accepted",
+      "title": "Preview Features Are Non-Production for Regulated Data"
+    },
+    {
+      "decisionSummary": "",
+      "id": "ADR-0007",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0007-0011-hardening-delta-summary.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0007-0011-hardening-delta-summary.md"
+      },
+      "status": "Accepted",
+      "title": "Hardening Delta Summary"
+    },
+    {
+      "decisionSummary": "For MVP and PROD baseline:",
+      "id": "ADR-0007",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+      },
+      "status": "Accepted",
+      "title": "MVP Agent Runtime Choices and HITL Release Gates"
+    },
+    {
+      "decisionSummary": "For Sprint 5 and MVP execution:",
+      "id": "ADR-0008",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0008-agent-runtime-pattern-scope-and-selection.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0008-agent-runtime-pattern-scope-and-selection.md"
+      },
+      "status": "Accepted",
+      "title": "Agent Runtime Pattern Scope and Selection"
+    },
+    {
+      "decisionSummary": "For Sprint 5 execution and MVP promotion controls:",
+      "id": "ADR-0009",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md"
+      },
+      "status": "Accepted",
+      "title": "Reliability and Disaster Recovery Baseline for SIT and PROD"
+    },
+    {
+      "decisionSummary": "For Sprint 5 and subsequent release cycles:",
+      "id": "ADR-0010",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0010-policy-as-code-and-release-evidence-gates.md"
+      },
+      "status": "Accepted",
+      "title": "Policy-as-Code and Release Evidence Gates"
+    },
+    {
+      "decisionSummary": "For Sprint 5 and public-sector promotion governance:",
+      "id": "ADR-0011",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0011-cantonal-legal-applicability-gate.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0011-cantonal-legal-applicability-gate.md"
+      },
+      "status": "Accepted",
+      "title": "Cantonal Legal Applicability Gate for Production Promotion"
+    },
+    {
+      "decisionSummary": "Rebuild SIT and PROD in the new tenant using a single shared subscription `66a9953a-df37-4c51-856c-9971b9bf3e03` (demo simplification per D9) in region `westus2` (per [ADR-0013](0013-temporary-us-region-demo-scope.md)). Solution short name renamed `chhealthpf` → `ihzhhpf` in live/authoritative files only; historical sprint/spec docs preserve the audit trail. Old tenant remains operational; teardown is deferred to a separate later decision.",
+      "id": "ADR-0012",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0012-tenant-migration-to-mcap164444.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0012-tenant-migration-to-mcap164444.md"
+      },
+      "status": "Accepted",
+      "title": "Tenant migration to MCAP164444"
+    },
+    {
+      "decisionSummary": "For the **new-tenant demo scope only**, deploy Azure resources in **`westus2`** to unblock validation of services that are not yet GA in `switzerlandnorth`.",
+      "id": "ADR-0013",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0013-temporary-us-region-demo-scope.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0013-temporary-us-region-demo-scope.md"
+      },
+      "status": "Proposed",
+      "title": "Temporary US-region demo scope on new tenant"
+    },
+    {
+      "decisionSummary": "**Adopt Fabric IQ Ontology as the target operational semantic backbone for the integral HCC tier, gated on Switzerland-region GA. Author the reference layer (BFO / OBO in OWL/RDF) in parallel and portably, so that operational realisation is de-risked against Fabric IQ preview status and Switzerland-region GA timing.**",
+      "id": "ADR-0014",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md"
+      },
+      "status": "Proposed",
+      "title": "Fabric IQ Ontology as target semantic backbone (GA-gated)"
+    },
+    {
+      "decisionSummary": "For the MVP demo scope, the platform ingests data via **two Fabric-native paths only**:",
+      "id": "ADR-0015",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0015-skip-sql-for-mvp-demo.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0015-skip-sql-for-mvp-demo.md"
+      },
+      "status": "Proposed",
+      "title": "Skip SQL for MVP demo"
+    },
+    {
+      "decisionSummary": "In the demo scope (as defined by ADR-0013):",
+      "id": "ADR-0016",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0016-no-phi-in-mvp-demo-scope.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0016-no-phi-in-mvp-demo-scope.md"
+      },
+      "status": "Proposed",
+      "title": "No PHI in MVP demo scope"
+    },
+    {
+      "decisionSummary": "Bump [`docs/sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md`](../sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md) from **1.3.0 → 2.0.0** (MAJOR per [`.github/copilot-instructions.md` §9 Document Versioning](../../.github/copilot-instructions.md#9-document-versioning)). Old track headings are removed; the migration path is: readers consult the design spec §7.2 deliverable table for the authoritative mapping from the v1.x scope to the v2 track structure.",
+      "id": "ADR-0017",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0017-sprint-09-v2-track-restructure.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0017-sprint-09-v2-track-restructure.md"
+      },
+      "status": "Accepted",
+      "title": "Sprint 09 v2.0.0 Track Restructure"
+    },
+    {
+      "decisionSummary": "**Formalise the four IDs in PRD.md.** Add two new PRD sub-sections at the end of their respective (FR / NFR) top-level sections so no existing anchors break:",
+      "id": "ADR-0018",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0018-add-fr-viz-and-nfr-gov-ids.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0018-add-fr-viz-and-nfr-gov-ids.md"
+      },
+      "status": "Accepted",
+      "title": "Formalise `FR-VIZ-*` and `NFR-GOV-*` requirement IDs in PRD"
+    },
+    {
+      "decisionSummary": "For the SIT MCAPS-hosted demo scope only, pivot the Sprint 10 T1 ingest architecture:",
+      "id": "ADR-0019",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0019-fabric-eventstream-custom-endpoint-entra-id.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0019-fabric-eventstream-custom-endpoint-entra-id.md"
+      },
+      "status": "Accepted",
+      "title": "Fabric Eventstream ingest via Custom Endpoint + Entra ID (MCAPS baseline forced pivot)"
+    },
+    {
+      "decisionSummary": "1. All Sprint 11 agents share a **single frontier chat-completion deployment** in the `westus2` demo Foundry project per ADR-0013 (demo scope only). The deployment name is referenced by each agent manifest as `modelDeploymentRef: sprint11-chat` — the concrete Azure deployment name is resolved at Sprint 13 agent-host configuration time and is **not** hard-coded in any prompt, manifest, or workflow. 2. This deployment is **synthetic-data-only**. Per ADR-0006 and ADR-0016 it is **non-production for regulated data** and must never process real PHI. Enforcement is layered: agent refusal rules (per-agent `AGENT.md`), the synthetic-only Sprint 10 Gold tables, and the `data-quality-agent` PHI gate. 3. Every Sprint 11 agent `AGENT.md` **references this ADR** in its Identity or Grounding section so that the model-selection decision is traceable from the agent to the constraint set above. 4. When the platform sunsets ADR-0013 and returns to Switzerland North, this ADR is **superseded** by a new ADR that pins Swiss-resident deployments per agent and lifts the synthetic-only restriction for regulated data.",
+      "id": "ADR-0020",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0020-sprint11-agent-model-selection.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0020-sprint11-agent-model-selection.md"
+      },
+      "status": "Accepted",
+      "title": "Sprint 11 agent model selection"
+    },
+    {
+      "decisionSummary": "Readiness is computed in the Silver → Gold transform and recomputed on every ingest. The canonical implementation is the pure module [`data-platform/notebooks/evidence/readiness_rules.py`](../../data-platform/notebooks/evidence/readiness_rules.py); the Fabric `score_readiness` notebook applies it to Silver Delta rows.",
+      "id": "ADR-0021",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0021-readiness-scoring-rules.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0021-readiness-scoring-rules.md"
+      },
+      "status": "Accepted",
+      "title": "Showcase Evidence readiness scoring rules (T-SHOW / T-PROD)"
+    },
+    {
+      "decisionSummary": "Use a **custom lightweight canvas** for Sprint 13:",
+      "id": "ADR-0021",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md"
+      },
+      "status": "Accepted",
+      "title": "Whiteboard base for the operational whiteboard (React Flow vs tldraw vs custom)"
+    },
+    {
+      "decisionSummary": "Use **Python + FastAPI** for the agent-host.",
+      "id": "ADR-0022",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0022-agent-host-language-python-fastapi.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0022-agent-host-language-python-fastapi.md"
+      },
+      "status": "Accepted",
+      "title": "Agent-host implementation language (Python + FastAPI vs Node + Fastify)"
+    },
+    {
+      "decisionSummary": "**Adopt the Fluent UI v9 baseline (`apps/hcc-app-fluent/`) as the app stack for Sprint 14+.** The Rayfin track is closed as *not evaluable in scope*; it may be revisited if a runnable Rayfin toolchain becomes available.",
+      "id": "ADR-0023",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0023-app-stack-fluent-vs-rayfin-decision.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0023-app-stack-fluent-vs-rayfin-decision.md"
+      },
+      "status": "Accepted",
+      "title": "App stack decision: Fluent UI baseline vs Rayfin PoC"
+    },
+    {
+      "decisionSummary": "The tier classifier is implemented as a pure, deterministic rules layer in [`data-platform/scripts/csa/csa-tier-classifier.py`](../../data-platform/scripts/csa/csa-tier-classifier.py), `RULES_VERSION = \"1.0.0\"`. It consumes a projected capacity state and returns a tier with human-readable reasons.",
+      "id": "ADR-0024",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0024-csa-tier-classifier-rules.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0024-csa-tier-classifier-rules.md"
+      },
+      "status": "Accepted",
+      "title": "CSA tier classifier rules (Swiss Lage doctrine)"
+    },
+    {
+      "decisionSummary": "1. **Single source of formula truth** — the reference module [`data-platform/notebooks/bva/bva_kpi.py`](../../data-platform/notebooks/bva/bva_kpi.py) defines every KPI as a pure function. The DAX measures in [`bva_measures.tmdl`](../../data-platform/reports/capacity-dashboard.SemanticModel/definition/tables/bva_measures.tmdl) mirror those formulas one-for-one (same name, same arithmetic, `DIVIDE` guards match `_safe_div`). Golden tests ([`test_bva_kpi_golden.py`](../../data-platform/reports/tests/test_bva_kpi_golden.py)) assert catalogue completeness, the internal identities, and ROM calibration.",
+      "id": "ADR-0025",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0025-bva-kpi-catalog.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0025-bva-kpi-catalog.md"
+      },
+      "status": "Accepted",
+      "title": "BVA KPI catalogue (DAX ↔ reference formulas + synthetic constants)"
+    },
+    {
+      "decisionSummary": "**Adopt Option B — a separate `evidence.SemanticModel`.** The readiness measures own their own Direct Lake model over the `gold.fact_readiness_*` tables. The `capacity-dashboard.SemanticModel` is left untouched.",
+      "id": "ADR-0026",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0026-evidence-readiness-measure-ownership.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0026-evidence-readiness-measure-ownership.md"
+      },
+      "status": "Accepted",
+      "title": "Evidence readiness measure ownership: separate `evidence.SemanticModel`"
+    }
+  ],
+  "boms": [
+    {
+      "category": "app",
+      "dependencyCount": 2,
+      "governedByAdrs": [
+        "ADR-0008"
+      ],
+      "id": "bom-app-fluent",
+      "name": "HCC Operations App (hcc-app-fluent)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-CX-001",
+        "FR-CX-004",
+        "FR-VIZ-001"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.App/staticApp"
+    },
+    {
+      "category": "ai",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0003",
+        "ADR-0005",
+        "ADR-0020"
+      ],
+      "id": "bom-azure-openai",
+      "name": "Azure OpenAI (grounded chat models)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-CX-001",
+        "FR-CX-002",
+        "FR-CX-003"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.CognitiveServices/accounts"
+    },
+    {
+      "category": "app",
+      "dependencyCount": 2,
+      "governedByAdrs": [
+        "ADR-0008"
+      ],
+      "id": "bom-container-apps-agent-host",
+      "name": "Container Apps Agent-Host (Sprint 13)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": "dependency bom-fabric-data-agent is NotAvailable (not GA) in Switzerland North",
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Blocked"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": true,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-CX-001",
+        "FR-CX-004"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.App/containerApps"
+    },
+    {
+      "category": "security",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0012"
+      ],
+      "id": "bom-entra-id",
+      "name": "Microsoft Entra ID",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "NFR-SEC-001",
+        "FR-GOV-002"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.AAD/tenant"
+    },
+    {
+      "category": "data",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0014"
+      ],
+      "id": "bom-eventhouse",
+      "name": "Fabric Eventhouse (time-series bindings)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-001",
+        "FR-FC-006"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/eventhouse"
+    },
+    {
+      "category": "integration",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0019"
+      ],
+      "id": "bom-eventstream",
+      "name": "Fabric Eventstream (custom endpoint, Entra ID)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-001",
+        "FR-DATA-004"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/eventstream"
+    },
+    {
+      "category": "platform",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0012",
+        "ADR-0013",
+        "ADR-0015"
+      ],
+      "id": "bom-fabric-capacity",
+      "name": "Microsoft Fabric Capacity",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-003",
+        "FR-DATA-005"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": "F64",
+      "type": "Microsoft.Fabric/capacities"
+    },
+    {
+      "category": "ai",
+      "dependencyCount": 2,
+      "governedByAdrs": [
+        "ADR-0008",
+        "ADR-0014"
+      ],
+      "id": "bom-fabric-data-agent",
+      "name": "Fabric Data Agent (read-only query surface)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": "bom-fabric-data-agent is NotAvailable (not GA) in Switzerland North",
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Blocked"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "West Europe",
+          "showcaseOnly": true,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-ONT-004",
+        "FR-CX-002"
+      ],
+      "regionChip": {
+        "maturity": "NotAvailable",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/dataAgent"
+    },
+    {
+      "category": "ai",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0014",
+        "ADR-0002",
+        "ADR-0006"
+      ],
+      "id": "bom-fabric-iq-ontology",
+      "name": "Fabric IQ Operational Ontology",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": "bom-fabric-iq-ontology is NotAvailable (not GA) in Switzerland North",
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Blocked"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "West Europe",
+          "showcaseOnly": true,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-ONT-002",
+        "FR-ONT-003",
+        "FR-ONT-004"
+      ],
+      "regionChip": {
+        "maturity": "NotAvailable",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/ontology"
+    },
+    {
+      "category": "platform",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0012"
+      ],
+      "id": "bom-fabric-workspace-data",
+      "name": "Fabric Data Workspace (ws-ihzhhpf-sit-data)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-003"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/workspaces"
+    },
+    {
+      "category": "integration",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0016"
+      ],
+      "id": "bom-fhir-service",
+      "name": "Azure Health Data Services FHIR Service",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-002",
+        "FR-ONT-006"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.HealthcareApis/fhirServices"
+    },
+    {
+      "category": "ai",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0007",
+        "ADR-0008"
+      ],
+      "id": "bom-foundry-agent-service",
+      "name": "Azure AI Foundry Agent Service",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": "bom-foundry-agent-service is Preview (not GA) in Switzerland North",
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Blocked"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": true,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-CX-002",
+        "FR-CX-004"
+      ],
+      "regionChip": {
+        "maturity": "Preview",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.MachineLearningServices/agents"
+    },
+    {
+      "category": "platform",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0010"
+      ],
+      "id": "bom-github-actions",
+      "name": "GitHub Actions Delivery Pipeline",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-GOV-003",
+        "NFR-MAINT-001",
+        "NFR-GOV-006"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "GitHub/actions"
+    },
+    {
+      "category": "security",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0009"
+      ],
+      "id": "bom-key-vault",
+      "name": "Azure Key Vault",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "NFR-SEC-001",
+        "NFR-SEC-002"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.KeyVault/vaults"
+    },
+    {
+      "category": "data",
+      "dependencyCount": 2,
+      "governedByAdrs": [
+        "ADR-0015"
+      ],
+      "id": "bom-lakehouse",
+      "name": "Fabric Lakehouse (lh_ihzhhpf_sit)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-001",
+        "FR-DATA-003",
+        "FR-DATA-008"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/lakehouse"
+    },
+    {
+      "category": "platform",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0009"
+      ],
+      "id": "bom-log-analytics",
+      "name": "Log Analytics Workspace",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "NFR-REL-001",
+        "FR-GOV-001",
+        "FR-GOV-004"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.OperationalInsights/workspaces"
+    },
+    {
+      "category": "integration",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0010"
+      ],
+      "id": "bom-logic-apps",
+      "name": "Logic Apps Integration Workflows",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-007",
+        "FR-DC-003",
+        "FR-DC-004",
+        "FR-GOV-005"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Logic/workflows"
+    },
+    {
+      "category": "security",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0007"
+      ],
+      "id": "bom-managed-identity",
+      "name": "Managed Identity / Workload Identity Federation",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "NFR-SEC-001",
+        "NFR-SEC-003"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+    },
+    {
+      "category": "data",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0015"
+      ],
+      "id": "bom-onelake",
+      "name": "OneLake",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-003",
+        "FR-DATA-008"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/onelake"
+    },
+    {
+      "category": "governance",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0010"
+      ],
+      "id": "bom-policy-as-code",
+      "name": "Policy-as-Code Release Gate",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-GOV-003",
+        "FR-GOV-004",
+        "NFR-GOV-001"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Platform/policy-gate"
+    },
+    {
+      "category": "app",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0018"
+      ],
+      "id": "bom-powerbi-report",
+      "name": "Power BI Operational Dashboards",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-CX-005",
+        "FR-VIZ-001",
+        "FR-VIZ-002"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.PowerBI/reports"
+    },
+    {
+      "category": "governance",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0010"
+      ],
+      "id": "bom-purview",
+      "name": "Microsoft Purview (governance + lineage)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-GOV-001",
+        "FR-GOV-004",
+        "NFR-COMP-005"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Purview/accounts"
+    },
+    {
+      "category": "governance",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0014"
+      ],
+      "id": "bom-reference-ontology",
+      "name": "Reference Ontology (OWL/RDF, BFO-aligned)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-ONT-001",
+        "FR-ONT-005",
+        "FR-ONT-006"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Platform/ontology-owl"
+    },
+    {
+      "category": "data",
+      "dependencyCount": 1,
+      "governedByAdrs": [
+        "ADR-0015"
+      ],
+      "id": "bom-semantic-model",
+      "name": "Direct Lake Semantic Model (capacity-dashboard)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-005",
+        "FR-VIZ-001",
+        "FR-VIZ-002"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Fabric/semanticModel"
+    },
+    {
+      "category": "data",
+      "dependencyCount": 0,
+      "governedByAdrs": [
+        "ADR-0004",
+        "ADR-0009"
+      ],
+      "id": "bom-storage-account",
+      "name": "Landing Storage Account (ADLS Gen2)",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "readiness": {
+        "tProd": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        },
+        "tShow": {
+          "blockingReason": null,
+          "region": "Switzerland North",
+          "showcaseOnly": false,
+          "status": "Ready"
+        }
+      },
+      "realisesRequirements": [
+        "FR-DATA-001",
+        "NFR-COMP-004"
+      ],
+      "regionChip": {
+        "maturity": "GA",
+        "region": "Switzerland North"
+      },
+      "sku": null,
+      "type": "Microsoft.Storage/storageAccounts"
+    }
+  ],
+  "dependencies": [
+    {
+      "fromId": "bom-app-fluent",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-container-apps-agent-host",
+      "type": "requires"
+    },
+    {
+      "fromId": "bom-app-fluent",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-powerbi-report",
+      "type": "binds"
+    },
+    {
+      "fromId": "bom-container-apps-agent-host",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-fabric-data-agent",
+      "type": "grounds"
+    },
+    {
+      "fromId": "bom-container-apps-agent-host",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-managed-identity",
+      "type": "binds"
+    },
+    {
+      "fromId": "bom-eventhouse",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-eventstream",
+      "type": "requires"
+    },
+    {
+      "fromId": "bom-eventstream",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-fabric-workspace-data",
+      "type": "hosts"
+    },
+    {
+      "fromId": "bom-fabric-data-agent",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-fabric-iq-ontology",
+      "type": "grounds"
+    },
+    {
+      "fromId": "bom-fabric-data-agent",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-semantic-model",
+      "type": "grounds"
+    },
+    {
+      "fromId": "bom-fabric-iq-ontology",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-semantic-model",
+      "type": "grounds"
+    },
+    {
+      "fromId": "bom-fabric-workspace-data",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-fabric-capacity",
+      "type": "hosts"
+    },
+    {
+      "fromId": "bom-fhir-service",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-logic-apps",
+      "type": "binds"
+    },
+    {
+      "fromId": "bom-foundry-agent-service",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-azure-openai",
+      "type": "requires"
+    },
+    {
+      "fromId": "bom-github-actions",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-managed-identity",
+      "type": "binds"
+    },
+    {
+      "fromId": "bom-lakehouse",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-fabric-workspace-data",
+      "type": "hosts"
+    },
+    {
+      "fromId": "bom-lakehouse",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-onelake",
+      "type": "requires"
+    },
+    {
+      "fromId": "bom-managed-identity",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-entra-id",
+      "type": "binds"
+    },
+    {
+      "fromId": "bom-onelake",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-fabric-capacity",
+      "type": "requires"
+    },
+    {
+      "fromId": "bom-policy-as-code",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-github-actions",
+      "type": "hosts"
+    },
+    {
+      "fromId": "bom-powerbi-report",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-semantic-model",
+      "type": "binds"
+    },
+    {
+      "fromId": "bom-semantic-model",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/bom.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/bom.yaml"
+      },
+      "toId": "bom-lakehouse",
+      "type": "requires"
+    }
+  ],
+  "gaEvidence": [
+    {
+      "bomId": "bom-app-fluent",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-app-fluent",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-azure-openai",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-azure-openai",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-container-apps-agent-host",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-container-apps-agent-host",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-entra-id",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-entra-id",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-eventhouse",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-eventhouse",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-eventstream",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-eventstream",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-capacity",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://learn.microsoft.com/fabric/enterprise/region-availability"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-capacity",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://learn.microsoft.com/fabric/enterprise/region-availability"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-data-agent",
+      "maturity": "NotAvailable",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-data-agent",
+      "maturity": "Preview",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-iq-ontology",
+      "maturity": "NotAvailable",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://learn.microsoft.com/fabric/fundamentals/fabric-iq"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-iq-ontology",
+      "maturity": "Preview",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://learn.microsoft.com/fabric/fundamentals/fabric-iq"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-workspace-data",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fabric-workspace-data",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fhir-service",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://learn.microsoft.com/azure/healthcare-apis/fhir/overview"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-fhir-service",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-foundry-agent-service",
+      "maturity": "Preview",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-foundry-agent-service",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-github-actions",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-github-actions",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-key-vault",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-key-vault",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-lakehouse",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-lakehouse",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-log-analytics",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-log-analytics",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-logic-apps",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-logic-apps",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-managed-identity",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-managed-identity",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-onelake",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-onelake",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-policy-as-code",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-policy-as-code",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-powerbi-report",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-powerbi-report",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-purview",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-purview",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-reference-ontology",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-reference-ontology",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-semantic-model",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-semantic-model",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-storage-account",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "Switzerland North",
+      "verifiedBy": "Urs Rüegg"
+    },
+    {
+      "bomId": "bom-storage-account",
+      "maturity": "GA",
+      "provenance": {
+        "asOf": "2026-07-09",
+        "sourcePath": "docs/region-availability.yaml",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+      },
+      "region": "West Europe",
+      "verifiedBy": "Urs Rüegg"
+    }
+  ],
+  "generatedAt": "2026-07-10",
+  "requirements": [
+    {
+      "family": "Bed Management Copilot And User Experience",
+      "id": "FR-CX-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall provide a copilot interface for operations teams to query bed and flow status."
+    },
+    {
+      "family": "Bed Management Copilot And User Experience",
+      "id": "FR-CX-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The copilot shall provide grounded answers based on live operational data, forecast outputs, and discharge signals."
+    },
+    {
+      "family": "Bed Management Copilot And User Experience",
+      "id": "FR-CX-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The copilot shall provide bottleneck explanations and recommended operational options."
+    },
+    {
+      "family": "Bed Management Copilot And User Experience",
+      "id": "FR-CX-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The copilot shall present current bed state, predicted pressure windows, and likely same-day discharges."
+    },
+    {
+      "family": "Bed Management Copilot And User Experience",
+      "id": "FR-CX-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Power BI-based operational visibility shall be available for non-conversational usage scenarios."
+    },
+    {
+      "family": "Bed Management Copilot And User Experience",
+      "id": "FR-CX-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Copilot responses shall preserve references to source context and response timestamp metadata."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall ingest provider-internal operational signals, including ED, ADT, bed-state, and discharge-related events."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support HL7 FHIR-oriented normalization where healthcare interoperability requires it."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall maintain curated datasets that unify operational, planning, and model input data."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall capture partner acknowledgements and status updates from integration flows."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall expose governed semantic models for dashboard and copilot consumption."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support data ingestion from KIS/EHR, ED systems, bed management systems, and staffing/planning systems."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support outbound and inbound orchestration with downstream partners via integration workflows."
+    },
+    {
+      "family": "Data And Interoperability",
+      "id": "FR-DATA-008",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall keep source-to-consumption traceability for operational and AI-serving datasets."
+    },
+    {
+      "family": "Discharge Coordination Intelligence",
+      "id": "FR-DC-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall identify inpatients approaching discharge readiness."
+    },
+    {
+      "family": "Discharge Coordination Intelligence",
+      "id": "FR-DC-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall produce ranked discharge candidates with explanatory factors."
+    },
+    {
+      "family": "Discharge Coordination Intelligence",
+      "id": "FR-DC-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall trigger integration-based downstream actions for discharge coordination."
+    },
+    {
+      "family": "Discharge Coordination Intelligence",
+      "id": "FR-DC-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall record outbound coordination events and returned partner statuses."
+    },
+    {
+      "family": "Discharge Coordination Intelligence",
+      "id": "FR-DC-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall surface discharge blockers to operations users."
+    },
+    {
+      "family": "Discharge Coordination Intelligence",
+      "id": "FR-DC-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall make discharge-readiness outputs available to dashboards and copilot interactions."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall produce a 72-hour demand forecast for emergency demand and admission pressure."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Forecast outputs shall be segmented by specialty and time window."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Forecasting shall use provider-internal arrivals plus downstream capacity signals as model inputs."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Forecast outputs shall be published to operations-facing dashboards."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Forecast outputs shall be available as grounding context for the bed management copilot."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Forecast generation runs shall persist execution timestamps and model run identifiers for auditability."
+    },
+    {
+      "family": "Governance, Delivery, And Operations",
+      "id": "FR-GOV-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall provide auditable traceability between source data, model outputs, user-facing answers, and integration events."
+    },
+    {
+      "family": "Governance, Delivery, And Operations",
+      "id": "FR-GOV-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support access-control enforcement for clinical and operational data surfaces."
+    },
+    {
+      "family": "Governance, Delivery, And Operations",
+      "id": "FR-GOV-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The delivery model shall support structured promotion across DEV, SIT, and PROD stages."
+    },
+    {
+      "family": "Governance, Delivery, And Operations",
+      "id": "FR-GOV-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall produce governance evidence artifacts for compliance reviews."
+    },
+    {
+      "family": "Governance, Delivery, And Operations",
+      "id": "FR-GOV-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support policy-driven integration controls for outbound partner interactions."
+    },
+    {
+      "family": "Governance, Delivery, And Operations",
+      "id": "FR-GOV-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall maintain provider-local control over prompts, model configuration, and operational workflows."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-GOV-ONT-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The data-governance RACI shall include a nominated **semantic / ontology owner**. Documented in [OPERATIONS.md](OPERATIONS.md) as of v1.4.0."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-GOV-ONT-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Ontology changes shall follow an **OBO-inspired semantic change workflow** (proposal → domain-owner review → versioned release → downstream impact check), mirroring the data-contract breaking-change control in `NFR-MAINT-002`."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-GOV-ONT-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build."
+    },
+    {
+      "family": "Operating Model And Product Scope",
+      "id": "FR-OM-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall be deployed for one hospital provider instance at a time."
+    },
+    {
+      "family": "Operating Model And Product Scope",
+      "id": "FR-OM-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support provider-internal governance and data ownership boundaries."
+    },
+    {
+      "family": "Operating Model And Product Scope",
+      "id": "FR-OM-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support an implementation sequence for USZ-first or LUKS-first rollout patterns."
+    },
+    {
+      "family": "Operating Model And Product Scope",
+      "id": "FR-OM-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "External care entities shall be integrated as endpoints and not as first-class platform operators."
+    },
+    {
+      "family": "Operating Model And Product Scope",
+      "id": "FR-OM-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The product shall support a phased implementation model where capabilities can be enabled incrementally."
+    },
+    {
+      "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+      "id": "FR-ONB-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall onboard new patients using a minimum required metadata set only."
+    },
+    {
+      "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+      "id": "FR-ONB-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall onboard hospital capacity using specialty-tagged metadata."
+    },
+    {
+      "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+      "id": "FR-ONB-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support provider-specific specialty profiles for capacity planning."
+    },
+    {
+      "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+      "id": "FR-ONB-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall classify onboarding workflows as deterministic service vs agentic flow using a documented criterion."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall maintain a **reference ontology** authored in OWL/RDF, importing established published ontologies (BFO ISO/IEC 21838-2:2021, OMRSE, OGMS, OOSTT, Goyer et al. healthcare-system classes) and adding the platform-specific `CapacityUnit` abstraction with subtypes for bed, OR slot, room, staff shift and device."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall realise the **operational ontology** in Fabric IQ, auto-generated from the governed semantic model with static (lakehouse) and time-series (eventhouse) bindings. Use in `switzerlandnorth` PROD paths carrying PHI is gated on Fabric IQ Switzerland-region GA + DPA equivalence per ADR-0014 gate G-C; use in the `westus2` demo scope is permitted per ADR-0013."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall model all in-scope hospital resource dimensions (beds, OR slots, rooms, staff shifts, devices) as **capacity-unit subtypes** with shared states (available / occupied / blocked / planned) and shared relations, so one set of KPIs, forecasts and simulation logic applies across all dimensions."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The copilot and Fabric Data Agents shall **ground responses on ontology entities and relationships** to deliver concept-level traceability, extending `NFR-AI-002/003/004`."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall provide a **process-ontology overlay** on the reference layer to support what-if simulation (`FR-SIM-*` when introduced)."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The ontology shall carry a **crosswalk to FHIR resource types and SNOMED CT concepts** for clinical interoperability (extends `FR-DATA-002`)."
+    },
+    {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The ontology shall support **provider-specific extensions** (specialisations) without re-architecture, realising `NFR-MAINT-004` at the semantic layer."
+    },
+    {
+      "family": "Visualization And Dashboards (Sprint 09 T5)",
+      "id": "FR-VIZ-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall provide an operational **bed-capacity dashboard page** exposing current occupancy, forecast pressure windows, and data-quality signals, aligned with `FR-CX-005`."
+    },
+    {
+      "family": "Visualization And Dashboards (Sprint 09 T5)",
+      "id": "FR-VIZ-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall provide an operational **OR-steering dashboard page** exposing case-level utilisation, first-case on-time performance, cancellation, and idle-slot metrics, aligned with `FR-CX-005`."
+    },
+    {
+      "family": "Responsible AI And Auditability",
+      "id": "NFR-AI-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Copilot outputs shall remain advisory and shall not replace human operational authority."
+    },
+    {
+      "family": "Responsible AI And Auditability",
+      "id": "NFR-AI-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Copilot outputs shall be retrieval-grounded in provider operational context and model outputs."
+    },
+    {
+      "family": "Responsible AI And Auditability",
+      "id": "NFR-AI-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Forecast and discharge model outputs shall be traceable to model version and execution time."
+    },
+    {
+      "family": "Responsible AI And Auditability",
+      "id": "NFR-AI-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "User-facing AI responses and coordination triggers shall be auditable to source context."
+    },
+    {
+      "family": "Responsible AI And Auditability",
+      "id": "NFR-AI-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "AI-serving behavior shall support provider-local governance and change control."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support Swiss DSG compliance for healthcare data handling."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support cantonal healthcare governance requirements in deployment and operations controls."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support KVG/LAMal-aligned operational governance where applicable to patient flow data usage."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Data residency controls shall support Switzerland or permitted jurisdiction constraints for each dataset class."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall maintain a data processing inventory with legal basis and purpose tags for PHI and operational datasets."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-006",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall provide a documented data-subject-rights operating process with accountable ownership and response SLAs."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-007",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall implement policy-enforced default-deny behavior for PHI cross-border transfer and failover activation unless explicitly approved."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-008",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall maintain auditable privacy incident handling and notification decision workflows."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-009",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "If EPR integration is enabled, the solution shall enforce consent, identity, access, and logging controls aligned to EPDG/EPDV-EDI obligations."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-010",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall maintain compliance evidence artifacts and review cadence mapped to legal obligations and internal controls."
+    },
+    {
+      "family": "Compliance And Privacy",
+      "id": "NFR-COMP-011",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Onboarding data contracts shall enforce minimum-sensitive-data controls and purpose tags (Sprint 6)."
+    },
+    {
+      "family": "Data Quality And Integrity",
+      "id": "NFR-DQ-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Critical operational feeds shall include quality checks for completeness and schema validity."
+    },
+    {
+      "family": "Data Quality And Integrity",
+      "id": "NFR-DQ-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Curated operational datasets shall support lineage from source to serving views."
+    },
+    {
+      "family": "Data Quality And Integrity",
+      "id": "NFR-DQ-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Data model changes shall preserve backward compatibility or include controlled migration plans."
+    },
+    {
+      "family": "Data Quality And Integrity",
+      "id": "NFR-DQ-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Integration message failures shall be observable and recoverable without silent data loss."
+    },
+    {
+      "family": "Data Quality And Integrity",
+      "id": "NFR-DQ-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Specialty metadata shall include quality checks and controlled versioning (Sprint 6)."
+    },
+    {
+      "family": "Governance And Audit (Sprint 09 T5)",
+      "id": "NFR-GOV-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall record change-management traceability for semantic-model, dashboard, and agent artefacts (aligns with `FR-GOV-001`)."
+    },
+    {
+      "family": "Governance And Audit (Sprint 09 T5)",
+      "id": "NFR-GOV-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support audit-review workflows for governance evidence artefacts (aligns with `FR-GOV-004`)."
+    },
+    {
+      "family": "Governance And Audit (Sprint 09 T5)",
+      "id": "NFR-GOV-003",
+      "kind": "NFR",
+      "mvp": true,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The dashboard consumption path shall enforce role-scoped filtering that prevents PHI-tagged column exposure to any non-owner role (extends [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) gate 4)."
+    },
+    {
+      "family": "Governance And Audit (Sprint 09 T5)",
+      "id": "NFR-GOV-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Semantic-model and dashboard artefacts shall be round-trippable to source-controlled TMDL/PBIP such that any deployed state can be replayed from repository content alone."
+    },
+    {
+      "family": "Governance And Audit (Sprint 09 T5)",
+      "id": "NFR-GOV-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Governance evidence artefacts shall be co-located with the sprint or ADR that produced them under `docs/sprints/*/evidence/` or `docs/adr/*.md`."
+    },
+    {
+      "family": "Governance And Audit (Sprint 09 T5)",
+      "id": "NFR-GOV-006",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Every dashboard visual shall carry per-visual traceability back to its underlying semantic-model measure and its ontology-grounded source (`hcp:*` entities), aligned with `FR-CX-006` and `FR-ONT-004`."
+    },
+    {
+      "family": "Maintainability And Delivery",
+      "id": "NFR-MAINT-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall support modular architecture lanes for data, AI, app, integration, and governance assets."
+    },
+    {
+      "family": "Maintainability And Delivery",
+      "id": "NFR-MAINT-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Delivery workflows shall be Git-first and support auditable promotion across environments."
+    },
+    {
+      "family": "Maintainability And Delivery",
+      "id": "NFR-MAINT-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Requirement artifacts shall remain traceable to specification sources and implementation increments."
+    },
+    {
+      "family": "Maintainability And Delivery",
+      "id": "NFR-MAINT-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Platform configuration shall support provider-specific rollout without full re-architecture."
+    },
+    {
+      "family": "Maintainability And Delivery",
+      "id": "NFR-MAINT-005",
+      "kind": "NFR",
+      "mvp": true,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Sprint 6 onboarding and MVP agent services shall be deployable through IaC-first pipelines with reproducible environment bootstrap (Sprint 6)."
+    },
+    {
+      "family": "Semantic Ontology (Sprint 9)",
+      "id": "NFR-ONT-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The ontology (reference layer OWL/RDF + operational layer Fabric IQ + crosswalk) shall be **versioned, governed and promoted as a first-class asset** with DEV/SIT/PROD gates, an explicit reference↔operational crosswalk artefact (`docs/ontology/crosswalk.md`), and a **CI conformance check** enforcing `FR-GOV-ONT-003`. Extends `NFR-MAINT-002`."
+    },
+    {
+      "family": "Performance And Throughput",
+      "id": "NFR-PERF-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Ingestion shall support near-real-time updates for ED, ADT, bed-state, and discharge status signals."
+    },
+    {
+      "family": "Performance And Throughput",
+      "id": "NFR-PERF-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Forecast inference shall support at least hourly refresh cadence for the 72-hour horizon."
+    },
+    {
+      "family": "Performance And Throughput",
+      "id": "NFR-PERF-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Discharge-readiness scoring shall support multiple recalculations per day."
+    },
+    {
+      "family": "Performance And Throughput",
+      "id": "NFR-PERF-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support burst headroom above average event volume."
+    },
+    {
+      "family": "Performance And Throughput",
+      "id": "NFR-PERF-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "End-user operational surfaces shall support interactive decision cycles without batch-only dependence."
+    },
+    {
+      "family": "Reliability And Operational Continuity",
+      "id": "NFR-REL-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support continuous operations and shall not be designed as overnight batch-only service."
+    },
+    {
+      "family": "Reliability And Operational Continuity",
+      "id": "NFR-REL-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Critical data and inference pipelines shall provide failure visibility and restartability."
+    },
+    {
+      "family": "Reliability And Operational Continuity",
+      "id": "NFR-REL-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Operational dashboards and copilot services shall degrade gracefully when non-critical dependencies fail."
+    },
+    {
+      "family": "Reliability And Operational Continuity",
+      "id": "NFR-REL-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Integration workflows shall provide retry and exception-handling behavior for transient endpoint errors."
+    },
+    {
+      "family": "Reliability And Operational Continuity",
+      "id": "NFR-REL-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Onboarding services shall remain available under defined degraded-mode behavior (Sprint 6)."
+    },
+    {
+      "family": "Security And Access Control",
+      "id": "NFR-SEC-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Access shall be least-privilege and role-scoped by user and service identity."
+    },
+    {
+      "family": "Security And Access Control",
+      "id": "NFR-SEC-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Data access attempts and privilege changes shall be fully auditable."
+    },
+    {
+      "family": "Security And Access Control",
+      "id": "NFR-SEC-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Integration endpoints shall enforce authenticated and authorized communication patterns."
+    },
+    {
+      "family": "Security And Access Control",
+      "id": "NFR-SEC-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Secret material shall be managed outside source-controlled artifacts."
+    },
+    {
+      "family": "Security And Access Control",
+      "id": "NFR-SEC-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Onboarding identity and cross-tenant boundaries shall be explicit and auditable (Sprint 6)."
+    }
+  ],
+  "summary": [
+    {
+      "readyCount": 21,
+      "readyPct": 84.0,
+      "total": 25,
+      "track": "T-PROD"
+    },
+    {
+      "readyCount": 25,
+      "readyPct": 100.0,
+      "total": 25,
+      "track": "T-SHOW"
+    },
+    {
+      "readyCount": 4,
+      "readyPct": 0.0,
+      "total": 0,
+      "track": "GA-parity-gap"
+    }
+  ]
+}

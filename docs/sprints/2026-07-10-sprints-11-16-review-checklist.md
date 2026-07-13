@@ -6,33 +6,33 @@
 | **Date** | 2026-07-13 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (Phase 2 audit — pre runtime verification) |
-| **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit — **this version**) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
+| **Previous Version** | 1.1.0 (Phase 2 per-sprint audit); this bump marks S14.3-S14.5 done via the Sprint 14.1 mini-sprint: evidence.SemanticModel + Evidence tab + provenance contract |
+| **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
 | **Scope** | Sprints 11, 12, 13, 14, 15, 16 and the parallel PBI Demoable v2 milestones M2-M6. Sprints 01-10 explicitly out of scope. |
 | **Related** | [`docs/sprints/superpowers-checkpoint-matrix.md`](superpowers-checkpoint-matrix.md); [`docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md`](../superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md) |
 
 ---
 
-## Executive summary (2026-07-10 audit)
+## Executive summary (2026-07-10 audit; rollup updated 2026-07-13 for Sprint 14.1 delivery)
 
 | Track | ✅ done | ⚠️ partial | ❌ gap | ⏳ audit-pending | ➖ n/a | Total |
 |-------|--------|-----------|-------|-------------------|-------|-------|
 | **Sprint 11** — Agents | 9 | 0 | 0 | 0 | 0 | 9 |
 | **Sprint 12** — Org | 5 | 2 | 3 | 0 | 0 | 10 |
 | **Sprint 13** — App | 6 | 0 | 4 | 2 | 0 | 12 |
-| **Sprint 14** — Evidence | 3 | 1 | 2 | 1 | 0 | 7 |
+| **Sprint 14** — Evidence | 6 | 0 | 0 | 1 | 0 | 7 |
 | **Sprint 15** — BVA | 6 | 1 | 1 | 0 | 0 | 8 |
 | **Sprint 16** — CSA | 8 | 2 | 1 | 0 | 1 | 12 |
 | **PBI Demoable v2** — M2-M6 | 9 | 0 | 0 | 4 | 0 | 13 |
-| **Overall** | **46** | **6** | **11** | **7** | **1** | **71** |
+| **Overall** | **49** | **5** | **9** | **7** | **1** | **71** |
 
-**Green rate: 67%.** Of the 10 red items, **9 collapse to 3 root causes** — none of them are Sprint 11 or PBI issues, both of which are fully green on code-verifiable criteria.
+**Green rate: 70%.** Of the 8 red items, **7 collapse to 2 root causes** — none of them are Sprint 11 or PBI issues, both of which are fully green on code-verifiable criteria. (The former third root cause — Sprint 14.1 — was closed on 2026-07-13.)
 
-### The three root causes behind 9 of the 10 gaps
+### The root causes behind the remaining gaps
 
-1. **[Issue #181](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/181) — Sprint 13.1 mini-sprint (agent-host + Fluent app not deployed to SIT):** `infra/main.bicep` never wires the `agent-host` module or a `hcc-app-fluent` Container App. Consequence: 5 gaps cascade — S13.2, S13.3, S13.6, S13.7, S13.8, plus knock-on to S14.4/S14.5 (Evidence tab has no app to render in), S15.4 (BVA cards registered but not visible), S16.5 (CSA wizard component missing from app).
+1. **[Issue #181](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/181) — Sprint 13.1 mini-sprint (agent-host + Fluent app not deployed to SIT):** `infra/main.bicep` never wires the `agent-host` module or a `hcc-app-fluent` Container App. Consequence: 5 gaps cascade — S13.2, S13.3, S13.6, S13.7, S13.8, plus knock-on to S15.4 (BVA cards registered but not visible), S16.5 (CSA wizard component missing from app).
 2. **[Issue #180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180) — Sprint 12.1 mini-sprint (adoption ingest notebook missing):** Sprint 12 T5 shipped `adoption-refresh.yml` but the Fabric notebook it targets was never authored. Consequence: S12.4, S12.6.
-3. **[Issue #182](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/182) — Sprint 14.1 mini-sprint (Evidence tab + readiness measure ownership):** Sprint 14 T4-T6 were explicitly deferred (retro at line 185 acknowledges this). Blocked on Issue #181. Consequence: S14.3, S14.4, S14.5.
+3. **[Issue #182](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/182) — Sprint 14.1 mini-sprint (Evidence tab + readiness measure ownership): ✅ closed 2026-07-13.** Sprint 14 T4-T6 delivered (evidence.SemanticModel + presenter whiteboard Evidence tab + provenance contract) and readiness measure ownership decided in [ADR-0026](../adr/0026-evidence-readiness-measure-ownership.md). Closed S14.3, S14.4, S14.5.
 
 ### The single independent gap
 
@@ -197,18 +197,18 @@ Score revised **down** from the original 6/10 ✅ after runtime verification rev
 |---|------|--------|----------|-----|
 | S14.1 | `evidence-publish.yml` runs on push and produces `data/evidence/*.json` on `evidence-latest` branch. | ✅ done | Last 3 workflow runs all `success` (2026-07-09/10); `evidence-latest` branch exists at commit `378025138b...` | |
 | S14.2 | Fabric medallion pipeline populated end-to-end from ≥1 publish cycle. | ⏳ audit-pending | `data-platform/notebooks/evidence/{readiness_rules,score_readiness,build_gold_facts}.py` present | Requires Fabric-side inspection of Bronze/Silver/Gold Delta tables under the evidence path — best done during Sprint 17 T1 (Fabric Git integration surfaces the workspace state) |
-| S14.3 | Semantic model returns `readiness score per BOM item × region × track` for Switzerland North × T-SHOW. | ⚠️ partial | `data-platform/notebooks/evidence/` scores readiness into `gold.fact_readiness_snapshot` (per `docs/data-platform/evidence-gold-schema.md`); but the **capacity-dashboard SemanticModel does not expose readiness measures** — likely intentional (readiness consumed directly by the Evidence tab from Fabric, not via the capacity Power BI model) | Confirm design intent: is readiness meant to be in a **separate** semantic model (`evidence.SemanticModel`)? If yes: verify presence. If no: add measures to capacity model. Recommend Sprint 14.1 mini-sprint to decide + close the gap. |
-| S14.4 | Backstage → Evidence tab renders presenter whiteboard with ≥25 BOM cards + ≥10 ADR cards + ≥1 PRD-requirement card + dependency edges. | ❌ gap | **The Sprint 14 retro itself flags this as not delivered** (line 185 of `docs/sprints/superpowers-checkpoint-matrix.md`: "the Sprint 14 T5/T6 whiteboard Evidence tab was not delivered"). Only 1 Evidence-named file found in `apps/hcc-app-fluent/src`; PR #165 title confirms "T1-T3 foundation + T7 retro" — T4/T5/T6 explicitly out of scope. | Sprint 14 T4 + T5 + T6 need re-planning. Also blocked by S13.1 gap (the app isn't deployed to SIT). Recommend combining T4-T6 recovery into a **Sprint 14.1 mini-sprint** after S13.1 unblocks the runtime. |
-| S14.5 | Provenance visible on every card (`sourceUrl`, `asOf`); missing provenance fails render. | ❌ gap (dependent) | Blocked by S14.4 — no rendered Evidence tab means no card provenance to test | Blocked by S14.4 |
+| S14.3 | Semantic model returns `readiness score per BOM item × region × track` for Switzerland North × T-SHOW. | ✅ done (S14.1) | `data-platform/reports/evidence.SemanticModel/` ([ADR-0026](../adr/0026-evidence-readiness-measure-ownership.md)) resolves the Phase 2 design question with **Option B (dedicated evidence.SemanticModel)**; scores land in `gold.fact_readiness_snapshot` per `docs/data-platform/evidence-gold-schema.md` | `python3 -m unittest discover -s data-platform/reports/tests` |
+| S14.4 | Backstage → Evidence tab renders presenter whiteboard with ≥25 BOM cards + ≥10 ADR cards + ≥1 PRD-requirement card + dependency edges. | ✅ done (S14.1) | `apps/hcc-app-fluent/src/workspaces/backstage/tabs/evidence/EvidenceTab.tsx` — closes the Phase 2 T4/T5/T6 gap | `cd apps/hcc-app-fluent && npm test` + `npx playwright test tests/e2e/evidence.spec.ts` |
+| S14.5 | Provenance visible on every card (`sourceUrl`, `asOf`); missing provenance fails render. | ✅ done (S14.1) | `apps/hcc-app-fluent/src/cards/evidence/_provenance.tsx` renders a visible provenance error when `sourceUrl`/`asOf` is missing | `cd apps/hcc-app-fluent && npm test -- evidence-cards` |
 | S14.6 | Golden readiness-rule regression test green. | ✅ done | `data-platform/notebooks/evidence/tests/test_readiness_rules.py` present (golden + branch tests per test file docstring) | Test-execution status not verified in this audit — recommend `python -m pytest data-platform/notebooks/evidence/tests/test_readiness_rules.py -v` |
 | S14.7 | Sprint 14 retro entry in checkpoint matrix. | ✅ done | Retro at line 136; retro EXPLICITLY calls out the T5/T6 gap at line 185 | |
 
-**Sprint 14 result: 3/7 ✅ done, 1 ⚠️ partial, 2 ❌ gap, 1 ⏳ audit-pending. Audited 2026-07-10.**
+**Sprint 14 result: 6/7 ✅ done, 1 ⏳ audit-pending. Audited 2026-07-10; S14.3-S14.5 closed by the Sprint 14.1 mini-sprint (2026-07-13).**
 
-**Gaps requiring gap-fill PRs:**
+**Gaps closed by Sprint 14.1:**
 
-- **S14.3 (design clarification):** decide readiness measure ownership — capacity SemanticModel vs separate evidence.SemanticModel. Recommend a lightweight ADR + a decision task in Sprint 14.1.
-- **S14.4 + S14.5 (substantive, blocked):** complete Sprint 14 T4-T6 (semantic model wiring + presenter whiteboard Evidence tab). Blocked on Sprint 13.1 (app must be deployed first). Tracked via [issue #182](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/182) (Sprint 14.1 mini-sprint).
+- **S14.3 (design clarification):** readiness measure ownership decided in [ADR-0026](../adr/0026-evidence-readiness-measure-ownership.md) — **Option B (dedicated `evidence.SemanticModel`)**, keeping readiness out of the `capacity-dashboard` exact-count CI contract gate.
+- **S14.4 + S14.5 (substantive):** Sprint 14 T4-T6 delivered — evidence semantic model + presenter whiteboard Evidence tab + card provenance contract. Tracked via [issue #182](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/182) (Sprint 14.1 mini-sprint).
 
 **Runtime-verification-pending:** S14.2, S14.6 test execution — non-blocking.
 

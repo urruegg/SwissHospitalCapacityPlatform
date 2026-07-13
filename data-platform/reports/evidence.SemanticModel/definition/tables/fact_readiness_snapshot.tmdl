@@ -1,0 +1,145 @@
+/// Showcase Evidence readiness fact (Sprint 14.1 T4). One row per
+/// (bomId × track), scored by data-platform/notebooks/evidence/readiness_rules.py
+/// and materialised to gold.fact_readiness_snapshot by score_readiness.py.
+/// Direct Lake over lh_ihzhhpf_sit. Synthetic non-PHI evidence (ADR-0016);
+/// measure ownership decided in ADR-0026.
+table fact_readiness_snapshot
+	lineageTag: c24af3b4-4da7-4d05-a406-b939bd04575c
+	sourceLineageTag: [gold].[fact_readiness_snapshot]
+
+	/// Count of distinct BOM items in the current filter context.
+	measure 'BOM count' = DISTINCTCOUNT(fact_readiness_snapshot[bomId])
+		formatString: #,0
+		lineageTag: 2914bc5d-81d6-42e9-b621-5180db50b7d1
+
+	/// % of BOM items Ready on the T-SHOW (synthetic showcase) track.
+	measure 'Readiness % (T-SHOW)' = ```
+			VAR ready =
+			    CALCULATE(
+			        DISTINCTCOUNT(fact_readiness_snapshot[bomId]),
+			        fact_readiness_snapshot[track] = "T-SHOW",
+			        fact_readiness_snapshot[status] = "Ready"
+			    )
+			VAR total =
+			    CALCULATE(
+			        DISTINCTCOUNT(fact_readiness_snapshot[bomId]),
+			        fact_readiness_snapshot[track] = "T-SHOW"
+			    )
+			RETURN
+			    DIVIDE(ready, total)
+		```
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 43c8d9d2-4bfc-4bd6-9346-7743c272d4af
+
+	/// % of BOM items Ready on the T-PROD (real-PHI, GA-only) track.
+	measure 'Readiness % (T-PROD)' = ```
+			VAR ready =
+			    CALCULATE(
+			        DISTINCTCOUNT(fact_readiness_snapshot[bomId]),
+			        fact_readiness_snapshot[track] = "T-PROD",
+			        fact_readiness_snapshot[status] = "Ready"
+			    )
+			VAR total =
+			    CALCULATE(
+			        DISTINCTCOUNT(fact_readiness_snapshot[bomId]),
+			        fact_readiness_snapshot[track] = "T-PROD"
+			    )
+			RETURN
+			    DIVIDE(ready, total)
+		```
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 49b58bc8-92ab-43a4-a241-93066696f4bc
+
+	/// GA-parity gap: #Ready on T-SHOW minus #Ready on T-PROD (design spec §6).
+	measure 'GA-Parity Gap' = ```
+			VAR showReady =
+			    CALCULATE(
+			        DISTINCTCOUNT(fact_readiness_snapshot[bomId]),
+			        fact_readiness_snapshot[track] = "T-SHOW",
+			        fact_readiness_snapshot[status] = "Ready"
+			    )
+			VAR prodReady =
+			    CALCULATE(
+			        DISTINCTCOUNT(fact_readiness_snapshot[bomId]),
+			        fact_readiness_snapshot[track] = "T-PROD",
+			        fact_readiness_snapshot[status] = "Ready"
+			    )
+			RETURN
+			    showReady - prodReady
+		```
+		formatString: #,0
+		lineageTag: 11ba36e3-3be2-4793-9379-23e5213ca633
+
+	/// Count of BOM items Blocked on the T-PROD track (drives the blocked-cluster
+	/// card). Named "Blocked requirements count" per plan Task 4; grain is BOM item.
+	measure 'Blocked requirements count' = ```
+			CALCULATE(
+			    DISTINCTCOUNT(fact_readiness_snapshot[bomId]),
+			    fact_readiness_snapshot[track] = "T-PROD",
+			    fact_readiness_snapshot[status] = "Blocked"
+			)
+		```
+		formatString: #,0
+		lineageTag: 8f825abd-507e-44ab-8936-6a33c6f687c4
+
+	column bomId
+		dataType: string
+		lineageTag: 92fcc4c5-0692-4a56-b9d2-520a67269437
+		sourceLineageTag: bomId
+		summarizeBy: none
+		sourceColumn: bomId
+
+		annotation SummarizationSetBy = Automatic
+
+	column track
+		dataType: string
+		lineageTag: 8017d0c5-9c75-4da6-af84-393b4f68931c
+		sourceLineageTag: track
+		summarizeBy: none
+		sourceColumn: track
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: e4d2e790-ec59-41ec-943e-1e9f8b0109e2
+		sourceLineageTag: region
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: 01fef603-d0cc-4446-9d55-0063e242e459
+		sourceLineageTag: status
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column showcaseOnly
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 46035cf0-f7ee-48a0-b28d-d37c522eb846
+		sourceLineageTag: showcaseOnly
+		summarizeBy: none
+		sourceColumn: showcaseOnly
+
+		annotation SummarizationSetBy = Automatic
+
+	column blockingReason
+		dataType: string
+		lineageTag: 510c10df-113e-4fb9-97a3-f594d465e59a
+		sourceLineageTag: blockingReason
+		summarizeBy: none
+		sourceColumn: blockingReason
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_readiness_snapshot = entity
+		mode: directLake
+		source
+			entityName: fact_readiness_snapshot
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

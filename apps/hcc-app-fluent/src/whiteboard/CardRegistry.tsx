@@ -9,6 +9,11 @@ import { ScenarioCard } from '../cards/ScenarioCard';
 import { BvaHeadlineKpiCard } from '../cards/bva/BvaHeadlineKpiCard';
 import { BvaPlanVsActualCard } from '../cards/bva/BvaPlanVsActualCard';
 import { BvaTrendCard } from '../cards/bva/BvaTrendCard';
+import { BomCard } from '../cards/evidence/BomCard';
+import { AdrCard } from '../cards/evidence/AdrCard';
+import { PrdRequirementCard } from '../cards/evidence/PrdRequirementCard';
+import { GaEvidenceCard } from '../cards/evidence/GaEvidenceCard';
+import { DependencyEdge } from '../cards/evidence/DependencyEdge';
 
 /**
  * Sprint 13 T3 — card registry.
@@ -29,6 +34,11 @@ export const cardRegistry: Record<CardType, AnyCardComponent> = {
   BvaHeadlineKpiCard,
   BvaPlanVsActualCard,
   BvaTrendCard,
+  BomCard,
+  AdrCard,
+  PrdRequirementCard,
+  GaEvidenceCard,
+  DependencyEdge,
 };
 
 export function resolveCard(type: CardType): AnyCardComponent {

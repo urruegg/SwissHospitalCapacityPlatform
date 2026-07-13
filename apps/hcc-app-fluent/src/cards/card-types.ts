@@ -14,7 +14,12 @@ export type CardType =
   | 'ScenarioCard'
   | 'BvaHeadlineKpiCard'
   | 'BvaPlanVsActualCard'
-  | 'BvaTrendCard';
+  | 'BvaTrendCard'
+  | 'BomCard'
+  | 'AdrCard'
+  | 'PrdRequirementCard'
+  | 'GaEvidenceCard'
+  | 'DependencyEdge';
 
 export interface CardPosition {
   x: number;

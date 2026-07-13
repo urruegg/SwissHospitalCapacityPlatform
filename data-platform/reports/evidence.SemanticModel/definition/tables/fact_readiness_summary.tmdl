@@ -1,0 +1,52 @@
+/// Showcase Evidence readiness summary (Sprint 14.1 T4). One row per track plus
+/// a GA-parity-gap row, materialised to gold.fact_readiness_summary by
+/// score_readiness.py (aggregate_readiness). Direct Lake over lh_ihzhhpf_sit.
+table fact_readiness_summary
+	lineageTag: feb286d1-d492-456e-91b7-1148369502c4
+	sourceLineageTag: [gold].[fact_readiness_summary]
+
+	column track
+		dataType: string
+		lineageTag: e5917d7c-afd8-4d7e-8188-924895cacd2b
+		sourceLineageTag: track
+		summarizeBy: none
+		sourceColumn: track
+
+		annotation SummarizationSetBy = Automatic
+
+	column readyCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: 8b3f10d6-4871-45e1-8734-53442683afda
+		sourceLineageTag: readyCount
+		summarizeBy: sum
+		sourceColumn: readyCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column total
+		dataType: int64
+		formatString: #,0
+		lineageTag: d097a53e-b398-465e-8d71-ea48fcc7107a
+		sourceLineageTag: total
+		summarizeBy: sum
+		sourceColumn: total
+
+		annotation SummarizationSetBy = Automatic
+
+	column readyPct
+		dataType: double
+		formatString: 0.0
+		lineageTag: a0580d83-860b-49b6-8936-0c7bcd039f8f
+		sourceLineageTag: readyPct
+		summarizeBy: none
+		sourceColumn: readyPct
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_readiness_summary = entity
+		mode: directLake
+		source
+			entityName: fact_readiness_summary
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

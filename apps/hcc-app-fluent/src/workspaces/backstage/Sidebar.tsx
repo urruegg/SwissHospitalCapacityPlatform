@@ -1,7 +1,7 @@
 import { makeStyles, tokens, Tab, TabList } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 
-export type BackstageTabKey = 'roles';
+export type BackstageTabKey = 'roles' | 'evidence';
 
 const useStyles = makeStyles({
   sidebar: {
@@ -18,7 +18,7 @@ interface SidebarProps {
   onSelect: (key: BackstageTabKey) => void;
 }
 
-/** Sprint 13 T4 — Backstage left sidebar. Only "Roles" tab in Sprint 13. */
+/** Sprint 13 T4 — Backstage left sidebar. "Roles" (S13) + "Evidence" (S14.1 T6). */
 export function Sidebar({ selected, onSelect }: SidebarProps) {
   const styles = useStyles();
   const { t } = useTranslation();
@@ -30,6 +30,7 @@ export function Sidebar({ selected, onSelect }: SidebarProps) {
         onTabSelect={(_e, data) => onSelect(data.value as BackstageTabKey)}
       >
         <Tab value="roles">{t('backstage.roles')}</Tab>
+        <Tab value="evidence">{t('backstage.evidence')}</Tab>
       </TabList>
     </nav>
   );
