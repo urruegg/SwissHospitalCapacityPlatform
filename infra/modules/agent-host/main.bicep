@@ -16,6 +16,12 @@ param logAnalyticsWorkspaceResourceId string
 @description('Enable the Azure Managed Redis grounding cache (ADR-0007 §1). Default true for PROD; set to false in SIT per ADR-0028 (Managed Redis Balanced_B0 SKU is not offered in westus2 for the MCAPS demo subscription; the agent-host runtime already uses an in-memory cache so there is no functional loss for demo scope).')
 param enableRedisModule bool = true
 
+@description('Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable Entra-MI-based pull once real images land in ACR.')
+param containerRegistryLoginServer string = ''
+
+@description('Optional ACR resource ID. Required together with containerRegistryLoginServer.')
+param containerRegistryResourceId string = ''
+
 // Sprint 13 T5 — Container Apps agent-host + optional Redis grounding cache + Cosmos DB
 // (ADR-0007). This is a UC1-style output template; it is NOT deployed by this
 // PR. Deployment requires the AGENTS.md §4 `approved-to-apply` gate.
@@ -57,6 +63,8 @@ module containerApp 'container-app.bicep' = {
     cosmosEndpoint: cosmos.outputs.cosmosEndpoint
     redisHostName: enableRedisModule ? redis!.outputs.redisHostName : ''
     redisPort: enableRedisModule ? redis!.outputs.redisPort : 0
+    containerRegistryLoginServer: containerRegistryLoginServer
+    containerRegistryResourceId: containerRegistryResourceId
   }
 }
 

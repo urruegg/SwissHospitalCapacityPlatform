@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "16226819346214650727"
+      "templateHash": "6912252981811407758"
     }
   },
   "parameters": {
@@ -3215,6 +3215,12 @@
           },
           "enableRedisModule": {
             "value": "[parameters('agentHostEnableRedis')]"
+          },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('simCapacityContainerRegistryResourceId')]"
           }
         },
         "template": {
@@ -3224,7 +3230,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "5594776033510172743"
+              "templateHash": "17494556863250514001"
             }
           },
           "parameters": {
@@ -3263,6 +3269,20 @@
               "defaultValue": true,
               "metadata": {
                 "description": "Enable the Azure Managed Redis grounding cache (ADR-0007 §1). Default true for PROD; set to false in SIT per ADR-0028 (Managed Redis Balanced_B0 SKU is not offered in westus2 for the MCAPS demo subscription; the agent-host runtime already uses an in-memory cache so there is no functional loss for demo scope)."
+              }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable Entra-MI-based pull once real images land in ACR."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
               }
             }
           },
@@ -3557,7 +3577,13 @@
                     "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosEndpoint.value]"
                   },
                   "redisHostName": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value), createObject('value', ''))]",
-                  "redisPort": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value), createObject('value', 0))]"
+                  "redisPort": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value), createObject('value', 0))]",
+                  "containerRegistryLoginServer": {
+                    "value": "[parameters('containerRegistryLoginServer')]"
+                  },
+                  "containerRegistryResourceId": {
+                    "value": "[parameters('containerRegistryResourceId')]"
+                  }
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -3566,7 +3592,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "13558522603455617398"
+                      "templateHash": "4874355471326521590"
                     }
                   },
                   "parameters": {
@@ -3632,9 +3658,25 @@
                       "metadata": {
                         "description": "Target port the agent-host container listens on."
                       }
+                    },
+                    "containerRegistryLoginServer": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId. When empty, the CA uses no `registries` block and relies on public/anonymous pull."
+                      }
+                    },
+                    "containerRegistryResourceId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
+                      }
                     }
                   },
                   "variables": {
+                    "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+                    "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
                     "baseEnv": [
                       {
                         "name": "COSMOS_ENDPOINT",
@@ -3665,13 +3707,39 @@
                       }
                     },
                     {
+                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                      "apiVersion": "2023-01-31",
+                      "name": "[format('id-ca-agent-host-{0}', parameters('nameSuffix'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]"
+                    },
+                    {
+                      "condition": "[variables('useAcrMiPull')]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+                      "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 13 T5 — agent-host CA pulls image from ACR via user-assigned MI."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+                      ]
+                    },
+                    {
                       "type": "Microsoft.App/containerApps",
                       "apiVersion": "2024-03-01",
                       "name": "[format('ca-agent-host-{0}', parameters('nameSuffix'))]",
                       "location": "[parameters('location')]",
                       "tags": "[parameters('tags')]",
                       "identity": {
-                        "type": "SystemAssigned"
+                        "type": "UserAssigned",
+                        "userAssignedIdentities": {
+                          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))]": {}
+                        }
                       },
                       "properties": {
                         "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]",
@@ -3681,7 +3749,8 @@
                             "targetPort": "[parameters('targetPort')]",
                             "transport": "auto",
                             "allowInsecure": false
-                          }
+                          },
+                          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))), createArray())]"
                         },
                         "template": {
                           "containers": [
@@ -3702,6 +3771,8 @@
                         }
                       },
                       "dependsOn": [
+                        "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/'))), 'Microsoft.Authorization/roleAssignments', guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId')))]",
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]",
                         "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
                       ]
                     }
@@ -3713,7 +3784,15 @@
                     },
                     "principalId": {
                       "type": "string",
-                      "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]"
+                      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+                    },
+                    "identityResourceId": {
+                      "type": "string",
+                      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+                    },
+                    "identityClientId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
                     }
                   }
                 }
@@ -3773,6 +3852,12 @@
           },
           "logAnalyticsWorkspaceResourceId": {
             "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
+          },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('simCapacityContainerRegistryResourceId')]"
           }
         },
         "template": {
@@ -3782,7 +3867,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "3033338825325266110"
+              "templateHash": "6571318679961517210"
             }
           },
           "parameters": {
@@ -3880,13 +3965,39 @@
               }
             },
             {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('id-ca-app-fluent-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[variables('useAcrMiPull')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 13 T1 — hcc-app-fluent CA pulls image from ACR via user-assigned MI."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]"
+              ]
+            },
+            {
               "type": "Microsoft.App/containerApps",
               "apiVersion": "2024-03-01",
               "name": "[format('ca-app-fluent-{0}', parameters('nameSuffix'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))))]": {}
+                }
               },
               "properties": {
                 "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]",
@@ -3897,7 +4008,7 @@
                     "transport": "auto",
                     "allowInsecure": false
                   },
-                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', 'system')), createArray())]"
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))))), createArray())]"
                 },
                 "template": {
                   "containers": [
@@ -3917,21 +4028,9 @@
                 }
               },
               "dependsOn": [
+                "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/'))), 'Microsoft.Authorization/roleAssignments', guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]",
                 "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]"
-              ]
-            },
-            {
-              "condition": "[variables('useAcrMiPull')]",
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
-              "properties": {
-                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
-                "principalId": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]",
-                "principalType": "ServicePrincipal"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix')))]"
               ]
             }
           ],
@@ -3953,9 +4052,23 @@
             "appFluentPrincipalId": {
               "type": "string",
               "metadata": {
-                "description": "System-assigned MI principal ID (for OBO/Graph token wiring)."
+                "description": "User-assigned MI principal ID (for OBO/Graph token wiring)."
               },
-              "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]"
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+            },
+            "appFluentClientId": {
+              "type": "string",
+              "metadata": {
+                "description": "User-assigned MI client ID."
+              },
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+            },
+            "appFluentIdentityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "User-assigned MI resource ID."
+              },
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]"
             }
           }
         }

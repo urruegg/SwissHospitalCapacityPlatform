@@ -387,6 +387,9 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     agentHostImage: agentHostImage
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
     enableRedisModule: agentHostEnableRedis
+    // Reuse the sim-capacity ACR params — same registry serves all three CAs.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
   }
 }
 
@@ -400,6 +403,9 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     tags: tags
     appImage: appFluentImage
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    // Reuse the sim-capacity ACR params — same registry serves all three CAs.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
   }
 }
 
