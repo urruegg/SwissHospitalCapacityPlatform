@@ -18,13 +18,13 @@
 | Track | ✅ done | ⚠️ partial | ❌ gap | ⏳ audit-pending | ➖ n/a | Total |
 |-------|--------|-----------|-------|-------------------|-------|-------|
 | **Sprint 11** — Agents | 9 | 0 | 0 | 0 | 0 | 9 |
-| **Sprint 12** — Org | 6 | 1 | 2 | 1 | 0 | 10 |
+| **Sprint 12** — Org | 5 | 2 | 3 | 0 | 0 | 10 |
 | **Sprint 13** — App | 6 | 0 | 4 | 2 | 0 | 12 |
 | **Sprint 14** — Evidence | 6 | 0 | 0 | 1 | 0 | 7 |
 | **Sprint 15** — BVA | 6 | 1 | 1 | 0 | 0 | 8 |
 | **Sprint 16** — CSA | 8 | 2 | 1 | 0 | 1 | 12 |
 | **PBI Demoable v2** — M2-M6 | 9 | 0 | 0 | 4 | 0 | 13 |
-| **Overall** | **50** | **4** | **8** | **8** | **1** | **71** |
+| **Overall** | **49** | **5** | **9** | **7** | **1** | **71** |
 
 **Green rate: 70%.** Of the 8 red items, **7 collapse to 2 root causes** — none of them are Sprint 11 or PBI issues, both of which are fully green on code-verifiable criteria. (The former third root cause — Sprint 14.1 — was closed on 2026-07-13.)
 
@@ -117,24 +117,32 @@ Phase 2 (subsequent PRs, one per sprint) fills the Status / Evidence / Gap colum
 | # | DoD item | Status | Evidence | Gap |
 |---|------|--------|----------|-----|
 | S12.1 | Tasks T1-T7 all merged. | ✅ done | PR #159 merged 2026-07-09 with 20 files spanning Bicep modules + workflows + tests | |
-| S12.2 | 15 app roles + 15 security groups + 23 personas provisioned in SIT (or documented deferral). | ✅ done | `infra/modules/entra/{app-registration,app-roles,security-groups,users,adoption-telemetry,assignments,main}.bicep` + `parameters/sit.bicepparam` + `parameters/prod.bicepparam` + persona seed `data/synthetic/personas.csv` | Actual SIT deployment state not re-verified here — sit.bicepparam is authoritative source; runtime state should match |
-| S12.3 | `super.admin` and `demo.guest` sign-in verified against Sprint 13 app shell (or dry auth callback). | ⏳ audit-pending | | Requires app shell running + interactive sign-in test — this is a runtime verification that cannot be automated from CLI. Recommend manual verification during next demo session. |
-| S12.4 | Adoption telemetry pipeline emitting nightly files within 24h of T5 merge. | ❌ gap | `.github/workflows/adoption-refresh.yml` present but **last run failed on 2026-07-10 04:19 UTC** with `##[error]Process completed with exit code 1` because `FABRIC_WORKSPACE_ID` and `FABRIC_ADOPTION_NOTEBOOK_ID` environment variables are empty. **Root cause identified in this audit:** the workflow points to a Fabric notebook that **does not exist** in `ws-ihzhhpf-sit-data`. The workspace contains eventstream medallion notebooks, master-data medallion notebooks, `04_load_or_samples`, and `csa-verify-mvp` — but no adoption/telemetry notebook. | **Two-step fix:** (a) author the adoption ingest notebook (e.g. `05_bronze_adoption` following the eventstream/master-data pattern in the same workspace) — the Sprint 12 T5 plan implies a notebook that reads Entra sign-in / group-membership events and lands them in a Bronze Delta table; (b) set the two GitHub Actions repo variables (`FABRIC_WORKSPACE_ID=f3af9733-9503-4e92-98f9-a901d96f1c87` and `FABRIC_ADOPTION_NOTEBOOK_ID=<notebook-id-after-authoring>`) via `gh variable set`. This is substantive work — cannot be closed with a config-only fix. Recommend a dedicated Sprint 12.1 mini-sprint. |
-| S12.5 | `env`-scoping smoke test green (same identity, two slots, two Bronze paths). | ⏳ audit-pending | | Requires SIT + PROD Bronze paths to be reachable via a test identity — runtime task, cannot verify from CLI. |
+| S12.2 | 15 app roles + 15 security groups + 23 personas provisioned in SIT (or documented deferral). | ❌ **CORRECTED 2026-07-13** | **Bicep source of truth is authored** (`infra/modules/entra/{app-registration,app-roles,security-groups,users,adoption-telemetry,assignments,main}.bicep` + `parameters/sit.bicepparam` + `parameters/prod.bicepparam` + persona seed `data/synthetic/personas.csv` + portable CSVs from PR #185 at `data/entra/{organizations,app-roles,security-groups,users}.csv`). **Correct count verified 2026-07-13:** 17 app roles + 17 security groups + 23 personas (the audit and DoD text under-counted by 2 — did not include the two super roles `HCC.SuperAdmin` and `HCC.GuestReadOnly` per D-10 in the sprints-11-16 roadmap). **Runtime state verified 2026-07-13:** Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` contains 0 HCC app registrations, 0 HCC security groups, and 3 total users (`admin@`, `ms-breakglass@`, `urruegg@` — none of the 23 personas). `az deployment sub create` against the Entra module has **never been run**. Original ✅ done was incorrect (checked Bicep presence, not runtime state). | **Substantive gap.** Requires a subscription-scope Bicep deployment of `infra/modules/entra/` against the target tenant with `approved-to-apply` gate. Tracked via [issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) (originally opened for PROD promotion; scope expanded to include the initial SIT provisioning gap). |
+| S12.3 | `super.admin` and `demo.guest` sign-in verified against Sprint 13 app shell (or dry auth callback). | ❌ **CORRECTED 2026-07-13** | Blocked by S12.2 — the identities do not exist in Entra. Cannot sign in with users who were never provisioned. Original ⏳ audit-pending was misleading; this is a hard blocker not a runtime-check-pending. | Blocked by S12.2 fix. |
+| S12.4 | Adoption telemetry pipeline emitting nightly files within 24h of T5 merge. | ⚠️ **UPDATED 2026-07-13** — partial | **PR #186 (merged 2026-07-10) authored the adoption notebook** — closes half of the S12.4 root cause. Remaining: (a) publish the notebook to `ws-ihzhhpf-sit-data` (Fabric-side action), (b) set the two GitHub Actions repo variables (`FABRIC_WORKSPACE_ID` + `FABRIC_ADOPTION_NOTEBOOK_ID`), (c) retrigger `adoption-refresh.yml` and confirm success. | Follow-up on [issue #180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180). |
+| S12.5 | `env`-scoping smoke test green (same identity, two slots, two Bronze paths). | ❌ **CORRECTED 2026-07-13** | Blocked by S12.2 (no test identities exist) and S12.4 (Bronze paths not populated). | Blocked by S12.2 + S12.4 fixes. |
 | S12.6 | `entra-whatif.yml` + `adoption-refresh.yml` operational. | ⚠️ partial | `entra-whatif.yml` last run **success** on 2026-07-09; `adoption-refresh.yml` last run **failure** (see S12.4) | Same fix as S12.4 clears the partial. |
 | S12.7 | `entra-provisioning.yml` issue template selectable. | ✅ done | `.github/ISSUE_TEMPLATE/entra-provisioning.yml` present | |
 | S12.8 | Retro row in checkpoint matrix. | ✅ done | `docs/sprints/superpowers-checkpoint-matrix.md` line 78: "Sprint 12 retro notes" section | |
 | S12.9 | Kickoff issue closed. | ✅ done | Issue #158 CLOSED on 2026-07-09T11:50:43Z | |
-| S12.10 | PROD promotion tracked as follow-up issue. | ❌ gap | No issue found matching "PROD promotion" or "entra prod" | **Fix:** open a new issue titled "Sprint 12 follow-up: promote Entra demo-org from SIT to PROD" — capture the sit.bicepparam → prod.bicepparam diff and the approval gate. Non-blocking for demo; capture as backlog. |
+| S12.10 | PROD promotion tracked as follow-up issue. | ✅ **UPDATED 2026-07-13** — done | Closed via [PR #185](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/185) which extracted the Entra org as portable master-data CSVs (`data/entra/`) + drift-gate CI (`.github/workflows/entra-master-data.yml`) + validation script + 8 unit tests. This is bigger scope than [issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) asked for, but was accepted per user decision 2026-07-13 — CSVs are tenant-migration-ready and satisfy both the PROD promotion tracker and the AGENTS.md tenant-migration doctrine. | |
 
-**Sprint 12 result: 6/10 ✅ done, 1 ⚠️ partial, 2 ❌ gap, 3 ⏳ audit-pending (runtime-only). Audited 2026-07-10.**
+**Sprint 12 result (revised 2026-07-13): 5/10 ✅ done, 2 ⚠️ partial, 3 ❌ gap. Runtime evidence added.**
+
+Score revised **down** from the original 6/10 ✅ after runtime verification revealed S12.2 was never actually provisioned to Entra. S12.3 and S12.5 downgraded to ❌ because they cascade from S12.2. S12.4 upgraded to ⚠️ partial because PR #186 authored the adoption notebook. S12.10 upgraded to ✅ done because PR #185 delivered a bigger scope (portable master-data CSVs + drift-gate CI) than the tracker issue asked for.
 
 **Gaps requiring gap-fill PRs:**
 
-- **S12.4 / S12.6 (substantive):** author the adoption ingest notebook in `ws-ihzhhpf-sit-data` (naming: `05_bronze_adoption` following the eventstream/master-data pattern) + set the two GitHub Actions variables. Tracked via [issue #180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180) (Sprint 12.1 mini-sprint).
-- **S12.10 (done in this session):** [issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) opened for PROD promotion follow-up.
+- **S12.2 (substantive, largest gap in the sprint):** deploy `infra/modules/entra/` against the target tenant (subscription-scope Bicep). Requires `approved-to-apply` per AGENTS.md §3. This is the real "close Sprint 12" work — everything downstream (S12.3, S12.5) unblocks the moment this apply succeeds. Tracked via [issue #179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) (scope-expanded from just "PROD promotion tracker" to include the SIT provisioning apply).
+- **S12.4 / S12.6 (in flight):** adoption notebook now merged via PR #186; remaining: publish to Fabric + set repo vars + retrigger workflow. Tracked via [issue #180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180).
 
-**Runtime-verification-pending:** S12.3, S12.5 — these need a manual demo-day walk-through and are out of scope for this async audit.
+**Runtime evidence — snapshot 2026-07-13:**
+
+- Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329` app registrations: 2 (`ws-ihzhhpf-sit-data`, `gh-oidc-ihzhhpf`) — **0 with HCC.\* app roles**
+- Entra tenant security groups matching `startsWith(displayName, 'HCC.')`: **0**
+- Entra tenant users: 3 (`admin@`, `ms-breakglass@`, `urruegg@`) — **0 of the 23 personas**
+- `data/entra/*.csv` (added by PR #185): 17 roles + 17 groups + 23 users + 5 organisations — matches Bicep source of truth
+- `entra-master-data.yml` CI gate: green (from PR #185)
 
 ---
 
