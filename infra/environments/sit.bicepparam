@@ -113,7 +113,7 @@ param eventHubsCsaAgentMiPrincipalId = ''
 // sim-capacity pattern — until agent-host-build.yml is extended to push
 // the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
 param enableAgentHostModule = true
-param agentHostImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:ccaf429'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`
@@ -131,4 +131,4 @@ param agentHostEnableRedis = false
 // checklist). Image is a placeholder until app-build.yml is extended to push
 // the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
 param enableAppFluentModule = true
-param appFluentImage = 'nginxinc/nginx-unprivileged:1.27-alpine'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:27e410c'
