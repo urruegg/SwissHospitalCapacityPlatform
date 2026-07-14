@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "6523723561942103234"
+      "templateHash": "7631022528746123641"
     }
   },
   "parameters": {
@@ -706,7 +706,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "17032074811652342278"
+              "templateHash": "15218413478265915950"
             }
           },
           "parameters": {
@@ -748,6 +748,13 @@
               "metadata": {
                 "description": "Address prefix for the platform data subnet (private endpoints for SQL, KV, Storage)."
               }
+            },
+            "caeSubnetPrefix": {
+              "type": "string",
+              "defaultValue": "10.60.4.0/23",
+              "metadata": {
+                "description": "Address prefix for the Container Apps Environment (CAE) infrastructure subnet. Delegated to Microsoft.App/environments. Required for CAE VNet integration (ADR-0029 Option A). Consumption-only CAEs accept /27 minimum; workload-profiles CAEs need /23. We use /23 for headroom."
+              }
             }
           },
           "resources": [
@@ -775,6 +782,20 @@
                     "properties": {
                       "addressPrefix": "[parameters('dataSubnetPrefix')]",
                       "privateEndpointNetworkPolicies": "Disabled"
+                    }
+                  },
+                  {
+                    "name": "snet-cae",
+                    "properties": {
+                      "addressPrefix": "[parameters('caeSubnetPrefix')]",
+                      "delegations": [
+                        {
+                          "name": "Microsoft.App.environments",
+                          "properties": {
+                            "serviceName": "Microsoft.App/environments"
+                          }
+                        }
+                      ]
                     }
                   }
                 ]
@@ -809,6 +830,20 @@
                 "description": "Data subnet resource ID (for private endpoints)."
               },
               "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-data')]"
+            },
+            "caeSubnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Container Apps Environment (CAE) infrastructure subnet resource ID (ADR-0029 Option A). Delegated to Microsoft.App/environments; consumed by cae-<suffix> vnetConfiguration."
+              },
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-cae')]"
+            },
+            "vnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Virtual network resource ID (needed to link the private DNS zone for Cosmos when the PE lives inside this VNet)."
+              },
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-platform-{0}', parameters('nameSuffix')))]"
             },
             "scaffoldInput": {
               "type": "object",
@@ -3236,7 +3271,9 @@
           },
           "containerRegistryResourceId": {
             "value": "[parameters('simCapacityContainerRegistryResourceId')]"
-          }
+          },
+          "caeInfrastructureSubnetResourceId": "[if(parameters('enableNetworkModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName'))), '2025-04-01').outputs.caeSubnetResourceId.value), createObject('value', ''))]",
+          "vnetResourceId": "[if(parameters('enableNetworkModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName'))), '2025-04-01').outputs.vnetResourceId.value), createObject('value', ''))]"
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -3245,7 +3282,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "17494556863250514001"
+              "templateHash": "10360018275364676497"
             }
           },
           "parameters": {
@@ -3299,7 +3336,31 @@
               "metadata": {
                 "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
               }
+            },
+            "caeInfrastructureSubnetResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that VNet subnet AND the Cosmos private-endpoint module is invoked (both parts of Option A are gated together — a PE without VNet integration is useless, and vice versa)."
+              }
+            },
+            "vnetResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional VNet resource ID that hosts the CAE subnet + Cosmos private endpoint subnet. Required together with caeInfrastructureSubnetResourceId — used to locate the private-endpoint subnet in the same VNet."
+              }
+            },
+            "privateEndpointSubnetName": {
+              "type": "string",
+              "defaultValue": "snet-data",
+              "metadata": {
+                "description": "Name of the subnet (inside vnetResourceId) that hosts the Cosmos private endpoint. Defaults to snet-data — the same subnet used by the CSA cosmos private endpoint (ADR-0029 Option A precedent)."
+              }
             }
+          },
+          "variables": {
+            "enableVnetIntegration": "[and(not(empty(parameters('caeInfrastructureSubnetResourceId'))), not(empty(parameters('vnetResourceId'))))]"
           },
           "resources": [
             {
@@ -3329,7 +3390,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "8328373282681718422"
+                      "templateHash": "1418152727854971719"
                     }
                   },
                   "parameters": {
@@ -3380,7 +3441,7 @@
                         "databaseAccountOfferType": "Standard",
                         "enableAutomaticFailover": false,
                         "disableLocalAuth": true,
-                        "publicNetworkAccess": "Enabled",
+                        "publicNetworkAccess": "Disabled",
                         "capabilities": [
                           {
                             "name": "EnableServerless"
@@ -3440,6 +3501,10 @@
                       "type": "string",
                       "value": "[format('cosmos-{0}', parameters('nameSuffix'))]"
                     },
+                    "cosmosAccountResourceId": {
+                      "type": "string",
+                      "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix')))]"
+                    },
                     "cosmosEndpoint": {
                       "type": "string",
                       "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix'))), '2024-05-15').documentEndpoint]"
@@ -3447,6 +3512,147 @@
                   }
                 }
               }
+            },
+            {
+              "condition": "[variables('enableVnetIntegration')]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "agent-host-cosmos-pe",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "nameSuffix": {
+                    "value": "[parameters('nameSuffix')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "cosmosAccountResourceId": {
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosAccountResourceId.value]"
+                  },
+                  "privateEndpointSubnetResourceId": {
+                    "value": "[format('{0}/subnets/{1}', parameters('vnetResourceId'), parameters('privateEndpointSubnetName'))]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.45.6.27763",
+                      "templateHash": "9808019470207933078"
+                    }
+                  },
+                  "parameters": {
+                    "location": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Location for all resources."
+                      }
+                    },
+                    "nameSuffix": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "Resource tags applied to all resources."
+                      }
+                    },
+                    "cosmosAccountResourceId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource ID of the Cosmos DB account to expose via private endpoint."
+                      }
+                    },
+                    "privateEndpointSubnetResourceId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource ID of the subnet that hosts the private endpoint. Must have `privateEndpointNetworkPolicies: Disabled`."
+                      }
+                    },
+                    "privateDnsZoneName": {
+                      "type": "string",
+                      "defaultValue": "privatelink.documents.azure.com",
+                      "metadata": {
+                        "description": "Existing private DNS zone name — Azure-managed for Cosmos SQL is exactly `privatelink.documents.azure.com`. Do not override."
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Network/privateEndpoints",
+                      "apiVersion": "2023-11-01",
+                      "name": "[format('pe-cosmos-{0}', parameters('nameSuffix'))]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "subnet": {
+                          "id": "[parameters('privateEndpointSubnetResourceId')]"
+                        },
+                        "privateLinkServiceConnections": [
+                          {
+                            "name": "[format('pe-cosmos-{0}-conn', parameters('nameSuffix'))]",
+                            "properties": {
+                              "privateLinkServiceId": "[parameters('cosmosAccountResourceId')]",
+                              "groupIds": [
+                                "Sql"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+                      "apiVersion": "2023-11-01",
+                      "name": "[format('{0}/{1}', format('pe-cosmos-{0}', parameters('nameSuffix')), 'default')]",
+                      "properties": {
+                        "privateDnsZoneConfigs": [
+                          {
+                            "name": "privatelink-documents-azure-com",
+                            "properties": {
+                              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                            }
+                          }
+                        ]
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Network/privateEndpoints', format('pe-cosmos-{0}', parameters('nameSuffix')))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "privateEndpointName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Private endpoint resource name."
+                      },
+                      "value": "[format('pe-cosmos-{0}', parameters('nameSuffix'))]"
+                    },
+                    "privateEndpointResourceId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Private endpoint resource ID."
+                      },
+                      "value": "[resourceId('Microsoft.Network/privateEndpoints', format('pe-cosmos-{0}', parameters('nameSuffix')))]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos')]"
+              ]
             },
             {
               "condition": "[parameters('enableRedisModule')]",
@@ -3598,6 +3804,9 @@
                   },
                   "containerRegistryResourceId": {
                     "value": "[parameters('containerRegistryResourceId')]"
+                  },
+                  "caeInfrastructureSubnetResourceId": {
+                    "value": "[parameters('caeInfrastructureSubnetResourceId')]"
                   }
                 },
                 "template": {
@@ -3607,7 +3816,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "4874355471326521590"
+                      "templateHash": "16654548792054353308"
                     }
                   },
                   "parameters": {
@@ -3687,6 +3896,13 @@
                       "metadata": {
                         "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
                       }
+                    },
+                    "caeInfrastructureSubnetResourceId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that subnet — Container Apps traffic then reaches Cosmos DB via its private endpoint. Empty string keeps the CAE public (default). Setting this on an EXISTING CAE forces a destructive recreate; the child Container Apps get a new FQDN."
+                      }
                     }
                   },
                   "variables": {
@@ -3718,7 +3934,8 @@
                             "customerId": "[parameters('logAnalyticsCustomerId')]",
                             "sharedKey": "[parameters('logAnalyticsSharedKey')]"
                           }
-                        }
+                        },
+                        "vnetConfiguration": "[if(empty(parameters('caeInfrastructureSubnetResourceId')), null(), createObject('infrastructureSubnetId', parameters('caeInfrastructureSubnetResourceId'), 'internal', false()))]"
                       }
                     },
                     {
@@ -3839,6 +4056,7 @@
         }
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName')))]",
         "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
       ]
     },

@@ -20,7 +20,12 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
     databaseAccountOfferType: 'Standard'
     enableAutomaticFailover: false
     disableLocalAuth: true
-    publicNetworkAccess: 'Enabled'
+    // ADR-0029 Option A — Cosmos data-plane is reached exclusively via the
+    // private endpoint provisioned in `./cosmos-pe.bicep`. MCAPS
+    // `CosmosDB_PublicNetwork_Modify` policy already forces this to Disabled
+    // at deploy time; declaring it here matches deployed state and removes
+    // silent drift.
+    publicNetworkAccess: 'Disabled'
     capabilities: [
       {
         name: 'EnableServerless'
@@ -83,4 +88,5 @@ resource containerResources 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/
 ]
 
 output cosmosAccountName string = cosmosAccount.name
+output cosmosAccountResourceId string = cosmosAccount.id
 output cosmosEndpoint string = cosmosAccount.properties.documentEndpoint

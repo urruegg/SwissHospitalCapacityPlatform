@@ -35,6 +35,9 @@ param containerRegistryLoginServer string = ''
 @description('Optional ACR resource ID. Required together with containerRegistryLoginServer.')
 param containerRegistryResourceId string = ''
 
+@description('Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that subnet — Container Apps traffic then reaches Cosmos DB via its private endpoint. Empty string keeps the CAE public (default). Setting this on an EXISTING CAE forces a destructive recreate; the child Container Apps get a new FQDN.')
+param caeInfrastructureSubnetResourceId string = ''
+
 // Sprint 13 T5 — Container Apps environment + agent-host app. Uses a
 // **user-assigned managed identity** (`id-ca-agent-host-<suffix>`) so the
 // AcrPull role assignment can be provisioned BEFORE the CA references the
@@ -84,6 +87,15 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
         customerId: logAnalyticsCustomerId
         sharedKey: logAnalyticsSharedKey
       }
+    }
+    // ADR-0029 Option A — join the delegated `snet-cae` subnet so this CAE
+    // (and every Container App it hosts) can egress via the platform VNet and
+    // resolve Cosmos DB through its private endpoint. `internal: false`
+    // preserves external HTTPS ingress on `*.<default-domain>.azurecontainerapps.io`.
+    // Empty caeInfrastructureSubnetResourceId keeps legacy public behaviour.
+    vnetConfiguration: empty(caeInfrastructureSubnetResourceId) ? null : {
+      infrastructureSubnetId: caeInfrastructureSubnetResourceId
+      internal: false
     }
   }
 }

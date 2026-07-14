@@ -22,6 +22,15 @@ param containerRegistryLoginServer string = ''
 @description('Optional ACR resource ID. Required together with containerRegistryLoginServer.')
 param containerRegistryResourceId string = ''
 
+@description('Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that VNet subnet AND the Cosmos private-endpoint module is invoked (both parts of Option A are gated together — a PE without VNet integration is useless, and vice versa).')
+param caeInfrastructureSubnetResourceId string = ''
+
+@description('Optional VNet resource ID that hosts the CAE subnet + Cosmos private endpoint subnet. Required together with caeInfrastructureSubnetResourceId — used to locate the private-endpoint subnet in the same VNet.')
+param vnetResourceId string = ''
+
+@description('Name of the subnet (inside vnetResourceId) that hosts the Cosmos private endpoint. Defaults to snet-data — the same subnet used by the CSA cosmos private endpoint (ADR-0029 Option A precedent).')
+param privateEndpointSubnetName string = 'snet-data'
+
 // Sprint 13 T5 — Container Apps agent-host + optional Redis grounding cache + Cosmos DB
 // (ADR-0007). This is a UC1-style output template; it is NOT deployed by this
 // PR. Deployment requires the AGENTS.md §4 `approved-to-apply` gate.
@@ -39,6 +48,23 @@ module cosmos 'cosmos.bicep' = {
     location: location
     nameSuffix: nameSuffix
     tags: tags
+  }
+}
+
+// ADR-0029 Option A — Cosmos private endpoint in snet-data. Gated on the CAE
+// VNet-integration parameter because a PE without a VNet-integrated CAE gives
+// no reachability improvement (Container Apps would still use the public
+// resolver). Both halves land in the same deploy.
+var enableVnetIntegration = !empty(caeInfrastructureSubnetResourceId) && !empty(vnetResourceId)
+
+module cosmosPrivateEndpoint 'cosmos-pe.bicep' = if (enableVnetIntegration) {
+  name: 'agent-host-cosmos-pe'
+  params: {
+    location: location
+    nameSuffix: nameSuffix
+    tags: tags
+    cosmosAccountResourceId: cosmos.outputs.cosmosAccountResourceId
+    privateEndpointSubnetResourceId: '${vnetResourceId}/subnets/${privateEndpointSubnetName}'
   }
 }
 
@@ -65,6 +91,7 @@ module containerApp 'container-app.bicep' = {
     redisPort: enableRedisModule ? redis!.outputs.redisPort : 0
     containerRegistryLoginServer: containerRegistryLoginServer
     containerRegistryResourceId: containerRegistryResourceId
+    caeInfrastructureSubnetResourceId: caeInfrastructureSubnetResourceId
   }
 }
 

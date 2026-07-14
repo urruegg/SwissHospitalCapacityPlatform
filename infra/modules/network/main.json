@@ -1,0 +1,159 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "15218413478265915950"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Resource tags applied to all resources."
+      }
+    },
+    "vnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.60.0.0/16",
+      "metadata": {
+        "description": "Address prefix for the platform virtual network."
+      }
+    },
+    "appSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.60.1.0/24",
+      "metadata": {
+        "description": "Address prefix for the platform application subnet."
+      }
+    },
+    "dataSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.60.2.0/24",
+      "metadata": {
+        "description": "Address prefix for the platform data subnet (private endpoints for SQL, KV, Storage)."
+      }
+    },
+    "caeSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.60.4.0/23",
+      "metadata": {
+        "description": "Address prefix for the Container Apps Environment (CAE) infrastructure subnet. Delegated to Microsoft.App/environments. Required for CAE VNet integration (ADR-0029 Option A). Consumption-only CAEs accept /27 minimum; workload-profiles CAEs need /23. We use /23 for headroom."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-09-01",
+      "name": "[format('vnet-platform-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetAddressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "snet-app",
+            "properties": {
+              "addressPrefix": "[parameters('appSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "snet-data",
+            "properties": {
+              "addressPrefix": "[parameters('dataSubnetPrefix')]",
+              "privateEndpointNetworkPolicies": "Disabled"
+            }
+          },
+          {
+            "name": "snet-cae",
+            "properties": {
+              "addressPrefix": "[parameters('caeSubnetPrefix')]",
+              "delegations": [
+                {
+                  "name": "Microsoft.App.environments",
+                  "properties": {
+                    "serviceName": "Microsoft.App/environments"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Network module implementation marker."
+      },
+      "value": "network-implemented"
+    },
+    "vnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual network name."
+      },
+      "value": "[format('vnet-platform-{0}', parameters('nameSuffix'))]"
+    },
+    "appSubnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Application subnet resource ID."
+      },
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-app')]"
+    },
+    "dataSubnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Data subnet resource ID (for private endpoints)."
+      },
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-data')]"
+    },
+    "caeSubnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Container Apps Environment (CAE) infrastructure subnet resource ID (ADR-0029 Option A). Delegated to Microsoft.App/environments; consumed by cae-<suffix> vnetConfiguration."
+      },
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-cae')]"
+    },
+    "vnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual network resource ID (needed to link the private DNS zone for Cosmos when the PE lives inside this VNet)."
+      },
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-platform-{0}', parameters('nameSuffix')))]"
+    },
+    "scaffoldInput": {
+      "type": "object",
+      "metadata": {
+        "description": "Network module scaffold input echo for validation only."
+      },
+      "value": {
+        "location": "[parameters('location')]",
+        "nameSuffix": "[parameters('nameSuffix')]",
+        "tagCount": "[length(items(parameters('tags')))]"
+      }
+    }
+  }
+}
