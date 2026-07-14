@@ -105,6 +105,28 @@ jobs:
             fi
           done
 
+          # ADR-0029 Option A - subscription-level FEATURE flags (not RPs) that
+          # Container Apps Environments need when infrastructureSubnetId is set.
+          # AllowBringYourOwnPublicIpAddress is required by the CAE's internal
+          # cluster provisioning; without it the CAE reaches provisioningState
+          # Failed with SubscriptionNotRegisteredForFeature on
+          # Microsoft.Network/AllowBringYourOwnPublicIpAddress. Registering the
+          # feature is idempotent and does not consume any billable resource.
+          features=(
+            "Microsoft.Network/AllowBringYourOwnPublicIpAddress"
+          )
+          for f in "${features[@]}"; do
+            ns="${f%/*}"
+            name="${f#*/}"
+            state=$(az feature show --namespace "$ns" --name "$name" --query properties.state -o tsv || echo "NotRegistered")
+            if [ "$state" != "Registered" ]; then
+              az feature register --namespace "$ns" --name "$name" >/dev/null || \
+                echo "::warning::Unable to register feature $f. Deploy may fail."
+              # Propagate to the RP (Azure requires this after a feature register).
+              az provider register --namespace "$ns" --wait >/dev/null || true
+            fi
+          done
+
       - name: What-if before deploy (SIT)
         shell: bash
         run: |
