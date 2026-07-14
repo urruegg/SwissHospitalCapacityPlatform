@@ -3,10 +3,10 @@
 | Field | Value |
 | ----- | ----- |
 | **Status** | **Accepted (2026-07-14) — Option A** |
-| **Date** | 2026-07-13 (Proposed) → 2026-07-14 (Accepted) |
+| **Date** | 2026-07-13 (Proposed) → 2026-07-14 (Accepted, implemented, verified) |
 | **Deciders** | @urruegg |
 | **Superseded by** | — |
-| **Scope** | SIT. PROD inherits Option A when PROD RG is provisioned. |
+| **Scope** | SIT. PROD inherits Option A when PROD RG is provisioned (see §Implementation trail → Guidance for PROD promotion). |
 
 > Sprint 13.1 recovery deploy revealed a runtime reachability gap between
 > `ca-agent-host-ihzhhpf-sit` and `cosmos-ihzhhpf-sit`. This ADR documents the
@@ -251,3 +251,49 @@ For **PROD** — Option A remains the plan, tied to
 1. ~~Confirm Option C is the right SIT posture given the HITL evidence consequence.~~ — Answered: no. HITL evidence persistence matters for the demo credibility. Option A restores full posture.
 2. ~~If not: pick Option A (destructive recreate, ~2-3 days) or Option B (workload consolidation on CSA Cosmos, ~1 day).~~ — Answered: **Option A**. Effort reduced to ~1 day because VNet + private DNS zone + PE pattern already exist. Option B rejected because it violates ADR-0007 one-account-per-workload posture.
 3. ~~Confirm this ADR should also cover PROD, or split PROD into a separate ADR at PROD promotion time.~~ — Answered: **this ADR covers PROD by extension**. Same Bicep pattern applies. PROD promotion issue [#179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) inherits the Option A implementation without a new ADR.
+
+## Implementation trail (2026-07-14)
+
+Recorded here so PROD promotion has the complete diagnostic history and doesn't re-discover the same failure modes. Option A implementation on SIT took **five deploy iterations + one non-Bicep destructive step** before landing green.
+
+### Iteration table
+
+| # | PR / action | Deploy run | Blocker | Fix that unblocked next iteration |
+| - | ----------- | ---------- | ------- | --------------------------------- |
+| 1 | [PR #205](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/205) initial Option A Bicep (subnet + PE + CAE `vnetConfiguration`) | [29325801157](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29325801157) | `SubscriptionIsNotRegistered` on `Microsoft.App` + `Microsoft.ContainerService`. CAE VNet integration silently requires the `Microsoft.ContainerService` RP because the CAE internally provisions AKS-managed infrastructure when `infrastructureSubnetId` is set. | [PR #206](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/206) — add both RPs to the workflow registration guard + `az provider register` ad-hoc for SIT sub. |
+| 2 | (Retry after PR #206) | [29327123189](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29327123189) | `ManagedEnvironmentV1SubnetDelegationNotAllowed`: "consumption-only environment must not have delegations". This wording was **misleading** — the actual cause was that ARM refuses to reconfigure a v1 (consumption-only) CAE with `infrastructureSubnetId` **at all**, regardless of delegation. See also iteration 5 for the reversal of the naive fix. | [PR #207](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/207) — removed the delegation, which was wrong but appeared to match the error. |
+| 3 | (Retry after PR #207) | [29329094217](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29329094217) | `ManagedEnvironmentCannotAddVnetToExistingEnv`: "Adding a subnet to managed environment cae-ihzhhpf-sit is not allowed". This finally revealed the real rule: **VNet integration on a CAE is immutable after environment creation**. Bicep `Modify` on an existing CAE is refused at the RP level. | **Manual destructive step (with explicit `approved-to-apply`)**: `az containerapp delete ca-agent-host-ihzhhpf-sit` + `az containerapp env delete cae-ihzhhpf-sit`. Recreated cleanly by next Bicep deploy. |
+| 4 | (Retry after manual delete, still on PR #207 Bicep with no delegation) | [29330572239](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29330572239) | `ManagedEnvironmentSubnetDelegationError`: "The subnet of the environment MUST be delegated to `Microsoft.App/environments`". The delegation IS required on a fresh modern-API CAE with `infrastructureSubnetId`. Iteration 2's error was a red herring; the true rule is "delegation required". | [PR #208](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/208) — restore the `Microsoft.App/environments` delegation on `snet-cae`. |
+| 5 | (Retry after PR #208) | [29332192702](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29332192702) | CAE PUT was accepted (delegation now correct), then failed **inside the CAE's internal cluster provisioning** with `SubscriptionNotRegisteredForFeature` on `Microsoft.Network/AllowBringYourOwnPublicIpAddress`. VNet-integrated CAEs internally provision a public IP for the managed AKS load balancer; the subscription-level **feature flag** (not RP) was not registered. | [PR #209](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/209) — add feature-registration loop to both SIT + PROD workflows + `az feature register` ad-hoc for SIT sub. |
+| 6 | (Retry after PR #209 + delete of the Failed CAE from iteration 5) | [29334633463](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29334633463) | ✅ **Green (6m12s)**. All architectural components proven. | — |
+
+### Total effort
+
+- **Bicep PRs**: 5 (#205, #206, #207, #208, #209)
+- **Destructive manual steps**: 2 (delete of live v1 CAE + delete of Failed CAE after iteration 5). Both under explicit `approved-to-apply`.
+- **Ad-hoc `az` commands** (idempotent, non-destructive): 2 (`az provider register Microsoft.ContainerService`, `az feature register Microsoft.Network/AllowBringYourOwnPublicIpAddress`)
+- **Successful deploys**: 2 (Option A itself, then [PR #210](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/210) which added the Cosmos DB Built-in Data Contributor RBAC on run [29336946152](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29336946152))
+- **Wall-clock**: ~2 hours of iterative diagnosis
+- **Original estimate** (before substrate discovery): 2–3 days
+- **Revised estimate** (after substrate discovery, before iteration): ~1 day
+- **Actual**: within revised estimate, but with more iteration than expected
+
+### Guidance for PROD promotion
+
+Do this in order for a first-time PROD deploy:
+
+1. **Pre-flight the subscription**: run `az provider register --namespace Microsoft.App --wait`, `az provider register --namespace Microsoft.ContainerService --wait`, `az feature register --namespace Microsoft.Network --name AllowBringYourOwnPublicIpAddress`, then `az provider register --namespace Microsoft.Network --wait`. **PRs #206 + #209 make the workflow do this automatically**, but running once ahead of time saves ~1 iteration.
+2. **Ensure `snet-cae` subnet has the `Microsoft.App/environments` delegation** in the network module (already correct post PR #208 revert).
+3. **Deploy Option A Bicep clean** — because the CAE does not exist yet in PROD, ARM accepts the `vnetConfiguration` on the first create. No delete-and-recreate dance needed.
+4. **Deploy PR #210 RBAC in the same run OR immediately after** — the Cosmos DB Built-in Data Contributor role is inline in `agent-host/main.bicep` and lands together with the CAE.
+5. **Run the same 10-check verification** used for SIT (private DNS resolves inside the CA, PE connection Approved, private DNS records auto-registered, MI principalId matches role assignment).
+
+### Post-mortem — what would have avoided the iteration cost
+
+- **A more thorough pre-flight probe** at the start would have surfaced items 1, 4, and 5 as separate failures with clearer signal. For PROD I'll add a "pre-flight" workflow step that registers RPs + features + validates subnet delegation in a single dry-run.
+- **The Microsoft error `ManagedEnvironmentV1SubnetDelegationNotAllowed`** is documented misleadingly. Would have been faster to try the delete-and-recreate path first (iteration 3), and only reach for the "remove delegation" hypothesis after that failed. Lesson: when an ARM error mentions "must not have X" but the operation is on a resource that is architecturally frozen (v1 CAE with legacy shape), prefer the "recreate the resource" hypothesis over the "modify the property to match the error message" hypothesis.
+
+### Cross-references
+
+- [`docs/superpowers/plans/2026-07-14-cae-vnet-integration-cosmos-pe.md`](../superpowers/plans/2026-07-14-cae-vnet-integration-cosmos-pe.md) — original implementation plan (task-by-task; some tasks superseded by the manual delete path).
+- [`docs/runbooks/curavias-dns-godaddy-delegation.md`](../runbooks/curavias-dns-godaddy-delegation.md) — related Sprint 13.1 DNS work; separate from ADR-0029 but shares the same deploy window.
