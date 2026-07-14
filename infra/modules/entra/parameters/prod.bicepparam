@@ -10,6 +10,12 @@ using '../main.bicep'
 param solutionShort = 'ihzhhpf'
 param env = 'prod'
 param spaRedirectUris = [
+  // Sprint 13.1 ADR-0030 custom hostname on curavias.ch. Dormant in PROD
+  // today — the PROD app-fluent CA + Phase 2 managed cert will be
+  // provisioned when PROD is promoted. Adding the URI now (before the
+  // target exists) is safe: Entra treats it as an allow-list entry.
+  'https://app.curavias.ch'
+  // Legacy App Service URL — kept for backward compatibility.
   'https://app-platform-ihzhhpf-prod.azurewebsites.net'
 ]
 param personas = [

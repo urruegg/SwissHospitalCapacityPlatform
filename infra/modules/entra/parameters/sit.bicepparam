@@ -10,6 +10,15 @@ using '../main.bicep'
 param solutionShort = 'ihzhhpf'
 param env = 'sit'
 param spaRedirectUris = [
+  // Sprint 13.1 ADR-0030 custom hostname on curavias.ch (Phase 2 landed
+  // 2026-07-14 with a DigiCert-issued managed cert). Primary SIT SPA URL.
+  'https://appsit.curavias.ch'
+  // Default Container Apps FQDN — fallback when the custom domain is being
+  // re-issued or during ADR-0031 KV-backed cert transitions. Domain suffix
+  // (`ashysky-8f51a689`) is stable for the `cae-app-fluent-ihzhhpf-sit` CAE.
+  'https://ca-app-fluent-ihzhhpf-sit.ashysky-8f51a689.westus2.azurecontainerapps.io'
+  // Legacy App Service URL — kept for backward compatibility with any
+  // demo bookmarks / MSAL sessions still referencing the pre-CA slot.
   'https://app-platform-ihzhhpf-sit.azurewebsites.net'
   'http://localhost:5173' // Sprint 13 dev
 ]
