@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "3915441062447142500"
+      "templateHash": "14124663035077719212"
     }
   },
   "parameters": {
@@ -4121,7 +4121,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "7091315258363163511"
+              "templateHash": "17217601412357354511"
             }
           },
           "parameters": {
@@ -4289,7 +4289,7 @@
                     "targetPort": "[parameters('targetPort')]",
                     "transport": "auto",
                     "allowInsecure": false,
-                    "customDomains": "[if(and(parameters('enableCustomDomainCert'), not(empty(parameters('customHostname')))), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'SniEnabled', 'certificateId', resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-'))))), createArray())]"
+                    "customDomains": "[if(empty(parameters('customHostname')), createArray(), if(parameters('enableCustomDomainCert'), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'SniEnabled', 'certificateId', resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-'))))), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'Disabled'))))]"
                   },
                   "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))))), createArray())]"
                 },

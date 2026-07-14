@@ -123,13 +123,32 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: targetPort
         transport: 'auto'
         allowInsecure: false
-        customDomains: (enableCustomDomainCert && !empty(customHostname)) ? [
+        // ADR-0030 two-phase custom-domain handling. Azure managed cert issuance
+        // requires the hostname to already be registered on a CA in the CAE
+        // (otherwise: RequireCustomHostnameInEnvironment). Bicep can't create
+        // the cert and the hostname binding in one deploy because they have a
+        // dependency cycle, so we split it:
+        //
+        //   * Phase 1 (enableCustomDomainCert=false): register the hostname on
+        //     the CA with bindingType=Disabled - no cert yet, but the CAE knows
+        //     the hostname is claimed.
+        //   * Phase 2 (enableCustomDomainCert=true): create the managed cert
+        //     (validation succeeds because the hostname is already registered),
+        //     then update the binding to SniEnabled + certificateId.
+        //
+        // Empty customHostname => empty customDomains (legacy behaviour).
+        customDomains: empty(customHostname) ? [] : (enableCustomDomainCert ? [
           {
             name: customHostname
             bindingType: 'SniEnabled'
             certificateId: managedCert!.id
           }
-        ] : []
+        ] : [
+          {
+            name: customHostname
+            bindingType: 'Disabled'
+          }
+        ])
       }
       registries: useAcrMiPull ? [
         {
