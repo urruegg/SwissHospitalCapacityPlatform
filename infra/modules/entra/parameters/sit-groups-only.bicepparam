@@ -18,6 +18,11 @@ using '../main.bicep'
 param solutionShort = 'ihzhhpf'
 param env = 'sit'
 param spaRedirectUris = [
+  // Sprint 13.1 ADR-0030 custom hostname — must stay in sync with sit.bicepparam.
+  // This groups-only variant is used for identity-only slice deploys; still
+  // needs the correct redirect URIs on the shared ihzhhpf-app registration.
+  'https://appsit.curavias.ch'
+  'https://ca-app-fluent-ihzhhpf-sit.ashysky-8f51a689.westus2.azurecontainerapps.io'
   'https://app-platform-ihzhhpf-sit.azurewebsites.net'
   'http://localhost:5173'
 ]
