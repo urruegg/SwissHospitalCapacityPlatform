@@ -327,6 +327,16 @@ module aiMlFoundation './modules/ai-ml-foundation/main.bicep' = if (enableAiMlFo
     nameSuffix: resourceSuffix
     tags: tags
   }
+  // 2026-07-14 — force serial ordering after platform-foundation to avoid the
+  // Key Vault parallel-operation race. This module resolves the KV via
+  // `existing` (matched name), so Bicep cannot infer an implicit dependency;
+  // without dependsOn, ARM may re-apply both modules concurrently and hit
+  // `ConflictError: parallel operations on Key Vault` (observed on deploy
+  // run 29356935951). See ADR-nothing-yet (may promote to ADR if the pattern
+  // repeats on other foundation modules).
+  dependsOn: [
+    platformFoundation
+  ]
 }
 
 module integrationOrchestration './modules/integration-orchestration/main.bicep' = if (enableIntegrationOrchestrationModule) {
