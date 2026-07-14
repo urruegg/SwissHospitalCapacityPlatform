@@ -397,6 +397,11 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    // ADR-0029 Option A — wire CAE VNet integration + Cosmos PE when the
+    // network module is enabled. Empty strings otherwise (keeps the CAE
+    // public — matches legacy behaviour).
+    caeInfrastructureSubnetResourceId: enableNetworkModule ? network!.outputs.caeSubnetResourceId : ''
+    vnetResourceId: enableNetworkModule ? network!.outputs.vnetResourceId : ''
   }
 }
 

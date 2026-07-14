@@ -1,0 +1,109 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "9808019470207933078"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Resource tags applied to all resources."
+      }
+    },
+    "cosmosAccountResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the Cosmos DB account to expose via private endpoint."
+      }
+    },
+    "privateEndpointSubnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the subnet that hosts the private endpoint. Must have `privateEndpointNetworkPolicies: Disabled`."
+      }
+    },
+    "privateDnsZoneName": {
+      "type": "string",
+      "defaultValue": "privatelink.documents.azure.com",
+      "metadata": {
+        "description": "Existing private DNS zone name — Azure-managed for Cosmos SQL is exactly `privatelink.documents.azure.com`. Do not override."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2023-11-01",
+      "name": "[format('pe-cosmos-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "subnet": {
+          "id": "[parameters('privateEndpointSubnetResourceId')]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "name": "[format('pe-cosmos-{0}-conn', parameters('nameSuffix'))]",
+            "properties": {
+              "privateLinkServiceId": "[parameters('cosmosAccountResourceId')]",
+              "groupIds": [
+                "Sql"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2023-11-01",
+      "name": "[format('{0}/{1}', format('pe-cosmos-{0}', parameters('nameSuffix')), 'default')]",
+      "properties": {
+        "privateDnsZoneConfigs": [
+          {
+            "name": "privatelink-documents-azure-com",
+            "properties": {
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateEndpoints', format('pe-cosmos-{0}', parameters('nameSuffix')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "privateEndpointName": {
+      "type": "string",
+      "metadata": {
+        "description": "Private endpoint resource name."
+      },
+      "value": "[format('pe-cosmos-{0}', parameters('nameSuffix'))]"
+    },
+    "privateEndpointResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Private endpoint resource ID."
+      },
+      "value": "[resourceId('Microsoft.Network/privateEndpoints', format('pe-cosmos-{0}', parameters('nameSuffix')))]"
+    }
+  }
+}
