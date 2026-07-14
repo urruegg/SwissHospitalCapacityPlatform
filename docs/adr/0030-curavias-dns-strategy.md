@@ -2,16 +2,19 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Status** | Accepted |
-| **Date** | 2026-07-13 |
+| **Status** | **Accepted (2026-07-13) — implemented + verified (2026-07-14)** |
+| **Date** | 2026-07-13 (Accepted) → 2026-07-14 (Phase 1 + Phase 2 landed) |
 | **Deciders** | @urruegg |
 | **Superseded by** | — |
+| **Complemented by** | [ADR-0031](0031-tls-certificate-lifecycle-strategy.md) — TLS cert lifecycle strategy + Key Vault opt-in scaffold for future PROD |
 | **Scope** | Public-facing hostnames for the platform on SIT and PROD. Private-endpoint DNS (Cosmos, Storage, etc.) uses Azure-owned zones and is out of scope. |
 
 > Sprint 13.1 mini-sprint decision. Records how the freshly-registered
 > `curavias.ch` domain is used for public custom hostnames on Azure Container
 > Apps, why we chose full Azure DNS delegation over GoDaddy-hosted DNS, and why
 > the domain is intentionally decoupled from the MCAPS Entra tenant.
+>
+> **Implementation status (2026-07-14):** SIT complete end-to-end — `https://appsit.curavias.ch` serves HTTP 200 with a valid DigiCert-issued managed TLS cert. Full delivery trail: PR #201 (Phase 1 zone + records), GoDaddy NS delegation confirmed at `.ch` TLD, PR #211 (Phase 2 cert flip), PR #212 (declarative two-phase Bicep for PROD readiness), PR #213 (ADR-0031 + KV opt-in scaffold), PR #216 (Entra `spaRedirectUris`).
 
 ## Context
 
