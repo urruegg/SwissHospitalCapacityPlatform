@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "11571915680960924748"
+      "templateHash": "3915441062447142500"
     }
   },
   "parameters": {
@@ -3282,7 +3282,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "10360018275364676497"
+              "templateHash": "3723918610018088654"
             }
           },
           "parameters": {
@@ -3360,9 +3360,24 @@
             }
           },
           "variables": {
-            "enableVnetIntegration": "[and(not(empty(parameters('caeInfrastructureSubnetResourceId'))), not(empty(parameters('vnetResourceId'))))]"
+            "enableVnetIntegration": "[and(not(empty(parameters('caeInfrastructureSubnetResourceId'))), not(empty(parameters('vnetResourceId'))))]",
+            "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002"
           },
           "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', format('cosmos-{0}', parameters('nameSuffix')), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix'))), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('cosmosDataContributorRoleId')))]",
+              "properties": {
+                "roleDefinitionId": "[format('{0}/sqlRoleDefinitions/{1}', resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix'))), variables('cosmosDataContributorRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix')))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'agent-host-container-app')]",
+                "[resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos')]"
+              ]
+            },
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2025-04-01",

@@ -95,6 +95,42 @@ module containerApp 'container-app.bicep' = {
   }
 }
 
+// ADR-0029 Option A follow-up — Cosmos DB data-plane RBAC for the agent-host
+// user-assigned managed identity. The Cosmos account has disableLocalAuth=true
+// (no keys), so the CA can only reach data via this role. Mirrors the CSA
+// Cosmos pattern (`infra/modules/cosmos/csa.bicep` §agentHostDataContributor).
+// Role: `Cosmos DB Built-in Data Contributor` (built-in id
+// 00000000-0000-0000-0000-000000000002) scoped to this account only.
+resource agentHostCosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' existing = {
+  name: 'cosmos-${nameSuffix}'
+}
+
+// The user-assigned MI is created inside container-app.bicep with a
+// deterministic name — reference it here so we can read principalId
+// at deploy-start (containerApp.outputs.principalId is only known at
+// deploy-end, which fails the BCP120 constraint on `name`).
+resource agentHostMi 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: 'id-ca-agent-host-${nameSuffix}'
+}
+
+var cosmosDataContributorRoleId = '00000000-0000-0000-0000-000000000002'
+
+resource agentHostCosmosDataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-12-01-preview' = {
+  parent: agentHostCosmosAccount
+  name: guid(agentHostCosmosAccount.id, agentHostMi.id, cosmosDataContributorRoleId)
+  properties: {
+    roleDefinitionId: '${agentHostCosmosAccount.id}/sqlRoleDefinitions/${cosmosDataContributorRoleId}'
+    principalId: agentHostMi.properties.principalId
+    scope: agentHostCosmosAccount.id
+  }
+  dependsOn: [
+    // Ensure both the cosmos account and the CA (which owns the MI) exist
+    // before the sqlRoleAssignment tries to bind them.
+    cosmos
+    containerApp
+  ]
+}
+
 output agentHostFqdn string = containerApp.outputs.fqdn
 output cosmosAccountName string = cosmos.outputs.cosmosAccountName
 output redisName string = enableRedisModule ? redis!.outputs.redisName : ''
