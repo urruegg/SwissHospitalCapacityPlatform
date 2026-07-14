@@ -318,6 +318,39 @@
       },
       "status": "Accepted",
       "title": "MCAPS demo-user model: `admin@` + `urruegg@` hold all 17 HCC.\\* group memberships"
+    },
+    {
+      "decisionSummary": "**Adopt Option 2.**",
+      "id": "ADR-0028",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0028-defer-managed-redis-in-sit-demo-scope.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0028-defer-managed-redis-in-sit-demo-scope.md"
+      },
+      "status": "Accepted",
+      "title": "Defer Azure Managed Redis in SIT demo scope (agent-host uses in-memory cache)"
+    },
+    {
+      "decisionSummary": "",
+      "id": "ADR-0029",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0029-agent-host-cosmos-reachability.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0029-agent-host-cosmos-reachability.md"
+      },
+      "status": "Accepted",
+      "title": "Agent-host Cosmos reachability in SIT (choose PE + VNet integration or co-locate on CSA Cosmos)"
+    },
+    {
+      "decisionSummary": "**Adopt full Azure DNS delegation (\"Option C\" in the brainstorm) + Azure Container Apps managed certificates.**",
+      "id": "ADR-0030",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0030-curavias-dns-strategy.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0030-curavias-dns-strategy.md"
+      },
+      "status": "Accepted",
+      "title": "curavias.ch DNS strategy: full Azure DNS delegation + Container Apps managed certs"
     }
   ],
   "boms": [
