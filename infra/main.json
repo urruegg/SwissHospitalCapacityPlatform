@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "14124663035077719212"
+      "templateHash": "7588654438523436976"
     }
   },
   "parameters": {
@@ -4121,7 +4121,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "17217601412357354511"
+              "templateHash": "3570153104393533044"
             }
           },
           "parameters": {
@@ -4208,11 +4208,19 @@
               "metadata": {
                 "description": "When true and customHostname is non-empty, provision a Managed Certificate on the CAE and bind it to the CA ingress. Set FALSE during the first deploy (or when curavias.ch NS delegation to Azure DNS is not yet propagated) to avoid managed-cert issuance failure. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md."
               }
+            },
+            "existingCustomDomainCertificateResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "ADR-0031 opt-in. Fully-qualified resource ID of an EXISTING certificate on the CAE (either Microsoft.App/managedEnvironments/certificates — imported from Key Vault — or a pre-provisioned managedCertificates resource). When non-empty AND enableCustomDomainCert=true, this ID is used as the CA customDomains[0].certificateId instead of the Bicep-provisioned managed cert. Empty (default) keeps the current ACA-managed cert path. The Key Vault import itself is provisioned out-of-band in a dedicated module when PROD switches per ADR-0031 §Trigger."
+              }
             }
           },
           "variables": {
             "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
-            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]"
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+            "useExistingCert": "[not(empty(parameters('existingCustomDomainCertificateResourceId')))]"
           },
           "resources": [
             {
@@ -4256,7 +4264,7 @@
               ]
             },
             {
-              "condition": "[and(parameters('enableCustomDomainCert'), not(empty(parameters('customHostname'))))]",
+              "condition": "[and(and(parameters('enableCustomDomainCert'), not(empty(parameters('customHostname')))), not(variables('useExistingCert')))]",
               "type": "Microsoft.App/managedEnvironments/managedCertificates",
               "apiVersion": "2024-03-01",
               "name": "[format('{0}/{1}', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-')))]",
@@ -4289,7 +4297,7 @@
                     "targetPort": "[parameters('targetPort')]",
                     "transport": "auto",
                     "allowInsecure": false,
-                    "customDomains": "[if(empty(parameters('customHostname')), createArray(), if(parameters('enableCustomDomainCert'), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'SniEnabled', 'certificateId', resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-'))))), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'Disabled'))))]"
+                    "customDomains": "[if(empty(parameters('customHostname')), createArray(), if(parameters('enableCustomDomainCert'), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'SniEnabled', 'certificateId', if(variables('useExistingCert'), parameters('existingCustomDomainCertificateResourceId'), resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-')))))), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'Disabled'))))]"
                   },
                   "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))))), createArray())]"
                 },
