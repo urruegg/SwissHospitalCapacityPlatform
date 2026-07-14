@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "7631022528746123641"
+      "templateHash": "6985349561479933841"
     }
   },
   "parameters": {
@@ -706,7 +706,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "15218413478265915950"
+              "templateHash": "15810023039592720100"
             }
           },
           "parameters": {
@@ -753,7 +753,7 @@
               "type": "string",
               "defaultValue": "10.60.4.0/23",
               "metadata": {
-                "description": "Address prefix for the Container Apps Environment (CAE) infrastructure subnet. Delegated to Microsoft.App/environments. Required for CAE VNet integration (ADR-0029 Option A). Consumption-only CAEs accept /27 minimum; workload-profiles CAEs need /23. We use /23 for headroom."
+                "description": "Address prefix for the Container Apps Environment (CAE) infrastructure subnet. Consumed by `cae-<suffix>.vnetConfiguration.infrastructureSubnetId` (ADR-0029 Option A). Consumption-only CAEs REQUIRE this subnet to have NO service delegation (unlike workload-profiles CAEs, which require the `Microsoft.App/environments` delegation). See Task 6 hotfix - the first ADR-0029 apply failed with `ManagedEnvironmentV1SubnetDelegationNotAllowed` when the delegation was set. Consumption-only CAE minimum size is /27; we use /23 for headroom and to match the internal address consumption of the CAE."
               }
             }
           },
@@ -787,15 +787,7 @@
                   {
                     "name": "snet-cae",
                     "properties": {
-                      "addressPrefix": "[parameters('caeSubnetPrefix')]",
-                      "delegations": [
-                        {
-                          "name": "Microsoft.App.environments",
-                          "properties": {
-                            "serviceName": "Microsoft.App/environments"
-                          }
-                        }
-                      ]
+                      "addressPrefix": "[parameters('caeSubnetPrefix')]"
                     }
                   }
                 ]
@@ -834,7 +826,7 @@
             "caeSubnetResourceId": {
               "type": "string",
               "metadata": {
-                "description": "Container Apps Environment (CAE) infrastructure subnet resource ID (ADR-0029 Option A). Delegated to Microsoft.App/environments; consumed by cae-<suffix> vnetConfiguration."
+                "description": "Container Apps Environment (CAE) infrastructure subnet resource ID (ADR-0029 Option A). No delegation; consumption-only CAEs reject delegated subnets."
               },
               "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', parameters('nameSuffix')), 'snet-cae')]"
             },
