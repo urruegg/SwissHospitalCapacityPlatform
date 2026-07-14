@@ -1,4 +1,14 @@
-// Sprint 12 — Entra demo org: PROD parameters.
+// Sprint 12 — Entra demo org: PROD parameters (documentation-of-intended-state).
+//
+// ⚠️  DO NOT USE THIS FILE FOR APPLY.  ⚠️
+// -------------------------------------------------------------------------
+// Same limitation as sit.bicepparam: applying this bicepparam fails on the
+// `users-prod` sub-deployment because `Microsoft.Graph/users@v1.0` is read-only
+// in the Microsoft Graph Bicep extension (MCAPS tenant restriction).
+//
+// When PROD is promoted, create a `prod-groups-only.bicepparam` variant with
+// `personas = []` matching the SIT pattern, and apply that instead. Users
+// (admin@ + urruegg@) are added to groups out-of-band via `az ad group member add`.
 //
 // Users are shared across SIT and PROD (design spec D-6); only the redirect URIs
 // and the friendly env tag differ between sit.bicepparam and this file.

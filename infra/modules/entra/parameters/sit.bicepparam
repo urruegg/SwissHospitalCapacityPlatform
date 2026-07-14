@@ -1,4 +1,23 @@
-// Sprint 12 — Entra demo org: SIT parameters.
+// Sprint 12 — Entra demo org: SIT parameters (documentation-of-intended-state).
+//
+// ⚠️  DO NOT USE THIS FILE FOR APPLY.  ⚠️
+// -------------------------------------------------------------------------
+// The `personas` array below documents the 23 intended demo users, but
+// applying this bicepparam fails on the `users-sit` sub-deployment with
+//     BadRequest: Resource 'users' is readonly.
+// because `Microsoft.Graph/users@v1.0` is read-only in the Microsoft Graph
+// Bicep extension (verified at v1.0 and beta; MCAPS tenant restriction).
+//
+// The **actual apply artefact for SIT is `sit-groups-only.bicepparam`**
+// (personas = []). It provisions the app registration, app roles, service
+// principal, 17 security groups, and 17 group→role assignments — which is
+// everything except the users. Group membership is added out-of-band via
+// `az ad group member add` for admin@ + urruegg@ per file-header of
+// `sit-groups-only.bicepparam`. See ADR-0027 follow-up 1 for the users
+// refactor plan.
+//
+// The `entra-whatif.yml` workflow also targets `sit-groups-only.bicepparam`
+// (2026-07-14 update) so PR what-if comments match the actual apply artefact.
 //
 // Users are shared across SIT and PROD (design spec D-6); only the redirect URIs
 // and the friendly env tag differ between this file and prod.bicepparam.

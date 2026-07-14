@@ -45,10 +45,16 @@ jobs:
           set -euo pipefail
           # temporaryPassword is a throwaway value used only to satisfy the
           # secure parameter during planning; no user is created by what-if.
+          #
+          # Targets sit-groups-only.bicepparam — the ACTUAL apply artefact for
+          # SIT because sit.bicepparam apply fails on the users-sit sub-deployment
+          # (Microsoft.Graph/users@v1.0 is read-only in the Graph Bicep extension
+          # per MCAPS tenant restriction). See file-header of
+          # infra/modules/entra/parameters/sit.bicepparam for details.
           az deployment sub what-if \
             --location westus2 \
             --template-file infra/modules/entra/main.bicep \
-            --parameters infra/modules/entra/parameters/sit.bicepparam \
+            --parameters infra/modules/entra/parameters/sit-groups-only.bicepparam \
             --parameters temporaryPassword="WhatIf-Plan-Only-$(date +%s)!" \
             > whatif.txt 2>&1 || {
               echo "what-if failed:"; cat whatif.txt; exit 1;
