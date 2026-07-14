@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "7588654438523436976"
+      "templateHash": "13416800688071519301"
     }
   },
   "parameters": {
@@ -2513,7 +2513,10 @@
             }
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
     },
     {
       "condition": "[parameters('enableIntegrationOrchestrationModule')]",
