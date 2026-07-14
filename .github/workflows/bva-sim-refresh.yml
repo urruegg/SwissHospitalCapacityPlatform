@@ -114,10 +114,13 @@ jobs:
           token="$(az account get-access-token \
             --resource https://api.fabric.microsoft.com \
             --query accessToken -o tsv)"
+          # See adoption-refresh.yml for why --data '{}' is required (Fabric
+          # edge proxy returns HTTP 411 Length Required otherwise).
           http_status="$(curl -sS -o response.json -w '%{http_code}' \
             -X POST \
             --oauth2-bearer "$token" \
             -H 'Content-Type: application/json' \
+            --data '{}' \
             "https://api.fabric.microsoft.com/v1/workspaces/${FABRIC_WORKSPACE_ID}/items/${FABRIC_BVA_PIPELINE_ID}/jobs/instances?jobType=Pipeline")"
           echo "Fabric pipeline submit HTTP ${http_status}"
           cat response.json || true

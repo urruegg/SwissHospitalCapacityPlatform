@@ -55,10 +55,16 @@ jobs:
           token="$(az account get-access-token \
             --resource https://api.fabric.microsoft.com \
             --query accessToken -o tsv)"
+          # Fabric edge proxy returns HTTP 411 Length Required if the POST
+          # has no Content-Length header. curl -X POST without --data omits
+          # both body and Content-Length. Send an empty JSON body so the
+          # header is set. The jobs/instances endpoint accepts an optional
+          # `executionData` body; {} is treated as "use default parameters".
           http_status="$(curl -sS -o response.json -w '%{http_code}' \
             -X POST \
             --oauth2-bearer "$token" \
             -H 'Content-Type: application/json' \
+            --data '{}' \
             "https://api.fabric.microsoft.com/v1/workspaces/${FABRIC_WORKSPACE_ID}/items/${FABRIC_ADOPTION_NOTEBOOK_ID}/jobs/instances?jobType=RunNotebook")"
           echo "Fabric job submit HTTP ${http_status}"
           cat response.json || true
