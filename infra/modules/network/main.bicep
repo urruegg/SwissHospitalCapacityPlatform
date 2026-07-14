@@ -16,7 +16,7 @@ param appSubnetPrefix string = '10.60.1.0/24'
 @description('Address prefix for the platform data subnet (private endpoints for SQL, KV, Storage).')
 param dataSubnetPrefix string = '10.60.2.0/24'
 
-@description('Address prefix for the Container Apps Environment (CAE) infrastructure subnet. Delegated to Microsoft.App/environments. Required for CAE VNet integration (ADR-0029 Option A). Consumption-only CAEs accept /27 minimum; workload-profiles CAEs need /23. We use /23 for headroom.')
+@description('Address prefix for the Container Apps Environment (CAE) infrastructure subnet. Consumed by `cae-<suffix>.vnetConfiguration.infrastructureSubnetId` (ADR-0029 Option A). Consumption-only CAEs REQUIRE this subnet to have NO service delegation (unlike workload-profiles CAEs, which require the `Microsoft.App/environments` delegation). See Task 6 hotfix - the first ADR-0029 apply failed with `ManagedEnvironmentV1SubnetDelegationNotAllowed` when the delegation was set. Consumption-only CAE minimum size is /27; we use /23 for headroom and to match the internal address consumption of the CAE.')
 param caeSubnetPrefix string = '10.60.4.0/23'
 
 resource platformVnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
@@ -47,17 +47,10 @@ resource platformVnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 				name: 'snet-cae'
 				properties: {
 					addressPrefix: caeSubnetPrefix
-					delegations: [
-						{
-							name: 'Microsoft.App.environments'
-							properties: {
-								serviceName: 'Microsoft.App/environments'
-							}
-						}
-					]
-					// Azure Container Apps forbids NSGs with certain restrictions on the delegated
-					// subnet. Keep it clean for the demo; harden with a curated NSG in PROD if
-					// needed. See https://learn.microsoft.com/azure/container-apps/networking#network-security-groups
+					// NO delegations, NO NSG - consumption-only CAEs reject subnets with either.
+					// If we ever migrate cae-<suffix> to workload-profiles, add the
+					// `Microsoft.App/environments` delegation back here.
+					// Ref: https://learn.microsoft.com/azure/container-apps/vnet-custom-internal#subnet
 				}
 			}
 		]
@@ -76,7 +69,7 @@ output appSubnetResourceId string = resourceId('Microsoft.Network/virtualNetwork
 @description('Data subnet resource ID (for private endpoints).')
 output dataSubnetResourceId string = resourceId('Microsoft.Network/virtualNetworks/subnets', platformVnet.name, 'snet-data')
 
-@description('Container Apps Environment (CAE) infrastructure subnet resource ID (ADR-0029 Option A). Delegated to Microsoft.App/environments; consumed by cae-<suffix> vnetConfiguration.')
+@description('Container Apps Environment (CAE) infrastructure subnet resource ID (ADR-0029 Option A). No delegation; consumption-only CAEs reject delegated subnets.')
 output caeSubnetResourceId string = resourceId('Microsoft.Network/virtualNetworks/subnets', platformVnet.name, 'snet-cae')
 
 @description('Virtual network resource ID (needed to link the private DNS zone for Cosmos when the PE lives inside this VNet).')
