@@ -158,13 +158,22 @@
       "value": true
     },
     "agentHostImage": {
-      "value": "mcr.microsoft.com/dotnet/samples:aspnetapp"
+      "value": "cri75lbu5sj4hza.azurecr.io/hcc-agent-host:ccaf429"
+    },
+    "agentHostEnableRedis": {
+      "value": false
     },
     "enableAppFluentModule": {
       "value": true
     },
     "appFluentImage": {
-      "value": "nginxinc/nginx-unprivileged:1.27-alpine"
+      "value": "cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:27e410c"
+    },
+    "appFluentCustomHostname": {
+      "value": "appsit.curavias.ch"
+    },
+    "appFluentEnableCustomDomainCert": {
+      "value": true
     }
   }
 }
