@@ -144,5 +144,9 @@ param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:27e410c'
 //   4. Flip `appFluentEnableCustomDomainCert = true` and redeploy -> Managed
 //      Certificate resource issues a free Let's Encrypt cert (~15-30 min) + CA binds
 //      the custom domain via SNI.
+//
+// Phase 2 completed 2026-07-14 — steps 1-3 done in earlier iterations; NS delegation
+// confirmed via .ch TLD authoritative servers (a.nic.ch / d.nic.ch returning Azure NS).
+// Flipping to `true` triggers Managed Certificate issuance for `appsit.curavias.ch`.
 param appFluentCustomHostname = 'appsit.curavias.ch'
-param appFluentEnableCustomDomainCert = false
+param appFluentEnableCustomDomainCert = true
