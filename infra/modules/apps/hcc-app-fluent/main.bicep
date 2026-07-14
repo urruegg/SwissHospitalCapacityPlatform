@@ -43,6 +43,9 @@ param customHostname string = ''
 @description('When true and customHostname is non-empty, provision a Managed Certificate on the CAE and bind it to the CA ingress. Set FALSE during the first deploy (or when curavias.ch NS delegation to Azure DNS is not yet propagated) to avoid managed-cert issuance failure. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md.')
 param enableCustomDomainCert bool = false
 
+@description('ADR-0031 opt-in. Fully-qualified resource ID of an EXISTING certificate on the CAE (either Microsoft.App/managedEnvironments/certificates — imported from Key Vault — or a pre-provisioned managedCertificates resource). When non-empty AND enableCustomDomainCert=true, this ID is used as the CA customDomains[0].certificateId instead of the Bicep-provisioned managed cert. Empty (default) keeps the current ACA-managed cert path. The Key Vault import itself is provisioned out-of-band in a dedicated module when PROD switches per ADR-0031 §Trigger.')
+param existingCustomDomainCertificateResourceId string = ''
+
 // AcrPull role definition id (built-in).
 var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 var useAcrMiPull = !empty(containerRegistryLoginServer) && !empty(containerRegistryResourceId)
@@ -90,12 +93,20 @@ resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 }
 
-// Managed certificate for the custom hostname (Let's Encrypt via Azure Container Apps).
+// Managed certificate for the custom hostname (Azure Container Apps managed PKI —
+// currently DigiCert / GeoTrust TLS RSA CA G1 in commercial regions, historically
+// Let's Encrypt).
 // Provisioned only when the caller has confirmed DNS zone + records are live at Azure DNS
 // AND the GoDaddy NS delegation for curavias.ch has propagated (enableCustomDomainCert=true).
 // Cert issuance is synchronous — deploy will FAIL if DNS validation cannot complete, so keep
 // enableCustomDomainCert=false until the runbook confirms propagation.
-resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (enableCustomDomainCert && !empty(customHostname)) {
+//
+// ADR-0031: SKIPPED when existingCustomDomainCertificateResourceId is set — the caller
+// takes over cert ownership (typically via a Key Vault import). See ADR-0031
+// §Trigger for when to switch.
+var useExistingCert = !empty(existingCustomDomainCertificateResourceId)
+
+resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (enableCustomDomainCert && !empty(customHostname) && !useExistingCert) {
   parent: managedEnvironment
   name: 'cert-${replace(customHostname, '.', '-')}'
   location: location
@@ -137,11 +148,14 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
         //     then update the binding to SniEnabled + certificateId.
         //
         // Empty customHostname => empty customDomains (legacy behaviour).
+        // ADR-0031: certificateId resolves to `existingCustomDomainCertificateResourceId`
+        // when set (KV-backed or imported cert), otherwise the Bicep-provisioned
+        // ACA-managed cert.
         customDomains: empty(customHostname) ? [] : (enableCustomDomainCert ? [
           {
             name: customHostname
             bindingType: 'SniEnabled'
-            certificateId: managedCert!.id
+            certificateId: useExistingCert ? existingCustomDomainCertificateResourceId : managedCert!.id
           }
         ] : [
           {
