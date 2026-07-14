@@ -1,0 +1,6 @@
+config:
+  # Customer-facing review pack — inline HTML is used for centered logo/branding
+  # on the cover of the produktubersicht (product overview) and the interview-briefing.
+  # Both are shared with external stakeholders, so visual polish matters.
+  MD033: false
+  MD041: false
