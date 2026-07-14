@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.7.0 |
+| **Version** | 1.8.0 |
 | **Date** | 2026-07-14 |
 | **Author** | Urs Rüeegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.6.0 (2026-07-13 pm late — S13.2 + S13.3 flipped to done after the real ACR-image deploy [`29256829953`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29256829953)); this bump flips S13.6 to done after ADR-0029 Option A landed on 2026-07-14 via deploy run [`29334633463`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29334633463) (CAE VNet integration + Cosmos PE + private DNS) plus Cosmos Data Contributor RBAC via run [`29336946152`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29336946152) (PR #210). |
+| **Previous Version** | 1.7.0 (2026-07-14 pm — S13.6 flipped to done); this bump reconciles the narrative sections (root cause #1, Recommendation, Runtime-verification-pending) with the fact that the Sprint 13.1 mini-sprint completed end-to-end on 2026-07-14 (5 workstreams: Cosmos reachability per [ADR-0029](../adr/0029-agent-host-cosmos-reachability.md), Cosmos RBAC, DNS Phase 1+2 per [ADR-0030](../adr/0030-curavias-dns-strategy.md), cert lifecycle per [ADR-0031](../adr/0031-tls-certificate-lifecycle-strategy.md), Entra SPA redirects). |
 | **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
 | **Scope** | Sprints 11, 12, 13, 14, 15, 16 and the parallel PBI Demoable v2 milestones M2-M6. Sprints 01-10 explicitly out of scope. |
 | **Related** | [`docs/sprints/superpowers-checkpoint-matrix.md`](superpowers-checkpoint-matrix.md); [`docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md`](../superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md) |
@@ -30,7 +30,7 @@
 
 ### The root causes behind the remaining gaps
 
-1. **[Issue #181](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/181) — Sprint 13.1 mini-sprint (agent-host + Fluent app not deployed to SIT):** `infra/main.bicep` never wires the `agent-host` module or a `hcc-app-fluent` Container App. Consequence: 5 gaps cascade — S13.2, S13.3, S13.6, S13.7, S13.8, plus knock-on to S15.4 (BVA cards registered but not visible), S16.5 (CSA wizard component missing from app).
+1. **[Issue #181](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/181) — Sprint 13.1 mini-sprint: ✅ completed 2026-07-14.** Original scope (agent-host + Fluent app not deployed to SIT) is fully resolved. All 5 direct Sprint 13 impact items (S13.2, S13.3, S13.6, S13.7 → 🚫 N/A per [ADR-0028](../adr/0028-defer-managed-redis-in-sit-demo-scope.md), S13.8) closed. Delivery trail: PR #199 (agent-host + Fluent CA wiring), real ACR image deploy [`29256829953`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29256829953), ADR-0029 Option A (Cosmos reachability) via PR #205/#206/#208/#209 + run [`29334633463`](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29334633463), PR #210 (Cosmos RBAC), and the DNS/Entra follow-ups PR #201/#211/#212/#213/#216. Remaining knock-ons S15.4 (BVA card visibility) and S16.5 (CSA wizard component) are separate **app-code** work, not infrastructure-blocked.
 2. **[Issue #180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180) — Sprint 12.1 mini-sprint (adoption ingest notebook missing):** Sprint 12 T5 shipped `adoption-refresh.yml` but the Fabric notebook it targets was never authored. Consequence: S12.4, S12.6.
 3. **[Issue #182](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/182) — Sprint 14.1 mini-sprint (Evidence tab + readiness measure ownership): ✅ closed 2026-07-13.** Sprint 14 T4-T6 delivered (evidence.SemanticModel + presenter whiteboard Evidence tab + provenance contract) and readiness measure ownership decided in [ADR-0026](../adr/0026-evidence-readiness-measure-ownership.md). Closed S14.3, S14.4, S14.5.
 
@@ -46,17 +46,17 @@
 
 All ⏳ items require either:
 
-- **App-shell running:** S12.3, S12.5, S13.5, S13.9, S16.5-partial → unblock with issue #181
+- **App-shell running:** S12.3, S12.5, S13.5, S13.9, S16.5-partial — no longer blocked; the Sprint 13.1 mini-sprint landed the app-shell + agent-host + Cosmos reachability on 2026-07-14. These items now need an interactive smoke session against SIT to close them.
 - **PBI Desktop or Fabric data plane:** PBI.2, PBI.6, PBI.10, PBI.11, S14.2, S14.6, S15.5 → unblock via Sprint 17 T1 (Fabric Git integration) + a demo-day walk-through
 
 None of the runtime-pending items are blocking merges — they are validation activities for the demo readiness gate.
 
 ### Recommendation for next work session
 
-1. **Fix S15.1** (this PR) — trivial, non-destructive.
-2. **Kick off Sprint 13.1 mini-sprint** (issue #181) — highest leverage: unblocks S13.2/3/6/7/8, S14.4/5, S15.4, S16.5. **Deploy-ceiling**, requires `approved-to-apply`.
-3. **After Sprint 13.1 stabilises:** kick off Sprint 12.1 (adoption notebook) and Sprint 14.1 (Evidence tab) in parallel.
-4. **Only then** proceed with Sprint 17 T1 (Fabric Git integration).
+1. **Sprint 13.1 mini-sprint completion ✅ done (2026-07-14).** All original scope items landed; the remaining knock-ons (S15.4, S16.5) are application-code work, not deploy-blocked.
+2. **Kick off Sprint 12.1** (adoption notebook, issue [#180](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/180)) — unblocks S12.4/6.
+3. **Address S15.4 + S16.5 knock-ons** — app-code work in the Fluent SPA. Can be batched with any sprint that needs to touch `apps/hcc-app-fluent/src/`.
+4. **Proceed with Sprint 17 T1** (Fabric Git integration) — unblocks the PBI Desktop / Fabric data plane runtime-verification items.
 
 ---
 

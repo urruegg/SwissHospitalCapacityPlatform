@@ -2,12 +2,15 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-13 |
-| **Author** | Urs Rüegg |
-| **Status** | Approved (see [ADR-0030](../../adr/0030-curavias-dns-strategy.md)) |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-14 |
+| **Author** | Urs Rüeegg |
+| **Status** | **Delivered (2026-07-14).** See [ADR-0030](../../adr/0030-curavias-dns-strategy.md) for the decision, [ADR-0031](../../adr/0031-tls-certificate-lifecycle-strategy.md) for the cert-lifecycle follow-up. |
 | **Sprint** | 13.1 mini-sprint |
-| **Related** | [ADR-0030](../../adr/0030-curavias-dns-strategy.md), [runbook](../../runbooks/curavias-dns-godaddy-delegation.md) |
+| **Previous Version** | 1.0.0 (initial approved design) |
+| **Related** | [ADR-0030](../../adr/0030-curavias-dns-strategy.md), [ADR-0031](../../adr/0031-tls-certificate-lifecycle-strategy.md), [runbook](../../runbooks/curavias-dns-godaddy-delegation.md) |
+
+> **Delivery evidence (2026-07-14):** `https://appsit.curavias.ch` serves HTTP 200 with a DigiCert-issued managed TLS cert. Delivery trail: PR #201 (Phase 1 zone + records), GoDaddy NS delegation confirmed at `.ch` TLD, PR #211 (Phase 2 cert flip — required an ad-hoc `az containerapp hostname add` step to break the cert/hostname chicken-and-egg), PR #212 (declarative two-phase Bicep so PROD needs no manual CLI step), PR #213 (ADR-0031 + KV opt-in scaffold for future PROD), PR #216 (Entra `spaRedirectUris`). Runbook updated to v1.1.0 with the correct sequence + DigiCert issuer note.
 
 ## 1. Problem
 

@@ -1,5 +1,7 @@
 # CAE VNet integration + Cosmos private endpoint — Implementation Plan (ADR-0029 Option A)
 
+> **✅ STATUS 2026-07-14: EXECUTED AND VERIFIED.** SIT landed via deploy run [29334633463](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29334633463); Cosmos data-plane RBAC via PR #210 + run [29336946152](https://github.com/urruegg/SwissHospitalCapacityPlatform/actions/runs/29336946152). Actual execution required **5 deploy iterations** and **1 destructive manual step** — different from this plan because ARM refuses `Modify` on a live v1 CAE for `vnetConfiguration`; the CAE had to be deleted + recreated manually before Bicep could land the new VNet-integrated CAE. The definitive shipped story is [ADR-0029 §Implementation trail](../../adr/0029-agent-host-cosmos-reachability.md#implementation-trail-2026-07-14). This plan is kept for historical context on the pre-execution thinking; **do not use as the PROD promotion playbook** — use the ADR trail's PROD guidance instead.
+>
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Close the Cosmos reachability gap between `ca-agent-host-ihzhhpf-sit` and `cosmos-ihzhhpf-sit` by (a) provisioning a Private Endpoint on the Cosmos account in the existing `snet-data` subnet, (b) VNet-integrating `cae-ihzhhpf-sit` into a new delegated subnet so Container Apps traffic resolves the Cosmos FQDN to the private IP.
