@@ -2,11 +2,12 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-13 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-14 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Related** | [ADR-0030](../adr/0030-curavias-dns-strategy.md), [`infra/modules/dns/curavias.bicep`](../../infra/modules/dns/curavias.bicep) |
+| **Previous Version** | 1.0.0 (initial Phase 1 + Phase 2 sequence) |
+| **Related** | [ADR-0030](../adr/0030-curavias-dns-strategy.md), [`infra/modules/dns/curavias.bicep`](../../infra/modules/dns/curavias.bicep), [`infra/modules/apps/hcc-app-fluent/main.bicep`](../../infra/modules/apps/hcc-app-fluent/main.bicep) |
 
 ## When to use this runbook
 
@@ -103,9 +104,14 @@ The deploy will:
 1. Provision `Microsoft.App/managedEnvironments/managedCertificates` named
    `cert-appsit-curavias-ch` on the app-fluent CAE.
 2. Azure Container Apps validates domain ownership via the `asuid.appsit`
-   TXT record.
-3. Let's Encrypt issues a free managed certificate (~15-30 min).
-4. Container App ingress binds `appsit.curavias.ch` with SNI to the cert.
+   TXT record (Phase 1 already registered the hostname on the CA as
+   `bindingType: Disabled`, which is required for the cert to validate).
+3. A managed certificate is issued (~15–30 min). Azure Container Apps
+   currently issues via **DigiCert / GeoTrust TLS RSA CA G1** in most
+   commercial regions (was Let's Encrypt historically) — both are
+   publicly-trusted CAs, outcome identical.
+4. Container App ingress upgrades the binding from `Disabled` to
+   `SniEnabled` and points to the new cert.
 
 ## Step 5 — Verify the custom hostname is live
 
@@ -126,8 +132,11 @@ Optional cert-chain inspection:
 openssl s_client -connect appsit.curavias.ch:443 -servername appsit.curavias.ch < NUL 2>NUL | openssl x509 -noout -issuer -subject -dates
 ```
 
-Issuer should read `Let's Encrypt` (or `E5`/`E6`/`R3`/etc. depending on the
-Let's Encrypt intermediate at time of issuance).
+Issuer should read one of the Azure-managed PKI chains — in commercial
+regions today typically `DigiCert Inc / GeoTrust TLS RSA CA G1`. In older
+deploys or some regions the issuer may still be `Let's Encrypt` with
+intermediates `E5`/`E6`/`R3`. Both are publicly-trusted CAs and both
+auto-renew via Azure Container Apps.
 
 ## Rollback
 
