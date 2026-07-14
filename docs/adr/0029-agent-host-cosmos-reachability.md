@@ -2,16 +2,21 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Status** | **Proposed** — needs decision |
-| **Date** | 2026-07-13 |
+| **Status** | **Accepted (2026-07-14) — Option A** |
+| **Date** | 2026-07-13 (Proposed) → 2026-07-14 (Accepted) |
 | **Deciders** | @urruegg |
 | **Superseded by** | — |
-| **Scope** | SIT (and, if the same posture is chosen, PROD by extension) |
+| **Scope** | SIT. PROD inherits Option A when PROD RG is provisioned. |
 
 > Sprint 13.1 recovery deploy revealed a runtime reachability gap between
 > `ca-agent-host-ihzhhpf-sit` and `cosmos-ihzhhpf-sit`. This ADR documents the
-> gap, presents three options, and recommends one. **The ADR is in Proposed
-> state and needs decider sign-off before any Bicep change lands.** Referenced by
+> gap, presents three options, and records the final decision. **Status flipped
+> Proposed → Accepted on 2026-07-14 with Option A chosen** after a fresh
+> inspection of the SIT infrastructure revealed that the required VNet + private
+> DNS zone + PE pattern already exists (used by `cosmos-csa-ihzhhpf-sit`), so
+> Option A's implementation is materially smaller than initially estimated.
+> Implementation plan: [`docs/superpowers/plans/2026-07-14-cae-vnet-integration-cosmos-pe.md`](../superpowers/plans/2026-07-14-cae-vnet-integration-cosmos-pe.md).
+> Referenced by
 > [`infra/modules/agent-host/main.bicep`](../../infra/modules/agent-host/main.bicep),
 > [`infra/modules/agent-host/cosmos.bicep`](../../infra/modules/agent-host/cosmos.bicep),
 > [`infra/modules/agent-host/container-app.bicep`](../../infra/modules/agent-host/container-app.bicep),
@@ -60,11 +65,31 @@ Reference precedent in the same RG:
 `vnet-platform-ihzhhpf-sit`. Its callers are Foundry-hosted agents (`csa-agent`,
 `bm-copilot`), which run inside the VNet by default.
 
-## Decision — **Proposed, not yet Accepted**
+## Decision — **Accepted: Option A** (2026-07-14)
 
-Three options are on the table. **Recommendation: Option C** for SIT scope
-(fastest, aligned with existing precedent), promote to a more permanent
-Option A pattern for PROD.
+**Option A — Add private endpoint on `cosmos-ihzhhpf-sit` + VNet-integrate `cae-ihzhhpf-sit`** is chosen. The initial recommendation in the Proposed version was Option C (env-var toggle to skip Cosmos in SIT), but a fresh inspection of the SIT infrastructure on 2026-07-14 revealed that the required substrate already exists:
+
+| Substrate | State on 2026-07-14 | Impact on Option A effort |
+| --- | --- | --- |
+| `vnet-platform-ihzhhpf-sit` (`10.60.0.0/16`) | Exists in `rg-ihzhhpf-sit` | No new VNet needed |
+| Subnets: `snet-app` (`10.60.1.0/24`), `snet-data` (`10.60.2.0/24`) | Exist with NSGs | Add ONE new subnet for CAE (delegated) |
+| Private DNS zone `privatelink.documents.azure.com` | Exists, VNet-linked, 3 records | No new zone — PE auto-registers via `privateDnsZoneGroup` |
+| CSA Cosmos PE pattern (`pe-cosmos-csa-ihzhhpf-sit` in `snet-data`, `groupIds: ['Sql']`) | Exists and working | Mirror the pattern for `cosmos-ihzhhpf-sit` |
+| CAE VNet integration precedent in this repo | Not yet — this is new for the platform | Bicep pattern documented in the implementation plan |
+
+The Option A effort estimate drops from "2–3 days + destructive CAE recreate" to **~1 day of Bicep work + 1 destructive apply** (still destructive on the CAE, but confined and testable). This tips the balance decisively toward Option A because it preserves ADR-0007 §2 posture, restores full HITL evidence persistence, and is directly reusable for PROD.
+
+Option C's rationale (fast SIT unblock via env-var toggle) is no longer needed because:
+
+1. SIT is now stable end-to-end via PR #199 + #201 + #202 — no urgent operational pressure to defer
+2. The demo showcase requires functional Cosmos writes (HITL evidence, conversation history) for a credible walk-through with Spital Zollikerberg on 2026-07-17
+3. Option A gives us PROD readiness "for free" — the same Bicep serves both envs
+
+Implementation is tracked in [`docs/superpowers/plans/2026-07-14-cae-vnet-integration-cosmos-pe.md`](../superpowers/plans/2026-07-14-cae-vnet-integration-cosmos-pe.md) and gated behind an explicit `approved-to-apply` per AGENTS.md §4 (destructive CAE recreate).
+
+### Original option summary (kept for context)
+
+Three options were evaluated in the Proposed version:
 
 ### Option A — Add private endpoint + VNet-integrate `cae-ihzhhpf-sit`
 
@@ -128,13 +153,13 @@ handles Redis.
 - **PROD readiness:** ⚠️ SIT-only pattern. PROD must use Option A.
 - **Reversibility:** high — flip an env var / add PE later.
 
-### Recommendation
+### Original recommendation (overridden by 2026-07-14 decision above)
 
-For **SIT demo scope** (aligned with [ADR-0013](0013-temporary-us-region-demo-scope.md)
-and the "keep the demo simple, defer PROD-hardening" posture already set by
-[ADR-0028](0028-defer-managed-redis-in-sit-demo-scope.md)):
+**~~Adopt Option C (env-var toggle variant)~~ — SUPERSEDED by Option A per the 2026-07-14 decision above.**
 
-**Adopt Option C (env-var toggle variant).**
+The Option C recommendation stood on 2026-07-13 based on the assumption that Option A required 2–3 days + substantial new infrastructure (VNet, private DNS zone, PE pattern). The 2026-07-14 infrastructure inspection showed the substrate already exists, dropping Option A to ~1 day. See the 2026-07-14 Decision section above.
+
+For historical reference, the original Option C plan was:
 
 1. Add an `agentHostEnableCosmos bool = true` param on
    [`infra/main.bicep`](../../infra/main.bicep) mirroring the ADR-0028 pattern.
@@ -221,9 +246,8 @@ For **PROD** — Option A remains the plan, tied to
 
 ## Open questions for the decider
 
-1. **Confirm Option C is the right SIT posture** given the HITL evidence
-   consequence.
-2. If **not**: pick Option A (destructive recreate, ~2-3 days) or Option B
-   (workload consolidation on CSA Cosmos, ~1 day).
-3. Confirm this ADR should also cover PROD, or split PROD into a separate ADR
-   at PROD promotion time.
+**All resolved on 2026-07-14 by the Accepted-Option-A decision above.**
+
+1. ~~Confirm Option C is the right SIT posture given the HITL evidence consequence.~~ — Answered: no. HITL evidence persistence matters for the demo credibility. Option A restores full posture.
+2. ~~If not: pick Option A (destructive recreate, ~2-3 days) or Option B (workload consolidation on CSA Cosmos, ~1 day).~~ — Answered: **Option A**. Effort reduced to ~1 day because VNet + private DNS zone + PE pattern already exist. Option B rejected because it violates ADR-0007 one-account-per-workload posture.
+3. ~~Confirm this ADR should also cover PROD, or split PROD into a separate ADR at PROD promotion time.~~ — Answered: **this ADR covers PROD by extension**. Same Bicep pattern applies. PROD promotion issue [#179](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/179) inherits the Option A implementation without a new ADR.
