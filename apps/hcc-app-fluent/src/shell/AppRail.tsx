@@ -1,7 +1,7 @@
 import { makeStyles, tokens, Tab, TabList } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 
-export type WorkspaceKey = 'main' | 'backstage' | 'home' | 'askAgent' | 'settings';
+export type WorkspaceKey = 'main' | 'backstage' | 'home' | 'askAgent' | 'settings' | 'csa';
 
 const useStyles = makeStyles({
   rail: {
@@ -32,6 +32,7 @@ export function AppRail({ selected, onSelect }: AppRailProps) {
       >
         <Tab value="home">{t('rail.home')}</Tab>
         <Tab value="main">{t('rail.main')}</Tab>
+        <Tab value="csa">{t('rail.csa')}</Tab>
         <Tab value="backstage">{t('rail.backstage')}</Tab>
         <Tab value="askAgent">{t('rail.askAgent')}</Tab>
         <Tab value="settings">{t('rail.settings')}</Tab>

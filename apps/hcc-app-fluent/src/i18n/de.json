@@ -8,7 +8,8 @@
     "backstage": "Backstage",
     "home": "Start",
     "askAgent": "Agent fragen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "csa": "CSA"
   },
   "topbar": {
     "search": "Suchen",
