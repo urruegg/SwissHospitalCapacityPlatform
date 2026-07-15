@@ -9,7 +9,7 @@
  *   - Rail integration: `csa` is a valid WorkspaceKey and rail exposes the tab
  */
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '../../src/i18n';
 import { App } from '../../src/App';
 import { CSA_STEPS, csaStepById, CSA_SAMPLE_RECOMMENDATIONS } from '../../src/workspaces/main/wizards/csa/csa-steps';
@@ -71,7 +71,7 @@ describe('CSA wizard — App integration', () => {
 
   it('anonymous session sees the deny message when opening CSA', () => {
     const { getByRole, getByTestId } = render(<App />);
-    getByRole('tab', { name: 'CSA' }).click();
+    fireEvent.click(getByRole('tab', { name: 'CSA' }));
     // Guard renders the deny testid because no roles are present in anonymous session.
     expect(getByTestId('CsaRoleGuardDenied')).toBeInTheDocument();
   });
@@ -80,7 +80,7 @@ describe('CSA wizard — App integration', () => {
     const { getByRole, getByTestId } = render(
       <App rawClaims={{ roles: ['HCC.SuperAdmin'], env: 'sit', hospital: 'usz' }} />,
     );
-    getByRole('tab', { name: 'CSA' }).click();
+    fireEvent.click(getByRole('tab', { name: 'CSA' }));
     expect(getByTestId('CsaWizard')).toBeInTheDocument();
     expect(getByTestId('CsaStepper')).toBeInTheDocument();
     expect(getByTestId('CsaStepBody-prepare')).toBeInTheDocument();
@@ -92,7 +92,7 @@ describe('CSA wizard — App integration', () => {
     const { getByRole, getByTestId } = render(
       <App rawClaims={{ roles: ['HCC.CrisisManager'], env: 'sit', hospital: 'usz' }} />,
     );
-    getByRole('tab', { name: 'CSA' }).click();
+    fireEvent.click(getByRole('tab', { name: 'CSA' }));
     expect(getByTestId('CsaWizard')).toBeInTheDocument();
   });
 });
