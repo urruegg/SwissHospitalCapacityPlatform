@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.14.0 |
+| **Version** | 1.14.1 |
 | **Date** | 2026-07-15 |
 | **Author** | Urs Rüeegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.13.0 (day-2 chunk #4g close of S13.9 + S16.4 refresh); this bump captures **day-2 chunk #4h — S15.1 close via monolithic Fabric notebook**: (i) published new `bva_medallion_ingest` notebook (id `56e4f37c-a1b5-4668-a3dc-ec551e483eef`) chaining bronze register → silver → 8 gold dims → 3 gold facts in one PySpark run; (ii) pivoted `bva-sim-refresh.yml` from `?jobType=Pipeline` → `?jobType=RunNotebook` (env var rename `FABRIC_BVA_PIPELINE_ID` → `FABRIC_BVA_NOTEBOOK_ID`) to match the adoption-refresh pattern validated end-to-end on 2026-07-15; (iii) set `FABRIC_BVA_NOTEBOOK_ID` on `sit` GH env; (iv) end-to-end Fabric notebook run **Completed** twice (3min 28s debug run + 4min 3s production run) producing the full medallion (bronze.bva_consumption + silver.bva_consumption + 8 gold.bva_dim_* + 3 gold.bva_fact_* Delta tables) from 3,960 synthetic FOCUS rows. |
+| **Previous Version** | 1.14.0 (day-2 chunk #4h close of S15.1 — full evidence body captured in that bump). This bump is a **PATCH** — editorial-only fix for the `Markdown lint` CI failure on PR #227: wrap `bronze.bva_consumption` / `silver.bva_consumption` / `gold.bva_dim_*` / `gold.bva_fact_*` table names in backticks inside the v1.14.0 previous-version note so `markdownlint-cli2` (rule MD037/no-space-in-emphasis) no longer parses `_* + N gold.bva_fact_*` as an unclosed emphasis span. Semantic content unchanged. |
 | **Purpose** | Track evidence + gap-fill for every Definition-of-Done item across Sprints 11-16 and PBI Demoable v2 M2-M6. Feeds Phase 2 (per-sprint audit) and Phase 3 (Sprint 17 kickoff on a stabilised base). |
 | **Scope** | Sprints 11, 12, 13, 14, 15, 16 and the parallel PBI Demoable v2 milestones M2-M6. Sprints 01-10 explicitly out of scope. |
 | **Related** | [`docs/sprints/superpowers-checkpoint-matrix.md`](superpowers-checkpoint-matrix.md); [`docs/superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md`](../superpowers/specs/2026-07-09-sprints-11-16-roadmap-design.md) |
