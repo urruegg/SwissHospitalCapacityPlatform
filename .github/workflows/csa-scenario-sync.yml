@@ -53,7 +53,12 @@ jobs:
     name: Upsert scenarios into Cosmos (main only)
     runs-on: ubuntu-latest
     needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Runs on push-to-main (auto) and workflow_dispatch on main (manual seed
+    # while Cosmos public access is temporarily enabled — see Sprint 17
+    # tracker for the long-term self-hosted-runner-in-VNet path).
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
     environment: sit
     permissions:
       contents: read
@@ -67,17 +72,35 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install PyYAML
-        run: python3 -m pip install --disable-pip-version-check pyyaml
+      - name: Validate required environment configuration
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          CSA_COSMOS_ENDPOINT: ${{ secrets.CSA_COSMOS_ENDPOINT }}
+        run: |
+          set -euo pipefail
+          test -n "$AZURE_CLIENT_ID"
+          test -n "$AZURE_TENANT_ID"
+          test -n "$AZURE_SUBSCRIPTION_ID"
+          test -n "$CSA_COSMOS_ENDPOINT"
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Python dependencies (PyYAML + azure-cosmos + azure-identity)
+        run: python3 -m pip install --disable-pip-version-check pyyaml azure-cosmos azure-identity
 
       - name: Upsert scenarios
         shell: bash
         env:
           CSA_COSMOS_ENDPOINT: ${{ secrets.CSA_COSMOS_ENDPOINT }}
+          CSA_COSMOS_DATABASE: csa
         run: |
           set -euo pipefail
-          if [ -z "${CSA_COSMOS_ENDPOINT:-}" ]; then
-            echo "::notice::CSA_COSMOS_ENDPOINT not set — skipping Cosmos upsert (validate-only)."
-            exit 0
-          fi
           python3 data-platform/scripts/csa/csa-seed-scenarios.py
