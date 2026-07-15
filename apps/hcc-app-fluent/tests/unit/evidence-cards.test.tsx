@@ -47,7 +47,9 @@ describe('Evidence cards (Sprint 14.1 T5)', () => {
   });
 
   it('preset layouts render the whole catalog and every card resolves via the registry', () => {
-    for (const layout of evidenceLayouts()) {
+    // BVA preset is a boardroom-focused view (Sprint 15.4 mini-scope) and is
+    // covered by its own assertion; skip it here.
+    for (const layout of evidenceLayouts().filter((l) => l.key !== 'bva')) {
       const counts = layout.cards.reduce<Record<string, number>>((acc, c) => {
         acc[c.type] = (acc[c.type] ?? 0) + 1;
         return acc;
@@ -67,6 +69,28 @@ describe('Evidence cards (Sprint 14.1 T5)', () => {
     const gaParity = buildEvidenceCards('ga-parity');
     expect(chNorth.some((c) => c.type === 'GaEvidenceCard')).toBe(false);
     expect(gaParity.some((c) => c.type === 'GaEvidenceCard')).toBe(true);
+  });
+
+  it('the bva preset renders the BVA card cluster (Sprint 15.4 mini-scope)', () => {
+    const bva = buildEvidenceCards('bva');
+    const counts = bva.reduce<Record<string, number>>((acc, c) => {
+      acc[c.type] = (acc[c.type] ?? 0) + 1;
+      return acc;
+    }, {});
+    expect(counts.BvaHeadlineKpiCard).toBeGreaterThanOrEqual(2);
+    expect(counts.BvaPlanVsActualCard).toBe(1);
+    expect(counts.BvaTrendCard).toBe(1);
+    // The BVA preset is a boardroom-focused view — no BOM/ADR/req cards.
+    expect(counts.BomCard).toBeUndefined();
+    expect(counts.AdrCard).toBeUndefined();
+    expect(counts.PrdRequirementCard).toBeUndefined();
+    // Every BVA card must still resolve via the registry.
+    for (const card of bva) {
+      expect(cardRegistry[card.type]).toBeDefined();
+    }
+    // The layout iterator surfaces the new preset key.
+    const layoutKeys = evidenceLayouts().map((l) => l.key);
+    expect(layoutKeys).toContain('bva');
   });
 
   it('every evidence card payload carries provenance (sourceUrl + asOf)', () => {

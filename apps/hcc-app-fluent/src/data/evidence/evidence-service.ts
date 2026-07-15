@@ -8,6 +8,14 @@ import type {
   GaEvidenceCardPayload,
   DependencyEdgePayload,
 } from './evidence-types';
+import {
+  bvaHeadlineKpis,
+  bvaPlanVsActual,
+  bvaTrend,
+  type BvaHeadlineKpiPayload,
+  type BvaPlanVsActualPayload,
+  type BvaTrendPayload,
+} from '../bva/bva-evidence';
 
 /**
  * Sprint 14.1 · T5/T6 — Showcase Evidence data source for the presenter
@@ -35,7 +43,7 @@ function gridPosition(index: number) {
 }
 
 /** Preset presenter layouts (design spec §4 "shared demo layouts"). */
-export type EvidencePreset = 'ch-north-tshow' | 'ga-parity';
+export type EvidencePreset = 'ch-north-tshow' | 'ga-parity' | 'bva';
 
 export interface EvidenceLayout {
   key: EvidencePreset;
@@ -94,15 +102,57 @@ function dependencyCards(dataset: EvidenceDataset, offset: number): CardModel[] 
 }
 
 /**
- * Build the full presenter card catalog for a preset. Both presets render the
- * whole BOM + ADR + PRD-requirement catalog and dependency edges (the E2E
- * acceptance floor is >=25 BOM + >=10 ADR + >=1 PRD-req); the "GA-parity" preset
- * additionally surfaces the GA-evidence chips.
+ * Sprint 15.4 mini-scope — BVA card cluster on the Evidence whiteboard.
+ *
+ * Projects the 3 registered BVA card types (`BvaHeadlineKpiCard`,
+ * `BvaPlanVsActualCard`, `BvaTrendCard`) from `data/bva/bva-evidence.ts` onto
+ * whiteboard `CardModel` entries so the `bva` preset can render them. Payload
+ * shapes are unchanged and provenance stamps are preserved (design spec §6/§7).
+ */
+function bvaCards(offset: number): CardModel[] {
+  const cards: CardModel[] = [];
+  bvaHeadlineKpis.forEach((payload: BvaHeadlineKpiPayload, i) => {
+    cards.push({
+      id: `bva-card-headline-${i}`,
+      type: 'BvaHeadlineKpiCard' as const,
+      title: payload.measure,
+      position: gridPosition(offset + cards.length),
+      payload,
+    });
+  });
+  cards.push({
+    id: 'bva-card-plan-vs-actual',
+    type: 'BvaPlanVsActualCard' as const,
+    title: (bvaPlanVsActual as BvaPlanVsActualPayload).measure,
+    position: gridPosition(offset + cards.length),
+    payload: bvaPlanVsActual,
+  });
+  cards.push({
+    id: 'bva-card-trend',
+    type: 'BvaTrendCard' as const,
+    title: (bvaTrend as BvaTrendPayload).measure,
+    position: gridPosition(offset + cards.length),
+    payload: bvaTrend,
+  });
+  return cards;
+}
+
+/**
+ * Build the full presenter card catalog for a preset. The `ch-north-tshow`
+ * and `ga-parity` presets render the whole BOM + ADR + PRD-requirement catalog
+ * and dependency edges (the E2E acceptance floor is >=25 BOM + >=10 ADR + >=1
+ * PRD-req); the `ga-parity` preset additionally surfaces GA-evidence chips.
+ *
+ * The `bva` preset (Sprint 15.4 mini-scope) renders only the BVA card cluster
+ * so the boardroom BVA view stays uncluttered by BOM/ADR/req context.
  */
 export function buildEvidenceCards(
   preset: EvidencePreset,
   dataset: EvidenceDataset = loadEvidenceDataset(),
 ): CardModel[] {
+  if (preset === 'bva') {
+    return bvaCards(0);
+  }
   const boms = bomCards(dataset, 0);
   const reqs = requirementCards(dataset, boms.length);
   const adrs = adrCards(dataset, boms.length + reqs.length);
@@ -125,6 +175,11 @@ export function evidenceLayouts(dataset: EvidenceDataset = loadEvidenceDataset()
       key: 'ga-parity',
       labelKey: 'evidence.presetGaParity',
       cards: buildEvidenceCards('ga-parity', dataset),
+    },
+    {
+      key: 'bva',
+      labelKey: 'evidence.presetBva',
+      cards: buildEvidenceCards('bva', dataset),
     },
   ];
 }
