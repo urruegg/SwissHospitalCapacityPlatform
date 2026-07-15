@@ -3,15 +3,17 @@ name: bva-sim-refresh
 # Sprint 15 · T2 — nightly refresh of the BVA synthetic FOCUS-shaped consumption
 # seed. Regenerates a 90-day daily-partitioned slice with a date-derived seed,
 # uploads it to the SIT lakehouse Bronze zone (Files/Bronze/consumption/) via
-# OneLake, and triggers the Fabric BVA medallion pipeline (published in T3).
+# OneLake, and triggers the Fabric BVA medallion notebook (Sprint 15.1: pivoted
+# from Fabric Data Factory Pipeline to a monolithic notebook run to match the
+# adoption-refresh.yml pattern validated end-to-end on 2026-07-15).
 #
 # Runs at 02:00 UTC — one hour ahead of the 03:00 adoption-refresh
-# (.github/workflows/adoption-refresh.yml) and the 03:00 CET Fabric pipeline, so
+# (.github/workflows/adoption-refresh.yml) and the 03:00 CET medallion run, so
 # fresh consumption + adoption Bronze land before the medallion runs.
 #
 # Identity: workload identity federation (OIDC) — no secrets. The Fabric
-# pipeline trigger is a `deploy`-adjacent action, but this workflow only *runs*
-# an already-published pipeline; publishing the pipeline itself is gated by
+# notebook trigger is a `deploy`-adjacent action, but this workflow only *runs*
+# an already-published notebook; publishing the notebook itself is gated by
 # `approved-to-apply` in T3 (AGENTS.md §4).
 
 on:
@@ -76,13 +78,13 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           FABRIC_WORKSPACE_ID: ${{ vars.FABRIC_WORKSPACE_ID }}
-          FABRIC_BVA_PIPELINE_ID: ${{ vars.FABRIC_BVA_PIPELINE_ID }}
+          FABRIC_BVA_NOTEBOOK_ID: ${{ vars.FABRIC_BVA_NOTEBOOK_ID }}
         run: |
           set -euo pipefail
           test -n "$AZURE_CLIENT_ID"
           test -n "$AZURE_TENANT_ID"
           test -n "$FABRIC_WORKSPACE_ID"
-          test -n "$FABRIC_BVA_PIPELINE_ID"
+          test -n "$FABRIC_BVA_NOTEBOOK_ID"
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
@@ -104,11 +106,11 @@ jobs:
           cd data-platform/scripts
           python3 bva_upload_bronze.py --src "${BVA_OUT}" --remote-root Bronze/consumption
 
-      - name: Trigger Fabric BVA medallion pipeline
+      - name: Trigger Fabric BVA medallion notebook
         shell: bash
         env:
           FABRIC_WORKSPACE_ID: ${{ vars.FABRIC_WORKSPACE_ID }}
-          FABRIC_BVA_PIPELINE_ID: ${{ vars.FABRIC_BVA_PIPELINE_ID }}
+          FABRIC_BVA_NOTEBOOK_ID: ${{ vars.FABRIC_BVA_NOTEBOOK_ID }}
         run: |
           set -euo pipefail
           token="$(az account get-access-token \
@@ -121,10 +123,10 @@ jobs:
             --oauth2-bearer "$token" \
             -H 'Content-Type: application/json' \
             --data '{}' \
-            "https://api.fabric.microsoft.com/v1/workspaces/${FABRIC_WORKSPACE_ID}/items/${FABRIC_BVA_PIPELINE_ID}/jobs/instances?jobType=Pipeline")"
-          echo "Fabric pipeline submit HTTP ${http_status}"
+            "https://api.fabric.microsoft.com/v1/workspaces/${FABRIC_WORKSPACE_ID}/items/${FABRIC_BVA_NOTEBOOK_ID}/jobs/instances?jobType=RunNotebook")"
+          echo "Fabric notebook submit HTTP ${http_status}"
           cat response.json || true
           case "${http_status}" in
-            2*) echo 'Pipeline run accepted.' ;;
-            *) echo 'Pipeline run submission failed.'; exit 1 ;;
+            2*) echo 'Notebook run accepted.' ;;
+            *) echo 'Notebook run submission failed.'; exit 1 ;;
           esac
