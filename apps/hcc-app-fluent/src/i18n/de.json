@@ -34,7 +34,8 @@
     "readinessSummary": "Bereitschaftsübersicht",
     "gaParityGap": "GA-Paritätslücke",
     "presetChNorthTShow": "CH Nord × T-SHOW",
-    "presetGaParity": "GA-Paritätsansicht"
+    "presetGaParity": "GA-Paritätsansicht",
+    "presetBva": "BVA-Ansicht"
   },
   "bedManager": {
     "title": "Bettenmanagement — USZ",
