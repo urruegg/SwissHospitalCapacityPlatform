@@ -62,7 +62,7 @@ The script will fail without these in place:
 4. **Fabric connection to the source Azure SQL database exists** and its GUID
    is known. Create via the Fabric portal (Data Factory â†’ Connections) or
    `POST /v1/connections`. The mirrored database REST call binds to this
-   connection by ID â€” see the [Microsoft Fabric mirroring REST API][mirapi]
+   connection by ID — see the [Microsoft Fabric mirroring REST API][mirapi]
    reference. Without a pre-existing connection, the mirror cannot be created.
 
 [asqltut]: https://learn.microsoft.com/fabric/mirroring/azure-sql-database-tutorial
@@ -79,16 +79,16 @@ The script will fail without these in place:
     -SourceDatabase 'kis'
 ```
 
-`-CapacityName` is the Fabric capacity **displayName** â€” emitted by the Bicep
+`-CapacityName` is the Fabric capacity **displayName** — emitted by the Bicep
 module as the `capacityName` output (e.g. `fabricihzhhpfsit`). The script
 resolves this to the Fabric capacity GUID via `GET /v1/capacities`; the Bicep
 `capacityId` output is the ARM resource ID and is **not** the value the Fabric
 workspace API expects.
 
-Per `AGENTS.md` Â§4, both `az deployment group create` and execution of
+Per `AGENTS.md` §4, both `az deployment group create` and execution of
 `configure-fabric.ps1` against Azure require an explicit `approved-to-apply`
 comment on the governing issue/PR. The script supports a `-DryRun` switch that
-loads the payload-builder functions without making any REST calls â€” that is
+loads the payload-builder functions without making any REST calls — that is
 what the Pester suite under `post-deploy/tests/` exercises.
 
 ## Tests

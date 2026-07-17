@@ -2,18 +2,18 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 1.1.1 |
+| **Date** | 2026-07-17 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.0.0 (initial optional-wave gate decision) |
+| **Previous Version** | 1.1.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
 
 ## Purpose
 
-Stage the **deferred optional agent wave** for Sprint 6 â€” Demand Forecasting
+Stage the **deferred optional agent wave** for Sprint 6 — Demand Forecasting
 Agent (DFA), Integration Workflow Agent (IWA), Data Quality and Semantics Agent
 (DQSA), Compliance and Safety Agent (CSA), and Explainability and Audit Agent
-(EAA) â€” and record the **explicit gate decision** on whether to onboard them in
+(EAA) — and record the **explicit gate decision** on whether to onboard them in
 Phase 3. This is the optional-wave deliverable for Phase 3 (#47) of
 [`docs/sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md`\](../sprints/sprint-06-minimal-data-onboarding-and-capacity-specialty.md)
 "Optional agents (deferred to Phase 3)", and is non-blocking for the MVP Phase 1
@@ -25,8 +25,8 @@ scope locked to OOA/DCA/BMCA in
 The optional agents remain **deferred backlog** and are realized as Markdown
 governance artifacts only, consistent with ADR-0002 (agents and controls are
 realized as Markdown). This note introduces no optional-agent implementation
-work; it records readiness signals and the gate decision that authorizes â€” or
-defers â€” onboarding.
+work; it records readiness signals and the gate decision that authorizes — or
+defers — onboarding.
 
 ## Optional Agent Backlog
 
@@ -96,6 +96,6 @@ of the following hold:
 ## Change Control
 
 Any change to the optional-agent backlog or the gate decision bumps this
-document's version per `.github/copilot-instructions.md` Â§9 and must stay
+document's version per `.github/copilot-instructions.md` §9 and must stay
 consistent with the Sprint 6 phase plan and gate sequence.
 

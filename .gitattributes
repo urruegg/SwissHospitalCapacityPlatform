@@ -1,0 +1,2 @@
+# Keep shell hooks LF so Git-for-Windows bash can execute them.
+.githooks/pre-commit text eol=lf

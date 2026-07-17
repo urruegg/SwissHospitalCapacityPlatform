@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.5.1 |
+| **Date** | 2026-07-17 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.4.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
+| **Previous Version** | 1.5.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
 
 ## Purpose
 
@@ -104,8 +104,8 @@ Current strategy has progressed from phased rollout to controlled parity enablem
 
 ## Sprint 05 Landing-Zone Governance Evidence
 
-The CAF/WAF review (Â§4.1, Â§7) found landing-zone governance evidence â€” management-group
-hierarchy, policy assignments, and RBAC scopes â€” weaker than architecture intent. A
+The CAF/WAF review (§4.1, §7) found landing-zone governance evidence — management-group
+hierarchy, policy assignments, and RBAC scopes — weaker than architecture intent. A
 dedicated landing-zone governance evidence document is a Phase 2 deliverable, tracked as
 `RV-06` (owner `ARCH`) in
 [`docs/sprints/sprint-05/requires-validation-register.md`\](sprints/sprint-05/requires-validation-register.md).

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.3.0 |
+| **Version** | 2.4.0 |
 | **Date** | 2026-07-17 |
 | **Author** | Urs Rüeegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.2.0 (Sprint 18: added eastus2 Foundry endpoint to §2, ADR-0032 reference, agent registration IDs) |
+| **Previous Version** | 2.3.0 (added `knowledge-agent` §1 registry row + `document-authoring` workspace-skill row; approved via issue #242) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -73,6 +73,7 @@ Seven domain skills installed under [`.github/skills/`](.github/skills/) to spee
 | [`powerbi-optimization`](.github/skills/powerbi-optimization/SKILL.md) + [specialists/](.github/skills/powerbi-optimization/specialists/) | [PBI-Guy/Power-BI-Optimization-Skill](https://github.com/PBI-Guy/Power-BI-Optimization-Skill) | "optimize DAX", "slow measure", "RLS performance", "storage mode", "BPA" | DAX + model + RLS optimization — M2-M3 measure tuning + M3 RLS re-authoring |
 | [`e2e-medallion-architecture`](.github/skills/e2e-medallion-architecture/SKILL.md) *(v1.13.0)* | microsoft/skills-for-fabric fabric-authoring | "medallion architecture", "bronze silver gold", "multi-layer lakehouse", "PHI gate", "data quality enforcement" | Bronze/silver/gold design + PHI/FK/schema gate patterns — M1.5 silver-hardening + M2 gold refinement |
 | [`spark-operations`](.github/skills/spark-operations/SKILL.md) *(v1.13.0)* | microsoft/skills-for-fabric fabric-operations | "Spark session", "notebook logs", "Spark statement failure", "Spark diagnostics", `System_Cancelled_Session_Statements_Failed` | Diagnose Fabric Spark session errors + notebook runtime failures — M1.5 silver debugging + future notebook failure triage |
+| [`document-authoring`](.github/skills/document-authoring/SKILL.md) *(v1.0.0)* | workspace-authored (issue #242) | "create a doc", "update the PRD", "bump the doc version", "fix markdownlint", "fix mojibake", "is the status accurate" | Judgment layer for every Markdown create/update — version-bump level, FR/NFR traceability, status accuracy; mechanical encoding/lint gates are automated by `scripts/lint/*mojibake*.py` + `.githooks/pre-commit` + CI `mojibake-scan` |
 
 The `powerbi-optimization` skill ships with 5 specialists (`dax-mastery`, `model-design`, `report-performance`, `powerquery-m`, `security-rls`) plus BPA and MCP integration guides under `.github/skills/powerbi-optimization/`. The MCP integration is optional and requires a separate Power BI Modeling MCP server install; skip it unless we need automated DAX benchmarking.
 
@@ -194,6 +195,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `fabric-data-agent` | Read-only ontology + semantic-model query surface (Sprint 09 v2). Retained through the 2.0.0 restructure as a Fabric IQ-hosted read-only agent; runtime posture reconciliation with ADR-0008 is a separate follow-up. | @urruegg | Runtime-only; not invoked from repo issues | Fabric IQ (Preview per ADR-0002) | `read` | [`agents/fabric-data-agent/AGENT.md`](agents/fabric-data-agent/AGENT.md) | *(none; Sprint 11 shape not yet applied)* |
 | `pr-review` | UC3 — PR Review | @urruegg | GitHub pull request or issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp` | `write` (GitHub review comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
 | `drift-analyzer` | Solution and Azure drift detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents/drift-analyzer/AGENT.md` §2](agents/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents/drift-analyzer/AGENT.md`](agents/drift-analyzer/AGENT.md) | [`agents/drift-analyzer/golden-tasks.md`](agents/drift-analyzer/golden-tasks.md) |
+| `knowledge-agent` | Documentation steward — encoding / lint / version / traceability / status gate for every doc create or update (S18; approved via issue #242) | @urruegg | `@knowledge-agent` mention or a doc-steward issue; also usable as the `document-authoring` skill from Copilot CLI | `github-mcp` | `write` | [`agents/knowledge-agent/AGENT.md`](agents/knowledge-agent/AGENT.md) | [`agents/knowledge-agent/golden-tasks.md`](agents/knowledge-agent/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per
