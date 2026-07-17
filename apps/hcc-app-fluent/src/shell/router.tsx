@@ -4,8 +4,7 @@ import { StartView } from '../workspaces/start/StartView';
 import { MainView } from '../workspaces/main/MainView';
 import { CsaView } from '../workspaces/main/wizards/csa/CsaView';
 import { BackstageView } from '../workspaces/backstage/BackstageView';
-
-const Stub = ({ id }: { id: string }) => <div data-testid={id} />;
+import { SettingsView } from '../workspaces/settings/SettingsView';
 
 /**
  * Sprint 20 M2 — five-plane route table.
@@ -24,7 +23,7 @@ export const routes: RouteObject[] = [
       { path: 'main/:board?', element: <MainView /> },
       { path: 'csa', element: <CsaView /> },
       { path: 'backstage/:widget?', element: <BackstageView /> },
-      { path: 'settings', element: <Stub id="settings-view" /> },
+      { path: 'settings', element: <SettingsView /> },
       { path: '*', element: <Navigate to="/start" replace /> },
     ],
   },
