@@ -130,10 +130,10 @@ param agentHostEnableRedis = false
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image tag is bumped as a deliberate manual review step after
 // `ci-build-app-fluent.yml` pushes a new tag to ACR (per that workflow's
-// header comment + AGENTS.md §4). Current tag ships the Sprint 16.1 CSA
-// wizard scaffold (PR #230, merge commit e34ee45; closes S16.5).
+// header comment + AGENTS.md §4). Current tag ships the Sprint 20 Curavias
+// five-plane UX shell (PR #248, merge commit c9fc6f3; closes S20).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:e34ee45'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:c9fc6f3'
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:
