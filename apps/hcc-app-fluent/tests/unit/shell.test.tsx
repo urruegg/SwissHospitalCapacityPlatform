@@ -1,7 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import '../../src/i18n';
+import i18n from '../../src/i18n';
 import { App } from '../../src/App';
+
+// Sprint 20 M6 — assert the language-independent English labels deterministically.
+beforeAll(async () => {
+  await i18n.changeLanguage('en');
+});
 
 /**
  * Sprint 20 M4 — App-level smoke for the routed five-plane shell.

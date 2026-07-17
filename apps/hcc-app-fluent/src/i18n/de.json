@@ -46,5 +46,20 @@
     "placeholder": "Frage an den Agenten stellen…",
     "send": "Senden",
     "noPhiNotice": "Antworten enthalten keine Patientendaten (PHI)."
+  },
+  "nav": {
+    "start": "Start",
+    "main": "Hauptbereich",
+    "csa": "CSA",
+    "backstage": "Backstage",
+    "settings": "Einstellungen"
+  },
+  "start": {
+    "title": "Curavias",
+    "mission": "Koordination der Spitalkapazität im Schweizer Versorgungsnetz.",
+    "disclaimer": "Microsoft Innovation Hub Showcase — ausschliesslich simulierte und generische Daten, nur zu Demonstrationszwecken."
+  },
+  "settings": {
+    "preferences": "Einstellungen"
   }
 }

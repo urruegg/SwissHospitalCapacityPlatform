@@ -1,9 +1,14 @@
-import { describe, it, expect } from 'vitest';
-import '../../src/i18n';
+import { describe, it, expect, beforeAll } from 'vitest';
+import i18n from '../../src/i18n';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { NavigationPlane } from '../../src/shell/planes/NavigationPlane';
 import { RoleProvider } from '../../src/context/role-context';
+
+// Sprint 20 M6 — assert the language-independent English labels deterministically.
+beforeAll(async () => {
+  await i18n.changeLanguage('en');
+});
 
 function renderNav(roles: string[]) {
   return render(

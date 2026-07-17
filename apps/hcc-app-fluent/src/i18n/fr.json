@@ -1,0 +1,65 @@
+{
+  "app": {
+    "title": "Helvion — Capacité hospitalière",
+    "loading": "Chargement…"
+  },
+  "rail": {
+    "main": "Principal",
+    "backstage": "Coulisses",
+    "home": "Accueil",
+    "askAgent": "Demander à l'agent",
+    "settings": "Paramètres",
+    "csa": "CSA"
+  },
+  "topbar": {
+    "search": "Rechercher",
+    "hospital": "Hôpital",
+    "roleSwitcher": "Changer de rôle",
+    "signOut": "Se déconnecter",
+    "signIn": "Se connecter"
+  },
+  "hospitals": {
+    "usz": "USZ",
+    "luks": "LUKS",
+    "zollikerberg": "Zollikerberg",
+    "aggregated": "Agrégé"
+  },
+  "backstage": {
+    "roles": "Rôles et RBAC",
+    "rolesDescription": "Vue en direct des rôles de l'application depuis Microsoft Entra (lecture seule).",
+    "evidence": "Preuves",
+    "evidenceDescription": "Tableau blanc du présentateur : cartes BOM, ADR, exigences, preuves GA et dépendances (synthétiques, sans PHI)."
+  },
+  "evidence": {
+    "readinessSummary": "Résumé de préparation",
+    "gaParityGap": "Écart de parité GA",
+    "presetChNorthTShow": "CH Nord × T-SHOW",
+    "presetGaParity": "Vue parité GA",
+    "presetBva": "Vue BVA"
+  },
+  "bedManager": {
+    "title": "Gestion des lits — USZ",
+    "askBmca": "Demander à BMCA"
+  },
+  "copilot": {
+    "title": "Copilot",
+    "placeholder": "Poser une question à l'agent…",
+    "send": "Envoyer",
+    "noPhiNotice": "Les réponses ne contiennent aucune donnée patient (PHI)."
+  },
+  "nav": {
+    "start": "Accueil",
+    "main": "Principal",
+    "csa": "CSA",
+    "backstage": "Coulisses",
+    "settings": "Paramètres"
+  },
+  "start": {
+    "title": "Curavias",
+    "mission": "Coordonner la capacité hospitalière du réseau de soins suisse.",
+    "disclaimer": "Vitrine Microsoft Innovation Hub — données simulées et génériques, à des fins de démonstration uniquement."
+  },
+  "settings": {
+    "preferences": "Préférences"
+  }
+}
