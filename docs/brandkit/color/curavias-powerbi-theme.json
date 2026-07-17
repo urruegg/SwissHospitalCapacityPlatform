@@ -1,0 +1,22 @@
+{
+  "name": "Curavias",
+  "dataColors": [
+    "#17B890",
+    "#365B7D",
+    "#1C95BD",
+    "#5A6CF0",
+    "#E30613",
+    "#E8A200",
+    "#8FDBC9",
+    "#9EAFC0"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#2E4C68",
+  "tableAccent": "#17B890",
+  "good": "#17B890",
+  "neutral": "#E8A200",
+  "bad": "#E30613",
+  "maximum": "#148C6F",
+  "center": "#365B7D",
+  "minimum": "#C5EBE2"
+}

@@ -46,5 +46,25 @@
     "placeholder": "Ask the agent…",
     "send": "Send",
     "noPhiNotice": "Replies contain no patient data (PHI)."
+  },
+  "nav": {
+    "start": "Start",
+    "main": "Main",
+    "csa": "CSA",
+    "backstage": "Backstage",
+    "settings": "Settings"
+  },
+  "start": {
+    "title": "Curavias",
+    "mission": "Coordinating hospital capacity across the Swiss care network.",
+    "disclaimer": "Microsoft Innovation Hub Showcase — pure simulated and generic data for demo purposes only."
+  },
+  "settings": {
+    "preferences": "Preferences"
+  },
+  "agent": {
+    "open": "Open agent",
+    "close": "Close agent",
+    "title": "Agent"
   }
 }

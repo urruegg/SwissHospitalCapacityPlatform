@@ -1,0 +1,30 @@
+import { Navigate, type RouteObject } from 'react-router-dom';
+import { AppShell } from './AppShell';
+import { StartView } from '../workspaces/start/StartView';
+import { MainView } from '../workspaces/main/MainView';
+import { CsaView } from '../workspaces/main/wizards/csa/CsaView';
+import { BackstageView } from '../workspaces/backstage/BackstageView';
+import { SettingsView } from '../workspaces/settings/SettingsView';
+
+/**
+ * Sprint 20 M2 — five-plane route table.
+ *
+ * The surface elements are being replaced by the real Start / Main / CSA /
+ * Backstage / Settings surfaces in M5. The router is mounted in `App.tsx`
+ * (M4 cutover), once the legacy `TopBar`/`AppRail`/`WorkspaceRouter` shell was
+ * removed.
+ */
+export const routes: RouteObject[] = [
+  {
+    element: <AppShell />,
+    children: [
+      { index: true, element: <Navigate to="/start" replace /> },
+      { path: 'start', element: <StartView /> },
+      { path: 'main/:board?', element: <MainView /> },
+      { path: 'csa', element: <CsaView /> },
+      { path: 'backstage/:widget?', element: <BackstageView /> },
+      { path: 'settings', element: <SettingsView /> },
+      { path: '*', element: <Navigate to="/start" replace /> },
+    ],
+  },
+];

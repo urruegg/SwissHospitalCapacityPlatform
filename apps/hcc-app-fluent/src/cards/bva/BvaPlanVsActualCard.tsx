@@ -1,6 +1,6 @@
 import { Body1, Caption1, tokens } from '@fluentui/react-components';
 import { CardShell } from '../_shared';
-import { ragColors } from '../../theme/helvion-theme';
+import { ragColors } from '../../theme/curavias-theme';
 import { ProvenanceFooter } from './_provenance';
 import { budgetRag } from '../../data/bva/bva-evidence';
 import type { CardModel } from '../card-types';

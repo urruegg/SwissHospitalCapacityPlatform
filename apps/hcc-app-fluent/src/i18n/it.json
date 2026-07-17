@@ -1,0 +1,70 @@
+{
+  "app": {
+    "title": "Helvion — Capacità ospedaliera",
+    "loading": "Caricamento…"
+  },
+  "rail": {
+    "main": "Principale",
+    "backstage": "Backstage",
+    "home": "Inizio",
+    "askAgent": "Chiedi all'agente",
+    "settings": "Impostazioni",
+    "csa": "CSA"
+  },
+  "topbar": {
+    "search": "Cerca",
+    "hospital": "Ospedale",
+    "roleSwitcher": "Cambia ruolo",
+    "signOut": "Disconnetti",
+    "signIn": "Accedi"
+  },
+  "hospitals": {
+    "usz": "USZ",
+    "luks": "LUKS",
+    "zollikerberg": "Zollikerberg",
+    "aggregated": "Aggregato"
+  },
+  "backstage": {
+    "roles": "Ruoli e RBAC",
+    "rolesDescription": "Vista in tempo reale dei ruoli dell'app da Microsoft Entra (sola lettura).",
+    "evidence": "Prove",
+    "evidenceDescription": "Lavagna del presentatore: schede BOM, ADR, requisiti, prove GA e dipendenze (sintetiche, senza PHI)."
+  },
+  "evidence": {
+    "readinessSummary": "Riepilogo di preparazione",
+    "gaParityGap": "Divario di parità GA",
+    "presetChNorthTShow": "CH Nord × T-SHOW",
+    "presetGaParity": "Vista parità GA",
+    "presetBva": "Vista BVA"
+  },
+  "bedManager": {
+    "title": "Gestione dei letti — USZ",
+    "askBmca": "Chiedi a BMCA"
+  },
+  "copilot": {
+    "title": "Copilot",
+    "placeholder": "Fai una domanda all'agente…",
+    "send": "Invia",
+    "noPhiNotice": "Le risposte non contengono dati dei pazienti (PHI)."
+  },
+  "nav": {
+    "start": "Inizio",
+    "main": "Principale",
+    "csa": "CSA",
+    "backstage": "Backstage",
+    "settings": "Impostazioni"
+  },
+  "start": {
+    "title": "Curavias",
+    "mission": "Coordinare la capacità ospedaliera nella rete sanitaria svizzera.",
+    "disclaimer": "Vetrina Microsoft Innovation Hub — dati simulati e generici, solo a scopo dimostrativo."
+  },
+  "settings": {
+    "preferences": "Preferenze"
+  },
+  "agent": {
+    "open": "Apri agente",
+    "close": "Chiudi agente",
+    "title": "Agente"
+  }
+}

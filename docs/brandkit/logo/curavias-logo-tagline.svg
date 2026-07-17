@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 320" width="1040" height="320" role="img" aria-label="Curavias logo">
+  <rect x="0" y="0" width="1040" height="320" fill="#FFFFFF"/>
+  <g transform="translate(26,18) scale(0.82)">
+    <defs><linearGradient id="pLT" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#22C08A"/><stop offset="0.5" stop-color="#1FA9D6"/><stop offset="1" stop-color="#5A6CF0"/>
+    </linearGradient></defs>
+    <path d="M46,212 C130,196 150,150 258,74" fill="none" stroke="url(#pLT)" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="46" cy="212" r="16" fill="#365B7D"/>
+    <circle cx="150" cy="146" r="30" fill="#E30613"/>
+    <g transform="translate(150,146)"><rect x="-13" y="-5" width="26" height="10" rx="2" fill="#FFFFFF"/><rect x="-5" y="-13" width="10" height="26" rx="2" fill="#FFFFFF"/></g>
+    <circle cx="258" cy="74" r="38" fill="#17B890"/>
+    <g transform="translate(258,74) scale(1.5)"><path d="M-14,1 L-4,12 L15,-12" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+  <text x="332" y="128" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="104" font-weight="700" fill="#2E4C68" letter-spacing="-1">Curavias</text>
+  <text x="336" y="178" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="24" font-weight="600" fill="#6B7A88" letter-spacing="3.2">SWISS HOSPITAL CAPACITY COPILOT</text>
+  <line x1="336" y1="214" x2="1004" y2="214" stroke="#E1E7EC" stroke-width="2"/><text x="336" y="262" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="34" font-weight="500" fill="#365B7D">Every patient&#8217;s path, in Swiss hands.</text>
+</svg>
