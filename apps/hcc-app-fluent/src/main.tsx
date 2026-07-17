@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MsalProvider } from '@azure/msal-react';
-import './i18n';
 import { App } from './App';
 import { msalInstance } from './auth/msal-provider';
 

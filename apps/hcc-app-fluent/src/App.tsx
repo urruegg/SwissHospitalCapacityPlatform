@@ -1,4 +1,5 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import './i18n';
 import { ThemeModeProvider } from './theme/theme-context';
 import { HospitalProvider } from './context/hospital-context';
 import { RoleProvider } from './context/role-context';
