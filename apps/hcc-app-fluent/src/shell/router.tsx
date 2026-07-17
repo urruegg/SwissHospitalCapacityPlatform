@@ -2,6 +2,7 @@ import { Navigate, type RouteObject } from 'react-router-dom';
 import { AppShell } from './AppShell';
 import { StartView } from '../workspaces/start/StartView';
 import { MainView } from '../workspaces/main/MainView';
+import { CsaView } from '../workspaces/main/wizards/csa/CsaView';
 
 const Stub = ({ id }: { id: string }) => <div data-testid={id} />;
 
@@ -20,7 +21,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <Navigate to="/start" replace /> },
       { path: 'start', element: <StartView /> },
       { path: 'main/:board?', element: <MainView /> },
-      { path: 'csa', element: <Stub id="csa-view" /> },
+      { path: 'csa', element: <CsaView /> },
       { path: 'backstage/:widget?', element: <Stub id="backstage-view" /> },
       { path: 'settings', element: <Stub id="settings-view" /> },
       { path: '*', element: <Navigate to="/start" replace /> },
