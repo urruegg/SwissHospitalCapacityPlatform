@@ -2,17 +2,24 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Sprint 14.1 · T6 — Presenter whiteboard Evidence tab E2E.
+ * Sprint 20 M9.3 — re-pointed at the route-driven Backstage surface
+ * (`/backstage` defaults to the evidence widget) after the AppRail/TopBar/
+ * WorkspaceRouter shell was removed. Language is forced to EN so the preset
+ * tab labels are deterministic.
  *
- * demo.guest shell: Home → Backstage → Evidence. Asserts the preset layout
- * renders the card catalog floor (>=25 BOM + >=10 ADR + >=1 PRD-req cards +
- * dependency edges) and that every rendered card exposes provenance with no
- * provenance-error state (design spec §10 provenance check).
+ * Asserts the preset layout renders the card catalog floor (>=25 BOM +
+ * >=10 ADR + >=1 PRD-req cards + dependency edges) and that every rendered
+ * card exposes provenance with no provenance-error state (design spec §10
+ * provenance check).
  */
-test('Backstage Evidence tab renders the presenter whiteboard card catalog', async ({ page }) => {
-  await page.goto('/');
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('curavias.lang', 'en');
+  });
+});
 
-  await page.getByRole('tab', { name: 'Backstage' }).click();
-  await page.getByRole('tab', { name: 'Nachweise' }).click();
+test('Backstage Evidence widget renders the presenter whiteboard card catalog', async ({ page }) => {
+  await page.goto('/backstage');
 
   await expect(page.locator('[data-card-type="BomCard"]').first()).toBeVisible();
 
@@ -31,12 +38,10 @@ test('Backstage Evidence tab renders the presenter whiteboard card catalog', asy
   expect(await page.locator('[data-provenance-error="true"]').count()).toBe(0);
 });
 
-test('Evidence tab switches to the GA-parity preset and shows GA-evidence cards', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('tab', { name: 'Backstage' }).click();
-  await page.getByRole('tab', { name: 'Nachweise' }).click();
+test('Evidence widget switches to the GA-parity preset and shows GA-evidence cards', async ({ page }) => {
+  await page.goto('/backstage');
 
   await expect(page.locator('[data-card-type="GaEvidenceCard"]')).toHaveCount(0);
-  await page.getByRole('tab', { name: 'GA-Paritätsansicht' }).click();
+  await page.getByRole('tab', { name: 'GA-parity view' }).click();
   await expect(page.locator('[data-card-type="GaEvidenceCard"]').first()).toBeVisible();
 });
