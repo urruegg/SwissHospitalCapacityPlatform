@@ -1,6 +1,6 @@
 import { Title2, Caption1 } from '@fluentui/react-components';
 import { CardShell } from './_shared';
-import { ragColors } from '../theme/helvion-theme';
+import { ragColors } from '../theme/curavias-theme';
 import type { CardModel } from './card-types';
 
 export type Rag = 'bad' | 'neutral' | 'good';

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import {
-  FluentProvider,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import { helvionLightTheme } from './theme/helvion-theme';
 import { TopBar } from './shell/TopBar';
 import { AppRail, type WorkspaceKey } from './shell/AppRail';
 import { WorkspaceRouter } from './shell/WorkspaceRouter';
@@ -35,19 +33,17 @@ export function App({ rawClaims }: { rawClaims?: RawClaims }) {
   const claims: ParsedClaims = parseClaims(rawClaims);
 
   return (
-    <FluentProvider theme={helvionLightTheme}>
-      <RoleProvider claims={claims}>
-        <HospitalProvider claims={claims}>
-          <div className={styles.root}>
-            <TopBar />
-            <div className={styles.body}>
-              <AppRail selected={workspace} onSelect={setWorkspace} />
-              <WorkspaceRouter selected={workspace} />
-            </div>
+    <RoleProvider claims={claims}>
+      <HospitalProvider claims={claims}>
+        <div className={styles.root}>
+          <TopBar />
+          <div className={styles.body}>
+            <AppRail selected={workspace} onSelect={setWorkspace} />
+            <WorkspaceRouter selected={workspace} />
           </div>
-        </HospitalProvider>
-      </RoleProvider>
-    </FluentProvider>
+        </div>
+      </HospitalProvider>
+    </RoleProvider>
   );
 }
 

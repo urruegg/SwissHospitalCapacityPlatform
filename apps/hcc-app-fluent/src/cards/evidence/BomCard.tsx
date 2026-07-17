@@ -1,6 +1,6 @@
 import { Badge, Caption1, tokens } from '@fluentui/react-components';
 import { CardShell } from '../_shared';
-import { ragColors } from '../../theme/helvion-theme';
+import { ragColors } from '../../theme/curavias-theme';
 import { EvidenceProvenanceFooter } from './_provenance';
 import type { CardModel } from '../card-types';
 import type { BomCardPayload, ReadinessResult } from '../../data/evidence/evidence-types';

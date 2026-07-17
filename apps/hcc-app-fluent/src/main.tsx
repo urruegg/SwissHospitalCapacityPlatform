@@ -4,6 +4,7 @@ import { MsalProvider } from '@azure/msal-react';
 import './i18n';
 import { App } from './App';
 import { msalInstance } from './auth/msal-provider';
+import { ThemeModeProvider } from './theme/theme-context';
 
 /**
  * Sprint 13 — app bootstrap.
@@ -16,9 +17,11 @@ const rootEl = document.getElementById('root');
 if (rootEl) {
   createRoot(rootEl).render(
     <StrictMode>
-      <MsalProvider instance={msalInstance}>
-        <App />
-      </MsalProvider>
+      <ThemeModeProvider>
+        <MsalProvider instance={msalInstance}>
+          <App />
+        </MsalProvider>
+      </ThemeModeProvider>
     </StrictMode>,
   );
 }

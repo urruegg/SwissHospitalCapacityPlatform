@@ -36,3 +36,9 @@ export const curaviasDarkTheme: Theme = {
   colorBrandBackground: tokens.brand['80'],
   colorNeutralForegroundOnBrand: tokens.text.onLight,
 };
+
+export const ragColors = {
+  bad: tokens.danger['80'],
+  neutral: tokens.warning['80'],
+  good: tokens.brand['80'],
+} as const;
