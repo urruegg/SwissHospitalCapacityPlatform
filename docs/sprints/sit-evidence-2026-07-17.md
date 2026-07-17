@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-17 |
 | **Author** | Urs Rüegg / GitHub Copilot |
 | **Status** | Evidence collected |
-| **Previous Version** | 1.0.0 (added §12 Foundry Agent Service evidence — Sprint 18 completion) |
+| **Previous Version** | 1.1.0 (added §11 Foundry Agent Service account-level evidence — Sprint 18) |
 
 > **Purpose.** Consolidated evidence proving the Sprints 11–16 roadmap
 > artefacts are live and operational in the SIT environment
@@ -51,9 +51,9 @@
 | `cosmos-csa-ihzhhpf-sit` | Cosmos DB (NoSQL) | ✅ Active | AAD-only, private endpoint, vector search enabled |
 | `cosmos-ihzhhpf-sit` | Cosmos DB (Serverless) | ✅ Active | AAD-only, private endpoint |
 | `ai-ihzhhpf-sit` | AI Services (S0) | ✅ Active | Foundry account |
-| `mlw-ihzhhpf-sit` | Machine Learning Workspace | ✅ Active |
-| `fabricihzhhpfsit` | Fabric Capacity | ✅ Active (resumed 2026-07-17) |
-| `stdpihzhhpfsity26y` | Storage Account | ✅ Active |
+| `mlw-ihzhhpf-sit` | Machine Learning Workspace | ✅ Active | Foundry hub dependency |
+| `fabricihzhhpfsit` | Fabric Capacity | ✅ Active (resumed 2026-07-17) | Trusted-workspace access |
+| `stdpihzhhpfsity26y` | Storage Account | ✅ Active | Foundry hub dependency |
 
 ### Messaging & Integration
 
@@ -135,7 +135,7 @@
 
 ### Playwright Test Results (2026-07-17, live SIT)
 
-```
+```text
 Running 6 tests using 4 workers
 
   ok 1 › evidence.spec.ts › Backstage Evidence tab renders the presenter whiteboard card catalog
@@ -243,6 +243,34 @@ Per [ADR-0032](../adr/0032-foundry-control-plane-eastus2.md): westus2 has **zero
 
 ### 11.4 Agent registration (8/8)
 
+Agents are registered in **two distinct planes**, both proven:
+
+#### 11.4.1 Project-scoped Foundry Agent Service (portal-visible — primary)
+
+This is the plane the **New Foundry portal** reads (Build → Agents). All 8 agents
+are registered as `prompt` agents at **version 2**, status **active** (portal:
+"Running"), each with its own managed agent identity.
+
+| Agent | Model | Kind | Version | Portal status |
+|-------|-------|------|---------|---------------|
+| `bmca-agent` | gpt-5 | prompt | 2 | 🟢 Running |
+| `ooa-agent` | gpt-5-mini | prompt | 2 | 🟢 Running |
+| `dca-agent` | gpt-5 | prompt | 2 | 🟢 Running |
+| `orsa-agent` | gpt-5-mini | prompt | 2 | 🟢 Running |
+| `sba-agent` | gpt-5-mini | prompt | 2 | 🟢 Running |
+| `csa-agent` | o3 | prompt | 2 | 🟢 Running |
+| `data-quality-agent` | gpt-5-mini | prompt | 2 | 🟢 Running |
+| `onboarding-agent` | gpt-5-mini | prompt | 2 | 🟢 Running |
+
+- **API:** `POST /api/projects/ai-ihzhhpf-sit-eastus2-project/agents?api-version=2025-05-15-preview` (token audience `https://ai.azure.com`).
+- **Portal proof:** Build → Agents lists "1‑8 of 8", all Running, all type `prompt`, all version 2 (verified live via authenticated Edge session, 2026-07-17T10:40 UTC+2).
+- **Gap closed:** the initial Sprint 18 registration wrote only to the account-level Assistants API (§11.4.2), which the project portal view does **not** read — the Operate view showed "No data to show". Registering into the project-scoped Agent Service closed this gap.
+
+#### 11.4.2 Account-level Assistants API (inference layer)
+
+The original registration plane, retained for raw inference. These `asst_` IDs
+back the E2E smoke/refusal tests in §11.6.
+
 | Agent | Model | Assistant ID | Status |
 |-------|-------|-------------|--------|
 | `bmca-agent` | gpt-5 | `asst_Z8FSaalfy1a3asWdZcJJ5Wsg` | ✅ Registered |
@@ -273,10 +301,12 @@ Per [ADR-0032](../adr/0032-foundry-control-plane-eastus2.md): westus2 has **zero
 
 ### 11.7 Foundry endpoint
 
-```
+```text
 Account endpoint:  https://ai-ihzhhpf-sit-eastus2.openai.azure.com
 Services endpoint: https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com
-API version:       2025-04-01-preview
+Agent Service:     https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project/agents
+Assistants API version: 2025-04-01-preview
+Agent Service API version: 2025-05-15-preview
 ```
 
 ---
@@ -288,9 +318,11 @@ application, and agent layers. All Azure resources are provisioned, running, and
 correctly secured. The Fluent UI app + agent-host serve live traffic on the branded
 domain with full E2E Playwright proof (6/6 tests green).
 
-**Sprint 18 adds Foundry Agent Service proof:** 8/8 agents registered in eastus2,
-all responding to domain prompts, all refusing destructive requests. The Foundry
-control plane is operational with 3 GA models (gpt-5, gpt-5-mini, o3).
+**Sprint 18 adds Foundry Agent Service proof:** 8/8 agents registered in eastus2
+**in the project-scoped Foundry Agent Service** (portal Build → Agents shows all 8
+Running at version 2, type `prompt`), backed by the account-level Assistants API for
+inference. All agents respond to domain prompts and refuse destructive requests. The
+Foundry control plane is operational with 3 GA models (gpt-5, gpt-5-mini, o3).
 
 The overall SIT proven state is now approximately **95%**, with the remaining 5%
 being Fabric workspace portal verification and cross-region tool invocation
