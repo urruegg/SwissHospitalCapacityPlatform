@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Pre-commit doc-steward gate for the Swiss Hospital Capacity Platform.
+#
+# Enforces two mechanical guarantees BEFORE a commit is written ("check before
+# we save"): encoding integrity (no double-encoded UTF-8 / mojibake) and a clean
+# markdownlint pass on staged Markdown. The matching CI jobs (ci.yml
+# mojibake-scan + markdown-lint) are the enforced backstop for everyone; this
+# hook is the fast local mirror.
+#
+# Enable once per clone:
+#     git config core.hooksPath .githooks
+#
+# Judgment steps (version bump, FR/NFR traceability, status accuracy) are NOT
+# mechanical and are covered by the document-authoring skill + knowledge-agent,
+# not by this hook.
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+py="$(command -v python3 || command -v python || true)"
+
+# 1. Mojibake gate on staged files (mechanical; needs only python + git).
+if [ -n "$py" ]; then
+  if ! PYTHONUTF8=1 "$py" scripts/lint/check_mojibake.py --staged; then
+    echo ""
+    echo "pre-commit: mojibake (double-encoded UTF-8) detected in staged files."
+    echo "  Repair:  $py scripts/lint/fix_mojibake.py <file>   # then: git add <file>"
+    echo "  Or add a 'mojibake-allow' marker to any line that must show a literal example."
+    exit 1
+  fi
+else
+  echo "pre-commit: WARNING - python not found; skipping mojibake gate (CI still enforces it)." >&2
+fi
+
+# 2. Markdown lint gate on staged .md (auto-fix the safe rules, re-stage, verify).
+md_files=()
+while IFS= read -r line; do
+  [ -n "$line" ] && md_files+=("$line")
+done < <(git diff --cached --name-only --diff-filter=ACM -- '*.md')
+
+if [ "${#md_files[@]}" -gt 0 ]; then
+  if command -v npx >/dev/null 2>&1; then
+    npx --yes markdownlint-cli2 --fix "${md_files[@]}" >/dev/null 2>&1 || true
+    git add -- "${md_files[@]}"
+    if ! npx --yes markdownlint-cli2 "${md_files[@]}"; then
+      echo ""
+      echo "pre-commit: markdownlint errors remain in staged docs (see above). Fix and re-stage." >&2
+      exit 1
+    fi
+  else
+    echo "pre-commit: WARNING - npx/node not found; skipping markdown lint gate (CI still enforces it)." >&2
+  fi
+fi
+
+echo "pre-commit: doc-steward gates passed (encoding + markdown lint)."

@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.7.0 |
-| **Date** | 2026-07-09 |
+| **Version** | 1.8.0 |
+| **Date** | 2026-07-17 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.6.0 (updated folder table, lane row, Agent Decision Order, and Scope Guards for the 2.0.0 `agents-archive/` → `agents/` restructure) |
+| **Previous Version** | 1.7.0 (added `document-authoring` skill reference + automated mojibake/lint gate to the `docs/**` Scope Guard; approved via issue #242) |
 
 This repository hosts a sample **Swiss Hospital Capacity Platform**: a system where AI agents
 plan, execute, and observe hospital capacity management workflows (CI/CD, infrastructure provisioning,
@@ -177,7 +177,7 @@ security, or agent behavior.
 - Changes in `security-governance/**`: read `docs/SECURITY.md`, `docs/COMPLIANCE.md`, and `docs/AI.md` first.
 - Changes in `.github/workflows/**`: read `docs/ALM_PLAN.md` and `docs/SECURITY.md` (OIDC, secrets) before editing.
 - Changes in `evals/**` / `agents/<name>/golden-tasks.md`: read `docs/AI.md` and `docs/TEST.md` first.
-- Changes in `docs/**`: every edited doc must follow §9 Document Versioning.
+- Changes in `docs/**` (and any Markdown create or update anywhere in the repo): every edited doc must follow §9 Document Versioning **and** use the [`document-authoring`](skills/document-authoring/SKILL.md) skill for the judgment checks (version-bump level, FR/NFR traceability, status accuracy). Mechanical encoding + lint gates are automated and enforced by `scripts/lint/check_mojibake.py`, the `.githooks/pre-commit` hook, and the CI `mojibake-scan` job — a doc that fails these gates must be repaired before it is saved or committed.
 
 ### Key Technical Decisions
 - **Runtime**: **GitHub Copilot coding agent** (per ADR-0002) with Superpowers-first execution for new work. No bespoke service, no Foundry-hosted agent. Legacy per-agent Markdown assets are retained for compatibility and rollback.

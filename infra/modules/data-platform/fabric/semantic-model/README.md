@@ -1,6 +1,6 @@
-# Semantic Model â€” `sm_capacity_data_product` (W1.4 thin slice)
+# Semantic Model — `sm_capacity_data_product` (W1.4 thin slice)
 
-Direct Lake Power BI semantic model that exposes `lh_ihzhhpf_sit.gold.demand_encounter` to Power BI without a refresh step. This is the walking-skeleton scope from spec Â§8.1 W1.4: one table, one measure (`Encounter Count`). The W2.4 widen slice adds the remaining `DC-DEMAND-ENCOUNTER-v1` measures.
+Direct Lake Power BI semantic model that exposes `lh_ihzhhpf_sit.gold.demand_encounter` to Power BI without a refresh step. This is the walking-skeleton scope from spec §8.1 W1.4: one table, one measure (`Encounter Count`). The W2.4 widen slice adds the remaining `DC-DEMAND-ENCOUNTER-v1` measures.
 
 ## File layout
 
@@ -18,7 +18,7 @@ sm_capacity_data_product/
 
 ## Direct Lake binding
 
-The partition reads directly from the Delta files of `gold.demand_encounter` in the lakehouse â€” no import, no refresh schedule. Power BI queries hit OneLake in near real time.
+The partition reads directly from the Delta files of `gold.demand_encounter` in the lakehouse — no import, no refresh schedule. Power BI queries hit OneLake in near real time.
 
 ```tmdl
 partition 'demand_encounter' = directLake
@@ -63,4 +63,4 @@ The semantic model is created after the workspace, lakehouse, and mirror exist.
 Invoke-Pester -Path infra/modules/data-platform/fabric/post-deploy/tests/configure-fabric.Tests.ps1 -Output Detailed
 ```
 
-Acceptance per spec Â§8.1 W1.4: after deploy, opening the semantic model in Power BI and dragging `Encounter Count` onto a card returns `1` (the single row seeded by W1.1 plus the mirror path from W1.2/W1.3).
+Acceptance per spec §8.1 W1.4: after deploy, opening the semantic model in Power BI and dragging `Encounter Count` onto a card returns `1` (the single row seeded by W1.1 plus the mirror path from W1.2/W1.3).

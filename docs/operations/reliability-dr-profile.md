@@ -2,23 +2,23 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 1.1.1 |
+| **Date** | 2026-07-17 |
 | **Author** | GitHub Copilot |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (Phase 1 target-state baseline; rehearsal/restore evidence pending) |
+| **Previous Version** | 1.1.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
 
 ## Purpose
 
-Define the reliability and disaster-recovery (DR) target state â€” recovery classes,
-RTO/RPO targets, failover boundaries by data class, and the DR evidence model â€” so that
+Define the reliability and disaster-recovery (DR) target state — recovery classes,
+RTO/RPO targets, failover boundaries by data class, and the DR evidence model — so that
 reliability moves from intent to a measurable, release-gated baseline. This is the Phase 1
 deliverable for the reliability/DR baseline gate in
 [`docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md`](../adr/0009-reliability-and-dr-baseline-for-sit-prod.md)
 and seeds register items `RV-02`, `RV-07`, and `RV-11` in
 [`docs/sprints/sprint-05/requires-validation-register.md`\](../sprints/sprint-05/requires-validation-register.md).
 
-It addresses CAF/WAF review findings Â§4.2 (Reliability), Â§5.2, and Â§6, and the Â§9 High 2
+It addresses CAF/WAF review findings §4.2 (Reliability), §5.2, and §6, and the §9 High 2
 recommendation.
 
 ## Scope
@@ -44,7 +44,7 @@ targets below are mandatory unless an approved exception is recorded.
 
 | Data class | Failover posture | Rule |
 | ----- | ----- | ----- |
-| PHI-sensitive | Cross-region failover **default-deny** | PHI cross-region failover requires a compliance-approved exception (ADR-0009 Â§3, ADR-0003/`AR-D-003`). Within Switzerland regions, prefer zone redundancy over cross-region. |
+| PHI-sensitive | Cross-region failover **default-deny** | PHI cross-region failover requires a compliance-approved exception (ADR-0009 §3, ADR-0003/`AR-D-003`). Within Switzerland regions, prefer zone redundancy over cross-region. |
 | Operational (non-PHI) | Zone-redundant, region failover allowed with evidence | Region failover permitted where supporting services are GA-in-region and restore proof exists. |
 | Reporting / derived | Best-effort recovery | Recovery within `R3` targets; no PHI may be reintroduced via failover paths. |
 
@@ -60,7 +60,7 @@ targets below are mandatory unless an approved exception is recorded.
 ## DR Rehearsal Evidence Schema
 
 Per ADR-0009 Target 2, each rehearsal records all fields below. This schema is the
-"DR test evidence placeholder" requested in the review Â§9 quick wins.
+"DR test evidence placeholder" requested in the review §9 quick wins.
 
 | Field | Description |
 | ----- | ----- |
@@ -84,7 +84,7 @@ Full evidence: [`docs/sprints/sprint-05/evidence/2026-06-09-phase-3-sit-dr-rehea
 | `DR-SIT-R2-01` | `R2` | 4 h / 1 h | 72 min / 22 min | pass |
 | `DR-SIT-R3-01` | `R3` | 24 h / 24 h | 220 min / 30 min | pass |
 
-PHI cross-region failover was not exercised; it remains default-deny (ADR-0009 Â§3) with no
+PHI cross-region failover was not exercised; it remains default-deny (ADR-0009 §3) with no
 active exception.
 
 ### Restore-Proof Register
@@ -138,5 +138,5 @@ Per ADR-0009 Target 5:
 ## Change Control
 
 Any change to recovery classes, targets, or the evidence schema bumps this document's
-version per `.github/copilot-instructions.md` Â§9 and must stay consistent with ADR-0009.
+version per `.github/copilot-instructions.md` §9 and must stay consistent with ADR-0009.
 

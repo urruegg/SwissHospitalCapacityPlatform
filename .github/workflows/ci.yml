@@ -47,6 +47,25 @@ jobs:
         with:
           fail-on-error: true
 
+  mojibake-scan:
+    name: Mojibake scan (encoding integrity)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan tracked text files for double-encoded UTF-8
+        shell: bash
+        env:
+          PYTHONUTF8: "1"
+        run: python3 scripts/lint/check_mojibake.py
+
+      - name: Self-test the mojibake checker
+        shell: bash
+        env:
+          PYTHONUTF8: "1"
+        run: python3 scripts/lint/tests/test_check_mojibake.py
+
   bicep-build:
     name: Bicep build (infra/landing-zone)
     runs-on: ubuntu-latest

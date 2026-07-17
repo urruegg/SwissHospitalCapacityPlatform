@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 1.0.1 |
+| **Date** | 2026-07-17 |
 | **Author** | GitHub Copilot |
 | **Status** | Reviewed |
-| **Previous Version** | N/A |
+| **Previous Version** | 1.0.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
 
 ## Purpose
 
@@ -25,7 +25,7 @@ rehearsal and capturing restore-proof evidence against the recovery classes and 
   `docs/sprints/sprint-05/evidence/`.
 
 ### Out of scope
-- PHI cross-region failover activation (remains default-deny per ADR-0009 Â§3 unless a
+- PHI cross-region failover activation (remains default-deny per ADR-0009 §3 unless a
   compliance-approved exception is completed).
 - PROD execution; this runbook validates SIT and feeds the PROD readiness recommendation.
 - Provisioning infrastructure; this runbook is governance documentation only.
@@ -38,9 +38,9 @@ Mandatory prerequisites:
 3. `OPS` owns execution; `SEC` is available for the Key Vault restore step.
 
 Repository prerequisites already in place:
-1. [`docs/operations/reliability-dr-profile.md`](../operations/reliability-dr-profile.md) â€” recovery classes, targets, evidence schema.
-2. [`docs/OPERATIONS.md`](../OPERATIONS.md) â€” DR test evidence checkpoints.
-3. [`docs/TEST.md`](../TEST.md) â€” DR rehearsal evidence schema checkpoint.
+1. [`docs/operations/reliability-dr-profile.md`](../operations/reliability-dr-profile.md) — recovery classes, targets, evidence schema.
+2. [`docs/OPERATIONS.md`](../OPERATIONS.md) — DR test evidence checkpoints.
+3. [`docs/TEST.md`](../TEST.md) — DR rehearsal evidence schema checkpoint.
 
 ## Security and Compliance Guardrails
 
@@ -115,7 +115,7 @@ Before closing this runbook execution:
 
 ## Linked Documentation
 
-- [docs/operations/reliability-dr-profile.md](../operations/reliability-dr-profile.md) â€” recovery classes, targets, evidence schema (ADR-0009)
-- [docs/OPERATIONS.md](../OPERATIONS.md) â€” DR test evidence checkpoints
-- [docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md](../adr/0009-reliability-and-dr-baseline-for-sit-prod.md) â€” reliability/DR baseline decision
+- [docs/operations/reliability-dr-profile.md](../operations/reliability-dr-profile.md) — recovery classes, targets, evidence schema (ADR-0009)
+- [docs/OPERATIONS.md](../OPERATIONS.md) — DR test evidence checkpoints
+- [docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md](../adr/0009-reliability-and-dr-baseline-for-sit-prod.md) — reliability/DR baseline decision
 

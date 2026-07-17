@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.6.0 |
-| **Date** | 2026-07-10 |
+| **Version** | 1.6.1 |
+| **Date** | 2026-07-17 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.5.0 (added §Infra deploy governance runbook after the 2026-07-10 SIT auto-deploy incident) |
+| **Previous Version** | 1.6.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
 
 ## Purpose
 
@@ -233,8 +233,8 @@ Once configured, every deploy job that carries `environment: sit` (or `prod`) pa
 
 ## Reliability and Disaster Recovery Operations
 
-The reliability/DR target state â€” recovery classes R1/R2/R3, RTO/RPO targets, failover
-boundaries by data class, and the DR rehearsal evidence model â€” is defined in
+The reliability/DR target state — recovery classes R1/R2/R3, RTO/RPO targets, failover
+boundaries by data class, and the DR rehearsal evidence model — is defined in
 [`docs/operations/reliability-dr-profile.md`](operations/reliability-dr-profile.md)
 (ADR-0009). Operations is the accountable owner (`OPS`) for the evidence cadence.
 
