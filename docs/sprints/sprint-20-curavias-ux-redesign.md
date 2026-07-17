@@ -87,4 +87,4 @@ Deliver a coherent, brand-aligned, accessible operator experience for Curavias b
 * Design: [`2026-07-17-sprint-20-curavias-ux-design.md`](../superpowers/specs/2026-07-17-sprint-20-curavias-ux-design.md)
 * Plan: [`2026-07-17-sprint-20-curavias-ux-plan.md`](../superpowers/plans/2026-07-17-sprint-20-curavias-ux-plan.md)
 * Interactive mockup (session artifact, not committed): validated five-plane wireframe with role dropdown
-* Issue: See linked GitHub issue
+* Issue: [#245 — Sprint 20: Curavias App UX Redesign](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/245)
