@@ -17,7 +17,7 @@
 
 #### A1. Write ADR-0028: eastus2 Foundry region decision
 
-```
+```text
 Location: docs/adr/0028-foundry-control-plane-eastus2.md
 Context: westus2 has zero OpenAI quota and is not listed for Foundry Agent Service.
 Decision: Deploy Foundry control plane (AI Services + project + models + agents) in eastus2.

@@ -131,7 +131,7 @@ flowchart TB
 ## 5. Task breakdown
 
 | Task | Depends on | Side-effect ceiling | Estimated effort |
-|------|------------|--------------------|-----------------| 
+|------|------------|--------------------|-----------------|
 | T1: Write ADR-0028 | — | `write` (repo) | 30 min |
 | T2: Create AI Services account | T1 approved | `deploy` (Azure) | 15 min |
 | T3: Create Foundry project | T2 | `deploy` (Azure) | 10 min |
@@ -151,9 +151,9 @@ flowchart TB
 ## 6. Agent registration plan
 
 Each agent is registered as a **prompt agent** in the Foundry project with:
-- **Model:** assigned per agent's complexity tier
-- **Instructions:** from the agent's `AGENT.md` Identity + Scope + Tools sections
-- **Tools:** mapped from the agent's MCP server declarations
+* **Model:** assigned per agent's complexity tier
+* **Instructions:** from the agent's `AGENT.md` Identity + Scope + Tools sections
+* **Tools:** mapped from the agent's MCP server declarations
 
 | Agent | Model | Tools (Foundry-mapped) |
 |-------|-------|------------------------|
@@ -231,24 +231,24 @@ For each registered agent, execute:
 
 ## 12. Definition of done
 
-- [ ] ADR-0028 merged documenting eastus2 Foundry decision
-- [ ] AI Services account `ai-ihzhhpf-sit-eastus2` provisioned and accessible
-- [ ] Foundry project created with SystemAssigned managed identity
-- [ ] 3 models deployed (gpt-5, gpt-5-mini, o3) all in `Succeeded` state
-- [ ] 8 agents registered in Foundry project with correct model assignments
-- [ ] RBAC: agent-host identity has Cognitive Services User on eastus2 account
-- [ ] E2E tests: 8/8 agents pass health + smoke; ≥4/8 pass tool invocation; 8/8 pass refusal
-- [ ] `docs/sprints/sit-evidence-2026-07-17.md` updated with Foundry evidence
-- [ ] `AGENTS.md` updated with eastus2 endpoint references
-- [ ] All CI checks pass (markdown lint, link check)
+* [ ] ADR-0028 merged documenting eastus2 Foundry decision
+* [ ] AI Services account `ai-ihzhhpf-sit-eastus2` provisioned and accessible
+* [ ] Foundry project created with SystemAssigned managed identity
+* [ ] 3 models deployed (gpt-5, gpt-5-mini, o3) all in `Succeeded` state
+* [ ] 8 agents registered in Foundry project with correct model assignments
+* [ ] RBAC: agent-host identity has Cognitive Services User on eastus2 account
+* [ ] E2E tests: 8/8 agents pass health + smoke; ≥4/8 pass tool invocation; 8/8 pass refusal
+* [ ] `docs/sprints/sit-evidence-2026-07-17.md` updated with Foundry evidence
+* [ ] `AGENTS.md` updated with eastus2 endpoint references
+* [ ] All CI checks pass (markdown lint, link check)
 
 ---
 
 ## 13. References
 
-- [SIT Evidence Analysis (2026-07-17)](../../sprints/sit-evidence-2026-07-17.md)
-- [Sprints 11–16 Roadmap Design](2026-07-09-sprints-11-16-roadmap-design.md)
-- [ADR-0013: Temporary US Region Demo Scope](../../adr/0013-temporary-us-region-demo-scope.md)
-- [AGENTS.md §1 Registry](../../../AGENTS.md#1-registry)
-- [Microsoft Learn: Foundry Agent Service regions](https://learn.microsoft.com/en-us/azure/ai-services/agents/overview)
-- [eastus2 Feasibility Matrix (session checkpoint 003)](../../../.copilot/session-state/) — 22/22 resource types GA
+* [SIT Evidence Analysis (2026-07-17)](../../sprints/sit-evidence-2026-07-17.md)
+* [Sprints 11–16 Roadmap Design](2026-07-09-sprints-11-16-roadmap-design.md)
+* [ADR-0013: Temporary US Region Demo Scope](../../adr/0013-temporary-us-region-demo-scope.md)
+* [AGENTS.md §1 Registry](../../../AGENTS.md#1-registry)
+* [Microsoft Learn: Foundry Agent Service regions](https://learn.microsoft.com/en-us/azure/ai-services/agents/overview)
+* [eastus2 Feasibility Matrix (session checkpoint 003)](../../../.copilot/session-state/) — 22/22 resource types GA

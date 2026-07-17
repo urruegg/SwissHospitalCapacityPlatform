@@ -66,11 +66,11 @@ Deploy the **entire PROD environment from scratch in eastus2** — all resources
 
 ### Why eastus2 specifically
 
-- 122 OpenAI models (88 GA), 5.8M TPM quota — richest in the tenant
-- Foundry Agent Service GA supported
-- All 22 resource types confirmed GA (Sprint 18 feasibility analysis)
-- DataZone + ProvisionedManaged SKUs available for future scale
-- Same continent as current deployment (acceptable latency for EU-based users during demo scope)
+* 122 OpenAI models (88 GA), 5.8M TPM quota — richest in the tenant
+* Foundry Agent Service GA supported
+* All 22 resource types confirmed GA (Sprint 18 feasibility analysis)
+* DataZone + ProvisionedManaged SKUs available for future scale
+* Same continent as current deployment (acceptable latency for EU-based users during demo scope)
 
 ---
 
@@ -210,7 +210,7 @@ flowchart TB
 
 ## 7. Bicep module plan
 
-```
+```text
 infra/prod-eastus2/
 ├── main.bicep                  # Orchestrator
 ├── main.bicepparam             # PROD parameters
@@ -235,9 +235,9 @@ infra/prod-eastus2/
 ```
 
 All modules follow the conventions in `.github/copilot-instructions.md` §3 (Bicep):
-- Parameterised environment suffix (`-prod`)
-- Tags: `env=prod`, `owner=urruegg`, `costCenter=demo`, `workload=ihzhhpf`
-- Diagnostic settings → Log Analytics for every resource
+* Parameterised environment suffix (`-prod`)
+* Tags: `env=prod`, `owner=urruegg`, `costCenter=demo`, `workload=ihzhhpf`
+* Diagnostic settings → Log Analytics for every resource
 
 ---
 
@@ -274,10 +274,10 @@ Steps:
 
 ## 10. Fabric capacity and workspace
 
-- New `fabricihzhhpfprod` capacity (F2 SKU) in eastus2
-- Create PROD workspace `ws-ihzhhpf-prod-data` attached to eastus2 capacity
-- Deploy lakehouse, notebooks, semantic model from repo via Fabric Git integration (Sprint 17 pattern)
-- No data migration — run simulator to regenerate synthetic PROD data
+* New `fabricihzhhpfprod` capacity (F2 SKU) in eastus2
+* Create PROD workspace `ws-ihzhhpf-prod-data` attached to eastus2 capacity
+* Deploy lakehouse, notebooks, semantic model from repo via Fabric Git integration (Sprint 17 pattern)
+* No data migration — run simulator to regenerate synthetic PROD data
 
 ---
 
@@ -323,28 +323,28 @@ Steps:
 
 ## 14. Definition of done
 
-- [ ] `infra/prod-eastus2/main.bicep` authored and passes `az bicep build`
-- [ ] `az deployment group what-if` produces clean output with expected resources
-- [ ] All 25 resources deployed in `rg-ihzhhpf-prod-eastus2` with `Succeeded` state
-- [ ] Cosmos DB accounts: AAD-only, local auth disabled, PE connected, vector search enabled
-- [ ] AI Services + Foundry project with 3 models deployed and 8 agents registered
-- [ ] Container Apps: 3 apps running, agent-host health check green
-- [ ] Custom domain `app.curavias.ch` resolves to PROD CA with valid TLS
-- [ ] Fabric capacity F2 active in eastus2; PROD workspace created
-- [ ] E2E demo flow: sign-in → app → agent → data → response (end-to-end green)
-- [ ] PROD evidence document committed: `docs/sprints/prod-evidence-eastus2.md`
-- [ ] All CI checks pass (markdown lint, link check, Bicep build)
-- [ ] ADR (if needed) for PROD region strategy beyond ADR-0028
-- [ ] SIT remains functional (no breaking changes to westus2)
+* [ ] `infra/prod-eastus2/main.bicep` authored and passes `az bicep build`
+* [ ] `az deployment group what-if` produces clean output with expected resources
+* [ ] All 25 resources deployed in `rg-ihzhhpf-prod-eastus2` with `Succeeded` state
+* [ ] Cosmos DB accounts: AAD-only, local auth disabled, PE connected, vector search enabled
+* [ ] AI Services + Foundry project with 3 models deployed and 8 agents registered
+* [ ] Container Apps: 3 apps running, agent-host health check green
+* [ ] Custom domain `app.curavias.ch` resolves to PROD CA with valid TLS
+* [ ] Fabric capacity F2 active in eastus2; PROD workspace created
+* [ ] E2E demo flow: sign-in → app → agent → data → response (end-to-end green)
+* [ ] PROD evidence document committed: `docs/sprints/prod-evidence-eastus2.md`
+* [ ] All CI checks pass (markdown lint, link check, Bicep build)
+* [ ] ADR (if needed) for PROD region strategy beyond ADR-0028
+* [ ] SIT remains functional (no breaking changes to westus2)
 
 ---
 
 ## 15. References
 
-- [Sprint 18 Design Spec](../specs/2026-07-17-sprint-18-foundry-eastus2-control-plane-design.md)
-- [Sprints 11–16 Roadmap Design](../specs/2026-07-09-sprints-11-16-roadmap-design.md)
-- [ADR-0013: Temporary US Region Demo Scope](../../adr/0013-temporary-us-region-demo-scope.md)
-- [SIT Evidence (2026-07-17)](../../sprints/sit-evidence-2026-07-17.md)
-- [Sprint 17: Fabric Git Integration Design](../specs/2026-07-10-sprint-17-fabric-git-cicd-and-lakehouse-schema-design.md)
-- [AGENTS.md](../../../AGENTS.md)
-- [.github/copilot-instructions.md](../../../.github/copilot-instructions.md)
+* [Sprint 18 Design Spec](../specs/2026-07-17-sprint-18-foundry-eastus2-control-plane-design.md)
+* [Sprints 11–16 Roadmap Design](../specs/2026-07-09-sprints-11-16-roadmap-design.md)
+* [ADR-0013: Temporary US Region Demo Scope](../../adr/0013-temporary-us-region-demo-scope.md)
+* [SIT Evidence (2026-07-17)](../../sprints/sit-evidence-2026-07-17.md)
+* [Sprint 17: Fabric Git Integration Design](../specs/2026-07-10-sprint-17-fabric-git-cicd-and-lakehouse-schema-design.md)
+* [AGENTS.md](../../../AGENTS.md)
+* [.github/copilot-instructions.md](../../../.github/copilot-instructions.md)
