@@ -3,6 +3,7 @@ import { AppShell } from './AppShell';
 import { StartView } from '../workspaces/start/StartView';
 import { MainView } from '../workspaces/main/MainView';
 import { CsaView } from '../workspaces/main/wizards/csa/CsaView';
+import { BackstageView } from '../workspaces/backstage/BackstageView';
 
 const Stub = ({ id }: { id: string }) => <div data-testid={id} />;
 
@@ -22,7 +23,7 @@ export const routes: RouteObject[] = [
       { path: 'start', element: <StartView /> },
       { path: 'main/:board?', element: <MainView /> },
       { path: 'csa', element: <CsaView /> },
-      { path: 'backstage/:widget?', element: <Stub id="backstage-view" /> },
+      { path: 'backstage/:widget?', element: <BackstageView /> },
       { path: 'settings', element: <Stub id="settings-view" /> },
       { path: '*', element: <Navigate to="/start" replace /> },
     ],
