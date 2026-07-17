@@ -6,12 +6,12 @@
  *   - CsaRoleGuard: allow / deny based on role-context membership
  *   - CsaStepper: renders 4 tabs, current highlighted, future disabled
  *   - CsaWizard: composed happy path (role-authorised user sees Prepare step)
- *   - Rail integration: `csa` is a valid WorkspaceKey and rail exposes the tab
+ *
+ * Sprint 20 M4: the App-integration block was removed with the RouterProvider
+ * cutover — routed CSA coverage moves to navigation-plane.test.tsx (nav gating,
+ * M4) and csa-view.test.tsx (wizard reachability behind /csa, M5).
  */
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '../../src/i18n';
-import { App } from '../../src/App';
 import { CSA_STEPS, csaStepById, CSA_SAMPLE_RECOMMENDATIONS } from '../../src/workspaces/main/wizards/csa/csa-steps';
 import { CSA_WIZARD_ROLES } from '../../src/workspaces/main/wizards/csa/CsaRoleGuard';
 
@@ -60,39 +60,5 @@ describe('CSA wizard — role guard', () => {
     expect([...CSA_WIZARD_ROLES].sort()).toEqual(
       ['HCC.CrisisManager', 'HCC.OperationsLead', 'HCC.PlatformAdmin', 'HCC.SuperAdmin'].sort(),
     );
-  });
-});
-
-describe('CSA wizard — App integration', () => {
-  it('rail exposes the CSA tab (visible to everyone; guard runs inside)', () => {
-    render(<App />);
-    expect(screen.getByRole('tab', { name: 'CSA' })).toBeInTheDocument();
-  });
-
-  it('anonymous session sees the deny message when opening CSA', () => {
-    const { getByRole, getByTestId } = render(<App />);
-    fireEvent.click(getByRole('tab', { name: 'CSA' }));
-    // Guard renders the deny testid because no roles are present in anonymous session.
-    expect(getByTestId('CsaRoleGuardDenied')).toBeInTheDocument();
-  });
-
-  it('SuperAdmin session sees the wizard scaffold (stepper + Prepare body)', () => {
-    const { getByRole, getByTestId } = render(
-      <App rawClaims={{ roles: ['HCC.SuperAdmin'], env: 'sit', hospital: 'usz' }} />,
-    );
-    fireEvent.click(getByRole('tab', { name: 'CSA' }));
-    expect(getByTestId('CsaWizard')).toBeInTheDocument();
-    expect(getByTestId('CsaStepper')).toBeInTheDocument();
-    expect(getByTestId('CsaStepBody-prepare')).toBeInTheDocument();
-    expect(getByTestId('CsaStepperTab-prepare')).toBeInTheDocument();
-    expect(getByTestId('CsaStepperTab-recommend')).toBeInTheDocument();
-  });
-
-  it('CrisisManager session (spec §8 primary persona) sees the wizard', () => {
-    const { getByRole, getByTestId } = render(
-      <App rawClaims={{ roles: ['HCC.CrisisManager'], env: 'sit', hospital: 'usz' }} />,
-    );
-    fireEvent.click(getByRole('tab', { name: 'CSA' }));
-    expect(getByTestId('CsaWizard')).toBeInTheDocument();
   });
 });
