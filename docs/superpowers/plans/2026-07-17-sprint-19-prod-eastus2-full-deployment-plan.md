@@ -157,7 +157,8 @@ Follow Sprint 18 pattern (already proven):
 #### 5.2 Register 8 agents
 
 Same registration flow as Sprint 18 but targeting PROD project endpoint:
-```
+
+```text
 https://ai-ihzhhpf-prod-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-prod-eastus2-project/assistants
 ```
 
@@ -219,7 +220,7 @@ az network dns record-set cname set-record \
 
 #### 8.2 Produce PROD evidence document
 
-```
+```text
 docs/sprints/prod-evidence-eastus2.md
 ```
 

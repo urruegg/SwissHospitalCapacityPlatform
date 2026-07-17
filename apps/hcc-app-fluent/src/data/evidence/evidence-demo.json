@@ -362,6 +362,17 @@
       },
       "status": "Accepted",
       "title": "TLS certificate lifecycle strategy for custom hostnames"
+    },
+    {
+      "decisionSummary": "Deploy the **Microsoft Foundry control plane** (AI Services account + Foundry project + model deployments + agent registrations) in **eastus2**.",
+      "id": "ADR-0032",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0032-foundry-control-plane-eastus2.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0032-foundry-control-plane-eastus2.md"
+      },
+      "status": "Accepted",
+      "title": "Foundry Control Plane Deployed in eastus2"
     }
   ],
   "boms": [
