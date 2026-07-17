@@ -61,5 +61,10 @@
   },
   "settings": {
     "preferences": "Préférences"
+  },
+  "agent": {
+    "open": "Ouvrir l'agent",
+    "close": "Fermer l'agent",
+    "title": "Agent"
   }
 }

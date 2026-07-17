@@ -1,9 +1,15 @@
-import '../../src/i18n';
-import { render, screen } from '@testing-library/react';
+import i18n from '../../src/i18n';
+import { render, screen, act } from '@testing-library/react';
+import { beforeAll, describe, it, expect } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { AppShell } from '../../src/shell/AppShell';
 import { ThemeModeProvider } from '../../src/theme/theme-context';
 import { RoleProvider } from '../../src/context/role-context';
+
+// Sprint 20 M7 — the agent affordance label is asserted in English.
+beforeAll(async () => {
+  await i18n.changeLanguage('en');
+});
 
 function renderShell(path = '/start') {
   return render(
@@ -26,8 +32,11 @@ describe('AppShell', () => {
     renderShell();
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByRole('navigation')).toBeInTheDocument();
-    expect(screen.getByRole('complementary')).toBeInTheDocument();
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     expect(screen.getByText('start-content')).toBeInTheDocument();
+    // The agent plane starts collapsed (icon rail); opening it reveals the
+    // complementary landmark.
+    act(() => screen.getByRole('button', { name: /open agent/i }).click());
+    expect(screen.getByRole('complementary')).toBeInTheDocument();
   });
 });

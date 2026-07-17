@@ -61,5 +61,10 @@
   },
   "settings": {
     "preferences": "Preferenze"
+  },
+  "agent": {
+    "open": "Apri agente",
+    "close": "Chiudi agente",
+    "title": "Agente"
   }
 }
