@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-17 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft for review |
-| **Previous Version** | n/a (new — Sprint 20 kickoff) |
+| **Status** | Delivered |
+| **Previous Version** | 1.0.0 (design draft for review) |
 | **Anchor triggers** | User-experience improvement request for the `hcc-app-fluent` React app; validated interactive mockup (`sprint-20-curavias-ux-mockup.html`); brandkit re-base to Curavias green-primary theme |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; no change to per-agent runtime posture (ADR-0008 unchanged); app remains a Container Apps-hosted SPA calling the Sprint 13 agent-host |
 

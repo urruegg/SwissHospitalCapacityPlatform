@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-17 |
 | **Author** | @urruegg |
-| **Status** | Ready for execution |
-| **Previous Version** | n/a (new sprint) |
+| **Status** | Delivered |
+| **Previous Version** | 1.0.0 (ready for execution) |
 
 > **Sprint theme.** Rebuild the `hcc-app-fluent` React app as a Teams-style five-plane shell (Header / Navigation / Main / Agent / Footer) themed with the Curavias brandkit, add a role dropdown that acts as an RBAC access lens, four-language i18n (EN/DE/FR/IT), a dockable context-aware agent plane, and Start/Main/CSA/Backstage/Settings surfaces.
 
