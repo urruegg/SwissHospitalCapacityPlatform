@@ -108,6 +108,7 @@ Green is now the **primary brand colour** (it best fits Curavias — care, healt
 The wordmark stays **Ink/Blue** (now the *secondary* brand) — coherent, since green now drives the success node and UI primary actions. If you'd like the **wordmark in green** to foreground the new primary, I can produce that logo variant.
 
 ## 9. Integration
+
 ```tsx
 import { FluentProvider } from '@fluentui/react-components';
 import { curaviasLightTheme } from './curavias-theme';

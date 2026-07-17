@@ -84,7 +84,7 @@ Colour deliverables in `color/`: `curavias-theme.ts` (Fluent v9 theme), `curavia
 
 ## 7. Kit Contents
 
-```
+```text
 brandkitv2/
 ├─ Curavias-Brand-Guidelines.(md|docx)   ← this document
 ├─ README.(md|docx)                       ← quick index
