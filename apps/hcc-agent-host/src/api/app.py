@@ -25,6 +25,7 @@ from pydantic import BaseModel
 from manifests.loader import AgentManifest, load_agent_host_manifests
 from orchestrator.dispatch import Orchestrator
 from orchestrator.mock_model import MockChatModel
+from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from hitl.gate_enforcer import enforce_gates
 
 
@@ -48,7 +49,15 @@ class HostState:
     def __init__(self, agents_root: Path):
         self.agents_root = agents_root
         self.manifests: dict[str, AgentManifest] = load_agent_host_manifests(agents_root)
-        self.orchestrator = Orchestrator(chat_model=MockChatModel())
+        # Slice 0: inject the read-only Fabric Data Agent adapter so manifests that
+        # bind `groundingAgent: precedence: primary` (e.g. ooa-agent) ground via the
+        # MVO ontology (hcp:* citations) and propagate its PHI refusals. Without a
+        # live client the adapter answers synthetically (no PHI, ADR-0016); a live
+        # Fabric Data Agent client is injected here once the endpoint is provisioned.
+        self.orchestrator = Orchestrator(
+            chat_model=MockChatModel(),
+            data_agent=FabricDataAgentAdapter(),
+        )
 
     def require(self, name: str) -> AgentManifest:
         manifest = self.manifests.get(name)

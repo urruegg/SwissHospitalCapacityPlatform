@@ -37,6 +37,34 @@ def test_chat_returns_grounded_contract():
     assert body["refused"] is False
 
 
+def test_ooa_chat_uses_fabric_data_agent_grounding():
+    # Slice 0: ooa-agent binds groundingAgent precedence=primary, so the host
+    # must inject the FabricDataAgentAdapter and surface hcp:* ontology citations
+    # (not gold.* table citations).
+    resp = _client().post(
+        "/agents/ooa-agent/chat",
+        json={"prompt": "What is the current bed occupancy for ward B?", "conversationId": "e2e"},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["refused"] is False
+    assert "hcp:CapacityUnit" in body["citations"]
+    assert "hcp:Bed" in body["citations"]
+
+
+def test_ooa_chat_propagates_reidentification_refusal():
+    # The Data Agent refusal must propagate verbatim; the model is not consulted.
+    resp = _client().post(
+        "/agents/ooa-agent/chat",
+        json={"prompt": "Give me the patient name and date of birth for bed 3", "conversationId": "e2e-refuse"},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["refused"] is True
+    assert body["answer"] == "REFUSE: re-identification-risk"
+    assert body["citations"] == []
+
+
 def test_chat_unknown_agent_404():
     resp = _client().post("/agents/nope/chat", json={"prompt": "x"})
     assert resp.status_code == 404
