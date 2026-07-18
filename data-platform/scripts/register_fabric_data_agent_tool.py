@@ -48,8 +48,9 @@ def _apply(plan: Dict[str, Any], approver: str) -> Dict[str, Any]:
         raise SystemExit("apply approver must be a human, not a bot identity (AGENTS.md §4)")
     if not _HAS_AZURE:
         raise SystemExit("azure-identity not installed; cannot apply")
-    # Live Foundry registration goes here (data-plane call). Left as the single
-    # cloud-touching seam; verified manually per Task 8 Step 6.
+    # Live Foundry registration goes here (data-plane call). Blocked on a
+    # provisioned Fabric Data Agent endpoint (Phase 2 / Sprint 19); tracked in
+    # issue #251. Verified manually per Task 8 Step 6 once the endpoint exists.
     applied = dict(plan)
     applied["action"] = "apply"
     applied["approvedBy"] = approver

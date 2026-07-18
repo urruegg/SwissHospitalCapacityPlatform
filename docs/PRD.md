@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.0 |
-| **Date** | 2026-07-06 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-07-18 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.4.0 (added `FR-VIZ-*` + `NFR-GOV-*` per ADR-0018) |
+| **Previous Version** | 1.5.0 (added `FR-ONT-008` Fabric-to-Foundry grounding seam + ADR-0033 traceability row) |
 
 ## Purpose
 
@@ -134,6 +134,7 @@ Sprint 09 deltas per [ADR-0014](adr/0014-fabric-iq-ontology-target-backbone-ga-g
 | `FR-ONT-005` | The platform shall provide a **process-ontology overlay** on the reference layer to support what-if simulation (`FR-SIM-*` when introduced). |
 | `FR-ONT-006` | The ontology shall carry a **crosswalk to FHIR resource types and SNOMED CT concepts** for clinical interoperability (extends `FR-DATA-002`). |
 | `FR-ONT-007` | The ontology shall support **provider-specific extensions** (specialisations) without re-architecture, realising `NFR-MAINT-004` at the semantic layer. |
+| `FR-ONT-008` | Foundry-hosted copilots shall consume the read-only **Fabric Data Agent as their primary grounding source** ahead of table grounding (the Fabric-to-Foundry consumption seam), propagate its RLS and [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) PHI-gate `REFUSE:` codes **verbatim** (no route-around), and surface at least one `hcp:*` ontology citation per grounded answer. Realised per [ADR-0033](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md); extends `FR-ONT-004`, `NFR-AI-002/004`. |
 | `FR-GOV-ONT-001` | The data-governance RACI shall include a nominated **semantic / ontology owner**. Documented in [OPERATIONS.md](OPERATIONS.md) as of v1.4.0. |
 | `FR-GOV-ONT-002` | Ontology changes shall follow an **OBO-inspired semantic change workflow** (proposal → domain-owner review → versioned release → downstream impact check), mirroring the data-contract breaking-change control in `NFR-MAINT-002`. |
 | `FR-GOV-ONT-003` | The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build. |
@@ -268,6 +269,8 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/sprints/sprint-10-e2e-pipeline-and-dashboard-completion.md`](sprints/sprint-10-e2e-pipeline-and-dashboard-completion.md) *(Sprint 10 charter)* | `FR-VIZ-001` to `FR-VIZ-002`, `NFR-GOV-001` to `NFR-GOV-006`, `FR-CX-005`, `FR-DATA-005`, `FR-DATA-008`, `FR-GOV-001`, `FR-GOV-004`, `FR-ONT-004`, `FR-ONT-006` |
 | [`docs/adr/0018-add-fr-viz-and-nfr-gov-ids.md`](adr/0018-add-fr-viz-and-nfr-gov-ids.md) *(formalises drift from Sprint 09 v2 design spec §7.7)* | `FR-VIZ-001` to `FR-VIZ-002`, `NFR-GOV-001` to `NFR-GOV-006` |
 | [`docs/sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md`](sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md) *(recovered draft — pre-refresh)* | `FR-ONT-001` to `FR-ONT-007` (MVO scope), `NFR-ONT-001` (target implementation slot) |
+
+| [`docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md`](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md) *(Fabric-to-Foundry grounding seam, Slice 0)* | `FR-ONT-008` (extends `FR-ONT-004`, `NFR-AI-002/004`) |
 
 ## Assumptions To Validate In Implementation Planning
 
