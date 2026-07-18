@@ -127,6 +127,9 @@ param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:3433f72'
 // Reversibility: flip to `true` when PROD is provisioned in a region that
 // offers Balanced_B0 (or when a follow-up PR migrates the SKU to Enterprise_E1).
 param agentHostEnableRedis = false
+param fabricDataAgentEndpoint = '' // TODO(M3): fill from published Data Agent
+param fabricWorkspaceId = '' // TODO(M3): fill from published Data Agent
+param fabricDataAgentId = '' // TODO(M3): fill from published Data Agent
 
 // Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review

@@ -16,6 +16,15 @@ param logAnalyticsWorkspaceResourceId string
 @description('Enable the Azure Managed Redis grounding cache (ADR-0007 §1). Default true for PROD; set to false in SIT per ADR-0028 (Managed Redis Balanced_B0 SKU is not offered in westus2 for the MCAPS demo subscription; the agent-host runtime already uses an in-memory cache so there is no functional loss for demo scope).')
 param enableRedisModule bool = true
 
+@description('Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback.')
+param fabricDataAgentEndpoint string = ''
+
+@description('Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback.')
+param fabricWorkspaceId string = ''
+
+@description('Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback.')
+param fabricDataAgentId string = ''
+
 @description('Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable Entra-MI-based pull once real images land in ACR.')
 param containerRegistryLoginServer string = ''
 
@@ -87,6 +96,9 @@ module containerApp 'container-app.bicep' = {
     logAnalyticsCustomerId: reference(logAnalyticsWorkspaceResourceId, '2023-09-01').customerId
     logAnalyticsSharedKey: listKeys(logAnalyticsWorkspaceResourceId, '2023-09-01').primarySharedKey
     cosmosEndpoint: cosmos.outputs.cosmosEndpoint
+    fabricDataAgentEndpoint: fabricDataAgentEndpoint
+    fabricWorkspaceId: fabricWorkspaceId
+    fabricDataAgentId: fabricDataAgentId
     redisHostName: enableRedisModule ? redis!.outputs.redisHostName : ''
     redisPort: enableRedisModule ? redis!.outputs.redisPort : 0
     containerRegistryLoginServer: containerRegistryLoginServer

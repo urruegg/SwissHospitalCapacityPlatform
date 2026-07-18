@@ -20,6 +20,15 @@ param logAnalyticsSharedKey string
 @description('Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2).')
 param cosmosEndpoint string
 
+@description('Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback.')
+param fabricDataAgentEndpoint string = ''
+
+@description('Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback.')
+param fabricWorkspaceId string = ''
+
+@description('Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback.')
+param fabricDataAgentId string = ''
+
 @description('Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope).')
 param redisHostName string = ''
 
@@ -62,6 +71,18 @@ var baseEnv = [
   {
     name: 'AGENTS_ROOT'
     value: '/app/agents'
+  }
+  {
+    name: 'FABRIC_DATA_AGENT_ENDPOINT'
+    value: fabricDataAgentEndpoint
+  }
+  {
+    name: 'FABRIC_WORKSPACE_ID'
+    value: fabricWorkspaceId
+  }
+  {
+    name: 'FABRIC_DATA_AGENT_ID'
+    value: fabricDataAgentId
   }
 ]
 

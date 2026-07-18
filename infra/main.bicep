@@ -187,6 +187,15 @@ param agentHostImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 @description('Enable Azure Managed Redis inside the agent-host module (grounding cache per ADR-0007 §1). Defaults to true (PROD behaviour); set to false in SIT per ADR-0028 (Balanced_B0 SKU not offered in westus2 for MCAPS demo sub; agent-host uses in-memory cache today).')
 param agentHostEnableRedis bool = true
 
+@description('Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback.')
+param fabricDataAgentEndpoint string = ''
+
+@description('Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback.')
+param fabricWorkspaceId string = ''
+
+@description('Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback.')
+param fabricDataAgentId string = ''
+
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
 @description('Enable the Sprint 13 hcc-app-fluent Container App module.')
 param enableAppFluentModule bool = false
@@ -404,6 +413,9 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     agentHostImage: agentHostImage
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
     enableRedisModule: agentHostEnableRedis
+    fabricDataAgentEndpoint: fabricDataAgentEndpoint
+    fabricWorkspaceId: fabricWorkspaceId
+    fabricDataAgentId: fabricDataAgentId
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId
