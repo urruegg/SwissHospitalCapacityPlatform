@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-18 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (initial) |
+| **Previous Version** | 1.1.0 (M5 agent-host live grounding proof) |
 | **Related** | [Fabric IQ to Foundry readiness design §6](../superpowers/specs/2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ demo showcase plan](../superpowers/plans/2026-07-18-fabric-iq-preview-demo-showcase.md), [ADR-0033](../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0034](../adr/0034-fabric-iq-demo-scope-artefacts.md), [GitHub issue #251](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/251) |
 
 ## Purpose
@@ -65,5 +65,6 @@ was switched to `gpt-5` (compatible: `gpt-5`, `gpt-4o`, `gpt-4.1`).
 | ---- | ----- |
 | G-A (operational ontology + first bed-state binding, ADR-0014 demo scope) | ✅ Met in demo scope |
 | Foundry consumption authorised | ✅ Yes (Foundry `ooa` surface proven live) |
-| App/agent-host surface | ✅ Live — user-assigned MI `id-ca-agent-host-ihzhhpf-sit` granted Fabric Viewer on `f3af9733`; `AZURE_CLIENT_ID` wired; live probes pass (§ readiness row 5) |
+| App/agent-host surface | ✅ Live — user-assigned MI `id-ca-agent-host-ihzhhpf-sit` granted Fabric Viewer on `f3af9733`; `AZURE_CLIENT_ID` wired; server-to-server live probes pass (§ readiness row 5) |
+| Browser app → agent surface | ✅ Live — `hcc-app-fluent` bundle baked with `VITE_AGENT_HOST_URL` (image `b796961`) + agent-host CORS allows the app origin; browser-style probe returns `hcp:Bed/hcp:Ward` (corr `77960709b80ebf57`) and refuses PHI `REFUSE: re-identification-risk` (corr `969eaf364470da54`) |
 | Certified Data Product + Domain | ⚠️ Blocked — Fabric Administrator role required |
