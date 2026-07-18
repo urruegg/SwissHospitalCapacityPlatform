@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-18 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | — (initial) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.0.0 (initial) |
 | **Related** | [Fabric IQ to Foundry readiness design §6](../superpowers/specs/2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ demo showcase plan](../superpowers/plans/2026-07-18-fabric-iq-preview-demo-showcase.md), [ADR-0033](../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0034](../adr/0034-fabric-iq-demo-scope-artefacts.md), [GitHub issue #251](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/251) |
 
 ## Purpose
@@ -38,7 +38,7 @@ read-only grounding, live registration approval-gated by AGENTS.md §4.
 | 2 | **OneLake Data Product + Domain** — Fabric Domain + published data product, Certified endorsement, Foundry-IQ discoverable | Semantic model endorsement live (Promoted + Discoverable + **Approved for Copilot**). **Domain + Data Product + Certified endorsement BLOCKED** — need the Fabric Administrator role | ⚠️ Partial (blocked) | Semantic-model endorsement in Settings pane; Domain/Data Product blocked (403 under Global Reader) — service ticket [`access-request-fabric-administrator.md`](../operations/access-request-fabric-administrator.md). Non-blocking for the demo: Foundry consumes the Data Agent, not the Domain |
 | 3 | **Semantic Data Model** — Direct-Lake `capacity-dashboard`, verify gate (16 relationships / 27 measures / 6 roles), RLS intact | Semantic model `capacity-dashboard` — `08245059-a6e7-489f-a765-a3114583db4c` | ✅ Live | `verify-semantic-model.yml` merge gate green; `export_semantic_model_tmdl.ps1 -VerifyOnly` asserts 16/27/6 |
 | 4 | **Fabric Data Agent** — in-region, workspace `Viewer` identity, 3 golden tasks (happy / failure / PHI refusal), published as a Foundry tool | Data Agent `da_hospital_capacity` — `b2e53c23-182a-452d-9321-e63f6009e80b` (published; 2 sources: semantic model 13 tables + ontology) | ✅ Live | M3 playground probes: probe 1 PASS (cites `hcp:Bed`/`hcp:Ward`), probe 2 PASS (`REFUSE: re-identification-risk`). Runbook [`create_data_agent.md`](../../data-platform/scripts/fabric/create_data_agent.md) |
-| 5 | **Readiness gate + seam golden tasks** — this doc goes green only when 1–4 + the §5 seam golden tasks pass; authorises Foundry consumption | This document + Foundry `ooa` native Fabric connection `fabric_dataagent_preview_3538da` (Version 4, active) | ✅ Live (Foundry) / ⏳ agent-host M5 | **M4 Step 7 live E2E** (approved `@urruegg` 2026-07-18T19:37Z): ooa-agent invoked `fabric_dataagent_preview_call`, cited `hcp:*` (probe 1) and refused PHI (probe 2). #251 closed. Agent-host live probe = M5 |
+| 5 | **Readiness gate + seam golden tasks** — this doc goes green only when 1–4 + the §5 seam golden tasks pass; authorises Foundry consumption | This document + Foundry `ooa` native Fabric connection `fabric_dataagent_preview_3538da` (Version 4, active) + agent-host live `FabricDataAgentClient` (image `478b115`, rev `0000004`) | ✅ Live (Foundry + agent-host) | **M4 Step 7 live E2E** (approved `@urruegg` 2026-07-18T19:37Z): ooa-agent invoked `fabric_dataagent_preview_call`, cited `hcp:*` (probe 1) and refused PHI (probe 2). #251 closed. **M5 Step live E2E** (2026-07-18T21:18Z, deploy `29657444723`): agent-host `POST /agents/ooa-agent/chat` probe 1 returned `hcp:Bed, hcp:Ward` citations with **no** `[grounding degraded]` prefix (`corr fa69c6b0f4e04cbd`); probe 2 returned `REFUSE: re-identification-risk`, `refused=true` (`corr f34b9bf2f730be12`) |
 
 ## Seam consumption evidence (design §5)
 
@@ -65,5 +65,5 @@ was switched to `gpt-5` (compatible: `gpt-5`, `gpt-4o`, `gpt-4.1`).
 | ---- | ----- |
 | G-A (operational ontology + first bed-state binding, ADR-0014 demo scope) | ✅ Met in demo scope |
 | Foundry consumption authorised | ✅ Yes (Foundry `ooa` surface proven live) |
-| App/agent-host surface | ⏳ Pending M5 (live `ask_fn` wiring + deploy) |
+| App/agent-host surface | ✅ Live — user-assigned MI `id-ca-agent-host-ihzhhpf-sit` granted Fabric Viewer on `f3af9733`; `AZURE_CLIENT_ID` wired; live probes pass (§ readiness row 5) |
 | Certified Data Product + Domain | ⚠️ Blocked — Fabric Administrator role required |
