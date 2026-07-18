@@ -455,3 +455,5 @@ FodyWeavers.xsd
 # published to the standalone `evidence-latest` branch, never committed to main.
 # The JSON Schemas under data/evidence/schema/ ARE tracked.
 /data/evidence/*.json
+
+.superpowers/
