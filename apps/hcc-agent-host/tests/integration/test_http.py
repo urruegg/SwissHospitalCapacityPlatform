@@ -89,6 +89,41 @@ def test_host_uses_live_ask_fn_when_env_set(monkeypatch):
     appmod.get_state.cache_clear()
 
 
+def test_cors_preflight_allows_default_app_origin():
+    # The browser app (hcc-app-fluent) calls the host cross-origin. A preflight
+    # from the default demo origin must be answered with an allow header so the
+    # Copilot Drawer can reach /agents/{name}/chat.
+    client = _client()
+    resp = client.options(
+        "/agents/ooa-agent/chat",
+        headers={
+            "Origin": "https://appsit.curavias.ch",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+    assert resp.status_code in (200, 204)
+    assert resp.headers.get("access-control-allow-origin") == "https://appsit.curavias.ch"
+
+
+def test_cors_honours_env_allowed_origins(monkeypatch):
+    monkeypatch.setenv(
+        "AGENT_HOST_ALLOWED_ORIGINS",
+        "https://example.test, https://other.test",
+    )
+    get_state.cache_clear()
+    client = TestClient(create_app())
+    resp = client.options(
+        "/agents/ooa-agent/chat",
+        headers={
+            "Origin": "https://example.test",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+    assert resp.headers.get("access-control-allow-origin") == "https://example.test"
+
+
 def test_chat_unknown_agent_404():
     resp = _client().post("/agents/nope/chat", json={"prompt": "x"})
     assert resp.status_code == 404

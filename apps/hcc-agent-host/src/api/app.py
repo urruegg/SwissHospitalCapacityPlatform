@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from manifests.loader import AgentManifest, load_agent_host_manifests
@@ -38,6 +39,23 @@ def _agents_root() -> Path:
         return Path(override)
     # apps/hcc-agent-host/src/api/app.py → repo root is parents[4].
     return Path(__file__).resolve().parents[4] / "agents"
+
+
+# Default browser origins for the hcc-app-fluent Copilot Drawer (ADR-0013 westus2
+# SIT + ADR-0030 custom domains). Overridable via AGENT_HOST_ALLOWED_ORIGINS
+# (comma-separated) so the same image lifts westus2 → eastus2 without a rebuild.
+_DEFAULT_ALLOWED_ORIGINS = (
+    "https://appsit.curavias.ch",
+    "https://app.curavias.ch",
+    "https://ca-app-fluent-ihzhhpf-sit.ashysky-8f51a689.westus2.azurecontainerapps.io",
+)
+
+
+def _allowed_origins() -> list[str]:
+    raw = os.environ.get("AGENT_HOST_ALLOWED_ORIGINS")
+    if raw:
+        return [o.strip() for o in raw.split(",") if o.strip()]
+    return list(_DEFAULT_ALLOWED_ORIGINS)
 
 
 def _build_live_data_agent():
@@ -107,6 +125,17 @@ class ToolRequest(BaseModel):
 
 def create_app() -> FastAPI:
     app = FastAPI(title="hcc-agent-host", version="0.1.0")
+
+    # Browser cross-origin access for the hcc-app-fluent Copilot Drawer. Only the
+    # POST /chat + GET /agents verbs and content-type header are needed; scoped to
+    # the configured app origins (not "*") to keep the surface least-privilege.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_allowed_origins(),
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["content-type", "authorization"],
+        max_age=600,
+    )
 
     @app.get("/healthz")
     def healthz() -> dict[str, str]:
