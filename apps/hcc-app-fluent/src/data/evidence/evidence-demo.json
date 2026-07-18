@@ -373,6 +373,17 @@
       },
       "status": "Accepted",
       "title": "Foundry Control Plane Deployed in eastus2"
+    },
+    {
+      "decisionSummary": "Adopt the **Fabric Data Agent as the primary grounding tool** for the operational copilots. Each consuming agent binds it via a `groundingAgent` manifest block; the orchestrator asks the Data Agent in natural language, uses its answer + `hcp:*` citations as primary grounding, propagates `REFUSE:` verbatim, and degrades loudly to table grounding if the Data Agent is unavailable. A Foundry IQ knowledge base is a *secondary* source; `fabric-mcp` remains for *actions* only. The binding is region-agnostic (endpoint + workspace from env), so it lifts westus2 -> eastus2 unchanged.",
+      "id": "ADR-0033",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md"
+      },
+      "status": "Proposed",
+      "title": "Fabric Data Agent as the Foundry grounding tool"
     }
   ],
   "boms": [

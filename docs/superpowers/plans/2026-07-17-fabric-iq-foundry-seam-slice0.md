@@ -928,4 +928,3 @@ answer carries an `hcp:*` citation and that a re-identification prompt returns
 - [ ] Run the script tests: `cd data-platform/scripts; python -m pytest tests/test_register_fabric_data_agent_tool.py -q` → PASS.
 - [ ] Run mojibake on all edited docs: `python scripts/lint/check_mojibake.py agents/ooa-agent/golden-tasks.md docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md docs/architecture/fabric-foundry-grounding-contract.md` → OK.
 - [ ] Confirm `docs/PRD.md` §7 is updated with the new seam FR (or an issue is filed to add it) — flagged in the design spec §10.
-```
