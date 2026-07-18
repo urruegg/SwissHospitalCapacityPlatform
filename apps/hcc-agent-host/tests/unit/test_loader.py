@@ -90,3 +90,34 @@ def test_parse_manifest_reads_grounding_agent():
 def test_parse_manifest_grounding_agent_absent_is_none():
     manifest = parse_manifest(_base_manifest(), Path("demo/manifest.yaml"))
     assert manifest.grounding_agent is None
+
+
+def test_grounding_agent_invalid_precedence_raises():
+    data = _base_manifest()
+    data["groundingAgent"] = {
+        "server": "srv",
+        "endpointEnv": "E",
+        "workspaceEnv": "W",
+        "precedence": "tertiary",
+    }
+    with pytest.raises(ManifestError, match="must be 'primary' or 'secondary'"):
+        parse_manifest(data, Path("demo/manifest.yaml"))
+
+
+def test_grounding_agent_missing_server_raises():
+    data = _base_manifest()
+    data["groundingAgent"] = {"endpointEnv": "E", "workspaceEnv": "W"}
+    with pytest.raises(ManifestError, match="missing required field 'server'"):
+        parse_manifest(data, Path("demo/manifest.yaml"))
+
+
+def test_grounding_agent_accepts_secondary_precedence():
+    data = _base_manifest()
+    data["groundingAgent"] = {
+        "server": "srv",
+        "endpointEnv": "E",
+        "workspaceEnv": "W",
+        "precedence": "secondary",
+    }
+    manifest = parse_manifest(data, Path("demo/manifest.yaml"))
+    assert manifest.grounding_agent.precedence == "secondary"
