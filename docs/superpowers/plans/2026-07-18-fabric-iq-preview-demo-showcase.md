@@ -22,7 +22,7 @@
 
 ## File Structure
 
-**New files**
+### New files
 - `apps/hcc-agent-host/src/tools/fabric_data_agent_client.py` — live Data Agent HTTP client (`ask_fn`).
 - `apps/hcc-agent-host/tests/unit/test_fabric_data_agent_client.py` — client unit tests (mocked HTTP).
 - `data-platform/scripts/fabric/build_ontology_from_semantic_model.md` — M1 runbook + REST snippets.
@@ -31,7 +31,7 @@
 - `docs/architecture/fabric-iq-ready-evidence.md` — "Fabric IQ ready" 5-point evidence doc.
 - `docs/demo/fabric-iq-showcase-script.md` — the demo golden-path script.
 
-**Modified files**
+### Modified files
 - `apps/hcc-agent-host/src/api/app.py` — build adapter with live `ask_fn` when env is set.
 - `apps/hcc-agent-host/tests/integration/test_http.py` — env-driven live-client wiring test.
 - `data-platform/scripts/register_fabric_data_agent_tool.py` — implement `_apply` (Foundry Fabric connection).

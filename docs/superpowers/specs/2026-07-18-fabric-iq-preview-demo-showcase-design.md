@@ -89,9 +89,9 @@ short-circuit, register script) is done and proven E2E **synthetically** (Slice
    `Specialty`, `HospitalService`, `Encounter`, `CareTeam`, `Equipment`. First
    time-series binding: **bed state** (occupied / available / blocked /
    cleaning). Realises gate **G-A** (ADR-0014 §5).
-2. **OneLake Data Product** — curated bundle (gold Delta tables + semantic model
-   + ontology) published for discovery, with a description, owner, and demo
-   endorsement (Promoted).
+2. **OneLake Data Product** — curated bundle (gold Delta tables, the semantic
+   model, and the ontology) published for discovery, with a description, owner,
+   and demo endorsement (Promoted).
 3. **OneLake Domain** — "Hospital Capacity" business domain; the workspace is
    assigned to it so the data product is discoverable in the catalog.
 4. **Fabric Data Agent** — sources = semantic model + lakehouse + ontology;
