@@ -113,9 +113,11 @@ param eventHubsCsaAgentMiPrincipalId = ''
 // sim-capacity pattern — until agent-host-build.yml is extended to push
 // the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
 param enableAgentHostModule = true
-// Bumped ccaf429 -> 9d91b1e to ship the Slice 0 Fabric Data Agent grounding
-// seam (PR #250, merge commit 9d91b1e; ci-build-agent-host.yml pushed the tag).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:3433f72'
+// Bumped 3433f72 -> 478b115 to ship the M5 live Fabric Data Agent client
+// (real OpenAI-Assistants flow, ADR-0033 Option A); ci-build-agent-host.yml
+// pushed the tag. Deploy is approval-gated per AGENTS.md §4 (approved-to-apply
+// by @urruegg 2026-07-18).
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:478b115'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`
@@ -127,9 +129,13 @@ param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:3433f72'
 // Reversibility: flip to `true` when PROD is provisioned in a region that
 // offers Balanced_B0 (or when a follow-up PR migrates the SKU to Enterprise_E1).
 param agentHostEnableRedis = false
-param fabricDataAgentEndpoint = '' // TODO(M3): fill from published Data Agent
-param fabricWorkspaceId = '' // TODO(M3): fill from published Data Agent
-param fabricDataAgentId = '' // TODO(M3): fill from published Data Agent
+// M5 (ADR-0033 Option A): live Fabric Data Agent grounding for the agent-host.
+// Live SIT artefacts in workspace f3af9733 (westus2) — see
+// docs/architecture/fabric-iq-ready-evidence.md. Endpoint is the published Data
+// Agent OpenAI-Assistants surface; the agent-host MI must hold workspace Viewer.
+param fabricDataAgentEndpoint = 'https://api.fabric.microsoft.com/v1/workspaces/f3af9733-9503-4e92-98f9-a901d96f1c87/aiskills/b2e53c23-182a-452d-9321-e63f6009e80b/aiassistant/openai'
+param fabricWorkspaceId = 'f3af9733-9503-4e92-98f9-a901d96f1c87'
+param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 
 // Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
