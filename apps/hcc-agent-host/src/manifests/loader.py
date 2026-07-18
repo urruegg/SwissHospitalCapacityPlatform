@@ -36,6 +36,14 @@ class ToolBinding:
 
 
 @dataclass(frozen=True)
+class GroundingAgentBinding:
+    server: str
+    endpoint_env: str
+    workspace_env: str
+    precedence: str = "primary"
+
+
+@dataclass(frozen=True)
 class AgentManifest:
     agent: str
     version: str
@@ -45,6 +53,7 @@ class AgentManifest:
     tools: tuple[ToolBinding, ...] = ()
     hitl_gates: tuple[str, ...] = ()
     grounding_tables: tuple[str, ...] = field(default=())
+    grounding_agent: "GroundingAgentBinding | None" = None
 
     @property
     def max_ceiling(self) -> str:
@@ -91,6 +100,21 @@ def parse_manifest(data: dict[str, Any], source: Path) -> AgentManifest:
         if isinstance(row, dict) and row.get("table")
     )
 
+    grounding_agent = None
+    raw_ga = data.get("groundingAgent")
+    if raw_ga:
+        precedence = raw_ga.get("precedence", "primary")
+        if precedence not in ("primary", "secondary"):
+            raise ManifestError(
+                f"{source}: groundingAgent precedence '{precedence}' must be 'primary' or 'secondary'"
+            )
+        grounding_agent = GroundingAgentBinding(
+            server=_require(raw_ga, "server", source),
+            endpoint_env=_require(raw_ga, "endpointEnv", source),
+            workspace_env=_require(raw_ga, "workspaceEnv", source),
+            precedence=precedence,
+        )
+
     return AgentManifest(
         agent=agent,
         version=str(_require(data, "version", source)),
@@ -100,6 +124,7 @@ def parse_manifest(data: dict[str, Any], source: Path) -> AgentManifest:
         tools=tuple(tools),
         hitl_gates=gates,
         grounding_tables=grounding,
+        grounding_agent=grounding_agent,
     )
 
 

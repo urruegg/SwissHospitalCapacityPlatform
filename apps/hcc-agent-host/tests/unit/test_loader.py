@@ -69,3 +69,24 @@ def test_loads_real_bmca_manifest_from_repo():
     assert bmca.hitl_gates == ("HITL-02",)
     # The Fabric IQ-hosted fabric-data-agent must never be loaded by this host.
     assert "fabric-data-agent" not in manifests
+
+
+def test_parse_manifest_reads_grounding_agent():
+    data = _base_manifest()
+    data["groundingAgent"] = {
+        "server": "fabric-data-agent",
+        "endpointEnv": "FABRIC_DATA_AGENT_ENDPOINT",
+        "workspaceEnv": "FABRIC_WORKSPACE_ID",
+        "precedence": "primary",
+    }
+    manifest = parse_manifest(data, Path("demo/manifest.yaml"))
+    assert manifest.grounding_agent is not None
+    assert manifest.grounding_agent.server == "fabric-data-agent"
+    assert manifest.grounding_agent.endpoint_env == "FABRIC_DATA_AGENT_ENDPOINT"
+    assert manifest.grounding_agent.workspace_env == "FABRIC_WORKSPACE_ID"
+    assert manifest.grounding_agent.precedence == "primary"
+
+
+def test_parse_manifest_grounding_agent_absent_is_none():
+    manifest = parse_manifest(_base_manifest(), Path("demo/manifest.yaml"))
+    assert manifest.grounding_agent is None
