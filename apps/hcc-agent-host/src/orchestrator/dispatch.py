@@ -12,6 +12,7 @@ live Foundry deployment in production and a deterministic mock in dev/CI.
 from __future__ import annotations
 
 import hashlib
+import logging
 import time
 from dataclasses import dataclass, field
 from typing import Any, Protocol
@@ -22,6 +23,8 @@ from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from cache.redis_client import RedisCache
 from persistence.cosmos_client import CosmosPersistence
 from orchestrator.redaction import redact, contains_sensitive
+
+logger = logging.getLogger(__name__)
 
 
 class ChatModel(Protocol):
@@ -74,6 +77,9 @@ class Orchestrator:
         try:
             result = self.data_agent.ask(user_prompt)
         except Exception:
+            logger.exception(
+                "Fabric Data Agent grounding failed; degrading to table grounding"
+            )
             rows, citations = self._grounding(manifest)
             return rows, citations, None, True
         if result.get("refused"):
@@ -100,6 +106,17 @@ class Orchestrator:
 
         if refusal_answer is not None:
             # Data Agent refusal propagates verbatim; the model is not consulted.
+            self.persistence.write(
+                "conversations",
+                {
+                    "conversationId": conversation_id,
+                    "agent": manifest.agent,
+                    "userPrompt": redact(user_prompt),
+                    "answer": refusal_answer,
+                    "citations": citations,
+                    "correlationId": correlation_id,
+                },
+            )
             self.persistence.write(
                 "audit",
                 {

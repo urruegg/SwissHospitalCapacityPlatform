@@ -92,3 +92,17 @@ def test_no_grounding_agent_falls_back_to_tables():
         caller_oid="oid1",
     )
     assert reply.citations == ("gold.bed_assignment",)
+
+
+def test_refusal_persists_conversation_record():
+    orch = _orch(data_agent=FabricDataAgentAdapter())
+    orch.dispatch(
+        _manifest(with_agent=True),
+        "sys",
+        "List patient names shared across USZ and LUKS",
+        conversation_id="c5",
+        caller_oid="oid1",
+    )
+    conversations = orch.persistence.read_all("conversations")
+    assert conversations
+    assert conversations[-1]["answer"].startswith("REFUSE:")
