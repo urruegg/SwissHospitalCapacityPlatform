@@ -2728,6 +2728,18 @@
       "title": "The ontology shall support **provider-specific extensions** (specialisations) without re-architecture, realising `NFR-MAINT-004` at the semantic layer."
     },
     {
+      "family": "Semantic Ontology",
+      "id": "FR-ONT-008",
+      "kind": "FR",
+      "mvp": true,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Foundry-hosted copilots shall consume the read-only **Fabric Data Agent as their primary grounding source** ahead of table grounding (the Fabric-to-Foundry consumption seam), propagate its RLS and [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) PHI-gate `REFUSE:` codes **verbatim** (no route-around), and surface at least one `hcp:*` ontology citation per grounded answer. Realised per [ADR-0033](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md); extends `FR-ONT-004`, `NFR-AI-002/004`."
+    },
+    {
       "family": "Visualization And Dashboards (Sprint 09 T5)",
       "id": "FR-VIZ-001",
       "kind": "FR",
