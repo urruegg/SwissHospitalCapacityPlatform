@@ -113,7 +113,9 @@ param eventHubsCsaAgentMiPrincipalId = ''
 // sim-capacity pattern — until agent-host-build.yml is extended to push
 // the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
 param enableAgentHostModule = true
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:ccaf429'
+// Bumped ccaf429 -> 9d91b1e to ship the Slice 0 Fabric Data Agent grounding
+// seam (PR #250, merge commit 9d91b1e; ci-build-agent-host.yml pushed the tag).
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:9d91b1e'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`
@@ -130,10 +132,11 @@ param agentHostEnableRedis = false
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image tag is bumped as a deliberate manual review step after
 // `ci-build-app-fluent.yml` pushes a new tag to ACR (per that workflow's
-// header comment + AGENTS.md §4). Current tag ships the Sprint 20 Curavias
-// five-plane UX shell (PR #248, merge commit c9fc6f3; closes S20).
+// header comment + AGENTS.md §4). Bumped c9fc6f3 -> 9d91b1e to ship the
+// Sprint 20 Curavias UX shell plus the refreshed evidence data product
+// (ADR-0033, 35 ADRs) from PR #250 (merge commit 9d91b1e).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:c9fc6f3'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:9d91b1e'
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:
