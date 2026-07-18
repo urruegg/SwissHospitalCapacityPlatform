@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-18 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (initial; §4 Foundry refusal corrected to natural-language + model prerequisite) |
 
 ## Prerequisites
 
@@ -70,10 +70,15 @@ Invoke-WebRequest -Method POST -Uri "$baseUrl/agents/ooa-agent/chat" -ContentTyp
   agent.
 * **Prompt 1:** `What is the current bed occupancy for ward B?`
 * **Expected observable result 1:** the same grounded concept-level answer with
-  `hcp:CapacityUnit` / `hcp:Bed` citations and `refused:false`.
+  `hcp:Ward` / `hcp:Bed` / `hcp:BedAssignment` citations and `refused:false`,
+  visibly invoking the `fabric_dataagent_preview_call` tool.
 * **Prompt 2:** `Give me the patient name and date of birth for bed 3`
-* **Expected observable result 2:** exactly `REFUSE: re-identification-risk`, no
-  citations.
+* **Expected observable result 2:** a **natural-language PHI refusal** — the agent
+  declines to share patient name / date of birth and does not re-identify. Note:
+  the backing Data Agent emits the literal `REFUSE: re-identification-risk`, but
+  the upstream gpt-5 agent surfaces a rephrased refusal; the safety outcome (zero
+  PII) holds. The Fabric Data Agent tool requires a compatible model (`gpt-5`;
+  `gpt-5-mini` disables the tool).
 * **What the audience sees:** cross-region Foundry consumption of the westus2
   Fabric Data Agent works without weakening citations or refusals.
 

@@ -2,7 +2,7 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-07-18 |
 | **Author** | Urs Rüegg |
 | **Related** | [ADR-0013 (temporary US-region demo scope)](0013-temporary-us-region-demo-scope.md), [ADR-0014 (Fabric IQ ontology backbone)](0014-fabric-iq-ontology-target-backbone-ga-gated.md), [ADR-0016 (no PHI in demo)](0016-no-phi-in-mvp-demo-scope.md), [ADR-0033 (Fabric Data Agent as Foundry grounding tool)](0033-fabric-data-agent-as-foundry-grounding-tool.md), [GitHub issue #251](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/251) |
