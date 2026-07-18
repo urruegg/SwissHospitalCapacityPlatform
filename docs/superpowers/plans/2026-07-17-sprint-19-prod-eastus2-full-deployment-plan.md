@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | Pending (blocked on Sprint 18 completion) |
-| **Previous Version** | n/a |
+| **Status** | In progress — #238 (Sprint 18) done; legacy westus2 PROD decommissioned; P1 IaC via Option 1 reuse |
+| **Previous Version** | 1.0.0 (Pending, blocked on Sprint 18). 1.1.0: Sprint 18 closed → unblocked; legacy westus2 rg-ihzhhpf-prod decommissioned (approved-to-apply 2026-07-19); P1 adopts Option 1 (new `infra/environments/prod-eastus2.bicepparam` for the existing `infra/main.bicep`). |
 | **Design spec** | [2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md](../specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md) |
 
 ---

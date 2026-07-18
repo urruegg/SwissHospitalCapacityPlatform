@@ -25,8 +25,9 @@ param spaRedirectUris = [
   // provisioned when PROD is promoted. Adding the URI now (before the
   // target exists) is safe: Entra treats it as an allow-list entry.
   'https://app.curavias.ch'
-  // Legacy App Service URL — kept for backward compatibility.
-  'https://app-platform-ihzhhpf-prod.azurewebsites.net'
+  // Legacy App Service URL removed 2026-07-19: the westus2 rg-ihzhhpf-prod
+  // (incl. app-platform-ihzhhpf-prod) was decommissioned ahead of the fresh
+  // eastus2 PROD build (Sprint 19, #239). PROD app-fluent uses app.curavias.ch.
 ]
 param personas = [
   {

@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | Draft for review |
-| **Previous Version** | n/a (new — Sprint 19 kickoff) |
+| **Status** | Accepted — in progress (P1 IaC; #238 done, legacy PROD decommissioned) |
+| **Previous Version** | 1.0.0 (new — Sprint 19 kickoff). 1.1.0 adopts §7 Option 1 (reuse `infra/main.bicep` + new `prod-eastus2.bicepparam` instead of a fresh module tree), records the legacy westus2 PROD decommission (2026-07-19), and narrows PROD module selection to the Container Apps + Foundry + Fabric topology. |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane proven in eastus2); SIT feasibility matrix confirming 22/22 resource types GA in eastus2; ADR-0013 demo-scope pivot |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first IaC for all PROD resources |
 | **Prerequisites** | Sprint 18 complete (Foundry agents proven E2E in eastus2); Fabric capacity stabilized; App Fluent builds green |
@@ -209,6 +209,29 @@ flowchart TB
 ---
 
 ## 7. Bicep module plan
+
+> **Revised 2026-07-19 (v1.1.0) — Option 1 (reuse) adopted.** The fresh
+> `infra/prod-eastus2/modules/*` tree below is **superseded**. Rather than
+> re-author 15 modules, PROD reuses the existing, SIT-proven orchestrator
+> `infra/main.bicep` (550 lines, 20+ `enable<X>Module` gates, parameterised
+> `location`) via a **new environment param file
+> `infra/environments/prod-eastus2.bicepparam`** (`environmentName='prod'`,
+> `location='eastus2'`). This is DRY, avoids module drift, and lets every
+> PROD deploy benefit from SIT hardening. Module *selection* for PROD is
+> leaner than SIT: the legacy App Service / ML-workspace topology
+> (`experience-hosting`, `api-runtime`, `ai-ml-foundation`) is **excluded** —
+> the PROD demo target is Container Apps + Foundry + Fabric + Cosmos only (see
+> §5 inventory).
+>
+> **Prerequisite done 2026-07-19:** the abandoned westus2 `rg-ihzhhpf-prod`
+> (19 resources: App Service, ML workspace, Cognitive Services, EventHub,
+> ServiceBus, KV, ACR, VNet, …) was **decommissioned** (`approved-to-apply`
+> by @urruegg) so PROD is region-isolated to eastus2. Cognitive Services was
+> purged; the Key Vault `kv-ihzhhpf-prod-i62t` is purge-protected and
+> auto-expires 2026-10-16 (non-blocking — the new deploy uses a distinct KV
+> name).
+
+### 7a. Original fresh-tree plan (superseded — kept for history)
 
 ```text
 infra/prod-eastus2/
