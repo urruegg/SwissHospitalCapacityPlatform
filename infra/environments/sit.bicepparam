@@ -115,7 +115,7 @@ param eventHubsCsaAgentMiPrincipalId = ''
 param enableAgentHostModule = true
 // Bumped ccaf429 -> 9d91b1e to ship the Slice 0 Fabric Data Agent grounding
 // seam (PR #250, merge commit 9d91b1e; ci-build-agent-host.yml pushed the tag).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:9d91b1e'
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:3433f72'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`
