@@ -69,6 +69,14 @@ var baseEnv = [
     value: cosmosEndpoint
   }
   {
+    // Pin DefaultAzureCredential to the agent-host user-assigned MI so token
+    // acquisition (e.g. the live Fabric Data Agent call, M5/ADR-0033) resolves
+    // deterministically. Without this the SDK cannot pick among user-assigned
+    // identities and fails with "Unable to load the proper Managed Identity".
+    name: 'AZURE_CLIENT_ID'
+    value: agentHostIdentity.properties.clientId
+  }
+  {
     name: 'AGENTS_ROOT'
     value: '/app/agents'
   }
