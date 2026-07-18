@@ -23,7 +23,7 @@ Agent-host base URL for the live probe:
 
 ```powershell
 $baseUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
-$body = @{ message = 'What is the current bed occupancy for ward B?' } | ConvertTo-Json
+$body = @{ prompt = 'What is the current bed occupancy for ward B?'; conversationId = 'demo-1'; callerObjectId = 'demo.guest' } | ConvertTo-Json
 Invoke-WebRequest -Method POST -Uri "$baseUrl/agents/ooa-agent/chat" -ContentType 'application/json' -Body $body
 ```
 
