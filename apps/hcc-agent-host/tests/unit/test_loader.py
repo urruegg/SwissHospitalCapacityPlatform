@@ -69,3 +69,83 @@ def test_loads_real_bmca_manifest_from_repo():
     assert bmca.hitl_gates == ("HITL-02",)
     # The Fabric IQ-hosted fabric-data-agent must never be loaded by this host.
     assert "fabric-data-agent" not in manifests
+
+
+def test_parse_manifest_reads_grounding_agent():
+    data = _base_manifest()
+    data["groundingAgent"] = {
+        "server": "fabric-data-agent",
+        "endpointEnv": "FABRIC_DATA_AGENT_ENDPOINT",
+        "workspaceEnv": "FABRIC_WORKSPACE_ID",
+        "precedence": "primary",
+    }
+    manifest = parse_manifest(data, Path("demo/manifest.yaml"))
+    assert manifest.grounding_agent is not None
+    assert manifest.grounding_agent.server == "fabric-data-agent"
+    assert manifest.grounding_agent.endpoint_env == "FABRIC_DATA_AGENT_ENDPOINT"
+    assert manifest.grounding_agent.workspace_env == "FABRIC_WORKSPACE_ID"
+    assert manifest.grounding_agent.precedence == "primary"
+
+
+def test_parse_manifest_grounding_agent_absent_is_none():
+    manifest = parse_manifest(_base_manifest(), Path("demo/manifest.yaml"))
+    assert manifest.grounding_agent is None
+
+
+def test_grounding_agent_invalid_precedence_raises():
+    data = _base_manifest()
+    data["groundingAgent"] = {
+        "server": "srv",
+        "endpointEnv": "E",
+        "workspaceEnv": "W",
+        "precedence": "tertiary",
+    }
+    with pytest.raises(ManifestError, match="must be 'primary' or 'secondary'"):
+        parse_manifest(data, Path("demo/manifest.yaml"))
+
+
+def test_grounding_agent_missing_server_raises():
+    data = _base_manifest()
+    data["groundingAgent"] = {"endpointEnv": "E", "workspaceEnv": "W"}
+    with pytest.raises(ManifestError, match="missing required field 'server'"):
+        parse_manifest(data, Path("demo/manifest.yaml"))
+
+
+def test_grounding_agent_accepts_secondary_precedence():
+    data = _base_manifest()
+    data["groundingAgent"] = {
+        "server": "srv",
+        "endpointEnv": "E",
+        "workspaceEnv": "W",
+        "precedence": "secondary",
+    }
+    manifest = parse_manifest(data, Path("demo/manifest.yaml"))
+    assert manifest.grounding_agent.precedence == "secondary"
+
+
+def test_load_agent_host_manifests_skips_non_agent_host_runtime(tmp_path):
+    # An agent-host manifest (valid) alongside a control-plane manifest that
+    # legitimately lacks modelDeploymentRef must not break loading.
+    host_dir = tmp_path / "host-agent"
+    host_dir.mkdir()
+    (host_dir / "manifest.yaml").write_text(
+        "agent: host-agent\n"
+        "version: 1.0.0\n"
+        "runtime: agent-host\n"
+        "modelDeploymentRef: sprint11-chat\n"
+        "systemPromptRef: ./AGENT.md\n",
+        encoding="utf-8",
+    )
+    cp_dir = tmp_path / "control-plane-agent"
+    cp_dir.mkdir()
+    (cp_dir / "manifest.yaml").write_text(
+        "agent: control-plane-agent\n"
+        "version: 1.0.0\n"
+        "runtime: copilot-coding-agent\n"
+        "systemPromptRef: ./AGENT.md\n",
+        encoding="utf-8",
+    )
+
+    manifests = load_agent_host_manifests(tmp_path)
+
+    assert set(manifests) == {"host-agent"}

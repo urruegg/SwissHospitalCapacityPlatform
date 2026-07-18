@@ -1,5 +1,5 @@
 agent: ooa-agent
-version: 1.1.0
+version: 1.2.0
 runtime: agent-host
 modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
 modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
@@ -23,4 +23,12 @@ grounding:
   - table: gold.seasonality             # was Gold.Seasonality
     scope: hospital
     status: pending                     # NOT YET IN SPRINT 10 MEDALLION; see docs/sprints/sprint-10/gold-medallion-pending-tables.md
+groundingAgent:
+  # Slice 0 — primary grounding via the read-only Fabric Data Agent
+  # (agents/fabric-data-agent/AGENT.md). Region-agnostic: endpoint + workspace
+  # come from env so the same binding lifts westus2 -> eastus2.
+  server: fabric-data-agent
+  endpointEnv: FABRIC_DATA_AGENT_ENDPOINT
+  workspaceEnv: FABRIC_WORKSPACE_ID
+  precedence: primary
 goldenTasksRef: ./golden-tasks.md

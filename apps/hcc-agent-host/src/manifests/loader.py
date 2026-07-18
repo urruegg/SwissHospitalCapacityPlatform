@@ -36,6 +36,14 @@ class ToolBinding:
 
 
 @dataclass(frozen=True)
+class GroundingAgentBinding:
+    server: str
+    endpoint_env: str
+    workspace_env: str
+    precedence: str = "primary"
+
+
+@dataclass(frozen=True)
 class AgentManifest:
     agent: str
     version: str
@@ -45,6 +53,7 @@ class AgentManifest:
     tools: tuple[ToolBinding, ...] = ()
     hitl_gates: tuple[str, ...] = ()
     grounding_tables: tuple[str, ...] = field(default=())
+    grounding_agent: "GroundingAgentBinding | None" = None
 
     @property
     def max_ceiling(self) -> str:
@@ -91,6 +100,21 @@ def parse_manifest(data: dict[str, Any], source: Path) -> AgentManifest:
         if isinstance(row, dict) and row.get("table")
     )
 
+    grounding_agent = None
+    raw_ga = data.get("groundingAgent")
+    if raw_ga:
+        precedence = raw_ga.get("precedence", "primary")
+        if precedence not in ("primary", "secondary"):
+            raise ManifestError(
+                f"{source}: groundingAgent precedence '{precedence}' must be 'primary' or 'secondary'"
+            )
+        grounding_agent = GroundingAgentBinding(
+            server=_require(raw_ga, "server", source),
+            endpoint_env=_require(raw_ga, "endpointEnv", source),
+            workspace_env=_require(raw_ga, "workspaceEnv", source),
+            precedence=precedence,
+        )
+
     return AgentManifest(
         agent=agent,
         version=str(_require(data, "version", source)),
@@ -100,6 +124,7 @@ def parse_manifest(data: dict[str, Any], source: Path) -> AgentManifest:
         tools=tuple(tools),
         hitl_gates=gates,
         grounding_tables=grounding,
+        grounding_agent=grounding_agent,
     )
 
 
@@ -119,8 +144,15 @@ def load_agent_host_manifests(agents_root: Path) -> dict[str, AgentManifest]:
     """
     manifests: dict[str, AgentManifest] = {}
     for manifest_path in sorted(agents_root.glob("*/manifest.yaml")):
-        manifest = load_manifest_file(manifest_path)
-        if manifest.runtime != "agent-host":
+        with manifest_path.open("r", encoding="utf-8") as fh:
+            raw = yaml.safe_load(fh) or {}
+        if not isinstance(raw, dict):
+            raise ManifestError(f"{manifest_path}: manifest is not a mapping")
+        # Skip non-agent-host manifests (control-plane / Fabric IQ) before the
+        # full schema parse: those manifests legitimately lack the model fields
+        # ``parse_manifest`` requires, so parsing them first would raise.
+        if raw.get("runtime") != "agent-host":
             continue
+        manifest = parse_manifest(raw, manifest_path)
         manifests[manifest.agent] = manifest
     return manifests
