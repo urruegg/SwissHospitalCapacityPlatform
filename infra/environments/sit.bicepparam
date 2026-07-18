@@ -117,7 +117,7 @@ param enableAgentHostModule = true
 // (real OpenAI-Assistants flow, ADR-0033 Option A); ci-build-agent-host.yml
 // pushed the tag. Deploy is approval-gated per AGENTS.md §4 (approved-to-apply
 // by @urruegg 2026-07-18).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:478b115'
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b796961'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`
@@ -145,7 +145,7 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 // Sprint 20 Curavias UX shell plus the refreshed evidence data product
 // (ADR-0033, 35 ADRs) from PR #250 (merge commit 9d91b1e).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:9d91b1e'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:b796961'
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:
