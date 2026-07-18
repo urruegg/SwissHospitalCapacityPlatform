@@ -8,6 +8,11 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
+# Vite bakes VITE_* vars into the static bundle at build time. Pass the agent-host
+# base URL so the Copilot Drawer calls the live agents instead of the built-in
+# mock (empty => mock, see src/copilot-drawer/agent-manifest.ts).
+ARG VITE_AGENT_HOST_URL=""
+ENV VITE_AGENT_HOST_URL=$VITE_AGENT_HOST_URL
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime

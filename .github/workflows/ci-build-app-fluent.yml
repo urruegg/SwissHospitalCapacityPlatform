@@ -66,11 +66,18 @@ jobs:
       - name: Docker build
         # Build context = apps/hcc-app-fluent/ so the Dockerfile's `COPY . .`
         # only picks up the app source, not the whole repo.
+        #
+        # VITE_AGENT_HOST_URL is baked into the static bundle so the Copilot
+        # Drawer calls the live agent-host. Sourced from the `sit` environment
+        # variable AGENT_HOST_URL (config, not code); empty => built-in mock.
         shell: bash
+        env:
+          VITE_AGENT_HOST_URL: ${{ vars.AGENT_HOST_URL }}
         run: |
           set -euo pipefail
           docker build \
             -f apps/hcc-app-fluent/Dockerfile \
+            --build-arg VITE_AGENT_HOST_URL="${VITE_AGENT_HOST_URL}" \
             -t "${{ steps.tags.outputs.full_sha }}" \
             -t "${{ steps.tags.outputs.full_latest }}" \
             apps/hcc-app-fluent
