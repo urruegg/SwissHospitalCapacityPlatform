@@ -20,6 +20,15 @@
 
 ---
 
+> **Status (2026-07-18): COMPLETE except M2.** M0, M1, M3, M4, M5, M6 are done and
+> live; the browser app (`hcc-app-fluent`) now calls the live agents end-to-end
+> (post-M6). **M2 (OneLake "Hospital Capacity" Domain + endorsed Data Product) is
+> blocked on the Fabric Administrator role** — see
+> [`docs/operations/access-request-fabric-administrator.md`](../../operations/access-request-fabric-administrator.md).
+> Evidence: [`docs/architecture/fabric-iq-ready-evidence.md`](../../architecture/fabric-iq-ready-evidence.md) (v1.2.0).
+
+---
+
 ## File Structure
 
 ### New files

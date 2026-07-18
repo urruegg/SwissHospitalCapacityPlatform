@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-18 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft |
-| **Previous Version** | — (new) |
+| **Status** | Accepted — implemented (M2 partial: Domain + endorsed Data Product blocked on Fabric Administrator role) |
+| **Previous Version** | 1.0.0 (new) |
 
 > Companion plan: [`docs/superpowers/plans/2026-07-18-fabric-iq-preview-demo-showcase.md`](../plans/2026-07-18-fabric-iq-preview-demo-showcase.md).
 > Parent readiness design: [`2026-07-17-fabric-iq-foundry-readiness-design.md`](2026-07-17-fabric-iq-foundry-readiness-design.md).
@@ -249,10 +249,13 @@ once M3 publishes the Data Agent.
 
 ## 12. Definition of done
 
-- [ ] M0 tenant toggles verified; ADR-0013 exception window confirmed.
-- [ ] M1 operational Fabric IQ ontology built + bed-state binding; crosswalk conformance green (gate G-A evidence captured).
-- [ ] M2 "Hospital Capacity" Domain + endorsed Data Product published and discoverable.
-- [ ] M3 Fabric Data Agent published; playground shows grounded hcp:* answer + PHI refusal.
-- [ ] M4 Foundry `ooa` consumes the Data Agent live (native connection); `_apply` implemented + run with `approved-to-apply`; #251 closed.
-- [ ] M5 agent-host `ooa` returns **live** hcp:* citations after redeploy; refusal still verbatim.
-- [ ] M6 demo script rehearsed; "Fabric IQ ready" evidence doc green; ADR-0034 merged; AGENTS.md fabric-data-agent row + PRD traceability updated.
+Status as of 2026-07-18 (see [`docs/architecture/fabric-iq-ready-evidence.md`](../../architecture/fabric-iq-ready-evidence.md) for evidence):
+
+- [x] M0 tenant toggles verified; ADR-0013 exception window confirmed.
+- [x] M1 operational Fabric IQ ontology built + bed-state binding; crosswalk conformance green (gate G-A evidence captured).
+- [ ] M2 "Hospital Capacity" Domain + endorsed Data Product published and discoverable. **Blocked — requires the Fabric Administrator role** (ticket `docs/operations/access-request-fabric-administrator.md`).
+- [x] M3 Fabric Data Agent published; playground shows grounded hcp:* answer + PHI refusal.
+- [x] M4 Foundry `ooa` consumes the Data Agent live (native connection); `_apply` implemented + run with `approved-to-apply`; #251 closed.
+- [x] M5 agent-host `ooa` returns **live** hcp:* citations after redeploy; refusal still verbatim (corr `fa69c6b0f4e04cbd` / `f34b9bf2f730be12`).
+- [x] M6 demo script rehearsed; "Fabric IQ ready" evidence doc green; ADR-0034 Accepted; AGENTS.md fabric-data-agent row + PRD traceability updated.
+- [x] **Post-M6 — browser app → agent live:** `hcc-app-fluent` Copilot Drawer calls the live agents end-to-end (`VITE_AGENT_HOST_URL` baked, agent-host CORS); browser-style probe returns hcp:* citations (corr `77960709b80ebf57`) and refuses PHI (corr `969eaf364470da54`).

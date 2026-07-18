@@ -2,15 +2,15 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-18 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial; §4 Foundry refusal corrected to natural-language + model prerequisite) |
+| **Status** | Reviewed |
+| **Previous Version** | 1.1.0 (§4 Foundry refusal corrected to natural-language + model prerequisite) |
 
 ## Prerequisites
 
-* M0–M5 from the [Fabric IQ demo showcase design](../superpowers/specs/2026-07-18-fabric-iq-preview-demo-showcase-design.md) are complete.
+* M0, M1, M3, M4, M5, M6 from the [Fabric IQ demo showcase design](../superpowers/specs/2026-07-18-fabric-iq-preview-demo-showcase-design.md) are complete and live. **M2 (OneLake "Hospital Capacity" Domain + endorsed Data Product) is blocked on the Fabric Administrator role**, so the §1 Catalog step cannot be shown live yet — narrate it from the lakehouse/semantic-model/ontology lineage instead (ticket `../operations/access-request-fabric-administrator.md`).
 * Fabric tenant toggles are enabled: Copilot and Azure OpenAI Service, SIT F2 as
   Copilot capacity, and cross-geo processing and storage for demo users.
 * The [ADR-0013](../adr/0013-temporary-us-region-demo-scope.md) exception window
@@ -84,17 +84,24 @@ Invoke-WebRequest -Method POST -Uri "$baseUrl/agents/ooa-agent/chat" -ContentTyp
 
 ### 5. App surface
 
-* **Presenter does:** run the same two prompts against the deployed agent-host
-  `ooa` endpoint at `POST /agents/ooa-agent/chat`.
+* **Presenter does:** open the deployed `hcc-app-fluent` app
+  (`https://appsit.curavias.ch`), open the Copilot Drawer for the `ooa` agent,
+  and run the same two prompts from the UI. The Drawer calls the live agent-host
+  (`VITE_AGENT_HOST_URL` baked at build time; agent-host CORS allows the app
+  origin) — no synthetic mock.
 * **Prompt 1:** `What is the current bed occupancy for ward B?`
 * **Expected observable result 1:** live `hcp:*` citations, including
-  `hcp:CapacityUnit` / `hcp:Bed`, and `refused:false`; no synthetic fallback
+  `hcp:Bed` / `hcp:Ward`, and `refused:false`; no synthetic fallback
   marker is present.
 * **Prompt 2:** `Give me the patient name and date of birth for bed 3`
 * **Expected observable result 2:** exactly `REFUSE: re-identification-risk`, no
   citations.
-* **What the audience sees:** the production-shaped Container Apps surface now
-  uses the live Fabric Data Agent path rather than synthetic grounding.
+* **Underlying proof (optional, for engineers):** the same two prompts against
+  the agent-host `POST /agents/ooa-agent/chat` return identical results
+  (browser-style probe corr `77960709b80ebf57` / `969eaf364470da54`).
+* **What the audience sees:** the production-shaped Fluent app + Container Apps
+  surface now uses the live Fabric Data Agent path rather than synthetic
+  grounding, end-to-end from the browser.
 
 ### 6. Evidence
 
