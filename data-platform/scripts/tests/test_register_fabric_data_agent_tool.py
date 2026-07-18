@@ -39,6 +39,33 @@ class BuildPlanTests(unittest.TestCase):
         self.assertEqual(reg.build_plan(**args), reg.build_plan(**args))
 
 
+class ApplyTests(unittest.TestCase):
+    def test_apply_builds_connection_payload(self):
+        plan = reg.build_plan(
+            foundry_agent="ooa-agent",
+            data_agent_endpoint="https://example/da",
+            workspace_id="ws-123",
+            region="westus2",
+        )
+
+        out = reg._apply(
+            plan,
+            approver="urruegg",
+            connection_factory=lambda payload: {"id": "conn-1", "sent": payload},
+        )
+
+        self.assertEqual(out["action"], "apply")
+        self.assertEqual(out["approvedBy"], "urruegg")
+        self.assertEqual(out["connection"]["sent"]["tool"]["type"], "fabric_data_agent")
+        self.assertEqual(out["connection"]["id"], "conn-1")
+
+    def test_apply_rejects_bot_approver(self):
+        plan = reg.build_plan("ooa-agent", "https://e/da", "ws", "westus2")
+
+        with self.assertRaises(SystemExit):
+            reg._apply(plan, approver="copilot[bot]", connection_factory=lambda p: {})
+
+
 class CliTests(unittest.TestCase):
     _BASE = [
         "--foundry-agent", "ooa-agent",

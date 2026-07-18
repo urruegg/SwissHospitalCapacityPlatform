@@ -40,20 +40,33 @@ def build_plan(
     }
 
 
-def _apply(plan: Dict[str, Any], approver: str) -> Dict[str, Any]:
+def _default_connection_factory(payload: Dict[str, Any]) -> Dict[str, Any]:
+    # Live path: create the Foundry Fabric connection via az rest / SDK using the
+    # shape confirmed in M4 Step 1. Requires azure-identity; called only on apply.
+    if not _HAS_AZURE:
+        raise SystemExit("azure-identity not installed; cannot apply")
+    raise SystemExit(
+        "connection_factory not provided: pass the M4-confirmed live factory to apply"
+    )
+
+
+def _apply(plan: Dict[str, Any], approver: str, connection_factory=None) -> Dict[str, Any]:
     # AGENTS.md §4: the approver must be a human with repo write access. This
     # CLI enforces the non-empty + non-bot invariant; write-access verification
     # is performed out of band by the agent/human via github-mcp before apply.
     if approver.endswith("[bot]"):
         raise SystemExit("apply approver must be a human, not a bot identity (AGENTS.md §4)")
-    if not _HAS_AZURE:
-        raise SystemExit("azure-identity not installed; cannot apply")
-    # Live Foundry registration goes here (data-plane call). Blocked on a
-    # provisioned Fabric Data Agent endpoint (Phase 2 / Sprint 19); tracked in
-    # issue #251. Verified manually per Task 8 Step 6 once the endpoint exists.
+    factory = connection_factory or _default_connection_factory
+    payload = {
+        "foundryAgent": plan["foundryAgent"],
+        "tool": plan["tool"],
+        "region": plan["region"],
+    }
+    connection = factory(payload)
     applied = dict(plan)
     applied["action"] = "apply"
     applied["approvedBy"] = approver
+    applied["connection"] = connection
     return applied
 
 
