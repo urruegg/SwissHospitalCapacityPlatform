@@ -65,6 +65,30 @@ def test_ooa_chat_propagates_reidentification_refusal():
     assert body["citations"] == []
 
 
+def test_host_uses_live_ask_fn_when_env_set(monkeypatch):
+    # When FABRIC_DATA_AGENT_* env is set, the host wires a live client whose
+    # ask() result is surfaced (proves the synthetic fallback is bypassed).
+    monkeypatch.setenv("FABRIC_DATA_AGENT_ENDPOINT", "https://da.example/query")
+    monkeypatch.setenv("FABRIC_WORKSPACE_ID", "ws-1")
+    monkeypatch.setenv("FABRIC_DATA_AGENT_ID", "da-1")
+
+    import api.app as appmod
+
+    class _FakeClient:
+        def ask(self, q):
+            return {"answer": "live", "citations": ["hcp:Ward"], "refused": False}
+
+    monkeypatch.setattr(appmod, "_build_live_data_agent", lambda: _FakeClient())
+    appmod.get_state.cache_clear()
+    client = TestClient(appmod.create_app())
+    body = client.post(
+        "/agents/ooa-agent/chat",
+        json={"prompt": "beds?", "conversationId": "live"},
+    ).json()
+    assert "hcp:Ward" in body["citations"]
+    appmod.get_state.cache_clear()
+
+
 def test_chat_unknown_agent_404():
     resp = _client().post("/agents/nope/chat", json={"prompt": "x"})
     assert resp.status_code == 404

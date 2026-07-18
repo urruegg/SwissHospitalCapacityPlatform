@@ -37,6 +37,18 @@ def _agents_root() -> Path:
     return Path(__file__).resolve().parents[4] / "agents"
 
 
+def _build_live_data_agent():
+    """Return a live FabricDataAgentClient when env is configured, else None."""
+    endpoint = os.environ.get("FABRIC_DATA_AGENT_ENDPOINT")
+    workspace = os.environ.get("FABRIC_WORKSPACE_ID")
+    agent_id = os.environ.get("FABRIC_DATA_AGENT_ID")
+    if not (endpoint and workspace and agent_id):
+        return None
+    from tools.fabric_data_agent_client import FabricDataAgentClient
+
+    return FabricDataAgentClient(endpoint=endpoint, workspace_id=workspace, data_agent_id=agent_id)
+
+
 def _system_prompt_for(manifest: AgentManifest, agents_root: Path) -> str:
     ref = manifest.system_prompt_ref.split("#", 1)[0].lstrip("./")
     prompt_path = agents_root / manifest.agent / ref
@@ -54,9 +66,11 @@ class HostState:
         # MVO ontology (hcp:* citations) and propagate its PHI refusals. Without a
         # live client the adapter answers synthetically (no PHI, ADR-0016); a live
         # Fabric Data Agent client is injected here once the endpoint is provisioned.
+        live = _build_live_data_agent()
+        adapter = FabricDataAgentAdapter(ask_fn=(live.ask if live is not None else None))
         self.orchestrator = Orchestrator(
             chat_model=MockChatModel(),
-            data_agent=FabricDataAgentAdapter(),
+            data_agent=adapter,
         )
 
     def require(self, name: str) -> AgentManifest:
