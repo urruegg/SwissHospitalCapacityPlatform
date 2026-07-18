@@ -144,8 +144,15 @@ def load_agent_host_manifests(agents_root: Path) -> dict[str, AgentManifest]:
     """
     manifests: dict[str, AgentManifest] = {}
     for manifest_path in sorted(agents_root.glob("*/manifest.yaml")):
-        manifest = load_manifest_file(manifest_path)
-        if manifest.runtime != "agent-host":
+        with manifest_path.open("r", encoding="utf-8") as fh:
+            raw = yaml.safe_load(fh) or {}
+        if not isinstance(raw, dict):
+            raise ManifestError(f"{manifest_path}: manifest is not a mapping")
+        # Skip non-agent-host manifests (control-plane / Fabric IQ) before the
+        # full schema parse: those manifests legitimately lack the model fields
+        # ``parse_manifest`` requires, so parsing them first would raise.
+        if raw.get("runtime") != "agent-host":
             continue
+        manifest = parse_manifest(raw, manifest_path)
         manifests[manifest.agent] = manifest
     return manifests

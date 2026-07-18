@@ -121,3 +121,31 @@ def test_grounding_agent_accepts_secondary_precedence():
     }
     manifest = parse_manifest(data, Path("demo/manifest.yaml"))
     assert manifest.grounding_agent.precedence == "secondary"
+
+
+def test_load_agent_host_manifests_skips_non_agent_host_runtime(tmp_path):
+    # An agent-host manifest (valid) alongside a control-plane manifest that
+    # legitimately lacks modelDeploymentRef must not break loading.
+    host_dir = tmp_path / "host-agent"
+    host_dir.mkdir()
+    (host_dir / "manifest.yaml").write_text(
+        "agent: host-agent\n"
+        "version: 1.0.0\n"
+        "runtime: agent-host\n"
+        "modelDeploymentRef: sprint11-chat\n"
+        "systemPromptRef: ./AGENT.md\n",
+        encoding="utf-8",
+    )
+    cp_dir = tmp_path / "control-plane-agent"
+    cp_dir.mkdir()
+    (cp_dir / "manifest.yaml").write_text(
+        "agent: control-plane-agent\n"
+        "version: 1.0.0\n"
+        "runtime: copilot-coding-agent\n"
+        "systemPromptRef: ./AGENT.md\n",
+        encoding="utf-8",
+    )
+
+    manifests = load_agent_host_manifests(tmp_path)
+
+    assert set(manifests) == {"host-agent"}
