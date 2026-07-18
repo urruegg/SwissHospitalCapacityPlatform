@@ -56,3 +56,18 @@ def test_ask_passes_refusal_through():
     assert out["refused"] is True
     assert out["answer"] == "REFUSE: re-identification-risk"
     assert out["citations"] == []
+
+
+def test_ask_treats_null_citations_as_empty_list():
+    def fake_post(url, json, headers, timeout):
+        return _FakeResponse({"answer": "No cited entities", "citations": None, "refused": False})
+
+    client = FabricDataAgentClient(
+        endpoint="https://da.example/query",
+        workspace_id="ws-1",
+        data_agent_id="da-1",
+        token_provider=lambda: "tok",
+        http_post=fake_post,
+    )
+    out = client.ask("status?")
+    assert out["citations"] == []

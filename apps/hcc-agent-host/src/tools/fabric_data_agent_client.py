@@ -55,6 +55,6 @@ class FabricDataAgentClient:
         data = resp.json()
         return {
             "answer": data.get("answer", ""),
-            "citations": list(data.get("citations", [])),
+            "citations": list(data.get("citations") or []),
             "refused": bool(data.get("refused", False)),
         }

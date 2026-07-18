@@ -14,6 +14,7 @@ enforcer for the manifest's declared gates (ADR-0007).
 
 from __future__ import annotations
 
+import logging
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -28,6 +29,8 @@ from orchestrator.mock_model import MockChatModel
 from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from hitl.gate_enforcer import enforce_gates
 
+logger = logging.getLogger(__name__)
+
 
 def _agents_root() -> Path:
     override = os.environ.get("AGENTS_ROOT")
@@ -38,11 +41,17 @@ def _agents_root() -> Path:
 
 
 def _build_live_data_agent():
-    """Return a live FabricDataAgentClient when env is configured, else None."""
+    """Return a live FabricDataAgentClient when env is fully configured, else None."""
     endpoint = os.environ.get("FABRIC_DATA_AGENT_ENDPOINT")
     workspace = os.environ.get("FABRIC_WORKSPACE_ID")
     agent_id = os.environ.get("FABRIC_DATA_AGENT_ID")
-    if not (endpoint and workspace and agent_id):
+    provided = [bool(endpoint), bool(workspace), bool(agent_id)]
+    if not all(provided):
+        if any(provided):
+            logger.warning(
+                "FABRIC_DATA_AGENT_* partially configured (%d/3 set); using synthetic grounding",
+                sum(provided),
+            )
         return None
     from tools.fabric_data_agent_client import FabricDataAgentClient
 
