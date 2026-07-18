@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from typing import Any, Callable, Dict, Optional
 
@@ -19,14 +20,44 @@ try:
 except ImportError:
     _HAS_AZURE = False
 
+# Models confirmed in M4 Step 1 (Foundry portal spike, 2026-07-18) against the
+# ai-ihzhhpf-sit-eastus2 project. The Fabric Data Agent tool tile is disabled for
+# gpt-5-mini ("This tool doesn't work with the model you selected"); gpt-5 enables
+# it. Computer Use stays disabled even on gpt-5.
+_MODEL_INCOMPATIBLE = ("gpt-5-mini",)
+_MODEL_COMPATIBLE = ("gpt-5", "gpt-4o", "gpt-4.1")
+
+_ARTIFACT_RE = re.compile(r"/aiskills/([^/]+)/", re.IGNORECASE)
+
+
+def derive_artifact_id(data_agent_endpoint: str) -> Optional[str]:
+    """Parse the Fabric Data Agent artifact (data agent) id from its endpoint.
+
+    The published endpoint is deterministic:
+    ``.../workspaces/{workspaceId}/aiskills/{artifactId}/aiassistant/openai``.
+    Returns ``None`` when the segment is absent (e.g. a placeholder endpoint).
+    """
+    match = _ARTIFACT_RE.search(data_agent_endpoint or "")
+    return match.group(1) if match else None
+
 
 def build_plan(
     foundry_agent: str,
     data_agent_endpoint: str,
     workspace_id: str,
     region: str,
+    artifact_id: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Return the deterministic registration plan (no side effects)."""
+    """Return the deterministic registration plan (no side effects).
+
+    Mirrors the Foundry "Connect to Fabric Data Agent" form confirmed in
+    M4 Step 1: Connection + Name + Workspace ID + Artifact ID (the data agent
+    id), NOT the raw aiskills/openai endpoint URL.
+    """
+    resolved_artifact = artifact_id or derive_artifact_id(data_agent_endpoint)
+    connection_name = "fabric_dataagent_" + re.sub(
+        r"[^a-z0-9]+", "_", foundry_agent.lower()
+    ).strip("_")
     return {
         "action": "plan",
         "foundryAgent": foundry_agent,
@@ -35,7 +66,22 @@ def build_plan(
             "type": "fabric_data_agent",
             "endpoint": data_agent_endpoint,
             "workspaceId": workspace_id,
+            "artifactId": resolved_artifact,
             "ceiling": "read",
+            "connectionForm": {
+                "connection": "Add a new connection",
+                "name": connection_name,
+                "workspaceId": workspace_id,
+                "artifactId": resolved_artifact,
+            },
+            "modelRequirement": {
+                "incompatible": list(_MODEL_INCOMPATIBLE),
+                "compatible": list(_MODEL_COMPATIBLE),
+                "note": (
+                    "Foundry agent must run a Fabric-Data-Agent-compatible model; "
+                    "gpt-5-mini is not supported (M4 Step 1 portal spike)."
+                ),
+            },
         },
     }
 
@@ -81,13 +127,16 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--foundry-agent", required=True)
     p.add_argument("--data-agent-endpoint", required=True)
     p.add_argument("--workspace-id", required=True)
+    p.add_argument("--artifact-id", dest="artifact_id", default=None,
+                   help="Fabric Data Agent artifact id; derived from the endpoint when omitted")
     p.add_argument("--region", default="westus2")
     p.add_argument("--action", choices=["plan", "apply"], default="plan")
     p.add_argument("--approved-to-apply", dest="approver", default="")
     args = p.parse_args(argv)
 
     plan = build_plan(
-        args.foundry_agent, args.data_agent_endpoint, args.workspace_id, args.region
+        args.foundry_agent, args.data_agent_endpoint, args.workspace_id, args.region,
+        artifact_id=args.artifact_id,
     )
     if args.action == "plan":
         print(json.dumps(plan, indent=2, sort_keys=True))
