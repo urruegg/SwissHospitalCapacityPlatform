@@ -384,6 +384,17 @@
       },
       "status": "Proposed",
       "title": "Fabric Data Agent as the Foundry grounding tool"
+    },
+    {
+      "decisionSummary": "Adopt the Fabric IQ demo-scope artefacts in the existing `westus2` Fabric workspace `f3af9733-9503-4e92-98f9-a901d96f1c87`:",
+      "id": "ADR-0034",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0034-fabric-iq-demo-scope-artefacts.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0034-fabric-iq-demo-scope-artefacts.md"
+      },
+      "status": "Proposed",
+      "title": "Fabric IQ (Preview) demo-scope artefacts in westus2"
     }
   ],
   "boms": [
