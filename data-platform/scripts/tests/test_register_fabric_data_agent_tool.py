@@ -39,5 +39,25 @@ class BuildPlanTests(unittest.TestCase):
         self.assertEqual(reg.build_plan(**args), reg.build_plan(**args))
 
 
+class CliTests(unittest.TestCase):
+    _BASE = [
+        "--foundry-agent", "ooa-agent",
+        "--data-agent-endpoint", "https://x",
+        "--workspace-id", "ws-1",
+    ]
+
+    def test_default_action_is_plan(self):
+        # main() returns 0 on the default (plan) path without an approver.
+        self.assertEqual(reg.main(self._BASE), 0)
+
+    def test_apply_without_approval_raises(self):
+        with self.assertRaises(SystemExit):
+            reg.main(self._BASE + ["--action", "apply"])
+
+    def test_apply_with_bot_approver_raises(self):
+        with self.assertRaises(SystemExit):
+            reg.main(self._BASE + ["--action", "apply", "--approved-to-apply", "copilot[bot]"])
+
+
 if __name__ == "__main__":
     unittest.main()

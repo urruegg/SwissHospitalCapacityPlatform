@@ -41,6 +41,11 @@ def build_plan(
 
 
 def _apply(plan: Dict[str, Any], approver: str) -> Dict[str, Any]:
+    # AGENTS.md §4: the approver must be a human with repo write access. This
+    # CLI enforces the non-empty + non-bot invariant; write-access verification
+    # is performed out of band by the agent/human via github-mcp before apply.
+    if approver.endswith("[bot]"):
+        raise SystemExit("apply approver must be a human, not a bot identity (AGENTS.md §4)")
     if not _HAS_AZURE:
         raise SystemExit("azure-identity not installed; cannot apply")
     # Live Foundry registration goes here (data-plane call). Left as the single
