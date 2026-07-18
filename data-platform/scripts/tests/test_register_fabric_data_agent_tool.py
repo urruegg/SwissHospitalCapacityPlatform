@@ -65,6 +65,12 @@ class ApplyTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             reg._apply(plan, approver="copilot[bot]", connection_factory=lambda p: {})
 
+    def test_apply_rejects_empty_approver(self):
+        plan = reg.build_plan("ooa-agent", "https://e/da", "ws", "westus2")
+
+        with self.assertRaises(SystemExit):
+            reg._apply(plan, approver="", connection_factory=lambda p: {})
+
 
 class CliTests(unittest.TestCase):
     _BASE = [

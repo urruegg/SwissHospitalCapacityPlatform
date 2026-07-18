@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Optional
 
 try:
     from azure.identity import DefaultAzureCredential  # noqa: F401
@@ -50,10 +50,16 @@ def _default_connection_factory(payload: Dict[str, Any]) -> Dict[str, Any]:
     )
 
 
-def _apply(plan: Dict[str, Any], approver: str, connection_factory=None) -> Dict[str, Any]:
+def _apply(
+    plan: Dict[str, Any],
+    approver: str,
+    connection_factory: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
     # AGENTS.md §4: the approver must be a human with repo write access. This
     # CLI enforces the non-empty + non-bot invariant; write-access verification
     # is performed out of band by the agent/human via github-mcp before apply.
+    if not approver:
+        raise SystemExit("apply requires a human approver handle")
     if approver.endswith("[bot]"):
         raise SystemExit("apply approver must be a human, not a bot identity (AGENTS.md §4)")
     factory = connection_factory or _default_connection_factory
