@@ -2,12 +2,62 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | In progress — #238 (Sprint 18) done; legacy westus2 PROD decommissioned; P1 IaC via Option 1 reuse |
-| **Previous Version** | 1.0.0 (Pending, blocked on Sprint 18). 1.1.0: Sprint 18 closed → unblocked; legacy westus2 rg-ihzhhpf-prod decommissioned (approved-to-apply 2026-07-19); P1 adopts Option 1 (new `infra/environments/prod-eastus2.bicepparam` for the existing `infra/main.bicep`). |
+| **Status** | In progress — P1–P3 (foundation + AI + compute) DEPLOYED & verified in eastus2; P4–P8 pending |
+| **Previous Version** | 1.1.0 (Sprint 18 closed → unblocked; legacy westus2 rg-ihzhhpf-prod decommissioned; P1 Option 1 reuse). 1.2.0: added the P1–P3 execution record — first deploy failed on 2 shared-module limits, corrected via a PROD-local ACR + network-off, redeployed green (17 resources, both Container Apps live). |
 | **Design spec** | [2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md](../specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md) |
+
+---
+
+## Execution record — P1–P3 (2026-07-19)
+
+> Supersedes the fresh-tree command examples below. Actual execution used
+> **Option 1**: the existing `infra/main.bicep` driven by
+> `infra/environments/prod-eastus2.bicepparam` (no `infra/prod-eastus2/` tree).
+
+**Approved-to-apply**: @urruegg 2026-07-19T00:53 +02:00.
+
+**Deployment**: `az deployment group create -n sprint19-prod-eastus2-p1 -g
+rg-ihzhhpf-prod-eastus2 -f infra/main.bicep -p
+infra/environments/prod-eastus2.bicepparam` — Succeeded in 2m26s
+(2026-07-19T05:37Z).
+
+**First attempt failed** on two shared-module limitations, both fixed:
+
+1. **Cross-RG ACR unsupported** — the Container App module references the
+   registry *by name in the deployment RG* (`existing`, no cross-RG scope), so
+   cross-region pull from the SIT ACR returned `ResourceNotFound`. Fix: created
+   a **PROD-local ACR `crihzhhpfprod`** and `az acr import`ed both images
+   (`hcc-agent-host:b796961`, `hcc-app-fluent:b796961`) from the SIT ACR.
+2. **Cosmos private endpoint** needs the `privatelink.documents.azure.com` zone
+   that only the CSA-Cosmos module creates. Fix: `enableNetworkModule=false`
+   for this slice → public CAEs + public Cosmos (synthetic data, no PHI per
+   ADR-0013 — parity with how SIT ran for months). VNet + private-endpoint is a
+   hardening follow-up.
+
+The two half-created CAEs + the orphaned Cosmos PE were deleted before the
+clean redeploy.
+
+**Deployed & verified (17 resources)**:
+
+| Layer | Resources |
+|-------|-----------|
+| Foundation | `vnet-platform-ihzhhpf-prod` (+3 NSGs, unused while network off), `log-ihzhhpf-prod`, `appi-ihzhhpf-prod`, `kv-ihzhhpf-prod-q4nk`, `id-platform-ihzhhpf-prod` |
+| AI platform | `ai-ihzhhpf-prod` (Foundry/Cognitive account) |
+| Registry | `crihzhhpfprod` (PROD-local ACR, 2 images) |
+| Compute | `cae-ihzhhpf-prod` + `ca-agent-host-ihzhhpf-prod` + `id-ca-agent-host-…`; `cae-app-fluent-ihzhhpf-prod` + `ca-app-fluent-ihzhhpf-prod` + `id-ca-app-fluent-…` |
+| Data | `cosmos-ihzhhpf-prod` → db `agenthost` → `conversations` / `audit` / `approval-events` |
+
+**Live-health evidence**: agent-host `/healthz` → `{"status":"ok"}`, `/agents`
+→ 200; app-fluent `/` → 200; both Container Apps `runningStatus=Running` on the
+PROD-ACR images. Commits `6d31559` (param) + `0913b02` (ACR + network-off fix).
+
+**Deferred to later phases**: Redis (eastus2 Balanced SKU unverified — in-memory
+per ADR-0028), P4 Event Hubs / Service Bus, P5 Foundry-hosted agents (Sprint 18
+API pattern against the PROD project), P6 Fabric F2 workspace + Data Agent, P7
+DNS cutover `app.curavias.ch`, VNet + private-endpoint hardening.
 
 ---
 

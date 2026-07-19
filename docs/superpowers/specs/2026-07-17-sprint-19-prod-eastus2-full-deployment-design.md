@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | Accepted — in progress (P1 IaC; #238 done, legacy PROD decommissioned) |
-| **Previous Version** | 1.0.0 (new — Sprint 19 kickoff). 1.1.0 adopts §7 Option 1 (reuse `infra/main.bicep` + new `prod-eastus2.bicepparam` instead of a fresh module tree), records the legacy westus2 PROD decommission (2026-07-19), and narrows PROD module selection to the Container Apps + Foundry + Fabric topology. |
+| **Status** | Accepted — in progress (P1–P3 foundation + AI + compute DEPLOYED & verified in eastus2; P4–P8 pending) |
+| **Previous Version** | 1.1.0 (adopted §7 Option 1 reuse; recorded legacy westus2 PROD decommission). 1.2.0 adds §7b — the verified P1–P3 deploy outcome (17 resources green) and two shared-module findings: cross-RG ACR is unsupported (→ PROD-local ACR) and the Cosmos private endpoint needs the CSA-Cosmos DNS zone (→ network off for the first slice). |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane proven in eastus2); SIT feasibility matrix confirming 22/22 resource types GA in eastus2; ADR-0013 demo-scope pivot |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first IaC for all PROD resources |
 | **Prerequisites** | Sprint 18 complete (Foundry agents proven E2E in eastus2); Fabric capacity stabilized; App Fluent builds green |
@@ -230,6 +230,41 @@ flowchart TB
 > purged; the Key Vault `kv-ihzhhpf-prod-i62t` is purge-protected and
 > auto-expires 2026-10-16 (non-blocking — the new deploy uses a distinct KV
 > name).
+
+### 7b. Verified deploy outcome — P1–P3 (2026-07-19)
+
+Approved-to-apply @urruegg 2026-07-19T00:53 +02:00. Deployment
+`sprint19-prod-eastus2-p1` Succeeded in 2m26s (2026-07-19T05:37Z) into
+`rg-ihzhhpf-prod-eastus2`. **17 resources**, both Container Apps live on
+PROD-local images.
+
+The first attempt surfaced two limitations in the reused shared modules; both
+are now documented constraints for future PROD/region work:
+
+1. **Cross-RG ACR is unsupported.** `modules/agent-host/container-app.bicep`
+   references the registry with `existing = { name: last(split(resourceId,'/')) }`
+   — resolved **in the deployment resource group**, with no cross-RG scope. A
+   cross-region pull from the SIT ACR therefore fails `ResourceNotFound`.
+   **Decision:** stand up a **PROD-local ACR `crihzhhpfprod`** in the PROD RG and
+   `az acr import` the images from the SIT ACR. This is also the more
+   region-isolated end-state (reverses the interim "reuse SIT ACR" idea).
+2. **Cosmos private endpoint depends on the CSA-Cosmos DNS zone.**
+   `modules/agent-host/cosmos-pe.bicep` references
+   `privatelink.documents.azure.com` as `existing`; that zone is created only by
+   `modules/cosmos/csa.bicep`. With the CSA module out of scope, the PE fails
+   `InvalidPrivateDnsZoneIds`. **Decision:** `enableNetworkModule=false` for the
+   first slice → public CAEs + public Cosmos (synthetic data, no PHI per
+   ADR-0013). VNet + private endpoint becomes a **hardening follow-up** (must
+   also provision/own the privatelink zone independently of CSA-Cosmos).
+
+**Verified live:** agent-host `/healthz` → `{"status":"ok"}`, `/agents` → 200;
+app-fluent `/` → 200; Cosmos db `agenthost` has `conversations` / `audit` /
+`approval-events`; KV `kv-ihzhhpf-prod-q4nk` (distinct name dodged the
+purge-protected `-i62t`). Commits `6d31559` + `0913b02`.
+
+**Still deferred:** Redis (eastus2 Balanced SKU unverified), P4 Event Hubs /
+Service Bus, P5 Foundry-hosted agents, P6 Fabric F2 workspace + Data Agent, P7
+DNS cutover `app.curavias.ch`, VNet/PE hardening.
 
 ### 7a. Original fresh-tree plan (superseded — kept for history)
 
