@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 2.0.0 |
+| **Version** | 2.1.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft for review |
-| **Previous Version** | 1.0.0 (new — Fabric IQ readiness brainstorm). 2.0.0 **relaxes decision D2**: PROD Fabric IQ stays in **westus2** because the subscription's eastus2 Fabric quota is 0 CU (recorded in [ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md); Sprint 19 §7e). Adds **D7** — build the `fabric-cicd` release train first, then deploy PROD reproducibly. §4/§8 reconciled to the retained cross-region seam. |
+| **Previous Version** | 2.0.0 (relaxed D2 + added D7). 2.1.0 records the **Phase 1 delivery** (fabric-cicd release train + schemas-enabled PROD lakehouse) and the **Phase 2 PROD data-load pause**: the committed operational medallion notebooks write the old path-based (non-schema) gold layout and cannot reproduce the as-built flat `gold.*` schema — modernization tracked in [issue #253](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/253). See §8 execution notes. |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane live in eastus2, 8 agents registered, no grounding surface wired); the undesigned Fabric-to-Foundry consumption seam; region split (Foundry+PROD in eastus2 vs. Fabric IQ in westus2) |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first infra; Fabric Git integration + `fabric-cicd` for Fabric assets |
 | **Related sprints** | [Sprint 17 — Fabric Git CI/CD + lakehouse schema](2026-07-10-sprint-17-fabric-git-cicd-and-lakehouse-schema-design.md); [Sprint 18 — Foundry control plane eastus2](2026-07-17-sprint-18-foundry-eastus2-control-plane-design.md); [Sprint 19 — PROD eastus2 full deploy](2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md); Sprint 21 — trusted external signals (follow-on) |
@@ -182,6 +182,11 @@ Approach: **seam-first thin slice** — retire the highest risk (the seam) first
 | **Phase 4** | Sprint 21 (follow-on) | CAP-based external-signals ontology extension to CSA triggers. Rides the same seam. | Signals extension live |
 
 **Dependencies:** Slice 0 is independent (uses existing westus2). Phase 1 is a prerequisite for Phase 2's `fabric-cicd` build. Phase 2 depends on Sprint 18 (done) + Sprint 19 infra. Phase 3 depends on Phase 2. Phase 4 depends on the Phase 3 seam.
+
+### 8.1 Execution notes (2026-07-19)
+
+- **Phase 1 — delivered.** `fabric-cicd` release train committed (`data-platform/fabric/environments.yml`, `data-platform/reports/parameter.yml`, `data-platform/scripts/fabric/deploy_fabric_cicd.py`, `.github/workflows/fabric-cicd-deploy.yml`, runbook `README-fabric-cicd.md`). Static validate green for SIT + PROD; live `FabricWorkspace` construction + parameter-file validation + item discovery confirmed (no publish). PROD workspace `ws-ihzhhpf-prod-data` (`399b73f6-…`) created; PROD lakehouse `lh_ihzhhpf_prod` recreated **schemas-enabled** (`4f73c480-6c85-4823-bb98-4e66780c527f`, `defaultSchema=dbo`) after the first attempt was non-schema.
+- **Phase 2 — PROD data-load PAUSED (user decision).** The as-built SIT gold is a **flat schemas-enabled** layout (`gold.dim_hospital`, `gold.encounter`, `gold.bed_assignment`, `gold.or_case`, …) that the Direct Lake model binds to. The committed **operational** medallion notebooks (`03_gold_master_data`, `03_gold_eventstream`, `04_load_or_samples`) instead write the **old path-based** layout (`Tables/gold/reference/…`, `Tables/gold/patient-flow/…`, `Files/gold/…`) and `04_load_or_samples` reads repo-relative paths absent in Fabric. Only BVA + evidence already use `saveAsTable('gold.*')`. A faithful fresh rebuild therefore requires **notebook modernization first** — tracked in [issue #253](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/253). Phase 1 + the schemas-enabled PROD lakehouse remain in place; Phase 2 resumes once #253 lands (or via an explicit gold-copy decision).
 
 ---
 
