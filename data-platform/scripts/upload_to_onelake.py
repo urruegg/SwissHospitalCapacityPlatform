@@ -17,8 +17,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import requests
-
 ONELAKE_HOST = "https://onelake.dfs.fabric.microsoft.com"
 
 
@@ -44,6 +42,12 @@ def get_token() -> str:
 
 def upload_file(local_path: Path, workspace_id: str, lakehouse_id: str,
                 remote_folder: str, token: str) -> None:
+    # Lazy import: ``requests`` is only needed for the actual upload, not for
+    # argument parsing. Keeping it out of module scope lets other test suites
+    # that discover this directory (e.g. the BVA generator self-test) import
+    # the module without installing ``requests``.
+    import requests
+
     remote_name = local_path.name
     base = f"{ONELAKE_HOST}/{workspace_id}/{lakehouse_id}/Files/{remote_folder}/{remote_name}"
     headers = {"Authorization": f"Bearer {token}"}
