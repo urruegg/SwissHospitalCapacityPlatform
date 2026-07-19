@@ -1,0 +1,43 @@
+name: master-data
+
+on:
+  pull_request:
+    paths:
+      - 'data/master-data/**'
+      - '.github/workflows/master-data.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/master-data/**'
+      - '.github/workflows/master-data.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: master-data-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  master-data:
+    name: Master-data contract gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run master-data unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pytest
+          python3 -m pytest data/master-data/tests -q
+      - name: Validate master-data CSVs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 data/master-data/validate_master_data.py
