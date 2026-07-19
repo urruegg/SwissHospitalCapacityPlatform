@@ -25,11 +25,16 @@ param logAnalyticsRetentionInDays = 90
 
 // --- Foundation ---
 param enableIdentityModule = true
-param enableNetworkModule = true
+// Network module OFF for the first slice. Enabling it wires a Cosmos private
+// endpoint whose privatelink.documents.azure.com zone is created only by the
+// CSA-Cosmos module (out of scope here), and VNet-integrated CAEs are a
+// hardening concern. PROD runs public (synthetic data, no PHI per ADR-0013) —
+// parity with how SIT ran for months. VNet + private-endpoint is a later item.
+param enableNetworkModule = false
 param enableObservabilityModule = true
 
-// Region-isolated VNet. Same private address space as SIT is fine — it is a
-// separate VNet in a separate region/RG with no peering.
+// Region-isolated VNet address space (unused while enableNetworkModule=false;
+// kept for the hardening follow-up).
 param networkVnetAddressPrefix = '10.60.0.0/16'
 param networkAppSubnetPrefix = '10.60.1.0/24'
 param networkDataSubnetPrefix = '10.60.2.0/24'
@@ -37,18 +42,20 @@ param networkDataSubnetPrefix = '10.60.2.0/24'
 // --- AI platform (Foundry account ai-ihzhhpf-prod in eastus2) ---
 param enableAiPlatformModule = true
 
-// --- Container image registry (cross-region pull from the SIT ACR) ---
-// User decision 2026-07-19: reuse the existing SIT ACR for the first deploy;
-// defer a dedicated PROD ACR. The agent-host + app-fluent modules consume these
-// two params (they share the sim-capacity registry inputs) and grant their MIs
-// AcrPull on the SIT ACR (cross-RG role assignment; GH OIDC principal is
-// Contributor on rg-ihzhhpf-sit).
-param simCapacityContainerRegistryLoginServer = 'cri75lbu5sj4hza.azurecr.io'
-param simCapacityContainerRegistryResourceId = '/subscriptions/66a9953a-df37-4c51-856c-9971b9bf3e03/resourceGroups/rg-ihzhhpf-sit/providers/Microsoft.ContainerRegistry/registries/cri75lbu5sj4hza'
+// --- Container image registry (PROD-local ACR, region-isolated) ---
+// The shared Container App module references the registry BY NAME in the
+// deployment RG (existing, no cross-RG scope), so cross-region pull from the
+// SIT ACR is not possible without editing SIT-critical modules. Instead a
+// PROD-local ACR crihzhhpfprod holds the images (imported from the SIT ACR via
+// `az acr import`). The agent-host + app-fluent modules consume these two
+// params (shared sim-capacity registry inputs) and grant their MIs AcrPull on
+// this in-RG ACR.
+param simCapacityContainerRegistryLoginServer = 'crihzhhpfprod.azurecr.io'
+param simCapacityContainerRegistryResourceId = '/subscriptions/66a9953a-df37-4c51-856c-9971b9bf3e03/resourceGroups/rg-ihzhhpf-prod-eastus2/providers/Microsoft.ContainerRegistry/registries/crihzhhpfprod'
 
 // --- Compute: agent-host (Container App + Cosmos conversations/audit/approval-events) ---
 param enableAgentHostModule = true
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b796961'
+param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:b796961'
 // Redis: the Managed Redis Balanced SKU availability in eastus2 is unverified.
 // Start with the in-memory grounding cache (proven in SIT per ADR-0028) to avoid
 // a deploy-time AllocationFailed. Flip to true once the SKU is confirmed in
@@ -62,7 +69,7 @@ param fabricDataAgentId = ''
 
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:b796961'
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:b796961'
 // DNS cutover (app.curavias.ch) is P7. Empty custom hostname is REQUIRED here to
 // avoid creating a SECOND curavias.ch DNS zone — the zone already exists in
 // rg-ihzhhpf-sit. P7 binds app.curavias.ch to the PROD CA against the existing zone.
