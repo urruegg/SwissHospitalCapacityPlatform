@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft for review |
-| **Previous Version** | n/a (new document) |
+| **Previous Version** | 1.0.0 (resolved Q1: the three Curavias tenants **replace** today's `dim_hospital` rows; resolved Q2: BVA stays a separate `bva_*` domain, but every remaining `dim_hospital` / `hospital_id` reference is re-pointed to the Curavias org spine) |
 | **Supersedes** | [issue #253](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/253) (operational medallion notebook modernization is folded in as P1a below) |
 | **Builds on** | The Curavias idea package under [`docs/superpowers/ideas/curavias-organisation-skills-ontology-work-id/`](../ideas/curavias-organisation-skills-ontology-work-id/README-Curavias-Skills-Ontology-Deliverables.md) (Steps 1-4 + 20 CSVs + generator); the [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md) (Phase 2 was paused on the stale-notebook blocker) |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; git = single source of truth for master data; Fabric Git integration + `fabric-cicd` for Fabric assets; every Azure apply gated by `approved-to-apply`; human-performed PR merges |
@@ -83,7 +83,7 @@ existing ontology and semantic model.
 | 3.1 | **Supersede #253** — fold the notebook modernization into this broader design as **P1a**. | One coherent design; #253 was a subset. |
 | 3.2 | **Git is the single source of truth** for master data — version-controlled CSVs, validated, CI-gated, deployed identically to each environment. | Reproducibility, review, no cross-env drift. |
 | 3.3 | **Canonical home = `data/master-data/`**, following the `data/entra/` pattern (validator + CI gate). | Reuses an established, working repo pattern. |
-| 3.4 | **Reconcile into one unified organisation spine** — fold `dim_hospital` into `dim_tenant` / `dim_org_unit` / `dim_department`. | One unified organisation model; cleaner ontology; accepted higher rework. |
+| 3.4 | **Reconcile into one unified organisation spine** — the three Curavias tenants **replace** today's `dim_hospital` rows; every remaining `dim_hospital` / `hospital_id` reference is re-pointed to `dim_tenant` / `dim_org_unit` / `dim_department`. | One unified organisation model; cleaner ontology; accepted higher rework. |
 | 3.5 | **Phased build (Approach B)** — P1a reproducibility-first on today's schema, then P1b unify + org/skills. | Incremental validation; unblocks PROD fast; isolates the risky semantic-model change. |
 | 3.6 | **Synthetic Curavias set = canonical demo master data** — no PHI, modelled on real Swiss archetypes. | Platform is demo / proof-of-technology scope (ADR-0013, ADR-0016). |
 | 3.7 | **Part 1 builds now; Part 2 is design-only** target architecture for the operational agents. | Ship the data product; agent extension is a later sprint. |
@@ -167,13 +167,21 @@ layer.
 
 - **New org/skills medallion notebooks** (`reference/1x_bronze_org_skills`, `_silver_`, `_gold_`) reading
   `Files/master-data/curavias-org-skills/` and writing `saveAsTable('{bronze,silver,gold}.*')`.
-- **Reconciliation (the unified spine):**
-  - Fold `dim_hospital` into `dim_tenant` + `dim_org_unit` + `dim_department`. Provide an explicit
-    crosswalk mapping today's hospital rows to the three Curavias tenants (CuraNova / Curalp / Vialta) and
-    their org units.
+- **Reconciliation (the unified spine) — replace, not alias:**
+  - The three Curavias tenants (CuraNova / Curalp / Vialta) and their org units **replace** today's
+    `dim_hospital` rows. `dim_hospital` is **retired** as a canonical table; the Curavias org hierarchy
+    (`dim_tenant` / `dim_org_unit` / `dim_department`) becomes the single organisation spine.
+  - A one-time **migration crosswalk** (`data/master-data/capacity/_hospital_to_org_crosswalk.csv`,
+    checked into git and validated) maps each old `hospital_id` to its replacement tenant / org-unit so
+    downstream facts can be re-keyed deterministically.
   - Re-key downstream facts — `fact_capacity_baseline`, `encounter`, `bed_assignment`, `or_case`,
-    `or_schedule` — to `org_unit_id` / `department_id`. Retain `hospital_id` as a **derived alias column**
-    (view / computed) for backward compatibility during the semantic-model cutover.
+    `or_schedule` — to `org_unit_id` / `department_id` via the crosswalk. `hospital_id` is dropped (no
+    back-compat alias — Q1 chose replace).
+  - **Reference-replacement surface** (all re-pointed to the Curavias org keys in the same cutover):
+    the semantic-model tables (`dim_hospital.tmdl`, `relationships.tmdl`, roles, dependent measures), the
+    `capacity-dashboard` report visuals that bind `dim_hospital` / `hospital_id`, and the `sim-capacity`
+    generators / calibration presets that emit `hospital_id`. **Out of scope (Q2):** BVA keeps its own
+    separate `bva_dim_hospital` (`bva_*` product domain) unchanged.
 - **Gold additions (org/skills product domain):** `dim_tenant`, `dim_org_unit`, `dim_department`,
   `dim_specialisation`, `dim_occupation_role`, `dim_skill`, `dim_issuing_authority`, `dim_assurance_level`,
   `dim_proficiency_level`, `dim_workforce_position`, `dim_employee`, `fact_skill_assertion`,
@@ -249,12 +257,12 @@ are scoped there, not here.
 
 | # | Risk / question | Mitigation |
 |---|-----------------|------------|
-| R1 | The `dim_hospital` merge breaks the `capacity-dashboard` model and its exact-count CI gate. | Isolate in P1b; keep `hospital_id` as a derived alias during cutover; bump gate constants in the same PR; validate `what-if` on a SIT clone first. |
-| R2 | Re-keying facts to org units mis-maps historical rows. | Explicit, reviewed hospital->tenant/org-unit crosswalk table checked into `data/master-data/`; validator asserts every fact key resolves. |
+| R1 | Replacing `dim_hospital` breaks the `capacity-dashboard` model, its exact-count CI gate, report visuals, and the `sim-capacity` generators. | Isolate in P1b; do the full reference-replacement (semantic model + visuals + generators) in one cutover PR; bump gate constants in the same PR; validate `what-if` on a SIT clone first. |
+| R2 | Re-keying facts to org units mis-maps historical rows once `hospital_id` is dropped. | Explicit, reviewed `_hospital_to_org_crosswalk.csv` checked into `data/master-data/capacity/`; validator asserts every old `hospital_id` maps and every re-keyed fact key resolves. |
 | R3 | ESCO / SIWF / SNOMED references in the CSVs are demo slugs, not canonical URIs. | Keep as demo slugs for the demo; record a "replace at real load" note in the README; crosswalk conformance treats them as demo-tier. |
 | R4 | The org/skills gold enlarges the semantic model beyond what Direct Lake demoably handles. | Scope the demo semantic model to the tables the dashboard + agents actually use; keep the rest queryable via the Data Agent only. |
-| Q1 | Should the three Curavias tenants **replace** or **map onto** today's `dim_hospital` rows? | Assumed: the Curavias org hierarchy becomes canonical and today's hospital rows map onto it via the crosswalk (confirm in spec review). |
-| Q2 | Does BVA gold need re-keying to the org spine too? | Assumed no for this effort (BVA is a separate `bva_*` product domain); revisit if the boardroom view needs org-unit granularity. |
+| Q1 | ~~Should the three Curavias tenants replace or map onto today's `dim_hospital` rows?~~ **Resolved: replace.** The Curavias org hierarchy is canonical; `dim_hospital` is retired and all references re-pointed. | — |
+| Q2 | ~~Does BVA gold need re-keying to the org spine?~~ **Resolved: no.** BVA keeps its separate `bva_dim_hospital` (`bva_*` domain); only the operational `dim_hospital` / `hospital_id` references are re-pointed. | — |
 
 ## 8. Sequencing summary
 
