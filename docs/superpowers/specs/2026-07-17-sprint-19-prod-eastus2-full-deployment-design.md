@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.0 |
+| **Version** | 1.6.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | Accepted — in progress (P1–P6.1 foundation + AI + compute + data lane + Foundry agents + Fabric capacity DEPLOYED & verified; P6.2 + P7–P8 pending) |
-| **Previous Version** | 1.4.0 (added §7d — the P5 Foundry provisioning outcome and the `allowProjectManagement` Bicep parity gap). 1.5.0 adds §7e — the P6.1 Fabric F2 capacity deploy and the **eastus2 Fabric quota = 0** finding that forced PROD Fabric into **westus2** (§10 updated accordingly). |
+| **Status** | Accepted — in progress (P1–P7 foundation + AI + compute + data lane + Foundry agents + Fabric capacity + integration/DNS/Entra DEPLOYED & verified; P6.2 + P8 pending) |
+| **Previous Version** | 1.5.0 (added §7e — the P6.1 Fabric F2 capacity deploy and the **eastus2 Fabric quota = 0** finding that forced PROD Fabric into **westus2**). 1.6.0 adds §7f — the P7 integration outcome: `app.curavias.ch` custom domain + managed cert bound to the PROD app (HTTP 200 live), PROD Entra SPA redirect URIs, and the Logic App skip (SIT one is Disabled). |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane proven in eastus2); SIT feasibility matrix confirming 22/22 resource types GA in eastus2; ADR-0013 demo-scope pivot |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first IaC for all PROD resources |
 | **Prerequisites** | Sprint 18 complete (Foundry agents proven E2E in eastus2); Fabric capacity stabilized; App Fluent builds green |
@@ -350,6 +350,33 @@ to save cost. §10 and the §5 resource inventory updated to westus2.
 **P6.2 (deferred to a dedicated slice):** create workspace `ws-ihzhhpf-prod-data`,
 attach to the capacity, Git-connect, deploy lakehouse + notebooks + semantic
 model, and run the simulator for synthetic PROD data (Sprint 17 pattern).
+
+### 7f. P7 integration — DNS custom domain + Entra redirect URIs (2026-07-19)
+
+Approved-to-apply @urruegg 2026-07-19 (P7 batch). Delivers §8's DNS strategy row
+for `app.curavias.ch` and the Entra binding.
+
+**7.1 Custom domain + managed TLS.** `app.curavias.ch` had no DNS record yet
+(only `appsit` was live for SIT), so pointing it at the PROD app was a fresh,
+zero-regression binding. Created TXT `asuid.app` = the PROD app's
+`customDomainVerificationId` and CNAME `app` → the eastus2 PROD CA fqdn in zone
+`curavias.ch` (rg-ihzhhpf-sit), then `az containerapp hostname add` +
+`hostname bind --validation-method CNAME` on `ca-app-fluent-ihzhhpf-prod`. The
+managed certificate `mc-cae-app-fluent-app-curavias-ch-6166` reached
+`provisioningState=Succeeded` and is bound `SniEnabled`.
+
+**Verified:** `https://app.curavias.ch/` returns **HTTP 200** over the managed
+certificate.
+
+**7.2 Entra redirect URIs.** The platform uses a single SPA app registration
+`ihzhhpf-app` (appId `52681a08-…`) across both environments. Added the two PROD
+SPA redirect URIs — `https://app.curavias.ch` and the PROD CA fqdn — via Graph
+PATCH; the SPA redirect set is now 6 URIs (SIT + PROD), verified read-back.
+
+**7.3 Logic App — skipped.** The inventory row 20 (`logic-ihzhhpf-prod`) is not
+provisioned: the only Logic App is `logic-ihzhhpf-sit` (westus2) and it is
+**Disabled**, so there is no active workflow to mirror. Logged as a deferred
+SIT/PROD parity item (SIT parity = disabled/unused), not a demo blocker.
 
 ### 7a. Original fresh-tree plan (superseded — kept for history)
 

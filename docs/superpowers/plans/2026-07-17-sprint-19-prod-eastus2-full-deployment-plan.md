@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.0 |
+| **Version** | 1.6.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | In progress — P1–P6.1 (foundation + AI + compute + data lane + Foundry agents + Fabric capacity) DEPLOYED & verified; P6.2 + P7–P8 pending |
-| **Previous Version** | 1.4.0 (added the P5 execution record — PROD Foundry project + 3 models + agent-host RBAC + 8 agents on `ai-ihzhhpf-prod`). 1.5.0: added the P6.1 execution record — `fabricihzhhpfprod` F2 created + paused, placed in **westus2** because the subscription's eastus2 Fabric quota is 0 CU. |
+| **Status** | In progress — P1–P7 (foundation + AI + compute + data lane + Foundry agents + Fabric capacity + integration/DNS/Entra) DEPLOYED & verified; P6.2 + P8 pending |
+| **Previous Version** | 1.5.0 (added the P6.1 execution record — `fabricihzhhpfprod` F2 created + paused, placed in **westus2** because the subscription's eastus2 Fabric quota is 0 CU). 1.6.0: added the P7 execution record — `app.curavias.ch` custom domain + managed cert bound to the PROD app (HTTP 200 live), PROD Entra SPA redirect URIs added, Logic App skipped (SIT one is Disabled). |
 | **Design spec** | [2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md](../specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md) |
 
 ---
@@ -168,6 +168,37 @@ mirrors SIT). Design §10 + §5 inventory updated to westus2.
 
 **P6.2 (dedicated slice):** workspace `ws-ihzhhpf-prod-data` + Git-connect +
 lakehouse/notebooks/semantic-model deploy + simulator run.
+
+---
+
+## Execution record — P7 integration (DNS + custom domain + Entra) (2026-07-19)
+
+**Approved-to-apply**: @urruegg 2026-07-19 (P7 batch).
+
+**7.1 Custom domain + TLS — `app.curavias.ch` → PROD app-fluent.** The apex
+domain had **no `app` record** yet (only `appsit` for SIT), so the cutover was a
+fresh binding with zero regression to the running SIT demo. Steps executed:
+
+1. TXT `asuid.app` = the PROD app's `customDomainVerificationId`
+   (`98440D26…48AB`) in zone `curavias.ch` (rg-ihzhhpf-sit).
+2. CNAME `app` → `ca-app-fluent-ihzhhpf-prod.thankfulisland-9e831bdb.eastus2.azurecontainerapps.io`.
+3. `az containerapp hostname add` + `hostname bind --validation-method CNAME` on
+   `ca-app-fluent-ihzhhpf-prod` → managed cert
+   `mc-cae-app-fluent-app-curavias-ch-6166` (`provisioningState=Succeeded`),
+   bound `SniEnabled`.
+
+**Verified live:** `https://app.curavias.ch/` → **HTTP 200** with valid managed
+TLS.
+
+**7.2 Entra redirect URIs.** Added the two PROD origins to the single SPA app
+registration `ihzhhpf-app` (appId `52681a08-…`):
+`https://app.curavias.ch` and the PROD CA fqdn. SPA redirect set now 6 URIs
+(SIT + PROD). Verified via `az ad app show`.
+
+**7.3 Logic App — skipped.** The only Logic App is `logic-ihzhhpf-sit`
+(westus2) and it is **Disabled** (no active workflow), so `logic-ihzhhpf-prod`
+is **not** created. Logged as a deferred SIT/PROD parity item (SIT parity =
+disabled/unused).
 
 ---
 
