@@ -1,0 +1,28 @@
+# fabric-cicd parameterization for the capacity-dashboard semantic model.
+#
+# Rewrites the Direct Lake OneLake path (workspace GUID + lakehouse GUID) in
+# expressions.tmdl to the target environment at deploy time. The repository
+# files stay SIT-pinned, so the verify-semantic-model.yml exact-count gate
+# remains valid; the substitution happens in-memory during `publish` only.
+#
+# find_value defaults are the SIT coordinates already committed in the TMDL.
+# replace_value is keyed by the `environment` passed to FabricWorkspace and MUST
+# stay in sync with data-platform/fabric/environments.yml (the deploy script
+# asserts this in --mode validate).
+
+find_replace:
+  # OneLake workspace GUID (Direct Lake source path)
+  - find_value: f3af9733-9503-4e92-98f9-a901d96f1c87
+    replace_value:
+      SIT: f3af9733-9503-4e92-98f9-a901d96f1c87
+      PROD: 399b73f6-4b1c-44da-b7f9-1b4a37525a2b
+    item_type: SemanticModel
+    item_name: capacity-dashboard
+
+  # OneLake lakehouse GUID (Direct Lake source path)
+  - find_value: 30594c20-46ba-40ea-91fa-4701b105e0b9
+    replace_value:
+      SIT: 30594c20-46ba-40ea-91fa-4701b105e0b9
+      PROD: e74276f6-a00b-46de-9265-c6462c8faa17
+    item_type: SemanticModel
+    item_name: capacity-dashboard

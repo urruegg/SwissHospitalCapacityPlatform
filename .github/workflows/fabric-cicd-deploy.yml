@@ -1,0 +1,143 @@
+name: fabric-cicd-deploy
+
+# Fabric IQ release train (readiness design D5/D7; ADR-0035).
+#
+# The same SIT-pinned PBIP source under data-platform/reports/ is deployed to a
+# chosen environment's Fabric workspace by rewriting the Direct Lake OneLake
+# path via data-platform/reports/parameter.yml. Changing the target is a
+# --environment value change only.
+#
+# Two lanes:
+#   * validate (PR + push, network-free) - static consistency of the variable
+#     library, the fabric-cicd parameter file, and the semantic-model TMDL.
+#     Needs only PyYAML; runs on every touch of the release-train files.
+#   * publish (workflow_dispatch, gated) - live fabric-cicd deploy into the
+#     target workspace via OIDC az login. The `prod` publish is gated by the
+#     GitHub `prod` environment (human approval) and requires the confirm input
+#     to equal 'approved-to-apply'.
+#
+# PREREQUISITE for publish: the OIDC service principal (gh-oidc-ihzhhpf,
+# secrets.AZURE_CLIENT_ID) must be a Member/Admin of the target Fabric
+# workspace so fabric-cicd can call the Fabric REST APIs. See
+# data-platform/scripts/fabric/README-fabric-cicd.md.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data-platform/reports/**'
+      - 'data-platform/fabric/environments.yml'
+      - 'data-platform/scripts/fabric/deploy_fabric_cicd.py'
+      - '.github/workflows/fabric-cicd-deploy.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'data-platform/reports/**'
+      - 'data-platform/fabric/environments.yml'
+      - 'data-platform/scripts/fabric/deploy_fabric_cicd.py'
+      - '.github/workflows/fabric-cicd-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target Fabric environment.
+        required: true
+        type: choice
+        options:
+          - SIT
+          - PROD
+      confirm:
+        description: Type 'approved-to-apply' to run a live publish.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate release train (network-free)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        shell: bash
+        run: python -m pip install --upgrade pyyaml
+
+      - name: Validate SIT + PROD
+        shell: bash
+        run: |
+          set -euo pipefail
+          python data-platform/scripts/fabric/deploy_fabric_cicd.py --environment SIT --mode validate
+          python data-platform/scripts/fabric/deploy_fabric_cicd.py --environment PROD --mode validate
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Fabric IQ release-train validate"
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Checks: variable library <-> parameter.yml <-> Direct Lake TMDL, item disk presence"
+            echo "- Status: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    name: Publish to Fabric (${{ github.event.inputs.environment }})
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirm == 'approved-to-apply'
+    environment:
+      name: ${{ github.event.inputs.environment == 'PROD' && 'prod' || 'sit' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install fabric-cicd
+        shell: bash
+        run: python -m pip install --upgrade fabric-cicd azure-identity pyyaml
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Publish (fabric-cicd)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python data-platform/scripts/fabric/deploy_fabric_cicd.py \
+            --environment "${{ github.event.inputs.environment }}" \
+            --mode publish
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Fabric IQ release-train publish"
+            echo "- Environment: ${{ github.event.inputs.environment }}"
+            echo "- Item scope: capacity-dashboard SemanticModel + Report"
+            echo "- Status: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"
