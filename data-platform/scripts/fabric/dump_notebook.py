@@ -43,6 +43,13 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--code", action="store_const", const="code", dest="only")
     g.add_argument("--markdown", action="store_const", const="markdown", dest="only")
     ns = p.parse_args(argv if argv is not None else sys.argv[1:])
+    # Notebook cells often contain non-cp1252 characters (arrows, dashes).
+    # Force UTF-8 stdout so this read-only dump never crashes on a Windows
+    # console whose default code page cannot encode them.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
     return dump(Path(ns.path), ns.only)
 
 
