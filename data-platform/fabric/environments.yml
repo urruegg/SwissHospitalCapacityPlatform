@@ -24,6 +24,6 @@ environments:
     workspace_name: ws-ihzhhpf-prod-data
     workspace_id: 399b73f6-4b1c-44da-b7f9-1b4a37525a2b
     lakehouse_name: lh_ihzhhpf_prod
-    lakehouse_id: e74276f6-a00b-46de-9265-c6462c8faa17
+    lakehouse_id: 4f73c480-6c85-4823-bb98-4e66780c527f
     capacity_name: fabricihzhhpfprod
     region: westus2

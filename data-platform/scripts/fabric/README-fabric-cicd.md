@@ -63,7 +63,7 @@ stay valid.
 | Environment | Workspace | Lakehouse | Capacity (westus2) |
 | ----------- | --------- | --------- | ------------------ |
 | SIT | `ws-ihzhhpf-sit-data` `f3af9733-9503-4e92-98f9-a901d96f1c87` | `lh_ihzhhpf_sit` `30594c20-46ba-40ea-91fa-4701b105e0b9` | `fabricihzhhpfsit` |
-| PROD | `ws-ihzhhpf-prod-data` `399b73f6-4b1c-44da-b7f9-1b4a37525a2b` | `lh_ihzhhpf_prod` `e74276f6-a00b-46de-9265-c6462c8faa17` | `fabricihzhhpfprod` |
+| PROD | `ws-ihzhhpf-prod-data` `399b73f6-4b1c-44da-b7f9-1b4a37525a2b` | `lh_ihzhhpf_prod` `4f73c480-6c85-4823-bb98-4e66780c527f` | `fabricihzhhpfprod` |
 
 ## Local prerequisites
 
