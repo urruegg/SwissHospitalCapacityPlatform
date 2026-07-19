@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | In progress — P1–P4 (foundation + AI + compute + data lane) DEPLOYED & verified in eastus2 (P4 via the CI/CD workflow); P5–P8 pending |
-| **Previous Version** | 1.2.0 (added the P1–P3 execution record — first deploy failed on 2 shared-module limits, corrected via a PROD-local ACR + network-off, redeployed green, 17 resources, both Container Apps live). 1.3.0: added the P4 execution record — CSA Cosmos wired into `main.bicep` (#252 Phase A), then EVH + SB + CSA Cosmos deployed to PROD through the `cd-infra-deploy-prod` GitHub workflow (proving the CI/CD infra path), 12 resources verified live. |
+| **Status** | In progress — P1–P5 (foundation + AI + compute + data lane + Foundry agents) DEPLOYED & verified in eastus2; P6–P8 pending |
+| **Previous Version** | 1.3.0 (added the P4 execution record — CSA Cosmos wired into `main.bicep` per #252 Phase A, EVH + SB + CSA Cosmos deployed via the `cd-infra-deploy-prod` workflow, 12 resources verified). 1.4.0: added the P5 execution record — PROD Foundry project + 3 models (gpt-5 / gpt-5-mini / o3) + agent-host RBAC + all 8 agents registered against `ai-ihzhhpf-prod`, models cross-checked against SIT v2. |
 | **Design spec** | [2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md](../specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md) |
 
 ---
@@ -111,6 +111,42 @@ PROD is folded into the **VNet + private-endpoint hardening** follow-up
 **Still deferred:** P5 Foundry-hosted agents, P6 Fabric F2 workspace + Data
 Agent, P7 DNS cutover, VNet/PE hardening, #252 Phase B (ACR module + CD import)
 and Phase C (SIT/PROD parity assertion).
+
+---
+
+## Execution record — P5 Foundry agents (2026-07-19)
+
+**Approved-to-apply**: @urruegg 2026-07-19 10:47 +02:00. Followed the proven
+Sprint 18 pattern (az + Foundry data-plane API) against the PROD account
+`ai-ihzhhpf-prod` — models/project/agents are **not** Bicep-managed, so this is
+script/API-based rather than the infra CD workflow.
+
+**IaC finding — `allowProjectManagement`.** Project create first failed
+`BadRequest: Project can only [be] created under AIServices Kind account with
+allowProjectManagement set to true`. The `modules/ai-platform/main.bicep`
+module does not set this property; SIT had it set out-of-band. Fixed with a
+`PATCH` on the account (`properties.allowProjectManagement=true`) and logged on
+[#252](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/252) as
+a Bicep parity gap (the module should set it declaratively).
+
+**Deployed & verified:**
+
+| Step | Evidence |
+|------|----------|
+| Foundry project | `ai-ihzhhpf-prod-project` — provisioningState `Succeeded`, SystemAssigned identity |
+| Models (3) | `gpt-5` (2025-08-07, GS 50), `gpt-5-mini` (2025-08-07, GS 100), `o3` (2025-04-16, GS 30) — all `Succeeded`; eastus2 quota headroom confirmed (50/100/0 of 1000 used pre-deploy) |
+| RBAC | `id-ca-agent-host-ihzhhpf-prod` (`af610e05…`) → **Cognitive Services User** on `ai-ihzhhpf-prod` |
+| Agents (8) | Registered via the Foundry v2 persistent-agents API (`/agents`, `definition.kind=prompt`), replicated from the SIT v2 definitions. All 8 present; model assignments cross-checked **OK** vs SIT (bmca/dca/ooa=gpt-5, csa=o3, orsa/sba/data-quality/onboarding=gpt-5-mini) |
+
+**API note:** the v2 persistent-agents `/agents` API (api-version
+`2025-05-15-preview`) requires a `definition` wrapper (`kind: prompt`, `model`,
+`instructions`) — distinct from the classic OpenAI Assistants (`asst_*`) shape.
+Live-inference E2E runs through the agent-host `azure-ai-projects` SDK path and
+is deferred to **P8/T9** (same invocation path as SIT), not the raw
+`threads/runs` API.
+
+**Still deferred:** P6 Fabric F2 workspace + Data Agent, P7 DNS cutover,
+VNet/PE hardening, P8 E2E agent invocation, #252 Phases B/C/D.
 
 ---
 

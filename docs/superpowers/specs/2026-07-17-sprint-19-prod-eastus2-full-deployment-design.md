@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | Accepted — in progress (P1–P4 foundation + AI + compute + data lane DEPLOYED & verified in eastus2, P4 via the CI/CD workflow; P5–P8 pending) |
-| **Previous Version** | 1.2.0 (added §7b — the verified P1–P3 deploy outcome, 17 resources green, and two shared-module findings: cross-RG ACR is unsupported and the Cosmos private endpoint needs the CSA-Cosmos DNS zone). 1.3.0 adds §7c — the P4 data-lane deploy via the `cd-infra-deploy-prod` CI/CD workflow (#252 Phase A CSA-Cosmos wiring + EVH + SB, 12 resources), the stale `prod` env-var finding, and the MCAPSGov Modify-effect publicNetworkAccess policy note. |
+| **Status** | Accepted — in progress (P1–P5 foundation + AI + compute + data lane + Foundry agents DEPLOYED & verified in eastus2; P6–P8 pending) |
+| **Previous Version** | 1.3.0 (added §7c — the P4 data-lane deploy via the `cd-infra-deploy-prod` CI/CD workflow, #252 Phase A CSA-Cosmos wiring + EVH + SB, 12 resources, the stale `prod` env-var finding, and the MCAPSGov Modify-effect publicNetworkAccess policy note). 1.4.0 adds §7d — the P5 Foundry provisioning outcome (project + 3 models + agent-host RBAC + 8 agents on `ai-ihzhhpf-prod`) and the `allowProjectManagement` Bicep parity gap. |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane proven in eastus2); SIT feasibility matrix confirming 22/22 resource types GA in eastus2; ADR-0013 demo-scope pivot |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first IaC for all PROD resources |
 | **Prerequisites** | Sprint 18 complete (Foundry agents proven E2E in eastus2); Fabric capacity stabilized; App Fluent builds green |
@@ -302,6 +302,30 @@ template requesting `Enabled`. The subscription policy is a **Modify-effect**
 that force-disables public Cosmos: deploys succeed, but the accounts are
 unreachable without a private endpoint. Runtime reachability folds into the
 **VNet + private-endpoint hardening** follow-up; P4 *provisioning* is complete.
+
+### 7d. P5 Foundry agents — provisioned via the Sprint 18 API pattern (2026-07-19)
+
+Approved-to-apply @urruegg 2026-07-19 10:47 +02:00. The Foundry control plane
+(project + models + agents) is **not** Bicep-managed, so P5 followed the proven
+Sprint 18 pattern (az CLI + Foundry data-plane API) against `ai-ihzhhpf-prod`.
+
+**IaC parity gap — `allowProjectManagement`.** Project create failed until the
+account had `properties.allowProjectManagement=true`;
+`modules/ai-platform/main.bicep` does not set it (SIT had it out-of-band). Fixed
+via a `PATCH` and logged on #252 — the module should set it declaratively so
+future accounts are project-ready from Bicep.
+
+**Verified end state:** project `ai-ihzhhpf-prod-project` (`Succeeded`); 3 model
+deployments `gpt-5` / `gpt-5-mini` / `o3` (all `Succeeded`, GlobalStandard
+50/100/30 TPM); `id-ca-agent-host-ihzhhpf-prod` granted **Cognitive Services
+User**; **8 agents** registered via the v2 persistent-agents API
+(`/agents`, api-version `2025-05-15-preview`, `definition.kind=prompt`),
+replicated from the SIT v2 definitions with model assignments cross-checked OK.
+
+**Invocation note:** the v2 `/agents` API needs a `definition` wrapper — not the
+classic OpenAI Assistants (`asst_*`) `threads/runs` shape. Live-inference E2E
+runs through the agent-host `azure-ai-projects` SDK and is verified in **P8/T9**,
+not via the raw REST runs API.
 
 ### 7a. Original fresh-tree plan (superseded — kept for history)
 
