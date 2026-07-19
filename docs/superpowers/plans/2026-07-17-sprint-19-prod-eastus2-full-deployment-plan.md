@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | In progress — P1–P5 (foundation + AI + compute + data lane + Foundry agents) DEPLOYED & verified in eastus2; P6–P8 pending |
-| **Previous Version** | 1.3.0 (added the P4 execution record — CSA Cosmos wired into `main.bicep` per #252 Phase A, EVH + SB + CSA Cosmos deployed via the `cd-infra-deploy-prod` workflow, 12 resources verified). 1.4.0: added the P5 execution record — PROD Foundry project + 3 models (gpt-5 / gpt-5-mini / o3) + agent-host RBAC + all 8 agents registered against `ai-ihzhhpf-prod`, models cross-checked against SIT v2. |
+| **Status** | In progress — P1–P6.1 (foundation + AI + compute + data lane + Foundry agents + Fabric capacity) DEPLOYED & verified; P6.2 + P7–P8 pending |
+| **Previous Version** | 1.4.0 (added the P5 execution record — PROD Foundry project + 3 models + agent-host RBAC + 8 agents on `ai-ihzhhpf-prod`). 1.5.0: added the P6.1 execution record — `fabricihzhhpfprod` F2 created + paused, placed in **westus2** because the subscription's eastus2 Fabric quota is 0 CU. |
 | **Design spec** | [2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md](../specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md) |
 
 ---
@@ -145,8 +145,29 @@ Live-inference E2E runs through the agent-host `azure-ai-projects` SDK path and
 is deferred to **P8/T9** (same invocation path as SIT), not the raw
 `threads/runs` API.
 
-**Still deferred:** P6 Fabric F2 workspace + Data Agent, P7 DNS cutover,
+**Still deferred:** P6.2 workspace + content, P7 DNS cutover,
 VNet/PE hardening, P8 E2E agent invocation, #252 Phases B/C/D.
+
+---
+
+## Execution record — P6.1 Fabric capacity (2026-07-19)
+
+**Approved-to-apply**: @urruegg 2026-07-19 11:29 +02:00.
+
+**Blocker → decision — eastus2 Fabric quota = 0.** The eastus2 create failed
+`BadRequest … RegionalQuota: 0`. The `Microsoft.Fabric` usages API confirms
+**0 CU** quota in eastus2 vs **512 CU** in westus2 (2 CU used by the SIT F2).
+Per user decision, PROD Fabric is placed in **westus2** (region-flexible SaaS
+plane, reachable cross-region over HTTPS, ADR-0013 demo scope). All-eastus2
+would need an eastus2 Fabric quota-increase request (deferred).
+
+**Verified:** `fabricihzhhpfprod` — F2/Fabric, **westus2**, in
+`rg-ihzhhpf-prod-eastus2`, admin `admin@mngenvmcap164444.onmicrosoft.com`;
+created Active (`Succeeded`) then **suspended** → `state=Paused` (cost-saving,
+mirrors SIT). Design §10 + §5 inventory updated to westus2.
+
+**P6.2 (dedicated slice):** workspace `ws-ihzhhpf-prod-data` + Git-connect +
+lakehouse/notebooks/semantic-model deploy + simulator run.
 
 ---
 

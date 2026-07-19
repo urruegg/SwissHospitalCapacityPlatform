@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | Accepted — in progress (P1–P5 foundation + AI + compute + data lane + Foundry agents DEPLOYED & verified in eastus2; P6–P8 pending) |
-| **Previous Version** | 1.3.0 (added §7c — the P4 data-lane deploy via the `cd-infra-deploy-prod` CI/CD workflow, #252 Phase A CSA-Cosmos wiring + EVH + SB, 12 resources, the stale `prod` env-var finding, and the MCAPSGov Modify-effect publicNetworkAccess policy note). 1.4.0 adds §7d — the P5 Foundry provisioning outcome (project + 3 models + agent-host RBAC + 8 agents on `ai-ihzhhpf-prod`) and the `allowProjectManagement` Bicep parity gap. |
+| **Status** | Accepted — in progress (P1–P6.1 foundation + AI + compute + data lane + Foundry agents + Fabric capacity DEPLOYED & verified; P6.2 + P7–P8 pending) |
+| **Previous Version** | 1.4.0 (added §7d — the P5 Foundry provisioning outcome and the `allowProjectManagement` Bicep parity gap). 1.5.0 adds §7e — the P6.1 Fabric F2 capacity deploy and the **eastus2 Fabric quota = 0** finding that forced PROD Fabric into **westus2** (§10 updated accordingly). |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane proven in eastus2); SIT feasibility matrix confirming 22/22 resource types GA in eastus2; ADR-0013 demo-scope pivot |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first IaC for all PROD resources |
 | **Prerequisites** | Sprint 18 complete (Foundry agents proven E2E in eastus2); Fabric capacity stabilized; App Fluent builds green |
@@ -181,7 +181,7 @@ flowchart TB
 | 16 | Service Bus | `sb-ihzhhpf-prod` | Standard | — |
 | 17 | AI Services | `ai-ihzhhpf-prod-eastus2` | S0 | Foundry-enabled |
 | 18 | Foundry Project | `ai-ihzhhpf-prod-eastus2-project` | — | 8 agents + 3 models |
-| 19 | Fabric Capacity | `fabricihzhhpfprod` | F2 | eastus2 |
+| 19 | Fabric Capacity | `fabricihzhhpfprod` | F2 | westus2 (eastus2 quota = 0 — see §7e) |
 | 20 | Logic App | `logic-ihzhhpf-prod` | Consumption | Orchestration flows |
 | 21 | Managed Identities (×7) | `id-*-ihzhhpf-prod` | — | Per workload |
 | 22 | Private Endpoints (×3) | `pe-*-ihzhhpf-prod` | — | Cosmos CSA, Cosmos Platform, KV |
@@ -327,6 +327,30 @@ classic OpenAI Assistants (`asst_*`) `threads/runs` shape. Live-inference E2E
 runs through the agent-host `azure-ai-projects` SDK and is verified in **P8/T9**,
 not via the raw REST runs API.
 
+### 7e. P6.1 Fabric capacity — westus2 (eastus2 quota = 0) (2026-07-19)
+
+Approved-to-apply @urruegg 2026-07-19 11:29 +02:00. The eastus2 create failed:
+
+> `BadRequest: The sum total of CapacityUnits of all Fabric capacities … must
+> not exceed the regional quota … TotalCapacityUnits: 0, RegionalQuota: 0`
+
+The `Microsoft.Fabric` usages API confirms the subscription has **0 CU** quota
+in eastus2 and **512 CU** in westus2 (2 CU used by the SIT F2). Per the user
+decision, PROD Fabric is placed in **westus2** — Fabric is a region-flexible
+SaaS plane reachable cross-region over HTTPS from the eastus2 app/agents (same
+cross-region tolerance as the Sprint 18 topology), acceptable under the
+ADR-0013 synthetic demo scope. A clean all-eastus2 end-state would require an
+eastus2 Fabric quota-increase request (deferred).
+
+**Verified:** `fabricihzhhpfprod` — F2/Fabric, **westus2**, in
+`rg-ihzhhpf-prod-eastus2`, admin `admin@mngenvmcap164444.onmicrosoft.com`,
+created Active (`provisioningState=Succeeded`) then **suspended** → `state=Paused`
+to save cost. §10 and the §5 resource inventory updated to westus2.
+
+**P6.2 (deferred to a dedicated slice):** create workspace `ws-ihzhhpf-prod-data`,
+attach to the capacity, Git-connect, deploy lakehouse + notebooks + semantic
+model, and run the simulator for synthetic PROD data (Sprint 17 pattern).
+
 ### 7a. Original fresh-tree plan (superseded — kept for history)
 
 ```text
@@ -393,8 +417,11 @@ Steps:
 
 ## 10. Fabric capacity and workspace
 
-* New `fabricihzhhpfprod` capacity (F2 SKU) in eastus2
-* Create PROD workspace `ws-ihzhhpf-prod-data` attached to eastus2 capacity
+* New `fabricihzhhpfprod` capacity (F2 SKU) in **westus2** — the subscription's
+  Fabric regional quota in eastus2 is **0 CU**; westus2 has 512 CU (see §7e).
+  Kept in the PROD RG `rg-ihzhhpf-prod-eastus2`; created Active then **Paused**
+  to save cost (mirrors the SIT capacity posture).
+* Create PROD workspace `ws-ihzhhpf-prod-data` attached to the capacity
 * Deploy lakehouse, notebooks, semantic model from repo via Fabric Git integration (Sprint 17 pattern)
 * No data migration — run simulator to regenerate synthetic PROD data
 
