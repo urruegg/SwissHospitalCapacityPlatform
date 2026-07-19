@@ -113,6 +113,11 @@ param eventHubsCsaAgentMiPrincipalId = ''
 // sim-capacity pattern — until agent-host-build.yml is extended to push
 // the real image to ACR (follow-up gap-fill after Sprint 13.1 issue #181).
 param enableAgentHostModule = true
+// Issue #252 Phase A — CSA Cosmos DB now wired into the orchestrator (was a
+// standalone deploy). `true` here adopts the already-deployed
+// `cosmos-csa-ihzhhpf-sit` (+ private endpoint, network on) idempotently; the
+// what-if must show no changes to the account, containers, or role assignment.
+param enableCsaCosmosModule = true
 // Bumped 3433f72 -> 478b115 to ship the M5 live Fabric Data Agent client
 // (real OpenAI-Assistants flow, ADR-0033 Option A); ci-build-agent-host.yml
 // pushed the tag. Deploy is approval-gated per AGENTS.md §4 (approved-to-apply

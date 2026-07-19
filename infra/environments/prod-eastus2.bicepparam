@@ -77,9 +77,16 @@ param appFluentCustomHostname = ''
 param appFluentEnableCustomDomainCert = false
 
 // --- Deferred to later Sprint 19 phases (explicit for intent) ---
-// P4 data lane — Event Hubs / Service Bus / data-foundation
-param enableDataFoundationModule = false
+// P4 data lane — Event Hubs / Service Bus / CSA Cosmos.
+// EVH namespace + hub + consumer groups. Region-safe (no @allowed on location),
+// public, self-contained. sim-capacity stays gated off, so the flipped
+// simCapacityHasEhSource is unused; MI role params are empty -> assignments skipped.
+param enableDataFoundationModule = true
 param enableDataPlatformModule = false
+// Issue #252 Phase A — CSA Cosmos DB wired into the orchestrator. Public (no PE)
+// in eastus2 PROD because the network module is off (synthetic-only, ADR-0013);
+// creates cosmos-csa-ihzhhpf-prod + 4 vector containers.
+param enableCsaCosmosModule = true
 // P5 Foundry runtime agents — registered via the Sprint 18 API pattern against the
 // PROD project (the foundry-hosted module is region-locked to switzerlandnorth|westus2).
 param enableFoundryHostedAgents = false
@@ -92,6 +99,7 @@ param enableSimCapacityModule = false
 param enableExperienceHostingModule = false
 param enableApiRuntimeModule = false
 param enableAiMlFoundationModule = false
-param enableIntegrationModule = false
+// P4 Service Bus namespace (integration module). Region-safe, self-contained.
+param enableIntegrationModule = true
 param enableIntegrationOrchestrationModule = false
 param enableSourceSqlModule = false

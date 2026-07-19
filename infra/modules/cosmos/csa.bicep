@@ -70,6 +70,12 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview' = {
   properties: {
     databaseAccountOfferType: 'Standard'
     disableLocalAuth: true
+    // Pin publicNetworkAccess explicitly (matches infra/modules/agent-host/cosmos.bicep).
+    // Disabled when a private endpoint is provisioned (SIT — also what the MCAPSGov
+    // Modify-effect policy enforces); Enabled for the public/network-off scope
+    // (PROD eastus2, synthetic-only per ADR-0013). Without this the API defaults to
+    // Enabled and every redeploy shows a spurious what-if drift on this property.
+    publicNetworkAccess: enablePrivateEndpoint ? 'Disabled' : 'Enabled'
     minimalTlsVersion: 'Tls12'
     consistencyPolicy: {
       defaultConsistencyLevel: 'Session'

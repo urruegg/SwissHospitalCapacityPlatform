@@ -181,6 +181,9 @@ param simCapacityDemoScope bool = true
 @description('Enable the Sprint 13 agent-host module (Container App + Cosmos + optional Redis per ADR-0007).')
 param enableAgentHostModule bool = false
 
+@description('Enable the CSA Cosmos DB module (Sprint 16: EnableNoSQLVectorSearch account + 4 containers). Wired into the orchestrator per issue #252 Phase A so it is covered by CI what-if + SIT/PROD parity; the private endpoint follows enableNetworkModule (PE on with network, public otherwise per ADR-0013).')
+param enableCsaCosmosModule bool = false
+
 @description('Container image reference for the agent-host (registry/repository:tag). Placeholder matches sim-capacity pattern until agent-host CI pushes real images to ACR.')
 param agentHostImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
@@ -424,6 +427,29 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     // public — matches legacy behaviour).
     caeInfrastructureSubnetResourceId: enableNetworkModule ? network!.outputs.caeSubnetResourceId : ''
     vnetResourceId: enableNetworkModule ? network!.outputs.vnetResourceId : ''
+  }
+}
+
+// Sprint 16 T1 / issue #252 Phase A — CSA Cosmos DB (vector-search scenario
+// catalogue + agent memory). Previously a standalone deploy
+// (infra/modules/cosmos/main.bicep); wiring it here brings it under CI what-if
+// and the SIT/PROD parity gate. Tags + name suffix match the standalone shape,
+// so adopting the already-deployed SIT account is idempotent. The agent-host MI
+// (created inside the agent-host module) receives Cosmos DB Built-in Data
+// Contributor via agentHostMiPrincipalId — the implicit output reference makes
+// csaCosmos deploy after agentHost, so the MI exists before the role bind. PE
+// plumbing follows the network module: on in SIT (MCAPSGov requires it), public
+// in PROD/eastus2 (network off, synthetic-only per ADR-0013).
+module csaCosmos './modules/cosmos/csa.bicep' = if (enableCsaCosmosModule) {
+  name: 'csa-cosmos-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    agentHostMiPrincipalId: enableAgentHostModule ? agentHost!.outputs.agentHostMiPrincipalId : ''
+    enablePrivateEndpoint: enableNetworkModule
+    vnetResourceId: enableNetworkModule ? network!.outputs.vnetResourceId : ''
+    privateEndpointSubnetName: 'snet-data'
   }
 }
 

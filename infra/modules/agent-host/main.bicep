@@ -145,5 +145,9 @@ resource agentHostCosmosDataContributor 'Microsoft.DocumentDB/databaseAccounts/s
 
 output agentHostFqdn string = containerApp.outputs.fqdn
 output cosmosAccountName string = cosmos.outputs.cosmosAccountName
+// Exposed so the orchestrator can grant this MI Cosmos DB Built-in Data
+// Contributor on the CSA Cosmos account (issue #252 Phase A) without an
+// out-of-band role assignment.
+output agentHostMiPrincipalId string = agentHostMi.properties.principalId
 output redisName string = enableRedisModule ? redis!.outputs.redisName : ''
 output redisEnabled bool = enableRedisModule
