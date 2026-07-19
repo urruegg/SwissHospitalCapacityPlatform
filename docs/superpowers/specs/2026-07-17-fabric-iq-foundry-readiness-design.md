@@ -2,15 +2,15 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 2.0.0 |
+| **Date** | 2026-07-19 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft for review |
-| **Previous Version** | n/a (new — Fabric IQ readiness brainstorm) |
+| **Previous Version** | 1.0.0 (new — Fabric IQ readiness brainstorm). 2.0.0 **relaxes decision D2**: PROD Fabric IQ stays in **westus2** because the subscription's eastus2 Fabric quota is 0 CU (recorded in [ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md); Sprint 19 §7e). Adds **D7** — build the `fabric-cicd` release train first, then deploy PROD reproducibly. §4/§8 reconciled to the retained cross-region seam. |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane live in eastus2, 8 agents registered, no grounding surface wired); the undesigned Fabric-to-Foundry consumption seam; region split (Foundry+PROD in eastus2 vs. Fabric IQ in westus2) |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first infra; Fabric Git integration + `fabric-cicd` for Fabric assets |
 | **Related sprints** | [Sprint 17 — Fabric Git CI/CD + lakehouse schema](2026-07-10-sprint-17-fabric-git-cicd-and-lakehouse-schema-design.md); [Sprint 18 — Foundry control plane eastus2](2026-07-17-sprint-18-foundry-eastus2-control-plane-design.md); [Sprint 19 — PROD eastus2 full deploy](2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md); Sprint 21 — trusted external signals (follow-on) |
-| **Related ADRs** | [ADR-0014 (Fabric IQ ontology backbone, GA-gated)](../../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md); [ADR-0013 (US demo-scope)](../../adr/0013-temporary-us-region-demo-scope.md); [ADR-0016 (no PHI in demo)](../../adr/0016-no-phi-in-mvp-demo-scope.md); ADR-0026/0027 (Sprint 17); ADR-0032 (Foundry control plane eastus2) |
+| **Related ADRs** | [ADR-0014 (Fabric IQ ontology backbone, GA-gated)](../../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md); [ADR-0013 (US demo-scope)](../../adr/0013-temporary-us-region-demo-scope.md); [ADR-0016 (no PHI in demo)](../../adr/0016-no-phi-in-mvp-demo-scope.md); [ADR-0035 (PROD Fabric IQ in westus2)](../../adr/0035-fabric-iq-layer-region-westus2.md); ADR-0026/0027 (Sprint 17); ADR-0032 (Foundry control plane eastus2) |
 
 ---
 
@@ -77,17 +77,21 @@ Fabric IQ Ontology remains preview. [ADR-0014 §2](../../adr/0014-fabric-iq-onto
 | # | Decision | Rationale |
 |---|----------|-----------|
 | D1 | Produce **architecture + roadmap** in one spec | The seam is undesigned *and* the sprints need sequencing. |
-| D2 | **Collocate the Fabric IQ layer in eastus2**, built fresh in Sprint 19 | Removes the cross-region hop + two-region governance; matches Sprint 19's fresh-deploy (which already plans Fabric F2 in eastus2). |
+| D2 | ~~Collocate the Fabric IQ layer in eastus2~~ **RELAXED (2026-07-19, [ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md)):** PROD Fabric IQ stays in **westus2** — the subscription's eastus2 Fabric quota is **0 CU** (Sprint 19 §7e). The Foundry(eastus2)→Fabric(westus2) cross-region seam is retained; re-pointing to eastus2 later is a variable-library change, not a rebuild. | Original rationale (remove the hop) is not achievable without an eastus2 Fabric quota-increase; demo scope tolerates the HTTPS hop (ADR-0013). |
 | D3 | Seam = **Fabric Data Agent published into Foundry as primary grounding tool**; **Foundry IQ KB secondary**; **`fabric-mcp` for actions** | Preserves the ontology + semantic model + RLS + refusal rules already designed (ADR-0014, Data Agent spec). |
 | D4 | "Product Domain" = **Fabric Domain + OneLake Data Product** | Governed, catalog-discoverable bundle Foundry IQ can point at. |
 | D5 | Target **L3 gated release train** (`fabric-cicd` + variable libraries + gates), delivered incrementally | A fresh eastus2 build is where reproducible, gated deployment pays off. |
 | D6 | **Base layer = "ready"**; Sprint 21 external signals is a **follow-on** that rides the same seam | Bounds scope; external signals extend, they do not block readiness. |
+| D7 | **Build the `fabric-cicd` release train first, then deploy PROD reproducibly** (2026-07-19) — before mirroring content into the PROD workspace, land Git integration + `fabric-cicd` + variable libraries (Sprint 17 Phase 1), validated against SIT. PROD then deploys by changing variable-library values (region/workspace/lakehouse). | User decision (2026-07-19): favour a proper, repeatable release train over a one-off portal mirror, so PROD (westus2) and any future eastus2 re-point are push-button. |
 
 ---
 
 ## 4. Target-state architecture
 
-All resources collocated in `eastus2`. Top to bottom:
+Foundry control plane + PROD compute in `eastus2`; **Fabric IQ layer in `westus2`**
+(eastus2 Fabric quota = 0, [ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md)).
+The seam crosses regions over HTTPS and is region-agnostic via variable library.
+Top to bottom:
 
 ```text
 CONSUME · Foundry agents (bmca, ooa, dca, orsa, sba, csa, [data-quality, onboarding])
@@ -112,7 +116,7 @@ BUILD/DEPLOY · fabric-cicd (L3) from GitHub Actions
   gates: semantic-model verify | ontology-conformance (strict) | gold-schema | Data-Agent golden tasks
         ^
         |
-PLATFORM · Fabric F2 capacity + workspace + lakehouse (eastus2, Sprint 19)
+PLATFORM · Fabric F2 capacity + workspace + lakehouse (westus2 — ADR-0035; Sprint 19 P6.1)
 ```
 
 Key properties:
@@ -172,9 +176,9 @@ Approach: **seam-first thin slice** — retire the highest risk (the seam) first
 | Phase | Timing | Scope | Exit |
 |-------|--------|-------|------|
 | **Slice 0** | days (independent) | Wire **one** Foundry agent (ooa) to the existing `westus2` Fabric Data Agent as a Fabric data-agent tool. 1 grounding golden task. | Seam proven; ADR (seam pattern) + grounding-contract doc |
-| **Phase 1** | Sprint 17 | Git integration + gold schema hardening + introduce `fabric-cicd` + variable libraries (L1 to L2). | ADR-0026/0027; layer reproducibly deployable |
-| **Phase 2** | Sprint 19 | `fabric-cicd` builds the Fabric IQ layer **fresh in eastus2** (F2, workspace, lakehouse, semantic model, ontology, Data Agent); re-point seam variable lib to eastus2; publish OneLake data product + Domain; wire L3 gates. | Layer live in eastus2; seam re-pointed |
-| **Phase 3** | harden | Flip ontology-conformance to strict; **Certify** data product; run seam golden tasks across all 6 copilots; publish **"Fabric IQ ready" evidence doc**; sunset westus2 Fabric. | Readiness gate green |
+| **Phase 1** | Sprint 17 | Git integration + gold schema hardening + introduce `fabric-cicd` + variable libraries (L1 to L2), validated against SIT. **Prerequisite for the PROD build (D7).** | ADR-0026/0027; layer reproducibly deployable |
+| **Phase 2** | Sprint 19 | `fabric-cicd` builds the Fabric IQ layer **fresh in westus2** ([ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md): PROD Fabric capacity `fabricihzhhpfprod` is westus2) — workspace `ws-ihzhhpf-prod-data`, lakehouse, semantic model, ontology, Data Agent; point the seam variable lib at the PROD workspace; publish OneLake data product + Domain; wire L3 gates. | PROD Fabric IQ live in westus2; seam pointed at PROD |
+| **Phase 3** | harden | Flip ontology-conformance to strict; **Certify** data product; run seam golden tasks across all 6 copilots; publish **"Fabric IQ ready" evidence doc**. (No westus2 sunset — westus2 **is** the PROD end-state per ADR-0035; only a future eastus2 quota-increase would re-point the layer.) | Readiness gate green |
 | **Phase 4** | Sprint 21 (follow-on) | CAP-based external-signals ontology extension to CSA triggers. Rides the same seam. | Signals extension live |
 
 **Dependencies:** Slice 0 is independent (uses existing westus2). Phase 1 is a prerequisite for Phase 2's `fabric-cicd` build. Phase 2 depends on Sprint 18 (done) + Sprint 19 infra. Phase 3 depends on Phase 2. Phase 4 depends on the Phase 3 seam.
@@ -185,10 +189,10 @@ Approach: **seam-first thin slice** — retire the highest risk (the seam) first
 
 ### 9.1 Approval gates (AGENTS.md §4)
 
-- Phase 2 (eastus2 build) and Phase 3 (data-product certification; westus2 sunset = `delete`) are `deploy`/`delete` class to require `approved-to-apply`.
+- Phase 2 (PROD westus2 build) and Phase 3 (data-product certification) are `deploy` class to require `approved-to-apply`. (No westus2 Fabric sunset — westus2 is the PROD end-state per [ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md).)
 - Slice 0 attaches a **read-only** Data Agent to require no approval.
 - The Fabric data-agent tool is a **Foundry-native connection, not a new MCP server** to be documented in `AGENTS.md`, no MCP allow-list change.
-- **New ADRs:** seam pattern; region re-pin of the Fabric IQ layer to `eastus2` (annotating ADR-0013/0014); plus Sprint 17's 0026/0027.
+- **New ADRs:** seam pattern; [ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md) (PROD Fabric IQ region = westus2, relaxing D2, annotating ADR-0013/0014); plus Sprint 17's 0026/0027.
 
 ### 9.2 Degradation (fail loud, never silent)
 
