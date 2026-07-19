@@ -18,10 +18,19 @@ TABLES_DIR = (REPO_ROOT / "data-platform" / "reports" /
 
 
 def contract_tables(tables_dir: Path) -> set[str]:
+    """Direct-Lake gold tables the medallion must produce.
+
+    Excludes ``bva_*`` (a separate domain) and any Import-mode table
+    (``mode: import`` in its TMDL — field-parameter/calculated/CSV-seeded
+    tables such as ``param_*``, ``dim_persona``, ``benchmark``, ``grounding``),
+    which are not produced as gold Delta tables by the medallion.
+    """
     names = set()
     for tmdl in tables_dir.glob("*.tmdl"):
         stem = tmdl.stem
         if stem.startswith("bva_"):
+            continue
+        if "mode: import" in tmdl.read_text(encoding="utf-8"):
             continue
         names.add(stem)
     return names

@@ -31,3 +31,22 @@ def test_contract_excludes_bva(tmp_path):
     contract = vgs.contract_tables(tables)
     assert "dim_hospital" in contract
     assert "bva_dim_hospital" not in contract
+
+
+def test_contract_excludes_import_mode(tmp_path):
+    tables = tmp_path / "tables"
+    tables.mkdir()
+    (tables / "dim_hospital.tmdl").write_text(
+        "table dim_hospital\n\tpartition dim_hospital = entity\n\t\tmode: directLake\n",
+        encoding="utf-8")
+    (tables / "dim_persona.tmdl").write_text(
+        "table dim_persona\n\tpartition dim_persona = m\n\t\tmode: import\n",
+        encoding="utf-8")
+    (tables / "param_capacity_measure.tmdl").write_text(
+        "table param_capacity_measure\n\tpartition param_capacity_measure = calculated\n\t\tmode: import\n",
+        encoding="utf-8")
+    contract = vgs.contract_tables(tables)
+    assert "dim_hospital" in contract
+    assert "dim_persona" not in contract
+    assert "param_capacity_measure" not in contract
+
