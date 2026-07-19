@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | In progress — P1–P3 (foundation + AI + compute) DEPLOYED & verified in eastus2; P4–P8 pending |
-| **Previous Version** | 1.1.0 (Sprint 18 closed → unblocked; legacy westus2 rg-ihzhhpf-prod decommissioned; P1 Option 1 reuse). 1.2.0: added the P1–P3 execution record — first deploy failed on 2 shared-module limits, corrected via a PROD-local ACR + network-off, redeployed green (17 resources, both Container Apps live). |
+| **Status** | In progress — P1–P4 (foundation + AI + compute + data lane) DEPLOYED & verified in eastus2 (P4 via the CI/CD workflow); P5–P8 pending |
+| **Previous Version** | 1.2.0 (added the P1–P3 execution record — first deploy failed on 2 shared-module limits, corrected via a PROD-local ACR + network-off, redeployed green, 17 resources, both Container Apps live). 1.3.0: added the P4 execution record — CSA Cosmos wired into `main.bicep` (#252 Phase A), then EVH + SB + CSA Cosmos deployed to PROD through the `cd-infra-deploy-prod` GitHub workflow (proving the CI/CD infra path), 12 resources verified live. |
 | **Design spec** | [2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md](../specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md) |
 
 ---
@@ -55,9 +55,62 @@ clean redeploy.
 PROD-ACR images. Commits `6d31559` (param) + `0913b02` (ACR + network-off fix).
 
 **Deferred to later phases**: Redis (eastus2 Balanced SKU unverified — in-memory
-per ADR-0028), P4 Event Hubs / Service Bus, P5 Foundry-hosted agents (Sprint 18
-API pattern against the PROD project), P6 Fabric F2 workspace + Data Agent, P7
-DNS cutover `app.curavias.ch`, VNet + private-endpoint hardening.
+per ADR-0028), P5 Foundry-hosted agents (Sprint 18 API pattern against the PROD
+project), P6 Fabric F2 workspace + Data Agent, P7 DNS cutover `app.curavias.ch`,
+VNet + private-endpoint hardening.
+
+---
+
+## Execution record — P4 data lane, deployed via CI/CD (2026-07-19)
+
+> First PROD slice deployed through the **`cd-infra-deploy-prod` GitHub
+> workflow** rather than a local `az` command — deliberately, to prove the
+> CI/CD infra path works end-to-end (policy gate → OIDC → what-if → deploy).
+
+**Prerequisite — #252 Phase A (CSA Cosmos parity):** the CSA Cosmos account was
+previously an out-of-band standalone deploy (not in `main.bicep`, invisible to
+CI what-if — logged as [#252](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/252)).
+Phase A wired it in: `enableCsaCosmosModule` gate + a `csaCosmos` block calling
+`modules/cosmos/csa.bicep`, an `agentHostMiPrincipalId` output on the agent-host
+module, and a pinned `publicNetworkAccess` in `csa.bicep`. Enabled in both
+`sit.bicepparam` (idempotent adoption — SIT what-if showed **0 Create / 0
+Delete**) and `prod-eastus2.bicepparam` (which also flips on EVH + SB for P4).
+Commit `a0eeda1`.
+
+**CI/CD finding — stale `prod` environment variables:** the GitHub `prod`
+environment still pointed at the decommissioned westus2 footprint
+(`rg-ihzhhpf-prod`, `prod.bicepparam`, `westus2`). Corrected the three infra
+vars to `rg-ihzhhpf-prod-eastus2` / `prod-eastus2.bicepparam` / `eastus2`.
+(Broader staleness — `SOLUTION_SHORT_NAME`, `PROD_SOURCE_SQL_*`,
+`PROD_FABRIC_*` still reference the frozen old tenant `mngenvmcap228255` — noted
+on #252 for a follow-up sweep.)
+
+**Approved-to-apply**: @urruegg 2026-07-19 (PROD what-if **12 Create / 0
+Delete**). Workflow run `29679485559` — policy-gate PASSED, `Deploy PROD`
+job approved at the `prod` required-reviewer gate, deploy green in 5m8s
+(what-if + `az deployment group create`).
+
+**Deployed & verified (12 resources)**:
+
+| Resource | Evidence |
+|----------|----------|
+| `cosmos-csa-ihzhhpf-prod` | db `csa` + 4 containers: `scenarios`, `agent-memory`, `response-levers`, `simulation-runs` |
+| `evh-ihzhhpf-prod-q4nk` | Event Hubs namespace + hub `events` + `$Default` + consumer groups `cg-bm-copilot-agent`, `cg-csa-agent`, `cg-fabric-eventstream` |
+| `sb-ihzhhpf-prod-q4nk` | Service Bus namespace — status Active |
+
+**Policy note (publicNetworkAccess):** the template requested `Enabled`
+(network off), but both `cosmos-csa-ihzhhpf-prod` **and** the platform
+`cosmos-ihzhhpf-prod` show `publicNetworkAccess=Disabled` live. The MCAPSGov
+governance policy is therefore a **Modify-effect** that force-disables public
+Cosmos across the subscription — the deploy still succeeds, but the accounts are
+unreachable without a private endpoint. Runtime reachability of CSA Cosmos in
+PROD is folded into the **VNet + private-endpoint hardening** follow-up
+(consistent with ADR-0013 synthetic-only, network-off first slice). Resource
+*provisioning* (the P4 goal) is complete.
+
+**Still deferred:** P5 Foundry-hosted agents, P6 Fabric F2 workspace + Data
+Agent, P7 DNS cutover, VNet/PE hardening, #252 Phase B (ACR module + CD import)
+and Phase C (SIT/PROD parity assertion).
 
 ---
 

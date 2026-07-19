@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-19 |
 | **Author** | Urs Rüeegg |
-| **Status** | Accepted — in progress (P1–P3 foundation + AI + compute DEPLOYED & verified in eastus2; P4–P8 pending) |
-| **Previous Version** | 1.1.0 (adopted §7 Option 1 reuse; recorded legacy westus2 PROD decommission). 1.2.0 adds §7b — the verified P1–P3 deploy outcome (17 resources green) and two shared-module findings: cross-RG ACR is unsupported (→ PROD-local ACR) and the Cosmos private endpoint needs the CSA-Cosmos DNS zone (→ network off for the first slice). |
+| **Status** | Accepted — in progress (P1–P4 foundation + AI + compute + data lane DEPLOYED & verified in eastus2, P4 via the CI/CD workflow; P5–P8 pending) |
+| **Previous Version** | 1.2.0 (added §7b — the verified P1–P3 deploy outcome, 17 resources green, and two shared-module findings: cross-RG ACR is unsupported and the Cosmos private endpoint needs the CSA-Cosmos DNS zone). 1.3.0 adds §7c — the P4 data-lane deploy via the `cd-infra-deploy-prod` CI/CD workflow (#252 Phase A CSA-Cosmos wiring + EVH + SB, 12 resources), the stale `prod` env-var finding, and the MCAPSGov Modify-effect publicNetworkAccess policy note. |
 | **Anchor triggers** | Sprint 18 completion (Foundry control plane proven in eastus2); SIT feasibility matrix confirming 22/22 resource types GA in eastus2; ADR-0013 demo-scope pivot |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first IaC for all PROD resources |
 | **Prerequisites** | Sprint 18 complete (Foundry agents proven E2E in eastus2); Fabric capacity stabilized; App Fluent builds green |
@@ -265,6 +265,43 @@ purge-protected `-i62t`). Commits `6d31559` + `0913b02`.
 **Still deferred:** Redis (eastus2 Balanced SKU unverified), P4 Event Hubs /
 Service Bus, P5 Foundry-hosted agents, P6 Fabric F2 workspace + Data Agent, P7
 DNS cutover `app.curavias.ch`, VNet/PE hardening.
+
+### 7c. P4 data lane — deployed via the CI/CD workflow (2026-07-19)
+
+The P4 data lane was deployed through the **`cd-infra-deploy-prod` GitHub
+workflow** (not a local `az` command) to prove the CI/CD infra path
+end-to-end: `policy-gate` → `environment: prod` OIDC → what-if → deploy.
+
+**#252 Phase A — CSA Cosmos parity (prerequisite).** The CSA Cosmos account was
+an out-of-band standalone deploy, invisible to `main.bicep` and CI what-if
+([#252](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/252)).
+Phase A wired it into the orchestrator behind an `enableCsaCosmosModule` gate (a
+`csaCosmos` block calling `modules/cosmos/csa.bicep`), added an
+`agentHostMiPrincipalId` output on the agent-host module for the data-contributor
+role assignment, and pinned `publicNetworkAccess` in `csa.bicep`. Enabled in
+`sit.bicepparam` (idempotent — SIT what-if **0 Create / 0 Delete**) and
+`prod-eastus2.bicepparam` (which also enables EVH + SB). Commit `a0eeda1`.
+
+**CI/CD finding — stale `prod` environment.** The GitHub `prod` environment
+variables still targeted the decommissioned westus2 footprint
+(`rg-ihzhhpf-prod` / `prod.bicepparam` / `westus2`); corrected to
+`rg-ihzhhpf-prod-eastus2` / `prod-eastus2.bicepparam` / `eastus2`. Broader
+stale vars (`SOLUTION_SHORT_NAME`, `PROD_SOURCE_SQL_*`, `PROD_FABRIC_*` →
+frozen tenant `mngenvmcap228255`) are noted on #252 for a follow-up sweep.
+
+**Outcome.** Workflow run `29679485559` — policy-gate PASSED, `Deploy PROD`
+approved at the required-reviewer gate, green in 5m8s. PROD what-if **12 Create
+/ 0 Delete**; verified live: `cosmos-csa-ihzhhpf-prod` (db `csa` + 4 containers
+`scenarios` / `agent-memory` / `response-levers` / `simulation-runs`),
+`evh-ihzhhpf-prod-q4nk` (hub `events` + consumer groups `cg-bm-copilot-agent` /
+`cg-csa-agent` / `cg-fabric-eventstream`), `sb-ihzhhpf-prod-q4nk` (Active).
+
+**MCAPSGov policy note.** Both `cosmos-csa-ihzhhpf-prod` and the platform
+`cosmos-ihzhhpf-prod` show `publicNetworkAccess=Disabled` live despite the
+template requesting `Enabled`. The subscription policy is a **Modify-effect**
+that force-disables public Cosmos: deploys succeed, but the accounts are
+unreachable without a private endpoint. Runtime reachability folds into the
+**VNet + private-endpoint hardening** follow-up; P4 *provisioning* is complete.
 
 ### 7a. Original fresh-tree plan (superseded — kept for history)
 
