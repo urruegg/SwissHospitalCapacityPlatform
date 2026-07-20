@@ -46,7 +46,7 @@ def get_token() -> str:
     out = subprocess.run(
         ["az", "account", "get-access-token", "--resource",
          "https://storage.azure.com/", "--query", "accessToken", "-o", "tsv"],
-        capture_output=True, text=True, check=True,
+        capture_output=True, text=True, check=True, shell=True,
     )
     return out.stdout.strip()
 

@@ -51,18 +51,35 @@ class PayloadTests(unittest.TestCase):
         self.assertEqual(base64.b64decode(b64), raw)
 
     def test_definition_body_shape(self):
-        body = rm.build_definition("QkFTRTY0")
+        body = rm.build_definition("QkFTRTY0", "UExBVA==")
         parts = body["definition"]["parts"]
         self.assertEqual(body["definition"]["format"], "ipynb")
-        self.assertEqual(len(parts), 1)
+        self.assertEqual(len(parts), 2)
         self.assertEqual(parts[0]["path"], "notebook-content.ipynb")
         self.assertEqual(parts[0]["payload"], "QkFTRTY0")
         self.assertEqual(parts[0]["payloadType"], "InlineBase64")
+        self.assertEqual(parts[1]["path"], ".platform")
+        self.assertEqual(parts[1]["payload"], "UExBVA==")
 
     def test_create_body_includes_display_name(self):
-        body = rm.build_create_body("01_bronze_master_data", "QQ==")
+        body = rm.build_create_body("01_bronze_master_data", "QQ==", "Ug==")
         self.assertEqual(body["displayName"], "01_bronze_master_data")
         self.assertIn("definition", body)
+
+    def test_inject_lakehouse_binds_default(self):
+        raw = b'{"cells": [], "metadata": {"language_info": {"name": "python"}}}'
+        out = rm.inject_lakehouse(raw, "lh-id", "lh_name", "ws-id")
+        import json as _j
+        dep = _j.loads(out)["metadata"]["dependencies"]["lakehouse"]
+        self.assertEqual(dep["default_lakehouse"], "lh-id")
+        self.assertEqual(dep["default_lakehouse_name"], "lh_name")
+        self.assertEqual(dep["default_lakehouse_workspace_id"], "ws-id")
+
+    def test_platform_part_has_display_name(self):
+        import json as _j
+        p = _j.loads(rm.build_platform_part("03_gold_master_data", "x/y.ipynb"))
+        self.assertEqual(p["metadata"]["displayName"], "03_gold_master_data")
+        self.assertEqual(p["metadata"]["type"], "Notebook")
 
     def test_run_config_binds_default_lakehouse(self):
         cfg = rm.build_run_config("lh_ihzhhpf_sit", "lh-id", "ws-id")

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import json
 import subprocess
 import sys
 import time
@@ -70,24 +71,66 @@ def ipynb_to_base64(raw: bytes) -> str:
     return base64.b64encode(raw).decode("ascii")
 
 
-def build_definition(payload_b64: str) -> dict:
+def inject_lakehouse(raw: bytes, lakehouse_id: str, lakehouse_name: str,
+                     workspace_id: str) -> bytes:
+    """Bind the target lakehouse as the notebook's default lakehouse.
+
+    The canonical git ``.ipynb`` carries no lakehouse binding (env-agnostic);
+    Fabric needs ``metadata.dependencies.lakehouse`` so ``saveAsTable`` and
+    ``CREATE SCHEMA`` resolve against the right schemas-enabled lakehouse. This
+    makes the same source bind to SIT or PROD by ``--environment`` only.
+    """
+    nb = json.loads(raw.decode("utf-8"))
+    nb.setdefault("metadata", {})["dependencies"] = {
+        "lakehouse": {
+            "default_lakehouse": lakehouse_id,
+            "default_lakehouse_name": lakehouse_name,
+            "default_lakehouse_workspace_id": workspace_id,
+        }
+    }
+    return json.dumps(nb, ensure_ascii=False, indent=1).encode("utf-8")
+
+
+def build_platform_part(display_name: str, source_rel: str) -> str:
+    return json.dumps({
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/"
+                   "gitIntegration/platformProperties/2.0.0/schema.json",
+        "metadata": {
+            "type": "Notebook",
+            "displayName": display_name,
+            "description": f"Imported from {source_rel}",
+        },
+        "config": {
+            "version": "2.0",
+            "logicalId": "00000000-0000-0000-0000-000000000000",
+        },
+    }, indent=2)
+
+
+def build_definition(ipynb_b64: str, platform_b64: str) -> dict:
     return {
         "definition": {
             "format": "ipynb",
             "parts": [
                 {
                     "path": "notebook-content.ipynb",
-                    "payload": payload_b64,
+                    "payload": ipynb_b64,
                     "payloadType": "InlineBase64",
-                }
+                },
+                {
+                    "path": ".platform",
+                    "payload": platform_b64,
+                    "payloadType": "InlineBase64",
+                },
             ],
         }
     }
 
 
-def build_create_body(display_name: str, payload_b64: str) -> dict:
+def build_create_body(display_name: str, ipynb_b64: str,
+                      platform_b64: str) -> dict:
     body = {"displayName": display_name}
-    body.update(build_definition(payload_b64))
+    body.update(build_definition(ipynb_b64, platform_b64))
     return body
 
 
@@ -134,7 +177,7 @@ def get_token() -> str:
         ["az", "account", "get-access-token", "--resource",
          "https://api.fabric.microsoft.com", "--query", "accessToken",
          "-o", "tsv"],
-        capture_output=True, text=True, check=True,
+        capture_output=True, text=True, check=True, shell=True,
     )
     return out.stdout.strip()
 
@@ -155,8 +198,9 @@ def list_notebooks(workspace_id: str, token: str) -> dict[str, str]:
 def _wait_lro(response, token: str) -> None:
     """Poll a Fabric long-running-operation until it succeeds."""
     import requests
+    if response.status_code not in (200, 201, 202):
+        raise RuntimeError(f"HTTP {response.status_code}: {response.text}")
     if response.status_code != 202:
-        response.raise_for_status()
         return
     location = response.headers.get("Location")
     if not location:
@@ -167,28 +211,38 @@ def _wait_lro(response, token: str) -> None:
         s = requests.get(location, headers=_headers(token))
         s.raise_for_status()
         status = s.json().get("status")
-        if status == "Succeeded":
+        # Item-definition LROs report "Succeeded"; on-demand job instances
+        # report "Completed" (and "Deduped" when a matching run already ran).
+        if status in ("Succeeded", "Completed", "Deduped"):
             return
         if status in ("Failed", "Cancelled"):
             raise RuntimeError(f"LRO {status}: {s.text}")
     raise TimeoutError("LRO did not complete within timeout")
 
 
-def create_or_update(workspace_id: str, existing: dict[str, str],
+def create_or_update(env: dict, existing: dict[str, str],
                      nb: Notebook, token: str) -> str:
     import requests
-    b64 = ipynb_to_base64(nb.path.read_bytes())
+    workspace_id = env["workspace_id"]
+    source_rel = nb.path.relative_to(REPO_ROOT).as_posix()
+    bound = inject_lakehouse(nb.path.read_bytes(), env["lakehouse_id"],
+                             env["lakehouse_name"], workspace_id)
+    ipynb_b64 = ipynb_to_base64(bound)
+    platform_b64 = ipynb_to_base64(
+        build_platform_part(nb.display_name, source_rel).encode("utf-8"))
     if nb.display_name in existing:
         item_id = existing[nb.display_name]
         r = requests.post(
             f"{FABRIC_API}/workspaces/{workspace_id}/notebooks/{item_id}/"
             "updateDefinition?updateMetadata=true",
-            headers=_headers(token), json=build_definition(b64))
+            headers=_headers(token),
+            json=build_definition(ipynb_b64, platform_b64))
         _wait_lro(r, token)
         return item_id
     r = requests.post(
         f"{FABRIC_API}/workspaces/{workspace_id}/notebooks",
-        headers=_headers(token), json=build_create_body(nb.display_name, b64))
+        headers=_headers(token),
+        json=build_create_body(nb.display_name, ipynb_b64, platform_b64))
     _wait_lro(r, token)
     if r.status_code == 201:
         return r.json()["id"]
@@ -234,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
     for nb in notebooks:
         action = "update" if nb.display_name in existing else "create"
         print(f"\n[{action}] {nb.display_name} ...", flush=True)
-        item_id = create_or_update(env["workspace_id"], existing, nb, token)
+        item_id = create_or_update(env, existing, nb, token)
         print(f"[run]    {nb.display_name} ({item_id}) ...", flush=True)
         run_notebook(env["workspace_id"], item_id, run_config, token)
         print(f"[ok]     {nb.display_name}", flush=True)
