@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Curavias &mdash; Sprint 20 UX Mockup</title>
+<style>
+  /* ===== Curavias brand tokens (from docs/brandkit/color/curavias-tokens.json) ===== */
+  :root{
+    --cv-brand-80:#17B890; --cv-brand-70:#15A280; --cv-brand-60:#148C6F; --cv-brand-50:#12765F;
+    --cv-brand-150:#E0F2EF; --cv-brand-160:#FAFAFB;
+    --cv-sec-80:#365B7D; --cv-sec-70:#30516F; --cv-sec-90:#537290; --cv-sec-150:#E3E8EC;
+    --cv-danger-80:#E30613; --cv-warn-80:#E8A200; --cv-info-80:#1FA9D6; --cv-accent-80:#5A6CF0;
+    --cv-ink:#2E4C68; --cv-slate:#6B7A88;
+    --cv-on-brand:#0E0F11;               /* dark text on green (WCAG AAA) */
+    --cv-on-sec:#FFFFFF;                 /* white text on blue (WCAG AAA) */
+  }
+  /* Light theme (default) */
+  [data-theme="light"]{
+    --bg1:#FFFFFF; --bg2:#F1F2F3; --bg3:#FBFBFB; --stroke:#E3E6E8; --stroke2:#D6D9DC;
+    --fg1:#2E4C68; --fg2:#6B7A88; --header-bg:#365B7D; --header-fg:#FFFFFF;
+    --nav-bg:#FBFBFB; --nav-sel:#E0F2EF; --nav-sel-bar:#17B890; --card:#FFFFFF; --shadow:0 1.6px 3.6px rgba(0,0,0,.10),0 .3px .9px rgba(0,0,0,.07);
+  }
+  /* Dark theme */
+  [data-theme="dark"]{
+    --bg1:#171A1C; --bg2:#0E0F11; --bg3:#212427; --stroke:#3B4045; --stroke2:#2D3134;
+    --fg1:#E3E6E8; --fg2:#ACB3B9; --header-bg:#1A2837; --header-fg:#E3E6E8;
+    --nav-bg:#0E0F11; --nav-sel:#0F493E; --nav-sel-bar:#17B890; --card:#212427; --shadow:0 1.6px 3.6px rgba(0,0,0,.4),0 .3px .9px rgba(0,0,0,.3);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:"Segoe UI","Segoe UI Web (West European)",system-ui,-apple-system,sans-serif;
+    color:var(--fg1); background:var(--bg2); font-size:14px; overflow:hidden;
+  }
+  /* ===== App grid: 5 planes ===== */
+  #app{
+    display:grid; height:100vh;
+    grid-template-rows:48px 1fr 32px;
+    grid-template-columns:auto 1fr auto;
+    grid-template-areas:
+      "header header header"
+      "nav    main   agent"
+      "footer footer footer";
+  }
+  /* ---- AppHeaderPlane ---- */
+  header{
+    grid-area:header; background:var(--header-bg); color:var(--header-fg);
+    display:flex; align-items:center; justify-content:space-between; padding:0 12px; gap:12px;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:600}
+  .brand .logo{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:linear-gradient(135deg,#17B890,#365B7D);color:#fff;font-weight:800}
+  .brand .word{font-size:16px;letter-spacing:.2px}
+  .hgroup{display:flex; align-items:center; gap:8px}
+  .hbtn,.hsel{
+    background:transparent;color:var(--header-fg);border:1px solid rgba(255,255,255,.28);
+    border-radius:6px;padding:5px 8px;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer
+  }
+  .hsel{padding-right:6px}
+  select.hsel{appearance:auto}
+  .user{display:flex;align-items:center;gap:8px}
+  .avatar{width:26px;height:26px;border-radius:50%;background:var(--cv-brand-80);color:var(--cv-on-brand);display:grid;place-items:center;font-weight:700;font-size:12px}
+  /* ---- AppNavigationPlane ---- */
+  nav{
+    grid-area:nav; background:var(--nav-bg); border-right:1px solid var(--stroke);
+    width:220px; transition:width .16s ease; display:flex; flex-direction:column; padding-top:8px;
+  }
+  nav.collapsed{width:48px}
+  .navitem{
+    display:flex; align-items:center; gap:12px; height:40px; padding:0 12px; cursor:pointer;
+    color:var(--fg1); border-left:3px solid transparent; white-space:nowrap; overflow:hidden;
+  }
+  .navitem .ico{min-width:22px;height:22px;display:grid;place-items:center;color:var(--fg2)}
+  .navitem:hover{background:var(--bg2)}
+  .navitem.sel{background:var(--nav-sel); border-left-color:var(--nav-sel-bar); font-weight:600}
+  .navitem.sel .ico{color:var(--cv-brand-60)}
+  .navitem.locked{opacity:.38;cursor:not-allowed;pointer-events:none}
+  .navitem.locked .ico::after{content:"\1F512";font-size:11px;margin-left:2px}
+  nav.collapsed .navitem .label{display:none}
+  .navspacer{flex:1}
+  .navtoggle{display:flex;align-items:center;gap:12px;height:40px;padding:0 12px;cursor:pointer;color:var(--fg2)}
+  .navtoggle:hover{background:var(--bg2)}
+  /* ---- AppMainPlane ---- */
+  main{grid-area:main; background:var(--bg2); overflow:auto; padding:18px 22px}
+  .crumbs{color:var(--fg2);font-size:12px;margin-bottom:6px}
+  h1.page{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--fg2);margin:0 0 16px}
+  .boardbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+  .pill{border:1px solid var(--stroke2);background:var(--card);border-radius:16px;padding:6px 12px;cursor:pointer;font-size:13px;color:var(--fg1)}
+  .pill.sel{background:var(--cv-brand-80);color:var(--cv-on-brand);border-color:var(--cv-brand-70);font-weight:600}
+  .pill.locked{opacity:.4;cursor:not-allowed;pointer-events:none}
+  .rolestrip{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:12px;color:var(--fg2)}
+  .rolestrip .chip{font-size:11px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--stroke);border-radius:10px;padding:14px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 8px;font-size:14px;color:var(--fg2);font-weight:600;display:flex;align-items:center;gap:8px}
+  .kpi{font-size:30px;font-weight:700}
+  .kpi.good{color:var(--cv-brand-50)} .kpi.warn{color:var(--cv-warn-80)} .kpi.bad{color:var(--cv-danger-80)}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 8px;border-radius:12px;font-weight:600}
+  .chip.good{background:var(--cv-brand-150);color:var(--cv-brand-50)}
+  .chip.warn{background:#F8F0DE;color:#946a06}
+  .chip.bad{background:#F7DEE0;color:#a5101a}
+  .chip.info{background:#E1F1F7;color:#166a86}
+  .bar{height:8px;border-radius:4px;background:var(--stroke2);overflow:hidden;margin-top:8px}
+  .bar>span{display:block;height:100%;background:var(--cv-brand-80)}
+  .startcard{max-width:820px;background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:26px;box-shadow:var(--shadow)}
+  .showcase{margin-top:14px;padding:12px 14px;border-left:4px solid var(--cv-warn-80);background:#F8F0DE;color:#6b4d05;border-radius:6px;font-size:13px}
+  [data-theme="dark"] .showcase{background:#3D2E0C;color:#F4DBA3}
+  /* stepper for CSA */
+  .stepper{display:flex;gap:8px;margin:0 0 18px}
+  .step{flex:1;border:1px solid var(--stroke2);border-radius:8px;padding:10px 12px;background:var(--card);text-align:center;font-size:13px}
+  .step.active{border-color:var(--cv-brand-70);background:var(--cv-brand-150);color:var(--cv-brand-50);font-weight:700}
+  [data-theme="dark"] .step.active{background:#0F493E;color:#8FDBC9}
+  .btnrow{display:flex;gap:10px;margin-top:14px}
+  .btn{border:none;border-radius:6px;padding:9px 16px;font-weight:600;cursor:pointer}
+  .btn.primary{background:var(--cv-brand-80);color:var(--cv-on-brand)}
+  .btn.secondary{background:var(--cv-sec-80);color:#fff}
+  .btn.ghost{background:transparent;border:1px solid var(--stroke2);color:var(--fg1)}
+  .settingrow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--stroke)}
+  /* ---- AppAgentPlane ---- */
+  aside{grid-area:agent; width:0; transition:width .16s ease; background:var(--bg1); border-left:1px solid var(--stroke); overflow:hidden}
+  aside.open{width:340px}
+  .agenthead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--stroke)}
+  .agenthead .t{display:flex;align-items:center;gap:8px;font-weight:600}
+  .agentbody{padding:14px;display:flex;flex-direction:column;gap:10px;height:calc(100% - 110px);overflow:auto}
+  .agentswitch{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--stroke)}
+  .agentswitch .pill{font-size:12px;padding:4px 10px}
+  .msg{background:var(--bg2);border:1px solid var(--stroke);border-radius:10px;padding:10px 12px;font-size:13px}
+  .msg.me{background:var(--cv-sec-150);border-color:transparent;align-self:flex-end}
+  [data-theme="dark"] .msg.me{background:#253D53}
+  .agentinput{position:absolute;bottom:0;left:0;right:0;display:flex;gap:8px;padding:12px;border-top:1px solid var(--stroke);background:var(--bg1)}
+  aside .wrap{position:relative;height:100%}
+  .agentinput input{flex:1;border:1px solid var(--stroke2);border-radius:8px;padding:9px 12px;background:var(--card);color:var(--fg1)}
+  .cite{font-size:11px;color:var(--fg2);margin-top:6px}
+  /* floating agent button (collapsed) */
+  #agentfab{position:fixed;right:22px;bottom:48px;width:52px;height:52px;border-radius:14px;border:none;cursor:pointer;
+    background:linear-gradient(135deg,#17B890,#5A6CF0);color:#fff;font-size:22px;box-shadow:0 6px 18px rgba(0,0,0,.28);display:grid;place-items:center;z-index:20}
+  #agentfab.hidden{display:none}
+  /* ---- AppFooterPlane ---- */
+  footer{
+    grid-area:footer; background:var(--bg3); border-top:1px solid var(--stroke);
+    display:flex; align-items:center; justify-content:space-between; padding:0 14px; color:var(--fg2); font-size:12px;
+  }
+  footer .fr{display:flex;align-items:center;gap:8px}
+  footer select{background:var(--card);color:var(--fg1);border:1px solid var(--stroke2);border-radius:6px;padding:3px 6px}
+  .hidden{display:none}
+  svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+</style>
+</head>
+<body data-theme="light">
+<div id="app">
+  <!-- ===== AppHeaderPlane ===== -->
+  <header>
+    <div class="brand">
+      <div class="logo">C</div>
+      <span class="word">Curavias</span>
+    </div>
+    <div class="hgroup">
+      <!-- right-to-left: user, hospital, language, theme (rendered L->R but ordered per spec) -->
+      <button class="hbtn" id="themeBtn" title="Toggle light / dark">&#9681; <span id="themeLbl">Dark</span></button>
+      <select class="hsel" id="langSel" title="Language">
+        <option value="en">EN</option><option value="de">DE</option>
+        <option value="fr">FR</option><option value="it">IT</option>
+      </select>
+      <select class="hsel" id="hospSel" title="Hospital scope (constrained by role)"></select>
+      <select class="hsel" id="roleSel" title="Active role (from your security-group assignments)"></select>
+      <div class="user"><span class="avatar">UR</span><span id="userLbl">U. R&uuml;egg</span></div>
+    </div>
+  </header>
+
+  <!-- ===== AppNavigationPlane ===== -->
+  <nav id="nav">
+    <div class="navtoggle" id="navToggle" title="Collapse / expand">
+      <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
+      <span class="label">Collapse</span>
+    </div>
+    <div class="navitem sel" data-ws="start"><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg></span><span class="label" data-t="start">Start</span></div>
+    <div class="navitem" data-ws="main"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></span><span class="label" data-t="main">Main</span></div>
+    <div class="navitem" data-ws="csa"><span class="ico"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg></span><span class="label" data-t="csa">CSA</span></div>
+    <div class="navitem" data-ws="backstage"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/></svg></span><span class="label" data-t="backstage">Backstage</span></div>
+    <div class="navspacer"></div>
+    <div class="navitem" data-ws="settings"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2M6 6l1.5 1.5M16.5 16.5L18 18M18 6l-1.5 1.5M7.5 16.5L6 18"/></svg></span><span class="label" data-t="settings">Settings</span></div>
+  </nav>
+
+  <!-- ===== AppMainPlane ===== -->
+  <main id="main"></main>
+
+  <!-- ===== AppAgentPlane ===== -->
+  <aside id="agent">
+    <div class="wrap">
+      <div class="agenthead">
+        <div class="t">&#129302; <span id="agentName">BMCA</span> <span class="chip info" id="agentCeiling" style="font-size:11px">write</span></div>
+        <button class="btn ghost" id="agentClose" style="padding:4px 10px">&times;</button>
+      </div>
+      <div class="agentswitch">
+        <span class="pill sel" id="ctxAgent">Context agent</span>
+        <span class="pill" id="orchAgent">Ask Orchestrator</span>
+      </div>
+      <div class="agentbody" id="agentBody">
+        <div class="msg">Hi &mdash; I'm the context agent for this window. Ask me about capacity, or switch to the Orchestrator to route to another specialist.</div>
+        <div class="msg me">Station B occupancy?</div>
+        <div class="msg">Station B is at <b>92%</b>. Recommendation: shift 2 beds toward the ED. This action needs <b>HITL-02</b> approval.
+          <div class="cite">Sources: gold.bed_assignment, gold.fact_capacity_baseline</div>
+        </div>
+      </div>
+      <div class="agentinput"><input placeholder="Ask the agent (no PHI)&hellip;" /><button class="btn primary">Send</button></div>
+    </div>
+  </aside>
+
+  <!-- ===== AppFooterPlane ===== -->
+  <footer>
+    <div>Microsoft Innovation Hub Showcase &mdash; simulated demo data</div>
+    <div class="fr">
+      <span id="frWrap" class="fr">Refresh
+        <select id="refreshSel"><option>Off</option><option selected>5s</option><option>15s</option><option>60s</option></select>
+      </span>
+      <span>&nbsp;&bull;&nbsp; Curavias v0.20.0 (SIT / eastus2)</span>
+    </div>
+  </footer>
+</div>
+
+<button id="agentfab" class="hidden" title="Open agent">&#129302;</button>
+
+<script>
+/* ---- tiny i18n for the mockup (nav + a few labels) ---- */
+const T={
+  en:{start:"Start",main:"Main",csa:"CSA",backstage:"Backstage",settings:"Settings",collapse:"Collapse"},
+  de:{start:"Start",main:"Haupt",csa:"CSA",backstage:"Backstage",settings:"Einstellungen",collapse:"Einklappen"},
+  fr:{start:"Accueil",main:"Principal",csa:"CSA",backstage:"Coulisses",settings:"Param&egrave;tres",collapse:"R&eacute;duire"},
+  it:{start:"Avvio",main:"Principale",csa:"CSA",backstage:"Retroscena",settings:"Impostazioni",collapse:"Comprimi"}
+};
+let lang="en", ws="start", agentOpen=false;
+
+/* ---- RBAC model: roles come from Entra security-group -> HCC.* app-role claims ---- */
+/* The active role is the ACCESS LENS: it constrains hospital scope, visible nav/boards, and action ceiling. */
+const HOSPITALS=["Kantonsspital Aarau","Universit&auml;tsspital Z&uuml;rich","Inselspital Bern","Aggregated (all)"];
+const ROLE_MODEL={
+  "HCC.PlatformAdmin":   {label:"Platform Admin",      hospitals:"all", nav:"all", boards:"all", ceiling:"deploy"},
+  "HCC.DemoOperator":    {label:"Demo Operator",       hospitals:"all", nav:"all", boards:"all", ceiling:"write"},
+  "HCC.RegionalCrisisLead":{label:"Regional Crisis Lead",hospitals:"all", nav:["start","main","csa","backstage","settings"], boards:"all", ceiling:"deploy"},
+  "HCC.BedManager":      {label:"Bed Manager",         hospitals:["Kantonsspital Aarau"], nav:["start","main","settings"], boards:["Bed Manager","Occupancy / Forecast","Discharge"], ceiling:"write"},
+  "HCC.Viewer":          {label:"Viewer (read-only)",  hospitals:["Aggregated (all)"], nav:["start","main"], boards:["Occupancy / Forecast"], ceiling:"read"}
+};
+/* roles the signed-in user actually holds (only these appear in the dropdown) */
+const ASSIGNED=["HCC.PlatformAdmin","HCC.DemoOperator","HCC.RegionalCrisisLead","HCC.BedManager","HCC.Viewer"];
+let activeRole="HCC.PlatformAdmin";
+const ceilChip={read:"info",write:"good",deploy:"warn"};
+function roleDef(){return ROLE_MODEL[activeRole];}
+function navAllowed(k){const n=roleDef().nav;return n==="all"||n.includes(k);}
+function boardAllowed(b){const bs=roleDef().boards;return bs==="all"||bs.includes(b);}
+function allowedHospitals(){const h=roleDef().hospitals;return h==="all"?HOSPITALS:h;}
+
+/* ---- content per workspace ---- */
+function content(k){
+  if(k==="start") return `
+    <div class="crumbs">Curavias / Start</div>
+    <div class="startcard">
+      <h1 class="page">Curavias &mdash; Swiss Hospital Capacity Platform</h1>
+      <p class="sub">Vision &amp; mission</p>
+      <p><b>Vision.</b> Every patient reaches the right bed, at the right hospital, at the right time &mdash; across the Swiss care network.</p>
+      <p><b>Mission.</b> Give capacity, discharge and crisis teams a shared, AI-assisted operating picture that turns fragmented data into confident decisions.</p>
+      <div class="showcase">&#9432; This is a <b>Microsoft Innovation Hub Showcase</b>. All figures use <b>pure simulated, generic data</b> for demonstration only &mdash; no real patient or hospital data (no PHI).</div>
+    </div>`;
+  if(k==="main") return `
+    <div class="crumbs">Curavias / Main / Occupancy &amp; Forecast</div>
+    <h1 class="page">Capacity boards</h1>
+    <p class="sub">Infinity whiteboard &mdash; pick a role board</p>
+    <div class="rolestrip" id="roleStrip"></div>
+    <div class="boardbar">
+      <span class="pill sel" data-board="Bed Manager">Bed Manager</span><span class="pill" data-board="Occupancy / Forecast">Occupancy / Forecast</span>
+      <span class="pill" data-board="Discharge">Discharge</span><span class="pill" data-board="OR-Steering">OR-Steering</span><span class="pill" data-board="Staffing">Staffing</span>
+    </div>
+    <div class="grid">
+      <div class="card"><h3>Occupancy now</h3><div class="kpi warn">92%</div><span class="chip warn">Above target 85%</span><div class="bar"><span style="width:92%"></span></div></div>
+      <div class="card"><h3>Free beds</h3><div class="kpi good">18</div><span class="chip good">Stable</span></div>
+      <div class="card"><h3>72h forecast peak</h3><div class="kpi bad">104%</div><span class="chip bad">Breach Wed 14:00</span></div>
+      <div class="card"><h3>Pending discharges</h3><div class="kpi">7</div><span class="chip info">3 ready now</span></div>
+      <div class="card"><h3>ED inflow (live)</h3><div class="kpi">+5</div><span class="chip info">last 60 min</span></div>
+      <div class="card"><h3>Power BI &mdash; ward trend</h3><div class="bar"><span style="width:70%"></span></div><div class="bar" style="margin-top:6px"><span style="width:55%;background:var(--cv-sec-80)"></span></div><div class="cite">Direct Lake &bull; gold.fact_capacity</div></div>
+    </div>`;
+  if(k==="csa") return `
+    <div class="crumbs">Curavias / CSA</div>
+    <h1 class="page">Crisis &amp; Scenario cockpit</h1>
+    <p class="sub">Prepare &rarr; Run &rarr; Evaluate &rarr; Recommend</p>
+    <div class="stepper"><div class="step active">1 &middot; Prepare</div><div class="step">2 &middot; Run</div><div class="step">3 &middot; Evaluate</div><div class="step">4 &middot; Recommend</div></div>
+    <div class="grid">
+      <div class="card"><h3>Scenario</h3><b>Mass-casualty &mdash; 40 arrivals / 3h</b><p class="sub" style="margin:8px 0 0">Region: Aargau &bull; Horizon: 24h</p></div>
+      <div class="card"><h3>Levers</h3><span class="chip info">+12 surge beds</span> <span class="chip info">defer elective OR</span> <span class="chip info">Spitex discharge</span></div>
+      <div class="card"><h3>Run status</h3><span class="chip warn">Awaiting HITL-02 (approved-to-apply)</span><div class="btnrow"><button class="btn primary">Request approval</button><button class="btn ghost">Edit inputs</button></div></div>
+    </div>`;
+  if(k==="backstage") return `
+    <div class="crumbs">Curavias / Backstage</div>
+    <h1 class="page">Backstage &mdash; governance &amp; evidence</h1>
+    <p class="sub">Infinity whiteboard of platform artefacts (with provenance)</p>
+    <div class="grid">
+      <div class="card"><h3>&#128220; ADRs</h3><div class="kpi">17</div><span class="chip good">2 accepted this sprint</span></div>
+      <div class="card"><h3>&#9989; PRD &amp; FR/NFR traceability</h3><div class="kpi">96%</div><span class="chip good">covered</span></div>
+      <div class="card"><h3>&#128230; Bill of materials</h3><div class="kpi">42</div><span class="chip info">Azure + Fabric</span></div>
+      <div class="card"><h3>&#127760; GA / Preview evidence</h3><span class="chip good">GA 31</span> <span class="chip warn">Preview 6</span></div>
+      <div class="card"><h3>&#128100; Roles / RBAC</h3><div class="kpi">9</div><span class="chip info">least-privilege</span></div>
+      <div class="card"><h3>&#127937; Sprint status</h3><span class="chip good">S18 done</span> <span class="chip warn">S20 active</span></div>
+      <div class="card"><h3>&#129302; Agent registry</h3><div class="kpi">11</div><span class="chip info">8 hosted &bull; 3 control</span></div>
+    </div>`;
+  if(k==="settings") return `
+    <div class="crumbs">Curavias / Settings</div>
+    <h1 class="page">Settings</h1>
+    <p class="sub">App &amp; user preferences (persisted to localStorage)</p>
+    <div style="max-width:640px">
+      <div class="settingrow"><div><b>Active role</b><div class="sub" style="margin:0">From your security-group assignment</div></div><span class="chip info">${roleDef().label}</span></div>
+      <div class="settingrow"><div><b>Theme</b><div class="sub" style="margin:0">Light / Dark</div></div><span class="chip info">Dark</span></div>
+      <div class="settingrow"><div><b>Language</b><div class="sub" style="margin:0">EN / DE / FR / IT</div></div><span class="chip info">EN</span></div>
+      <div class="settingrow"><div><b>Default hospital</b><div class="sub" style="margin:0">Applied on sign-in</div></div><span class="chip info">Kantonsspital Aarau</span></div>
+      <div class="settingrow"><div><b>Default refresh rate</b><div class="sub" style="margin:0">Live boards</div></div><span class="chip info">5s</span></div>
+      <div class="settingrow"><div><b>Agent plane</b><div class="sub" style="margin:0">Open on start</div></div><span class="chip good">On</span></div>
+    </div>`;
+}
+const liveWs=new Set(["main","csa"]); // footer refresh only where real-time data exists
+const ctxAgentByWs={start:"Orchestrator",main:"BMCA / OOA",csa:"CSA agent",backstage:"Knowledge agent",settings:"Orchestrator"};
+
+function render(){
+  // if the active role can't see current workspace, fall back to the first allowed nav
+  if(!navAllowed(ws)) ws = (roleDef().nav==="all"?"start":roleDef().nav[0]);
+  document.getElementById("main").innerHTML=content(ws);
+  document.querySelectorAll(".navitem").forEach(n=>{
+    n.classList.toggle("sel",n.dataset.ws===ws);
+    n.classList.toggle("locked",!navAllowed(n.dataset.ws));
+  });
+  document.getElementById("frWrap").style.visibility = liveWs.has(ws) ? "visible":"hidden";
+  document.getElementById("agentName").textContent=ctxAgentByWs[ws];
+  applyBoardGating();
+  updateCeiling();
+}
+function applyBoardGating(){
+  const strip=document.getElementById("roleStrip");
+  if(strip){
+    const d=roleDef(), scope=d.hospitals==="all"?"all hospitals":allowedHospitals().join(", ");
+    const nb=d.boards==="all"?5:d.boards.length;
+    strip.innerHTML=`Active role: <b>${d.label}</b> <span class="chip ${ceilChip[d.ceiling]}">${d.ceiling}</span>`+
+      ` &bull; Scope: <span class="chip info">${scope}</span> &bull; Boards: <span class="chip">${nb}/5</span>`+
+      ` &bull; <span class="sub" style="margin:0">access &amp; actions follow this role</span>`;
+  }
+  document.querySelectorAll(".boardbar .pill").forEach(p=>{
+    const ok=boardAllowed(p.dataset.board);
+    p.classList.toggle("locked",!ok);
+    if(!ok) p.classList.remove("sel");
+    p.onclick=()=>{if(!ok)return;document.querySelectorAll(".boardbar .pill").forEach(x=>x.classList.remove("sel"));p.classList.add("sel");};
+  });
+  // ensure one allowed board is selected
+  const bar=document.querySelector(".boardbar");
+  if(bar && !bar.querySelector(".pill.sel")){const first=[...bar.querySelectorAll(".pill")].find(p=>!p.classList.contains("locked"));if(first)first.classList.add("sel");}
+}
+function updateCeiling(){
+  const c=roleDef().ceiling, badge=document.getElementById("agentCeiling");
+  badge.textContent=c; badge.className="chip "+ceilChip[c];
+}
+function populateHospitals(){
+  const sel=document.getElementById("hospSel"), list=allowedHospitals();
+  sel.innerHTML=list.map(h=>`<option>${h}</option>`).join("");
+  sel.disabled = list.length<=1;
+}
+function populateRoles(){
+  const sel=document.getElementById("roleSel");
+  sel.innerHTML=ASSIGNED.map(r=>`<option value="${r}" ${r===activeRole?"selected":""}>${ROLE_MODEL[r].label}</option>`).join("");
+}
+function setRole(r){activeRole=r;populateHospitals();render();}
+function applyLang(){
+  document.querySelectorAll("[data-t]").forEach(el=>{el.innerHTML=T[lang][el.dataset.t]||el.textContent;});
+  document.querySelector(".navtoggle .label").innerHTML=T[lang].collapse;
+}
+
+/* ---- events ---- */
+document.querySelectorAll(".navitem").forEach(n=>n.onclick=()=>{if(n.classList.contains("locked"))return;ws=n.dataset.ws;render();});
+document.getElementById("navToggle").onclick=()=>document.getElementById("nav").classList.toggle("collapsed");
+document.getElementById("themeBtn").onclick=()=>{
+  const b=document.body,cur=b.getAttribute("data-theme");
+  const next=cur==="light"?"dark":"light"; b.setAttribute("data-theme",next);
+  document.getElementById("themeLbl").textContent=next==="light"?"Dark":"Light";
+};
+document.getElementById("langSel").onchange=e=>{lang=e.target.value;applyLang();};
+document.getElementById("roleSel").onchange=e=>setRole(e.target.value);
+function openAgent(o){agentOpen=o;document.getElementById("agent").classList.toggle("open",o);document.getElementById("agentfab").classList.toggle("hidden",o);}
+document.getElementById("agentfab").onclick=()=>openAgent(true);
+document.getElementById("agentClose").onclick=()=>openAgent(false);
+document.getElementById("ctxAgent").onclick=()=>{document.getElementById("ctxAgent").classList.add("sel");document.getElementById("orchAgent").classList.remove("sel");document.getElementById("agentName").textContent=ctxAgentByWs[ws];};
+document.getElementById("orchAgent").onclick=()=>{document.getElementById("orchAgent").classList.add("sel");document.getElementById("ctxAgent").classList.remove("sel");document.getElementById("agentName").textContent="Orchestrator";};
+
+/* start with agent plane collapsed to the floating fab */
+openAgent(false);
+populateRoles(); populateHospitals();
+applyLang(); render();
+</script>
+</body>
+</html>

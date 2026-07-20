@@ -1,0 +1,20 @@
+{
+  // VS Code MCP server config — read by GitHub Copilot Chat / agent mode in VS Code so the
+  // ux-design-agent (and you, while pairing with Copilot) can drive a browser and share the
+  // rendered page context. This is the "within VS Code / share context with GitHub Copilot"
+  // mode described in agents/ux-design-agent/AGENT.md §3.
+  //
+  // The standalone counterpart uses the repo's local Playwright CLI instead of this server:
+  //   npm --prefix apps/hcc-app-fluent run test:e2e
+  //   npm --prefix apps/hcc-app-fluent run test:a11y
+  //
+  // The coding-agent counterpart is registered as `playwright-mcp` (read-only ceiling) in
+  // .github/copilot/mcp.json. Browser automation here is read-oriented (navigate, snapshot,
+  // screenshot, resize, console) — it never mutates repo or cloud state.
+  "servers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}

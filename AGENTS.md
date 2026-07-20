@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.5.0 |
+| **Version** | 2.6.0 |
 | **Date** | 2026-07-18 |
 | **Author** | Urs Rüeegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.4.0 (`fabric-data-agent` registry row now records the live westus2 `da_hospital_capacity` demo artefact + Foundry consumption; issue #251) |
+| **Previous Version** | 2.5.0 (added the `ux-design-agent` registry row + `playwright-mcp` allow-list entry for UX visual + accessibility verification; issue #258) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -196,6 +196,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `pr-review` | UC3 — PR Review | @urruegg | GitHub pull request or issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp` | `write` (GitHub review comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
 | `drift-analyzer` | Solution and Azure drift detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents/drift-analyzer/AGENT.md` §2](agents/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents/drift-analyzer/AGENT.md`](agents/drift-analyzer/AGENT.md) | [`agents/drift-analyzer/golden-tasks.md`](agents/drift-analyzer/golden-tasks.md) |
 | `knowledge-agent` | Documentation steward — encoding / lint / version / traceability / status gate for every doc create or update (S18; approved via issue #242) | @urruegg | `@knowledge-agent` mention or a doc-steward issue; also usable as the `document-authoring` skill from Copilot CLI | `github-mcp` | `write` | [`agents/knowledge-agent/AGENT.md`](agents/knowledge-agent/AGENT.md) | [`agents/knowledge-agent/golden-tasks.md`](agents/knowledge-agent/golden-tasks.md) |
+| `ux-design-agent` | UX design steward — anchor for all user-experience questions (mockups, flows, brand tokens, accessibility) and refinement of the Curavias demo showcase; runs the Superpowers brainstorming + visual-companion flow (S20; approved via issue #258) | @urruegg | `@ux-design-agent` mention or any UX / design / mockup / accessibility issue | `github-mcp`, `playwright-mcp` (read; visual + a11y verification) | `write` | [`agents/ux-design-agent/AGENT.md`](agents/ux-design-agent/AGENT.md) | [`agents/ux-design-agent/golden-tasks.md`](agents/ux-design-agent/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per
@@ -225,6 +226,7 @@ tool.
 | Cosmos | `cosmos-mcp` | Read/write the CSA Cosmos DB for NoSQL (scenarios, agent-memory, response-levers, simulation-runs); vector + hybrid search; per-run agent memory — dispatched by the Sprint 13 agent-host on behalf of the `csa-agent` (Sprint 16) | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered. `Cosmos DB Built-in Data Contributor` scoped to the `cosmos-csa-ihzhhpf-sit` account |
 | Foundry Agents (eastus2) | `foundry-agents` | The 8 platform agents (bmca, ooa, dca, orsa, sba, csa, data-quality, onboarding) registered in the **project-scoped Foundry Agent Service** (`https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project/agents`, api-version `2025-05-15-preview`, portal Build → Agents: 8/8 Running, `prompt`, v2), backed by the account-level OpenAI Assistants API (`https://ai-ihzhhpf-sit-eastus2.openai.azure.com/openai`) for inference. Per [ADR-0032](docs/adr/0032-foundry-control-plane-eastus2.md) — eastus2 is the only MCAP region with OpenAI quota + Foundry Agent Service GA. | Workload Identity Federation (OIDC); `Cognitive Services User` on `ai-ihzhhpf-sit-eastus2` |
 | Repo-managed markdown specs | `github-mcp` | Read canonical source material from `docs/` and `docs/specs/` for planning and review flows | GitHub Copilot coding-agent identity |
+| Playwright | `playwright-mcp` | Drive a headless browser for UX visual + accessibility verification (screenshots, responsive breakpoints, DOM/snapshot inspection, WCAG/axe scans) of rendered Curavias mockups and the `hcc-app-fluent` shell — the "within VS Code / share context with GitHub Copilot" mode for the `ux-design-agent`; the standalone mode uses the repo's local Playwright CLI (`@playwright/test` + `@axe-core/playwright`) | Local stdio server (`npx @playwright/mcp`); no external auth; read-oriented (no repo/cloud mutation) |
 
 ---
 

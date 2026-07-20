@@ -12,13 +12,15 @@
     "- azure-mcp: Workload Identity Federation (OIDC) for autonomous runs;",
     "- work-iq-mcp: Microsoft 365 delegated or application auth with read-only transcript scopes;",
     "  OBO when human-triggered. Federated credentials live on MCP-side",
-    "  service principals (per ADR-0004 once Accepted)."
+    "  service principals (per ADR-0004 once Accepted).",
+    "- playwright-mcp: local stdio server (npx @playwright/mcp); no external auth.",
+    "  Read-oriented browser automation for UX visual + a11y verification."
   ],
   "mcpServers": {
     "github-mcp": {
       "_purpose": "Read/write this repo (issues, PRs, comments, branches).",
       "_owners": "@urruegg",
-      "_used_by": ["orchestrator", "spec-parser-agent", "solution-design-agent", "landing-zone-agent", "compliance-agent", "data-design-agent", "app-builder-agent", "test-verifier-agent", "review-session-agent", "pr-review", "drift-analyzer"],
+      "_used_by": ["orchestrator", "spec-parser-agent", "solution-design-agent", "landing-zone-agent", "compliance-agent", "data-design-agent", "app-builder-agent", "test-verifier-agent", "review-session-agent", "pr-review", "drift-analyzer", "ux-design-agent"],
       "_side_effect_ceiling": "write",
       "_required_permissions": [
         "contents: write",
@@ -98,6 +100,23 @@
       "type": "remote",
       "enabled": true,
       "_enabled_in_sprint": "S16 (CSA what-if scenario catalogue + agent memory)"
+    },
+    "playwright-mcp": {
+      "_purpose": "Drive a headless browser for UX visual + accessibility verification (screenshots, responsive-breakpoint checks, DOM/snapshot inspection, WCAG/axe scans) of rendered Curavias mockups and the hcc-app-fluent shell. Enables the 'within VS Code / share context with GitHub Copilot' mode; the standalone mode uses the repo's local Playwright CLI (@playwright/test + @axe-core/playwright).",
+      "_owners": "@urruegg",
+      "_used_by": ["ux-design-agent"],
+      "_side_effect_ceiling": "read",
+      "_confirmation_rule": "Browser automation is read-oriented (captures screenshots, DOM, a11y results); it does not mutate repo or cloud state, so no approved-to-apply gate applies.",
+      "_required_permissions": [
+        "None — local browser automation only; no GitHub, Azure, Fabric, or data-plane scopes"
+      ],
+      "_golden_task": "agents/ux-design-agent/golden-tasks.md",
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--headless", "--isolated"],
+      "tools": ["browser_navigate", "browser_snapshot", "browser_take_screenshot", "browser_resize", "browser_console_messages"],
+      "enabled": true,
+      "_enabled_in_sprint": "S20 (ux-design-agent visual + a11y verification)"
     }
   }
 }

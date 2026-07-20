@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.8.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.9.0 |
+| **Date** | 2026-07-18 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.7.0 (added `document-authoring` skill reference + automated mojibake/lint gate to the `docs/**` Scope Guard; approved via issue #242) |
+| **Previous Version** | 1.8.0 (added the Experience-lane + `apps/**` Scope Guard anchor routing UX questions to the `ux-design-agent`, including its Playwright visual/accessibility verification; issue #258) |
 
 This repository hosts a sample **Swiss Hospital Capacity Platform**: a system where AI agents
 plan, execute, and observe hospital capacity management workflows (CI/CD, infrastructure provisioning,
@@ -129,7 +129,7 @@ When creating or reviewing changes, map them to one or more explicit lanes:
 3. Infrastructure lane: `infra/`, environment parameters, deployment contracts
 4. Data lane: `data-platform/`, interoperability artefacts, semantic models
 5. AI lane: `ai-models/`, `copilot/`, eval assets, safety controls
-6. Experience lane: `apps/`, `integrations/`, operational workflows
+6. Experience lane: `apps/`, `integrations/`, operational workflows. All user-experience questions (mockups, flows, brand tokens, accessibility) are anchored to the [`ux-design-agent`](../agents/ux-design-agent/AGENT.md), which may use Playwright — the repo's local CLI (`@playwright/test` + `@axe-core/playwright`) or the read-only `playwright-mcp` server for the VS Code / Copilot shared-context mode — for visual + accessibility verification.
 
 Every non-trivial PR should state which lanes are impacted.
 
@@ -173,7 +173,7 @@ security, or agent behavior.
 - Changes in `infra/**`: read `docs/INFRASTRUCTURE.md` (which clarifies these are UC1 *outputs*) and `docs/ALM_PLAN.md` (Bicep validate workflow).
 - Changes in `data-platform/**`: read `docs/DATA.md`, `docs/COMPLIANCE.md`, and `docs/INTEGRATION.md` first.
 - Changes in `ai-models/**` or `copilot/**`: read `docs/AI.md`, `docs/TEST.md`, and `docs/COMPLIANCE.md` first.
-- Changes in `apps/**` or `integrations/**`: read `docs/ARCHITECTURE.md`, `docs/INTEGRATION.md`, and `docs/SECURITY.md` first.
+- Changes in `apps/**` or `integrations/**`: read `docs/ARCHITECTURE.md`, `docs/INTEGRATION.md`, and `docs/SECURITY.md` first. Route user-experience questions (mockups, flows, brand tokens, accessibility) to the [`ux-design-agent`](../agents/ux-design-agent/AGENT.md); it may use Playwright (the repo's local CLI or the read-only `playwright-mcp` server) for visual + accessibility verification.
 - Changes in `security-governance/**`: read `docs/SECURITY.md`, `docs/COMPLIANCE.md`, and `docs/AI.md` first.
 - Changes in `.github/workflows/**`: read `docs/ALM_PLAN.md` and `docs/SECURITY.md` (OIDC, secrets) before editing.
 - Changes in `evals/**` / `agents/<name>/golden-tasks.md`: read `docs/AI.md` and `docs/TEST.md` first.
