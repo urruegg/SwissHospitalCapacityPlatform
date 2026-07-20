@@ -1,0 +1,85 @@
+<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.75rem">
+  <div>
+    <div class="label" style="color:#17B890">MAIN &middot; ooa-agent</div>
+    <h2 style="margin:0">Occupancy &amp; 72h Forecast</h2>
+  </div>
+  <div style="display:flex;gap:0.5rem;align-items:center;font-size:0.72rem;color:var(--text-secondary)">
+    <span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">SIMULATED DATA</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">EN&middot;DE&middot;FR&middot;IT</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">Access-lens: Bed Ops</span>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:1rem;align-items:start">
+
+  <!-- LEFT: ward forecast table -->
+  <div class="mockup" style="margin:0">
+    <div class="mockup-header">Ward pressure &mdash; now vs. forecast in 72&nbsp;hours</div>
+    <div class="mockup-body" style="padding:0">
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem">
+        <thead>
+          <tr style="text-align:left;color:var(--text-secondary);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em">
+            <th style="padding:0.6rem 1rem">Ward</th>
+            <th style="padding:0.6rem 0.5rem">Now</th>
+            <th style="padding:0.6rem 0.5rem">72h trend</th>
+            <th style="padding:0.6rem 0.5rem">Forecast</th>
+            <th style="padding:0.6rem 1rem">Flag</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>Medicine A</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">34 / 36 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">94%</td>
+            <td style="padding:0.6rem 0.5rem;color:#ff3b30">&#9650; rising</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700;color:#ff3b30">102%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#ff3b3022;color:#ff3b30;padding:2px 8px;border-radius:10px;font-weight:600">OVER</span></td>
+          </tr>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>ICU</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">11 / 12 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">92%</td>
+            <td style="padding:0.6rem 0.5rem;color:#ff9f0a">&#9650; rising</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700;color:#ff9f0a">95%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">WATCH</span></td>
+          </tr>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>Surgery B</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">28 / 40 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">70%</td>
+            <td style="padding:0.6rem 0.5rem;color:#ff9f0a">&#9650; rising</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700;color:#ff9f0a">88%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">WATCH</span></td>
+          </tr>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>Cardiology</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">20 / 30 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">67%</td>
+            <td style="padding:0.6rem 0.5rem;color:var(--text-secondary)">&#8594; flat</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700">74%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#34c75922;color:#34c759;padding:2px 8px;border-radius:10px;font-weight:600">OK</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT: docked copilot -->
+  <div class="mockup" style="margin:0;border-color:#17B890">
+    <div class="mockup-header" style="background:#17B89022;color:#17B890;font-weight:600">&#9679; Occupancy Copilot</div>
+    <div class="mockup-body">
+      <p style="font-size:0.78rem;font-weight:600;margin-bottom:0.4rem">Why is pressure rising?</p>
+      <ul style="margin-left:1rem;font-size:0.8rem;color:var(--text-secondary);line-height:1.5">
+        <li><strong style="color:var(--text-primary)">Medicine&nbsp;A</strong>: +6 admissions forecast (flu season) vs. only 2 planned discharges in 72h.</li>
+        <li><strong style="color:var(--text-primary)">ICU</strong>: length-of-stay running 1.4 days above median.</li>
+      </ul>
+      <div style="margin-top:0.9rem;padding:0.6rem;background:var(--bg-tertiary);border-radius:8px;font-size:0.78rem">
+        <span style="color:var(--text-secondary)">Suggested next step</span><br>
+        Relieve Medicine&nbsp;A by expediting eligible discharges.
+      </div>
+      <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.8rem">See 8 discharge candidates &rarr;</button>
+      <p style="font-size:0.68rem;color:var(--text-tertiary);margin-top:0.5rem">Handoff &rarr; Discharge Coordinator (dca)</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="section" style="margin-top:1rem;font-size:0.8rem;color:var(--text-secondary)">
+Early-warning flags (OVER / WATCH / OK) + a copilot that explains the <em>why</em> and hands off to the discharge surface. Refining question is in the terminal.
+</p>

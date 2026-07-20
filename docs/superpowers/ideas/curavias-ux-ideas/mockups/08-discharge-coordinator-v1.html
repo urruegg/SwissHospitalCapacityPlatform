@@ -1,0 +1,312 @@
+<style>
+  .ooa-workspace{position:relative;display:grid;grid-template-columns:1fr 320px;gap:1rem;align-items:stretch}
+  .ooa-workspace.copilot-collapsed{grid-template-columns:1fr}
+  .ooa-main{display:flex;flex-direction:column;gap:1rem;min-width:0}
+  .ooa-copilot{display:flex;flex-direction:column;margin:0;min-height:100%;border-color:#17B890}
+  .ooa-workspace.copilot-collapsed .ooa-copilot{display:none}
+  .ooa-copilot-head{display:flex;align-items:center;justify-content:space-between;background:#17B89022;color:#17B890;font-weight:600}
+  .ooa-collapse{background:transparent;border:none;color:#17B890;font-size:1.2rem;line-height:1;cursor:pointer;padding:0 0.25rem;border-radius:6px}
+  .ooa-collapse:hover{background:#17B89033}
+  .ooa-copilot-body{flex:1;overflow-y:auto}
+  .ooa-copilot-foot{border-top:1px solid var(--border);padding:0.55rem;display:flex;gap:0.4rem;align-items:center}
+  .ooa-chat-input{flex:1;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;padding:0.45rem 0.6rem;font-size:0.76rem;color:var(--text-primary)}
+  .ooa-chat-send{flex-shrink:0;width:32px;height:32px;border:none;border-radius:8px;background:#17B890;color:#fff;font-size:0.9rem;cursor:pointer}
+  .ooa-chip{display:inline-block;font-size:0.7rem;padding:3px 9px;border:1px solid var(--border);border-radius:12px;color:var(--text-secondary);cursor:pointer;background:var(--bg-tertiary)}
+  .ooa-chip:hover{border-color:#17B890;color:#17B890}
+  .copilot-fab{display:none;position:absolute;right:16px;bottom:16px;z-index:20;width:54px;height:54px;padding:0;border-radius:15px;background:var(--bg-tertiary);border:1px solid var(--border);box-shadow:0 6px 20px rgba(0,0,0,0.24);align-items:center;justify-content:center;cursor:pointer}
+  .copilot-fab:hover{box-shadow:0 8px 26px rgba(23,184,144,0.35);border-color:#17B890}
+  .ooa-workspace.copilot-collapsed .copilot-fab{display:flex}
+  .copilot-glyph{width:30px;height:30px;border-radius:50%;background:conic-gradient(from 210deg,#17B890,#2E9BD6,#8a6fbf,#E85D9E,#F4A93B,#17B890);box-shadow:inset 0 0 0 5px var(--bg-tertiary)}
+  /* --- actionable, context-based insights --- */
+  .insight{cursor:pointer;transition:background 0.15s,box-shadow 0.15s,filter 0.15s}
+  .insight-row:hover{background:var(--bg-tertiary)}
+  .insight-row.sel{background:#17B89018;box-shadow:inset 3px 0 0 #17B890}
+  .insight-card:hover{filter:brightness(1.07)}
+  .insight-card.sel{box-shadow:0 0 0 2px #17B890}
+  .hdr-hint{float:right;font-weight:400;font-size:0.66rem;color:var(--text-tertiary);letter-spacing:0.02em}
+  .reco-hint{font-size:0.7rem;color:var(--text-tertiary);margin:0 0 0.6rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}
+  .reco-chip{display:inline-block;font-size:0.64rem;font-weight:700;letter-spacing:0.03em;padding:3px 9px;border-radius:10px;margin-bottom:0.55rem}
+  .reco-agent{font-size:0.72rem;font-weight:600;color:#17B890;margin-bottom:0.3rem}
+  .reco-read{font-size:0.78rem;line-height:1.5;margin:0 0 0.2rem;color:var(--text-secondary)}
+  .reco-action{display:flex;align-items:flex-start;gap:0.5rem;padding:0.45rem 0;font-size:0.78rem;border-top:1px dashed var(--border)}
+  .reco-num{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:#17B890;color:#fff;font-size:0.64rem;display:flex;align-items:center;justify-content:center;font-weight:700;margin-top:1px}
+  .reco-impact{margin-left:auto;flex-shrink:0;font-size:0.64rem;color:#17B890;background:#17B89015;padding:1px 6px;border-radius:8px;white-space:nowrap;font-weight:600}
+  .reco-back{background:transparent;border:none;color:var(--text-secondary);font-size:0.7rem;cursor:pointer;padding:0;margin-bottom:0.5rem}
+  .reco-back:hover{color:#17B890}
+  .dca-badge{font-size:0.64rem;font-weight:700;padding:2px 8px;border-radius:10px}
+  .dca-handoff{display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.8rem;background:#17B8900f;border:1px solid #17B89055;border-radius:10px;font-size:0.76rem;color:var(--text-secondary)}
+  .dca-bar{height:12px;border-radius:6px;background:var(--bg-tertiary);overflow:hidden;display:flex}
+</style>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.75rem">
+  <div>
+    <div class="label" style="color:#17B890">MAIN &middot; dca-agent</div>
+    <h2 style="margin:0">Discharge Coordination</h2>
+  </div>
+  <div style="display:flex;gap:0.5rem;align-items:center;font-size:0.72rem;color:var(--text-secondary)">
+    <span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">SIMULATED DATA</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">EN&middot;DE&middot;FR&middot;IT</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">Access-lens: Discharge</span>
+  </div>
+</div>
+
+<div class="ooa-workspace">
+
+  <!-- LEFT COLUMN: handoff + discharge worklist + relief tracker stacked -->
+  <div class="ooa-main">
+
+    <!-- HANDOFF from ooa -->
+    <div class="dca-handoff">
+      <span style="color:#17B890;display:flex;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7824 2.21965L19.2774 6.71441C19.5435 6.98047 19.5679 7.39676 19.3505 7.69038L19.278 7.77451L14.783 12.2794C14.4904 12.5726 14.0155 12.5731 13.7223 12.2805C13.4558 12.0145 13.4311 11.5979 13.6486 11.3041L13.7212 11.2199L16.938 7.997L5.24219 7.99766C4.86249 7.99766 4.5487 7.71551 4.49903 7.34943L4.49219 7.24766C4.49219 6.86797 4.77434 6.55417 5.14042 6.50451L5.24219 6.49766L16.94 6.497L13.7218 3.28035C13.4555 3.01409 13.4313 2.59743 13.6491 2.30381L13.7217 2.21969C13.988 1.95341 14.4047 1.92919 14.6983 2.14704L14.7824 2.21965Z" fill="currentColor"/></svg></span>
+      <span><strong style="color:var(--text-primary)">Handoff from ooa-agent</strong> &middot; Medicine&nbsp;A forecast <strong style="color:#ff3b30">102%</strong> in 72h &middot; site gap <strong style="color:#ff3b30">&minus;16 beds</strong>. <strong style="color:#17B890">8 discharge candidates</strong> identified for relief.</span>
+    </div>
+
+    <!-- DISCHARGE CANDIDATE WORKLIST -->
+    <div class="mockup" style="margin:0">
+      <div class="mockup-header">Discharge worklist &mdash; 8 candidates, anonymised<span class="hdr-hint">click a row &rarr; Copilot unblock playbook</span></div>
+      <div class="mockup-body" style="padding:0">
+        <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+          <thead>
+            <tr style="text-align:left;color:var(--text-secondary);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.04em">
+              <th style="padding:0.55rem 1rem">Patient</th>
+              <th style="padding:0.55rem 0.5rem">Ward</th>
+              <th style="padding:0.55rem 0.5rem">Readiness</th>
+              <th style="padding:0.55rem 0.5rem">Barrier</th>
+              <th style="padding:0.55rem 1rem">Est. free</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-ready');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4471</strong></td>
+              <td style="padding:0.55rem 0.5rem">Medicine&nbsp;A</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#34c75922;color:#34c759">READY</span></td>
+              <td style="padding:0.55rem 0.5rem;color:var(--text-tertiary)">&mdash;</td>
+              <td style="padding:0.55rem 1rem;color:#34c759;font-weight:600">&lt; 2h</td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-tto');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4488</strong></td>
+              <td style="padding:0.55rem 0.5rem">Medicine&nbsp;A</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#ff3b3022;color:#ff3b30">BLOCKED</span></td>
+              <td style="padding:0.55rem 0.5rem">TTO meds pending</td>
+              <td style="padding:0.55rem 1rem">4h</td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-transport');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4501</strong></td>
+              <td style="padding:0.55rem 0.5rem">Medicine&nbsp;A</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#ff3b3022;color:#ff3b30">BLOCKED</span></td>
+              <td style="padding:0.55rem 0.5rem">Transport not booked</td>
+              <td style="padding:0.55rem 1rem">3h</td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-stepdown');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4459</strong></td>
+              <td style="padding:0.55rem 0.5rem">ICU</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#ff3b3022;color:#ff3b30">BLOCKED</span></td>
+              <td style="padding:0.55rem 0.5rem">HDU step&#8209;down bed</td>
+              <td style="padding:0.55rem 1rem">6h</td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-signoff');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4423</strong></td>
+              <td style="padding:0.55rem 0.5rem">Surgery&nbsp;B</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#ff9f0a22;color:#ff9f0a">PENDING</span></td>
+              <td style="padding:0.55rem 0.5rem">Consultant sign&#8209;off</td>
+              <td style="padding:0.55rem 1rem">today</td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-social');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4510</strong></td>
+              <td style="padding:0.55rem 0.5rem">Medicine&nbsp;A</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#ff3b3022;color:#ff3b30">BLOCKED</span></td>
+              <td style="padding:0.55rem 0.5rem">Spitex placement</td>
+              <td style="padding:0.55rem 1rem">24h</td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-ready');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4467</strong></td>
+              <td style="padding:0.55rem 0.5rem">Cardiology</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#34c75922;color:#34c759">READY</span></td>
+              <td style="padding:0.55rem 0.5rem;color:var(--text-tertiary)">&mdash;</td>
+              <td style="padding:0.55rem 1rem;color:#34c759;font-weight:600">&lt; 2h</td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-transport');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>PT&#8209;4495</strong></td>
+              <td style="padding:0.55rem 0.5rem">Medicine&nbsp;A</td>
+              <td style="padding:0.55rem 0.5rem"><span class="dca-badge" style="background:#ff3b3022;color:#ff3b30">BLOCKED</span></td>
+              <td style="padding:0.55rem 0.5rem">Family transport</td>
+              <td style="padding:0.55rem 1rem">5h</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CAPACITY RELIEVED TRACKER (loops back to ooa) -->
+    <div class="mockup" style="margin:0">
+      <div class="mockup-header">Capacity relieved &mdash; contribution to the 16&#8209;bed gap<span class="hdr-hint">click the target &rarr; Copilot plan</span></div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap">
+
+          <!-- clickable target node -->
+          <div class="insight insight-card" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-plan');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="flex:0 0 150px;padding:0.7rem 0.9rem;border:1px solid #365B7D;background:#365B7D12;border-radius:10px;text-align:center">
+            <div style="font-size:1.8rem;font-weight:800;color:#365B7D;line-height:1">8</div>
+            <div style="font-size:0.68rem;color:var(--text-secondary)">beds from discharges</div>
+            <div style="font-size:0.62rem;color:var(--text-tertiary);margin-top:0.3rem">7 today &middot; 1 within 24h</div>
+          </div>
+
+          <!-- progress toward 16 -->
+          <div style="flex:1;min-width:220px;display:flex;flex-direction:column;justify-content:center;gap:0.5rem">
+            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-secondary)">
+              <span>Gap coverage</span><span><strong style="color:var(--text-primary)">8</strong> / 16 beds</span>
+            </div>
+            <div class="dca-bar">
+              <span style="width:44%;background:#34c759" title="7 discharges today"></span>
+              <span style="width:6%;background:#ff9f0a" title="1 discharge within 24h"></span>
+              <span style="flex:1"></span>
+            </div>
+            <div style="font-size:0.66rem;color:var(--text-tertiary);line-height:1.5">
+              <span style="color:#34c759">&#9679;</span> 7 today &nbsp; <span style="color:#ff9f0a">&#9679;</span> 1 within 24h (Spitex) &nbsp; remaining 8 via Cardiology overflow + elective holds (ooa).
+            </div>
+            <div style="font-size:0.68rem;color:#17B890;font-weight:600;margin-top:0.1rem">&#8635; Live sync &rarr; ooa forecast: Medicine&nbsp;A 102% &rarr; 94%</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN: full-height Discharge Copilot rail -->
+  <div class="mockup ooa-copilot">
+    <div class="mockup-header ooa-copilot-head">
+      <span>&#9679; Discharge Copilot</span>
+      <button class="ooa-collapse" title="Collapse Copilot" aria-label="Collapse Copilot"
+              onclick="this.closest('.ooa-workspace').classList.add('copilot-collapsed')">&minus;</button>
+    </div>
+    <div class="mockup-body ooa-copilot-body">
+      <p class="reco-hint">&#9758; Click any candidate row or the relief target &mdash; the Copilot reads that context and proposes an unblock playbook here.</p>
+
+      <!-- DEFAULT: no selection -->
+      <div class="reco" id="reco-default" style="display:block">
+        <p style="font-size:0.78rem;font-weight:600;margin:0 0 0.4rem">Where do we start?</p>
+        <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.5;margin:0 0 0.6rem">8 discharge-ready candidates cover the Medicine&nbsp;A relief target. <strong style="color:#34c759">2 can be released now</strong>; 6 have a single, unblockable barrier.</p>
+        <ul style="margin:0 0 0 1rem;padding:0;font-size:0.78rem;color:var(--text-secondary);line-height:1.5">
+          <li><strong style="color:var(--text-primary)">Medicine&nbsp;A</strong>: 5 candidates &middot; <strong style="color:var(--text-primary)">ICU</strong>: 1 &middot; <strong style="color:var(--text-primary)">Surgery&nbsp;B</strong>: 1 &middot; <strong style="color:var(--text-primary)">Cardiology</strong>: 1</li>
+        </ul>
+        <div style="margin-top:0.9rem;padding:0.6rem;background:var(--bg-tertiary);border-radius:8px;font-size:0.78rem">
+          <span style="color:var(--text-secondary)">Suggested next step</span><br>
+          Release the 2 ready beds, then clear barriers in impact order.
+        </div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.8rem">Auto-sequence today&rsquo;s discharges &rarr;</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Loops back &rarr; ooa occupancy forecast</p>
+      </div>
+
+      <!-- READY NOW -->
+      <div class="reco" id="reco-ready" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#34c75918;color:#34c759">READY NOW &middot; no barrier</span>
+        <div class="reco-agent">&#9679; Discharge Copilot &mdash; context picked up</div>
+        <p class="reco-read">PT&#8209;4471 (Medicine&nbsp;A) and PT&#8209;4467 (Cardiology) meet every discharge criterion &mdash; meds issued, transport arranged, summary signed. Release immediately:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Release both beds &amp; notify domestic for turnaround.</span><span class="reco-impact">&minus;2 beds</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Auto-post the freed beds to the ooa live view.</span><span class="reco-impact">live sync</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Release 2 beds now</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">&minus;2 beds within 2 hours &mdash; the quickest relief on the list.</p>
+      </div>
+
+      <!-- TTO MEDS -->
+      <div class="reco" id="reco-tto" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff3b3018;color:#ff3b30">PT&#8209;4488 &middot; MEDICINE&nbsp;A &middot; BLOCKED</span>
+        <div class="reco-agent">&#9679; Discharge Copilot &mdash; context picked up</div>
+        <p class="reco-read">The only barrier is take-home medication (TTO) not yet dispensed &mdash; pharmacy queue ETA 4h. Three steps clear it by early afternoon:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Auto-page pharmacy to expedite the TTO.</span><span class="reco-impact">4h &rarr; 90m</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Pre-fill the discharge summary for e-sign.</span><span class="reco-impact">saves 20m</span></div>
+        <div class="reco-action"><span class="reco-num">3</span><span style="flex:1">Pre-book transport for 14:30.</span><span class="reco-impact">no wait</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Escalate TTO to pharmacy</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Frees 1 Medicine&nbsp;A bed by 14:00.</p>
+      </div>
+
+      <!-- TRANSPORT -->
+      <div class="reco" id="reco-transport" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff9f0a18;color:#ff9f0a">PT&#8209;4501 &amp; PT&#8209;4495 &middot; MEDICINE&nbsp;A &middot; BLOCKED</span>
+        <div class="reco-agent">&#9679; Discharge Copilot &mdash; context picked up</div>
+        <p class="reco-read">Two Medicine&nbsp;A patients are clinically ready but waiting on patient transport / family pickup. Book both in one pass:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Reserve 2 non-emergency transport slots (14:00, 15:30).</span><span class="reco-impact">&minus;2 beds</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">SMS the family with the confirmed pickup window.</span><span class="reco-impact">no re-work</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Book transport</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">2 Medicine&nbsp;A beds freed by 16:00.</p>
+      </div>
+
+      <!-- STEP-DOWN -->
+      <div class="reco" id="reco-stepdown" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff9f0a18;color:#ff9f0a">PT&#8209;4459 &middot; ICU &middot; BLOCKED</span>
+        <div class="reco-agent">&#9679; Discharge Copilot &mdash; context picked up</div>
+        <p class="reco-read">This ICU patient is ready for HDU step-down, but no HDU bed is reserved. Freeing it cascades relief toward Medicine&nbsp;A:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Reserve 1 HDU step-down bed.</span><span class="reco-impact">&minus;1 ICU</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Cascade the freed capacity to Medicine&nbsp;A overflow.</span><span class="reco-impact">+1 Med&nbsp;A</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Reserve HDU step-down</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Chain: &minus;1 ICU enables +1 Medicine&nbsp;A.</p>
+      </div>
+
+      <!-- SIGN-OFF -->
+      <div class="reco" id="reco-signoff" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff9f0a18;color:#ff9f0a">PT&#8209;4423 &middot; SURGERY&nbsp;B &middot; PENDING</span>
+        <div class="reco-agent">&#9679; Discharge Copilot &mdash; context picked up</div>
+        <p class="reco-read">Post-op patient meets discharge criteria and is only awaiting consultant sign-off on the ward round:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Send a priority sign-off request to the on-call consultant.</span><span class="reco-impact">SLA 2h</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Flag as discharge-priority for the 14:00 round.</span><span class="reco-impact">&minus;1 bed</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Request sign-off</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">1 Surgery&nbsp;B bed by 17:00.</p>
+      </div>
+
+      <!-- SOCIAL / SPITEX -->
+      <div class="reco" id="reco-social" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff3b3018;color:#ff3b30">PT&#8209;4510 &middot; MEDICINE&nbsp;A &middot; BLOCKED</span>
+        <div class="reco-agent">&#9679; Discharge Copilot &mdash; context picked up</div>
+        <p class="reco-read">Longest lead on the list: this patient needs a Spitex home-care package before a safe discharge, and the referral has not started:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Trigger the Spitex referral via the Curavias connector.</span><span class="reco-impact">intake &le;24h</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Reserve a transitional-care bed as interim.</span><span class="reco-impact">safe hold</span></div>
+        <div class="reco-action"><span class="reco-num">3</span><span style="flex:1">Notify family &amp; social work.</span><span class="reco-impact">no delay</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Start Spitex referral</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Plans for tomorrow &mdash; the one candidate that lands within 24h, not today.</p>
+      </div>
+
+      <!-- COORDINATED PLAN -->
+      <div class="reco" id="reco-plan" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#365B7D18;color:#365B7D">COORDINATED PLAN &middot; 8 beds &middot; 72h</span>
+        <div class="reco-agent">&#9679; Discharge Copilot &mdash; context picked up</div>
+        <p class="reco-read">Sequenced to clear the Medicine&nbsp;A relief target with the least friction:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Release 2 ready patients now.</span><span class="reco-impact">&minus;2</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Clear TTO + transport (3 patients) by 16:00.</span><span class="reco-impact">&minus;3</span></div>
+        <div class="reco-action"><span class="reco-num">3</span><span style="flex:1">Reserve the HDU step-down chain.</span><span class="reco-impact">&minus;1</span></div>
+        <div class="reco-action"><span class="reco-num">4</span><span style="flex:1">Consultant sign-off by 17:00.</span><span class="reco-impact">&minus;1</span></div>
+        <div class="reco-action"><span class="reco-num">5</span><span style="flex:1">Spitex referral for the last candidate.</span><span class="reco-impact">&minus;1 / 24h</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Publish plan + sync to ooa</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Medicine&nbsp;A 102% &rarr; 94%; full 8-bed contribution within 24h.</p>
+      </div>
+
+      <div class="label" style="margin:1rem 0 0.4rem">Ask about</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.35rem">
+        <span class="ooa-chip">Fastest 5 beds today?</span>
+        <span class="ooa-chip">Any discharge risk?</span>
+        <span class="ooa-chip">Spitex lead time</span>
+      </div>
+    </div>
+    <div class="ooa-copilot-foot">
+      <input class="ooa-chat-input" type="text" placeholder="Ask the Discharge Copilot&hellip;" />
+      <button class="ooa-chat-send" title="Send" aria-label="Send">&rarr;</button>
+    </div>
+  </div>
+
+  <!-- COLLAPSED STATE: Copilot icon chip, floating bottom-right as overlay -->
+  <button class="copilot-fab" title="Open Discharge Copilot" aria-label="Open Discharge Copilot"
+          onclick="this.closest('.ooa-workspace').classList.remove('copilot-collapsed')">
+    <span class="copilot-glyph"></span>
+  </button>
+
+</div>
+
+<p class="section" style="margin-top:1rem;font-size:0.8rem;color:var(--text-secondary)">
+The Discharge Coordinator picks up the ooa handoff and works a single worklist of anonymised candidates. Each one is one click from an <em>unblock playbook</em> &mdash; the Copilot reads the barrier and proposes the exact next action with its bed impact. As barriers clear, the relief tracker fills and syncs straight back to the ooa occupancy forecast, closing the loop between foresight and action.
+</p>

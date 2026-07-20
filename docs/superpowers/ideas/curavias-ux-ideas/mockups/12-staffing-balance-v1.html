@@ -1,0 +1,383 @@
+<style>
+  .ooa-workspace{position:relative;display:grid;grid-template-columns:1fr 320px;gap:1rem;align-items:stretch}
+  .ooa-workspace.copilot-collapsed{grid-template-columns:1fr}
+  .ooa-main{display:flex;flex-direction:column;gap:1rem;min-width:0}
+  .ooa-copilot{display:flex;flex-direction:column;margin:0;min-height:100%;border-color:#17B890}
+  .ooa-workspace.copilot-collapsed .ooa-copilot{display:none}
+  .ooa-copilot-head{display:flex;align-items:center;justify-content:space-between;background:#17B89022;color:#17B890;font-weight:600}
+  .ooa-collapse{background:transparent;border:none;color:#17B890;font-size:1.2rem;line-height:1;cursor:pointer;padding:0 0.25rem;border-radius:6px}
+  .ooa-collapse:hover{background:#17B89033}
+  .ooa-copilot-body{flex:1;overflow-y:auto}
+  .ooa-copilot-foot{border-top:1px solid var(--border);padding:0.55rem;display:flex;gap:0.4rem;align-items:center}
+  .ooa-chat-input{flex:1;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;padding:0.45rem 0.6rem;font-size:0.76rem;color:var(--text-primary)}
+  .ooa-chat-send{flex-shrink:0;width:32px;height:32px;border:none;border-radius:8px;background:#17B890;color:#fff;font-size:0.9rem;cursor:pointer}
+  .ooa-chip{display:inline-block;font-size:0.7rem;padding:3px 9px;border:1px solid var(--border);border-radius:12px;color:var(--text-secondary);cursor:pointer;background:var(--bg-tertiary)}
+  .ooa-chip:hover{border-color:#17B890;color:#17B890}
+  .copilot-fab{display:none;position:absolute;right:16px;bottom:16px;z-index:20;width:54px;height:54px;padding:0;border-radius:15px;background:var(--bg-tertiary);border:1px solid var(--border);box-shadow:0 6px 20px rgba(0,0,0,0.24);align-items:center;justify-content:center;cursor:pointer}
+  .copilot-fab:hover{box-shadow:0 8px 26px rgba(23,184,144,0.35);border-color:#17B890}
+  .ooa-workspace.copilot-collapsed .copilot-fab{display:flex}
+  .copilot-glyph{width:30px;height:30px;border-radius:50%;background:conic-gradient(from 210deg,#17B890,#2E9BD6,#8a6fbf,#E85D9E,#F4A93B,#17B890);box-shadow:inset 0 0 0 5px var(--bg-tertiary)}
+  /* --- actionable, context-based insights --- */
+  .insight{cursor:pointer;transition:background 0.15s,box-shadow 0.15s,filter 0.15s}
+  .insight-row:hover{background:var(--bg-tertiary)}
+  .insight-row.sel{background:#17B89018;box-shadow:inset 3px 0 0 #17B890}
+  .insight-card:hover{filter:brightness(1.07)}
+  .insight-card.sel{box-shadow:0 0 0 2px #17B890}
+  .hdr-hint{float:right;font-weight:400;font-size:0.66rem;color:var(--text-tertiary);letter-spacing:0.02em}
+  .reco-hint{font-size:0.7rem;color:var(--text-tertiary);margin:0 0 0.6rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}
+  .reco-chip{display:inline-block;font-size:0.64rem;font-weight:700;letter-spacing:0.03em;padding:3px 9px;border-radius:10px;margin-bottom:0.55rem}
+  .reco-agent{font-size:0.72rem;font-weight:600;color:#17B890;margin-bottom:0.3rem}
+  .reco-read{font-size:0.78rem;line-height:1.5;margin:0 0 0.2rem;color:var(--text-secondary)}
+  .reco-action{display:flex;align-items:flex-start;gap:0.5rem;padding:0.45rem 0;font-size:0.78rem;border-top:1px dashed var(--border)}
+  .reco-num{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:#17B890;color:#fff;font-size:0.64rem;display:flex;align-items:center;justify-content:center;font-weight:700;margin-top:1px}
+  .reco-impact{margin-left:auto;flex-shrink:0;font-size:0.64rem;color:#17B890;background:#17B89015;padding:1px 6px;border-radius:8px;white-space:nowrap;font-weight:600}
+  .reco-back{background:transparent;border:none;color:var(--text-secondary);font-size:0.7rem;cursor:pointer;padding:0;margin-bottom:0.5rem}
+  .reco-back:hover{color:#17B890}
+  .dca-badge{font-size:0.64rem;font-weight:700;padding:2px 8px;border-radius:10px}
+  .dca-handoff{display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.8rem;background:#17B8900f;border:1px solid #17B89055;border-radius:10px;font-size:0.76rem;color:var(--text-secondary)}
+  .dca-bar{height:12px;border-radius:6px;background:var(--bg-tertiary);overflow:hidden;display:flex}
+  /* --- placement-barriers board (systemic, ranked by bed impact) --- */
+  .bar-list{display:flex;flex-direction:column;gap:0.5rem}
+  .bar-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:10px;background:var(--bg-secondary)}
+  .bar-row:hover{background:var(--bg-tertiary);border-color:#17B89066}
+  .bar-row.sel{box-shadow:0 0 0 2px #17B890;border-color:#17B890}
+  .bar-rank{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--bg-tertiary);border:1px solid var(--border);font-size:0.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}
+  .bar-rank.top{background:#17B890;color:#fff;border-color:#17B890}
+  .bar-ic{width:16px;height:16px;flex-shrink:0;color:#17B890}
+  .bar-name-wrap{flex:1;min-width:0;display:flex;flex-direction:column}
+  .bar-name{font-size:0.82rem;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:0.4rem}
+  .bar-sub{font-size:0.66rem;color:var(--text-tertiary)}
+  .bar-impact{display:flex;gap:2px;align-items:center;flex-shrink:0;width:92px}
+  .bar-seg{width:13px;height:9px;border-radius:2px;background:#17B890}
+  .bar-seg.ghost{background:var(--border)}
+  .bar-impact-n{font-size:0.7rem;color:#17B890;font-weight:700;margin-left:5px}
+  .bar-owner{font-size:0.7rem;color:var(--text-secondary);flex-shrink:0;width:140px}
+  .bar-age{display:inline-flex;align-items:center;gap:5px;font-size:0.68rem;color:var(--text-secondary);flex-shrink:0;width:96px}
+  .bar-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+  .bar-clears{font-size:0.66rem;color:var(--text-tertiary);flex-shrink:0;width:82px;text-align:right}
+  .bar-arrow{color:var(--text-tertiary);font-size:0.95rem;flex-shrink:0}
+  .bar-flag{font-size:0.58rem;font-weight:700;letter-spacing:0.03em;padding:1px 6px;border-radius:8px;background:#ff3b3018;color:#ff3b30}
+  .bar-summary{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem;font-size:0.74rem;color:var(--text-secondary)}
+  .bar-plan-link{font-size:0.72rem;color:#365B7D;font-weight:600;border:1px solid #365B7D55;background:#365B7D12;padding:3px 10px;border-radius:10px}
+  .bar-plan-link:hover{background:#365B7D22}
+  .bar-handoff-tag{font-size:0.58rem;font-weight:700;letter-spacing:0.03em;padding:1px 6px;border-radius:8px;background:#8a6fbf18;color:#8a6fbf}
+</style>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.75rem">
+  <div>
+    <div class="label" style="color:#17B890">MAIN &middot; sba-agent</div>
+    <h2 style="margin:0">Staffing Balance</h2>
+  </div>
+  <div style="display:flex;gap:0.5rem;align-items:center;font-size:0.72rem;color:var(--text-secondary)">
+    <span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">SIMULATED DATA</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">EN&middot;DE&middot;FR&middot;IT</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">Access-lens: Roster</span>
+  </div>
+</div>
+
+<div class="ooa-workspace">
+
+  <!-- LEFT COLUMN: handoff + coverage worklist + staffing-levers board stacked -->
+  <div class="ooa-main">
+
+    <!-- HANDOFF from bmca + orsa -->
+    <div class="dca-handoff">
+      <span style="color:#17B890;display:flex;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7824 2.21965L19.2774 6.71441C19.5435 6.98047 19.5679 7.39676 19.3505 7.69038L19.278 7.77451L14.783 12.2794C14.4904 12.5726 14.0155 12.5731 13.7223 12.2805C13.4558 12.0145 13.4311 11.5979 13.6486 11.3041L13.7212 11.2199L16.938 7.997L5.24219 7.99766C4.86249 7.99766 4.5487 7.71551 4.49903 7.34943L4.49219 7.24766C4.49219 6.86797 4.77434 6.55417 5.14042 6.50451L5.24219 6.49766L16.94 6.497L13.7218 3.28035C13.4555 3.01409 13.4313 2.59743 13.6491 2.30381L13.7217 2.21969C13.988 1.95341 14.4047 1.92919 14.6983 2.14704L14.7824 2.21965Z" fill="currentColor"/></svg></span>
+      <span><strong style="color:var(--text-primary)">Handoff from bmca + orsa</strong> &middot; <strong style="color:#ff9f0a">3 beds ready but unstaffed</strong> &middot; Medicine&nbsp;A holds <strong style="color:#17B890">94%</strong> only if covered. Now matching staff to the plan: <strong style="color:#365B7D">2 oncology post-op</strong> (orsa) &plus; <strong style="color:#17B890">1 general</strong> (bmca).</span>
+    </div>
+
+    <!-- STAFFING COVERAGE WORKLIST -->
+    <div class="mockup" style="margin:0">
+      <div class="mockup-header">Coverage worklist &mdash; 6 shift gaps, Medicine&nbsp;A relief<span class="hdr-hint">click a row &rarr; Copilot staffing playbook</span></div>
+      <div class="mockup-body" style="padding:0">
+        <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+          <thead>
+            <tr style="text-align:left;color:var(--text-secondary);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.04em">
+              <th style="padding:0.55rem 1rem">Shift</th>
+              <th style="padding:0.55rem 0.5rem">Window</th>
+              <th style="padding:0.55rem 0.5rem">Skill</th>
+              <th style="padding:0.55rem 0.5rem">Covers</th>
+              <th style="padding:0.55rem 1rem">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-oncology');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>SH&#8209;4402</strong></td>
+              <td style="padding:0.55rem 0.5rem">Late 14&ndash;22</td>
+              <td style="padding:0.55rem 0.5rem">RN oncology</td>
+              <td style="padding:0.55rem 0.5rem">&plus;2 beds &middot; <span style="color:#365B7D">orsa</span></td>
+              <td style="padding:0.55rem 1rem"><span class="dca-badge" style="background:#ff3b3022;color:#ff3b30">GAP</span></td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-float');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>SH&#8209;4401</strong></td>
+              <td style="padding:0.55rem 0.5rem">Late 14&ndash;22</td>
+              <td style="padding:0.55rem 0.5rem">RN general</td>
+              <td style="padding:0.55rem 0.5rem">&plus;1 bed &middot; <span style="color:#17B890">bmca</span></td>
+              <td style="padding:0.55rem 1rem"><span class="dca-badge" style="background:#34c75922;color:#34c759">FILLED</span></td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-ot');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>SH&#8209;4403</strong></td>
+              <td style="padding:0.55rem 0.5rem">Night 22&ndash;07</td>
+              <td style="padding:0.55rem 0.5rem">RN general</td>
+              <td style="padding:0.55rem 0.5rem">&plus;3 rollover</td>
+              <td style="padding:0.55rem 1rem"><span class="dca-badge" style="background:#ff9f0a22;color:#ff9f0a">PENDING</span></td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-ot');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>SH&#8209;4404</strong></td>
+              <td style="padding:0.55rem 0.5rem">Late 14&ndash;22</td>
+              <td style="padding:0.55rem 0.5rem">HCA support</td>
+              <td style="padding:0.55rem 0.5rem">surge &plus;3</td>
+              <td style="padding:0.55rem 1rem"><span class="dca-badge" style="background:#34c75922;color:#34c759">FILLED</span></td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-cross');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>SH&#8209;4405</strong></td>
+              <td style="padding:0.55rem 0.5rem">Late 14&ndash;22</td>
+              <td style="padding:0.55rem 0.5rem">RN &middot; Surgery&nbsp;B</td>
+              <td style="padding:0.55rem 0.5rem">orsa redirect</td>
+              <td style="padding:0.55rem 1rem"><span class="dca-badge" style="background:#ff9f0a22;color:#ff9f0a">WATCH</span></td>
+            </tr>
+            <tr class="insight insight-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-float');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0" style="border-top:1px solid var(--border)">
+              <td style="padding:0.55rem 1rem"><strong>SH&#8209;4406</strong></td>
+              <td style="padding:0.55rem 0.5rem">Twilight 17&ndash;01</td>
+              <td style="padding:0.55rem 0.5rem">RN flex</td>
+              <td style="padding:0.55rem 0.5rem">peak overlap</td>
+              <td style="padding:0.55rem 1rem"><span class="dca-badge" style="background:#34c75922;color:#34c759">FILLED</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STAFFING LEVERS BOARD (systemic, ranked by beds covered; loops back to ooa) -->
+    <div class="mockup" style="margin:0">
+      <div class="mockup-header">Staffing levers &mdash; ranked by beds covered<span class="hdr-hint">click a lever &rarr; systemic Copilot playbook</span></div>
+      <div class="mockup-body">
+
+        <!-- summary line -->
+        <div class="bar-summary">
+          <span><strong style="color:#ff3b30">2 oncology</strong> to secure &middot; <strong style="color:#17B890">1 general</strong> covered &middot; <strong style="color:var(--text-primary)">3 beds</strong> staffed &middot; <strong style="color:#34c759">no agency</strong></span>
+          <span class="insight bar-plan-link" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-plan');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0">View staffing plan &rarr;</span>
+        </div>
+
+        <!-- ranked lever list -->
+        <div class="bar-list">
+
+          <!-- #1 Oncology skill-match (2 beds, CRITICAL, tightest constraint) -->
+          <div class="insight bar-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-oncology');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0">
+            <div class="bar-rank top">1</div>
+            <svg class="bar-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" style="color:#ff3b30"><path d="M8 1.5v13M1.5 8h13" stroke-width="1.6"/><circle cx="8" cy="8" r="6.3"/></svg>
+            <div class="bar-name-wrap">
+              <div class="bar-name">Oncology skill-match <span class="bar-flag">CRITICAL</span></div>
+              <div class="bar-sub">secure the 1 free oncology-competent RN for OR&#8209;3307 / OR&#8209;3308 post-op &middot; Medicine&nbsp;A late</div>
+            </div>
+            <div class="bar-impact" title="2 beds"><span class="bar-seg"></span><span class="bar-seg"></span><span class="bar-impact-n">2 beds</span></div>
+            <div class="bar-owner">Staffing office</div>
+            <div class="bar-age"><span class="bar-dot" style="background:#ff3b30"></span>tightest</div>
+            <div class="bar-clears">hold RN</div>
+            <span class="bar-arrow">&rarr;</span>
+          </div>
+
+          <!-- #2 Float-pool reallocation (1 bed) -->
+          <div class="insight bar-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-float');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0">
+            <div class="bar-rank">2</div>
+            <svg class="bar-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="4.3" r="2.2"/><path d="M3.6 13c0-2.4 2-3.9 4.4-3.9s4.4 1.5 4.4 3.9"/><path d="M12.5 5.5l1.7 1.7-1.7 1.7"/></svg>
+            <div class="bar-name-wrap">
+              <div class="bar-name">Float-pool reallocation</div>
+              <div class="bar-sub">pull 1 general RN from Surgery&nbsp;A (low-pressure) to Medicine&nbsp;A late &middot; covers bmca RQ&#8209;2208</div>
+            </div>
+            <div class="bar-impact" title="1 bed"><span class="bar-seg"></span><span class="bar-seg ghost"></span><span class="bar-impact-n">1 bed</span></div>
+            <div class="bar-owner">Float pool</div>
+            <div class="bar-age"><span class="bar-dot" style="background:#34c759"></span>shift now</div>
+            <div class="bar-clears">reassign</div>
+            <span class="bar-arrow">&rarr;</span>
+          </div>
+
+          <!-- #3 Voluntary overtime (night rollover) -->
+          <div class="insight bar-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-ot');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0">
+            <div class="bar-rank">3</div>
+            <svg class="bar-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.3"/><path d="M8 4.4V8l2.4 1.6"/></svg>
+            <div class="bar-name-wrap">
+              <div class="bar-name">Voluntary overtime</div>
+              <div class="bar-sub">incentive OT fills the night rollover &plus; HCA surge &middot; 2 staff opted in &middot; SH&#8209;4403, SH&#8209;4404</div>
+            </div>
+            <div class="bar-impact" title="holds 3 beds overnight"><span class="bar-seg"></span><span class="bar-seg ghost"></span><span class="bar-impact-n">hold 3</span></div>
+            <div class="bar-owner">Charge nurse</div>
+            <div class="bar-age"><span class="bar-dot" style="background:#ff9f0a"></span>opt-in</div>
+            <div class="bar-clears">confirm</div>
+            <span class="bar-arrow">&rarr;</span>
+          </div>
+
+          <!-- #4 Cross-cover buddy (resilience) -->
+          <div class="insight bar-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-cross');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0">
+            <div class="bar-rank">4</div>
+            <svg class="bar-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="5" cy="5" r="1.9"/><circle cx="11" cy="5" r="1.9"/><path d="M1.7 12.6c0-2 1.5-3.2 3.3-3.2s3.3 1.2 3.3 3.2M7.7 12.6c0-2 1.5-3.2 3.3-3.2s3.3 1.2 3.3 3.2"/></svg>
+            <div class="bar-name-wrap">
+              <div class="bar-name">Cross-cover buddy</div>
+              <div class="bar-sub">pair a general RN on Surgery&nbsp;B with oncology charge oversight &middot; backfills the orsa redirect &middot; SH&#8209;4405</div>
+            </div>
+            <div class="bar-impact" title="resilience"><span class="bar-seg ghost"></span><span class="bar-seg ghost"></span><span class="bar-impact-n" style="color:var(--text-tertiary)">resilience</span></div>
+            <div class="bar-owner">Ward lead</div>
+            <div class="bar-age"><span class="bar-dot" style="background:#34c759"></span>buddy</div>
+            <div class="bar-clears">pair</div>
+            <span class="bar-arrow">&rarr;</span>
+          </div>
+
+          <!-- #5 Agency / bank (last resort, cost flag, hands to csa) -->
+          <div class="insight bar-row" onclick="var w=this.closest('.ooa-workspace');w.classList.remove('copilot-collapsed');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var t=w.querySelector('#reco-lever-agency');if(t)t.style.display='block';var b=w.querySelector('.ooa-copilot-body');if(b)b.scrollTop=0">
+            <div class="bar-rank">5</div>
+            <svg class="bar-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" style="color:#ff3b30"><path d="M8 1.7l6.1 3.5v5.6L8 14.3 1.9 10.8V5.2z"/><path d="M8 5.4v3.2M8 10.6v.1"/></svg>
+            <div class="bar-name-wrap">
+              <div class="bar-name">Agency / bank <span class="bar-flag">LAST RESORT</span> <span class="bar-handoff-tag">&rarr; csa</span></div>
+              <div class="bar-sub">only if internal levers slip &middot; cost &plus; lead-time &middot; pressure-test via csa before booking</div>
+            </div>
+            <div class="bar-impact" title="reserve only"><span class="bar-seg ghost"></span><span class="bar-seg ghost"></span><span class="bar-impact-n" style="color:var(--text-tertiary)">reserve</span></div>
+            <div class="bar-owner">Staffing office</div>
+            <div class="bar-age"><span class="bar-dot" style="background:#ff3b30"></span>&pound;&pound; cost</div>
+            <div class="bar-clears">via csa</div>
+            <span class="bar-arrow">&rarr;</span>
+          </div>
+
+        </div>
+
+        <!-- compact relief strip + loop-back to ooa -->
+        <div style="margin-top:0.85rem;padding-top:0.7rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:0.45rem">
+          <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-secondary)">
+            <span>Beds staffed as levers land</span><span><strong style="color:var(--text-primary)">3</strong> / 3 beds</span>
+          </div>
+          <div class="dca-bar">
+            <span style="width:34%;background:#34c759" title="1 general covered (float)"></span>
+            <span style="width:52%;background:#ff9f0a" title="2 oncology securing"></span>
+            <span style="width:14%;background:#ff3b30" title="agency reserve via csa"></span>
+          </div>
+          <div style="font-size:0.68rem;color:#17B890;font-weight:600">&#8635; Live sync &rarr; ooa forecast: Medicine&nbsp;A staffed to hold <strong>94%</strong> &nbsp;&middot;&nbsp; <span style="color:var(--text-tertiary);font-weight:400">coverage thin &rarr; <strong style="color:#8a6fbf">csa-agent</strong> on standby to simulate a sick-call or surge</span></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN: full-height Staffing Copilot rail -->
+  <div class="mockup ooa-copilot">
+    <div class="mockup-header ooa-copilot-head">
+      <span>&#9679; Staffing Copilot</span>
+      <button class="ooa-collapse" title="Collapse Copilot" aria-label="Collapse Copilot"
+              onclick="this.closest('.ooa-workspace').classList.add('copilot-collapsed')">&minus;</button>
+    </div>
+    <div class="mockup-body ooa-copilot-body">
+      <p class="reco-hint">&#9758; Click any lever &mdash; the Copilot reads that context and proposes a <strong>systemic</strong> staffing playbook here, matched across every gap it holds.</p>
+
+      <!-- DEFAULT: no selection -->
+      <div class="reco" id="reco-default" style="display:block">
+        <p style="font-size:0.78rem;font-weight:600;margin:0 0 0.4rem">What do we staff first?</p>
+        <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.5;margin:0 0 0.6rem">3 beds are physically ready but unstaffed &mdash; <strong style="color:#365B7D">2 oncology post-op</strong> from orsa and <strong style="color:#17B890">1 general</strong> from bmca. The binding constraint isn&rsquo;t headcount, it&rsquo;s the <strong style="color:var(--text-primary)">oncology skill</strong>: only 1 competent RN is free.</p>
+        <ul style="margin:0 0 0 1rem;padding:0;font-size:0.78rem;color:var(--text-secondary);line-height:1.5">
+          <li><strong style="color:#ff3b30">Oncology skill-match</strong> is the tightest lever &mdash; secure that 1 RN before OR&#8209;3307 / OR&#8209;3308 post-op.</li>
+          <li><strong style="color:#17B890">Float, OT and cross-cover</strong> absorb the general bed and overnight rollover with <strong style="color:var(--text-primary)">no agency spend</strong>.</li>
+        </ul>
+        <div style="margin-top:0.9rem;padding:0.6rem;background:var(--bg-tertiary);border-radius:8px;font-size:0.78rem">
+          <span style="color:var(--text-secondary)">Suggested sequence</span><br>
+          Lock the oncology RN now (critical) &rarr; float-pull 1 general RN &rarr; confirm voluntary OT for the night rollover &rarr; hold agency in reserve (&rarr; csa).
+        </div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.8rem">Auto-match staff to plan &rarr;</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Loops back &rarr; ooa occupancy forecast</p>
+      </div>
+
+      <!-- ===== SYSTEMIC LEVER PLAYBOOKS ===== -->
+
+      <!-- LEVER: ONCOLOGY SKILL-MATCH (critical, 2 beds, hands back to orsa / flags csa) -->
+      <div class="reco" id="reco-lever-oncology" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff3b3018;color:#ff3b30">LEVER &middot; ONCOLOGY SKILL &middot; 2 BEDS &middot; CRITICAL</span>
+        <div class="reco-agent">&#9679; Staffing Copilot &mdash; lever picked up</div>
+        <p class="reco-read">The binding constraint. OR&#8209;3307 and OR&#8209;3308 are time-critical oncology cases orsa is proceeding into Medicine&nbsp;A &mdash; their 2 post-op beds are useless without an oncology-competent RN. Exactly <strong style="color:var(--text-primary)">1 is free</strong> on late shift; secure them now:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Assign the free oncology RN to the 2 post-op beds (Medicine&nbsp;A late).</span><span class="reco-impact">2 beds safe</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Confirm back to orsa the beds are staffed &amp; reserved.</span><span class="reco-impact" style="color:#365B7D;background:#365B7D15">&rarr; orsa &#10003;</span></div>
+        <div class="reco-action"><span class="reco-num">3</span><span style="flex:1">Flag csa if that RN becomes unavailable.</span><span class="reco-impact" style="color:#8a6fbf;background:#8a6fbf15">&rarr; csa</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Secure oncology cover (2 beds)</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Do this first &mdash; the only bed staffing that can&rsquo;t be substituted from the general pool.</p>
+      </div>
+
+      <!-- LEVER: FLOAT POOL (1 bed) -->
+      <div class="reco" id="reco-lever-float" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#17B89018;color:#17B890">LEVER &middot; FLOAT POOL &middot; 1 BED</span>
+        <div class="reco-agent">&#9679; Staffing Copilot &mdash; lever picked up</div>
+        <p class="reco-read">1 general bed (bmca RQ&#8209;2208) is ready but Medicine&nbsp;A is at its safe nurse ratio. Surgery&nbsp;A is running below pressure &mdash; a single float move covers it:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Reallocate 1 general RN from Surgery&nbsp;A to Medicine&nbsp;A late.</span><span class="reco-impact">&minus;1 gap</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Confirm Surgery&nbsp;A stays within ratio after the move.</span><span class="reco-impact">safe</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Float 1 RN to Medicine&nbsp;A</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">1 general placement covered with no premium cost.</p>
+      </div>
+
+      <!-- LEVER: VOLUNTARY OT (night rollover / HCA) -->
+      <div class="reco" id="reco-lever-ot" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff9f0a18;color:#ff9f0a">LEVER &middot; VOLUNTARY OT &middot; NIGHT ROLLOVER</span>
+        <div class="reco-agent">&#9679; Staffing Copilot &mdash; lever picked up</div>
+        <p class="reco-read">The 3 newly-staffed beds roll into the night shift and need an HCA surge (SH&#8209;4403, SH&#8209;4404). Two staff have opted in to incentive overtime:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Confirm 2 voluntary OT slots for the night rollover &plus; HCA surge.</span><span class="reco-impact">3 beds held</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Auto-log OT against the capacity-relief cost centre.</span><span class="reco-impact">tracked</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Confirm voluntary OT</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Keeps the 3 beds covered overnight without agency.</p>
+      </div>
+
+      <!-- LEVER: CROSS-COVER BUDDY (resilience) -->
+      <div class="reco" id="reco-lever-cross" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#17B89018;color:#17B890">LEVER &middot; CROSS-COVER &middot; RESILIENCE</span>
+        <div class="reco-agent">&#9679; Staffing Copilot &mdash; lever picked up</div>
+        <p class="reco-read">orsa redirected 1 case to Surgery&nbsp;B (SH&#8209;4405) &mdash; that ward needs light backfill. A buddy pairing covers it without a new hire:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Pair a general RN on Surgery&nbsp;B with oncology charge oversight.</span><span class="reco-impact">safe cover</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Set a 2-hourly check-in for the shift.</span><span class="reco-impact">quality</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Arrange buddy cover</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Backfills the orsa redirect without pulling from Medicine&nbsp;A.</p>
+      </div>
+
+      <!-- LEVER: AGENCY / BANK (last resort, hands to csa) -->
+      <div class="reco" id="reco-lever-agency" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#ff3b3018;color:#ff3b30">LEVER &middot; AGENCY / BANK &middot; LAST RESORT</span>
+        <div class="reco-agent">&#9679; Staffing Copilot &mdash; lever picked up</div>
+        <p class="reco-read">Only if the internal levers slip. Agency carries cost and lead-time, so it stays in reserve &mdash; and if we&rsquo;re reaching for it, the plan is fragile enough that <strong style="color:#8a6fbf">csa-agent</strong> should simulate the escalation first:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Hold 1 agency RN on standby (not booked).</span><span class="reco-impact">reserve</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Hand the fragility to csa-agent to simulate before spending.</span><span class="reco-impact" style="color:#8a6fbf;background:#8a6fbf15">&rarr; csa</span></div>
+        <button class="mock-button" style="background:#8a6fbf;width:100%;margin-top:0.6rem">Hand to csa-agent &rarr;</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">The only lever that costs premium &mdash; pressure-test with csa before committing.</p>
+      </div>
+
+      <!-- COORDINATED STAFFING PLAN -->
+      <div class="reco" id="reco-plan" style="display:none">
+        <button class="reco-back" onclick="var w=this.closest('.ooa-workspace');w.querySelectorAll('.insight').forEach(function(e){e.classList.remove('sel')});w.querySelectorAll('.reco').forEach(function(p){p.style.display='none'});var d=w.querySelector('#reco-default');if(d)d.style.display='block'">&larr; Back to summary</button>
+        <span class="reco-chip" style="background:#365B7D18;color:#365B7D">COORDINATED PLAN &middot; 3 beds &middot; staffed</span>
+        <div class="reco-agent">&#9679; Staffing Copilot &mdash; context picked up</div>
+        <p class="reco-read">Sequenced so every freed bed is safely staffed and the Medicine&nbsp;A relief actually holds:</p>
+        <div class="reco-action"><span class="reco-num">1</span><span style="flex:1">Secure the oncology RN for the 2 post-op beds.</span><span class="reco-impact">2</span></div>
+        <div class="reco-action"><span class="reco-num">2</span><span style="flex:1">Float 1 general RN from Surgery&nbsp;A.</span><span class="reco-impact">1</span></div>
+        <div class="reco-action"><span class="reco-num">3</span><span style="flex:1">Confirm voluntary OT for the night rollover.</span><span class="reco-impact">hold</span></div>
+        <div class="reco-action"><span class="reco-num">4</span><span style="flex:1">Buddy-cover the Surgery&nbsp;B backfill.</span><span class="reco-impact">resilience</span></div>
+        <div class="reco-action"><span class="reco-num">5</span><span style="flex:1">Hold agency in reserve &mdash; pressure-test via csa.</span><span class="reco-impact" style="color:#8a6fbf;background:#8a6fbf15">&rarr; csa</span></div>
+        <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.6rem">Publish roster + sync to ooa</button>
+        <p style="font-size:0.68rem;color:var(--text-tertiary);margin:0.5rem 0 0">Medicine&nbsp;A staffed to hold 94%; 3 beds covered, 0 agency booked, csa on standby.</p>
+      </div>
+
+      <div class="label" style="margin:1rem 0 0.4rem">Ask about</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.35rem">
+        <span class="ooa-chip">Oncology cover secured?</span>
+        <span class="ooa-chip">Any agency needed?</span>
+        <span class="ooa-chip">Night rollover staffed?</span>
+      </div>
+    </div>
+    <div class="ooa-copilot-foot">
+      <input class="ooa-chat-input" type="text" placeholder="Ask the Staffing Copilot&hellip;" />
+      <button class="ooa-chat-send" title="Send" aria-label="Send">&rarr;</button>
+    </div>
+  </div>
+
+  <!-- COLLAPSED STATE: Copilot icon chip, floating bottom-right as overlay -->
+  <button class="copilot-fab" title="Open Staffing Copilot" aria-label="Open Staffing Copilot"
+          onclick="this.closest('.ooa-workspace').classList.remove('copilot-collapsed')">
+    <span class="copilot-glyph"></span>
+  </button>
+
+</div>

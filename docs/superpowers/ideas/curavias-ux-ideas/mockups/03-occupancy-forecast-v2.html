@@ -1,0 +1,142 @@
+<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.75rem">
+  <div>
+    <div class="label" style="color:#17B890">MAIN &middot; ooa-agent</div>
+    <h2 style="margin:0">Occupancy &amp; 72h Forecast</h2>
+  </div>
+  <div style="display:flex;gap:0.5rem;align-items:center;font-size:0.72rem;color:var(--text-secondary)">
+    <span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">SIMULATED DATA</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">EN&middot;DE&middot;FR&middot;IT</span>
+    <span style="border:1px solid var(--border);padding:2px 8px;border-radius:10px">Access-lens: Bed Ops</span>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:1rem;align-items:start">
+
+  <!-- LEFT: ward forecast table -->
+  <div class="mockup" style="margin:0">
+    <div class="mockup-header">Ward pressure &mdash; now vs. forecast in 72&nbsp;hours</div>
+    <div class="mockup-body" style="padding:0">
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem">
+        <thead>
+          <tr style="text-align:left;color:var(--text-secondary);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em">
+            <th style="padding:0.6rem 1rem">Ward</th>
+            <th style="padding:0.6rem 0.5rem">Now</th>
+            <th style="padding:0.6rem 0.5rem">72h trend</th>
+            <th style="padding:0.6rem 0.5rem">Forecast</th>
+            <th style="padding:0.6rem 1rem">Flag</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>Medicine A</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">34 / 36 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">94%</td>
+            <td style="padding:0.6rem 0.5rem;color:#ff3b30">&#9650; rising</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700;color:#ff3b30">102%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#ff3b3022;color:#ff3b30;padding:2px 8px;border-radius:10px;font-weight:600">OVER</span></td>
+          </tr>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>ICU</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">11 / 12 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">92%</td>
+            <td style="padding:0.6rem 0.5rem;color:#ff9f0a">&#9650; rising</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700;color:#ff9f0a">95%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">WATCH</span></td>
+          </tr>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>Surgery B</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">28 / 40 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">70%</td>
+            <td style="padding:0.6rem 0.5rem;color:#ff9f0a">&#9650; rising</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700;color:#ff9f0a">88%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#ff9f0a22;color:#ff9f0a;padding:2px 8px;border-radius:10px;font-weight:600">WATCH</span></td>
+          </tr>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:0.6rem 1rem"><strong>Cardiology</strong><br><span style="color:var(--text-secondary);font-size:0.75rem">20 / 30 beds</span></td>
+            <td style="padding:0.6rem 0.5rem">67%</td>
+            <td style="padding:0.6rem 0.5rem;color:var(--text-secondary)">&#8594; flat</td>
+            <td style="padding:0.6rem 0.5rem;font-weight:700">74%</td>
+            <td style="padding:0.6rem 1rem"><span style="background:#34c75922;color:#34c759;padding:2px 8px;border-radius:10px;font-weight:600">OK</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT: docked copilot -->
+  <div class="mockup" style="margin:0;border-color:#17B890">
+    <div class="mockup-header" style="background:#17B89022;color:#17B890;font-weight:600">&#9679; Occupancy Copilot</div>
+    <div class="mockup-body">
+      <p style="font-size:0.78rem;font-weight:600;margin-bottom:0.4rem">Why is pressure rising?</p>
+      <ul style="margin-left:1rem;font-size:0.8rem;color:var(--text-secondary);line-height:1.5">
+        <li><strong style="color:var(--text-primary)">Medicine&nbsp;A</strong>: +6 admissions forecast (flu season) vs. only 2 planned discharges in 72h.</li>
+        <li><strong style="color:var(--text-primary)">ICU</strong>: length-of-stay running 1.4 days above median.</li>
+      </ul>
+      <div style="margin-top:0.9rem;padding:0.6rem;background:var(--bg-tertiary);border-radius:8px;font-size:0.78rem">
+        <span style="color:var(--text-secondary)">Suggested next step</span><br>
+        Relieve Medicine&nbsp;A by expediting eligible discharges.
+      </div>
+      <button class="mock-button" style="background:#17B890;width:100%;margin-top:0.8rem">See 8 discharge candidates &rarr;</button>
+      <p style="font-size:0.68rem;color:var(--text-tertiary);margin-top:0.5rem">Handoff &rarr; Discharge Coordinator (dca)</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- CAPACITY FLOW DIAGRAM -->
+<div class="mockup" style="margin-top:1rem">
+  <div class="mockup-header">Capacity flow &mdash; how signals become a 72h forecast</div>
+  <div class="mockup-body">
+    <div style="display:flex;align-items:stretch;gap:0.5rem;flex-wrap:wrap">
+
+      <!-- 1. Signal channels -->
+      <div style="flex:1;min-width:200px">
+        <div class="label" style="margin-bottom:0.5rem">Signal channels</div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem">
+          <div style="display:flex;justify-content:space-between;padding:0.4rem 0.6rem;background:var(--bg-tertiary);border-radius:6px;font-size:0.76rem"><span>ED arrivals</span><span style="color:#365B7D;font-weight:600">FHIR</span></div>
+          <div style="display:flex;justify-content:space-between;padding:0.4rem 0.6rem;background:var(--bg-tertiary);border-radius:6px;font-size:0.76rem"><span>Admissions / transfers</span><span style="color:#365B7D;font-weight:600">HL7v2</span></div>
+          <div style="display:flex;justify-content:space-between;padding:0.4rem 0.6rem;background:var(--bg-tertiary);border-radius:6px;font-size:0.76rem"><span>Elective OR schedule</span><span style="color:#365B7D;font-weight:600">Fabric</span></div>
+          <div style="display:flex;justify-content:space-between;padding:0.4rem 0.6rem;background:var(--bg-tertiary);border-radius:6px;font-size:0.76rem"><span>Planned discharges</span><span style="color:#365B7D;font-weight:600">FHIR</span></div>
+          <div style="display:flex;justify-content:space-between;padding:0.4rem 0.6rem;background:var(--bg-tertiary);border-radius:6px;font-size:0.76rem"><span>Length-of-stay signal</span><span style="color:#365B7D;font-weight:600">model</span></div>
+          <div style="display:flex;justify-content:space-between;padding:0.4rem 0.6rem;background:var(--bg-tertiary);border-radius:6px;font-size:0.76rem"><span>Staffing roster</span><span style="color:#365B7D;font-weight:600">Fabric</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;color:#17B890;font-size:1.5rem;font-weight:700">&rarr;</div>
+
+      <!-- 2. Ingest + forecast pipeline -->
+      <div style="flex:1;min-width:200px">
+        <div class="label" style="margin-bottom:0.5rem">Ingest &amp; forecast</div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem">
+          <div style="padding:0.5rem 0.7rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;text-align:center">Fabric Eventstream</div>
+          <div style="text-align:center;color:var(--text-tertiary)">&darr;</div>
+          <div style="padding:0.5rem 0.7rem;border:1px solid var(--border);border-radius:6px;font-size:0.78rem;text-align:center">FHIR normalize &middot; Bronze&rarr;Silver&rarr;Gold</div>
+          <div style="text-align:center;color:var(--text-tertiary)">&darr;</div>
+          <div style="padding:0.5rem 0.7rem;border:1px solid #17B890;background:#17B89015;border-radius:6px;font-size:0.78rem;text-align:center;font-weight:600;color:#17B890">ooa forecast model</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;color:#17B890;font-size:1.5rem;font-weight:700">&rarr;</div>
+
+      <!-- 3. Capacity outputs -->
+      <div style="flex:1;min-width:200px">
+        <div class="label" style="margin-bottom:0.5rem">Capacity</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem">
+          <div style="padding:0.7rem;border:1px solid var(--border);border-radius:8px">
+            <div style="font-size:0.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em">Current capacity</div>
+            <div style="font-size:1.3rem;font-weight:700">105 / 130 <span style="font-size:0.8rem;color:var(--text-secondary)">beds &middot; 81%</span></div>
+          </div>
+          <div style="padding:0.7rem;border:1px solid #ff9f0a;background:#ff9f0a12;border-radius:8px">
+            <div style="font-size:0.7rem;color:#ff9f0a;text-transform:uppercase;letter-spacing:0.04em">Forecast capacity &middot; 72h</div>
+            <div style="font-size:1.3rem;font-weight:700;color:#ff9f0a">121 / 130 <span style="font-size:0.8rem">beds &middot; 93% &#9650;</span></div>
+          </div>
+          <div style="padding:0.5rem 0.7rem;background:var(--bg-tertiary);border-radius:8px;font-size:0.8rem">
+            <strong style="color:#ff3b30">Gap: &minus;16 beds</strong> needed within 72h &mdash; closeable via discharges.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<p class="section" style="margin-top:1rem;font-size:0.8rem;color:var(--text-secondary)">
+Signals flow in through named channels &rarr; Fabric ingest + ooa model &rarr; a clear <em>current vs. forecast capacity</em> gap that the discharge surface then closes.
+</p>
