@@ -50,12 +50,19 @@ class Notebook:
 
 
 # Dependency order: bronze -> silver -> gold master data -> OR samples ->
-# gold eventstream (reads the same schemas-enabled lakehouse).
+# eventstream seed -> bronze/silver/gold eventstream (all reading the same
+# schemas-enabled lakehouse). The eventstream lane is fed from a committed
+# synthetic seed (00_seed_eventstream_raw) so the patient-flow gold tables
+# (encounter, bed_assignment, ...) rebuild reproducibly from git with no live
+# Eventstream dependency.
 _ORDER = [
     ("01_bronze_master_data", "reference/01_bronze_master_data.ipynb"),
     ("02_silver_master_data", "reference/02_silver_master_data.ipynb"),
     ("03_gold_master_data", "reference/03_gold_master_data.ipynb"),
     ("04_load_or_samples", "reference/04_load_or_samples.ipynb"),
+    ("00_seed_eventstream_raw", "eventstream/00_seed_eventstream_raw.ipynb"),
+    ("01_bronze_eventstream", "eventstream/01_bronze_eventstream.ipynb"),
+    ("02_silver_eventstream", "eventstream/02_silver_eventstream.ipynb"),
     ("03_gold_eventstream", "eventstream/03_gold_eventstream.ipynb"),
 ]
 

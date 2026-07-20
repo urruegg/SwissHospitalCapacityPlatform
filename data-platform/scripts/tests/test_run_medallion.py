@@ -35,6 +35,9 @@ class OrderingTests(unittest.TestCase):
                 "02_silver_master_data",
                 "03_gold_master_data",
                 "04_load_or_samples",
+                "00_seed_eventstream_raw",
+                "01_bronze_eventstream",
+                "02_silver_eventstream",
                 "03_gold_eventstream",
             ],
         )
