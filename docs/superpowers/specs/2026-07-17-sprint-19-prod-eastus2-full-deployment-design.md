@@ -646,7 +646,7 @@ Steps:
 * [ ] E2E demo flow: sign-in → app → agent → data → response (end-to-end green)
 * [ ] PROD evidence document committed: `docs/sprints/prod-evidence-swn.md`
 * [ ] All CI checks pass (markdown lint, link check, Bicep build)
-* [ ] [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md) status advanced (Proposed → Accepted) once the rebuild is verified
+* [ ] [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md) is **Accepted**; re-confirm once the rebuild is verified live
 * [ ] SIT remains functional (no breaking changes to westus2 + eastus2)
 
 ---

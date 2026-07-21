@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-07-21 |
 | **Author** | Urs Rüegg |
 | **Decision-makers** | @urruegg |
