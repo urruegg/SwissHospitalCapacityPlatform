@@ -2,14 +2,14 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-09 |
+| **Version** | 1.0.1 |
+| **Date** | 2026-07-21 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft for review |
-| **Previous Version** | — (initial, Sprint 13) |
+| **Previous Version** | 1.0.0 (helvion→curavias brand rename) |
 
 Sprint 13 primary track: the **deployable baseline** app for the Swiss Hospital
-Capacity Platform — React 18 + Fluent UI v9 + Helvion brand tokens + MSAL against
+Capacity Platform — React 18 + Fluent UI v9 + Curavias brand tokens + MSAL against
 the Sprint 12 `ihzhhpf-app` registration. It renders a two-workspace shell (Main +
 Backstage), the BedManager operational whiteboard (6 card types), the Backstage
 Roles & RBAC tab, and a Copilot Drawer that invokes the Sprint 11 `bmca-agent`
@@ -22,7 +22,7 @@ See the design spec:
 
 - Vite 6 + React 18 + TypeScript (strict)
 - Fluent UI v9 (`@fluentui/react-components`), theme derived from
-  [`helvion-token-mapping.md`](../../data-platform/reports/capacity-dashboard.Report/themes/helvion-token-mapping.md)
+  [`curavias-token-mapping.md`](../../data-platform/reports/capacity-dashboard.Report/themes/curavias-token-mapping.md)
 - MSAL for React (`@azure/msal-react`) — claims `roles` / `hospital` / `env`
 - `@microsoft/microsoft-graph-client` — read-only Entra app-role list
 - i18next — DE default, EN fallback
@@ -64,7 +64,7 @@ without a live backend.
 - `whiteboard/` — pure canvas; cards plug in via `CardRegistry`.
 - `cards/` — the 6 card types.
 - `copilot-drawer/` — agent-agnostic drawer; per-agent config via manifest.
-- `theme/` — Fluent v9 theme from Helvion tokens.
+- `theme/` — Fluent v9 theme from Curavias tokens.
 - `i18n/` — DE/EN resources.
 
 ## Deployment

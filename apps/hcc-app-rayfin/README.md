@@ -14,9 +14,9 @@
 This folder contains a **minimal, buildable placeholder shell** (Vite + React +
 TypeScript) that:
 
-- reuses the Helvion brand tokens from
-  [`helvion-token-mapping.md`](../../data-platform/reports/capacity-dashboard.Report/themes/helvion-token-mapping.md);
-- renders a Helvion-branded banner so the shared Playwright smoke test has a
+- reuses the Curavias brand tokens from
+  [`curavias-token-mapping.md`](../../data-platform/reports/capacity-dashboard.Report/themes/curavias-token-mapping.md);
+- renders a Curavias-branded banner so the shared Playwright smoke test has a
   target and the track stays green in CI;
 - clearly labels itself as a placeholder, not a Rayfin-generated artefact.
 
@@ -29,7 +29,7 @@ placeholder code as PoC evidence.
 Had the Rayfin CLI been available, T7 would have:
 
 1. generated the same two-workspace shell (Main + Backstage tabs, top bar);
-2. injected the same Brandkit / Helvion theme tokens;
+2. injected the same Brandkit / Curavias theme tokens;
 3. generated the one reference operational whiteboard (BedManager @ USZ);
 4. reused the Fluent Playwright smoke test to prove parity;
 5. scored the output against the design spec §4 rubric (build velocity, Fluent

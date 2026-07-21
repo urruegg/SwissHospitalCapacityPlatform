@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curavias · Klickbarer Prototyp</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #2A4A5E;      /* START act */
+    --teal: #17B890;      /* MAIN act */
+    --purple: #8a6fbf;    /* BACKSTAGE act */
+    --bg: #f5f5f7;
+    --panel: #ffffff;
+    --border: #d1d1d6;
+    --text: #1d1d1f;
+    --muted: #86868b;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ---- header ---- */
+  header {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: baseline; gap: 0.5rem; }
+  .brand .logo { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+  .brand .tag { font-size: 0.78rem; color: var(--muted); }
+  .spacer { flex: 1; }
+  .chip {
+    font-size: 0.72rem; font-weight: 600;
+    padding: 0.25rem 0.6rem; border-radius: 999px;
+    background: #eafaf3; color: #0d7a52; border: 1px solid #bfe9d6;
+    white-space: nowrap;
+  }
+  .chip.proto { background: #eef3f7; color: var(--navy); border-color: #c9dae4; }
+
+  /* ---- toolbar ---- */
+  .toolbar {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.55rem 1rem;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .acts { display: flex; gap: 0.4rem; }
+  .act {
+    font-size: 0.82rem; font-weight: 600;
+    padding: 0.4rem 0.9rem; border-radius: 8px;
+    border: 1.5px solid var(--border); background: var(--panel);
+    color: var(--text); cursor: pointer; transition: all 0.12s ease;
+  }
+  .act:hover { border-color: var(--muted); }
+  .act[data-act="start"].on { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .act[data-act="main"].on { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .act[data-act="backstage"].on { background: var(--purple); border-color: var(--purple); color: #fff; }
+
+  .sep { width: 1px; align-self: stretch; background: var(--border); margin: 0.1rem 0.15rem; }
+
+  .roles { display: flex; gap: 0.3rem; align-items: center; }
+  .roles .rlabel { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.15rem; }
+  .role {
+    font-size: 0.75rem; font-weight: 600;
+    padding: 0.32rem 0.6rem; border-radius: 7px;
+    border: 1.5px solid var(--border); background: var(--panel);
+    color: var(--text); cursor: pointer; transition: all 0.12s ease;
+  }
+  .role:hover { border-color: var(--teal); }
+  .role.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  .nav { display: flex; gap: 0.4rem; align-items: center; }
+  .btn {
+    font-size: 0.8rem; font-weight: 600;
+    padding: 0.4rem 0.7rem; border-radius: 8px;
+    border: 1.5px solid var(--border); background: var(--panel);
+    color: var(--text); cursor: pointer; transition: all 0.12s ease;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--muted); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+  .btn.loop { border-color: var(--teal); color: var(--teal); }
+  .btn.loop:hover { background: #eafaf3; }
+  .now { font-size: 0.8rem; color: var(--muted); min-width: 5.5rem; }
+  .now b { color: var(--text); }
+
+  /* ---- stage ---- */
+  .stage { flex: 1; position: relative; background: var(--bg); }
+  iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--bg); }
+
+  /* ---- footer ---- */
+  footer {
+    flex-shrink: 0;
+    padding: 0.45rem 1rem;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    font-size: 0.74rem; color: var(--muted);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  footer .thread { color: var(--text); font-weight: 600; }
+  footer .gd { width: 8px; height: 8px; border-radius: 999px; background: var(--warning, #ff9f0a); flex-shrink: 0; }
+
+  @media (max-width: 820px) {
+    .roles .rlabel { display: none; }
+    .now { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">Curavias</span>
+      <span class="tag">Klickbarer Prototyp</span>
+    </div>
+    <span class="spacer"></span>
+    <span class="chip proto">Review-Mockup</span>
+    <span class="chip">Synthetische Daten · 0 PHI</span>
+  </header>
+
+  <div class="toolbar">
+    <div class="acts">
+      <button class="act" data-act="start" onclick="go('start')">START</button>
+      <button class="act" data-act="main" onclick="go('ooa')">MAIN</button>
+      <button class="act" data-act="backstage" onclick="go('backstage')">BACKSTAGE</button>
+    </div>
+
+    <span class="sep"></span>
+
+    <div class="roles">
+      <span class="rlabel">Rollen</span>
+      <button class="role" data-role="ooa" onclick="go('ooa')">OOA</button>
+      <button class="role" data-role="dca" onclick="go('dca')">DCA</button>
+      <button class="role" data-role="bmca" onclick="go('bmca')">BMCA</button>
+      <button class="role" data-role="orsa" onclick="go('orsa')">ORSA</button>
+      <button class="role" data-role="sba" onclick="go('sba')">SBA</button>
+      <button class="role" data-role="csa" onclick="go('csa')">CSA</button>
+    </div>
+
+    <span class="spacer"></span>
+
+    <div class="nav">
+      <span class="now">Ansicht: <b id="now-label">START</b></span>
+      <button class="btn" id="prev" onclick="step(-1)">&larr; Zur&uuml;ck</button>
+      <button class="btn" id="next" onclick="step(1)">Weiter &rarr;</button>
+      <button class="btn loop" id="loop" onclick="go('ooa')" title="Zur&uuml;ck zum Start der MAIN-Reise">&#8635; Loop</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <iframe id="stage" src="surfaces/00-start.html" title="Curavias Prototyp-Oberfl&auml;che"></iframe>
+  </div>
+
+  <footer>
+    <span class="gd"></span>
+    <span>Goldener Faden:</span>
+    <span class="thread">Medizin A &rarr; 102 % Belegung in 72 h &middot; Standort &minus;16 Betten</span>
+    <span class="spacer"></span>
+    <span>START &rarr; MAIN (6 Rollen) &rarr; BACKSTAGE &middot; Pfeiltasten &larr; &rarr; navigieren</span>
+  </footer>
+
+<script>
+  var SPINE = ['start', 'ooa', 'dca', 'bmca', 'orsa', 'sba', 'csa', 'backstage'];
+  var SURF = {
+    start:     'surfaces/00-start.html',
+    ooa:       'surfaces/01-ooa-occupancy.html',
+    dca:       'surfaces/02-dca-discharge.html',
+    bmca:      'surfaces/03-bmca-bed-management.html',
+    orsa:      'surfaces/04-orsa-or-steering.html',
+    sba:       'surfaces/05-sba-staffing.html',
+    csa:       'surfaces/06-csa-crisis.html',
+    backstage: 'surfaces/07-backstage.html'
+  };
+  var LABEL = { start:'START', ooa:'OOA', dca:'DCA', bmca:'BMCA', orsa:'ORSA', sba:'SBA', csa:'CSA', backstage:'BACKSTAGE' };
+  var MAIN_ROLES = ['ooa', 'dca', 'bmca', 'orsa', 'sba', 'csa'];
+
+  var current = 'start';
+
+  function actOf(key) {
+    if (key === 'start') return 'start';
+    if (key === 'backstage') return 'backstage';
+    return 'main';
+  }
+
+  function go(key) {
+    if (!SURF[key]) return;
+    current = key;
+    var frame = document.getElementById('stage');
+    if (frame.getAttribute('src') !== SURF[key]) frame.setAttribute('src', SURF[key]);
+
+    var act = actOf(key);
+    document.querySelectorAll('.act').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-act') === act);
+    });
+    document.querySelectorAll('.role').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-role') === key);
+    });
+    document.getElementById('now-label').textContent = LABEL[key] || key;
+
+    var i = SPINE.indexOf(key);
+    document.getElementById('prev').disabled = (i <= 0);
+    document.getElementById('next').disabled = (i >= SPINE.length - 1);
+  }
+
+  function step(d) {
+    var i = SPINE.indexOf(current);
+    var j = i + d;
+    if (j >= 0 && j < SPINE.length) go(SPINE[j]);
+  }
+
+  window.addEventListener('message', function (e) {
+    if (e.data && e.data.curaviasNav) go(e.data.curaviasNav);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') { step(-1); }
+    else if (e.key === 'ArrowRight') { step(1); }
+  });
+
+  go('start');
+</script>
+</body>
+</html>

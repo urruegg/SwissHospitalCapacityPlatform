@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curavias · START — Patientenpfad-Einstieg</title>
+<style>
+    /* ===== Curavias prototype base (Superpowers companion frame, light-mode locked) ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e5e5e7;
+      --border: #d1d1d6;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #aeaeb2;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --success: #34c759;
+      --warning: #ff9f0a;
+      --error: #ff3b30;
+      --selected-bg: #e8f4fd;
+      --selected-border: #0071e3;
+    }
+    html { height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100%;
+    }
+    .cv-content { padding: 2rem; }
+    /* base helpers used by fragments */
+    h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .section { margin-bottom: 2rem; }
+    .label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .option { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: flex-start; gap: 1rem; }
+    .option:hover { border-color: var(--accent); }
+    .option.selected { background: var(--selected-bg); border-color: var(--selected-border); }
+    .option .letter { background: var(--bg-tertiary); color: var(--text-secondary); width: 1.75rem; height: 1.75rem; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
+    .option.selected .letter { background: var(--accent); color: white; }
+    .option .content { flex: 1; }
+    .option .content h3 { font-size: 0.95rem; margin-bottom: 0.15rem; }
+    .option .content p { color: var(--text-secondary); font-size: 0.85rem; margin: 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .card-body { padding: 1rem; }
+    .card-body h3 { margin-bottom: 0.25rem; }
+    .card-body p { color: var(--text-secondary); font-size: 0.85rem; }
+    .mockup { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+    .mockup-header { background: var(--bg-tertiary); padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+    .mockup-body { padding: 1.5rem; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+    .placeholder { background: var(--bg-tertiary); border: 2px dashed var(--border); border-radius: 8px; padding: 2rem; text-align: center; color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+<div class="cv-content">
+<style>
+  .start-wrap{max-width:1080px;margin:0 auto}
+  .start-chrome{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.35rem}
+  .brand{display:flex;align-items:center;gap:0.6rem}
+  .brand-word{font-size:1.5rem;font-weight:800;letter-spacing:-0.01em;color:#2A4A5E;line-height:1}
+  .brand-desc{font-size:0.6rem;letter-spacing:0.14em;font-weight:800;color:var(--text-tertiary);margin-top:0.22rem}
+  .brand-tag{font-size:0.82rem;font-style:italic;color:#4E7C97;margin:0 0 1rem 0.1rem}
+  .start-pills{display:flex;gap:0.5rem;align-items:center;font-size:0.72rem;color:var(--text-secondary);flex-wrap:wrap;justify-content:flex-end}
+  .start-actchip{border:1px solid #2A4A5E33;background:#2A4A5E12;color:#2A4A5E;padding:3px 9px;border-radius:10px;font-weight:800;font-size:0.66rem;letter-spacing:0.08em}
+  .start-seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-weight:700;font-size:0.66rem}
+  .start-seg span{padding:3px 9px}
+  .start-seg .off{color:var(--text-tertiary)}
+  .start-seg .on{background:#ff9f0a22;color:#ff9f0a}
+  .start-lang{border:1px solid var(--border);padding:3px 9px;border-radius:10px;font-weight:600}
+
+  .start-hero{display:grid;grid-template-columns:1.35fr 1fr;gap:1rem;border:1px solid var(--border);border-radius:16px;padding:1.15rem 1.25rem;background:linear-gradient(135deg,#2E9E7810,transparent 55%),var(--bg-secondary)}
+  .start-eyebrow{font-size:0.64rem;letter-spacing:0.12em;font-weight:800;color:#2E9E78;text-transform:uppercase}
+  .start-hook{font-size:1.5rem;line-height:1.18;font-weight:800;color:#2A4A5E;margin-top:0.35rem}
+  .start-hook span{color:#2E9E78}
+  .start-sub{font-size:0.82rem;color:var(--text-secondary);line-height:1.5;margin:0.5rem 0 0.6rem;max-width:42ch}
+  .start-value{font-size:0.88rem;font-weight:800;color:#2E9E78;line-height:1.35;margin-bottom:0.75rem}
+  .start-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+  .metric{background:#EAF4EE;border-radius:10px;padding:0.55rem 0.55rem;text-align:center}
+  .metric-num{font-size:1.15rem;font-weight:800;color:#2A4A5E;line-height:1}
+  .metric-lab{font-size:0.6rem;font-weight:700;color:#2E7D63;margin-top:0.28rem;line-height:1.25}
+  .start-disclaimer{display:flex;gap:0.55rem;align-items:flex-start;margin-top:0.75rem;padding:0.6rem 0.85rem;border-left:4px solid #F4A93B;border-radius:8px;background:#FBF1D4;font-size:0.72rem;color:#7a611c;line-height:1.42}
+  .start-disclaimer b{color:#5f4a12}
+
+  .squeeze{border:1px solid var(--border);border-radius:12px;background:var(--bg-tertiary);padding:0.85rem 0.95rem;display:flex;flex-direction:column;gap:0.45rem}
+  .squeeze-label{font-size:0.62rem;letter-spacing:0.08em;font-weight:800;color:var(--text-tertiary)}
+  .squeeze-big{font-size:1.05rem;font-weight:800;color:var(--text-primary)}
+  .squeeze-big .up{color:#ff3b30}
+  .squeeze-big .up::after{content:" \25B2";font-size:0.7rem}
+  .squeeze-beds{font-size:0.78rem;color:var(--text-secondary)}
+  .squeeze svg{width:100%;height:74px;display:block}
+  .squeeze-foot{font-size:0.66rem;color:var(--text-tertiary);line-height:1.35}
+
+  /* ---- Customer-voice band (CIO challenger question) ---- */
+  .cust{margin-top:1.1rem}
+  .cust-eyebrow{font-size:0.64rem;letter-spacing:0.12em;font-weight:800;color:#2A4A5E;text-transform:uppercase}
+  .cust-head{font-size:1.05rem;font-weight:800;color:#2A4A5E;margin:0.15rem 0 0.55rem;border-bottom:2px solid #2E9E78;padding-bottom:0.4rem}
+  .cust-quote{border-left:4px solid #2A4A5E;background:#EAF1F6;border-radius:0 8px 8px 0;padding:0.7rem 0.95rem;font-style:italic;font-weight:700;color:#2A4A5E;font-size:0.92rem;line-height:1.45}
+  .cust-lead{font-size:0.78rem;color:var(--text-secondary);margin:0.6rem 0 0.55rem}
+  .cust-tbl{width:100%;border-collapse:collapse;font-size:0.72rem;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .cust-tbl th{background:#2A4A5E;color:#fff;text-align:left;font-weight:700;padding:0.45rem 0.6rem;font-size:0.68rem;letter-spacing:0.02em}
+  .cust-tbl td{padding:0.45rem 0.6rem;border-top:1px solid var(--border);vertical-align:top;line-height:1.35}
+  .cust-tbl tr:nth-child(even) td{background:var(--bg-tertiary)}
+  .cust-nr{width:26px;color:var(--text-tertiary);font-weight:800}
+  .cust-dec{font-weight:700;color:var(--text-primary);width:19%}
+  .cust-today{color:var(--text-secondary);width:36%}
+  .cust-fut{color:#2E7D63;font-weight:600}
+
+  /* ---- Patient-path journey launcher ---- */
+  .start-launchhead{display:flex;align-items:baseline;justify-content:space-between;margin:1.35rem 0 0.65rem;gap:1rem}
+  .start-hint{font-size:0.7rem;color:var(--text-tertiary)}
+  .start-hint b{color:#17B890}
+
+  .jover{display:flex;gap:0.7rem;justify-content:center;margin:0.2rem 0 0.7rem;flex-wrap:wrap}
+  .jovercard{display:flex;align-items:center;gap:0.5rem;border:1px solid var(--border);border-radius:12px;padding:0.5rem 0.9rem;background:var(--bg-secondary);cursor:pointer;transition:border-color .15s,box-shadow .15s}
+  .jovercard:hover{border-color:#17B890;box-shadow:0 6px 16px rgba(23,184,144,.12)}
+  .jovercard.sel{box-shadow:0 0 0 2px #17B890;border-color:#17B890}
+  .joverico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;flex:none;box-shadow:0 3px 8px rgba(0,0,0,.12)}
+  .joverico svg{width:20px;height:20px}
+  .jovertext{display:flex;flex-direction:column;gap:0.3rem;min-width:0}
+  .jover-lab{font-size:0.82rem;font-weight:800;color:#2A4A5E;line-height:1.1}
+  .jover-dot{font-size:0.6rem;color:var(--text-tertiary);font-weight:600;margin-left:0.3rem}
+  .joverrow{display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap}
+  .joverrow .jbadge,.joverrow .jevi{margin-top:0}
+
+  .journey{position:relative;margin-top:0.2rem}
+  .jwaveband{position:absolute;top:8px;left:3%;right:3%;height:118px;z-index:0;pointer-events:none}
+  .jwaveband svg{width:100%;height:100%;display:block}
+  .jrow{position:relative;z-index:1;display:grid;grid-template-columns:repeat(6,1fr);gap:0.35rem}
+  .jstop{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0.55rem 0.4rem 0.7rem;border-radius:14px;border:1.5px solid transparent;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s}
+  .jstop.down{margin-top:58px}
+  .jstop.pick{cursor:pointer;border-color:var(--border)}
+  .jstop.pick:hover{border-color:#17B890;background:#17B8900f;box-shadow:0 8px 18px rgba(23,184,144,.16);transform:translateY(-2px)}
+  .jstop.pick.sel{border-color:#17B890;background:#17B89014;box-shadow:0 0 0 2px #17B89055,0 10px 20px rgba(23,184,144,.18)}
+  .jstop.sel .jnode{box-shadow:0 0 0 4px #17B89055,0 4px 12px rgba(0,0,0,.12)}
+  .jnode{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.14)}
+  .jnode svg{width:26px;height:26px}
+  .jtitle{font-size:0.78rem;font-weight:800;color:#2A4A5E;margin-top:0.4rem;line-height:1.15}
+  .jsub{font-size:0.64rem;color:var(--text-tertiary);margin-top:0.1rem;line-height:1.2}
+  .jbadge{display:inline-flex;align-items:center;gap:4px;font-size:0.6rem;font-weight:800;color:#fff;padding:3px 9px;border-radius:8px;margin-top:0.32rem;letter-spacing:0.04em}
+  .jbadge svg{width:11px;height:11px;flex:none}
+  .jevi{display:inline-block;text-align:center;font-size:0.57rem;font-weight:800;padding:3px 9px;border-radius:999px;margin-top:0.3rem;letter-spacing:0.02em;line-height:1.25;max-width:140px}
+  .jcap{font-size:0.6rem;color:var(--text-secondary);margin-top:0.25rem;line-height:1.28}
+
+  .jhil{display:flex;align-items:center;gap:0.55rem;margin-top:1.1rem;padding:0.6rem 0.9rem;border:1px solid #17B89040;border-radius:10px;background:#17B8900f;font-size:0.78rem;color:#0f7a5f;font-weight:600}
+  .jhil svg{width:18px;height:18px;flex:none;color:#17B890}
+  .jbackstage{display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.7rem;font-size:0.72rem;color:#8a6fbf;font-weight:800;cursor:pointer;border:1px dashed #8a6fbf55;border-radius:9px;padding:0.35rem 0.7rem;transition:background .15s}
+  .jbackstage:hover{background:#8a6fbf10}
+  .jbackstage.sel{box-shadow:0 0 0 2px #8a6fbf;border-style:solid}
+
+  .start-selfoot{display:none;align-items:center;gap:0.5rem;margin-top:0.9rem;padding:0.6rem 0.85rem;border:1px solid #17B89055;border-radius:10px;background:#17B8900f;font-size:0.75rem;color:var(--text-secondary)}
+  .start-selfoot .dot{width:8px;height:8px;border-radius:50%;background:#17B890;flex:none}
+</style>
+
+<div class="start-wrap">
+
+  <div class="start-chrome">
+    <div class="brand">
+      <svg width="58" height="32" viewBox="0 0 58 32" fill="none" aria-label="Curavias">
+        <polyline points="4,26 25,19 50,7" stroke="#2E9E78" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="4" cy="26" r="3" fill="#2A4A5E"/>
+        <circle cx="25" cy="19" r="7" fill="#E0392B"/>
+        <path d="M25 15.4v7.2M21.4 19h7.2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="50" cy="7" r="7" fill="#2E9E78"/>
+        <path d="M46.6 7.3l2.2 2.3 3.4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="brand-word">Curavias</div>
+        <div class="brand-desc">SWISS HOSPITAL CAPACITY COPILOT</div>
+      </div>
+    </div>
+    <div class="start-pills">
+      <span class="start-actchip">START</span>
+      <span class="start-seg"><span class="off">LIVE</span><span class="on">SIMULATED</span></span>
+      <span class="start-lang">EN&middot;DE&middot;FR&middot;IT</span>
+    </div>
+  </div>
+  <div class="brand-tag">Every patient&rsquo;s path, in Swiss hands.</div>
+
+  <div class="start-hero">
+    <div>
+      <div class="start-eyebrow">Product overview &middot; operative capacity</div>
+      <div class="start-hook">See the squeeze before it happens. <span>Act before it hurts.</span></div>
+      <p class="start-sub">One shared view of site capacity &mdash; a specialised AI copilot for every role, grounded in Fabric&nbsp;+&nbsp;FHIR.</p>
+      <div class="start-value">Reliable preview. &middot; Explainable recommendation. &middot; The human decides.</div>
+      <div class="start-metrics">
+        <div class="metric"><div class="metric-num">&asymp;&nbsp;3.5M</div><div class="metric-lab">CHF/yr target value (ROM)</div></div>
+        <div class="metric"><div class="metric-num">127%</div><div class="metric-lab">ROI over 3 years</div></div>
+        <div class="metric"><div class="metric-num">7</div><div class="metric-lab">specialised AI copilots</div></div>
+      </div>
+    </div>
+    <div class="squeeze">
+      <div class="squeeze-label">SITE CAPACITY &middot; NEXT 72H</div>
+      <div class="squeeze-big">Medicine&nbsp;A <span class="up">102%</span></div>
+      <div class="squeeze-beds">site <strong style="color:#ff3b30">&minus;16 beds</strong> at peak</div>
+      <svg viewBox="0 0 280 74" preserveAspectRatio="none">
+        <line x1="0" y1="26" x2="280" y2="26" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <text x="2" y="21" fill="var(--text-tertiary)" font-size="8">100%</text>
+        <polyline fill="none" stroke="#17B890" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" points="0,58 40,53 80,49 120,42 160,30 180,25"/>
+        <polyline fill="none" stroke="#ff3b30" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" points="180,25 220,19 260,14 280,12"/>
+        <circle cx="180" cy="25" r="3.4" fill="#ff3b30"/>
+        <line x1="180" y1="6" x2="180" y2="70" stroke="#ff3b3055" stroke-dasharray="3 3"/>
+        <text x="184" y="66" fill="#ff3b30" font-size="8" font-weight="700">breaches ~48h</text>
+      </svg>
+      <div class="squeeze-foot">Forecast crosses 100% in ~48h &middot; first surfaced by the Occupancy copilot.</div>
+    </div>
+  </div>
+
+  <div class="start-disclaimer"><span>&#9888;</span><span><b>Not a real product.</b> Curavias is a showcase of the <b>Microsoft Innovation Hub Z&uuml;rich</b> &mdash; synthetic data (no&nbsp;PHI), advisory-only AI, not a medical device and not for clinical use.</span></div>
+
+  <div class="cust">
+    <div class="cust-eyebrow">From our customer interviews &middot; why now</div>
+    <div class="cust-head">The CIO challenger question</div>
+    <div class="cust-quote">&ldquo;Which operational decisions could be made better today &mdash; if the future capacity and occupancy situation 3 to 7 days ahead were known with high reliability?&rdquo;</div>
+    <div class="cust-lead">Seven operational decisions measurably improve in quality and economics with a 3&ndash;7&nbsp;day preview:</div>
+    <table class="cust-tbl">
+      <thead>
+        <tr><th class="cust-nr">#</th><th>Operational decision</th><th>Today</th><th>With Curavias preview</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="cust-nr">1</td><td class="cust-dec">Bed assignment</td><td class="cust-today">Reactive on the admission morning, under time pressure</td><td class="cust-fut">3&ndash;7 days ahead &mdash; planned, not improvised</td></tr>
+        <tr><td class="cust-nr">2</td><td class="cust-dec">OR-slot utilisation</td><td class="cust-today">Cancellations &amp; empty slots found on the OR day</td><td class="cust-fut">No-show risk &amp; re-allocation visible days ahead</td></tr>
+        <tr><td class="cust-nr">3</td><td class="cust-dec">Staff coverage</td><td class="cust-today">Short-notice pool, expensive agency premiums</td><td class="cust-fut">Rosters aligned to forecasted demand</td></tr>
+        <tr><td class="cust-nr">4</td><td class="cust-dec">Discharge steering</td><td class="cust-today">Not assessable in the morning</td><td class="cust-fut">Candidates with blockers &amp; handoff 24&ndash;72h ahead</td></tr>
+        <tr><td class="cust-nr">5</td><td class="cust-dec">Transfers / admission stop</td><td class="cust-today">Ad-hoc, communication under time pressure</td><td class="cust-fut">Cascades simulated, partners engaged early</td></tr>
+        <tr><td class="cust-nr">6</td><td class="cust-dec">Crisis &amp; scenario answers</td><td class="cust-today">Doctrine sits in a folder</td><td class="cust-fut">Doctrine-based recommendations, scenario-driven</td></tr>
+        <tr><td class="cust-nr">7</td><td class="cust-dec">Data-quality alerts</td><td class="cust-today">Only surface in the KPI report</td><td class="cust-fut">Gates alert before a metric flows into a decision</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="start-launch">
+    <div class="start-launchhead">
+      <div class="label" style="color:#17B890">THE CURAVIAS PATIENT PATH</div>
+      <div class="start-hint">From admission to recovery &middot; <b>a specialised copilot at every step</b></div>
+    </div>
+
+    <div class="jover">
+      <div class="jovercard jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='Crisis and Scenario (csa-agent)';" data-nav="csa">
+        <div class="joverico" style="background:#E0392B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M12 8v4"/><path d="M12 15.4v.2"/></svg></div>
+        <div class="jovertext">
+          <div class="jover-lab">Crisis &amp; Scenarios <span class="jover-dot">spans the whole path</span></div>
+          <div class="joverrow">
+            <span class="jbadge" style="background:#E0392B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M12 8v4"/><path d="M12 15.4v.2"/></svg>CSA</span>
+            <span class="jevi" style="background:#E3F0FB;color:#2E86C0">stress-test shocks</span>
+          </div>
+        </div>
+      </div>
+      <div class="jovercard jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='Data Quality (data-quality-agent)';" data-nav="backstage">
+        <div class="joverico" style="background:#6B7A87"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="jovertext">
+          <div class="jover-lab">Data Quality (Gates) <span class="jover-dot">guards every metric</span></div>
+          <div class="joverrow">
+            <span class="jbadge" style="background:#6B7A87"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>DQ</span>
+            <span class="jevi" style="background:#EAF3EC;color:#3F8256">metric trusted</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="journey">
+      <div class="jwaveband">
+        <svg viewBox="0 0 1000 118" preserveAspectRatio="none" fill="none">
+          <defs><linearGradient id="jwave" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#33546B"/><stop offset="0.5" stop-color="#3FA0D0"/><stop offset="1" stop-color="#37B07A"/></linearGradient></defs>
+          <path d="M83,87 C150,87 183,30 250,30 C317,30 350,87 417,87 C484,87 516,30 583,30 C650,30 683,87 750,87 C817,87 850,30 917,30" stroke="url(#jwave)" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="jrow">
+
+        <div class="jstop pick down jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='Occupancy and Forecast (ooa-agent)';" data-nav="ooa">
+          <div class="jnode" style="background:#33546B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+          <div class="jtitle">Emergency &amp; Admission</div>
+          <div class="jsub">Emergency lead</div>
+          <div class="jbadge" style="background:#33546B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>OOA</div>
+          <div class="jevi" style="background:#FDE7E4;color:#E0392B">Med A &rarr; 102% in 72h</div>
+        </div>
+
+        <div class="jstop pick jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='Bed Management (bmca-agent)';" data-nav="bmca">
+          <div class="jnode" style="background:#3C6E8E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 10h18a2 2 0 0 1 2 2v8"/><path d="M2 16h20"/><circle cx="7" cy="8" r="2"/></svg></div>
+          <div class="jtitle">Bed Assignment</div>
+          <div class="jsub">Bed management</div>
+          <div class="jbadge" style="background:#3C6E8E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 10h18a2 2 0 0 1 2 2v8"/><path d="M2 16h20"/><circle cx="7" cy="8" r="2"/></svg>BMCA</div>
+          <div class="jevi" style="background:#DEF3E7;color:#2FA36A">place 8 + boarders</div>
+        </div>
+
+        <div class="jstop pick down jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='OR Steering (orsa-agent)';" data-nav="orsa">
+          <div class="jnode" style="background:#3FA0D0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg></div>
+          <div class="jtitle">OR &amp; Treatment</div>
+          <div class="jsub">OR coordination</div>
+          <div class="jbadge" style="background:#3FA0D0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>ORSA</div>
+          <div class="jevi" style="background:#FBEFD6;color:#C77700">reslot electives</div>
+        </div>
+
+        <div class="jstop pick jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='Staffing Balance (sba-agent)';" data-nav="sba">
+          <div class="jnode" style="background:#2E9E86"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="jtitle">Staffing Balance</div>
+          <div class="jsub">Workforce planning</div>
+          <div class="jbadge" style="background:#2E9E86"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>SBA</div>
+          <div class="jevi" style="background:#E7EDF3;color:#33546B">match staffing</div>
+        </div>
+
+        <div class="jstop pick down jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='Discharge Coordination (dca-agent)';" data-nav="dca">
+          <div class="jnode" style="background:#2FA36A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <div class="jtitle">Discharge</div>
+          <div class="jsub">Discharge coordination</div>
+          <div class="jbadge" style="background:#2FA36A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>DCA</div>
+          <div class="jevi" style="background:#FBEFD6;color:#C77700">free 8 beds</div>
+        </div>
+
+        <div class="jstop">
+          <div class="jnode" style="background:#37B07A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="jtitle">Recovery</div>
+          <div class="jsub">Patient recovered</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="jhil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      <span><b>Human-in-the-loop</b> &mdash; every action with external effect is released. The human decides.</span>
+    </div>
+
+    <div class="jbackstage jsel" onclick="var s=this.closest('.start-launch');s.querySelectorAll('.jsel').forEach(function(e){e.classList.remove('sel')});this.classList.add('sel');var f=document.getElementById('start-selfoot');f.style.display='flex';document.getElementById('start-selname').textContent='Executive / C-level (BACKSTAGE)';" data-nav="backstage">Executive / C-level view &mdash; open BACKSTAGE &rarr;</div>
+
+    <div class="start-selfoot" id="start-selfoot">
+      <span class="dot"></span> Selected <strong id="start-selname" style="margin:0 0.15rem">&mdash;</strong> &middot; opens the role surface with the copilot docked and the thread carried across.
+    </div>
+  </div>
+
+</div>
+
+</div>
+<script>
+/* Curavias prototype nav bridge: role-launcher badges post their target to the shell. */
+(function () {
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-nav]');
+    if (!el) return;
+    var nav = el.getAttribute('data-nav');
+    if (!nav) return;
+    try { parent.postMessage({ curaviasNav: nav }, '*'); } catch (err) {}
+  }, true);
+})();
+</script>
+</body>
+</html>

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.6.0 |
-| **Date** | 2026-07-18 |
+| **Version** | 2.7.0 |
+| **Date** | 2026-07-21 |
 | **Author** | Urs Rüeegg |
-| **Status** | Reviewed |
-| **Previous Version** | 2.5.0 (added the `ux-design-agent` registry row + `playwright-mcp` allow-list entry for UX visual + accessibility verification; issue #258) |
+| **Status** | Draft |
+| **Previous Version** | 2.6.0 (added the `ux-design-agent` registry row + `playwright-mcp` allow-list entry for UX visual + accessibility verification; issue #258) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -197,6 +197,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `drift-analyzer` | Solution and Azure drift detection | @urruegg | Issue from [`uc2-drift-scan.yml`](.github/ISSUE_TEMPLATE/uc2-drift-scan.yml) (on-demand; nightly scheduler `uc2-nightly.yml` deferred) | `github-mcp`, `azure-mcp` (read-only) | `write` (GitHub issue + branch artefacts only; `azure-mcp` ceiling downgraded to `read` per [`agents/drift-analyzer/AGENT.md` §2](agents/drift-analyzer/AGENT.md#2-scope); remediation routed through human-filed UC1 issues) | [`agents/drift-analyzer/AGENT.md`](agents/drift-analyzer/AGENT.md) | [`agents/drift-analyzer/golden-tasks.md`](agents/drift-analyzer/golden-tasks.md) |
 | `knowledge-agent` | Documentation steward — encoding / lint / version / traceability / status gate for every doc create or update (S18; approved via issue #242) | @urruegg | `@knowledge-agent` mention or a doc-steward issue; also usable as the `document-authoring` skill from Copilot CLI | `github-mcp` | `write` | [`agents/knowledge-agent/AGENT.md`](agents/knowledge-agent/AGENT.md) | [`agents/knowledge-agent/golden-tasks.md`](agents/knowledge-agent/golden-tasks.md) |
 | `ux-design-agent` | UX design steward — anchor for all user-experience questions (mockups, flows, brand tokens, accessibility) and refinement of the Curavias demo showcase; runs the Superpowers brainstorming + visual-companion flow (S20; approved via issue #258) | @urruegg | `@ux-design-agent` mention or any UX / design / mockup / accessibility issue | `github-mcp`, `playwright-mcp` (read; visual + a11y verification) | `write` | [`agents/ux-design-agent/AGENT.md`](agents/ux-design-agent/AGENT.md) | [`agents/ux-design-agent/golden-tasks.md`](agents/ux-design-agent/golden-tasks.md) |
+| `product-marketing-agent` | Product-marketing / communications steward — stringent, brand-aligned Curavias messaging across customer-, user-, and devops-facing channels; RACI-paired with `ux-design-agent` (message vs. experience) (S24; approved via issue #262) | @urruegg | `@product-marketing-agent` mention or any product-messaging / copy / positioning issue | `github-mcp`, `playwright-mcp` (read; copy-in-context review) | `write` | [`agents/product-marketing-agent/AGENT.md`](agents/product-marketing-agent/AGENT.md) | [`agents/product-marketing-agent/golden-tasks.md`](agents/product-marketing-agent/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per
