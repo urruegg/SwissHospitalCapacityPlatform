@@ -1,15 +1,37 @@
-# Sprint 19 — Full PROD Deployment in eastus2 (Fresh from Scratch) — Design Spec
+# Sprint 19 — PROD Region Pivot to Switzerland North (Greenfield Decommission-and-Rebuild) — Design Spec
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.6.0 |
-| **Date** | 2026-07-19 |
-| **Author** | Urs Rüeegg |
-| **Status** | Accepted — in progress (P1–P7 foundation + AI + compute + data lane + Foundry agents + Fabric capacity + integration/DNS/Entra DEPLOYED & verified; P6.2 + P8 pending) |
-| **Previous Version** | 1.5.0 (added §7e — the P6.1 Fabric F2 capacity deploy and the **eastus2 Fabric quota = 0** finding that forced PROD Fabric into **westus2**). 1.6.0 adds §7f — the P7 integration outcome: `app.curavias.ch` custom domain + managed cert bound to the PROD app (HTTP 200 live), PROD Entra SPA redirect URIs, and the Logic App skip (SIT one is Disabled). |
-| **Anchor triggers** | Sprint 18 completion (Foundry control plane proven in eastus2); SIT feasibility matrix confirming 22/22 resource types GA in eastus2; ADR-0013 demo-scope pivot |
+| **Version** | 2.0.0 |
+| **Date** | 2026-07-21 |
+| **Author** | Urs Rüegg |
+| **Status** | Accepted (region pivot) — supersedes the eastus2/westus2 PROD build recorded in §7 (now the **Phase 0 decommission target**); Switzerland North greenfield rebuild pending `approved-to-apply` |
+| **Previous Version** | 1.6.0 (P7 integration outcome — `app.curavias.ch` custom domain + managed cert bound to the PROD app, PROD Entra SPA redirect URIs, Logic App skip). 2.0.0 is a **MAJOR** bump: it reverses the "PROD in eastus2/westus2" region decision, backed by [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md). The whole prior eastus2/westus2 PROD footprint becomes the DR-style decommission target; PROD is rebuilt greenfield in `switzerlandnorth` at SIT parity. |
+| **Anchor triggers** | [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md) (Switzerland North PROD pivot, live-`az`-verified 2026-07-21); [ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md) sunset-to-`switzerlandnorth` intent now executed; Switzerland North Fabric quota (0/512) + OpenAI GA catalog confirming SIT-parity feasibility |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; Bicep-first IaC for all PROD resources |
 | **Prerequisites** | Sprint 18 complete (Foundry agents proven E2E in eastus2); Fabric capacity stabilized; App Fluent builds green |
+
+---
+
+> ## ⚠️ Region pivot notice (2026-07-21) — this sprint changed direction
+>
+> This sprint originally deployed PROD **split across two US regions** — Foundry
+> in `eastus2` ([ADR-0032](../../adr/0032-foundry-control-plane-eastus2.md)) and
+> Fabric in `westus2` ([ADR-0035](../../adr/0035-fabric-iq-layer-region-westus2.md))
+> — because each service had zero quota in the other US region. That footprint is
+> **built and verified** (see §7, kept as the execution record).
+>
+> Live `az` verification on 2026-07-21 (sub `66a9953a-df37-4c51-856c-9971b9bf3e03`)
+> confirmed Switzerland North now has **Fabric quota 0/512**, an **OpenAI GA
+> catalog** covering all three agent models (gpt-5, gpt-5-mini, o3), and
+> **Foundry Agent Service GA** — enough for **single-region SIT parity**. Per
+> [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md), PROD now
+> pivots to a **greenfield Switzerland North** deployment, executed **DR-style**:
+> **Phase 0 decommissions the entire eastus2/westus2 PROD footprint first**, then
+> PROD is rebuilt clean in `switzerlandnorth` at SIT parity in a single resource
+> group `rg-ihzhhpf-prod`. **SIT (westus2 + eastus2) is untouched.** Sections 1–6,
+> 10 and 14 below describe the **new** target; §7 is retained as the history of
+> the now-decommissioned footprint.
 
 ---
 
@@ -19,7 +41,7 @@
 2. [Context and rationale](#2-context-and-rationale)
 3. [Scope](#3-scope)
 4. [Architecture — PROD target state](#4-architecture--prod-target-state)
-5. [Resource inventory (PROD eastus2)](#5-resource-inventory-prod-eastus2)
+5. [Resource inventory (PROD Switzerland North)](#5-resource-inventory-prod-switzerland-north)
 6. [Task breakdown](#6-task-breakdown)
 7. [Bicep module plan](#7-bicep-module-plan)
 8. [DNS and custom domain strategy](#8-dns-and-custom-domain-strategy)
@@ -35,16 +57,42 @@
 
 ## 1. Goal and desired end state
 
-Deploy the **entire PROD environment from scratch in eastus2** — all resources collocated in a single region, eliminating cross-region latency, simplifying network topology, and unlocking full Foundry Agent Service capability.
+**Decommission the entire eastus2/westus2 PROD footprint, then deploy the whole
+PROD environment greenfield in `switzerlandnorth`** — DR-style, single-region,
+at SIT service parity. This executes the [ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md)
+sunset-to-Switzerland intent now that Switzerland North has verified quota and GA
+services (per [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md)),
+and collapses the two-US-region split into one Swiss region.
 
 **Desired end state:**
 
-* `rg-ihzhhpf-prod-eastus2` resource group with all platform resources deployed via Bicep.
-* Full stack: Container Apps (agent-host + app-fluent + sim), Cosmos DB (CSA + platform), Event Hubs, Service Bus, Key Vault, VNet + private endpoints, AI Services + Foundry project, Fabric capacity, Storage, Log Analytics, Application Insights, Logic Apps, Container Registry.
-* All 8 agents registered and functional in PROD Foundry project.
-* Custom domain `app.curavias.ch` (PROD) pointing to the new Container Apps.
-* Fabric PROD workspace connected to eastus2 lakehouse.
-* End-to-end demo flow operational: sign-in → app → agent invocation → data query → response.
+* Prior PROD footprint (`rg-ihzhhpf-prod-eastus2` + `fabricihzhhpfprod` in
+  westus2 + the managed App Insights RG) **deleted** — no PROD resources remain
+  in any US region.
+* Single `rg-ihzhhpf-prod` resource group in **`switzerlandnorth`** with all
+  platform resources deployed via Bicep.
+* Full stack (SIT parity): Container Apps (agent-host + app-fluent + sim),
+  Cosmos DB (CSA + platform), Event Hubs, Service Bus, Key Vault, VNet + private
+  endpoints, AI Services + Foundry project, Fabric capacity (F2), Storage, Log
+  Analytics, Application Insights, Logic Apps, Container Registry — **all in
+  `switzerlandnorth`**.
+* All 8 agents registered and functional in the PROD Foundry project on the
+  Switzerland North account (gpt-5 / gpt-5-mini / o3, GA in swn).
+* Custom domain `app.curavias.ch` (PROD) re-pointed to the new Switzerland North
+  Container App.
+* Fabric PROD workspace connected to the Switzerland North lakehouse (F2, quota
+  0/512 available — **no cross-region hop**, unlike the westus2 interim).
+* End-to-end demo flow operational: sign-in → app → agent invocation → data
+  query → response.
+* **SIT remains untouched** throughout (westus2 + eastus2).
+
+> **Residency posture (not a blocker now).** Under [ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md)
+> / [ADR-0016](../../adr/0016-no-phi-in-mvp-demo-scope.md) the data is synthetic
+> and PHI-free, so the region choice is about topology and sovereignty
+> readiness, not data residency. The three agent models are `GlobalStandard`
+> SKU (cross-geo inference); true in-Switzerland residency (regional `Standard`
+> SKU: gpt-4.1 / gpt-4o + embeddings) becomes decisive only at a future PHI PROD
+> and is recorded in ADR-0037 as a revisit criterion.
 
 ---
 
@@ -62,15 +110,49 @@ Deploy the **entire PROD environment from scratch in eastus2** — all resources
 | Blast radius | Risk breaking SIT during migration | Zero impact on existing SIT |
 | Time | Higher — debugging migration issues | Lower — known Bicep patterns |
 
-**Decision:** PROD deploys fresh. No data migration required (synthetic data regenerated). SIT remains in westus2 until proven stable in eastus2, then decommissioned in a future sprint.
+**Decision:** PROD is torn down and rebuilt **greenfield in `switzerlandnorth`**.
+No data migration required (synthetic data regenerated by the simulator). The
+existing eastus2/westus2 PROD footprint is **decommissioned first (Phase 0,
+DR-style)** so the rebuild starts from a clean single-region slate. **SIT stays
+in westus2 + eastus2, untouched.**
 
-### Why eastus2 specifically
+### Why Switzerland North now (2026-07-21 pivot)
+
+Live `az` verification (sub `66a9953a-df37-4c51-856c-9971b9bf3e03`, 2026-07-21)
+confirmed Switzerland North is ready for **single-region SIT parity**:
+
+* **Fabric quota 0/512** available in swn (vs eastus2 = 0/0 — the original
+  blocker that forced Fabric into westus2). PROD Fabric F2 can now be
+  **co-located** with the rest of PROD — no cross-region HTTPS hop.
+* **OpenAI GA catalog** in swn covers all three agent models (**gpt-5**,
+  **gpt-5-mini**, **o3**) plus the gpt-5.4/5.5/5.6 families and gpt-4.1/gpt-4o.
+* **Foundry Agent Service GA** in swn (Responses + Agents; the only gap is
+  Class-A private-IP networking, not needed under the network-off demo slice).
+* **Fabric IQ Ontology + Data Agent** are region-listed for CH North (Preview),
+  subject to the same per-capacity preview toggle tracked in
+  [#270](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/270) —
+  region-independent, so no worse than the westus2 PROD status quo.
+* **Swiss sovereignty readiness**: collapsing the two-US-region split into one
+  Swiss region is the intended [ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md)
+  sunset and de-risks the eventual PHI PROD (residency-tier models available in
+  swn when needed — see ADR-0037).
+
+See [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md) for
+the full evidence table and the residency/SKU nuance.
+
+### Why eastus2 was chosen originally (superseded 2026-07-21)
+
+> Retained for history. This rationale drove versions 1.0.0–1.6.0 and is
+> **superseded** by "Why Switzerland North now" above per ADR-0037.
 
 * 122 OpenAI models (88 GA), 5.8M TPM quota — richest in the tenant
 * Foundry Agent Service GA supported
 * All 22 resource types confirmed GA (Sprint 18 feasibility analysis)
 * DataZone + ProvisionedManaged SKUs available for future scale
 * Same continent as current deployment (acceptable latency for EU-based users during demo scope)
+* **Why it was split**: westus2 had 0 OpenAI quota, so Foundry went to eastus2;
+  eastus2 had 0 Fabric quota, so Fabric stayed in westus2. Switzerland North
+  resolves both at once, removing the split.
 
 ---
 
@@ -78,9 +160,24 @@ Deploy the **entire PROD environment from scratch in eastus2** — all resources
 
 ### In scope
 
+> **All region references below retarget from eastus2/westus2 to
+> `switzerlandnorth`, and from `rg-ihzhhpf-prod-eastus2` to the single
+> `rg-ihzhhpf-prod`.** Resource names drop the `-eastus2` infix and follow the
+> naming convention (`<type>-ihzhhpf-prod`, shared/PROD suffix `-prod`).
+
+**Phase 0 — DR-style decommission (runs first, `approved-to-apply`-gated):**
+
 | # | Item | Deliverable |
 |---|------|-------------|
-| T1 | Bicep template: PROD eastus2 landing zone | `infra/prod-eastus2/main.bicep` + modules |
+| T0a | Delete `rg-ihzhhpf-prod-eastus2` (all ~22 resources: Foundry account+project, Container Apps ×2 + CAEs, Cosmos ×2, Event Hubs, Service Bus, Key Vault, ACR, Log/AppInsights, VNet+NSGs, identities) | US PROD RG removed |
+| T0b | Delete `fabricihzhhpfprod` (F2, westus2) + purge if soft-deleted | US PROD Fabric removed |
+| T0c | Remove the managed App Insights RG + verify no PROD resources remain in any US region; note purge-protected KV auto-expiry (non-blocking, new swn KV name differs) | Clean slate confirmed |
+
+**Phase 1+ — Switzerland North greenfield rebuild (SIT parity):**
+
+| # | Item | Deliverable |
+|---|------|-------------|
+| T1 | Bicep: PROD Switzerland North landing zone via `infra/main.bicep` + new `infra/environments/prod-swn.bicepparam` (`location='switzerlandnorth'`) | Reuse SIT-proven orchestrator |
 | T2 | VNet + subnets + NSGs | Network foundation |
 | T3 | Key Vault (PROD) | Secrets store |
 | T4 | Storage Account (PROD) | Platform storage |
@@ -90,12 +187,12 @@ Deploy the **entire PROD environment from scratch in eastus2** — all resources
 | T8 | Cosmos DB (2 accounts: CSA + platform) | NoSQL + vector search + private endpoints |
 | T9 | Event Hubs namespace | Event ingestion |
 | T10 | Service Bus namespace | Message routing |
-| T11 | AI Services + Foundry project | Control plane (eastus2-native) |
+| T11 | AI Services + Foundry project | Control plane (switzerlandnorth-native, GA) |
 | T12 | Model deployments (gpt-5, gpt-5-mini, o3) | Agent backing models |
 | T13 | Agent registration (8 agents) | Full roster in PROD |
 | T14 | Managed Identities (7) | Workload identities |
 | T15 | Private endpoints + Private DNS zones | Cosmos DB + Key Vault PE |
-| T16 | Fabric capacity (F2) | PROD Fabric in eastus2 |
+| T16 | Fabric capacity (F2) | PROD Fabric in switzerlandnorth (quota 0/512, co-located) |
 | T17 | DNS: `app.curavias.ch` → PROD Container Apps | Custom domain + managed TLS |
 | T18 | Logic Apps workflow | Platform orchestration |
 | T19 | Entra: PROD app registration bindings | RBAC for PROD identities |
@@ -105,10 +202,13 @@ Deploy the **entire PROD environment from scratch in eastus2** — all resources
 
 ### Out of scope
 
-* SIT decommission (future sprint after PROD proven stable)
-* PHI data onboarding (per ADR-0016, demo scope only)
-* Multi-region DR (not required for demo scope)
-* switzerlandnorth failover (post-demo scope consideration)
+* **SIT decommission** (SIT stays in westus2 + eastus2, untouched by this sprint)
+* PHI data onboarding (per ADR-0016, demo scope only) — and therefore regional
+  residency-tier model deployment (deferred to a future PHI PROD, see ADR-0037)
+* Multi-region DR / failover (single-region swn is sufficient for demo scope;
+  the Phase 0 teardown is DR-*style* process, not standing DR capability)
+* Fabric IQ Ontology + Data Agent in PROD swn (Preview per-capacity gate #270 —
+  SIT remains the live Fabric IQ seam; unblocking is tracked separately)
 
 ---
 
@@ -159,13 +259,19 @@ flowchart TB
 
 ---
 
-## 5. Resource inventory (PROD eastus2)
+## 5. Resource inventory (PROD Switzerland North)
+
+> All PROD resources land in the **single `rg-ihzhhpf-prod` resource group in
+> `switzerlandnorth`**. Names drop the `-eastus2` infix (the split-region
+> artefact) and follow the naming convention `<type>-ihzhhpf-prod`. The table
+> below is the **target** — the eastus2/westus2 names in §7 are the
+> now-decommissioned prior footprint.
 
 | # | Resource Type | Name Pattern | SKU/Tier | Notes |
 |---|------|------|------|-------|
-| 1 | Resource Group | `rg-ihzhhpf-prod-eastus2` | — | New RG in eastus2 |
+| 1 | Resource Group | `rg-ihzhhpf-prod` | — | New single-region RG in **switzerlandnorth** |
 | 2 | VNet | `vnet-platform-ihzhhpf-prod` | — | 3 subnets: snet-cae, snet-data, snet-app |
-| 3 | NSGs (×3) | `*-nsg-eastus2` | — | Per subnet |
+| 3 | NSGs (×3) | `*-nsg-ihzhhpf-prod` | — | Per subnet (switzerlandnorth) |
 | 4 | Key Vault | `kv-ihzhhpf-prod` | Standard | RBAC mode, purge protection |
 | 5 | Storage | `stihzhhpfprod` | Standard_LRS | Platform storage |
 | 6 | Log Analytics | `log-ihzhhpf-prod` | PerGB2018 | 30-day retention |
@@ -179,9 +285,9 @@ flowchart TB
 | 14 | Cosmos Platform | `cosmos-ihzhhpf-prod` | Serverless | Platform state, PE, AAD-only |
 | 15 | Event Hubs | `evh-ihzhhpf-prod` | Standard | 1 TU |
 | 16 | Service Bus | `sb-ihzhhpf-prod` | Standard | — |
-| 17 | AI Services | `ai-ihzhhpf-prod-eastus2` | S0 | Foundry-enabled |
-| 18 | Foundry Project | `ai-ihzhhpf-prod-eastus2-project` | — | 8 agents + 3 models |
-| 19 | Fabric Capacity | `fabricihzhhpfprod` | F2 | westus2 (eastus2 quota = 0 — see §7e) |
+| 17 | AI Services | `ai-ihzhhpf-prod` | S0 | Foundry-enabled, **switzerlandnorth** (GA) |
+| 18 | Foundry Project | `ai-ihzhhpf-prod-project` | — | 8 agents + 3 models (gpt-5/gpt-5-mini/o3, GA in swn) |
+| 19 | Fabric Capacity | `fabricihzhhpfprod` | F2 | **switzerlandnorth** (quota 0/512 — co-located, no cross-region hop) |
 | 20 | Logic App | `logic-ihzhhpf-prod` | Consumption | Orchestration flows |
 | 21 | Managed Identities (×7) | `id-*-ihzhhpf-prod` | — | Per workload |
 | 22 | Private Endpoints (×3) | `pe-*-ihzhhpf-prod` | — | Cosmos CSA, Cosmos Platform, KV |
@@ -195,21 +301,43 @@ flowchart TB
 
 | Phase | Tasks | Depends on | Effort |
 |-------|-------|------------|--------|
-| **P1: IaC authoring** | T1 (Bicep modules) | Sprint 18 done | 4h |
+| **P0: Decommission (DR-style, first)** | T0a–T0c (delete `rg-ihzhhpf-prod-eastus2`, `fabricihzhhpfprod` westus2, managed AppInsights RG; confirm clean slate) | `approved-to-apply` | 1h |
+| **P1: IaC authoring** | T1 (`prod-swn.bicepparam`, `location='switzerlandnorth'`) | P0 done | 1h |
 | **P2: Foundation** | T2–T6 (VNet, KV, Storage, Log, ACR) | T1 reviewed | 1h |
 | **P3: Compute** | T7 (CAE + 3 apps) | P2 | 2h |
 | **P4: Data** | T8–T10 (Cosmos ×2, EVH, SB) + T15 (PEs) | P2 | 2h |
-| **P5: AI/Foundry** | T11–T13 (AI + project + models + agents) | P2 | 2h |
-| **P6: Fabric** | T16 (capacity + workspace) | P2 | 1h |
-| **P7: Integration** | T17 (DNS), T18 (Logic), T19 (Entra) | P3, P4, P5 | 2h |
+| **P5: AI/Foundry** | T11–T13 (AI + project + models + agents, swn GA) | P2 | 2h |
+| **P6: Fabric** | T16 (F2 capacity + workspace, swn — no cross-region) | P2 | 1h |
+| **P7: Integration** | T17 (DNS re-point), T18 (Logic), T19 (Entra) | P3, P4, P5 | 2h |
 | **P8: Verification** | T20–T22 (E2E test, evidence) | P3–P7 | 3h |
 
-**Total estimated effort:** ~17 hours (2–3 working days)
+**Total estimated effort:** ~15 hours (2–3 working days). Because PROD reuses the
+SIT-proven `infra/main.bicep` (Option 1, see §7) and the Foundry/Fabric API
+patterns are already scripted, the rebuild is mostly re-parameterise-and-replay;
+the new work is **P0 (decommission)** and swapping `location` to
+`switzerlandnorth`.
 
 ---
 
 ## 7. Bicep module plan
 
+> ## 🗄️ §7 is the execution history of the now-decommissioned eastus2/westus2 PROD footprint
+>
+> Everything in §7 (7a–7f) records the **prior** PROD build that Phase 0 (§6)
+> **tears down**. It is kept verbatim as the audit trail of what was deployed and
+> why. For the **Switzerland North rebuild**, the same Option-1 approach applies
+> unchanged — reuse `infra/main.bicep` via a **new
+> `infra/environments/prod-swn.bicepparam`** (`environmentName='prod'`,
+> `location='switzerlandnorth'`), leaner module selection identical to the
+> eastus2 param — with two simplifications the swn region enables:
+> **(a) Fabric co-locates in swn** (quota 0/512, no westus2 cross-region hop, so
+> §7e no longer applies); **(b) the ACR is a fresh PROD-local `crihzhhpfprod` in
+> swn** (`az acr import` from SIT ACR, same as §7b). Read §7 as "how PROD was
+> built in the US" — replace every `eastus2`/`westus2` with `switzerlandnorth`
+> and `rg-ihzhhpf-prod-eastus2` with `rg-ihzhhpf-prod` for the rebuild.
+>
+> ---
+>
 > **Revised 2026-07-19 (v1.1.0) — Option 1 (reuse) adopted.** The fresh
 > `infra/prod-eastus2/modules/*` tree below is **superseded**. Rather than
 > re-author 15 modules, PROD reuses the existing, SIT-proven orchestrator
@@ -415,9 +543,9 @@ All modules follow the conventions in `.github/copilot-instructions.md` §3 (Bic
 
 | Domain | Target | Current | After Sprint 19 |
 |--------|--------|---------|-----------------|
-| `app.curavias.ch` | PROD app | Points to westus2 CA (or not yet assigned) | CNAME → eastus2 CA FQDN |
+| `app.curavias.ch` | PROD app | Points to the eastus2 PROD CA (from prior §7f) | **Re-point** CNAME → switzerlandnorth CA FQDN |
 | `appsit.curavias.ch` | SIT app | Points to westus2 CA | Unchanged (SIT stays in westus2) |
-| `api.curavias.ch` | PROD API | Not assigned | CNAME → eastus2 agent-host CA |
+| `api.curavias.ch` | PROD API | Not assigned | CNAME → switzerlandnorth agent-host CA |
 
 Steps:
 1. Deploy Container Apps in eastus2 → get FQDN
@@ -444,13 +572,20 @@ Steps:
 
 ## 10. Fabric capacity and workspace
 
-* New `fabricihzhhpfprod` capacity (F2 SKU) in **westus2** — the subscription's
-  Fabric regional quota in eastus2 is **0 CU**; westus2 has 512 CU (see §7e).
-  Kept in the PROD RG `rg-ihzhhpf-prod-eastus2`; created Active then **Paused**
-  to save cost (mirrors the SIT capacity posture).
-* Create PROD workspace `ws-ihzhhpf-prod-data` attached to the capacity
-* Deploy lakehouse, notebooks, semantic model from repo via Fabric Git integration (Sprint 17 pattern)
-* No data migration — run simulator to regenerate synthetic PROD data
+* New `fabricihzhhpfprod` capacity (F2 SKU) in **`switzerlandnorth`** — live `az`
+  confirmed swn Fabric quota is **0/512 CU** (available), so PROD Fabric is now
+  **co-located** with the rest of PROD in one region. This removes the westus2
+  cross-region hop that §7e was forced into (eastus2 had 0 CU). Placed in the
+  single PROD RG `rg-ihzhhpf-prod`; create Active then **Paused** to save cost
+  (mirrors the SIT capacity posture).
+* Create PROD workspace `ws-ihzhhpf-prod-data` attached to the swn capacity
+* Deploy lakehouse, notebooks, semantic model from repo via the fabric-cicd
+  release train (Sprint 17 / ADR-0035 pattern; re-point `environments.yml`
+  region to `switzerlandnorth`)
+* No data migration — run the simulator to regenerate synthetic PROD data
+* **Fabric IQ Ontology + Data Agent**: Preview, per-capacity-gated (#270). SIT
+  stays the live Fabric IQ seam; PROD ontology/data-agent remain deferred to
+  #270, unchanged by the region pivot.
 
 ---
 
@@ -476,7 +611,7 @@ Steps:
 | App Fluent builds green | ✅ Verified (Playwright 6/6) | — |
 | Container images in ACR | ✅ Exist in SIT ACR | Push to PROD ACR or geo-replicate |
 | DNS zone `curavias.ch` writable | ✅ In rg-ihzhhpf-sit (shared) | — |
-| Subscription quota for eastus2 | ✅ Verified | — |
+| Subscription quota for switzerlandnorth | ✅ Verified 2026-07-21 (Fabric 0/512, OpenAI GA, Foundry Agent Service GA) | Blocker if not met |
 | Entra app registration (PROD bindings) | ⚠️ May need PROD redirect URIs | Low effort |
 
 ---
@@ -496,27 +631,35 @@ Steps:
 
 ## 14. Definition of done
 
-* [ ] `infra/prod-eastus2/main.bicep` authored and passes `az bicep build`
+* [ ] **P0 decommission complete**: `rg-ihzhhpf-prod-eastus2` deleted,
+  `fabricihzhhpfprod` (westus2) deleted, managed AppInsights RG removed; `az
+  resource list` confirms **zero PROD resources in any US region**
+* [ ] `infra/environments/prod-swn.bicepparam` authored (`location='switzerlandnorth'`)
+  and `az bicep build-params` passes
 * [ ] `az deployment group what-if` produces clean output with expected resources
-* [ ] All 25 resources deployed in `rg-ihzhhpf-prod-eastus2` with `Succeeded` state
-* [ ] Cosmos DB accounts: AAD-only, local auth disabled, PE connected, vector search enabled
-* [ ] AI Services + Foundry project with 3 models deployed and 8 agents registered
-* [ ] Container Apps: 3 apps running, agent-host health check green
-* [ ] Custom domain `app.curavias.ch` resolves to PROD CA with valid TLS
-* [ ] Fabric capacity F2 active in eastus2; PROD workspace created
+* [ ] All PROD resources deployed in `rg-ihzhhpf-prod` (**switzerlandnorth**) with `Succeeded` state
+* [ ] Cosmos DB accounts: AAD-only, local auth disabled, PE connected (or network-off per ADR-0013 first slice), vector search enabled
+* [ ] AI Services + Foundry project (swn, GA) with 3 models deployed and 8 agents registered
+* [ ] Container Apps: apps running, agent-host health check green (on swn-local ACR images)
+* [ ] Custom domain `app.curavias.ch` re-pointed to the swn PROD CA with valid TLS
+* [ ] Fabric capacity F2 active in **switzerlandnorth**; PROD workspace created (co-located)
 * [ ] E2E demo flow: sign-in → app → agent → data → response (end-to-end green)
-* [ ] PROD evidence document committed: `docs/sprints/prod-evidence-eastus2.md`
+* [ ] PROD evidence document committed: `docs/sprints/prod-evidence-swn.md`
 * [ ] All CI checks pass (markdown lint, link check, Bicep build)
-* [ ] ADR (if needed) for PROD region strategy beyond ADR-0028
-* [ ] SIT remains functional (no breaking changes to westus2)
+* [ ] [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md) is **Accepted**; re-confirm once the rebuild is verified live
+* [ ] SIT remains functional (no breaking changes to westus2 + eastus2)
 
 ---
 
 ## 15. References
 
+* [ADR-0037: PROD Region Pivot to Switzerland North (Greenfield)](../../adr/0037-prod-region-switzerland-north-greenfield.md)
+* [ADR-0032: Foundry Control Plane in eastus2](../../adr/0032-foundry-control-plane-eastus2.md) (scoped-superseded for PROD by ADR-0037)
+* [ADR-0035: Fabric IQ Layer Region westus2](../../adr/0035-fabric-iq-layer-region-westus2.md) (scoped-superseded for PROD by ADR-0037)
+* [ADR-0013: Temporary US Region Demo Scope](../../adr/0013-temporary-us-region-demo-scope.md)
+* [ADR-0016: No PHI in MVP Demo Scope](../../adr/0016-no-phi-in-mvp-demo-scope.md)
 * [Sprint 18 Design Spec](../specs/2026-07-17-sprint-18-foundry-eastus2-control-plane-design.md)
 * [Sprints 11–16 Roadmap Design](../specs/2026-07-09-sprints-11-16-roadmap-design.md)
-* [ADR-0013: Temporary US Region Demo Scope](../../adr/0013-temporary-us-region-demo-scope.md)
 * [SIT Evidence (2026-07-17)](../../sprints/sit-evidence-2026-07-17.md)
 * [Sprint 17: Fabric Git Integration Design](../specs/2026-07-10-sprint-17-fabric-git-cicd-and-lakehouse-schema-design.md)
 * [AGENTS.md](../../../AGENTS.md)

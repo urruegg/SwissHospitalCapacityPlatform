@@ -2,10 +2,16 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Accepted |
+| **Status** | Accepted (scoped-superseded for PROD by [ADR-0037](0037-prod-region-switzerland-north-greenfield.md)) |
 | **Date** | 2026-07-17 |
 | **Decision-makers** | @urruegg |
 | **Consulted** | SIT evidence analysis session (2026-07-17) |
+
+> **2026-07-21 update:** the PROD control plane is being moved to
+> `switzerlandnorth` per [ADR-0037](0037-prod-region-switzerland-north-greenfield.md)
+> (swn now has verified OpenAI GA quota + Foundry Agent Service GA). This ADR
+> remains the record of the SIT-era eastus2 control plane and the westus2-quota
+> rationale that made eastus2 necessary at the time.
 
 ## Context
 

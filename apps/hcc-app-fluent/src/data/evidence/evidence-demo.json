@@ -371,7 +371,7 @@
         "sourcePath": "docs/adr/0032-foundry-control-plane-eastus2.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0032-foundry-control-plane-eastus2.md"
       },
-      "status": "Accepted",
+      "status": "Superseded",
       "title": "Foundry Control Plane Deployed in eastus2"
     },
     {
@@ -404,8 +404,30 @@
         "sourcePath": "docs/adr/0035-fabric-iq-layer-region-westus2.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0035-fabric-iq-layer-region-westus2.md"
       },
-      "status": "Accepted",
+      "status": "Superseded",
       "title": "PROD Fabric IQ Layer Stays in westus2 (eastus2 Fabric Quota = 0)"
+    },
+    {
+      "decisionSummary": "Adopt the following governance policy for external hazard-trigger signals:",
+      "id": "ADR-0036",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0036-external-trigger-governance.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0036-external-trigger-governance.md"
+      },
+      "status": "Accepted",
+      "title": "External Trigger Governance"
+    },
+    {
+      "decisionSummary": "**PROD moves to `switzerlandnorth` as a greenfield, decommission-and-rebuild** — treated operationally like a **disaster-recovery rebuild in a new region**, not a resource migration.",
+      "id": "ADR-0037",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0037-prod-region-switzerland-north-greenfield.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0037-prod-region-switzerland-north-greenfield.md"
+      },
+      "status": "Accepted",
+      "title": "PROD Region Pivot to Switzerland North (Greenfield Decommission-and-Rebuild)"
     }
   ],
   "boms": [
@@ -504,7 +526,7 @@
       },
       "readiness": {
         "tProd": {
-          "blockingReason": "dependency bom-fabric-data-agent is NotAvailable (not GA) in Switzerland North",
+          "blockingReason": "dependency bom-fabric-data-agent is Preview (not GA) in Switzerland North",
           "region": "Switzerland North",
           "showcaseOnly": false,
           "status": "Blocked"
@@ -678,7 +700,7 @@
         "maturity": "GA",
         "region": "Switzerland North"
       },
-      "sku": "F64",
+      "sku": "F2",
       "type": "Microsoft.Fabric/capacities"
     },
     {
@@ -697,14 +719,14 @@
       },
       "readiness": {
         "tProd": {
-          "blockingReason": "bom-fabric-data-agent is NotAvailable (not GA) in Switzerland North",
+          "blockingReason": "bom-fabric-data-agent is Preview (not GA) in Switzerland North",
           "region": "Switzerland North",
           "showcaseOnly": false,
           "status": "Blocked"
         },
         "tShow": {
           "blockingReason": null,
-          "region": "West Europe",
+          "region": "Switzerland North",
           "showcaseOnly": true,
           "status": "Ready"
         }
@@ -714,7 +736,7 @@
         "FR-CX-002"
       ],
       "regionChip": {
-        "maturity": "NotAvailable",
+        "maturity": "Preview",
         "region": "Switzerland North"
       },
       "sku": null,
@@ -737,14 +759,14 @@
       },
       "readiness": {
         "tProd": {
-          "blockingReason": "bom-fabric-iq-ontology is NotAvailable (not GA) in Switzerland North",
+          "blockingReason": "bom-fabric-iq-ontology is Preview (not GA) in Switzerland North",
           "region": "Switzerland North",
           "showcaseOnly": false,
           "status": "Blocked"
         },
         "tShow": {
           "blockingReason": null,
-          "region": "West Europe",
+          "region": "Switzerland North",
           "showcaseOnly": true,
           "status": "Ready"
         }
@@ -755,7 +777,7 @@
         "FR-ONT-004"
       ],
       "regionChip": {
-        "maturity": "NotAvailable",
+        "maturity": "Preview",
         "region": "Switzerland North"
       },
       "sku": null,
@@ -852,15 +874,15 @@
       },
       "readiness": {
         "tProd": {
-          "blockingReason": "bom-foundry-agent-service is Preview (not GA) in Switzerland North",
+          "blockingReason": null,
           "region": "Switzerland North",
           "showcaseOnly": false,
-          "status": "Blocked"
+          "status": "Ready"
         },
         "tShow": {
           "blockingReason": null,
           "region": "Switzerland North",
-          "showcaseOnly": true,
+          "showcaseOnly": false,
           "status": "Ready"
         }
       },
@@ -869,7 +891,7 @@
         "FR-CX-004"
       ],
       "regionChip": {
-        "maturity": "Preview",
+        "maturity": "GA",
         "region": "Switzerland North"
       },
       "sku": null,
@@ -1610,12 +1632,12 @@
       "bomId": "bom-azure-openai",
       "maturity": "GA",
       "provenance": {
-        "asOf": "2026-07-09",
+        "asOf": "2026-07-21",
         "sourcePath": "docs/region-availability.yaml",
         "sourceUrl": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models"
       },
       "region": "Switzerland North",
-      "verifiedBy": "Urs Rüegg"
+      "verifiedBy": "Urs Rüegg (live az; gpt-5/o3 GlobalStandard, gpt-4.1/4o regional)"
     },
     {
       "bomId": "bom-azure-openai",
@@ -1720,12 +1742,12 @@
       "bomId": "bom-fabric-capacity",
       "maturity": "GA",
       "provenance": {
-        "asOf": "2026-07-09",
+        "asOf": "2026-07-21",
         "sourcePath": "docs/region-availability.yaml",
-        "sourceUrl": "https://learn.microsoft.com/fabric/enterprise/region-availability"
+        "sourceUrl": "https://learn.microsoft.com/fabric/admin/region-availability"
       },
       "region": "Switzerland North",
-      "verifiedBy": "Urs Rüegg"
+      "verifiedBy": "Urs Rüegg (live az)"
     },
     {
       "bomId": "bom-fabric-capacity",
@@ -1740,14 +1762,14 @@
     },
     {
       "bomId": "bom-fabric-data-agent",
-      "maturity": "NotAvailable",
+      "maturity": "Preview",
       "provenance": {
-        "asOf": "2026-07-09",
+        "asOf": "2026-07-21",
         "sourcePath": "docs/region-availability.yaml",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+        "sourceUrl": "https://learn.microsoft.com/fabric/data-science/data-agent-foundry"
       },
       "region": "Switzerland North",
-      "verifiedBy": "Urs Rüegg"
+      "verifiedBy": "Urs Rüegg (live az; F2+ capacity, residency caveat)"
     },
     {
       "bomId": "bom-fabric-data-agent",
@@ -1762,14 +1784,14 @@
     },
     {
       "bomId": "bom-fabric-iq-ontology",
-      "maturity": "NotAvailable",
+      "maturity": "Preview",
       "provenance": {
-        "asOf": "2026-07-09",
+        "asOf": "2026-07-21",
         "sourcePath": "docs/region-availability.yaml",
-        "sourceUrl": "https://learn.microsoft.com/fabric/fundamentals/fabric-iq"
+        "sourceUrl": "https://learn.microsoft.com/fabric/admin/region-availability"
       },
       "region": "Switzerland North",
-      "verifiedBy": "Urs Rüegg"
+      "verifiedBy": "Urs Rüegg (live az; per-capacity gated,"
     },
     {
       "bomId": "bom-fabric-iq-ontology",
@@ -1828,14 +1850,14 @@
     },
     {
       "bomId": "bom-foundry-agent-service",
-      "maturity": "Preview",
+      "maturity": "GA",
       "provenance": {
-        "asOf": "2026-07-09",
+        "asOf": "2026-07-21",
         "sourcePath": "docs/region-availability.yaml",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/region-availability.yaml"
+        "sourceUrl": "https://learn.microsoft.com/azure/foundry/agents/concepts/limits-quotas-regions"
       },
       "region": "Switzerland North",
-      "verifiedBy": "Urs Rüegg"
+      "verifiedBy": "Urs Rüegg (live az; Agents=Yes, no Class-A private-IP)"
     },
     {
       "bomId": "bom-foundry-agent-service",
@@ -2376,6 +2398,174 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "The solution shall make discharge-readiness outputs available to dashboards and copilot interactions."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Ingest Trust-A Swiss authority hazard feeds into the data lake."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Normalize every source to `DC-EXT-SIGNAL-v1`."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Activate advisory CSA runs from qualifying signals (dual-path trigger)."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Persist provenance + trigger audit (`ext_fact_trigger_event`)."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Noise governance: quarantine Test/Exercise/System; threshold gating."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Align to CAP-Suisse standard; bridge with pollable feeds until federal GA."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-010",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Build `gold.ext_fact_forecast_adjustment` from base `gold.forecast_output` x governed hazard-uplift, joined on specialty + canton + onset..expires window."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-011",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Govern the hazard-uplift map (`forecast_uplift.yaml`) as versioned, offline-unit-tested data; uplift is incremental over baseline and clamped."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-012",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Expose `gold.vw_forecast_adjusted` carrying both base and adjusted values plus a per-row signal `attribution[]` list for explainability."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-013",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prove the external-signals IQ loop end-to-end in SIT: live Fabric IQ ontology extension + SIT data-agent grounding + Foundry `ooa-agent` consumption, captured as evidence."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-014",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Record full provenance (`rawHash`, `connectorVersion`, `ingestedAt`, licence) on every forecast adjustment row; `Test`/`Exercise`/`System` signals excluded from the overlay."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-GOV-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Enforce trust-tier + HITL + advisory-only trigger policy."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-ONT-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Add ExternalSignal/TrustedSource/HazardType/HazardEvent/TriggerRule classes."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-ONT-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Maintain reference<->operational<->contract crosswalk for the new classes."
     },
     {
       "family": "Forecasting And Capacity Intelligence",
@@ -3134,6 +3324,42 @@
       "title": "Specialty metadata shall include quality checks and controlled versioning (Sprint 6)."
     },
     {
+      "family": "Trusted External Signals Governance (Sprint 21)",
+      "id": "NFR-EXT-GOV-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Record source licence/attribution for every ingested signal."
+    },
+    {
+      "family": "Trusted External Signals Governance (Sprint 21)",
+      "id": "NFR-EXT-GOV-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "No PHI/personal data; public authority feeds + synthetic fixtures only."
+    },
+    {
+      "family": "Trusted External Signals Governance (Sprint 21)",
+      "id": "NFR-EXT-ONT-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Operational (Fabric IQ) binding GA-gated per ADR-0014."
+    },
+    {
       "family": "Governance And Audit (Sprint 09 T5)",
       "id": "NFR-GOV-001",
       "kind": "NFR",
@@ -3460,8 +3686,8 @@
   ],
   "summary": [
     {
-      "readyCount": 21,
-      "readyPct": 84.0,
+      "readyCount": 22,
+      "readyPct": 88.0,
       "total": 25,
       "track": "T-PROD"
     },
@@ -3472,7 +3698,7 @@
       "track": "T-SHOW"
     },
     {
-      "readyCount": 4,
+      "readyCount": 3,
       "readyPct": 0.0,
       "total": 0,
       "track": "GA-parity-gap"

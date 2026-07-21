@@ -2,10 +2,17 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Accepted |
+| **Status** | Accepted (scoped-superseded for PROD by [ADR-0037](0037-prod-region-switzerland-north-greenfield.md)) |
 | **Date** | 2026-07-19 |
 | **Decision-makers** | @urruegg |
 | **Consulted** | Sprint 19 P6.1 deploy evidence; Fabric IQ readiness brainstorm |
+
+> **2026-07-21 update:** PROD Fabric moves to `switzerlandnorth` per
+> [ADR-0037](0037-prod-region-switzerland-north-greenfield.md) — live `az`
+> confirmed swn Fabric quota is **0/512** (available), so PROD Fabric can
+> co-locate with the rest of PROD and the westus2 cross-region placement this
+> ADR describes is no longer needed for PROD. This ADR remains the record of the
+> interim westus2 decision and the eastus2-quota-0 blocker behind it.
 
 ## Context
 
