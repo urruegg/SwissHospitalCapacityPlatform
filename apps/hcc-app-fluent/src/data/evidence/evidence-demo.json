@@ -371,7 +371,7 @@
         "sourcePath": "docs/adr/0032-foundry-control-plane-eastus2.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0032-foundry-control-plane-eastus2.md"
       },
-      "status": "Accepted",
+      "status": "Superseded",
       "title": "Foundry Control Plane Deployed in eastus2"
     },
     {
@@ -404,7 +404,7 @@
         "sourcePath": "docs/adr/0035-fabric-iq-layer-region-westus2.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0035-fabric-iq-layer-region-westus2.md"
       },
-      "status": "Accepted",
+      "status": "Superseded",
       "title": "PROD Fabric IQ Layer Stays in westus2 (eastus2 Fabric Quota = 0)"
     },
     {
