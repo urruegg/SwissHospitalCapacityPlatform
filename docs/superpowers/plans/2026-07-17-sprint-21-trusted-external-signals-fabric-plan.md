@@ -19,7 +19,7 @@ Files created or modified, grouped by responsibility:
 
 #### Governance and requirements
 
-- Create `docs/adr/0033-external-trigger-governance.md` — external-trigger governance decision.
+- Create `docs/adr/0036-external-trigger-governance.md` — external-trigger governance decision.
 - Modify `docs/PRD.md` — add `FR-EXT-*` family + traceability rows (MINOR bump).
 - Modify `docs/DATA.md` — document `DC-EXT-SIGNAL-v1` (MINOR bump).
 
@@ -202,7 +202,7 @@ Expected: FAIL (file not found / KeyError)
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "dc-ext-signal-v1.schema.json",
   "title": "Trusted External Signal Contract (DC-EXT-SIGNAL-v1)",
-  "description": "CAP-Suisse-aligned envelope for Trust-A Swiss authority hazard signals ingested by the Sprint 21 external-signals data product. Envelope mirrors dc-or-schedule-v1. Public authority data + synthetic fixtures only; no PHI. Records pre-seed CSA ScenarioTemplate and ADR-0024 Lage tiers. See docs/ontology/reference-layer.ttl (hcp:ExternalSignal) and docs/adr/0033-external-trigger-governance.md.",
+  "description": "CAP-Suisse-aligned envelope for Trust-A Swiss authority hazard signals ingested by the Sprint 21 external-signals data product. Envelope mirrors dc-or-schedule-v1. Public authority data + synthetic fixtures only; no PHI. Records pre-seed CSA ScenarioTemplate and ADR-0024 Lage tiers. See docs/ontology/reference-layer.ttl (hcp:ExternalSignal) and docs/adr/0036-external-trigger-governance.md.",
   "type": "object",
   "additionalProperties": false,
   "required": ["datasetId", "contractId", "contractVersion", "classification", "residency", "purposeTags", "records"],
@@ -284,18 +284,18 @@ git commit -m "feat(ext-signals): add DC-EXT-SIGNAL-v1 contract schema (#247)"
 
 **Files:** Modify `docs/DATA.md`
 
-- [ ] **Step 1: Add a `DC-EXT-SIGNAL-v1` subsection** under the Data Contracts section, describing: purpose (Trust-A hazard signals), envelope fields, record fields (table from spec §6), dedup key, noise-governance (Test/Exercise/System quarantine), licence obligation, link to `data/synthetic/schema/dc-ext-signal-v1.schema.json`, `docs/adr/0033-external-trigger-governance.md`, and `docs/ontology/reference-layer.ttl`.
+- [ ] **Step 1: Add a `DC-EXT-SIGNAL-v1` subsection** under the Data Contracts section, describing: purpose (Trust-A hazard signals), envelope fields, record fields (table from spec §6), dedup key, noise-governance (Test/Exercise/System quarantine), licence obligation, link to `data/synthetic/schema/dc-ext-signal-v1.schema.json`, `docs/adr/0036-external-trigger-governance.md`, and `docs/ontology/reference-layer.ttl`.
 - [ ] **Step 2: Bump the DATA.md version header** (MINOR: additive contract), update Previous Version.
 - [ ] **Step 3: Lint** — `python scripts/lint/check_mojibake.py docs/DATA.md; npx --yes markdownlint-cli2 "docs/DATA.md"`. Expected: no mojibake, 0 errors.
 - [ ] **Step 4: Commit** — `git add docs/DATA.md; git commit -m "docs(data): document DC-EXT-SIGNAL-v1 contract (#247)"`
 
-### Task M1.3: Author ADR-0033 external-trigger governance
+### Task M1.3: Author ADR-0036 external-trigger governance
 
-**Files:** Create `docs/adr/0033-external-trigger-governance.md`
+**Files:** Create `docs/adr/0036-external-trigger-governance.md`
 
 - [ ] **Step 1: Write the ADR** using the repo ADR format (Status: Proposed → Accepted). Sections: Context (Swiss authority feeds as advisory CSA triggers), Decision (Trust-A auto-evaluated; B/C human-curated; dual-path Activator+poller with Activator GA-gated; Test/Exercise/System quarantine; licence recorded per signal; advisory/HITL preserved; non-PHI synthetic demo residency), Consequences, Alternatives, Links (ADR-0014/0024/0026/0013, spec, issue #247).
 - [ ] **Step 2: Lint** — mojibake + markdownlint on the ADR. Expected: clean.
-- [ ] **Step 3: Commit** — `git add docs/adr/0033-external-trigger-governance.md; git commit -m "docs(adr): add ADR-0033 external-trigger governance (#247)"`
+- [ ] **Step 3: Commit** — `git add docs/adr/0036-external-trigger-governance.md; git commit -m "docs(adr): add ADR-0036 external-trigger governance (#247)"`
 
 ### Task M1.4: Add FR-EXT-* requirements to docs/PRD.md
 
@@ -1069,7 +1069,7 @@ Expected: all suites PASS; seeder validates the synthetic envelope.
 
 ```bash
 npx --yes markdownlint-cli2 "**/*.md" "#node_modules" "#.github/skills"
-python scripts/lint/check_mojibake.py docs/PRD.md docs/DATA.md docs/ontology/crosswalk.md AGENTS.md docs/adr/0033-external-trigger-governance.md
+python scripts/lint/check_mojibake.py docs/PRD.md docs/DATA.md docs/ontology/crosswalk.md AGENTS.md docs/adr/0036-external-trigger-governance.md
 ```
 
 Expected: 0 lint errors; no mojibake.

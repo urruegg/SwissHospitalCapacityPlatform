@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "dc-ext-signal-v1.schema.json",
   "title": "Trusted External Signal Contract (DC-EXT-SIGNAL-v1)",
-  "description": "CAP-Suisse-aligned envelope for Trust-A Swiss authority hazard signals ingested by the Sprint 21 external-signals data product. Envelope mirrors dc-or-schedule-v1. Public authority data + synthetic fixtures only; no PHI. Records pre-seed CSA ScenarioTemplate and ADR-0024 Lage tiers. See docs/ontology/reference-layer.ttl (hcp:ExternalSignal) and docs/adr/0033-external-trigger-governance.md.",
+  "description": "CAP-Suisse-aligned envelope for Trust-A Swiss authority hazard signals ingested by the Sprint 21 external-signals data product. Envelope mirrors dc-or-schedule-v1. Public authority data + synthetic fixtures only; no PHI. Records pre-seed CSA ScenarioTemplate and ADR-0024 Lage tiers. See docs/ontology/reference-layer.ttl (hcp:ExternalSignal) and docs/adr/0036-external-trigger-governance.md.",
   "type": "object",
   "additionalProperties": false,
   "required": ["datasetId", "contractId", "contractVersion", "classification", "residency", "purposeTags", "records"],

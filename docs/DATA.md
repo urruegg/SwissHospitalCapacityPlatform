@@ -166,7 +166,7 @@ signals. It normalizes Trust-A Swiss public-authority feeds and synthetic
 fixtures into a CAP-Suisse-aligned envelope for situational awareness,
 capacity-planning, and advisory CSA trigger evaluation. The machine-readable
 schema is [`data/synthetic/schema/dc-ext-signal-v1.schema.json`](../data/synthetic/schema/dc-ext-signal-v1.schema.json); external-trigger governance is recorded in
-[ADR-0033](adr/0033-external-trigger-governance.md), and the reference-layer
+[ADR-0036](adr/0036-external-trigger-governance.md), and the reference-layer
 ontology binding is [`docs/ontology/reference-layer.ttl`](ontology/reference-layer.ttl).
 The lane is public-authority plus synthetic data only and carries no PHI.
 

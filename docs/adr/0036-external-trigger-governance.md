@@ -1,4 +1,4 @@
-# ADR-0033: External Trigger Governance
+# ADR-0036: External Trigger Governance
 
 | Field | Value |
 | ----- | ----- |
