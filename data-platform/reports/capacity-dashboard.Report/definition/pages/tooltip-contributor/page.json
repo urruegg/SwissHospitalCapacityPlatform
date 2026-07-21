@@ -7,7 +7,7 @@
   "width": 420,
   "visibility": "HiddenInViewMode",
   "pageBinding": {
-    "name": "Pod",
+    "name": "tooltip-contributor",
     "type": "Tooltip"
   }
 }
