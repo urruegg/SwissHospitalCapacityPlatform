@@ -24,7 +24,7 @@ Add a locale by creating `src/i18n/<locale>.ts` and registering it in `src/i18n/
 
 ## Structure
 
-```
+```text
 src/
   i18n/         types.ts, de.ts, index.ts (locale registry + helpers)
   layouts/      BaseLayout.astro, LandingPage.astro

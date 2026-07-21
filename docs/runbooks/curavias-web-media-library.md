@@ -22,7 +22,7 @@ diagram assets have a governed home — without checking large binaries into git
 
 Public base URL (module output `mediaBaseUrl`):
 
-```
+```text
 https://stmediaihzhhpfprod.blob.core.windows.net/media
 ```
 
