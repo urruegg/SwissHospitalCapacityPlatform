@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "12869266231357671672"
+      "templateHash": "16560716462720530928"
     }
   },
   "parameters": {
@@ -5301,7 +5301,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "7900345548352902027"
+              "templateHash": "5703750538639136666"
             }
           },
           "parameters": {
@@ -5331,6 +5331,13 @@
               "defaultValue": [],
               "metadata": {
                 "description": "TXT records for Container Apps custom-domain validation. Each item: { name: \"asuid.appsit\", values: [\"<verificationId>\"], ttl: 3600 }. Empty array creates no TXT records."
+              }
+            },
+            "aliasARecords": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "A alias records that target an Azure resource (e.g. a Static Web App apex domain). Each item: { name: \"@\", targetResourceId: \"<swa resourceId>\", ttl: 3600 }. Azure DNS alias A records enable apex (curavias.ch) to point at a Static Web App, which cannot use a CNAME. Empty array creates no A records."
               }
             }
           },
@@ -5378,6 +5385,24 @@
                     "value": "[parameters('txtRecords')[copyIndex()].values]"
                   }
                 ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "aliasAs",
+                "count": "[length(parameters('aliasARecords'))]"
+              },
+              "type": "Microsoft.Network/dnsZones/A",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('zoneName'), parameters('aliasARecords')[copyIndex()].name)]",
+              "properties": {
+                "TTL": "[parameters('aliasARecords')[copyIndex()].ttl]",
+                "targetResource": {
+                  "id": "[parameters('aliasARecords')[copyIndex()].targetResourceId]"
+                }
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
