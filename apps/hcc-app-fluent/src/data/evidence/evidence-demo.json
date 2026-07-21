@@ -395,6 +395,17 @@
       },
       "status": "Accepted",
       "title": "Fabric IQ (Preview) demo-scope artefacts in westus2"
+    },
+    {
+      "decisionSummary": "The **PROD Fabric IQ layer (capacity, workspace, lakehouse, semantic model, ontology, Data Agent, OneLake Data Product + Domain) runs in westus2** for the demo / proof-of-technology scope. This **relaxes D2** of the readiness design: collocation in eastus2 is not achievable without an eastus2 Fabric quota-increase.",
+      "id": "ADR-0035",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0035-fabric-iq-layer-region-westus2.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0035-fabric-iq-layer-region-westus2.md"
+      },
+      "status": "Accepted",
+      "title": "PROD Fabric IQ Layer Stays in westus2 (eastus2 Fabric Quota = 0)"
     }
   ],
   "boms": [
@@ -2547,6 +2558,42 @@
       "title": "The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build."
     },
     {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-MKT-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall provide a **product-marketing copilot agent** grounded in the Curavias brandkit, vision, and mission to keep product communication stringent and aligned across customer-facing, user-facing, and devops-team-facing channels."
+    },
+    {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-MKT-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The product-marketing agent shall preserve the **advisory-only voice** (the platform *previews/recommends*, never *decides/diagnoses*) and enforce the showcase disclaimer across all generated messaging."
+    },
+    {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-MKT-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The product-marketing agent shall operate in an explicit RACI with the `ux-design-agent` for all customer-facing experience surfaces."
+    },
+    {
       "family": "Operating Model And Product Scope",
       "id": "FR-OM-001",
       "kind": "FR",
@@ -2773,6 +2820,66 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "The platform shall provide an operational **OR-steering dashboard page** exposing case-level utilisation, first-case on-time performance, cancellation, and idle-slot metrics, aligned with `FR-CX-005`."
+    },
+    {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-WEB-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
+    },
+    {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-WEB-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
+    },
+    {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-WEB-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
+    },
+    {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-WEB-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
+    },
+    {
+      "family": "Product Marketing And Public Web (Sprint 24)",
+      "id": "FR-WEB-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
     },
     {
       "family": "Responsible AI And Auditability",
