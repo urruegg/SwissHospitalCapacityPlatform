@@ -12,15 +12,19 @@
 #   asOf       ISO date the fact was verified
 #   verifiedBy who verified the fact
 
-version: 1.0.0
+version: 1.1.0
+# 1.1.0 (2026-07-21): AI-tier Switzerland North facts refreshed from live `az`
+# verification against sub 66a9953a-df37-4c51-856c-9971b9bf3e03 per ADR-0037 --
+# foundry-agent-service Preview->GA, fabric-iq-ontology + fabric-data-agent
+# NotAvailable->Preview (region-listed, per-capacity gated per issue #270).
 facts:
   # --- Fabric platform ---
   - bomId: bom-fabric-capacity
     region: Switzerland North
     maturity: GA
-    verifiedBy: Urs Rüegg
-    asOf: 2026-07-09
-    sourceUrl: https://learn.microsoft.com/fabric/enterprise/region-availability
+    verifiedBy: Urs Rüegg (live az)
+    asOf: 2026-07-21
+    sourceUrl: https://learn.microsoft.com/fabric/admin/region-availability
   - bomId: bom-fabric-capacity
     region: West Europe
     maturity: GA
@@ -108,10 +112,10 @@ facts:
   # --- AI (mixed maturity) ---
   - bomId: bom-fabric-iq-ontology
     region: Switzerland North
-    maturity: NotAvailable
-    verifiedBy: Urs Rüegg
-    asOf: 2026-07-09
-    sourceUrl: https://learn.microsoft.com/fabric/fundamentals/fabric-iq
+    maturity: Preview
+    verifiedBy: Urs Rüegg (live az; per-capacity gated, #270)
+    asOf: 2026-07-21
+    sourceUrl: https://learn.microsoft.com/fabric/admin/region-availability
   - bomId: bom-fabric-iq-ontology
     region: West Europe
     maturity: Preview
@@ -132,9 +136,10 @@ facts:
 
   - bomId: bom-fabric-data-agent
     region: Switzerland North
-    maturity: NotAvailable
-    verifiedBy: Urs Rüegg
-    asOf: 2026-07-09
+    maturity: Preview
+    verifiedBy: Urs Rüegg (live az; F2+ capacity, residency caveat)
+    asOf: 2026-07-21
+    sourceUrl: https://learn.microsoft.com/fabric/data-science/data-agent-foundry
   - bomId: bom-fabric-data-agent
     region: West Europe
     maturity: Preview
@@ -144,8 +149,8 @@ facts:
   - bomId: bom-azure-openai
     region: Switzerland North
     maturity: GA
-    verifiedBy: Urs Rüegg
-    asOf: 2026-07-09
+    verifiedBy: Urs Rüegg (live az; gpt-5/o3 GlobalStandard, gpt-4.1/4o regional)
+    asOf: 2026-07-21
     sourceUrl: https://learn.microsoft.com/azure/ai-services/openai/concepts/models
   - bomId: bom-azure-openai
     region: West Europe
@@ -155,9 +160,10 @@ facts:
 
   - bomId: bom-foundry-agent-service
     region: Switzerland North
-    maturity: Preview
-    verifiedBy: Urs Rüegg
-    asOf: 2026-07-09
+    maturity: GA
+    verifiedBy: Urs Rüegg (live az; Agents=Yes, no Class-A private-IP)
+    asOf: 2026-07-21
+    sourceUrl: https://learn.microsoft.com/azure/foundry/agents/concepts/limits-quotas-regions
   - bomId: bom-foundry-agent-service
     region: West Europe
     maturity: GA
