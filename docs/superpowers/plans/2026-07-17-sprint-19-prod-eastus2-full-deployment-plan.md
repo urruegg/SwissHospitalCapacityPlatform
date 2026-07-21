@@ -1,15 +1,70 @@
-# Sprint 19 — Full PROD Deployment in eastus2 — Implementation Plan
+# Sprint 19 — PROD Region Pivot to Switzerland North (Greenfield) — Implementation Plan
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.6.0 |
-| **Date** | 2026-07-19 |
-| **Author** | Urs Rüeegg |
-| **Status** | In progress — P1–P7 (foundation + AI + compute + data lane + Foundry agents + Fabric capacity + integration/DNS/Entra) DEPLOYED & verified; P6.2 + P8 pending |
-| **Previous Version** | 1.5.0 (added the P6.1 execution record — `fabricihzhhpfprod` F2 created + paused, placed in **westus2** because the subscription's eastus2 Fabric quota is 0 CU). 1.6.0: added the P7 execution record — `app.curavias.ch` custom domain + managed cert bound to the PROD app (HTTP 200 live), PROD Entra SPA redirect URIs added, Logic App skipped (SIT one is Disabled). |
+| **Version** | 2.0.0 |
+| **Date** | 2026-07-21 |
+| **Author** | Urs Rüegg |
+| **Status** | Accepted (region pivot) — Phase 0 decommission + Switzerland North greenfield rebuild pending `approved-to-apply`; the eastus2/westus2 execution records below are the decommission target |
+| **Previous Version** | 1.6.0 (P7 execution record — `app.curavias.ch` custom domain + managed cert, PROD Entra SPA redirect URIs, Logic App skip). 2.0.0 is a **MAJOR** bump reversing the eastus2/westus2 PROD region decision per [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md); PROD is decommissioned (DR-style) and rebuilt greenfield in `switzerlandnorth` at SIT parity. |
 | **Design spec** | [2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md](../specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md) |
 
 ---
+
+> ## ⚠️ Region pivot (2026-07-21) — read the design spec §0 pivot notice first
+>
+> Per [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md), PROD
+> moves from split US regions (eastus2 Foundry + westus2 Fabric) to a
+> **single-region `switzerlandnorth` greenfield** at SIT parity, executed
+> **DR-style**: **Phase 0 decommissions the whole eastus2/westus2 PROD footprint
+> first**, then the rebuild replays the proven Option-1 flow (reuse
+> `infra/main.bicep`) with `location='switzerlandnorth'`. The "Execution record"
+> sections below (P1–P7) document the **now-decommissioned** eastus2/westus2
+> build and are kept as the audit trail. For the rebuild, substitute
+> `eastus2`/`westus2` → `switzerlandnorth` and `rg-ihzhhpf-prod-eastus2` →
+> `rg-ihzhhpf-prod`. **SIT (westus2 + eastus2) is untouched.**
+
+---
+
+## Phase 0 — DR-style decommission (runs first, `approved-to-apply`-gated)
+
+Tear down the entire prior PROD footprint so the rebuild starts from a clean
+single-region slate. **Verify each deletion; SIT resource groups
+(`rg-ihzhhpf-sit`) must be excluded from every command.**
+
+```bash
+# T0a — delete the eastus2 PROD resource group (~22 resources: Foundry account
+# + project, Container Apps x2 + CAEs, Cosmos x2, Event Hubs, Service Bus,
+# Key Vault, ACR crihzhhpfprod, Log/AppInsights, VNet + NSGs, identities)
+az group delete --name rg-ihzhhpf-prod-eastus2 --yes
+
+# T0b — delete the westus2 PROD Fabric capacity
+az resource delete --name fabricihzhhpfprod \
+  --resource-type Microsoft.Fabric/capacities -g rg-ihzhhpf-prod-eastus2
+#   (if the RG is already gone, target by full resourceId before T0a)
+
+# T0c — confirm clean slate: zero PROD resources in any US region
+az resource list --query "[?resourceGroup=='rg-ihzhhpf-prod-eastus2']" -o tsv
+az group list --query "[?starts_with(name,'rg-ihzhhpf-prod')].name" -o tsv
+```
+
+Notes:
+
+- The purge-protected Key Vault from the earlier westus2 teardown
+  (`kv-ihzhhpf-prod-i62t`) auto-expires 2026-10-16 — non-blocking, the swn
+  rebuild uses a distinct KV name.
+- Foundry account soft-delete: purge `ai-ihzhhpf-prod` after RG deletion so the
+  name is reusable in swn (`az cognitiveservices account purge`).
+- Managed App Insights RG (auto-created) is removed with its parent; verify.
+
+---
+
+---
+
+> **The four "Execution record" sections below (P1–P7) are the history of the
+> now-decommissioned eastus2/westus2 PROD build (Phase 0 target).** They are kept
+> verbatim as the audit trail. The swn rebuild replays the same steps with
+> `location='switzerlandnorth'`.
 
 ## Execution record — P1–P3 (2026-07-19)
 
@@ -203,6 +258,17 @@ disabled/unused).
 ---
 
 ## Execution phases
+
+> **Region substitution for the Switzerland North rebuild.** The command
+> examples below were authored for eastus2. For the swn rebuild, run **Phase 0
+> (decommission) first**, then apply these with: `location`/region →
+> `switzerlandnorth`; `rg-ihzhhpf-prod-eastus2` → `rg-ihzhhpf-prod`;
+> param file → `infra/environments/prod-swn.bicepparam`; the Foundry project
+> endpoint host → `ai-ihzhhpf-prod.services.ai.azure.com`; **Fabric capacity
+> creates in `switzerlandnorth`** (quota 0/512 — drop the westus2 special-case
+> from §6.1). Everything else (Option-1 reuse of `infra/main.bicep`, PROD-local
+> ACR `az acr import`, network-off first slice, Foundry v2 `/agents` API,
+> DNS/Entra binding) is identical.
 
 ### Phase 1 — IaC Authoring (T1)
 
