@@ -1,12 +1,12 @@
-﻿# PRD
+# PRD
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.8.0 |
+| **Version** | 1.9.0 |
 | **Date** | 2026-07-21 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.7.0 (Sprint 24: added `FR-MKT-*` product-marketing agent + `FR-WEB-*` public Curavias site) |
+| **Previous Version** | 1.8.0 (added FR-EXT trusted external signal requirements) |
 
 ## Purpose
 
@@ -163,6 +163,31 @@ Sprint 24 deltas formalised per [Sprint 24 plan](superpowers/plans/2026-07-21-sp
 | `FR-WEB-004` | The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap. |
 | `FR-WEB-005` | Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268). |
 
+### K) Trusted External Signals (Sprint 21)
+
+Sprint 21 deltas formalised per the
+[Sprint 21 trusted external signals design](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md)
+and [ADR-0033](adr/0033-external-trigger-governance.md). The scope is
+public-authority plus synthetic data only, no PHI, and advisory-only CSA trigger
+preparation.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-EXT-001` | Ingest Trust-A Swiss authority hazard feeds into the data lake. |
+| `FR-EXT-002` | Normalize every source to `DC-EXT-SIGNAL-v1`. |
+| `FR-EXT-003` | Activate advisory CSA runs from qualifying signals (dual-path trigger). |
+| `FR-EXT-004` | Persist provenance + trigger audit (`ext_fact_trigger_event`). |
+| `FR-EXT-005` | Noise governance: quarantine Test/Exercise/System; threshold gating. |
+| `FR-EXT-006` | Align to CAP-Suisse standard; bridge with pollable feeds until federal GA. |
+| `FR-EXT-010` | Build `gold.ext_fact_forecast_adjustment` from base `gold.forecast_output` x governed hazard-uplift, joined on specialty + canton + onset..expires window. |
+| `FR-EXT-011` | Govern the hazard-uplift map (`forecast_uplift.yaml`) as versioned, offline-unit-tested data; uplift is incremental over baseline and clamped. |
+| `FR-EXT-012` | Expose `gold.vw_forecast_adjusted` carrying both base and adjusted values plus a per-row signal `attribution[]` list for explainability. |
+| `FR-EXT-013` | Prove the external-signals IQ loop end-to-end in SIT: live Fabric IQ ontology extension + SIT data-agent grounding + Foundry `ooa-agent` consumption, captured as evidence. |
+| `FR-EXT-014` | Record full provenance (`rawHash`, `connectorVersion`, `ingestedAt`, licence) on every forecast adjustment row; `Test`/`Exercise`/`System` signals excluded from the overlay. |
+| `FR-EXT-ONT-001` | Add ExternalSignal/TrustedSource/HazardType/HazardEvent/TriggerRule classes. |
+| `FR-EXT-ONT-002` | Maintain reference<->operational<->contract crosswalk for the new classes. |
+| `FR-EXT-GOV-001` | Enforce trust-tier + HITL + advisory-only trigger policy. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -260,6 +285,14 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-GOV-005` | Governance evidence artefacts shall be co-located with the sprint or ADR that produced them under `docs/sprints/*/evidence/` or `docs/adr/*.md`. |
 | `NFR-GOV-006` | Every dashboard visual shall carry per-visual traceability back to its underlying semantic-model measure and its ontology-grounded source (`hcp:*` entities), aligned with `FR-CX-006` and `FR-ONT-004`. |
 
+### J) Trusted External Signals Governance (Sprint 21)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-EXT-ONT-001` | Operational (Fabric IQ) binding GA-gated per ADR-0014. |
+| `NFR-EXT-GOV-001` | Record source licence/attribution for every ingested signal. |
+| `NFR-EXT-GOV-002` | No PHI/personal data; public authority feeds + synthetic fixtures only. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -288,6 +321,9 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md`](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md) *(Fabric-to-Foundry grounding seam, Slice 0)* | `FR-ONT-008` (extends `FR-ONT-004`, `NFR-AI-002/004`) |
 | [`docs/adr/0034-fabric-iq-demo-scope-artefacts.md`](adr/0034-fabric-iq-demo-scope-artefacts.md) + [`docs/architecture/fabric-iq-ready-evidence.md`](architecture/fabric-iq-ready-evidence.md) *(live demo-scope realisation)* | `FR-ONT-008` (Foundry `ooa` surface proven live, issue #251) |
 | [`docs/superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md`](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) *(Sprint 24: product-marketing agent + public Curavias site, epic #261, issues #262–#268)* | `FR-MKT-001` to `FR-MKT-003`, `FR-WEB-001` to `FR-WEB-005` |
+
+| [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0033-external-trigger-governance.md`](adr/0033-external-trigger-governance.md) *(Sprint 21: trusted external signals contract, triggers, ontology, and governance)* | `FR-EXT-001` to `FR-EXT-006`, `FR-EXT-ONT-001` to `FR-EXT-ONT-002`, `FR-EXT-GOV-001`, `NFR-EXT-ONT-001`, `NFR-EXT-GOV-001` to `NFR-EXT-GOV-002` |
+| [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0033-external-trigger-governance.md`](adr/0033-external-trigger-governance.md) *(Sprint 21 forecast overlay and SIT IQ-layer proof extension)* | `FR-EXT-010` to `FR-EXT-014` |
 
 ## Assumptions To Validate In Implementation Planning
 
