@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.5.0 |
-| **Date** | 2026-06-12 |
+| **Version** | 0.6.0 |
+| **Date** | 2026-07-21 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.4.0 (Sprint 6 onboarding contracts) |
+| **Previous Version** | 0.5.0 (added DC-EXT-SIGNAL-v1 trusted external signal contract) |
 
 ## Purpose
 
@@ -101,6 +101,7 @@ Each contract must define:
 | Copilot grounding contract | DC-GRD-CONTEXT-v1 | Grounding context and citation metadata format |
 | Patient onboarding contract | DC-ONB-PATIENT-v1 | Minimum-data, pseudonymous patient onboarding metadata (Sprint 6) |
 | Specialty-capacity onboarding contract | DC-ONB-CAPACITY-v1 | Specialty-tagged hospital capacity onboarding metadata (Sprint 6) |
+| External signal contract | DC-EXT-SIGNAL-v1 | CAP-Suisse-aligned trusted external hazard signals for advisory CSA trigger evaluation |
 
 ### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
 
@@ -157,6 +158,63 @@ Sprint 6 risk mitigation to keep the baseline model simple.
 | `DC-MATCH-RECOMMENDATION-v1` | Ranked top-N candidate Stations (advisory) | *(bespoke)* | `datasets/dc-match-recommendation-v1.sample.json` |
 
 Design rationale, validator rules, partition-key strategy, and the deterministic stub matcher are documented in [docs/superpowers/specs/2026-06-12-patient-capacity-data-product-design.md](superpowers/specs/2026-06-12-patient-capacity-data-product-design.md).
+
+### DC-EXT-SIGNAL-v1 (trusted external signal lane)
+
+`DC-EXT-SIGNAL-v1` is the Sprint 21 contract for trusted external hazard
+signals. It normalizes Trust-A Swiss public-authority feeds and synthetic
+fixtures into a CAP-Suisse-aligned envelope for situational awareness,
+capacity-planning, and advisory CSA trigger evaluation. The machine-readable
+schema is [`data/synthetic/schema/dc-ext-signal-v1.schema.json`](../data/synthetic/schema/dc-ext-signal-v1.schema.json); external-trigger governance is recorded in
+[ADR-0033](adr/0033-external-trigger-governance.md), and the reference-layer
+ontology binding is [`docs/ontology/reference-layer.ttl`](ontology/reference-layer.ttl).
+The lane is public-authority plus synthetic data only and carries no PHI.
+
+Envelope fields:
+
+| Field | Type / allowed values | Notes |
+| ----- | --------------------- | ----- |
+| `datasetId` | string, `DS-EXT-SIGNAL-*` | Dataset envelope identifier. |
+| `contractId` | `DC-EXT-SIGNAL-v1` | Stable contract identifier. |
+| `contractVersion` | SemVer string | Contract version of the payload. |
+| `classification` | `public-authority` | Public authority data only. |
+| `residency` | `CH`, `demo-westus2` | Swiss residency or ADR-0013 demo-scope residency. |
+| `purposeTags` | `crisis-trigger`, `capacity-planning`, `situational-awareness` | Purpose limitation tags; at least one is required. |
+| `records` | array | One or more normalized external-signal records. |
+
+Required record fields and governed optional fields:
+
+| Field | Type / allowed values | Notes |
+| ----- | --------------------- | ----- |
+| `signalId` | string | Stable signal identity. |
+| `sourceId` | string | Source key for the trusted-source dimension. |
+| `sourceAuthority` | string | Publishing authority such as MeteoSwiss, BABS/FOCP, SED-ETH, or FOPH/BAG. |
+| `trustTier` | `A`, `B`, `C` | Trust tier; only `A` is auto-evaluated this sprint, while `B` and `C` remain human-curated. |
+| `capIdentifier` | string or null | CAP identifier when present. |
+| `hazardType` | string | Foreign key to the external hazard-type dimension. |
+| `severity` | `Minor`, `Moderate`, `Severe`, `Extreme` | CAP-aligned severity. |
+| `certainty` | `Observed`, `Likely`, `Possible`, `Unlikely` | CAP-aligned certainty. |
+| `urgency` | `Immediate`, `Expected`, `Future`, `Past` | CAP-aligned urgency. |
+| `dangerLevel` | integer 1..5 or null | Swiss warning scale where available. |
+| `region` | object | `cantons`, `nuts`, and optional `geoPolygon`. |
+| `effective` | date-time or null | Signal effective timestamp. |
+| `onset` | date-time | Required event onset timestamp. |
+| `expires` | date-time or null | Signal expiry timestamp. |
+| `uri` | string or null | Source deep link. |
+| `status` | `Actual`, `Test`, `Exercise`, `System` | Non-`Actual` records are quarantined. |
+| `mappedScenarioTemplate` | string or null | CSA `ScenarioTemplate` pre-seed where mapped. |
+| `defaultLageTier` | integer 1..3 or null | ADR-0024 Lage tier pre-seed. |
+| `provenance.ingestedAt` | date-time | Ingestion timestamp. |
+| `provenance.connectorVersion` | string | Connector version that produced the record. |
+| `provenance.licence` | string | Source licence and attribution obligation; mandatory per signal. |
+| `provenance.rawHash` | string | Hash of the raw source payload. |
+
+The derived deduplication key is `sourceId + capIdentifier + hazardType +
+region + onset`, bucketed to a time window so overlapping re-publishes collapse
+before trigger evaluation. Noise governance is strict: `Test`, `Exercise`, and
+`System` records are quarantined and never trigger CSA (`FR-EXT-005`). Only
+Trust-A, `Actual` records that satisfy threshold rules can open an advisory CSA
+handoff; external signals never mutate capacity, roster, or bed state directly.
 
 ### Deprecations
 
