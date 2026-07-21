@@ -7,14 +7,14 @@
  * "not evaluable in scope" — see README.md and the exit ADR
  * (docs/adr/0023-app-stack-fluent-vs-rayfin-decision.md).
  *
- * This file is a minimal, buildable stand-in that reuses the Helvion brand
- * tokens (data-platform/reports/capacity-dashboard.Report/themes/helvion-token-mapping.md)
+ * This file is a minimal, buildable stand-in that reuses the Curavias brand
+ * tokens (data-platform/reports/capacity-dashboard.Report/themes/curavias-token-mapping.md)
  * so the app compiles in CI and the shared smoke test has a target. It is NOT a
  * Rayfin-generated artefact and must not be treated as PoC evidence.
  */
 
-// Helvion brand tokens (subset) — kept in sync with the Power BI theme mapping.
-const helvion = {
+// Curavias brand tokens (subset) — kept in sync with the Power BI theme mapping.
+const curavias = {
   brandBlue: '#365B7D',
   ink: '#2E4C68',
   background: '#FFFFFF',
@@ -26,21 +26,21 @@ export function App() {
     <div
       style={{
         fontFamily: 'Segoe UI, system-ui, sans-serif',
-        color: helvion.ink,
-        background: helvion.surface,
+        color: curavias.ink,
+        background: curavias.surface,
         minHeight: '100vh',
       }}
     >
       <header
         role="banner"
         style={{
-          background: helvion.brandBlue,
-          color: helvion.background,
+          background: curavias.brandBlue,
+          color: curavias.background,
           padding: '12px 24px',
           fontWeight: 600,
         }}
       >
-        Helvion — Rayfin PoC (placeholder)
+        Curavias — Rayfin PoC (placeholder)
       </header>
       <main role="main" style={{ padding: 24 }}>
         <h1>Rayfin PoC — not evaluable in scope</h1>

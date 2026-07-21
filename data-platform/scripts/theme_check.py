@@ -1,6 +1,6 @@
-"""Ensure the Helvion theme JSON contains the required Brandkit tokens.
+"""Ensure the Curavias theme JSON contains the required Brandkit tokens.
 
-Regression test for the Power BI Demoable Redesign (M1). Asserts the Helvion
+Regression test for the Power BI Demoable Redesign (M1). Asserts the Curavias
 Power BI theme carries every brand data colour from the design spec §8 mapping.
 
 Exit 0 = PASS, 1 = FAIL (missing token or absent file).
@@ -12,12 +12,12 @@ import sys
 from pathlib import Path
 
 THEME_PATH = Path(
-    "data-platform/reports/capacity-dashboard.Report/themes/helvion.json"
+    "data-platform/reports/capacity-dashboard.Report/themes/curavias.json"
 )
 
 REQUIRED_DATA_COLORS = [
-    "#E30613",  # Helvion Red
-    "#365B7D",  # Helvion Blue
+    "#E30613",  # Curavias Red
+    "#365B7D",  # Curavias Blue
     "#FF9A2E",  # Rainbow warm tip
     "#FF5A4E",
     "#F0398F",
@@ -37,10 +37,10 @@ def main() -> int:
     if missing:
         print(f"FAIL: missing dataColors {missing}")
         return 1
-    if theme.get("name") != "Helvion":
-        print(f"FAIL: theme name is {theme.get('name')!r}, expected 'Helvion'")
+    if theme.get("name") != "Curavias":
+        print(f"FAIL: theme name is {theme.get('name')!r}, expected 'Curavias'")
         return 1
-    print("PASS: Helvion theme contains all required dataColors")
+    print("PASS: Curavias theme contains all required dataColors")
     return 0
 
 

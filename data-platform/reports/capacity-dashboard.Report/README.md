@@ -1,6 +1,6 @@
 # capacity-dashboard.Report
 
-Power BI PBIP report — persona-anchored, Helvion-branded capacity dashboard **v2**
+Power BI PBIP report — persona-anchored, Curavias-branded capacity dashboard **v2**
 (design spec `docs/superpowers/specs/2026-07-09-powerbi-demoable-redesign-design.md`,
 plan `docs/superpowers/plans/2026-07-09-powerbi-demoable-redesign-plan.md`).
 
@@ -18,7 +18,7 @@ Visible pages (in `pages/pages.json` navigation order):
 
 | Page | Persona | Highlights |
 | --- | --- | --- |
-| `page-landing` | Entry | Helvion wordmark hero, persona navigation tiles, RLS-proof pill |
+| `page-landing` | Entry | Curavias wordmark hero, persona navigation tiles, RLS-proof pill |
 | `page-bed-manager` | Bed Manager | Occupancy/beds KPIs, capacity chart, field-parameter slicer, smart narrative, grounding strip |
 | `page-or-coordinator` | OR Coordinator | OR KPI wall, Gantt-style timeline, donut, bar, funnel, field-parameter slicer, smart narrative, grounding strip |
 | `page-ops-lead` | Ops Lead | Cross-site headline KPIs, flow cards, escalation-tier card (static stub), small-multiples strip, smart narrative, grounding strip |
@@ -68,5 +68,5 @@ python3 data-platform/scripts/perf_hero.py
 
 - Semantic model: [`../capacity-dashboard.SemanticModel/`](../capacity-dashboard.SemanticModel/)
 - Grounding source: [`grounding.yaml`](grounding.yaml)
-- Helvion theme: [`themes/helvion.json`](themes/helvion.json)
+- Curavias theme: [`themes/curavias.json`](themes/curavias.json)
 - OR sample data: [`../../../data/synthetic/or-samples/`](../../../data/synthetic/or-samples/)
