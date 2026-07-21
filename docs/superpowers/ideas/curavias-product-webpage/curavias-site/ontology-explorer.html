@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="de-CH" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Curavias — Ontologie-Explorer (Übersicht → Datenprodukte → Semantisches Modell)</title>
+<meta name="description" content="Interaktiver Curavias-Ontologie-Explorer: von der Übersicht der Nordstern-Ontologie bis in die Details der Datenprodukte und des semantischen Datenmodells (Fabric IQ). Ein Showcase des Microsoft Innovation Hub Zürich.">
+<style>
+:root{--teal:#0E7C86;--teal-dark:#0B5E66;--green:#2FA36B;--green-dark:#238a58;--navy:#16323F;--navy-2:#1C3B4A;--ms-blue:#0067B8;--purple:#6d28d9;--swiss-red:#DA291C;--ink:#21323C;--muted:#5C6B75;--bg:#F4F7F8;--card:#fff;--line:#E1E8EB;--gold-bg:#FBF3D0;--gold-line:#E6C34D;--mint:#E7F4EE;--shadow:0 2px 10px rgba(16,50,63,.06),0 8px 28px rgba(16,50,63,.08);--radius:14px;--maxw:1140px;--font:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1e26;--card:#15272f;--ink:#e8eef1;--muted:#9fb0b9;--line:#26424c;--mint:#153029}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55}
+h1,h2,h3{line-height:1.15;margin:0 0 .4em;color:var(--navy);font-weight:600}
+h1{font-size:clamp(1.9rem,4vw,2.7rem)}h2{font-size:1.5rem}h3{font-size:1.05rem}
+p{margin:0 0 1rem}a{color:var(--ms-blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:24px}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal)}
+.section{padding-block:40px}
+.lead{font-size:1.1rem;color:var(--muted);max-width:70ch}
+.btn{display:inline-block;padding:11px 20px;border-radius:999px;font-weight:600;font-size:.95rem;border:1.5px solid transparent}
+.btn-ghost{background:transparent;color:var(--teal);border-color:rgba(14,124,134,.4)}.btn-ghost:hover{background:rgba(14,124,134,.07);text-decoration:none}
+header.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+@media(prefers-color-scheme:dark){header.nav{background:rgba(21,39,47,.92)}}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.28rem;color:var(--navy)}
+.logo small{display:block;font-size:.52rem;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.disclaimer{background:var(--gold-bg);border-block:1px solid var(--gold-line);color:#6b5608;font-size:.86rem}
+.disclaimer .wrap{padding-block:9px;display:flex;gap:10px;align-items:center}.disclaimer b{color:#5a4906}
+@media(prefers-color-scheme:dark){.disclaimer{background:#3a3212;color:#f0e4b0;border-color:#5c4f1a}}
+.seg{display:inline-flex;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px;margin-top:14px}
+.seg button{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.9rem;padding:9px 18px;border-radius:999px;cursor:pointer;font-family:inherit}
+.seg button.active{background:var(--teal);color:#fff}
+.crumbs{font-size:.82rem;color:var(--muted);margin-top:14px}
+.crumbs b{color:var(--navy)}
+.view{display:none;margin-top:16px}.view.active{display:block}
+.hubwrap{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);overflow-x:auto}
+.hubwrap svg{min-width:640px;width:100%;height:auto;display:block}
+.node{cursor:pointer}.node:hover{filter:brightness(1.05)}
+.node.active circle,.node.active rect.card{stroke:#111;stroke-width:3}
+.pcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.pcards{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.pcards{grid-template-columns:1fr}}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:.12s}
+.pcard:hover{transform:translateY(-2px);border-color:var(--teal)}
+.pcard.active{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,134,.25),var(--shadow)}
+.pcard .tag{font-size:.68rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--teal)}
+.pcard h3{margin:4px 0 4px;font-size:1rem}.pcard p{margin:0;font-size:.85rem;color:var(--muted)}
+.tier-badge{display:inline-block;font-size:.68rem;font-weight:700;color:#fff;border-radius:5px;padding:1px 7px;margin-top:8px}
+.b-bronze{background:#a1662f}.b-silver{background:#7c8b95}.b-gold{background:#b8860b}
+.tlist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:760px){.tlist{grid-template-columns:1fr}}
+.trow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow);cursor:pointer;transition:.12s}
+.trow:hover{border-color:var(--teal)}.trow.active{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,134,.25)}
+.trow .ent{font-size:.7rem;font-weight:700;color:#fff;background:var(--teal);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.trow b{font-size:.92rem}.trow span{font-size:.78rem;color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+.flow .st{background:var(--mint);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:.83rem;font-weight:600;color:var(--navy)}
+.flow .ar{color:var(--teal);font-weight:700}
+.odetail{background:var(--card);border:1px solid var(--line);border-inline-start:5px solid var(--teal);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);margin-top:18px;min-height:120px}
+.odetail .k{font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--teal)}
+.odetail h3{margin:4px 0 6px}
+.odetail .layer{display:inline-block;font-size:.72rem;font-weight:700;color:#fff;border-radius:6px;padding:2px 9px;margin-bottom:8px}
+.l-ref{background:#6d28d9}.l-ops{background:#0E7C86}.l-both{background:#16323F}
+.odetail ul{margin:8px 0 0;padding-inline-start:18px;font-size:.92rem}.odetail li{margin:3px 0}
+.odetail .bind{margin-top:10px;font-size:.82rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:9px}
+.odetail code{background:rgba(14,124,134,.1);color:var(--teal-dark);padding:1px 6px;border-radius:5px;font-size:.85em}
+.note{font-size:.82rem;color:var(--muted)}
+footer{background:var(--navy-2);color:#c3d2d7;padding-block:40px;font-size:.9rem;margin-top:24px}
+footer a{color:#8fd8c9}.tagline{color:#fff;font-weight:600}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap nav-in">
+  <a class="logo" href="index.html"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="#0E7C86"/><path d="M8 21 C13 12, 21 12, 26 21" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="15" y="9" width="4" height="4" rx="1" fill="#DA291C"/><path d="M22.5 20.5 l2 2 l3.5-4" stroke="#2FA36B" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Curavias<small>Swiss Hospital Capacity Copilot</small></span></a>
+  <a class="btn btn-ghost" href="architecture.html">← Architektur</a>
+</div></header>
+<div class="disclaimer" role="note"><div class="wrap"><span><b>Kein reales Produkt.</b> Curavias ist ein Showcase des Microsoft Innovation Hub Zürich — synthetische Daten, beratende KI (advisory-only), kein Medizinprodukt und nicht für den klinischen Einsatz.</span></div></div>
+
+<section class="section">
+  <div class="wrap">
+    <span class="eyebrow">Ontologie-Explorer</span>
+    <h1>Von der Übersicht bis ins Detail</h1>
+    <p class="lead">Starte mit der <b>Übersicht</b> der Nordstern-Ontologie, dann tauche ein in die <b>Datenprodukte</b> und das <b>semantische Datenmodell</b>, aus dem Fabric IQ die operationale Ontologie generiert. Klicke auf einen Knoten, eine Karte oder eine Tabelle, um Details zu sehen.</p>
+    <div class="seg" role="tablist" aria-label="Detailebene">
+      <button class="active" data-view="overview" role="tab">1 · Übersicht</button>
+      <button data-view="products" role="tab">2 · Datenprodukte</button>
+      <button data-view="semantic" role="tab">3 · Semantisches Modell</button>
+    </div>
+    <div class="crumbs" id="crumbs"><b>Übersicht</b> — die Ontologie-Domänen auf einen Blick</div>
+
+    <!-- VIEW 1: OVERVIEW -->
+    <div class="view active" id="v-overview">
+      <div class="hubwrap">
+        <svg viewBox="0 0 720 440" role="img" aria-label="Nordstern-Ontologie im Zentrum mit sechs Domänen: Kapazität, Organisation & Skills, Patient-Flow & Encounter, AI-Outputs, Governance & Evidenz, Prozess-Overlay.">
+          <!-- spokes -->
+          <g stroke="#cfe0e3" stroke-width="2">
+            <line x1="360" y1="220" x2="360" y2="90"/><line x1="360" y1="220" x2="585" y2="150"/>
+            <line x1="360" y1="220" x2="585" y2="300"/><line x1="360" y1="220" x2="360" y2="370"/>
+            <line x1="360" y1="220" x2="135" y2="300"/><line x1="360" y1="220" x2="135" y2="150"/>
+          </g>
+          <!-- center -->
+          <circle cx="360" cy="220" r="62" fill="#16323F"/>
+          <text x="360" y="212" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#fff">Nordstern-</text>
+          <text x="360" y="228" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#fff">Ontologie</text>
+          <text x="360" y="245" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#9fc7cd">2 Schichten</text>
+          <!-- domain nodes -->
+          <g class="node" data-node="c-capacity" tabindex="0" role="button" aria-label="Domäne Kapazität"><circle cx="360" cy="80" r="46" fill="#0E7C86"/><text x="360" y="78" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fff">Kapazität</text><text x="360" y="93" text-anchor="middle" font-family="Segoe UI" font-size="8.5" fill="#cdeae2">Capacity Units</text></g>
+          <g class="node" data-node="c-orgskills" tabindex="0" role="button" aria-label="Domäne Organisation und Skills"><circle cx="585" cy="150" r="46" fill="#6d28d9"/><text x="585" y="146" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fff">Org &amp;</text><text x="585" y="160" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fff">Skills</text></g>
+          <g class="node" data-node="c-flow" tabindex="0" role="button" aria-label="Domäne Patient-Flow und Encounter"><circle cx="585" cy="300" r="46" fill="#0067B8"/><text x="585" y="298" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fff">Flow &amp;</text><text x="585" y="312" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="#fff">Encounter</text></g>
+          <g class="node" data-node="c-ai" tabindex="0" role="button" aria-label="Domäne AI-Outputs"><circle cx="360" cy="370" r="46" fill="#238a58"/><text x="360" y="368" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fff">AI-Outputs</text><text x="360" y="382" text-anchor="middle" font-family="Segoe UI" font-size="8.5" fill="#d6f0e2">ICE</text></g>
+          <g class="node" data-node="c-gov" tabindex="0" role="button" aria-label="Domäne Governance und Evidenz"><circle cx="135" cy="300" r="46" fill="#DA291C"/><text x="135" y="298" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fff">Governance</text><text x="135" y="312" text-anchor="middle" font-family="Segoe UI" font-size="8.5" fill="#ffd9d6">&amp; Evidenz</text></g>
+          <g class="node" data-node="c-sim" tabindex="0" role="button" aria-label="Domäne Prozess-Overlay Simulation"><circle cx="135" cy="150" r="46" fill="#b8860b"/><text x="135" y="146" text-anchor="middle" font-family="Segoe UI" font-size="10.5" font-weight="700" fill="#fff">Prozess-</text><text x="135" y="160" text-anchor="middle" font-family="Segoe UI" font-size="10.5" font-weight="700" fill="#fff">Overlay</text></g>
+        </svg>
+      </div>
+      <p class="note" style="margin-top:8px">Zwei Schichten: <b style="color:#6d28d9">Referenz</b> (BFO/OBO, OWL/RDF) ⇄ <b style="color:#0E7C86">Operational</b> (Fabric IQ, aus dem Semantic Model generiert). Die Domänen teilen sich <b>eine</b> Bedeutung.</p>
+    </div>
+
+    <!-- VIEW 2: DATA PRODUCTS -->
+    <div class="view" id="v-products">
+      <p class="lead" style="margin-bottom:14px">Die Datenprodukte, aus denen die Ontologie ihre Bindings zieht — kuratiert entlang Bronze → Silber → Gold, mit nicht deaktivierbaren PHI-Gates.</p>
+      <div class="pcards">
+        <div class="pcard node" data-node="p-cap" tabindex="0" role="button"><div class="tag">Kuratierte Domäne</div><h3>Kapazitäts-Domäne</h3><p>Belegung, Betten-/OR-/Raum-/Geräte-Status</p><span class="tier-badge b-gold">Gold</span></div>
+        <div class="pcard node" data-node="p-flow" tabindex="0" role="button"><div class="tag">Kuratierte Domäne</div><h3>Encounter-/Flow-Domäne</h3><p>Admission, Transfer, Discharge, Encounter</p><span class="tier-badge b-gold">Gold</span></div>
+        <div class="pcard node" data-node="p-staff" tabindex="0" role="button"><div class="tag">Kuratierte Domäne</div><h3>Staffing-Domäne</h3><p>Roster, Schichten, Personalbedarf</p><span class="tier-badge b-silver">Silber→Gold</span></div>
+        <div class="pcard node" data-node="p-onb" tabindex="0" role="button"><div class="tag">Data Contracts</div><h3>Onboarding-Contracts</h3><p>DC-ONB-PATIENT-v1 · DC-ONB-CAPACITY-v1 (+ Provider)</p><span class="tier-badge b-bronze">Bronze-Ingest</span></div>
+        <div class="pcard node" data-node="p-supdem" tabindex="0" role="button"><div class="tag">Data Contracts</div><h3>Supply/Demand-Contracts</h3><p>DC-SUPPLY-LOCATION/ORGANIZATION · DC-DEMAND-ENCOUNTER</p></div>
+        <div class="pcard node" data-node="p-orsched" tabindex="0" role="button"><div class="tag">Data Contracts</div><h3>OR / Roster / Room / Device</h3><p>DC-OR-SCHEDULE · DC-STAFF-ROSTER · DC-ROOM/DEVICE-STATE</p></div>
+        <div class="pcard node" data-node="p-skfact" tabindex="0" role="button"><div class="tag">Skills-Produkte</div><h3>Skill-Facts</h3><p>fact_skill_assertion · fact_skill_demand · fact_skill_gap</p><span class="tier-badge b-gold">Gold-Gate</span></div>
+        <div class="pcard node" data-node="p-skview" tabindex="0" role="button"><div class="tag">Skills-Produkte</div><h3>Supply-View &amp; Eligibility-Bridge</h3><p>view_skill_supply · bridge_worker_unit_eligibility</p></div>
+        <div class="pcard node" data-node="p-skdim" tabindex="0" role="button"><div class="tag">Skills-Produkte</div><h3>Skill-Dimensionen</h3><p>dim_skill · dim_occupation_role · dim_issuing_authority · L0–L4 / 1–5</p></div>
+        <div class="pcard node" data-node="p-ai" tabindex="0" role="button"><div class="tag">AI-Outputs</div><h3>Forecast &amp; Discharge-Score</h3><p>DC-AI-FORECAST-v1 · Discharge-Readiness-Scores</p></div>
+        <div class="pcard node" data-node="p-evid" tabindex="0" role="button"><div class="tag">Evidenz</div><h3>Showcase-Evidence-Produkt</h3><p>bom.json · dependencies.json (Sprint 14)</p></div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: SEMANTIC MODEL -->
+    <div class="view" id="v-semantic">
+      <p class="lead" style="margin-bottom:8px">Das Direct-Lake-Semantic-Model (<code>capacity-dashboard</code>) ist die Quelle, aus der Fabric IQ die operationale Ontologie <b>generiert</b>:</p>
+      <div class="flow">
+        <span class="st">Tabelle → Entity-Typ</span><span class="ar">→</span>
+        <span class="st">Beziehung → Relationship-Typ</span><span class="ar">→</span>
+        <span class="st">Keys &amp; FK-Bindings prüfen</span><span class="ar">→</span>
+        <span class="st">Zeitreihen-Bindings (Eventhouse)</span>
+      </div>
+      <p class="note" style="margin:6px 0 14px">Klicke eine Tabelle → zugehöriger Fabric-IQ-Entity-Typ, Schlüssel, Beziehungen und Bindings.</p>
+      <div class="tlist">
+        <div class="trow node" data-node="t-bed" tabindex="0" role="button"><span class="ent">Bed</span><div><b>Bed</b><br><span>part_of Room · admitted patient · bed state (live)</span></div></div>
+        <div class="trow node" data-node="t-loc" tabindex="0" role="button"><span class="ent">Location</span><div><b>Facility / Ward / Room</b><br><span>rekursive part_of-Hierarchie</span></div></div>
+        <div class="trow node" data-node="t-capunit" tabindex="0" role="button"><span class="ent">CapacityUnit</span><div><b>CapacityUnit</b><br><span>Generalisierung: Bed/OR/Room/Shift/Device</span></div></div>
+        <div class="trow node" data-node="t-enc" tabindex="0" role="button"><span class="ent">Encounter</span><div><b>Encounter</b><br><span>Person/Patient · admission→discharge</span></div></div>
+        <div class="trow node" data-node="t-dept" tabindex="0" role="button"><span class="ent">Department</span><div><b>Department</b><br><span>part_of Site · offers Specialisation</span></div></div>
+        <div class="trow node" data-node="t-emp" tabindex="0" role="button"><span class="ent">Employee</span><div><b>Employee / HealthWorker</b><br><span>GLN-keyed · member_of Department</span></div></div>
+        <div class="trow node" data-node="t-skill" tabindex="0" role="button"><span class="ent">Skill</span><div><b>Skill / SkillAssertion</b><br><span>ESCO-URI · Proficiency · Assurance · Validity</span></div></div>
+        <div class="trow node" data-node="t-device" tabindex="0" role="button"><span class="ent">Device</span><div><b>Device / Equipment</b><br><span>statisch + Zeitreihen-Messungen</span></div></div>
+        <div class="trow node" data-node="t-forecast" tabindex="0" role="button"><span class="ent">Forecast</span><div><b>Forecast / DischargeScore</b><br><span>ICE · an AI-Output-Tabellen gebunden</span></div></div>
+        <div class="trow node" data-node="t-measure" tabindex="0" role="button"><span class="ent">Measures</span><div><b>Kennzahlen</b><br><span>Belegung % · Druckfenster · Entlass-Kandidaten · Skill-Gap</span></div></div>
+      </div>
+    </div>
+
+    <!-- SHARED DETAIL -->
+    <div class="odetail" id="detail">
+      <div class="k">Zum Start</div>
+      <h3>Wähle eine Ebene und klicke ein Element</h3>
+      <p>Übersicht: klicke eine Domäne im Rad. Datenprodukte: klicke eine Karte. Semantisches Modell: klicke eine Tabelle. Die Details erscheinen hier.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <p><a class="btn btn-ghost" href="architecture.html">← Architektur &amp; Ontologie-Modelle</a> &nbsp; <a class="btn btn-ghost" href="product-build.html">Wie das Produkt gebaut wird →</a></p>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <p class="tagline">Verlässliche Vorschau. Erklärbare Empfehlung. Der Mensch entscheidet.</p>
+  <p style="color:#93a6ad;font-size:.82rem">Microsoft Innovation Hub Zürich — Showcase · Powered by Microsoft · <a href="https://curavias.ch">curavias.ch</a></p>
+</div></footer>
+
+<script>
+(function(){
+  var DATA = {
+    // Overview clusters
+    "c-capacity":{k:"Domäne · Übersicht",l:"both",lt:"Referenz + Operational",t:"Kapazität (Capacity Units)",items:["<b>Capacity Unit</b> — Generalisierung mit Zustand: verfügbar / belegt / blockiert / geplant","Subtypen: <b>Bed · OR-Slot · Room · Staff shift · Device</b>","Ein Satz Relationen, KPIs, Forecasts &amp; Simulationslogik über alle fünf Dimensionen"],bind:"Statisches Binding ← Lakehouse; Live-Zustände ← Eventhouse (Zeitreihen)."},
+    "c-orgskills":{k:"Domäne · Übersicht",l:"ref",lt:"Referenz (Skills-Erweiterung)",t:"Organisation &amp; Skills",items:["Tenant → HospitalOrganisation → LegalEntity → Site → <b>Department</b> → Employee","<b>Specialisation</b>, <b>WorkforcePosition</b> (Establishment) vs. <b>Employee</b> (Person)","<b>Skill / SkillAssertion</b> mit Proficiency (1–5) &amp; Assurance (L0–L4)","SkillDemand · view_skill_supply · SkillGap · WorkerUnitEligibility"],bind:"GLN-Golden-Thread; FHIR Practitioner/PractitionerRole; ESCO/ISCO-08."},
+    "c-flow":{k:"Domäne · Übersicht",l:"ref",lt:"Referenz (OGMS/Goyer)",t:"Patient-Flow &amp; Encounter",items:["Person · Patient role · Health-worker role","<b>Encounter</b> (facility-based / remote) als Flow-Rückgrat","Prozesse: Admission · Transfer · Discharge · Procedure"],bind:"Crosswalk zu FHIR <code>Encounter</code>; SNOMED CT Encounter-Typen."},
+    "c-ai":{k:"Domäne · Übersicht",l:"ops",lt:"Operational (ICE)",t:"AI-Outputs (Information Content Entities)",items:["Forecast · Discharge-Score · Capacity-Plan","OR-Slate · Roster · Szenario/Ergebnis · KPI","Erdet Copilot &amp; Data Agents — nachvollziehbar zu Konzepten (NFR-AI-003/004)"],bind:"Entity-Typen, an AI-Output-Tabellen gebunden."},
+    "c-gov":{k:"Domäne · Übersicht",l:"both",lt:"Referenz + Operational",t:"Governance &amp; Evidenz",items:["EvidenceRecord · IssuingAuthority (TrustedSource) · AssuranceLevel · ValidityPeriod","<b>PHI-Gates</b> — <code>phi=true</code> liefert leeres Ergebnis für alle Rollen","Konzept-Level-Lineage für Audit &amp; DSR (Purview)"],bind:"CI-Konformitätsprüfung Referenz↔Operational; deny-by-default."},
+    "c-sim":{k:"Domäne · Übersicht",l:"ref",lt:"Referenz (KTH-Overlay)",t:"Prozess-Overlay (Simulation)",items:["Generic Process Ontology: Process · Activity · Task","Resource · Agent · Method · Tool · Condition (pre/post)","Ermöglicht What-if-/Discrete-Event-Simulation auf gemeinsamem Objektmodell"],bind:"Referenz-Schicht (OWL/RDF); Phase 3 „Simulation-grade“."},
+    // Data products
+    "p-cap":{k:"Datenprodukt",l:"ops",lt:"Kuratiert · Gold",t:"Kapazitäts-Domäne",items:["Belegung, Bettendruck, OR-/Raum-/Geräte-Status","Speist Bed-, CapacityUnit- und Device-Entities"],bind:"Gold-Layer; Live-Signale via Eventstream/Eventhouse."},
+    "p-flow":{k:"Datenprodukt",l:"ops",lt:"Kuratiert · Gold",t:"Encounter-/Flow-Domäne",items:["Admission, Transfer, Discharge, Encounter","Flow-Rückgrat für BMCA/DCA/OOA"],bind:"Gold-Layer; FHIR-orientierte Normalisierung."},
+    "p-staff":{k:"Datenprodukt",l:"ops",lt:"Kuratiert",t:"Staffing-Domäne",items:["Roster, Schichten, Personalbedarf","Speist WorkforcePosition &amp; Employee"],bind:"Silber → Gold; Basis für SBA."},
+    "p-onb":{k:"Datenprodukt · Contract",l:"ref",lt:"Bronze-Ingest",t:"Onboarding-Contracts",items:["<code>DC-ONB-PATIENT-v1</code> — pseudonym, Minimal-Metadaten","<code>DC-ONB-CAPACITY-v1</code> (+ Hirslanden / Zollikerberg-Extensions)"],bind:"Minimierung + Purpose-Tags (NFR-COMP-011); CI-Contract-Gate."},
+    "p-supdem":{k:"Datenprodukt · Contract",l:"ref",lt:"Contracts",t:"Supply/Demand-Contracts",items:["<code>DC-SUPPLY-LOCATION-v1</code> (Site/Ward/Bed) · <code>DC-SUPPLY-ORGANIZATION-v1</code>","<code>DC-DEMAND-ENCOUNTER-v1</code> · <code>DC-MATCH-RECOMMENDATION-v1</code>"],bind:"Über den Contracts liegt die geteilte Ontologie-Bedeutung."},
+    "p-orsched":{k:"Datenprodukt · Contract",l:"ref",lt:"Contracts (proposed)",t:"OR / Roster / Room / Device",items:["<code>DC-OR-SCHEDULE-v1</code> · <code>DC-STAFF-ROSTER-v1</code>","<code>DC-ROOM-STATE-v1</code> · <code>DC-DEVICE-STATE-v1</code>"],bind:"Realisiert den integralen Ressourcen-Scope (ORSA/SBA)."},
+    "p-skfact":{k:"Datenprodukt · Skills",l:"ops",lt:"Skill-Facts · Gold-Gate",t:"Skill-Facts",items:["<code>fact_skill_assertion</code> — worker × skill × evidence × validity × assurance × proficiency","<code>fact_skill_demand</code> · <code>fact_skill_gap</code>"],bind:"Nur Gold-Assertions zählen als Supply (deny-by-default)."},
+    "p-skview":{k:"Datenprodukt · Skills",l:"ops",lt:"Views &amp; Bridges",t:"Supply-View &amp; Eligibility-Bridge",items:["<code>view_skill_supply</code> — gültige Assertions im Zeitfenster","<code>bridge_worker_unit_eligibility</code> — „kann sicher staffen“ (Surge)"],bind:"Temporal: Supply = gültig im Forecast-Fenster."},
+    "p-skdim":{k:"Datenprodukt · Skills",l:"ref",lt:"Dimensionen",t:"Skill-Dimensionen",items:["<code>dim_skill</code> (ESCO) · <code>dim_occupation_role</code> (ISCO-08)","<code>dim_issuing_authority</code> · <code>dim_assurance_level</code> (L0–L4) · <code>dim_proficiency_level</code> (1–5)"],bind:"Register-verifiziert via GLN (MedReg/GesReg/NAREG)."},
+    "p-ai":{k:"Datenprodukt · AI",l:"ops",lt:"AI-Outputs",t:"Forecast &amp; Discharge-Score",items:["<code>DC-AI-FORECAST-v1</code> — 72-h-Prognose","Discharge-Readiness-Scores mit erklärenden Faktoren"],bind:"An ICE-Entities gebunden; Model-Run-IDs für Auditierbarkeit."},
+    "p-evid":{k:"Datenprodukt · Evidenz",l:"both",lt:"Showcase-Evidence",t:"Showcase-Evidence-Produkt",items:["<code>bom.json</code> + <code>dependencies.json</code> (Sprint 14)","Aus <code>bom.yaml</code> geparst — Artefakte, Requirements, ADRs"],bind:"Governance-Evidenz mit Requirement-/ADR-Traceability."},
+    // Semantic tables
+    "t-bed":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typ: Bed",t:"Tabelle „Bed“",items:["Key: bed_id","Beziehungen: <code>is_part_of</code> Room · <code>admitted</code> Patient/Encounter","Property: bed state (occupied/available/blocked)"],bind:"Statisches Binding ← Lakehouse; <b>Zeitreihen-Binding</b> (bed state) ← Eventhouse."},
+    "t-loc":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typen: Facility/Ward/Room",t:"Tabellen „Facility / Ward / Room“",items:["Rekursive <code>is_part_of</code>-Hierarchie (Site⊑Facility⊑Ward⊑Room⊑Bed)","Keys + FK-Bindings identifizieren beide Seiten"],bind:"Statisch ← Lakehouse; FHIR <code>Location</code>/<code>HealthcareService</code>."},
+    "t-capunit":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typ: CapacityUnit",t:"Tabelle „CapacityUnit“",items:["Generalisierung über Bed/OR-Slot/Room/Shift/Device","Gemeinsame Zustände &amp; Relationen"],bind:"Ein KPI-/Forecast-/Simulations-Set über alle Ressourcen."},
+    "t-enc":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typ: Encounter",t:"Tabelle „Encounter“",items:["Person/Patient-role · admission→discharge","Beziehungen: <code>occurs_in</code> Facility · <code>has_participant</code>"],bind:"FHIR <code>Encounter</code>; Flow-Events als Sub-Prozesse."},
+    "t-dept":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typ: Department",t:"Tabelle „Department“",items:["<code>is_part_of</code> Site · <code>offers</code> Specialisation","<code>budgets</code> WorkforcePosition · <code>has_part</code> CapacityUnit"],bind:"FHIR <code>Organization</code>(part-of)/<code>HealthcareService</code>."},
+    "t-emp":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typ: Employee",t:"Tabelle „Employee“",items:["<b>GLN-keyed</b> · <code>member_of</code> Department · <code>bearer_of</code> OccupationRole","<code>asserts</code> SkillAssertion"],bind:"FHIR <code>Practitioner</code> (identifier = GLN) — kein Fuzzy-Matching."},
+    "t-skill":{k:"Semantic Model · Tabelle",l:"both",lt:"→ Entity-Typen: Skill/SkillAssertion",t:"Tabellen „Skill / SkillAssertion“",items:["Skill: ESCO-URI (+ SNOMED)","SkillAssertion: Proficiency (1–5) + Assurance (L0–L4) + Validity"],bind:"Statisch ← Lakehouse (HRIS/ESCO); Cert-Currency ← Eventhouse (Zeitreihe)."},
+    "t-device":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typ: Device",t:"Tabelle „Device / Equipment“",items:["Material entity in Prozeduren/Monitoring","Statische Properties + Live-Messungen"],bind:"<b>Zeitreihen-Binding</b> ← Eventhouse (analog zum Fabric-IQ-Sample)."},
+    "t-forecast":{k:"Semantic Model · Tabelle",l:"ops",lt:"→ Entity-Typen: Forecast/DischargeScore",t:"Tabellen „Forecast / DischargeScore“",items:["Information Content Entities (AI-Outputs)","An die AI-Output-Tabellen gebunden"],bind:"Erdet Copilot-Antworten; Model-Version + Run-Time (NFR-AI-003)."},
+    "t-measure":{k:"Semantic Model · Measures",l:"ops",lt:"DAX-Measures über Direct Lake",t:"Kennzahlen (Measures)",items:["Belegung % · Druckfenster (Forecast) · Same-Day-Entlass-Kandidaten","Skill-Gap = Bedarf − gültiges Supply"],bind:"Jedes Visual trägt Traceability zu Measure + <code>hcp:*</code>-Ontologie-Quelle (NFR-GOV-006)."}
+  };
+  var detail = document.getElementById('detail');
+  var crumbs = document.getElementById('crumbs');
+  var crumbText = {overview:'<b>Übersicht</b> — die Ontologie-Domänen auf einen Blick', products:'Übersicht › <b>Datenprodukte</b>', semantic:'Übersicht › Datenprodukte › <b>Semantisches Modell</b>'};
+  function show(id){
+    var d = DATA[id]; if(!d) return;
+    document.querySelectorAll('.node').forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-node')===id); });
+    var li = d.items.map(function(x){return '<li>'+x+'</li>';}).join('');
+    detail.innerHTML = '<div class="k">'+d.k+'</div><span class="layer l-'+d.l+'">'+d.lt+'</span><h3>'+d.t+'</h3><ul>'+li+'</ul><div class="bind"><b>Binding / Regel:</b> '+d.bind+'</div>';
+    detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+  // view switching
+  document.querySelectorAll('.seg button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var v = btn.getAttribute('data-view');
+      document.querySelectorAll('.seg button').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      document.querySelectorAll('.view').forEach(function(el){ el.classList.toggle('active', el.id==='v-'+v); });
+      crumbs.innerHTML = crumbText[v];
+    });
+  });
+  // node clicks (event delegation)
+  document.addEventListener('click', function(e){
+    var n = e.target.closest('.node'); if(n){ show(n.getAttribute('data-node')); }
+  });
+  document.addEventListener('keydown', function(e){
+    if((e.key==='Enter'||e.key===' ') && document.activeElement && document.activeElement.classList.contains('node')){
+      e.preventDefault(); show(document.activeElement.getAttribute('data-node'));
+    }
+  });
+})();
+</script>
+</body>
+</html>

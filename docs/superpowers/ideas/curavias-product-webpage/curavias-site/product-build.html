@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="de-CH" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Curavias — Wie das Produkt gebaut wird (DevSecOps-Team)</title>
+<meta name="description" content="Wie Curavias gebaut wird: ein DevSecOps-Plattform-Loop mit einem Menschen (Urs Rüegg, Approval-Gate), drei Interviewer-Personas (Rolle, Kompetenz, Challenger) und zehn GitHub-Build-Agenten. Ein Showcase des Microsoft Innovation Hub Zürich.">
+<style>
+:root{--teal:#0E7C86;--teal-dark:#0B5E66;--green:#2FA36B;--green-dark:#238a58;--navy:#16323F;--navy-2:#1C3B4A;--ms-blue:#0067B8;--purple:#6d28d9;--swiss-red:#DA291C;--gold:#c98a1a;--ink:#21323C;--muted:#5C6B75;--bg:#F4F7F8;--card:#fff;--line:#E1E8EB;--gold-bg:#FBF3D0;--gold-line:#E6C34D;--mint:#E7F4EE;--shadow:0 2px 10px rgba(16,50,63,.06),0 8px 28px rgba(16,50,63,.08);--radius:14px;--maxw:1180px;--panel:#0d1b22;--tealR:#17A2AF;--msR:#1f8fe0;--purpleR:#A78BFA;--goldA:#E0A22C;--lite:#E8EEF1;--dim:#9fb3bc;--font:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1e26;--card:#15272f;--ink:#e8eef1;--muted:#9fb0b9;--line:#26424c;--mint:#153029}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55}
+h1,h2,h3{line-height:1.15;margin:0 0 .4em;color:var(--navy);font-weight:600}
+h1{font-size:clamp(1.9rem,4vw,2.7rem)}h2{font-size:1.55rem}h3{font-size:1.05rem}
+p{margin:0 0 1rem}a{color:var(--ms-blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:24px}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal)}
+.section{padding-block:44px}
+.lead{font-size:1.1rem;color:var(--muted);max-width:70ch}
+.btn{display:inline-block;padding:11px 20px;border-radius:999px;font-weight:600;font-size:.95rem;border:1.5px solid transparent}
+.btn-ghost{background:transparent;color:var(--teal);border-color:rgba(14,124,134,.4)}.btn-ghost:hover{background:rgba(14,124,134,.07);text-decoration:none}
+header.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+@media(prefers-color-scheme:dark){header.nav{background:rgba(21,39,47,.92)}}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.28rem;color:var(--navy)}
+.logo small{display:block;font-size:.52rem;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.disclaimer{background:var(--gold-bg);border-block:1px solid var(--gold-line);color:#6b5608;font-size:.86rem}
+.disclaimer .wrap{padding-block:9px;display:flex;gap:10px;align-items:center}.disclaimer b{color:#5a4906}
+@media(prefers-color-scheme:dark){.disclaimer{background:#3a3212;color:#f0e4b0;border-color:#5c4f1a}}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);overflow-x:auto;margin-top:16px}
+.diagram .stage{position:relative;width:100%;aspect-ratio:1240/900;background:var(--panel);border-radius:12px;overflow:hidden;container-type:inline-size;font-family:var(--font)}
+.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.frame{position:absolute;z-index:1;border:.12cqw dashed var(--goldA);border-radius:1.9cqw;opacity:.55;pointer-events:none}
+.node{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:filter .15s ease,box-shadow .15s ease,opacity .15s ease}
+.node:hover{filter:brightness(1.15);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.node:focus-visible{outline:2px solid var(--goldA);outline-offset:3px}
+.node.active{box-shadow:0 0 0 .28cqw #fff,0 0 0 .58cqw var(--goldA)}
+.sq{aspect-ratio:1}
+.diagram .stage:has(.node:hover) .node:not(:hover){opacity:.38}
+.txt{position:absolute;z-index:5;pointer-events:none;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;line-height:1.15;color:var(--dim);transform:translateY(-50%)}
+.txt.l{align-items:flex-start;text-align:left}
+.band{z-index:2;border-radius:1.29cqw;display:flex;align-items:center;justify-content:flex-start;gap:2cqw;padding:0 2.4cqw}
+.gov{background:var(--navy);border:.13cqw solid var(--goldA)}
+.fnd{background:#1b2b33;border:.13cqw solid var(--tealR)}
+.band .lbl{display:flex;flex-direction:column;line-height:1.15;flex:0 0 auto;text-align:left}
+.band .lbl b{font-size:1.05cqw;font-weight:800;letter-spacing:.14em}
+.band .lbl span{font-size:.9cqw;color:var(--dim)}
+.gov .lbl b{color:var(--goldA)}
+.fnd .lbl b{color:var(--tealR)}
+.secgrp{display:flex;align-items:center;gap:1.5cqw;margin:0 auto}
+.secpill{background:var(--panel);border:.13cqw solid var(--goldA);border-radius:1cqw;color:#fff;font-weight:700;font-size:1.6cqw;padding:.5cqw 1.4cqw}
+.secdesc{display:flex;flex-direction:column;line-height:1.2;text-align:left}
+.secdesc b{font-size:1.05cqw;font-weight:700;color:var(--lite)}
+.secdesc span{font-size:.9cqw;color:var(--dim)}
+.fgrp{display:flex;gap:1.1cqw;margin-left:auto}
+.fbox{background:#24292f;border:.12cqw solid #3d4852;border-radius:.8cqw;display:flex;flex-direction:column;justify-content:center;align-items:center;line-height:1.2;padding:.4cqw 1cqw;min-width:18.5cqw}
+.fbox b{font-size:1.13cqw;font-weight:700;color:#fff}
+.fbox span{font-size:.9cqw;color:var(--dim)}
+.capsule{z-index:5;background:var(--navy);border:.12cqw solid var(--goldA);border-radius:1.5cqw;color:var(--goldA);font-size:.97cqw;font-weight:700}
+.sp{z-index:3;background:#12333a;border:.14cqw solid var(--green);border-radius:1.29cqw;color:#d8f3e4;font-weight:700;font-size:1.05cqw}
+.diamond{z-index:3;background:var(--purple);border:.16cqw solid var(--purpleR);transform:rotate(45deg)}
+.diamond span{transform:rotate(-45deg);color:#fff;font-weight:800;font-size:1.45cqw}
+.diamond:hover{filter:brightness(1.15)}
+.loop{z-index:2;border-radius:50%;font-weight:800;font-size:2.74cqw}
+.loop.dev{border:.95cqw solid var(--tealR);background:rgba(23,162,175,.10);color:#7fd6de}
+.loop.ops{border:.95cqw solid var(--msR);background:rgba(31,143,224,.10);color:#8ecbf5}
+.bubble{z-index:3;border-radius:50%;background:var(--teal);border:.16cqw solid #cfe8ea;color:#fff;font-weight:700;font-size:.9cqw}
+.bubble.o{background:var(--ms-blue)}
+.relpill{z-index:3;background:linear-gradient(90deg,#17A2AF,#1f8fe0);border:.12cqw solid #bfe3e8;border-radius:1.1cqw;color:#fff;font-weight:700;font-size:.97cqw}
+.gate{z-index:4;border-radius:50%;background:linear-gradient(180deg,#f2c14e,#d79a25);border:.24cqw solid #8a5f12;color:#fff;font-weight:800;font-size:2.74cqw}
+.gpill{z-index:5;border-radius:1cqw;background:var(--navy);border:.12cqw solid var(--goldA);color:var(--lite);font-weight:700;font-size:.89cqw}
+.envbox{z-index:3;border-radius:.97cqw;display:flex;flex-direction:column;justify-content:center;line-height:1.15}
+.envbox b{font-weight:800;color:#fff}
+.envbox span{color:var(--dim)}
+.sit{background:#103b40;border:.12cqw solid var(--tealR)}
+.sit b{font-size:1.29cqw}.sit span{font-size:.89cqw}
+.prod{background:#12352a;border:.12cqw solid var(--green)}
+.prod b{font-size:1.29cqw}.prod span{font-size:.89cqw}
+.prgate{background:linear-gradient(180deg,#f2c14e,#d79a25);border:.16cqw solid #8a5f12}
+.prgate b{font-size:1.05cqw;color:var(--navy)}.prgate span{font-size:.8cqw;color:#3a2c08;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:.85rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:7px}
+.dot{width:15px;height:15px;border-radius:50%;display:inline-block}
+.dia-detail{background:var(--card);border:1px solid var(--line);border-inline-start:5px solid var(--teal);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);margin-top:18px;min-height:120px}
+.dia-detail .k{font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--teal)}
+.dia-detail h3{margin:4px 0 4px}
+.dia-detail .stage{display:inline-block;font-size:.74rem;font-weight:700;color:#fff;background:var(--navy);border-radius:6px;padding:2px 9px;margin-bottom:8px}
+.dia-detail p{margin:0;font-size:.95rem}
+.dia-detail .gv{margin-top:10px;font-size:.82rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:9px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:14px}
+@media(max-width:820px){.grid3{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.box h3{margin:0 0 8px}.box ul{margin:0;padding-inline-start:18px;font-size:.92rem}.box li{margin:3px 0}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);font-size:.92rem;margin-top:14px}
+.tbl th{background:var(--navy);color:#fff;text-align:start;padding:11px 13px;font-weight:600;font-size:.86rem}
+.tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+.tbl tr:nth-child(even) td{background:rgba(14,124,134,.03)}
+.tbl code{background:rgba(14,124,134,.1);color:var(--teal-dark);padding:1px 7px;border-radius:5px;font-weight:700;font-size:.82rem}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.flow .st{background:var(--mint);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:.83rem;font-weight:600;color:var(--navy)}
+.flow .ar{color:var(--teal);font-weight:700}
+.callout{background:var(--mint);border-inline-start:5px solid var(--green);padding:18px 22px;border-radius:8px;margin-top:18px}
+footer{background:var(--navy-2);color:#c3d2d7;padding-block:40px;font-size:.9rem;margin-top:24px}
+footer a{color:#8fd8c9}.tagline{color:#fff;font-weight:600}
+.note{font-size:.82rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap nav-in">
+  <a class="logo" href="index.html"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="#0E7C86"/><path d="M8 21 C13 12, 21 12, 26 21" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="15" y="9" width="4" height="4" rx="1" fill="#DA291C"/><path d="M22.5 20.5 l2 2 l3.5-4" stroke="#2FA36B" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Curavias<small>Swiss Hospital Capacity Copilot</small></span></a>
+  <a class="btn btn-ghost" href="index.html">← Startseite</a>
+</div></header>
+<div class="disclaimer" role="note"><div class="wrap"><span><b>Kein reales Produkt.</b> Curavias ist ein Showcase des Microsoft Innovation Hub Zürich — synthetische Daten, beratende KI (advisory-only), kein Medizinprodukt und nicht für den klinischen Einsatz.</span></div></div>
+
+<section class="section">
+  <div class="wrap">
+    <span class="eyebrow">Wie Curavias gebaut wird</span>
+    <h1>Ein Mensch, drei Interviewer, zehn GitHub-Agenten — im DevSecOps-Plattform-Loop</h1>
+    <p class="lead">Curavias wird governance-first und GitHub-nativ gebaut: <b>ein Mensch</b> setzt Ziele und gibt frei, <b>drei Interviewer-Personas</b> (Rolle, Kompetenz, Challenger) schärfen und fordern heraus, und <b>zehn spezialisierte GitHub-Build-Agenten</b> erzeugen und prüfen die Artefakte. Die <b>Superpowers-PLAN-Kette</b> (Brainstorm → Design → Spec) führt in die beiden Schleifen <b>Dev</b> und <b>Ops</b>, mit durchgängiger <b>SEC-Governance-Schicht</b> und dem <b>HITL-Gate</b> im Kreuzungspunkt — kein Release ohne menschliche Freigabe. Ausgeliefert wird über <b>DEV → SIT → PROD</b>, auf dem Fundament aus GitHub, Copilot und Copilot CLI. Klicke auf ein Teil im Loop, um Details zu sehen.</p>
+
+    <div class="diagram">
+      <div class="stage" aria-label="Curavias DevSecOps Plattform-Loop interaktiv">
+
+        <!-- ============ WIRE LAYER (curved connectors + arrows only) ============ -->
+        <svg class="wires" viewBox="0 0 1240 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <defs>
+            <linearGradient id="cross" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#17A2AF"/><stop offset="1" stop-color="#1f8fe0"/></linearGradient>
+            <marker id="arwG" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2FA36B"/></marker>
+            <marker id="arwT" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#17A2AF"/></marker>
+            <marker id="arwP" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#A78BFA"/></marker>
+          </defs>
+          <!-- superpowers chain arrows + speist PLAN -->
+          <line x1="484" y1="172" x2="500" y2="172" stroke="#2FA36B" stroke-width="1.8" marker-end="url(#arwG)"/>
+          <line x1="598" y1="172" x2="614" y2="172" stroke="#2FA36B" stroke-width="1.8" marker-end="url(#arwG)"/>
+          <path d="M656,188 C 656,242 560,272 522,314" fill="none" stroke="#2FA36B" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#arwG)"/>
+          <text x="600" y="258" text-anchor="middle" font-size="10" fill="#2FA36B" font-family="Segoe UI,sans-serif">speist PLAN</text>
+          <!-- interviewer bracket + curve -->
+          <path d="M150,192 Q192,330 150,468" fill="none" stroke="#A78BFA" stroke-width="2"/>
+          <path d="M192,330 C 250,248 300,182 354,172" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#arwP)"/>
+          <text x="278" y="250" text-anchor="middle" font-size="10" fill="#A78BFA" font-family="Segoe UI,sans-serif">aus Interviews</text>
+          <!-- DEV -> OPS crossover -->
+          <polygon points="600,436 742,436 742,420 786,452 742,484 742,468 600,468" fill="url(#cross)" opacity="0.45"/>
+          <!-- release curve down to SIT -->
+          <path d="M652,486 C 600,556 540,610 490,648" fill="none" stroke="#17A2AF" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#arwT)"/>
+          <text x="586" y="600" text-anchor="middle" font-size="10" fill="#17A2AF" font-family="Segoe UI,sans-serif">Release &#8594;</text>
+          <!-- env promotion connectors -->
+          <line x1="570" y1="678" x2="585" y2="678" stroke="#17A2AF" stroke-width="1.8" marker-end="url(#arwT)"/>
+          <line x1="695" y1="678" x2="710" y2="678" stroke="#2FA36B" stroke-width="1.8" marker-end="url(#arwG)"/>
+          <!-- foundation ties -->
+          <line x1="485" y1="816" x2="485" y2="706" stroke="#17A2AF" stroke-width="1.5" stroke-dasharray="4 5" opacity="0.35"/>
+          <line x1="795" y1="816" x2="795" y2="706" stroke="#2FA36B" stroke-width="1.5" stroke-dasharray="4 5" opacity="0.35"/>
+        </svg>
+
+        <!-- ============ HITL enclosure (decorative frame + caption) ============ -->
+        <div class="frame" style="left:20.16%;top:11.56%;width:75.81%;height:77.78%"></div>
+        <div class="node capsule" data-part="hitl-enclosure" tabindex="0" title="Durchgaengig HITL: jede Promotion PR-/Issue-gated"
+             style="left:45.97%;top:9.89%;width:24.19%;height:3.33%">durchg&#228;ngig HITL &#183; PR / Issue-gated</div>
+
+        <!-- ============ GOVERNANCE band (top) ============ -->
+        <div class="node band gov" data-part="sec-governance" tabindex="0" title="Security / Compliance / DSG / PHI-Gates - durchgaengig, deny-by-default"
+             style="left:3.23%;top:2.44%;width:93.55%;height:7.78%">
+          <div class="lbl"><b>GOVERNANCE</b><span>Sicherheits- &amp; Compliance-Schicht</span></div>
+          <div class="secgrp">
+            <div class="secpill">SEC</div>
+            <div class="secdesc"><b>Security &#183; Compliance &#183; DSG &#183; PHI-Gates</b><span>durchg&#228;ngig &#183; deny-by-default &#183; approved-to-apply</span></div>
+          </div>
+        </div>
+
+        <!-- ============ SUPERPOWERS PLAN chain ============ -->
+        <div class="txt l" style="left:28.71%;top:15.6%;width:24%;color:#2FA36B;font-size:.97cqw;font-weight:800;letter-spacing:.12em">SUPERPOWERS &#183; PLAN-Kette</div>
+        <div class="node sp" data-part="sp-brainstorm" tabindex="0" title="Superpowers: Brainstorming (HARD-GATE)" style="left:28.71%;top:17.33%;width:10.32%;height:3.56%">Brainstorm</div>
+        <div class="node sp" data-part="sp-design" tabindex="0" title="Superpowers: Design" style="left:40.32%;top:17.33%;width:7.90%;height:3.56%">Design</div>
+        <div class="node sp" data-part="sp-spec" tabindex="0" title="Superpowers: Spec -> writing-plans" style="left:49.52%;top:17.33%;width:6.77%;height:3.56%">Spec</div>
+
+        <!-- ============ INTERVIEWERS (left) ============ -->
+        <div class="txt" style="left:2.0%;top:15.6%;width:15%;color:#A78BFA;font-size:.97cqw;font-weight:800;letter-spacing:.1em">INTERVIEWER</div>
+        <div class="node diamond sq" data-part="iv-rolle" tabindex="0" title="Interviewer-Perspektive: Rolle" style="left:7.10%;top:20%;width:4.84%"><span>R</span></div>
+        <div class="txt" style="left:2.0%;top:28.67%;width:15%;font-size:.97cqw">Rolle</div>
+        <div class="node diamond sq" data-part="iv-kompetenz" tabindex="0" title="Interviewer-Perspektive: Kompetenz" style="left:7.10%;top:33.33%;width:4.84%"><span>K</span></div>
+        <div class="txt" style="left:2.0%;top:42%;width:15%;font-size:.97cqw">Kompetenz</div>
+        <div class="node diamond sq" data-part="iv-challenger" tabindex="0" title="Interviewer-Perspektive: Challenger" style="left:7.10%;top:46.67%;width:4.84%"><span>C</span></div>
+        <div class="txt" style="left:2.0%;top:55.33%;width:15%;font-size:.97cqw">Challenger</div>
+
+        <!-- ============ DEV / OPS lobes ============ -->
+        <div class="node loop dev sq" data-part="lobe-dev" tabindex="0" title="DEV-Lobe: Build-Workflow (10 Build-Agenten)" style="left:33.06%;top:38%;width:17.74%">DEV</div>
+        <div class="node loop ops sq" data-part="lobe-ops" tabindex="0" title="OPS-Lobe: Betrieb (7 Copiloten + Drift)" style="left:60.48%;top:38%;width:17.74%">OPS</div>
+
+        <!-- ============ stage bubbles ============ -->
+        <div class="node bubble sq" data-part="stage-plan" tabindex="0" title="PLAN" style="left:39.68%;top:34.89%;width:4.52%">PLAN</div>
+        <div class="node bubble sq" data-part="stage-code" tabindex="0" title="CODE" style="left:31.94%;top:40.89%;width:4.52%">CODE</div>
+        <div class="node bubble sq" data-part="stage-build" tabindex="0" title="BUILD" style="left:31.94%;top:53.33%;width:4.52%">BUILD</div>
+        <div class="node bubble sq" data-part="stage-test" tabindex="0" title="TEST" style="left:39.68%;top:59.33%;width:4.52%">TEST</div>
+        <div class="node bubble o sq" data-part="stage-deploy" tabindex="0" title="DEPLOY" style="left:67.10%;top:34.89%;width:4.52%">DEPLOY</div>
+        <div class="node bubble o sq" data-part="stage-operate" tabindex="0" title="OPERATE" style="left:76.61%;top:47.11%;width:4.52%">OPERATE</div>
+        <div class="node bubble o sq" data-part="stage-monitor" tabindex="0" title="MONITOR" style="left:67.10%;top:59.33%;width:4.52%">MONITOR</div>
+
+        <!-- ============ RELEASE crossover pill ============ -->
+        <div class="node relpill" data-part="release" tabindex="0" title="RELEASE - nur durch den Human-Gate" style="left:51.94%;top:36.89%;width:7.42%;height:2.89%">RELEASE</div>
+
+        <!-- ============ central HITL gate ============ -->
+        <div class="node gate sq" data-part="hitl-gate" tabindex="0" title="HITL-Gate: Human entscheidet - approved-to-apply" style="left:52.42%;top:45.78%;width:6.45%">&#10003;</div>
+        <div class="txt" style="left:47.65%;top:57.6%;width:16%"><b style="color:#E0A22C;font-size:1.13cqw;font-weight:800">HITL-Gate</b><span style="font-size:.89cqw">Human entscheidet</span></div>
+        <div class="node gpill" data-part="gate-pr" tabindex="0" title="Pull-Request-Gate" style="left:51.29%;top:60%;width:3.55%;height:2.67%">PR</div>
+        <div class="node gpill" data-part="gate-issue" tabindex="0" title="Issue-Gate" style="left:55.97%;top:60%;width:4.52%;height:2.67%">Issue</div>
+        <div class="txt" style="left:45.65%;top:64.9%;width:20%;font-size:.8cqw">jede Aktion vom Menschen freigegeben</div>
+
+        <!-- ============ ENV promotion strip ============ -->
+        <div class="txt" style="left:36.1%;top:69.6%;width:31%;color:#17A2AF;font-size:.97cqw;font-weight:800;letter-spacing:.1em">AUSLIEFERUNG &#183; DEV &#8594; SIT &#8594; PROD</div>
+        <div class="node envbox sit" data-part="env-sit" tabindex="0" title="SIT - End-to-End-Test" style="left:32.26%;top:72.44%;width:13.71%;height:5.78%"><b>SIT</b><span>End-to-End-Test</span></div>
+        <div class="node envbox prgate" data-part="env-prgate" tabindex="0" title="HITL PR-Gate zwischen SIT und PROD" style="left:47.18%;top:73.11%;width:8.87%;height:4.44%"><b>PR-Gate</b><span>HITL</span></div>
+        <div class="node envbox prod" data-part="env-prod" tabindex="0" title="PROD - Go-Live" style="left:57.26%;top:72.44%;width:13.71%;height:5.78%"><b>PROD</b><span>Go-Live</span></div>
+        <div class="txt" style="left:31.6%;top:80.7%;width:40%;font-size:.8cqw">End-to-End-Test in SIT; Promotion nach PROD nur per HITL-PR-Gate.</div>
+
+        <!-- ============ FOUNDATION band (bottom) ============ -->
+        <div class="node band fnd" data-part="foundation" tabindex="0" title="Fundament: GitHub DevOps / Copilot / Copilot CLI"
+             style="left:3.23%;top:90.67%;width:93.55%;height:7.11%">
+          <div class="lbl"><b>FUNDAMENT</b><span>Plattform-Laufzeit</span></div>
+          <div class="fgrp">
+            <div class="fbox"><b>GitHub &#183; DevOps</b><span>Repos &#183; Actions &#183; PRs</span></div>
+            <div class="fbox"><b>GitHub Copilot</b><span>Coding-Agent</span></div>
+            <div class="fbox"><b>Copilot CLI</b><span>Agentische Laufzeit</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot" style="background:#A78BFA"></i> Interviewer</span>
+      <span><i class="dot" style="background:#2FA36B"></i> Superpowers · PLAN</span>
+      <span><i class="dot" style="background:#17A2AF"></i> DEV-Schleife</span>
+      <span><i class="dot" style="background:#1f8fe0"></i> OPS-Schleife</span>
+      <span><i class="dot" style="background:#E0A22C"></i> SEC · Governance</span>
+      <span><i class="dot" style="background:#f2c14e"></i> HITL-Gate</span>
+      <span><i class="dot" style="background:#0E7C86"></i> Auslieferung · DEV→SIT→PROD</span>
+      <span><i class="dot" style="background:#24292f"></i> Fundament</span>
+    </div>
+
+    <div class="dia-detail" id="detail">
+      <div class="k">Zum Start</div>
+      <h3>Klicke ein Teil im Loop</h3>
+      <p>Jedes Teil zeigt seine Aufgabe, seine DevSecOps-Phase und seine Governance-Kontrollen. Das HITL-Gate (✓) im Kreuzungspunkt bedeutet: kein Release ohne menschliche Freigabe („approved-to-apply“).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <h2>Der DevSecOps-Fluss (Superpowers-Workflow)</h2>
+    <div class="flow">
+      <span class="st">Brainstorming</span><span class="ar">→</span>
+      <span class="st">Writing-Plans</span><span class="ar">→</span>
+      <span class="st">Execution</span><span class="ar">→</span>
+      <span class="st">Requesting-Code-Review</span><span class="ar">→</span>
+      <span class="st">Verification-before-Completion</span>
+    </div>
+    <div class="callout"><b>Sicherheits-Gates (nicht verhandelbar):</b> Kein Deploy/Delete ohne explizite menschliche Freigabe (Phrase <code>approved-to-apply</code>). Jeder PR trägt Requirement-Traceability (FR/NFR-IDs) + Evidenz und ein explizites Security-/Compliance-Statement. Governance-Quelle: <code>AGENTS.md</code>, <code>.github/copilot/mcp.json</code>, <code>docs/TEST.md</code>.</div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <h2>Das Team im Überblick</h2>
+    <div class="grid3">
+      <div class="box"><h3 style="color:#c98a1a">1 Mensch</h3><ul><li><b>Urs Rüegg</b> — Sr Solution Engineer Hub, MIH Zürich</li><li>Setzt Ziele, Priorität, Akzeptanzkriterien</li><li>Gibt deploy-gated Schritte frei</li><li>Nimmt PRs an oder lehnt sie ab</li></ul></div>
+      <div class="box"><h3 style="color:#6d28d9">3 Interviewer</h3><ul><li><b>Rolle</b> — prüft gegen die 7 operativen Rollen</li><li><b>Kompetenz</b> — prüft Skill-/Kompetenz-Fit</li><li><b>Challenger</b> — CIO-Challenger, adversarialer Stresstest</li></ul></div>
+      <div class="box"><h3 style="color:#0E7C86">10 GitHub-Agenten</h3><ul><li>orchestrator · spec-parser · solution-design</li><li>data-design · app-builder · landing-zone</li><li>compliance · test-verifier · review-session · drift-analyzer</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <h2>Agenten-Register (Rolle, Phase, Governance)</h2>
+    <table class="tbl">
+      <thead><tr><th>Rolle</th><th>Typ</th><th>DevSecOps-Phase</th><th>Aufgabe / Kontrolle</th></tr></thead>
+      <tbody>
+        <tr><td>Urs Rüegg</td><td>Mensch</td><td>Gate (Deploy/Accept)</td><td>Ziele &amp; Akzeptanz; Freigabe <code>approved-to-apply</code>; PR-Annahme/-Ablehnung; Scope- &amp; Tradeoff-Entscheide</td></tr>
+        <tr><td>Interviewer · Rolle</td><td>Interviewer</td><td>Plan / Discovery</td><td>Validiert den Funktionsumfang gegen die 7 operativen Rollen (BMCA, OOA, DCA, ORSA, SBA, CSA, DQ)</td></tr>
+        <tr><td>Interviewer · Kompetenz</td><td>Interviewer</td><td>Plan / Discovery</td><td>Prüft Kompetenz-/Skill-Fit gegen die Skills-Ontologie (Proficiency &amp; Assurance)</td></tr>
+        <tr><td>Interviewer · Challenger</td><td>Interviewer</td><td>Plan / Review</td><td>CIO-Challenger — fordert Scope, Wert und Annahmen adversarial heraus</td></tr>
+        <tr><td><code>orchestrator</code></td><td>Agent</td><td>Kreuzungspunkt</td><td>Koordiniert die Agenten-Workflows; routet gescopte Arbeit; erzwingt den Handoff-Contract zwischen Iterationen</td></tr>
+        <tr><td><code>spec-parser-agent</code></td><td>Agent · Dev</td><td>Plan</td><td>Parst Specs/PRD in gebundene Requirements (FR-/NFR-IDs)</td></tr>
+        <tr><td><code>solution-design-agent</code></td><td>Agent · Dev</td><td>Plan / Code</td><td>Erzeugt Architektur- &amp; Solution-Design-Artefakte (ARCHITECTURE.md, SD.md)</td></tr>
+        <tr><td><code>data-design-agent</code></td><td>Agent · Dev</td><td>Code</td><td>Data Contracts, semantisches Modell, Ontologie, Datendomänen (DATA.md)</td></tr>
+        <tr><td><code>app-builder-agent</code></td><td>Agent · Dev</td><td>Code / Build</td><td>Baut die React-Command-Center-App und den Agent-Host</td></tr>
+        <tr><td><code>landing-zone-agent</code></td><td>Agent · Dev</td><td>Build / Deploy</td><td>IaC-Landing-Zone, What-if-Evidenz; Deploy nur nach Freigabe</td></tr>
+        <tr><td><code>compliance-agent</code></td><td>Agent · Sec</td><td>durchgängig</td><td>Compliance-Evidenz, CH-C-Kontrollen, Security-/Compliance-Impact</td></tr>
+        <tr><td><code>test-verifier-agent</code></td><td>Agent · Ops</td><td>Test / Verify</td><td>Validierung &amp; Quality-Gates; Evidenz vor Merge (TEST.md)</td></tr>
+        <tr><td><code>review-session-agent</code></td><td>Agent · Ops</td><td>Release / Review</td><td>Führt Review-Sessions &amp; Code-Review vor PR-Ready durch</td></tr>
+        <tr><td><code>drift-analyzer</code></td><td>Agent · Ops</td><td>Operate / Monitor</td><td>Post-Merge-Drift-Baseline &amp; Monitoring</td></tr>
+      </tbody>
+    </table>
+    <p class="note" style="margin-top:12px">Roster aus dem Repository <code>urruegg/SwissHospitalCapacityPlatform</code> (Ordner <code>agents/</code> + <code>AGENTS.md</code>). Ausführung via GitHub Copilot Coding Agent mit dem Superpowers-Plugin; der Mensch bleibt Ziel-Setzer und Freigabe-Instanz.</p>
+    <p style="margin-top:18px"><a class="btn btn-ghost" href="architecture.html">← Architektur &amp; Ontologie</a> &nbsp; <a class="btn btn-ghost" href="index.html">Zur Startseite</a></p>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <p class="tagline">Verlässliche Vorschau. Erklärbare Empfehlung. Der Mensch entscheidet.</p>
+  <p style="color:#93a6ad;font-size:.82rem">Microsoft Innovation Hub Zürich — Showcase · Powered by Microsoft · <a href="https://curavias.ch">curavias.ch</a></p>
+</div></footer>
+
+<script>
+(function(){
+  var DATA = {
+    "sec-governance":{t:"SEC · Security & Compliance",k:"Governance · durchgängig",s:"Sicherheits-Schicht",b:"Die durchgängige Sicherheits- und Compliance-Schicht über dem gesamten Loop: DSG- und PHI-Gates, deny-by-default, Least-Privilege-RBAC und Secret-Scanning. Kein Schritt entkommt der Kontrolle.",g:"Security ist im ganzen Loop verankert, nicht nachgelagert — approved-to-apply für jeden Deploy/Delete."},
+    "hitl-enclosure":{t:"Durchgängig HITL · PR-/Issue-gated",k:"Human-in-the-Loop",s:"durchgängig",b:"Der gesamte Loop ist von einer HITL-Hülle umschlossen: jede Promotion und jede zustandsändernde Aktion läuft über einen Pull-Request oder ein Issue, das ein Mensch prüft und freigibt.",g:"Kein autonomer Deploy — der Mensch bleibt Freigabe-Instanz."},
+    "sp-brainstorm":{t:"Brainstorming",k:"Superpowers · PLAN-Kette",s:"Brainstorm (HARD-GATE)",b:"Ideen werden im Dialog zu einem Design geschärft. HARD-GATE: kein Code, keine Spec-Transition, bevor ein Design präsentiert und vom Menschen freigegeben ist.",g:"Design-Freigabe zwingend, bevor Implementierung beginnt."},
+    "sp-design":{t:"Design",k:"Superpowers · PLAN-Kette",s:"Design",b:"Das freigegebene Konzept wird in Architektur, Komponenten, Datenfluss und Testfälle überführt — in Abschnitten, die einzeln bestätigt werden.",g:"Jeder Design-Abschnitt wird vom Menschen bestätigt."},
+    "sp-spec":{t:"Spec",k:"Superpowers · PLAN-Kette",s:"Spec → writing-plans",b:"Das validierte Design wird als Spec-Dokument geschrieben und committed; danach übernimmt writing-plans und erzeugt den Implementierungsplan.",g:"Terminal-State der Brainstorm-Kette ist writing-plans — keine andere Implementierungs-Skill."},
+    "iv-rolle":{t:"Interviewer · Rolle",k:"Interviewer-Persona",s:"Plan / Discovery",b:"Validiert den Funktionsumfang gegen die sieben operativen Rollen im Spital (Bettenmanagement, Notfall-Leitung, OP-Koordination, Personalplanung, Entlassungskoordination, Krisen-Diensthabende, Data/Ontology Steward).",g:"Stellt sicher, dass jede Rolle einen konkreten Nutzen und ein klares HITL-Gate hat."},
+    "iv-kompetenz":{t:"Interviewer · Kompetenz",k:"Interviewer-Persona",s:"Plan / Discovery",b:"Prüft den Kompetenz- und Skill-Fit gegen die Skills-Ontologie — Proficiency (1–5) und Assurance (L0–L4) — und ob Bedarf, Angebot und Kapazität sauber matchen.",g:"Verankert das Produkt an evidenzbasierter, aktuell gültiger Kompetenz statt Kopfzahl."},
+    "iv-challenger":{t:"Interviewer · Challenger",k:"Interviewer-Persona",s:"Plan / Review",b:"Der CIO-Challenger: fordert Scope, Geschäftswert und Annahmen adversarial heraus — „Welche Entscheidung wird heute im Blindflug getroffen, und wo ist der Beweis?“",g:"Verhindert Over-Engineering und hält den Business-Case ehrlich (ROM ±30 %)."},
+    "lobe-dev":{t:"DEV-Lobe",k:"Schleife · Dev",s:"Build-Workflow",b:"Die Entwicklungs-Schleife: zehn spezialisierte GitHub-Build-Agenten durchlaufen PLAN → CODE → BUILD → TEST und erzeugen auditierbare Draft-PRs mit Traceability.",g:"Jede Arbeit startet mit Requirement-IDs; Draft-PRs sind nachvollziehbar."},
+    "lobe-ops":{t:"OPS-Lobe",k:"Schleife · Ops",s:"Betrieb",b:"Die Betriebs-Schleife: DEPLOY → OPERATE → MONITOR. Sieben beratende Copiloten plus der Drift-Analyzer halten den Betrieb stabil und schliessen den Loop zurück in Plan.",g:"Monitor → zurück in Plan; Drift wird über menschlich gefilterte Issues remediert."},
+    "stage-plan":{t:"PLAN",k:"DevSecOps-Phase",s:"Plan",b:"Requirements werden aus Spezifikation und PRD in gebundene FR-/NFR-IDs geparst; die Solution-Design-Artefakte entstehen.",g:"Keine Arbeit ohne Requirement-IDs."},
+    "stage-code":{t:"CODE",k:"DevSecOps-Phase",s:"Code",b:"Data Contracts, semantisches Modell und die App-Artefakte (React-Command-Center, Agent-Host) werden erzeugt.",g:"Design → Plan → Execute → Review → Verify."},
+    "stage-build":{t:"BUILD",k:"DevSecOps-Phase",s:"Build",b:"Die IaC-Landing-Zone und die Build-Artefakte werden zusammengesetzt; What-if-Evidenz wird erzeugt.",g:"Deploy-Apply nur nach geprüftem What-if."},
+    "stage-test":{t:"TEST",k:"DevSecOps-Phase",s:"Test / Verify",b:"Validierung und Quality-Gates laufen; Evidenz wird vor dem Merge erzeugt — Verification-before-Completion.",g:"Kein Merge ohne Evidenz (Validation-Debt-Kontrolle)."},
+    "stage-deploy":{t:"DEPLOY",k:"DevSecOps-Phase",s:"Deploy",b:"Freigegebene Artefakte werden in die SIT-Umgebung ausgerollt — ausschliesslich nach dem HITL-Gate.",g:"Deploy nur nach approved-to-apply."},
+    "stage-operate":{t:"OPERATE",k:"DevSecOps-Phase",s:"Operate",b:"Der Betrieb läuft; die beratenden Copiloten unterstützen die operativen Rollen mit kontextbasierten Empfehlungen.",g:"Copiloten empfehlen; der Mensch entscheidet."},
+    "stage-monitor":{t:"MONITOR",k:"DevSecOps-Phase",s:"Operate / Monitor",b:"Post-Merge-Drift-Baselines werden erstellt und Abweichungen überwacht; Erkenntnisse fliessen zurück in Plan.",g:"Schliesst den Loop: Monitor → zurück in Plan."},
+    "release":{t:"RELEASE",k:"Kreuzungspunkt",s:"Release",b:"Der Übergang von Dev nach Ops. Nur der Human-Gate lässt eine Änderung diese Kreuzung passieren.",g:"Release ausschliesslich durch das HITL-Gate."},
+    "hitl-gate":{t:"HITL-Gate · Human entscheidet",k:"Human-in-the-Loop",s:"Gate — Deploy & Accept",b:"Urs Rüegg im Kreuzungspunkt: setzt Ziele, Priorität und Akzeptanzkriterien, gibt deploy-gated Schritte frei und nimmt finale PRs an oder lehnt sie ab.",g:"Freigabe-Phrase „approved-to-apply“ — kein Deploy/Delete ohne explizite menschliche Freigabe."},
+    "gate-pr":{t:"PR-Gate",k:"HITL-Gate",s:"Pull-Request",b:"Jede zustandsändernde Änderung läuft über einen Pull-Request, den ein Mensch mit Schreibrecht prüft und freigibt.",g:"Der Freigebende darf nicht der Agent selbst sein."},
+    "gate-issue":{t:"Issue-Gate",k:"HITL-Gate",s:"Issue",b:"Arbeit wird über Issues (Templates oder @-Mention) angestossen und gescoped; das hält Intent und Audit GitHub-nativ.",g:"Gescopte Arbeit; Intent bleibt auditierbar."},
+    "env-sit":{t:"SIT · End-to-End-Test",k:"Auslieferung",s:"SIT",b:"Die Integrations-Test-Umgebung: der vollständige Fluss wird end-to-end geprüft, bevor eine Promotion nach PROD überhaupt möglich ist.",g:"End-to-End-Test in SIT ist Voraussetzung für PROD."},
+    "env-prgate":{t:"PR-Gate zwischen SIT und PROD",k:"Auslieferung",s:"PR-Gate · HITL",b:"Zwischen SIT und PROD sitzt ein menschliches PR-Gate: die Promotion nach PROD erfolgt nur nach expliziter Freigabe.",g:"Promotion nach PROD nur per HITL-PR-Gate."},
+    "env-prod":{t:"PROD · Go-Live",k:"Auslieferung",s:"PROD",b:"Die Produktions-Umgebung. Änderungen erreichen PROD ausschliesslich über den geprüften SIT-Lauf und das menschliche PR-Gate.",g:"Kein direkter Weg nach PROD am Gate vorbei."},
+    "foundation":{t:"FUNDAMENT · GitHub-nativ",k:"Fundament · Plattform-Laufzeit",s:"Foundation",b:"Der gesamte Loop läuft auf GitHub · DevOps (Repos, Actions, PRs), dem GitHub Copilot Coding-Agent und der Copilot CLI als agentischer Laufzeit.",g:"GitHub-native Ausführung; kein bespoke Service, keine Plattform-Runtime-Infrastruktur."}
+  };
+  var detail = document.getElementById('detail');
+  var nodes = document.querySelectorAll('.node');
+  function show(id){
+    var d = DATA[id]; if(!d) return;
+    nodes.forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-part')===id); });
+    detail.innerHTML = '<div class="k">'+d.k+'</div><span class="stage">'+d.s+'</span><h3>'+d.t+'</h3><p>'+d.b+'</p><div class="gv"><b>Governance:</b> '+d.g+'</div>';
+    detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+  nodes.forEach(function(n){
+    n.addEventListener('click', function(){ show(n.getAttribute('data-part')); });
+    n.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); show(n.getAttribute('data-part')); } });
+  });
+})();
+</script>
+</body>
+</html>

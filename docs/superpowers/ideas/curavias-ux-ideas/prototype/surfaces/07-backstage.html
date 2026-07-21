@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curavias · BACKSTAGE — C-Level-Sicht</title>
+<style>
+    /* ===== Curavias prototype base (Superpowers companion frame, light-mode locked) ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e5e5e7;
+      --border: #d1d1d6;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #aeaeb2;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --success: #34c759;
+      --warning: #ff9f0a;
+      --error: #ff3b30;
+      --selected-bg: #e8f4fd;
+      --selected-border: #0071e3;
+    }
+    html { height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100%;
+    }
+    .cv-content { padding: 2rem; }
+    /* base helpers used by fragments */
+    h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .section { margin-bottom: 2rem; }
+    .label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .option { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: flex-start; gap: 1rem; }
+    .option:hover { border-color: var(--accent); }
+    .option.selected { background: var(--selected-bg); border-color: var(--selected-border); }
+    .option .letter { background: var(--bg-tertiary); color: var(--text-secondary); width: 1.75rem; height: 1.75rem; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; }
+    .option.selected .letter { background: var(--accent); color: white; }
+    .option .content { flex: 1; }
+    .option .content h3 { font-size: 0.95rem; margin-bottom: 0.15rem; }
+    .option .content p { color: var(--text-secondary); font-size: 0.85rem; margin: 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .card-body { padding: 1rem; }
+    .card-body h3 { margin-bottom: 0.25rem; }
+    .card-body p { color: var(--text-secondary); font-size: 0.85rem; }
+    .mockup { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+    .mockup-header { background: var(--bg-tertiary); padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+    .mockup-body { padding: 1.5rem; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+    .placeholder { background: var(--bg-tertiary); border: 2px dashed var(--border); border-radius: 8px; padding: 2rem; text-align: center; color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+<div class="cv-content">
+<style>
+  .bs-wrap{max-width:1080px;margin:0 auto}
+  .bs-chrome{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.35rem}
+  .brand{display:flex;align-items:center;gap:0.6rem}
+  .brand-word{font-size:1.5rem;font-weight:800;letter-spacing:-0.01em;color:#2A4A5E;line-height:1}
+  .brand-desc{font-size:0.6rem;letter-spacing:0.14em;font-weight:800;color:var(--text-tertiary);margin-top:0.22rem}
+  .brand-tag{font-size:0.82rem;font-style:italic;color:#6d54a0;margin:0 0 1rem 0.1rem}
+  .bs-pills{display:flex;gap:0.5rem;align-items:center;font-size:0.72rem;color:var(--text-secondary);flex-wrap:wrap;justify-content:flex-end}
+  .bs-actchip{border:1px solid #8a6fbf55;background:#8a6fbf14;color:#6d54a0;padding:3px 9px;border-radius:10px;font-weight:800;font-size:0.66rem;letter-spacing:0.08em}
+  .bs-seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-weight:700;font-size:0.66rem}
+  .bs-seg span{padding:3px 9px}
+  .bs-seg .off{color:var(--text-tertiary)}
+  .bs-seg .on{background:#ff9f0a22;color:#ff9f0a}
+  .bs-lang{border:1px solid var(--border);padding:3px 9px;border-radius:10px;font-weight:600}
+
+  /* ---- HERO ---- */
+  .bs-hero{display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;border:1px solid var(--border);border-radius:16px;padding:1.15rem 1.25rem;background:linear-gradient(135deg,#8a6fbf12,transparent 55%),var(--bg-secondary)}
+  .bs-eyebrow{font-size:0.64rem;letter-spacing:0.12em;font-weight:800;color:#8a6fbf;text-transform:uppercase}
+  .bs-hook{font-size:1.5rem;line-height:1.18;font-weight:800;color:#2A4A5E;margin-top:0.35rem}
+  .bs-hook span{color:#8a6fbf}
+  .bs-sub{font-size:0.82rem;color:var(--text-secondary);line-height:1.5;margin:0.5rem 0 0.8rem;max-width:46ch}
+  .bs-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+  .bs-metric{background:#F1ECF8;border-radius:10px;padding:0.6rem 0.55rem;text-align:center}
+  .bs-metric-num{font-size:1.2rem;font-weight:800;color:#2A4A5E;line-height:1}
+  .bs-metric-lab{font-size:0.6rem;font-weight:700;color:#6d54a0;margin-top:0.3rem;line-height:1.25}
+  .bs-plan{border:1px solid #8a6fbf33;border-radius:12px;background:#8a6fbf0a;padding:0.85rem 0.95rem;display:flex;flex-direction:column;gap:0.5rem}
+  .bs-plan-lab{font-size:0.62rem;letter-spacing:0.08em;font-weight:800;color:#6d54a0;text-transform:uppercase}
+  .bs-plan-line{font-size:0.8rem;color:var(--text-secondary);line-height:1.45}
+  .bs-plan-line b{color:#2A4A5E}
+  .bs-plan-flow{display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap;font-size:0.66rem;font-weight:800;color:#6d54a0}
+  .bs-plan-flow .st{background:#fff;border:1px solid #8a6fbf40;border-radius:8px;padding:3px 8px}
+  .bs-plan-flow .ar{color:#8a6fbf}
+
+  /* ---- 4 PROOF TILES ---- */
+  .bs-secthead{font-size:0.64rem;letter-spacing:0.12em;font-weight:800;color:#8a6fbf;text-transform:uppercase;margin:1.35rem 0 0.15rem}
+  .bs-sectsub{font-size:0.78rem;color:var(--text-tertiary);margin-bottom:0.7rem}
+  .bs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+  .bs-tile{border:1px solid var(--border);border-radius:14px;background:var(--bg-secondary);padding:1rem 1.05rem;display:flex;flex-direction:column;gap:0.55rem;position:relative;overflow:hidden}
+  .bs-tile::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--acc)}
+  .bs-tile-top{display:flex;align-items:center;gap:0.6rem}
+  .bs-ico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;flex:none;background:var(--acc);box-shadow:0 3px 8px rgba(0,0,0,.12)}
+  .bs-ico svg{width:22px;height:22px}
+  .bs-tile-kick{font-size:0.6rem;letter-spacing:0.08em;font-weight:800;color:var(--acc);text-transform:uppercase}
+  .bs-tile-title{font-size:1rem;font-weight:800;color:#2A4A5E;line-height:1.15;margin-top:0.15rem}
+  .bs-tile-body{font-size:0.8rem;color:var(--text-secondary);line-height:1.45}
+  .bs-tile-body b{color:#2A4A5E}
+  .bs-evi{display:inline-flex;align-items:center;gap:5px;align-self:flex-start;font-size:0.66rem;font-weight:800;color:#fff;padding:4px 10px;border-radius:999px;background:var(--acc);letter-spacing:0.02em}
+  .bs-evi svg{width:12px;height:12px;flex:none}
+
+  /* ---- DELIVERY RIBBON ---- */
+  .bs-deliv{margin-top:0.8rem;border:1px solid var(--border);border-radius:14px;background:var(--bg-tertiary);padding:0.95rem 1.1rem}
+  .bs-deliv-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.7rem;flex-wrap:wrap}
+  .bs-deliv-lab{font-size:0.72rem;font-weight:800;color:#2A4A5E;display:flex;align-items:center;gap:0.5rem}
+  .bs-deliv-lab svg{width:16px;height:16px;color:#2E9E78}
+  .bs-deliv-note{font-size:0.68rem;color:var(--text-tertiary)}
+  .bs-deliv-note b{color:#2E9E78}
+  .bs-ribbon{display:flex;align-items:stretch;gap:0}
+  .bs-env{flex:1;text-align:center;padding:0.6rem 0.5rem;border:1.5px solid var(--border);background:var(--bg-secondary);position:relative}
+  .bs-env:first-child{border-radius:10px 0 0 10px}
+  .bs-env:last-child{border-radius:0 10px 10px 0}
+  .bs-env-name{font-size:0.82rem;font-weight:800;color:#2A4A5E;letter-spacing:0.04em}
+  .bs-env-desc{font-size:0.63rem;color:var(--text-tertiary);margin-top:0.2rem;line-height:1.25}
+  .bs-gate{display:flex;align-items:center;justify-content:center;padding:0 0.55rem;font-size:0.6rem;font-weight:800;color:#8a6fbf;flex:none}
+  .bs-gate span{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1}
+  .bs-gate svg{width:15px;height:15px}
+
+  /* ---- AGENT STRIP ---- */
+  .bs-agents{margin-top:1.35rem}
+  .bs-agents-head{font-size:0.64rem;letter-spacing:0.12em;font-weight:800;color:#8a6fbf;text-transform:uppercase;margin-bottom:0.55rem}
+  .bs-agentrow{display:flex;gap:0.5rem;flex-wrap:wrap}
+  .bs-agent{display:inline-flex;align-items:center;gap:0.4rem;border:1px solid var(--border);border-radius:10px;background:var(--bg-secondary);padding:0.4rem 0.7rem;font-size:0.72rem;font-weight:700;color:#2A4A5E}
+  .bs-agent svg{width:15px;height:15px;flex:none;color:#8a6fbf}
+  .bs-agent .code{font-size:0.6rem;color:var(--text-tertiary);font-weight:600}
+
+  /* ---- DISCLAIMER + ACT NAV ---- */
+  .bs-disclaimer{display:flex;gap:0.55rem;align-items:flex-start;margin-top:1.3rem;padding:0.7rem 0.95rem;border-left:4px solid #F4A93B;border-radius:8px;background:#FBF1D4;font-size:0.74rem;color:#7a611c;line-height:1.45}
+  .bs-disclaimer b{color:#5f4a12}
+  .bs-nav{display:flex;gap:0.6rem;margin-top:1rem;flex-wrap:wrap}
+  .bs-navbtn{display:inline-flex;align-items:center;gap:0.4rem;border:1px solid var(--border);border-radius:10px;padding:0.5rem 0.9rem;font-size:0.74rem;font-weight:800;cursor:pointer;background:var(--bg-secondary);transition:border-color .15s,box-shadow .15s}
+  .bs-navbtn svg{width:15px;height:15px}
+  .bs-navbtn.start{color:#2A4A5E}
+  .bs-navbtn.start:hover{border-color:#2A4A5E;box-shadow:0 5px 14px rgba(42,74,94,.12)}
+  .bs-navbtn.main{color:#17B890}
+  .bs-navbtn.main:hover{border-color:#17B890;box-shadow:0 5px 14px rgba(23,184,144,.14)}
+</style>
+
+<div class="bs-wrap">
+
+  <div class="bs-chrome">
+    <div class="brand">
+      <svg width="58" height="32" viewBox="0 0 58 32" fill="none" aria-label="Curavias">
+        <polyline points="4,26 25,19 50,7" stroke="#2E9E78" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="4" cy="26" r="3" fill="#2A4A5E"/>
+        <circle cx="25" cy="19" r="7" fill="#E0392B"/>
+        <path d="M25 15.4v7.2M21.4 19h7.2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="50" cy="7" r="7" fill="#2E9E78"/>
+        <path d="M46.6 7.3l2.2 2.3 3.4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="brand-word">Curavias</div>
+        <div class="brand-desc">SWISS HOSPITAL CAPACITY COPILOT</div>
+      </div>
+    </div>
+    <div class="bs-pills">
+      <span class="bs-actchip">BACKSTAGE</span>
+      <span class="bs-seg"><span class="off">LIVE</span><span class="on">SIMULATED</span></span>
+      <span class="bs-lang">EN·DE·FR·IT</span>
+    </div>
+  </div>
+  <p class="brand-tag">Backstage — für die Geschäftsleitung: kein Dashboard, sondern der Beweis.</p>
+
+  <!-- HERO -->
+  <div class="bs-hero">
+    <div>
+      <div class="bs-eyebrow">Backstage · Wie es entstand</div>
+      <div class="bs-hook">Kein Dashboard. Der <span>Beweis</span>, wie diese Plattform gebaut wurde.</div>
+      <p class="bs-sub">Sie haben gerade gesehen, was die Copiloten leisten. Hier sehen Sie ruhig und in vier Bildern, wie das Ganze entstanden ist — von Agenten gebaut, Schweizer-DSG-konform, und bei jedem Schritt vom Menschen freigegeben.</p>
+      <div class="bs-metrics">
+        <div class="bs-metric"><div class="bs-metric-num">8</div><div class="bs-metric-lab">Copiloten, von Agenten gebaut</div></div>
+        <div class="bs-metric"><div class="bs-metric-num">100%</div><div class="bs-metric-lab">HITL-gated · PR / Issue</div></div>
+        <div class="bs-metric"><div class="bs-metric-num">0</div><div class="bs-metric-lab">echte Patientendaten (PHI)</div></div>
+      </div>
+    </div>
+    <div class="bs-plan">
+      <div class="bs-plan-lab">Der Bauplan in einem Satz</div>
+      <div class="bs-plan-line">GitHub-Agenten planen, bauen und testen — jede Änderung wird ein <b>nachvollziehbarer Draft-PR</b>, den ein Mensch freigibt.</div>
+      <div class="bs-plan-flow">
+        <span class="st">PLAN</span><span class="ar">→</span>
+        <span class="st">BUILD</span><span class="ar">→</span>
+        <span class="st">TEST</span><span class="ar">→</span>
+        <span class="st">HITL-Gate</span><span class="ar">→</span>
+        <span class="st">RELEASE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 PROOF TILES -->
+  <div class="bs-secthead">Vier Beweise</div>
+  <div class="bs-sectsub">Ein Blick pro Karte — keine Zahlenwand.</div>
+  <div class="bs-grid">
+
+    <!-- Tile 1: Built by agents -->
+    <div class="bs-tile" style="--acc:#8a6fbf">
+      <div class="bs-tile-top">
+        <div class="bs-ico"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 4v4M8.5 13h.01M15.5 13h.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M9 19v2M15 19v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div><div class="bs-tile-kick">Von Agenten gebaut</div><div class="bs-tile-title">Spezialisierte GitHub-Copiloten</div></div>
+      </div>
+      <div class="bs-tile-body">Acht Runtime-Copiloten (OOA, BMCA, DCA, ORSA, SBA, CSA, Data-Quality, Onboarding) — dahinter eine Kontrollebene von Build-Agenten. Jede Zeile Code startet mit einer <b>Requirement-ID</b>.</div>
+      <span class="bs-evi"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>jede Änderung = Draft-PR</span>
+    </div>
+
+    <!-- Tile 2: Data platform -->
+    <div class="bs-tile" style="--acc:#17B890">
+      <div class="bs-tile-top">
+        <div class="bs-ico"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="6" rx="7" ry="3" stroke="currentColor" stroke-width="1.7"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3" stroke="currentColor" stroke-width="1.7"/></svg></div>
+        <div><div class="bs-tile-kick">Datenplattform</div><div class="bs-tile-title">Microsoft Fabric + FHIR</div></div>
+      </div>
+      <div class="bs-tile-body">Bronze → Silber → Gold Medaillon-Architektur auf Fabric, Interoperabilität über <b>FHIR</b>. Ein Fabric-IQ-Datenagent macht die Ontologie live abfragbar — nur mit <b>synthetischen</b> Daten.</div>
+      <span class="bs-evi"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"/><path d="M8 12l3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>da_hospital_capacity · live</span>
+    </div>
+
+    <!-- Tile 3: Governance -->
+    <div class="bs-tile" style="--acc:#2A4A5E">
+      <div class="bs-tile-top">
+        <div class="bs-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 8-7 10-4-2-7-5.6-7-10V6l7-3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><div class="bs-tile-kick">Governance</div><div class="bs-tile-title">Swiss DSG · Human-in-the-Loop</div></div>
+      </div>
+      <div class="bs-tile-body">Kein Deploy und kein Löschen ohne explizite menschliche Freigabe — durchgesetzt über die Freigabe-Phrase <b>„approved-to-apply"</b>. Datenschutz nach Schweizer DSG, keine echten Patientendaten.</div>
+      <span class="bs-evi"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.8"/></svg>kein Deploy ohne Freigabe</span>
+    </div>
+
+    <!-- Tile 4: Delivery -->
+    <div class="bs-tile" style="--acc:#2E9E78">
+      <div class="bs-tile-top">
+        <div class="bs-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M13 3c4 1 7 4 8 8-4 1-7 4-8 8-1-4-4-7-8-8 4-1 7-4 8-8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="11" r="2" stroke="currentColor" stroke-width="1.6"/></svg></div>
+        <div><div class="bs-tile-kick">Auslieferung</div><div class="bs-tile-title">DEV → SIT → PROD</div></div>
+      </div>
+      <div class="bs-tile-body">Alles reift durch drei Umgebungen. Vor jeder Produktion steht ein <b>PR-Gate</b>, das ein Mensch bestätigt — nachvollziehbar im GitHub-Verlauf.</div>
+      <span class="bs-evi"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>PR-Gate vor PROD</span>
+    </div>
+
+  </div>
+
+  <!-- DELIVERY RIBBON -->
+  <div class="bs-deliv">
+    <div class="bs-deliv-head">
+      <div class="bs-deliv-lab"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M14 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>So reift eine Änderung bis zur Produktion</div>
+      <div class="bs-deliv-note">Menschliche Freigabe vor <b>PROD</b> · jeder Schritt auditierbar</div>
+    </div>
+    <div class="bs-ribbon">
+      <div class="bs-env"><div class="bs-env-name">DEV</div><div class="bs-env-desc">Agenten bauen · Draft-PR</div></div>
+      <div class="bs-gate"><span><svg viewBox="0 0 24 24" fill="none"><path d="M6 12l4 4 8-9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>PR</span></div>
+      <div class="bs-env"><div class="bs-env-name">SIT</div><div class="bs-env-desc">End-to-End getestet</div></div>
+      <div class="bs-gate"><span><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.9"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.9"/></svg>HITL</span></div>
+      <div class="bs-env"><div class="bs-env-name">PROD</div><div class="bs-env-desc">Freigegeben · live</div></div>
+    </div>
+  </div>
+
+  <!-- AGENT STRIP -->
+  <div class="bs-agents">
+    <div class="bs-agents-head">Die Copiloten, die Sie gesehen haben</div>
+    <div class="bs-agentrow">
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>OOA <span class="code">Belegung</span></span>
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>BMCA <span class="code">Betten</span></span>
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>DCA <span class="code">Austritt</span></span>
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 8l5-5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>ORSA <span class="code">OP</span></span>
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M4 19a5 5 0 0110 0M16 6h4M18 4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>SBA <span class="code">Personal</span></span>
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 10v4M12 16.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>CSA <span class="code">Krise</span></span>
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7"/><path d="M8 12l3 3 5-6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Data-Quality <span class="code">Kontrakte</span></span>
+      <span class="bs-agent"><svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM5 20a7 7 0 0114 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Onboarding <span class="code">Welcome-PR</span></span>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="bs-disclaimer">
+    <span>⚠️</span>
+    <div><b>Kein echtes Produkt.</b> Curavias ist ein Demo- und Proof-of-Technology-Showcase mit synthetischen Daten — keine echten Patientendaten, keine klinische Nutzung.</div>
+  </div>
+
+  <!-- ACT NAV -->
+  <div class="bs-nav">
+    <div class="bs-navbtn start"><svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Zurück zu START</div>
+    <div class="bs-navbtn main"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h14M13 7l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Zurück zu MAIN (Rolle wählen)</div>
+  </div>
+
+</div>
+
+</div>
+
+</body>
+</html>

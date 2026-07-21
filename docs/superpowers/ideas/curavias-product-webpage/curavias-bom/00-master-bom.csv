@@ -1,0 +1,147 @@
+id,step,category,artefact,description,format_or_type,origin_or_source,priority,maps_to
+REF-01,Step1,Reference-Section,Global navigation + product mega-menu,Sticky top nav reused for Curavias,HTML/Fluent,MS Healthcare page,P0,Nav
+REF-02,Step1,Reference-Section,Hero band,Headline+subhead+dual CTA+media,HTML/Media,MS Healthcare page,P0,Hero
+REF-03,Step1,Reference-Section,Trust/value-pillar strip,Reused as KPI+value strip,Icons,MS Healthcare page,P0,KPIs
+REF-04,Step1,Reference-Section,Alternating feature rows,Image+text+link capability rows,HTML/Image,MS Healthcare page,P0,Features
+REF-05,Step1,Reference-Section,Product showcase cards,Reused as 7-agent card grid,Icon/Image,MS Healthcare page,P0,Agents
+REF-06,Step1,Reference-Section,Real-world impact/testimonial,Quote card + stat counters,Portrait/Quote,MS Healthcare page,P1,Reviews
+REF-07,Step1,Reference-Section,Products index/grid,Reused as 3 experiences grid,Icons,MS Healthcare page,P1,Experiences
+REF-08,Step1,Reference-Section,Closing CTA band,Reused as Naechste Schritte,HTML,MS Healthcare page,P0,CTA
+REF-09,Step1,Reference-Section,Social/follow bar,Contact + MIH attribution,Icons,MS Healthcare page,P2,Footer
+REF-10,Step1,Reference-Section,Global footer,Footer + disclaimer,HTML,MS Healthcare page,P0,Footer
+REF-DS-01,Step1,Design-System,Typography scale,Segoe UI display+body hierarchy,Tokens,MS Healthcare page,P0,CD/CI
+REF-DS-02,Step1,Design-System,Colour system,MS blue + Curavias teal/green + Swiss red,Tokens,MS Healthcare page,P0,CD/CI
+REF-DS-03,Step1,Design-System,Fluent components,Rounded cards/pill buttons/icons,Components,MS Healthcare page,P0,CD/CI
+REF-DS-04,Step1,Design-System,Grid & layout,12-col responsive grid,Layout,MS Healthcare page,P0,CD/CI
+REF-DS-05,Step1,Design-System,Photography style,Warm human clinical settings,Guidance,MS Healthcare page,P1,CD/CI
+REF-DS-06,Step1,Design-System,Motion/video,Hero video pattern,Guidance,MS Healthcare page,P1,CD/CI
+REF-DS-07,Step1,Design-System,CTA pattern,Primary+secondary pairing,Components,MS Healthcare page,P0,CD/CI
+REF-DS-08,Step1,Design-System,Accessibility,WCAG 2.1 AA,Guidance,MS Healthcare page,P0,CD/CI
+REF-DS-10,Step1,Design-System,SEO/metadata pattern,Title/meta/OG/headings,Guidance,MS Healthcare page,P1,CD/CI
+APP-EXP-01,Step2,App-Experience,React SPA shell (hcc-app-fluent),Fluent UI app host,Microsoft.App/staticApp,SD/bom.yaml,P0,FR-CX-001
+APP-EXP-02,Step2,App-Experience,Entra auth (MSAL)+role routing,Sign-in+role mapping+telemetry,Auth,SD/SECURITY,P0,NFR-SEC-001
+APP-EXP-03,Step2,App-Experience,Copilot-Drawer,NL query grounded answer + citations,Component,Flyer/PRD,P0,FR-CX-002
+APP-EXP-04,Step2,App-Experience,Whiteboard command-center,Configurable KPI cards per role,Component,Flyer/PRD,P0,FR-CX-004
+APP-EXP-05,Step2,App-Experience,HITL approval modal,Log+release every outward action,Component,Flyer/PRD,P0,NFR-AI-001
+APP-EXP-06,Step2,App-Experience,Citations/evidence panel,Source refs + provenance,Component,PRD,P0,FR-CX-006
+APP-EXP-08,Step2,App-Experience,Bed-capacity dashboard,Occupancy+pressure+DQ,Page,PRD,P0,FR-VIZ-001
+APP-EXP-09,Step2,App-Experience,OR-steering dashboard,Utilisation+on-time+idle-slot,Page,PRD,P0,FR-VIZ-002
+APP-EXP-10,Step2,App-Experience,Power BI embeds,Embedded operational reports,Embed,bom.yaml,P1,FR-CX-005
+APP-EXP-11,Step2,App-Experience,Design tokens/Fluent theme,Curavias theme aligned to site,Tokens,Step1,P0,CD/CI
+APP-EXP-13,Step2,App-Experience,Interaction telemetry+audit,Prompt/response/action events,Telemetry,PRD,P0,FR-GOV-001
+APP-AGT-BMCA,Step2,App-Agent,Bettenmanagement-Copilot surface,Occupancy+pressure+candidates,Surface,Flyer,P0,FR-DC-001
+APP-AGT-OOA,Step2,App-Agent,Belegungs-Forecast-Copilot surface,72h forecast per specialty,Surface,Flyer,P0,FR-FC-001
+APP-AGT-DCA,Step2,App-Agent,Entlassungs-Copilot surface,Ranked discharge+handoff,Surface,Flyer,P0,FR-DC-002
+APP-AGT-ORSA,Step2,App-Agent,OP-Steuerungs-Copilot surface,OR slots+slate+cancel risk,Surface,Flyer,P0,FR-VIZ-002
+APP-AGT-SBA,Step2,App-Agent,Personal-Balance-Copilot surface,Staffing gap heatmap,Surface,Flyer,P0,FR-FC-002
+APP-AGT-CSA,Step2,App-Agent,Krisen-Szenario-Copilot surface,Scenario vs Swiss classifier,Surface,Flyer,P0,FR-CX-003
+APP-AGT-DQ,Step2,App-Agent,Datenqualitaets-Agent surface,Bronze-Silver-Gold gates+drift,Surface,Flyer,P0,NFR-DQ-001
+APP-RT-01,Step2,App-Runtime,Container Apps Agent-Host,Agent host runtime,Microsoft.App/containerApps,bom.yaml,P0,FR-CX-001
+APP-RT-03,Step2,App-Runtime,Azure AI Foundry Agent Service,Agent service,ML/agents,bom.yaml,P0,FR-CX-002
+APP-RT-04,Step2,App-Runtime,Azure OpenAI grounded chat,Grounded chat models,CognitiveServices,bom.yaml,P0,FR-CX-002
+APP-RT-05,Step2,App-Runtime,Fabric Data Agent,Read-only grounding seam,Fabric/dataAgent,bom.yaml,P0,FR-ONT-008
+APP-RT-06,Step2,App-Runtime,API orchestration+policy,Routing+correlation+safety,Service,SD,P0,FR-GOV-001
+APP-DAT-01,Step2,App-Data,Microsoft Fabric Capacity F64,Fabric capacity,Fabric/capacities,bom.yaml,P0,FR-DATA-003
+APP-DAT-03,Step2,App-Data,OneLake,Unified data lake,Fabric/onelake,bom.yaml,P0,FR-DATA-008
+APP-DAT-04,Step2,App-Data,Fabric Lakehouse,Curated datasets,Fabric/lakehouse,bom.yaml,P0,FR-DATA-001
+APP-DAT-05,Step2,App-Data,Fabric Eventstream,Real-time ingest,Fabric/eventstream,bom.yaml,P0,FR-DATA-001
+APP-DAT-06,Step2,App-Data,Fabric Eventhouse,Time-series bindings,Fabric/eventhouse,bom.yaml,P0,FR-FC-006
+APP-DAT-07,Step2,App-Data,Direct Lake Semantic Model,Governed serving model,Fabric/semanticModel,bom.yaml,P0,FR-DATA-005
+APP-DAT-08,Step2,App-Data,Power BI Operational Dashboards,Operational reports,PowerBI/reports,bom.yaml,P0,FR-VIZ-001
+APP-DAT-09,Step2,App-Data,Landing Storage ADLS Gen2,Landing zone storage,Storage/storageAccounts,bom.yaml,P0,FR-DATA-001
+APP-DAT-10,Step2,App-Data,Fabric IQ Operational Ontology,Operational ontology (GA-gated),Fabric/ontology,bom.yaml,P1,FR-ONT-002
+APP-DAT-11,Step2,App-Data,Reference Ontology OWL/RDF,BFO-aligned reference layer,ontology-owl,bom.yaml,P1,FR-ONT-001
+APP-INT-01,Step2,App-Integration,Logic Apps workflows,Partner orchestration,Logic/workflows,bom.yaml,P0,FR-DC-003
+APP-INT-02,Step2,App-Integration,FHIR Service,HL7 FHIR interoperability,HealthcareApis/fhirServices,bom.yaml,P0,FR-DATA-002
+APP-INT-03,Step2,App-Integration,Service Bus,Backpressure+retry,messaging,SD,P1,NFR-REL-004
+APP-ONB-01,Step2,App-Onboarding,Patient minimum-data lane,Pseudonymous minimum metadata,Service,PRD/SD,P0,FR-ONB-001
+APP-ONB-02,Step2,App-Onboarding,Specialty-capacity lane,Specialty-tagged capacity,Service,PRD/SD,P0,FR-ONB-002
+APP-SEC-01,Step2,App-Security,Microsoft Entra ID,Identity tenant,AAD/tenant,bom.yaml,P0,NFR-SEC-001
+APP-SEC-02,Step2,App-Security,Managed Identity/WIF,Workload identity,userAssignedIdentities,bom.yaml,P0,NFR-SEC-001
+APP-SEC-03,Step2,App-Security,Azure Key Vault,Secrets/keys/certs,KeyVault/vaults,bom.yaml,P0,NFR-SEC-002
+APP-SEC-04,Step2,App-Security,Microsoft Purview,Governance+lineage,Purview/accounts,bom.yaml,P1,FR-GOV-001
+APP-SEC-05,Step2,App-Security,Log Analytics Workspace,Central logs/metrics,OperationalInsights,bom.yaml,P0,FR-GOV-004
+APP-SEC-06,Step2,App-Security,Policy-as-Code Release Gate,Compliance release gate,policy-gate,bom.yaml,P0,FR-GOV-003
+APP-SEC-07,Step2,App-Security,GitHub Actions Pipeline,Git-first delivery,GitHub/actions,bom.yaml,P0,NFR-MAINT-001
+APP-SEC-08,Step2,App-Security,PHI Row-Level Security,phi=true empty-set all roles,RLS,SECURITY/ADR-0016,P0,NFR-GOV-003
+VIZ-PD-01,Step3,Viz-ProductDesign,Curavias logo lockup,Mark+wordmark+tagline,SVG,Recreate,P0,Brand
+VIZ-PD-03,Step3,Viz-ProductDesign,Drei Erlebnisse triptych,3 experience tiles,SVG,Recreate,P0,Experiences
+VIZ-PD-04,Step3,Viz-ProductDesign,Copilot-Drawer mockup,Grounded answer with source,PNG,Recreate,P0,UX
+VIZ-PD-05,Step3,Viz-ProductDesign,Whiteboard mockup,Live KPI command-center,PNG,Recreate,P0,UX
+VIZ-PD-06,Step3,Viz-ProductDesign,HITL approval mockup,Freigabe erforderlich,PNG,Recreate,P0,UX
+VIZ-PJ-01,Step3,Viz-PatientJourney,Patienten-Pfad hero infographic,Full patient path w/ roles+agents,SVG,Recreate,P0,Journey
+VIZ-PJ-02,Step3,Viz-PatientJourney,Cross-cutting lanes overlay,CSA+DQ spanning path,SVG,Recreate,P0,Journey
+VIZ-PJ-03,Step3,Viz-PatientJourney,HITL governance band,Der Mensch entscheidet band,SVG,Recreate,P0,Journey
+VIZ-PJ-04,Step3,Viz-PatientJourney,Interactive journey,Hover/click phase details,Interactive,Generate,P1,Journey
+VIZ-PJ-05,Step3,Viz-PatientJourney,Animated journey hero,Node-by-node reveal,MP4,Generate,P1,Journey
+VIZ-PJ-06,Step3,Viz-PatientJourney,Per-phase node icons,6 phase icons,SVG,Recreate,P0,Journey
+VIZ-AR-01,Step3,Viz-Architecture,Layered architecture,7-layer view,SVG,ARCHITECTURE.md,P0,Architecture
+VIZ-AR-02,Step3,Viz-Architecture,Component topology,Identity/Core/Security domains,SVG,ARCHITECTURE.md,P0,Architecture
+VIZ-AR-03,Step3,Viz-Architecture,End-to-end flow,Source to writeback trace,SVG,ARCHITECTURE/SD,P0,Architecture
+VIZ-AR-04,Step3,Viz-Architecture,CI/CD promotion flow,PR-CI-SIT-Gate-PROD-Evidence,SVG,ARCHITECTURE/README,P0,Delivery
+VIZ-AR-05,Step3,Viz-Architecture,Network hub-spoke,Private endpoints segmentation,SVG,SECURITY.md,P1,Architecture
+VIZ-AR-06,Step3,Viz-Architecture,Bronze-Silver-Gold pipeline,Data tiers + PHI gates,SVG,Flyer/SECURITY,P0,Data
+VIZ-AR-07,Step3,Viz-Architecture,Fabric-to-Foundry grounding seam,Data Agent to copilots,SVG,PRD/ADR-0033,P1,AI
+VIZ-AR-08,Step3,Viz-Architecture,Swiss residency region map,CH North + West failover,SVG,ARCHITECTURE.md,P1,Residency
+VIZ-AR-10,Step3,Viz-Architecture,Ontology stack,Reference-operational-crosswalk,SVG,PRD,P2,Ontology
+VIZ-AGT-01,Step3,Viz-Agents,Seven-agent card set,Name/code/role/delivers/gate,SVG,Flyer,P0,Agents
+VIZ-AGT-02,Step3,Viz-Agents,Agent icon family,7 agent icons,SVG,Recreate,P0,Agents
+VIZ-AGT-03,Step3,Viz-Agents,Agent-to-journey map,Agent per path phase,SVG,Flyer,P0,Agents
+VIZ-TEAM-01,Step3,Viz-Team,GitHub delivery model diagram,Docs-first agent workflows,SVG,README,P1,Team
+VIZ-TEAM-02,Step3,Viz-Team,Engineering-agent roster,Copilot coding agent+registry,SVG,AGENTS.md,P1,Team
+VIZ-TEAM-03,Step3,Viz-Team,Sprint timeline,Sprints 02-16 ribbon,SVG,repo history,P2,Team
+VIZ-TEAM-04,Step3,Viz-Team,RACI incl ontology owner,Governance roles,SVG,OPERATIONS.md,P2,Team
+VIZ-TEAM-05,Step3,Viz-Team,Human-agent responsibility split,Deterministic vs agentic,SVG,SD.md,P1,Team
+VIZ-DEMO-01,Step3,Viz-Demo,Demo-org chart,Synthetic tenant + 7 roles,SVG,Entra demo-org,P1,Demo
+VIZ-DEMO-02,Step3,Viz-Demo,Demo hospital profiles,Hirslanden + Zollikerberg,SVG,SD.md,P1,Demo
+VIZ-DEMO-03,Step3,Viz-Demo,Rollout-sequence graphic,USZ-first/LUKS-first,SVG,PRD FR-OM-003,P1,Demo
+VIZ-DEMO-04,Step3,Viz-Demo,Seven operational personas,Synthetic role personas,PNG,Flyer,P1,Demo
+VIZ-DEMO-05,Step3,Viz-Demo,Synthetic demo scenario board,Pressure walkthrough no PHI,PNG,ADR-0016,P1,Demo
+VIZ-REV-01,Step3,Viz-Reviews,BVA value-lever chart,Waterfall to 3.47M gross,SVG,Flyer BVA,P0,Value
+VIZ-REV-02,Step3,Viz-Reviews,ROI 3-year scorecard,127% + 6.41M net,SVG,Flyer BVA,P0,Value
+VIZ-REV-03,Step3,Viz-Reviews,KPI stat-counter set,3.5M/127%/7,SVG,Flyer hero,P0,KPIs
+VIZ-REV-04,Step3,Viz-Reviews,7 decisions comparison graphic,Heute vs Mit Curavias,SVG,Flyer,P0,Value
+VIZ-REV-06,Step3,Viz-Reviews,Compliance-readiness badges,DSG/ISO27001/residency/advisory,SVG,Flyer,P1,Trust
+VIZ-REV-07,Step3,Viz-Reviews,Synthetic testimonial cards,Persona quotes advisory-framed,PNG,Generate,P1,Reviews
+VIZ-ICO-01,Step3,Viz-Icons,Swiss-cross node motif,Brand accent,SVG,Recreate,P0,Brand
+VIZ-ICO-02,Step3,Viz-Icons,Success checkmark motif,Erfolg/Freigabe mark,SVG,Recreate,P0,Brand
+VIZ-ICO-03,Step3,Viz-Icons,HITL shield icon,Freigabe erforderlich,SVG,Recreate,P0,Trust
+VIZ-ICO-05,Step3,Viz-Icons,Trust-pillar icons,6 sovereignty icons,SVG,Recreate,P1,Trust
+WEB-S1,Step4,Web-Content,Hero section,Headline+subhead+CTA+media,Copy+Media,north star,P0,Hero
+WEB-S2,Step4,Web-Content,Disclaimer banner,Showcase advisory notice,Copy,Flyer,P0,Trust
+WEB-S3,Step4,Web-Content,KPI trust strip,3.5M/127%/7,Copy+Image,Flyer,P0,KPIs
+WEB-S4,Step4,Web-Content,Das Wichtigste in Kuerze,Value prop paragraph,Copy+Image,Flyer,P0,Value
+WEB-S5,Step4,Web-Content,CIO-Challenger + 7 decisions,Challenger quote + table,Copy+Image,Flyer,P0,Value
+WEB-S6,Step4,Web-Content,Patienten-Pfad section,Journey intro + infographic,Copy+Image+Video,Flyer,P0,Journey
+WEB-S7,Step4,Web-Content,Sieben Agenten section,Intro + 7 agent cards,Copy+Image,Flyer,P0,Agents
+WEB-S8,Step4,Web-Content,Drei Erlebnisse section,3 experiences + mockups,Copy+Image,Flyer,P0,Experiences
+WEB-S9,Step4,Web-Content,Sicherheit/Regulatorik section,6 trust pillars + Kernaussage,Copy+Image,Flyer,P0,Trust
+WEB-S10,Step4,Web-Content,Wirtschaftlicher Nutzen section,BVA table + ROI,Copy+Image,Flyer,P0,Value
+WEB-S11,Step4,Web-Content,Reviews/Evidence section,Synthetic testimonials + evidence,Copy+Image,Generate,P1,Reviews
+WEB-S12,Step4,Web-Content,Naechste Schritte/CTA,3 next steps + contact,Copy+Image,Flyer,P0,CTA
+WEB-S13,Step4,Web-Content,Footer,Tagline + attribution + legal,Copy+Logo,Flyer,P0,Footer
+VID-01,Step4,Web-Video,Hero patient-path explainer,Animated 20-30s,MP4,Generate,P1,Journey
+VID-02,Step4,Web-Video,Three experiences walkthrough,45-60s,MP4,Generate,P1,Experiences
+VID-03,Step4,Web-Video,Per-agent micro-demos,7 clips 10-15s,MP4,Generate,P2,Agents
+VID-04,Step4,Web-Video,90-second exec overview,90s,MP4,Generate,P2,Overview
+BRD-LOGO-01,Assets,Brand-Logo,Microsoft master logo,Full/mono/reversed,SVG,Brand Central,P0,Footer
+BRD-LOGO-02,Assets,Brand-Logo,MIH/Innovation Hub lockup,Hub attribution,SVG,Brand Central,P0,Attribution
+BRD-LOGO-04,Assets,Brand-Logo,Microsoft Azure logo,Runs-on-Azure,SVG,Brand Central,P0,Architecture
+BRD-LOGO-05,Assets,Brand-Logo,Microsoft Fabric logo+icons,Data-platform marks,SVG,Brand Central,P0,Architecture
+BRD-LOGO-06,Assets,Brand-Logo,Azure AI Foundry logo,AI runtime mark,SVG,Brand Central,P1,AI
+BRD-LOGO-07,Assets,Brand-Logo,Azure OpenAI icon,AI layer mark,SVG,Brand Central,P0,AI
+BRD-LOGO-08,Assets,Brand-Logo,Power BI logo+icon,Dashboard mark,SVG,Brand Central,P0,Dashboards
+BRD-LOGO-09,Assets,Brand-Logo,Microsoft Entra ID logo,Identity mark,SVG,Brand Central,P0,Security
+BRD-LOGO-10,Assets,Brand-Logo,Microsoft Purview icon,Governance mark,SVG,Brand Central,P1,Governance
+BRD-LOGO-11,Assets,Brand-Logo,Azure service icons set,KeyVault/LogicApps/ContainerApps/FHIR/Monitor/Policy/ServiceBus/Storage,SVG,Brand Central,P0,Architecture
+BRD-LOGO-12,Assets,Brand-Logo,GitHub logo+Actions/Copilot,Delivery marks,SVG,Brand Central,P1,Team
+BRD-IMG-01,Assets,Brand-Photo,Hospital operations/command-center,Hero+overview imagery,JPG,Brand Central,P0,Hero
+BRD-IMG-02,Assets,Brand-Photo,Clinicians & care teams,Feature+agent imagery,JPG,Brand Central,P0,Features
+BRD-IMG-03,Assets,Brand-Photo,Nurses/bed & ward,Bed/discharge imagery,JPG,Brand Central,P1,Journey
+BRD-IMG-04,Assets,Brand-Photo,Data/analytics/people-at-screens,Whiteboard/DQ imagery,JPG,Brand Central,P0,Dashboards
+BRD-IMG-05,Assets,Brand-Photo,Swiss/Zurich context,Residency framing,JPG,Brand Central,P1,Residency
+BRD-IMG-06,Assets,Brand-Photo,Security/trust abstract,Security section imagery,JPG,Brand Central,P1,Trust
+BRD-SYS-01,Assets,Brand-System,Microsoft brand guidelines,Logo usage rules,PDF,Brand Central,P0,CD/CI
+BRD-SYS-02,Assets,Brand-System,Segoe UI font package,Typography,Font,Brand Central,P0,CD/CI
+BRD-SYS-05,Assets,Brand-System,Azure architecture icon set,Official diagram icons,SVG,Brand Central,P0,Architecture
+BRD-SYS-06,Assets,Brand-System,Co-branding usage rules,Powered-by-Microsoft rules,PDF,Brand Central,P0,Attribution
