@@ -1,0 +1,82 @@
+---
+import type { SiteContent } from '../i18n/types';
+interface Props { content: SiteContent; }
+const { content } = Astro.props;
+const c = content;
+---
+<section id="kontakt" class="cv-section cv-cta">
+  <div class="cv-wrap">
+    <p class="cv-eyebrow cv-cta__eyebrow">{c.cta.eyebrow}</p>
+    <h2 class="cv-cta__heading">{c.cta.heading}</h2>
+
+    <ol class="cv-cta__steps">
+      {c.cta.steps.map((step, i) => (
+        <li>
+          <span class="cv-cta__num">{i + 1}</span>
+          <div>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="cv-cta__contact">
+      <p>{c.cta.contact}</p>
+      <a class="cv-btn cv-btn--primary" href="mailto:hello@curavias.ch">{c.cta.contactCta}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cv-cta {
+    background:
+      radial-gradient(900px 400px at 90% 10%, var(--cv-brand-150), transparent 60%),
+      var(--cv-surface);
+  }
+  .cv-cta__heading { max-width: 24ch; }
+  .cv-cta__steps {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    counter-reset: cta;
+  }
+  .cv-cta__steps li {
+    display: flex;
+    gap: 0.9rem;
+    padding: 1.25rem;
+    background: var(--cv-surface);
+    border: var(--cv-border);
+    border-radius: var(--cv-radius);
+    box-shadow: var(--cv-shadow-sm);
+  }
+  .cv-cta__num {
+    flex: none;
+    width: 2.1rem;
+    height: 2.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--cv-brand-background);
+    color: #08110E;
+    font-weight: 800;
+  }
+  .cv-cta__steps h3 { font-size: 1.05rem; margin-bottom: 0.25rem; }
+  .cv-cta__steps p { margin: 0; color: var(--cv-text-secondary); }
+  .cv-cta__contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.5rem 1.75rem;
+    border: var(--cv-border);
+    border-radius: var(--cv-radius);
+    background: var(--cv-secondary-150);
+  }
+  .cv-cta__contact p { margin: 0; font-weight: 600; font-size: var(--cv-fs-lead); }
+</style>

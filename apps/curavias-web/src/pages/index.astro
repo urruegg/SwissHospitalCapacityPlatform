@@ -1,0 +1,7 @@
+---
+import LandingPage from '../layouts/LandingPage.astro';
+import { getContent } from '../i18n';
+
+const content = getContent('de');
+---
+<LandingPage content={content} />

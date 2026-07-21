@@ -1,0 +1,98 @@
+---
+import type { SiteContent, Locale } from '../i18n/types';
+import BrandMark from './BrandMark.astro';
+import { availableLocales, localeHref, defaultLocale } from '../i18n';
+
+interface Props {
+  content: SiteContent;
+  locale: Locale;
+}
+const { content, locale } = Astro.props;
+const c = content;
+const locales = availableLocales();
+---
+<header class="cv-header">
+  <div class="cv-wrap cv-header__inner">
+    <a class="cv-header__logo" href={localeHref(locale)} aria-label="Curavias — Home">
+      <BrandMark height={30} />
+    </a>
+
+    <nav class="cv-header__nav" aria-label="Primär">
+      {c.nav.items.map((item) => (
+        <a href={item.href}>{item.label}</a>
+      ))}
+    </nav>
+
+    <div class="cv-header__actions">
+      {locales.length > 1 && (
+        <div class="cv-langswitch" aria-label={c.nav.langLabel}>
+          {locales.map((l) => (
+            <a
+              href={localeHref(l)}
+              class:list={['cv-langswitch__item', { 'is-active': l === locale }]}
+              hreflang={l}
+              aria-current={l === locale ? 'true' : undefined}
+            >{l === defaultLocale ? 'DE' : l.toUpperCase()}</a>
+          ))}
+        </div>
+      )}
+      <a class="cv-btn cv-btn--primary cv-header__cta" href="#kontakt">{c.nav.cta}</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .cv-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: saturate(1.1) blur(8px);
+    border-bottom: var(--cv-border);
+  }
+  .cv-header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: 64px;
+  }
+  .cv-header__logo { display: inline-flex; }
+  .cv-header__nav {
+    display: none;
+    gap: 1.4rem;
+    margin-inline-start: auto;
+    font-weight: 500;
+  }
+  .cv-header__nav a { color: var(--cv-text-primary); }
+  .cv-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-inline-start: auto;
+  }
+  .cv-langswitch {
+    display: inline-flex;
+    gap: 0.15rem;
+    border: var(--cv-border);
+    border-radius: 999px;
+    padding: 0.15rem;
+  }
+  .cv-langswitch__item {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cv-text-secondary);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+  }
+  .cv-langswitch__item.is-active {
+    background: var(--cv-brand-150);
+    color: var(--cv-brand-40);
+  }
+  .cv-header__cta { display: none; }
+
+  @media (min-width: 860px) {
+    .cv-header__nav { display: inline-flex; }
+    .cv-header__actions { margin-inline-start: 0; }
+    .cv-header__cta { display: inline-flex; }
+  }
+</style>

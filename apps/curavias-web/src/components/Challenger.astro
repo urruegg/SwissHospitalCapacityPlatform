@@ -1,0 +1,72 @@
+---
+import type { SiteContent } from '../i18n/types';
+interface Props { content: SiteContent; }
+const { content } = Astro.props;
+const c = content;
+---
+<section class="cv-section">
+  <div class="cv-wrap">
+    <p class="cv-eyebrow">{c.challenger.eyebrow}</p>
+    <h2>{c.challenger.heading}</h2>
+    <blockquote class="cv-challenger__quote">{c.challenger.quote}</blockquote>
+
+    <div class="cv-challenger__tablewrap">
+      <table class="cv-table">
+        <thead>
+          <tr>
+            <th scope="col">{c.challenger.tableHead.decision}</th>
+            <th scope="col">{c.challenger.tableHead.today}</th>
+            <th scope="col" class="cv-table__accent">{c.challenger.tableHead.withCuravias}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {c.challenger.rows.map((row) => (
+            <tr>
+              <th scope="row">{row.decision}</th>
+              <td>{row.today}</td>
+              <td class="cv-table__accent">{row.withCuravias}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cv-challenger__quote {
+    margin: 0 0 2rem;
+    font-size: var(--cv-fs-lead);
+    font-weight: 600;
+    color: var(--cv-secondary-80);
+    max-width: 60ch;
+  }
+  .cv-challenger__tablewrap { overflow-x: auto; }
+  .cv-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+    font-size: 0.98rem;
+  }
+  .cv-table th,
+  .cv-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.85rem 1rem;
+    border-bottom: var(--cv-border);
+  }
+  .cv-table thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cv-text-secondary);
+    border-bottom: 2px solid var(--cv-neutral-130);
+  }
+  .cv-table tbody th {
+    font-weight: 700;
+    color: var(--cv-neutral-20);
+    width: 22%;
+  }
+  .cv-table__accent { color: var(--cv-brand-40); }
+  .cv-table thead .cv-table__accent { color: var(--cv-brand-50); }
+</style>

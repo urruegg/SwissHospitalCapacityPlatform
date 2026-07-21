@@ -1,0 +1,68 @@
+---
+// Curavias brandmark: stylised patient path (teal -> green) with a red Swiss-cross
+// node and a green success checkmark. Inline SVG so it inherits currentColor + scales.
+interface Props {
+  height?: number;
+  withWordmark?: boolean;
+}
+const { height = 34, withWordmark = true } = Astro.props;
+---
+<span class="cv-brandmark" style={`--h:${height}px`}>
+  <svg
+    class="cv-brandmark__symbol"
+    viewBox="0 0 48 48"
+    role="img"
+    aria-label="Curavias"
+    focusable="false"
+  >
+    <!-- patient path -->
+    <path
+      d="M6 34 C 14 34, 16 16, 24 16 S 34 30, 42 14"
+      fill="none"
+      stroke="url(#cv-path-grad)"
+      stroke-width="4.5"
+      stroke-linecap="round"
+    />
+    <!-- Swiss-cross node -->
+    <g transform="translate(24 16)">
+      <circle r="6.4" fill="#E30613" />
+      <path d="M-3 -1 H-1 V-3 H1 V-1 H3 V1 H1 V3 H-1 V1 H-3 Z" fill="#fff" />
+    </g>
+    <!-- success checkmark -->
+    <path
+      d="M37 12 l3 3 l5 -6"
+      fill="none"
+      stroke="#148C6F"
+      stroke-width="4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <defs>
+      <linearGradient id="cv-path-grad" x1="6" y1="34" x2="42" y2="14" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#17B890" />
+        <stop offset="1" stop-color="#0F493E" />
+      </linearGradient>
+    </defs>
+  </svg>
+  {withWordmark && <span class="cv-brandmark__word">Curavias</span>}
+</span>
+
+<style>
+  .cv-brandmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    line-height: 1;
+  }
+  .cv-brandmark__symbol {
+    height: var(--h);
+    width: var(--h);
+    display: block;
+  }
+  .cv-brandmark__word {
+    font-weight: 700;
+    font-size: calc(var(--h) * 0.62);
+    letter-spacing: -0.01em;
+    color: var(--cv-neutral-20);
+  }
+</style>
