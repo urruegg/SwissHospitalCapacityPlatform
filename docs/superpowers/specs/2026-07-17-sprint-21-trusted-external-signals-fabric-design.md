@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-21 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft for review |
-| **Previous Version** | n/a (new — Sprint 21 kickoff) |
+| **Status** | Approved — v1.1.0 extension |
+| **Previous Version** | 1.0.0 (added §20 forecast-overlay + SIT IQ-layer proof extension; FR-EXT-010..014) |
 | **Anchor triggers** | AMA review `docs/reviews/2026-07-17-ama-trusted-external-signals-review.md`; source design `docs/reviews/2026-07-17-ama-trusted-external-signals-review/CSA-External-Trusted-Source-Triggers-and-Ontology-Extension.md`; review session with a Hospital Data Scientist (2026-07-17) |
 | **Runtime posture** | GitHub Copilot coding agent + Superpowers-first execution; advisory/HITL unchanged; agents realised as Markdown packs + MCP config (ADR-0002); Fabric items authored via skills + REST post-deploy (no live deploy from repo) |
 
@@ -33,6 +33,7 @@
 17. [Dependencies](#17-dependencies)
 18. [Definition of done](#18-definition-of-done)
 19. [References](#19-references)
+20. [v1.1.0 extension — forecast overlay & SIT IQ-layer proof](#20-v110-extension--forecast-overlay--sit-iq-layer-proof)
 
 ---
 
@@ -420,3 +421,139 @@ Milestone-by-milestone TDD tasks. Detailed task breakdown to be expanded in
 8. CSA agent — `agents/csa-agent/AGENT.md`
 9. Data contracts — `docs/DATA.md`
 10. PRD — `docs/PRD.md`
+
+---
+
+## 20. v1.1.0 extension — forecast overlay & SIT IQ-layer proof
+
+> **Why this extension.** v1.0.0 routes Trust-A signals to **one** consumer —
+> advisory CSA crisis runs. This extension adds a **second** consumer (the
+> 72-hour occupancy/demand forecast) and makes the sprint **prove the full
+> IQ-layer loop live in SIT**, where the Fabric IQ Ontology feature works
+> (SIT create = `202`) while PROD stays gated behind issue **#270**
+> (`FeatureNotAvailable`). The two consumers share the same `gold.ext_*`
+> data product; the forecast path is a deterministic medallion job, so it is
+> auditable and offline-testable exactly like the trigger path.
+
+### 20.1 Revised end state (delta over §1)
+
+* External signals feed **two** SIT consumers: (A) a **forecast overlay** that
+  shifts the `ooa-agent` 72-hour forecast, and (B) the existing **CSA pre-seed**.
+* The **SIT IQ layer is really exercised**: a live Fabric IQ Ontology extension
+  (5 new classes) + the SIT data agent `da_hospital_capacity`
+  (`b2e53c23-182a-452d-9321-e63f6009e80b`) grounded on the new `gold.ext_*`
+  tables + the adjusted-forecast view + new measures, consumed by the Foundry
+  `ooa-agent`.
+* **PROD** IQ binding is explicitly deferred (reference plane only) behind #270;
+  the SIT→PROD REST replication script is ready for when the capacity gate lifts.
+  No scope loss — SIT is the proof surface.
+
+### 20.2 Dual-consumer architecture (delta over §4)
+
+```text
+gold.ext_fact_signal  (Trust-A, deduped, status=Actual, trustTier=A)
+   |
+   +-- Path A (forecast overlay — deterministic notebook job):
+   |     build_gold_forecast_adjustment.py
+   |       join gold.forecast_output (base required_capacity, per hospital/ward/date)
+   |       x hazard-uplift on {ward->specialty, hospital->canton, onset..expires}
+   |         -> gold.ext_fact_forecast_adjustment   (audit + provenance + rationale)
+   |         -> gold.vw_forecast_adjusted           (base + adjusted + attribution)
+   |            -> external-signals.SemanticModel (adjusted-forecast measures)
+   |            -> SIT data agent grounding -> Foundry ooa-agent
+   |
+   +-- Path B (crisis — unchanged from v1.0.0):
+         signal-triage-agent -> CSA pre-seed (advisory, HITL, approved-to-apply)
+```
+
+* The overlay is a **medallion notebook job in the data lane**, *not* an agent
+  action — keeps it deterministic, provenance-complete, and CI-testable.
+* `signal-triage-agent` scope is unchanged (CSA routing only). The
+  `data-quality-agent` gate is extended to the adjustment table as well.
+* Base forecast source is the existing eventstream gold table
+  `gold.forecast_output` (`hospital, ward_id, date, required_capacity`), the
+  same table the `ooa-agent` and `[Required Capacity]` / `[Forecast Peak (72h)]`
+  measures already read.
+
+### 20.3 Forecast-overlay data model
+
+* **`data-platform/scripts/external-signals/forecast_uplift.yaml`** — the
+  governed uplift map: `hazardType x severity -> {specialties[], multiplier,
+  decay}`. Example: `heat/Severe -> geriatrics +0.25, cardiology +0.15,
+  emergency +0.20`. Offline unit-tested like `trigger_rules.yaml`.
+* **`gold.ext_fact_forecast_adjustment`** — one row per
+  (signal x affected specialty x affected date-bucket):
+  `signalId, hazardType, severity, specialty_id, canton, effective, onset,
+  expires, date, upliftFactor, baseRequiredCapacity, adjustedRequiredCapacity,
+  rationale, provenance{rawHash, connectorVersion, ingestedAt}`.
+* **`gold.vw_forecast_adjusted`** — for each base
+  `gold.forecast_output` row: `adjusted = base_required_capacity x
+  PROD(applicable upliftFactors)`, **clamped** to a documented ceiling, carrying
+  **both** `base_required_capacity` and `adjusted_required_capacity` plus an
+  `attribution[]` list (which `signalId`s moved the value) for explainability.
+* **Anti-double-counting:** uplift is **incremental over the seasonal baseline**
+  already in `gold.forecast_output` (the map encodes only the hazard-driven
+  delta), is clamped, and is documented in ADR-0033. `status in {Test, Exercise,
+  System}` signals are excluded from the overlay just as they are from triggering.
+* **Multi-signal overlap:** multiple applicable upliftFactors combine
+  **multiplicatively** with the same clamp; every contributing signal is listed
+  in `attribution[]`.
+
+### 20.4 SIT IQ-layer proof (the "integrated into IQ" deliverable)
+
+1. **Real SIT ontology extension** — create the 5 new classes
+   (`TrustedSource, HazardType, ExternalSignal, HazardEvent, TriggerRule`) as an
+   actual Fabric IQ `Ontology` item in the SIT workspace
+   `f3af9733-9503-4e92-98f9-a901d96f1c87` (create verified working: `202`),
+   with DataBindings to the SIT lakehouse `gold.ext_*` tables. This is the live
+   counterpart of the §7 reference plane.
+2. **Extend the SIT data agent grounding** — add `gold.ext_fact_signal`,
+   `gold.ext_fact_forecast_adjustment`, `gold.vw_forecast_adjusted`, and the new
+   semantic-model measures to `da_hospital_capacity`
+   (`b2e53c23-...`) grounding.
+3. **Foundry `ooa-agent` consumption** — the agent answers e.g. *"given the ZH
+   heat warning, what is the adjusted 72-hour geriatrics occupancy?"* returning
+   the adjusted curve **with signal attribution**.
+4. **Evidence** — a SIT E2E evidence doc under `docs/sprints/` captures the loop
+   signal -> overlay -> semantic model -> ontology -> data agent -> ooa-agent
+   answer (screenshots + REST/DAX transcripts), and links issue #270 as the
+   documented reason PROD parity is deferred.
+
+### 20.5 New requirements (added to PRD §7, MINOR bump)
+
+| ID | Requirement |
+|----|-------------|
+| `FR-EXT-010` | Build `gold.ext_fact_forecast_adjustment` from base `gold.forecast_output` x governed hazard-uplift, joined on specialty + canton + onset..expires window. |
+| `FR-EXT-011` | Govern the hazard-uplift map (`forecast_uplift.yaml`) as versioned, offline-unit-tested data; uplift is incremental over baseline and clamped. |
+| `FR-EXT-012` | Expose `gold.vw_forecast_adjusted` carrying both base and adjusted values plus a per-row signal `attribution[]` list for explainability. |
+| `FR-EXT-013` | Prove the external-signals IQ loop end-to-end in SIT: live Fabric IQ ontology extension + SIT data-agent grounding + Foundry `ooa-agent` consumption, captured as evidence. |
+| `FR-EXT-014` | Record full provenance (`rawHash`, `connectorVersion`, `ingestedAt`, licence) on every forecast adjustment row; `Test/Exercise/System` signals excluded from the overlay. |
+
+### 20.6 New milestones (detailed tasks in the implementation plan)
+
+* **M9** — forecast uplift map + overlay pure transforms + notebook + offline tests.
+* **M10** — `external-signals.SemanticModel` adjusted-forecast measures.
+* **M11** — live SIT Fabric IQ ontology create + SIT data-agent grounding extension.
+* **M12** — `ooa-agent` grounding extension + SIT E2E evidence doc.
+
+M9–M10 depend on M3 (`gold.ext_*`) and M5 (semantic model); M11 depends on M4
+(reference ontology) + M9/M10; M12 depends on M11.
+
+### 20.7 Risks / guardrails (delta over §16)
+
+| Risk | Mitigation |
+|------|-----------|
+| Double-counting hazard demand already in the seasonal baseline | Uplift map encodes only the incremental hazard delta; clamp; documented in ADR-0033; unit-tested. |
+| Runaway multiplicative uplift when many signals overlap | Multiplicative with a documented clamp ceiling; full `attribution[]` for audit. |
+| PROD parity expectation | Explicitly out of scope behind #270; SIT is the declared proof surface; SIT→PROD REST replication ready. |
+| Overlay perceived as auto-acting on capacity | Overlay only changes a **forecast view**; no capacity/roster/bed mutation; HITL unchanged. |
+
+### 20.8 Definition of done (delta over §18)
+
+* `gold.ext_fact_forecast_adjustment` + `gold.vw_forecast_adjusted` produced by
+  the offline synthetic end-to-end walk-through with attribution + provenance.
+* `external-signals.SemanticModel` exposes the adjusted-forecast measures.
+* Live SIT ontology extension created + SIT data agent grounded + `ooa-agent`
+  returns an attributed adjusted forecast — captured in the SIT evidence doc.
+* `FR-EXT-010..014` added to PRD §7; ADR-0033 records the anti-double-counting
+  and clamp rules; #270 linked as the PROD-deferral reason.
