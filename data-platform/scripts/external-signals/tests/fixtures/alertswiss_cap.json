@@ -1,0 +1,1 @@
+{"alerts": [{"identifier": "cap-2026-heat-zh-1", "sender": "BABS/FOCP", "status": "Actual", "msgType": "Alert", "hazard": "heat", "severity": "Severe", "certainty": "Likely", "urgency": "Immediate", "cantons": ["ZH"], "onset": "2026-07-17T12:00:00Z", "effective": "2026-07-17T11:45:00Z", "expires": "2026-07-18T18:00:00Z", "uri": "https://www.alert.swiss/cap-2026-heat-zh-1"}]}

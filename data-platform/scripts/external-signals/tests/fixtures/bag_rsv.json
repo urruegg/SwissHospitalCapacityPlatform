@@ -1,0 +1,1 @@
+{"reports": [{"reportId": "bag-rsv-2026-w29", "indicator": "RSV", "incidencePer100k": 42.5, "thresholdPer100k": 25.0, "cantons": ["BE", "ZH"], "weekStart": "2026-07-13T00:00:00Z", "publishedAt": "2026-07-17T08:00:00Z", "uri": "https://www.bag.admin.ch/rsv-report"}]}
