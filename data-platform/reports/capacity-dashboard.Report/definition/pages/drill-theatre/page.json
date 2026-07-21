@@ -26,7 +26,7 @@
     ]
   },
   "pageBinding": {
-    "name": "Pod",
+    "name": "drill-theatre",
     "type": "Drillthrough",
     "parameters": [
       {

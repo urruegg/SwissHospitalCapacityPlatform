@@ -7,7 +7,7 @@
   "width": 320,
   "visibility": "HiddenInViewMode",
   "pageBinding": {
-    "name": "Pod",
+    "name": "tooltip-kpi-delta",
     "type": "Tooltip"
   }
 }
