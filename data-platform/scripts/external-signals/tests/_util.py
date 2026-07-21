@@ -1,4 +1,4 @@
-﻿"""Shared helpers for the external-signals test-suite (dependency-free)."""
+"""Shared helpers for the external-signals test-suite (dependency-free)."""
 from __future__ import annotations
 
 import json
