@@ -1,0 +1,119 @@
+---
+import type { SiteContent } from '../i18n/types';
+interface Props { content: SiteContent; }
+const { content } = Astro.props;
+const c = content;
+---
+<section class="cv-section cv-section--alt">
+  <div class="cv-wrap">
+    <p class="cv-eyebrow">{c.path.eyebrow}</p>
+    <h2>{c.path.heading}</h2>
+    <p class="cv-lead">{c.path.intro}</p>
+
+    <ol class="cv-path">
+      {c.path.steps.map((step) => (
+        <li class:list={['cv-path__step', { 'is-success': step.agent === '—' }]}>
+          <span class="cv-path__index">{step.index}</span>
+          <span class="cv-path__phase">{step.phase}</span>
+          <span class="cv-path__role">{step.role}</span>
+          {step.agent !== '—' && <span class="cv-path__agent">{step.agent}</span>}
+          <span class="cv-path__focus">{step.focus}</span>
+        </li>
+      ))}
+    </ol>
+
+    <div class="cv-path__lanes">
+      <span class="cv-path__lanelabel">{c.path.laneLabel}</span>
+      <ul>
+        {c.path.lanes.map((lane) => <li>{lane}</li>)}
+      </ul>
+    </div>
+
+    <p class="cv-path__gov">{c.path.governance}</p>
+  </div>
+</section>
+
+<style>
+  .cv-path {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .cv-path__step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1.25rem 1rem 1.25rem 1.25rem;
+    background: var(--cv-surface);
+    border: var(--cv-border);
+    border-top: 4px solid var(--cv-brand-70);
+    border-radius: var(--cv-radius-sm);
+    box-shadow: var(--cv-shadow-sm);
+  }
+  .cv-path__step.is-success { border-top-color: var(--cv-success-fill, #17B890); background: var(--cv-success-background); }
+  .cv-path__index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--cv-brand-150);
+    color: var(--cv-brand-40);
+    font-weight: 800;
+  }
+  .cv-path__phase { font-weight: 700; color: var(--cv-neutral-20); }
+  .cv-path__role { color: var(--cv-text-secondary); font-size: 0.9rem; }
+  .cv-path__agent {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #fff;
+    background: var(--cv-secondary-80);
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+  }
+  .cv-path__focus { font-size: 0.9rem; color: var(--cv-text-primary); }
+
+  .cv-path__lanes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px dashed var(--cv-neutral-130);
+    border-radius: var(--cv-radius-sm);
+    background: var(--cv-surface);
+  }
+  .cv-path__lanelabel {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cv-text-secondary);
+  }
+  .cv-path__lanes ul {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+    color: var(--cv-secondary-80);
+  }
+  .cv-path__gov {
+    margin-top: 1.25rem;
+    padding: 0.9rem 1.25rem;
+    background: var(--cv-neutral-20);
+    color: #EAF3EF;
+    border-radius: var(--cv-radius-sm);
+    font-weight: 600;
+  }
+</style>

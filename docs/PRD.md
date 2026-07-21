@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.7.0 |
-| **Date** | 2026-07-18 |
+| **Version** | 1.8.0 |
+| **Date** | 2026-07-21 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.6.0 (added `FR-ONT-008` Fabric-to-Foundry grounding seam + ADR-0033 traceability row) |
+| **Previous Version** | 1.7.0 (Sprint 24: added `FR-MKT-*` product-marketing agent + `FR-WEB-*` public Curavias site) |
 
 ## Purpose
 
@@ -148,6 +148,21 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `FR-VIZ-001` | The platform shall provide an operational **bed-capacity dashboard page** exposing current occupancy, forecast pressure windows, and data-quality signals, aligned with `FR-CX-005`. |
 | `FR-VIZ-002` | The platform shall provide an operational **OR-steering dashboard page** exposing case-level utilisation, first-case on-time performance, cancellation, and idle-slot metrics, aligned with `FR-CX-005`. |
 
+### J) Product Marketing And Public Web (Sprint 24)
+
+Sprint 24 deltas formalised per [Sprint 24 plan](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) (epic #261). The product-marketing agent and public Curavias site are **showcase-scoped** (advisory-only, synthetic data, not a medical device) and carry a mandatory disclaimer.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-MKT-001` | The solution shall provide a **product-marketing copilot agent** grounded in the Curavias brandkit, vision, and mission to keep product communication stringent and aligned across customer-facing, user-facing, and devops-team-facing channels. |
+| `FR-MKT-002` | The product-marketing agent shall preserve the **advisory-only voice** (the platform *previews/recommends*, never *decides/diagnoses*) and enforce the showcase disclaimer across all generated messaging. |
+| `FR-MKT-003` | The product-marketing agent shall operate in an explicit RACI with the `ux-design-agent` for all customer-facing experience surfaces. |
+| `FR-WEB-001` | The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content. |
+| `FR-WEB-002` | The public site shall display the **showcase disclaimer** ("Kein reales Produkt…", synthetic data, advisory-only, not a medical device) on every page. |
+| `FR-WEB-003` | The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS. |
+| `FR-WEB-004` | The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap. |
+| `FR-WEB-005` | Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268). |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -272,6 +287,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 
 | [`docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md`](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md) *(Fabric-to-Foundry grounding seam, Slice 0)* | `FR-ONT-008` (extends `FR-ONT-004`, `NFR-AI-002/004`) |
 | [`docs/adr/0034-fabric-iq-demo-scope-artefacts.md`](adr/0034-fabric-iq-demo-scope-artefacts.md) + [`docs/architecture/fabric-iq-ready-evidence.md`](architecture/fabric-iq-ready-evidence.md) *(live demo-scope realisation)* | `FR-ONT-008` (Foundry `ooa` surface proven live, issue #251) |
+| [`docs/superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md`](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) *(Sprint 24: product-marketing agent + public Curavias site, epic #261, issues #262–#268)* | `FR-MKT-001` to `FR-MKT-003`, `FR-WEB-001` to `FR-WEB-005` |
 
 ## Assumptions To Validate In Implementation Planning
 

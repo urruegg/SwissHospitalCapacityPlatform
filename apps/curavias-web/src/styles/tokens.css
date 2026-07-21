@@ -1,0 +1,69 @@
+/* Curavias brand design tokens.
+   Source of truth: docs/brandkit/color/curavias-tokens.css (Fluent color system).
+   Keep in sync with the brandkit; do not hand-edit hex values without a brandkit change. */
+:root {
+  /* Brand (teal -> green) */
+  --cv-brand-30: #0F493E;
+  --cv-brand-40: #10604E;
+  --cv-brand-50: #12765F;
+  --cv-brand-60: #148C6F;
+  --cv-brand-70: #15A280;
+  --cv-brand-80: #17B890;
+  --cv-brand-90: #39C2A0;
+  --cv-brand-150: #E0F2EF;
+  --cv-brand-160: #FAFAFB;
+
+  /* Secondary (slate blue) */
+  --cv-secondary-40: #1F3245;
+  --cv-secondary-80: #365B7D;
+  --cv-secondary-150: #E3E8EC;
+
+  /* Swiss-cross red / danger */
+  --cv-danger-70: #C70713;
+  --cv-danger-80: #E30613;
+  --cv-danger-150: #F7DEE0;
+
+  /* Warning / Info / accent */
+  --cv-warning-80: #E8A200;
+  --cv-warning-150: #F8F0DE;
+  --cv-info-80: #1FA9D6;
+  --cv-info-150: #E1F1F7;
+  --cv-accent-80: #5A6CF0;
+
+  /* Neutrals */
+  --cv-neutral-20: #171A1C;
+  --cv-neutral-40: #2D3134;
+  --cv-neutral-70: #5E666E;
+  --cv-neutral-130: #D6D9DC;
+  --cv-neutral-150: #F1F2F3;
+
+  /* Semantic aliases */
+  --cv-brand-background: #17B890;
+  --cv-brand-background-hover: #15A280;
+  --cv-brand-foreground-link: #12765F;
+  --cv-brand-stroke: #15A280;
+  --cv-success-foreground: #12765F;
+  --cv-success-background: #E0F2EF;
+  --cv-text-primary: #2E4C68;
+  --cv-text-secondary: #6B7A88;
+  --cv-surface: #FFFFFF;
+  --cv-surface-alt: #FBFBFB;
+
+  /* Typography */
+  --cv-font-sans: "Segoe UI", "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --cv-fs-eyebrow: 0.8125rem;
+  --cv-fs-body: 1.0625rem;
+  --cv-fs-lead: 1.25rem;
+  --cv-fs-h3: 1.375rem;
+  --cv-fs-h2: clamp(1.6rem, 3.2vw, 2.4rem);
+  --cv-fs-h1: clamp(2.1rem, 5vw, 3.4rem);
+
+  /* Spacing / layout */
+  --cv-maxw: 1120px;
+  --cv-gap: 1.5rem;
+  --cv-radius: 14px;
+  --cv-radius-sm: 9px;
+  --cv-shadow: 0 1px 2px rgba(16, 40, 60, 0.06), 0 8px 28px rgba(16, 40, 60, 0.08);
+  --cv-shadow-sm: 0 1px 2px rgba(16, 40, 60, 0.06), 0 3px 12px rgba(16, 40, 60, 0.06);
+  --cv-border: 1px solid var(--cv-neutral-150);
+}

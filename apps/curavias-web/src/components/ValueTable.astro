@@ -1,0 +1,66 @@
+---
+import type { SiteContent } from '../i18n/types';
+interface Props { content: SiteContent; }
+const { content } = Astro.props;
+const c = content;
+---
+<section id="nutzen" class="cv-section cv-section--alt">
+  <div class="cv-wrap">
+    <p class="cv-eyebrow">{c.value.eyebrow}</p>
+    <h2>{c.value.heading}</h2>
+
+    <div class="cv-value__tablewrap">
+      <table class="cv-table cv-value__table">
+        <thead>
+          <tr>
+            <th scope="col">{c.value.tableHead.lever}</th>
+            <th scope="col" class="cv-value__num">{c.value.tableHead.amount}</th>
+            <th scope="col">{c.value.tableHead.rationale}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {c.value.rows.map((row) => (
+            <tr class:list={[{ 'is-emphasis': row.emphasis }]}>
+              <th scope="row">{row.lever}</th>
+              <td class="cv-value__num">{row.amount}</td>
+              <td>{row.rationale}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="cv-value__caveat">{c.value.caveat}</p>
+  </div>
+</section>
+
+<style>
+  .cv-value__tablewrap { overflow-x: auto; }
+  .cv-value__table { min-width: 620px; }
+  .cv-table th,
+  .cv-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.8rem 1rem;
+    border-bottom: var(--cv-border);
+  }
+  .cv-table { width: 100%; border-collapse: collapse; }
+  .cv-table thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cv-text-secondary);
+    border-bottom: 2px solid var(--cv-neutral-130);
+  }
+  .cv-table tbody th { font-weight: 600; color: var(--cv-neutral-20); }
+  .cv-value__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .is-emphasis { background: var(--cv-brand-150); }
+  .is-emphasis th,
+  .is-emphasis td { font-weight: 800; color: var(--cv-brand-30); }
+  .cv-value__caveat {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--cv-text-secondary);
+  }
+</style>

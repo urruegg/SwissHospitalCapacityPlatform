@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "13416800688071519301"
+      "templateHash": "16560716462720530928"
     }
   },
   "parameters": {
@@ -230,6 +230,27 @@
         "description": "Enable experience hosting foundation module deployment."
       }
     },
+    "enableCuraviasWebModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 24 Curavias web hosting module (Static Web App + media storage). PROD-only per ADR-0030."
+      }
+    },
+    "curaviasWebMediaPublisherPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the identity that publishes media to the Curavias media storage account. Empty string skips the role assignment."
+      }
+    },
+    "curaviasWebEnableCustomDomains": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "When true, bind curavias.ch + www.curavias.ch to the Curavias Static Web App. Two-step: deploy false first, add DNS records + delegation, then flip true. See ADR-0030."
+      }
+    },
     "enableApiRuntimeModule": {
       "type": "bool",
       "defaultValue": false,
@@ -392,6 +413,13 @@
         "description": "Enable the Sprint 13 agent-host module (Container App + Cosmos + optional Redis per ADR-0007)."
       }
     },
+    "enableCsaCosmosModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the CSA Cosmos DB module (Sprint 16: EnableNoSQLVectorSearch account + 4 containers). Wired into the orchestrator per issue #252 Phase A so it is covered by CI what-if + SIT/PROD parity; the private endpoint follows enableNetworkModule (PE on with network, public otherwise per ADR-0013)."
+      }
+    },
     "agentHostImage": {
       "type": "string",
       "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
@@ -404,6 +432,27 @@
       "defaultValue": true,
       "metadata": {
         "description": "Enable Azure Managed Redis inside the agent-host module (grounding cache per ADR-0007 §1). Defaults to true (PROD behaviour); set to false in SIT per ADR-0028 (Balanced_B0 SKU not offered in westus2 for MCAPS demo sub; agent-host uses in-memory cache today)."
+      }
+    },
+    "fabricDataAgentEndpoint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "fabricWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "fabricDataAgentId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
       }
     },
     "enableAppFluentModule": {
@@ -1621,7 +1670,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "14368032661601227617"
+              "templateHash": "15460063151507913680"
             }
           },
           "parameters": {
@@ -1656,7 +1705,8 @@
                 "name": "S0"
               },
               "properties": {
-                "publicNetworkAccess": "Enabled"
+                "publicNetworkAccess": "Enabled",
+                "customSubDomainName": "[format('ai-{0}', parameters('nameSuffix'))]"
               }
             }
           ],
@@ -1925,6 +1975,292 @@
                 "description": "Command center web app name."
               },
               "value": "[format('app-platform-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enableCuraviasWebModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('curavias-web-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "mediaPublisherPrincipalId": {
+            "value": "[parameters('curaviasWebMediaPublisherPrincipalId')]"
+          },
+          "enableCustomDomains": {
+            "value": "[parameters('curaviasWebEnableCustomDomains')]"
+          },
+          "customDomains": {
+            "value": [
+              {
+                "name": "curavias.ch",
+                "validation": "dns-txt-token"
+              },
+              {
+                "name": "www.curavias.ch",
+                "validation": "cname-delegation"
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "16503415288114807116"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the media storage account. The Static Web App itself is a global resource; pass a supported control-plane region (e.g. westeurope)."
+              }
+            },
+            "staticWebAppLocation": {
+              "type": "string",
+              "defaultValue": "westeurope",
+              "allowedValues": [
+                "westeurope",
+                "northeurope",
+                "eastus2",
+                "eastasia"
+              ],
+              "metadata": {
+                "description": "Static Web App control-plane region. SWA is only available in a subset of regions; westeurope is the closest to Switzerland."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "staticWebAppSku": {
+              "type": "string",
+              "defaultValue": "Standard",
+              "allowedValues": [
+                "Free",
+                "Standard"
+              ],
+              "metadata": {
+                "description": "Static Web App SKU. Standard is required for custom domains with SLA + enterprise features."
+              }
+            },
+            "mediaPublisherPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the identity (e.g. the media-publisher managed identity or the deploy service principal) that uploads media to the storage account. Empty string skips the role assignment."
+              }
+            },
+            "mediaPublisherPrincipalType": {
+              "type": "string",
+              "defaultValue": "ServicePrincipal",
+              "allowedValues": [
+                "ServicePrincipal",
+                "User",
+                "Group"
+              ],
+              "metadata": {
+                "description": "Principal type for the media publisher role assignment."
+              }
+            },
+            "enableCustomDomains": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, bind the custom domains in `customDomains` to the Static Web App. Keep false on the first deploy; flip true only after the DNS records + GoDaddy delegation are in place so SWA can validate ownership."
+              }
+            },
+            "customDomains": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Custom domains to bind when enableCustomDomains is true. Apex (curavias.ch) must use dns-txt-token validation; subdomains (www.curavias.ch) use cname-delegation. Example: [ { name: \"curavias.ch\", validation: \"dns-txt-token\" }, { name: \"www.curavias.ch\", validation: \"cname-delegation\" } ]."
+              }
+            }
+          },
+          "variables": {
+            "storageAccountName": "[toLower(format('stmedia{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "storageBlobDataContributorRoleId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[variables('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "accessTier": "Hot",
+                "allowBlobPublicAccess": true,
+                "supportsHttpsTrafficOnly": true,
+                "minimumTlsVersion": "TLS1_2",
+                "publicNetworkAccess": "Enabled",
+                "allowSharedKeyAccess": true,
+                "networkAcls": {
+                  "defaultAction": "Allow",
+                  "bypass": "AzureServices"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+              "properties": {
+                "cors": {
+                  "corsRules": [
+                    {
+                      "allowedOrigins": [
+                        "https://curavias.ch",
+                        "https://www.curavias.ch"
+                      ],
+                      "allowedMethods": [
+                        "GET",
+                        "HEAD",
+                        "OPTIONS"
+                      ],
+                      "allowedHeaders": [
+                        "*"
+                      ],
+                      "exposedHeaders": [
+                        "*"
+                      ],
+                      "maxAgeInSeconds": 3600
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'media')]",
+              "properties": {
+                "publicAccess": "Blob"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('mediaPublisherPrincipalId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('mediaPublisherPrincipalId'), variables('storageBlobDataContributorRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
+                "principalId": "[parameters('mediaPublisherPrincipalId')]",
+                "principalType": "[parameters('mediaPublisherPrincipalType')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Web/staticSites",
+              "apiVersion": "2023-12-01",
+              "name": "[format('stapp-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('staticWebAppLocation')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "[parameters('staticWebAppSku')]",
+                "tier": "[parameters('staticWebAppSku')]"
+              },
+              "properties": {
+                "provider": "Custom",
+                "allowConfigFileUpdates": true,
+                "stagingEnvironmentPolicy": "Enabled",
+                "enterpriseGradeCdnStatus": "Disabled"
+              }
+            },
+            {
+              "copy": {
+                "name": "staticSiteDomains",
+                "count": "[length(if(parameters('enableCustomDomains'), parameters('customDomains'), createArray()))]"
+              },
+              "type": "Microsoft.Web/staticSites/customDomains",
+              "apiVersion": "2023-12-01",
+              "name": "[format('{0}/{1}', format('stapp-{0}', parameters('nameSuffix')), if(parameters('enableCustomDomains'), parameters('customDomains'), createArray())[copyIndex()].name)]",
+              "properties": {
+                "validationMethod": "[if(parameters('enableCustomDomains'), parameters('customDomains'), createArray())[copyIndex()].validation]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/staticSites', format('stapp-{0}', parameters('nameSuffix')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Curavias web hosting module implementation marker."
+              },
+              "value": "curavias-web-implemented"
+            },
+            "staticWebAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Static Web App name."
+              },
+              "value": "[format('stapp-{0}', parameters('nameSuffix'))]"
+            },
+            "staticWebAppDefaultHostname": {
+              "type": "string",
+              "metadata": {
+                "description": "Static Web App default hostname (e.g. <name>.azurestaticapps.net). Used as the CNAME target for www.curavias.ch."
+              },
+              "value": "[reference(resourceId('Microsoft.Web/staticSites', format('stapp-{0}', parameters('nameSuffix'))), '2023-12-01').defaultHostname]"
+            },
+            "mediaStorageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Media storage account name."
+              },
+              "value": "[variables('storageAccountName')]"
+            },
+            "mediaBaseUrl": {
+              "type": "string",
+              "metadata": {
+                "description": "Public base URL for media blobs."
+              },
+              "value": "[format('{0}media', reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.blob)]"
             }
           }
         }
@@ -3269,6 +3605,15 @@
           "enableRedisModule": {
             "value": "[parameters('agentHostEnableRedis')]"
           },
+          "fabricDataAgentEndpoint": {
+            "value": "[parameters('fabricDataAgentEndpoint')]"
+          },
+          "fabricWorkspaceId": {
+            "value": "[parameters('fabricWorkspaceId')]"
+          },
+          "fabricDataAgentId": {
+            "value": "[parameters('fabricDataAgentId')]"
+          },
           "containerRegistryLoginServer": {
             "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
           },
@@ -3285,7 +3630,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "3723918610018088654"
+              "templateHash": "17496594672362556061"
             }
           },
           "parameters": {
@@ -3324,6 +3669,27 @@
               "defaultValue": true,
               "metadata": {
                 "description": "Enable the Azure Managed Redis grounding cache (ADR-0007 §1). Default true for PROD; set to false in SIT per ADR-0028 (Managed Redis Balanced_B0 SKU is not offered in westus2 for the MCAPS demo subscription; the agent-host runtime already uses an in-memory cache so there is no functional loss for demo scope)."
+              }
+            },
+            "fabricDataAgentEndpoint": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "fabricWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "fabricDataAgentId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
               }
             },
             "containerRegistryLoginServer": {
@@ -3815,6 +4181,15 @@
                   "cosmosEndpoint": {
                     "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosEndpoint.value]"
                   },
+                  "fabricDataAgentEndpoint": {
+                    "value": "[parameters('fabricDataAgentEndpoint')]"
+                  },
+                  "fabricWorkspaceId": {
+                    "value": "[parameters('fabricWorkspaceId')]"
+                  },
+                  "fabricDataAgentId": {
+                    "value": "[parameters('fabricDataAgentId')]"
+                  },
                   "redisHostName": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value), createObject('value', ''))]",
                   "redisPort": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value), createObject('value', 0))]",
                   "containerRegistryLoginServer": {
@@ -3834,7 +4209,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "16654548792054353308"
+                      "templateHash": "10466398943931516285"
                     }
                   },
                   "parameters": {
@@ -3878,6 +4253,27 @@
                       "type": "string",
                       "metadata": {
                         "description": "Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2)."
+                      }
+                    },
+                    "fabricDataAgentEndpoint": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback."
+                      }
+                    },
+                    "fabricWorkspaceId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback."
+                      }
+                    },
+                    "fabricDataAgentId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
                       }
                     },
                     "redisHostName": {
@@ -3926,16 +4322,6 @@
                   "variables": {
                     "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
                     "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
-                    "baseEnv": [
-                      {
-                        "name": "COSMOS_ENDPOINT",
-                        "value": "[parameters('cosmosEndpoint')]"
-                      },
-                      {
-                        "name": "AGENTS_ROOT",
-                        "value": "/app/agents"
-                      }
-                    ],
                     "redisEnv": "[if(empty(parameters('redisHostName')), createArray(), createArray(createObject('name', 'REDIS_HOST', 'value', parameters('redisHostName')), createObject('name', 'REDIS_PORT', 'value', string(parameters('redisPort')))))]"
                   },
                   "resources": [
@@ -4011,7 +4397,7 @@
                                 "cpu": "[json('0.5')]",
                                 "memory": "1Gi"
                               },
-                              "env": "[concat(variables('baseEnv'), variables('redisEnv'))]"
+                              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId'))), variables('redisEnv'))]"
                             }
                           ],
                           "scale": {
@@ -4062,6 +4448,10 @@
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosAccountName.value]"
             },
+            "agentHostMiPrincipalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+            },
             "redisName": {
               "type": "string",
               "value": "[if(parameters('enableRedisModule'), reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisName.value, '')]"
@@ -4076,6 +4466,493 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName')))]",
         "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableCsaCosmosModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('csa-cosmos-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "agentHostMiPrincipalId": "[if(parameters('enableAgentHostModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName'))), '2025-04-01').outputs.agentHostMiPrincipalId.value), createObject('value', ''))]",
+          "enablePrivateEndpoint": {
+            "value": "[parameters('enableNetworkModule')]"
+          },
+          "vnetResourceId": "[if(parameters('enableNetworkModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName'))), '2025-04-01').outputs.vnetResourceId.value), createObject('value', ''))]",
+          "privateEndpointSubnetName": {
+            "value": "snet-data"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "16346521696349718114"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the Cosmos account. Demo scope is westus2 per ADR-0013."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "databaseName": {
+              "type": "string",
+              "defaultValue": "csa",
+              "metadata": {
+                "description": "Cosmos SQL database name."
+              }
+            },
+            "agentHostMiPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the Sprint 13 agent-host managed identity. When set, receives Cosmos DB Built-in Data Contributor scoped to this account (least privilege). Empty string skips the assignment."
+              }
+            },
+            "databaseMaxThroughput": {
+              "type": "int",
+              "defaultValue": 1000,
+              "minValue": 1000,
+              "maxValue": 10000,
+              "metadata": {
+                "description": "Total shared throughput (RU/s) for the database in autoscale max mode. Small demo default. Applies to `simulation-runs` (no vector index)."
+              }
+            },
+            "vectorContainerMaxThroughput": {
+              "type": "int",
+              "defaultValue": 1000,
+              "minValue": 1000,
+              "maxValue": 10000,
+              "metadata": {
+                "description": "Dedicated per-container throughput (RU/s) in autoscale max mode for vector-indexed containers. Cosmos requires vector containers to use dedicated (not shared) throughput."
+              }
+            },
+            "enablePrivateEndpoint": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, provisions a private endpoint into the specified VNet subnet plus the Azure-managed `privatelink.documents.azure.com` private DNS zone. Required in SIT because MCAPSGov policies enforce publicNetworkAccess=Disabled on Cosmos."
+              }
+            },
+            "vnetResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the VNet that hosts the private endpoint subnet + will be linked to the private DNS zone. Ignored when enablePrivateEndpoint=false."
+              }
+            },
+            "privateEndpointSubnetName": {
+              "type": "string",
+              "defaultValue": "snet-data",
+              "metadata": {
+                "description": "Name of the subnet inside vnetResourceId that will host the Cosmos private endpoint. Ignored when enablePrivateEndpoint=false."
+              }
+            }
+          },
+          "variables": {
+            "accountName": "[toLower(format('cosmos-csa-{0}', parameters('nameSuffix')))]",
+            "vectorDimensions": 1536,
+            "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002",
+            "privateEndpointName": "[format('pe-{0}', variables('accountName'))]",
+            "privateDnsZoneName": "privatelink.documents.azure.com"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[variables('accountName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "GlobalDocumentDB",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "databaseAccountOfferType": "Standard",
+                "disableLocalAuth": true,
+                "publicNetworkAccess": "[if(parameters('enablePrivateEndpoint'), 'Disabled', 'Enabled')]",
+                "minimalTlsVersion": "Tls12",
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": [
+                  {
+                    "locationName": "[parameters('location')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ],
+                "capabilities": [
+                  {
+                    "name": "EnableNoSQLVectorSearch"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', variables('accountName'), parameters('databaseName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('databaseName')]"
+                },
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('databaseMaxThroughput')]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'scenarios')]",
+              "properties": {
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('vectorContainerMaxThroughput')]"
+                  }
+                },
+                "resource": {
+                  "id": "scenarios",
+                  "partitionKey": {
+                    "paths": [
+                      "/scenarioId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "vectorEmbeddingPolicy": {
+                    "vectorEmbeddings": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "dataType": "float32",
+                        "distanceFunction": "cosine",
+                        "dimensions": "[variables('vectorDimensions')]"
+                      }
+                    ]
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/descriptionEmbedding/*"
+                      }
+                    ],
+                    "vectorIndexes": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "type": "diskANN"
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'agent-memory')]",
+              "properties": {
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('vectorContainerMaxThroughput')]"
+                  }
+                },
+                "resource": {
+                  "id": "agent-memory",
+                  "partitionKey": {
+                    "paths": [
+                      "/threadId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "vectorEmbeddingPolicy": {
+                    "vectorEmbeddings": [
+                      {
+                        "path": "/contentEmbedding",
+                        "dataType": "float32",
+                        "distanceFunction": "cosine",
+                        "dimensions": "[variables('vectorDimensions')]"
+                      }
+                    ]
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/contentEmbedding/*"
+                      }
+                    ],
+                    "vectorIndexes": [
+                      {
+                        "path": "/contentEmbedding",
+                        "type": "diskANN"
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'response-levers')]",
+              "properties": {
+                "options": {
+                  "autoscaleSettings": {
+                    "maxThroughput": "[parameters('vectorContainerMaxThroughput')]"
+                  }
+                },
+                "resource": {
+                  "id": "response-levers",
+                  "partitionKey": {
+                    "paths": [
+                      "/leverId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "vectorEmbeddingPolicy": {
+                    "vectorEmbeddings": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "dataType": "float32",
+                        "distanceFunction": "cosine",
+                        "dimensions": "[variables('vectorDimensions')]"
+                      }
+                    ]
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": [
+                      {
+                        "path": "/descriptionEmbedding/*"
+                      }
+                    ],
+                    "vectorIndexes": [
+                      {
+                        "path": "/descriptionEmbedding",
+                        "type": "quantizedFlat"
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'simulation-runs')]",
+              "properties": {
+                "resource": {
+                  "id": "simulation-runs",
+                  "partitionKey": {
+                    "paths": [
+                      "/runId"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": []
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('agentHostMiPrincipalId')))]",
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}', variables('accountName'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName')), parameters('agentHostMiPrincipalId'), variables('cosmosDataContributorRoleId')))]",
+              "properties": {
+                "roleDefinitionId": "[format('{0}/sqlRoleDefinitions/{1}', resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName')), variables('cosmosDataContributorRoleId'))]",
+                "principalId": "[parameters('agentHostMiPrincipalId')]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[variables('privateDnsZoneName')]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', variables('privateDnsZoneName'), format('{0}-link', last(split(parameters('vnetResourceId'), '/'))))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetResourceId')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-11-01",
+              "name": "[variables('privateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "subnet": {
+                  "id": "[format('{0}/subnets/{1}', parameters('vnetResourceId'), parameters('privateEndpointSubnetName'))]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('{0}-conn', variables('privateEndpointName'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]",
+                      "groupIds": [
+                        "Sql"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enablePrivateEndpoint')]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-11-01",
+              "name": "[format('{0}/{1}', variables('privateEndpointName'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "privatelink-documents-azure-com",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "accountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos account name."
+              },
+              "value": "[variables('accountName')]"
+            },
+            "documentEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos account document endpoint."
+              },
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('accountName')), '2024-12-01-preview').documentEndpoint]"
+            },
+            "databaseName": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos SQL database name."
+              },
+              "value": "[parameters('databaseName')]"
+            },
+            "containerNames": {
+              "type": "array",
+              "metadata": {
+                "description": "Container names provisioned by this module."
+              },
+              "value": [
+                "scenarios",
+                "agent-memory",
+                "response-levers",
+                "simulation-runs"
+              ]
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName')))]"
       ]
     },
     {
@@ -4424,7 +5301,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "7900345548352902027"
+              "templateHash": "5703750538639136666"
             }
           },
           "parameters": {
@@ -4454,6 +5331,13 @@
               "defaultValue": [],
               "metadata": {
                 "description": "TXT records for Container Apps custom-domain validation. Each item: { name: \"asuid.appsit\", values: [\"<verificationId>\"], ttl: 3600 }. Empty array creates no TXT records."
+              }
+            },
+            "aliasARecords": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "A alias records that target an Azure resource (e.g. a Static Web App apex domain). Each item: { name: \"@\", targetResourceId: \"<swa resourceId>\", ttl: 3600 }. Azure DNS alias A records enable apex (curavias.ch) to point at a Static Web App, which cannot use a CNAME. Empty array creates no A records."
               }
             }
           },
@@ -4501,6 +5385,24 @@
                     "value": "[parameters('txtRecords')[copyIndex()].values]"
                   }
                 ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "aliasAs",
+                "count": "[length(parameters('aliasARecords'))]"
+              },
+              "type": "Microsoft.Network/dnsZones/A",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('zoneName'), parameters('aliasARecords')[copyIndex()].name)]",
+              "properties": {
+                "TTL": "[parameters('aliasARecords')[copyIndex()].ttl]",
+                "targetResource": {
+                  "id": "[parameters('aliasARecords')[copyIndex()].targetResourceId]"
+                }
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
@@ -4710,6 +5612,27 @@
       },
       "value": "[if(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), reference(resourceId('Microsoft.Resources/deployments', format('curavias-dns-{0}', parameters('environmentName'))), '2025-04-01').outputs.nameServers.value, createArray())]"
     },
+    "curaviasWebStaticWebAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Curavias Static Web App name (empty when the module is disabled)."
+      },
+      "value": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.staticWebAppName.value, '')]"
+    },
+    "curaviasWebDefaultHostname": {
+      "type": "string",
+      "metadata": {
+        "description": "Curavias Static Web App default hostname — CNAME target for www.curavias.ch (empty when disabled)."
+      },
+      "value": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.staticWebAppDefaultHostname.value, '')]"
+    },
+    "curaviasWebMediaStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Curavias media storage account name (empty when disabled)."
+      },
+      "value": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.mediaStorageAccountName.value, '')]"
+    },
     "keyVaultName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.keyVaultName.value]"
@@ -4741,6 +5664,7 @@
         "aiPlatform": "[if(parameters('enableAiPlatformModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-platform-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-platform-disabled')]",
         "integration": "[if(parameters('enableIntegrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-disabled')]",
         "experienceHosting": "[if(parameters('enableExperienceHostingModule'), reference(resourceId('Microsoft.Resources/deployments', format('experience-hosting-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'experience-hosting-disabled')]",
+        "curaviasWeb": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'curavias-web-disabled')]",
         "apiRuntime": "[if(parameters('enableApiRuntimeModule'), reference(resourceId('Microsoft.Resources/deployments', format('api-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'api-runtime-disabled')]",
         "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",

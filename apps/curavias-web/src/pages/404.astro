@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getContent } from '../i18n';
+const content = getContent('de');
+---
+<BaseLayout content={content}>
+  <section class="cv-section">
+    <div class="cv-wrap" style="text-align:center; padding-block: 4rem;">
+      <p class="cv-eyebrow">Fehler 404</p>
+      <h1>Seite nicht gefunden</h1>
+      <p class="cv-lead" style="margin-inline:auto;">Die angeforderte Seite existiert nicht (mehr).</p>
+      <p style="margin-top:1.5rem;"><a class="cv-btn cv-btn--primary" href="/">Zur Startseite</a></p>
+    </div>
+  </section>
+</BaseLayout>

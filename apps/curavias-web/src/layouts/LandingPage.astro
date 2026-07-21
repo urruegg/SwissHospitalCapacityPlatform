@@ -1,0 +1,33 @@
+---
+import type { SiteContent } from '../i18n/types';
+import BaseLayout from './BaseLayout.astro';
+import DisclaimerBanner from '../components/DisclaimerBanner.astro';
+import Hero from '../components/Hero.astro';
+import KpiStrip from '../components/KpiStrip.astro';
+import Summary from '../components/Summary.astro';
+import Challenger from '../components/Challenger.astro';
+import PatientPath from '../components/PatientPath.astro';
+import Agents from '../components/Agents.astro';
+import Experiences from '../components/Experiences.astro';
+import Trust from '../components/Trust.astro';
+import ValueTable from '../components/ValueTable.astro';
+import NextSteps from '../components/NextSteps.astro';
+
+interface Props {
+  content: SiteContent;
+}
+const { content } = Astro.props;
+---
+<BaseLayout content={content}>
+  <Hero content={content} />
+  <DisclaimerBanner content={content} />
+  <KpiStrip content={content} />
+  <Summary content={content} />
+  <Challenger content={content} />
+  <PatientPath content={content} />
+  <Agents content={content} />
+  <Experiences content={content} />
+  <Trust content={content} />
+  <ValueTable content={content} />
+  <NextSteps content={content} />
+</BaseLayout>
