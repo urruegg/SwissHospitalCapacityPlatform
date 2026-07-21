@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-18 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-21 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial ux-design-agent baseline; added Playwright visual + `axe` accessibility verification in two modes — standalone local CLI and the `playwright-mcp` VS Code / Copilot shared-context mode — per issue #258) |
+| **Previous Version** | 1.1.0 (added the `product-marketing-agent` RACI cross-reference — message vs. experience boundary; issue #262) |
 
 > **Runtime**: GitHub Copilot coding agent (control-plane), per
 > [ADR-0002](../../docs/adr/0002-runtime-is-github-copilot-coding-agent.md). This
@@ -19,6 +19,12 @@
 > [`powerbi-report-authoring`](../../.github/skills/powerbi-report-authoring/SKILL.md)
 > and [`powerbi-optimization`](../../.github/skills/powerbi-optimization/SKILL.md)
 > skills for report / dashboard UX. This prompt owns the **experience judgment**.
+>
+> **Message boundary**: the [`product-marketing-agent`](../product-marketing-agent/AGENT.md)
+> owns the **message judgment** (copy, voice, positioning, claims, disclaimer). This
+> agent owns layout, visual system, and accessibility; it consumes marketing copy and
+> places it. See the RACI in
+> [`product-marketing-agent` §6](../product-marketing-agent/AGENT.md#6-output-contract).
 
 ---
 

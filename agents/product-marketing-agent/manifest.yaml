@@ -1,0 +1,29 @@
+agent: product-marketing-agent
+version: 1.0.0
+runtime: copilot-coding-agent          # control-plane, per ADR-0002 (not the Sprint 13 agent-host)
+invocation: issue-triggered            # @product-marketing-agent mention or any product-messaging / copy / positioning issue
+approvalIssue: 262                     # human-authored governance issue that authorised this agent
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#5-refusal-rules
+skillRef: brainstorming                # + writing-plans (design -> plan handoff)
+localTools:                            # run in the agent harness, not via MCP
+  - markdownlint-cli2
+mcpTools:
+  - server: github-mcp
+    tools: [get-issue, add-issue-comment, create-branch, create-or-update-file, create-pull-request]
+    ceiling: write
+  - server: playwright-mcp             # copy-in-context review only (shared with ux-design-agent)
+    tools: [browser_navigate, browser_snapshot, browser_take_screenshot]
+    ceiling: read
+hitl:
+  gates: []                            # ceiling is write; no deploy/delete, so no approved-to-apply gate
+grounding:
+  - source: docs/brandkit
+    scope: curavias-brand-voice-and-tokens
+  - source: docs/superpowers/ideas/curavias-product-webpage/curavias-bom/curavias-context.md
+    scope: north-star-tagline-disclaimer-voice-rules
+  - source: docs/superpowers/ideas/curavias-product-webpage/curavias-bom/04-website-content-bom.md
+    scope: website-content-inventory
+  - source: docs/PRD.md
+    scope: fr-mkt-fr-web
+goldenTasksRef: ./golden-tasks.md
