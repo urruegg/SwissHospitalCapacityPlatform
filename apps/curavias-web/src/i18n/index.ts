@@ -1,10 +1,15 @@
 import type { Locale, SiteContent } from './types';
 import { de } from './de';
+import { en } from './en';
+import { fr } from './fr';
+import { it } from './it';
 
-// Registry of available locales. Phase 3 adds en/fr/it here.
-// Keep this in sync with astro.config.mjs `i18n.locales`.
+// Registry of available locales. Keep in sync with astro.config.mjs `i18n.locales`.
 export const content: Partial<Record<Locale, SiteContent>> = {
   de,
+  en,
+  fr,
+  it,
 };
 
 export const defaultLocale: Locale = 'de';

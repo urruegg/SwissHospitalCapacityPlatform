@@ -2,6 +2,7 @@
 import type { SiteContent, Locale } from '../i18n/types';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { availableLocales, localeHref, defaultLocale } from '../i18n';
 import '../styles/global.css';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
 const { content } = Astro.props;
 const c = content;
 const locale: Locale = c.locale;
+const siteBase = (Astro.site ?? new URL('https://curavias.ch')).origin;
+const alternates = availableLocales();
 ---
 <!doctype html>
 <html lang={c.htmlLang}>
@@ -19,6 +22,13 @@ const locale: Locale = c.locale;
     <title>{c.meta.title}</title>
     <meta name="description" content={c.meta.description} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site ?? 'https://curavias.ch').href} />
+
+    <!-- hreflang alternates -->
+    {alternates.map((l) => (
+      <link rel="alternate" hreflang={l === defaultLocale ? 'de-CH' : l} href={`${siteBase}${localeHref(l)}`} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={`${siteBase}${localeHref(defaultLocale)}`} />
+
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
