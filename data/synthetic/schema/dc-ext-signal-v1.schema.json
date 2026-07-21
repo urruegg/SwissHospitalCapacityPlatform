@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-ext-signal-v1.schema.json",
+  "title": "Trusted External Signal Contract (DC-EXT-SIGNAL-v1)",
+  "description": "CAP-Suisse-aligned envelope for Trust-A Swiss authority hazard signals ingested by the Sprint 21 external-signals data product. Envelope mirrors dc-or-schedule-v1. Public authority data + synthetic fixtures only; no PHI. Records pre-seed CSA ScenarioTemplate and ADR-0024 Lage tiers. See docs/ontology/reference-layer.ttl (hcp:ExternalSignal) and docs/adr/0033-external-trigger-governance.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetId", "contractId", "contractVersion", "classification", "residency", "purposeTags", "records"],
+  "properties": {
+    "datasetId":       { "type": "string", "pattern": "^DS-EXT-SIGNAL-[a-z0-9-]+$" },
+    "contractId":      { "type": "string", "enum": ["DC-EXT-SIGNAL-v1"] },
+    "contractVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":  { "type": "string", "enum": ["public-authority"] },
+    "residency":       { "type": "string", "enum": ["CH", "demo-westus2"] },
+    "purposeTags": {
+      "type": "array", "minItems": 1,
+      "items": { "type": "string", "enum": ["crisis-trigger", "capacity-planning", "situational-awareness"] }
+    },
+    "records": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["signalId", "sourceId", "sourceAuthority", "trustTier", "hazardType",
+                     "severity", "certainty", "urgency", "region", "onset", "status", "provenance"],
+        "properties": {
+          "signalId":        { "type": "string" },
+          "sourceId":        { "type": "string" },
+          "sourceAuthority": { "type": "string" },
+          "trustTier":       { "type": "string", "enum": ["A", "B", "C"] },
+          "capIdentifier":   { "type": ["string", "null"] },
+          "hazardType":      { "type": "string" },
+          "severity":        { "type": "string", "enum": ["Minor", "Moderate", "Severe", "Extreme"] },
+          "certainty":       { "type": "string", "enum": ["Observed", "Likely", "Possible", "Unlikely"] },
+          "urgency":         { "type": "string", "enum": ["Immediate", "Expected", "Future", "Past"] },
+          "dangerLevel":     { "type": ["integer", "null"], "minimum": 1, "maximum": 5 },
+          "region": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "cantons":    { "type": "array", "items": { "type": "string" } },
+              "nuts":       { "type": "array", "items": { "type": "string" } },
+              "geoPolygon": { "type": ["object", "null"] }
+            }
+          },
+          "effective": { "type": ["string", "null"], "format": "date-time" },
+          "onset":     { "type": "string", "format": "date-time" },
+          "expires":   { "type": ["string", "null"], "format": "date-time" },
+          "uri":       { "type": ["string", "null"] },
+          "status":    { "type": "string", "enum": ["Actual", "Test", "Exercise", "System"] },
+          "mappedScenarioTemplate": { "type": ["string", "null"] },
+          "defaultLageTier": { "type": ["integer", "null"], "minimum": 1, "maximum": 3 },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ingestedAt", "connectorVersion", "licence", "rawHash"],
+            "properties": {
+              "ingestedAt":       { "type": "string", "format": "date-time" },
+              "connectorVersion": { "type": "string" },
+              "licence":          { "type": "string" },
+              "rawHash":          { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
