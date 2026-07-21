@@ -1,6 +1,6 @@
 # Fabric IQ release train — reproducible fabric-cicd deploy
 
-> **Version** 1.0.0 · **Date** 2026-07-19 · **Author** Urs Rüegg · **Status** Reviewed · **Previous Version** n/a (new — Phase 1 of the Fabric IQ → Foundry readiness design)
+> **Version** 1.1.0 · **Date** 2026-07-20 · **Author** Urs Rüegg · **Status** Reviewed · **Previous Version** 1.0.0 (added the reproducible medallion rebuild + gold-parity proof section)
 
 Runbook for the **Fabric IQ release train**: a parameterized
 [`fabric-cicd`](https://microsoft.github.io/fabric-cicd/) deploy that takes the
@@ -124,6 +124,58 @@ to the target lakehouse's gold tables, so **load the lakehouse first**:
 2. Run the simulator/notebooks to populate the gold tables.
 3. `--mode publish` the semantic model + report.
 4. Portal/REST: ontology → endorsement → Data Agent → Data Product + Domain.
+
+## Reproducible medallion rebuild (step 2, git-only)
+
+Step 2 above — "populate the gold tables" — is itself fully **git-reproducible**
+via [`run_medallion.py`](run_medallion.py). It create-or-updates the eight
+canonical operational notebooks in the target workspace from their committed
+`.ipynb`, injects the target lakehouse as the run-time default (so the same
+source binds to SIT or PROD by `--environment` only), and runs them in
+dependency order:
+
+1. `01_bronze_master_data` → `02_silver_master_data` → `03_gold_master_data`
+2. `04_load_or_samples`
+3. `00_seed_eventstream_raw` → `01_bronze_eventstream` →
+   `02_silver_eventstream` → `03_gold_eventstream`
+
+The patient-flow lane (steps under 3) has **no live Eventstream dependency**:
+[`00_seed_eventstream_raw.ipynb`](../../notebooks/eventstream/00_seed_eventstream_raw.ipynb)
+materialises `Tables/bronze_eventstream_raw` from the committed synthetic
+corpus [`data/synthetic/eventstream/eventstream_raw.json`](../../../data/synthetic/eventstream/eventstream_raw.json)
+(generated deterministically by
+[`gen_eventstream_seed.py`](../gen_eventstream_seed.py); 840 FK-consistent,
+PHI-clean envelopes across 4 hospitals × 7 eventKinds). Batch bronze overwrites
+with `overwriteSchema` so a rebuild replaces any stale live-Eventstream
+partitions; gold `_flatten_payload` reads the JSON-string payload via
+`get_json_object`.
+
+Upload the source once per environment, then run and verify parity:
+
+```powershell
+# 1) source data (master-data CSVs + OR JSON + eventstream seed) → Files/
+py -3.11 data-platform/scripts/upload_to_onelake.py --workspace-id <ws> --lakehouse-id <lh> --source-root data/synthetic/master-data/capacity --target master-data/capacity
+py -3.11 data-platform/scripts/upload_to_onelake.py --workspace-id <ws> --lakehouse-id <lh> --source "data/synthetic/eventstream/*.json" --target eventstream-seed
+
+# 2) plan-first (no writes), then apply (deploy-class, approved-to-apply gate)
+py -3.11 data-platform/scripts/fabric/run_medallion.py --environment SIT
+py -3.11 data-platform/scripts/fabric/run_medallion.py --environment SIT --apply
+
+# 3) prove 13-table gold parity
+py -3.11 data-platform/scripts/fabric/list_gold_tables.py --environment SIT > produced.txt
+py -3.11 data-platform/scripts/verify_gold_schema.py --produced produced.txt
+```
+
+### Task 14 proof (2026-07-20, issue #254 / closes #253)
+
+Both environments rebuilt the schemas-enabled gold layer to full contract
+parity from git only (committed notebooks + committed synthetic seed, no live
+Eventstream):
+
+| Environment | Notebooks | Gold parity | Patient-flow lane |
+| ----------- | --------- | ----------- | ----------------- |
+| SIT | 8/8 `[ok]` | `OK: gold parity (13 contract tables covered).` | `encounter` + `bed_assignment` freshly produced from the seed |
+| PROD | 8/8 `[ok]` | `OK: gold parity (13 contract tables covered).` | `encounter` + `bed_assignment` freshly produced (were the 2 tables missing at the prior 11/13) |
 
 ## Related
 
