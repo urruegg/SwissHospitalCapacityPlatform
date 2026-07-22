@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.2.1 |
-| **Date** | 2026-07-03 |
+| **Version** | 0.3.0 |
+| **Date** | 2026-07-22 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft — Sprint 09 skeleton (RB-11) |
-| **Previous Version** | 0.2.0 (added Encounter, Specialty, BedAssignment, DischargeReadinessScore, DischargeRecommendation, ForecastOutput rows) |
+| **Previous Version** | 0.2.1 (Sprint 09 MVO crosswalk skeleton with ForecastOutput and discharge rows) |
 | **Governance** | Every PR that touches [reference-layer.ttl](reference-layer.ttl) OR the operational-layer semantic model MUST update this file in the same PR. Reviewed by semantic / ontology owner per [FR-GOV-ONT-002](../PRD.md#h-semantic-ontology). |
 | **Enforcement** | Manual review today; CI conformance check delivered by follow-up PR (RB-08) per [FR-GOV-ONT-003](../PRD.md#h-semantic-ontology). |
 
@@ -33,6 +33,12 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:DischargeReadinessScore` | `DischargeReadinessScore` | **new** `DC-DISCHARGE-SCORE-v1` *(T1.5)* | Time-series binding on Encounter timeline (hourly refresh) | Grounds `FR-DC-001`, `FR-DC-006`. |
 | `hcp:DischargeRecommendation` | `DischargeRecommendation` | **new** `DC-DISCHARGE-RECOMMENDATION-v1` *(T1.5)* | Deferred | Grounds `FR-DC-002`, `FR-DC-003`, `FR-DC-005`. |
 | `hcp:ForecastOutput` | `ForecastOutput` | **new** `DC-DEMAND-FORECAST-v1` *(T1.5)* | Time-series binding (hourly refresh per `NFR-PERF-002`) | Grounds `FR-FC-001..006`. |
+| `hcp:TrustedSource` | `TrustedSource` *(GA-gated per ADR-0014)* | `DC-EXT-SIGNAL-v1` (`sourceId`, `sourceAuthority`, `trustTier`) | Static dimension (`gold.ext_dim_source`) | Grounds `FR-EXT-ONT-001`; Fabric IQ operational binding deferred per `NFR-EXT-ONT-001`. |
+| `hcp:HazardType` | `HazardType` *(GA-gated per ADR-0014)* | `DC-EXT-SIGNAL-v1` (`hazardType`, severity / danger-level attributes) | Static dimension (`gold.ext_dim_hazard_type`) | Grounds hazard taxonomy for trusted external signals; operational binding deferred per `NFR-EXT-ONT-001`. |
+| `hcp:ExternalSignal` | `ExternalSignal` *(GA-gated per ADR-0014)* | `DC-EXT-SIGNAL-v1` | **Dual: silver/gold Delta + Eventhouse** (`silver.ext_signal`, `gold.ext_fact_signal`, hot Eventhouse stream) | CAP-aligned authority signal; advisory trigger input only. |
+| `hcp:HazardEvent` | `HazardEvent` *(GA-gated per ADR-0014)* | Derived from `DC-EXT-SIGNAL-v1` dedup key | Time-series trigger event (`gold.ext_fact_trigger_event`) | Deduplicated event-level object handed to CSA; records provenance and trigger audit. |
+| `hcp:TriggerRule` | `TriggerRule` *(GA-gated per ADR-0014)* | `trigger_rules.yaml` derived from `DC-EXT-SIGNAL-v1` fields | Static rule set | Maps qualifying signals to `ScenarioTemplate` + `LageTier`; bridge/Activator execution remains advisory and HITL. |
+| `hcp:AffectedRegion` | *(reuse Location; GA-gated operational region binding)* | `DC-EXT-SIGNAL-v1` (`region.cantons`, `region.nuts`, `region.geoPolygon`) | Region dimension (`gold.ext_dim_region`) | Reuses Location semantics for canton/NUTS/polygon targeting; operational binding deferred per `NFR-EXT-ONT-001`. |
 
 ### Reference-layer relations mapped to Fabric IQ relationships
 
@@ -40,6 +46,11 @@ Single source of truth for the mapping between the **three artefact planes** the
 | --- | --- | --- |
 | `hcp:isPartOf` (Bed ⊑ Room ⊑ Ward ⊑ Hospital) | `is_part_of` | Compositional; MVO uses ward→hospital hierarchy from `dim_hospital` / `dim_ward_capacityunit`. |
 | `hcp:hasState` (CapacityUnit → CapacityState) | `has_state` | Bound to time-series data via the eventhouse binding (Sprint 09: bed-state only). |
+| `hcp:signalFromSource` (ExternalSignal → TrustedSource) | `signal_from_source` *(GA-gated)* | Maps normalized authority signals to source dimension rows from `DC-EXT-SIGNAL-v1`. |
+| `hcp:signalIndicatesHazard` (ExternalSignal → HazardType) | `signal_indicates_hazard` *(GA-gated)* | Maps the signal hazard taxonomy to `gold.ext_dim_hazard_type`. |
+| `hcp:signalAffectsRegion` (ExternalSignal → AffectedRegion) | `signal_affects_region` *(GA-gated)* | Maps canton/NUTS/polygon region blocks to the governed region dimension. |
+| `hcp:triggerRuleMapsScenario` (TriggerRule → ScenarioTemplate) | `trigger_rule_maps_scenario` *(GA-gated)* | Maps trusted-signal rules to CSA scenario templates; advisory only. |
+| `hcp:signalPreseeds` (ExternalSignal → LageTier) | `signal_preseeds` *(GA-gated)* | Captures the default Lage-tier pre-seed from the signal contract; CSA remains authoritative. |
 
 ### Facility hierarchy (reused from AMA §11.2)
 
