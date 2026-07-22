@@ -5,6 +5,7 @@ import { BedManagerBoard } from './boards/bed-manager/BedManagerBoard';
 import { DischargeBoard } from './boards/discharge/DischargeBoard';
 import { OccupancyBoard } from './boards/occupancy/OccupancyBoard';
 import { OrSteeringBoard } from './boards/or-steering/OrSteeringBoard';
+import { StaffingBoard } from './boards/staffing/StaffingBoard';
 import { CsaView } from './wizards/csa/CsaView';
 import { MainSubNav } from './MainSubNav';
 
@@ -34,6 +35,11 @@ const BOARDS: Record<string, () => JSX.Element> = {
   'or-steering': () => (
     <div data-testid="board-or-steering-slot">
       <OrSteeringBoard />
+    </div>
+  ),
+  staffing: () => (
+    <div data-testid="board-staffing-slot">
+      <StaffingBoard />
     </div>
   ),
   crisis: () => (

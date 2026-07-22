@@ -66,7 +66,10 @@
     "casesDeferred": "Cases deferred",
     "bedsFreed": "Beds freed",
     "bedsReallocated": "Beds reallocated",
-    "residual": "Residual"
+    "residual": "Residual",
+    "staffing": "Staffing balance (72h)",
+    "surgeBeds": "Surge beds",
+    "fte": "FTE"
   },
   "handoff": {
     "live": "live",
@@ -77,7 +80,8 @@
     "occupancyRising": "{{channel}} rising",
     "dischargeExpedite": "Expedite {{ward}} discharge",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
-    "orDefer": "Defer {{specialty}} case"
+    "orDefer": "Defer {{specialty}} case",
+    "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}"
   },
   "copilot": {
     "title": "Copilot",

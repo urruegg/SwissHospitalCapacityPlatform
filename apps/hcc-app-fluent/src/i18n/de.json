@@ -66,7 +66,10 @@
     "casesDeferred": "Verschobene Eingriffe",
     "bedsFreed": "Freigewordene Betten",
     "bedsReallocated": "Umverteilte Betten",
-    "residual": "Restbedarf"
+    "residual": "Restbedarf",
+    "staffing": "Personalabgleich (72h)",
+    "surgeBeds": "Surge-Betten",
+    "fte": "VZÄ"
   },
   "handoff": {
     "live": "live",
@@ -77,7 +80,8 @@
     "occupancyRising": "{{channel}} steigt",
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
-    "orDefer": "Eingriff {{specialty}} verschieben"
+    "orDefer": "Eingriff {{specialty}} verschieben",
+    "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben"
   },
   "copilot": {
     "title": "Copilot",
