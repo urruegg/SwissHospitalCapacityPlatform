@@ -1,0 +1,56 @@
+{
+  "$schema": "https://fabric.microsoft.com/schemas/activator/reflex-rule.v1.schema.json",
+  "name": "external-signal-triage-handoff",
+  "status": "authored-ga-gated",
+  "gaGate": {
+    "adr": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md",
+    "deployment": "not-deployed",
+    "reason": "Fabric Activator/Reflex binding is authored for review but remains gated until the ADR-0014 GA condition is met."
+  },
+  "source": {
+    "eventstream": "es-ihzhhpf-events",
+    "eventhouseTable": "ExternalSignal",
+    "eventKind": "ext-signal"
+  },
+  "condition": {
+    "all": [
+      {
+        "field": "severity",
+        "operator": "in",
+        "values": ["Severe", "Extreme"]
+      },
+      {
+        "field": "status",
+        "operator": "equals",
+        "value": "Actual"
+      },
+      {
+        "field": "trustTier",
+        "operator": "equals",
+        "value": "A"
+      }
+    ]
+  },
+  "action": {
+    "type": "webhook-post",
+    "target": "signal-triage-agent",
+    "urlSecretName": "SIGNAL_TRIAGE_WEBHOOK_URL",
+    "method": "POST",
+    "bodyTemplate": {
+      "trigger": "external-signal",
+      "signalId": "{{signalId}}",
+      "hazardType": "{{hazardType}}",
+      "severity": "{{severity}}",
+      "certainty": "{{certainty}}",
+      "defaultLageTier": "{{defaultLageTier}}",
+      "mappedScenarioTemplate": "{{mappedScenarioTemplate}}",
+      "provenance": "{{provenance}}"
+    }
+  },
+  "safety": {
+    "sideEffectCeiling": "write",
+    "advisoryOnly": true,
+    "neverRunsCsaSimulation": true,
+    "requiresHumanApprovalForCsaRun": "approved-to-apply"
+  }
+}
