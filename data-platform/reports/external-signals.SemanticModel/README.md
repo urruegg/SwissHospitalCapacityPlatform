@@ -15,7 +15,7 @@ in `.github/workflows/verify-semantic-model.yml`.
 
 | Table | Gold source | Grain |
 | --- | --- | --- |
-| `ext_fact_signal` | `gold.ext_fact_signal` | one row per active normalized signal (`ext_signal_id`, source, hazard, severity, Lage tier, onset, status) |
+| `ext_fact_signal` | `gold.ext_fact_signal` | one row per active normalized signal (`ext_signal_id`, source, hazard, severity, Lage tier, canton membership, onset, status) |
 | `ext_fact_trigger_event` | `gold.ext_fact_trigger_event` | one row per signal-triage evaluation/fire/quarantine audit event, including CSA `runId` when fired |
 | `ext_dim_source` | `gold.ext_dim_source` | one row per trusted source (`ext_source_id`, authority, trust tier) |
 | `ext_dim_hazard_type` | `gold.ext_dim_hazard_type` | one row per hazard type (`ext_hazard_type`, scenario template, default Lage tier) |
@@ -25,9 +25,8 @@ Gold signal and dimension rows are projected by
 [`build_gold_signals.py`](../../notebooks/external-signals/build_gold_signals.py)
 from the DC-EXT-SIGNAL-v1 Silver records.
 
-`build_gold_signals.py` also emits `ext_cantons` as a list-valued Gold fact field
-for downstream forecast-overlay logic. The semantic model does not surface that
-complex list as a scalar column; canton browsing uses `ext_dim_region.ext_canton`.
+`ext_fact_signal.ext_cantons` preserves the Gold fact's canton-membership field;
+`ext_dim_region.ext_canton` provides the dimension list for canton browsing.
 
 ## Measures
 

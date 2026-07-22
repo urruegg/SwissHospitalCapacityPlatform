@@ -80,6 +80,15 @@ table ext_fact_signal
 
 		annotation SummarizationSetBy = Automatic
 
+	column ext_cantons
+		dataType: string
+		lineageTag: 80c3869c-ea9f-430b-bb72-bd6aed5ffadd
+		sourceLineageTag: ext_cantons
+		summarizeBy: none
+		sourceColumn: ext_cantons
+
+		annotation SummarizationSetBy = Automatic
+
 	column ext_onset
 		dataType: dateTime
 		formatString: General Date
