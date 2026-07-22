@@ -2,10 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 1.0.1 |
+| **Date** | 2026-07-22 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Approved (brainstorming) |
+| **Previous Version** | 1.0.0 (markdownlint MD040 fence-language fix) |
 | **Target app** | `apps/hcc-app-fluent` |
 | **Source pack** | `docs/superpowers/ideas/curavias-ux-ideas/` (locked prototype) |
 | **Predecessors** | Sprint 20 (5-plane shell), Sprint 13 (agent-host), Sprint 11 (agents), Sprint 21 (Trust-A external signals), Sprint 22 (golden-source medallion) |
@@ -53,7 +54,7 @@ capacity-relief ring: **"Medicine A → 102% occupancy in 72h, site −16 beds."
 Top-level left nav (`NavigationPlane.tsx`) = the **3 acts** plus app-level Settings.
 The 6 role surfaces are **MAIN sub-navigation**, reached via `/main/:board`.
 
-```
+```text
 START                     /start
 MAIN                      /main
   ├ Occupancy   (ooa)     /main/occupancy
@@ -75,7 +76,7 @@ are visible per role.
 Extends the existing `apps/hcc-app-fluent/src` structure and follows current patterns
 (Fluent UI v9, react-router-dom v6, i18next, Vitest, Playwright/axe).
 
-```
+```text
 src/
   context/mode-context.tsx            # NEW  Demo|User, persisted, header-toggled
   shell/TopBar/ModeToggle.tsx         # NEW  ribbon control (next to RoleLensDropdown)
@@ -151,7 +152,7 @@ insights" rule enforceable at the seam.
 
 ## 6. Data flow
 
-```
+```text
 Header ModeToggle ─┐
                    ▼
           ModeContext (Demo | User)
