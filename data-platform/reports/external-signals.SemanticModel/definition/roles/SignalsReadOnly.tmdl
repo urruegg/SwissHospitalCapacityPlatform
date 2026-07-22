@@ -1,0 +1,5 @@
+/// External signals read-only role (Sprint 21 M5, ADR-0026 precedent).
+/// Trusted external signal data is public-authority, synthetic/demo scoped, and
+/// non-PHI; no row-level restriction is required in this separate model.
+role SignalsReadOnly
+	modelPermission: read

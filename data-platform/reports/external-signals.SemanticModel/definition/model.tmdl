@@ -1,0 +1,19 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-CH
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["DirectLake - lh_ihzhhpf_sit"]
+
+annotation PBI_ProTooling = ["RemoteModeling","DirectLakeOnOneLakeCreatedInDesktop"]
+
+ref table ext_fact_signal
+ref table ext_fact_trigger_event
+ref table ext_dim_source
+ref table ext_dim_hazard_type
+ref table ext_dim_region
+
+ref role SignalsReadOnly
