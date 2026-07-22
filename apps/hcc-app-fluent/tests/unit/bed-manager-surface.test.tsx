@@ -64,7 +64,7 @@ describe('BedManagerBoard surface', () => {
 
     expect(screen.getByRole('button', { name: /Ask BMCA/ })).toBeInTheDocument();
     expect(await screen.findByText(/simulated/i)).toBeInTheDocument();
-    expect(screen.getByText(/Carried from ooa-agent/i)).toBeInTheDocument();
+    expect(screen.getByText(/Carried from dca-agent/i)).toBeInTheDocument();
   });
 
   it('opens the Copilot rail and invokes the bmca-agent with reallocation context', async () => {

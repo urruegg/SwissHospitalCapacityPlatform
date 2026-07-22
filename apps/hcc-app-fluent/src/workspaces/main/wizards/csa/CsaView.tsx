@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { Button, makeStyles, Text, Title3, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import type { RoleBoardData } from '../../../../journey/RoleBoard';
+import type { ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
 import { CRISIS_PINNED, type CrisisPayload } from '../../../../data/roleboard/crisis-data';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
-import { bannerFor } from '../../../../journey/handoff-orchestrator';
-import { GOLDEN_THREAD_SCOPE, SEED_SITUATION } from '../../../../journey/golden-thread';
+import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
+import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { CsaRoleGuard } from './CsaRoleGuard';
 import { CsaWizard } from './CsaWizard';
@@ -78,18 +78,21 @@ function CrisisRoleBoardBlock() {
     payload: CRISIS_PINNED,
   };
   const [userData, setUserData] = useState<RoleBoardData<CrisisPayload> | null>(null);
+  const [prev, setPrev] = useState<ResidualPressure | null>(null);
 
   useEffect(() => {
     const scope = mode === 'demo'
       ? GOLDEN_THREAD_SCOPE
       : { hospital, windowHours: 72, pinned: false };
-    if (mode === 'demo') {
-      return undefined;
-    }
     let active = true;
-    void crisisBoard.load(scope, mode).then((loaded) => {
-      if (active) setUserData(loaded);
+    void residualFromPrev(crisisBoard.agent, scope, mode).then((residual) => {
+      if (active) setPrev(residual);
     });
+    if (mode !== 'demo') {
+      void crisisBoard.load(scope, mode).then((loaded) => {
+        if (active) setUserData(loaded);
+      });
+    }
     return () => {
       active = false;
     };
@@ -97,7 +100,7 @@ function CrisisRoleBoardBlock() {
 
   const data = mode === 'demo' ? demoData : userData;
   const banner = data
-    ? bannerFor(mode, crisisBoard.agent, mode === 'demo' ? SEED_SITUATION : null)
+    ? bannerFor(mode, crisisBoard.agent, prev)
     : null;
   const insights = data ? crisisBoard.insights(data) : [];
 

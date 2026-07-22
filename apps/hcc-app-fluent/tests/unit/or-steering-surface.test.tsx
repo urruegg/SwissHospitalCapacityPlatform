@@ -60,7 +60,7 @@ describe('OrSteeringBoard surface', () => {
       expect(screen.getByText(orCase.slot)).toBeInTheDocument();
     }
     expect(screen.getByText(/simulated/i)).toBeInTheDocument();
-    expect(screen.getByText(/Carried from ooa-agent/i)).toBeInTheDocument();
+    expect(screen.getByText(/Carried from bmca-agent/i)).toBeInTheDocument();
   });
 
   it('opens the Copilot rail and invokes the orsa-agent with insight context', async () => {

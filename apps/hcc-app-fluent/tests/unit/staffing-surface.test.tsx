@@ -60,7 +60,7 @@ describe('StaffingBoard surface', () => {
       expect(screen.getByText(`${move.fromUnit} -> ${move.toUnit}`)).toBeInTheDocument();
     }
     expect(screen.getByText(/simulated/i)).toBeInTheDocument();
-    expect(screen.getByText(/Carried from ooa-agent/i)).toBeInTheDocument();
+    expect(screen.getByText(/Carried from orsa-agent/i)).toBeInTheDocument();
   });
 
   it('opens the Copilot rail and invokes the sba-agent with insight context', async () => {

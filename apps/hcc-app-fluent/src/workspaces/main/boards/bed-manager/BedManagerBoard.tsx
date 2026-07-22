@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { makeStyles, tokens, Title2, Button, Text } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import type { RoleBoardData } from '../../../../journey/RoleBoard';
+import type { ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
 import type { BedManagerPayload } from '../../../../data/roleboard/bed-manager-data';
 import { Canvas } from '../../../../whiteboard/Canvas';
 import { useLayoutManager } from '../../../../whiteboard/LayoutManager';
@@ -11,8 +11,8 @@ import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
-import { bannerFor } from '../../../../journey/handoff-orchestrator';
-import { GOLDEN_THREAD_SCOPE, SEED_SITUATION } from '../../../../journey/golden-thread';
+import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
+import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { bedManagerBoard } from './bed-manager-board';
 
@@ -50,6 +50,7 @@ export function BedManagerBoard() {
   const layout = useLayoutManager(bedManagerCards);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [data, setData] = useState<RoleBoardData<BedManagerPayload> | null>(null);
+  const [prev, setPrev] = useState<ResidualPressure | null>(null);
 
   useEffect(() => {
     const scope = mode === 'demo'
@@ -59,13 +60,16 @@ export function BedManagerBoard() {
     void bedManagerBoard.load(scope, mode).then((loaded) => {
       if (active) setData(loaded);
     });
+    void residualFromPrev(bedManagerBoard.agent, scope, mode).then((residual) => {
+      if (active) setPrev(residual);
+    });
     return () => {
       active = false;
     };
   }, [mode, hospital]);
 
   const banner = data
-    ? bannerFor(mode, bedManagerBoard.agent, mode === 'demo' ? SEED_SITUATION : null)
+    ? bannerFor(mode, bedManagerBoard.agent, prev)
     : null;
   const insights = data ? bedManagerBoard.insights(data) : [];
 
