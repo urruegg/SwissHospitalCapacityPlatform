@@ -61,6 +61,8 @@
     "discharge": "Discharge readiness (72h)",
     "bedsNeeded": "Beds needed",
     "bedsFreeable": "Beds freeable",
+    "bedsShort": "Beds short",
+    "bedsReallocated": "Beds reallocated",
     "residual": "Residual"
   },
   "handoff": {
@@ -70,7 +72,8 @@
   },
   "insight": {
     "occupancyRising": "{{channel}} rising",
-    "dischargeExpedite": "Expedite {{ward}} discharge"
+    "dischargeExpedite": "Expedite {{ward}} discharge",
+    "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}"
   },
   "copilot": {
     "title": "Copilot",

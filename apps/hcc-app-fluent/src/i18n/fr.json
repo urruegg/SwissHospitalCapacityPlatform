@@ -61,6 +61,8 @@
     "discharge": "Pr?paration des sorties (72 h)",
     "bedsNeeded": "Lits n?cessaires",
     "bedsFreeable": "Lits lib?rables",
+    "bedsShort": "Lits manquants",
+    "bedsReallocated": "Lits réaffectés",
     "residual": "R?siduel"
   },
   "handoff": {
@@ -70,7 +72,8 @@
   },
   "insight": {
     "occupancyRising": "{{channel}} augmente",
-    "dischargeExpedite": "Acc?l?rer la sortie {{ward}}"
+    "dischargeExpedite": "Acc?l?rer la sortie {{ward}}",
+    "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}"
   },
   "copilot": {
     "title": "Copilot",

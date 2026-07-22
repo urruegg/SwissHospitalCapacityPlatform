@@ -61,6 +61,8 @@
     "discharge": "Preparazione dimissioni (72h)",
     "bedsNeeded": "Letti necessari",
     "bedsFreeable": "Letti liberabili",
+    "bedsShort": "Letti mancanti",
+    "bedsReallocated": "Letti riallocati",
     "residual": "Residuo"
   },
   "handoff": {
@@ -70,7 +72,8 @@
   },
   "insight": {
     "occupancyRising": "{{channel}} in aumento",
-    "dischargeExpedite": "Accelera la dimissione {{ward}}"
+    "dischargeExpedite": "Accelera la dimissione {{ward}}",
+    "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}"
   },
   "copilot": {
     "title": "Copilot",

@@ -61,6 +61,8 @@
     "discharge": "Entlassungsbereitschaft (72h)",
     "bedsNeeded": "Ben?tigte Betten",
     "bedsFreeable": "Freisetzbare Betten",
+    "bedsShort": "Fehlende Betten",
+    "bedsReallocated": "Umverteilte Betten",
     "residual": "Restbedarf"
   },
   "handoff": {
@@ -70,7 +72,8 @@
   },
   "insight": {
     "occupancyRising": "{{channel}} steigt",
-    "dischargeExpedite": "Entlassung {{ward}} beschleunigen"
+    "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
+    "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben"
   },
   "copilot": {
     "title": "Copilot",
