@@ -104,7 +104,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Coordinare la capacità ospedaliera nella rete sanitaria svizzera.",
-    "disclaimer": "Vetrina Microsoft Innovation Hub — dati simulati e generici, solo a scopo dimostrativo."
+    "disclaimer": "Vetrina Microsoft Innovation Hub — dati simulati e generici, solo a scopo dimostrativo.",
+    "mode": {
+      "demo": "Demo — vetrina del filo conduttore simulata",
+      "user": "Utente — modalità di lavoro live"
+    },
+    "launcher": {
+      "title": "Entra in una board di ruolo",
+      "occupancy": "Occupazione",
+      "discharge": "Dimissioni",
+      "bedManager": "Gestione letti",
+      "orSteering": "Coordinamento sala operatoria",
+      "staffing": "Personale",
+      "crisis": "Crisi e scenari"
+    }
   },
   "settings": {
     "preferences": "Preferenze"

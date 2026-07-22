@@ -104,7 +104,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Coordinating hospital capacity across the Swiss care network.",
-    "disclaimer": "Microsoft Innovation Hub Showcase — pure simulated and generic data for demo purposes only."
+    "disclaimer": "Microsoft Innovation Hub Showcase — pure simulated and generic data for demo purposes only.",
+    "mode": {
+      "demo": "Demo — simulated golden-thread showcase",
+      "user": "User — live working mode"
+    },
+    "launcher": {
+      "title": "Enter a role board",
+      "occupancy": "Occupancy",
+      "discharge": "Discharge",
+      "bedManager": "Bed management",
+      "orSteering": "OR steering",
+      "staffing": "Staffing",
+      "crisis": "Crisis & scenarios"
+    }
   },
   "settings": {
     "preferences": "Preferences"

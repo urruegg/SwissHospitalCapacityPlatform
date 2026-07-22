@@ -104,7 +104,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Koordination der Spitalkapazität im Schweizer Versorgungsnetz.",
-    "disclaimer": "Microsoft Innovation Hub Showcase — ausschliesslich simulierte und generische Daten, nur zu Demonstrationszwecken."
+    "disclaimer": "Microsoft Innovation Hub Showcase — ausschliesslich simulierte und generische Daten, nur zu Demonstrationszwecken.",
+    "mode": {
+      "demo": "Demo — simulierte Golden-Thread-Präsentation",
+      "user": "Benutzer — Live-Arbeitsmodus"
+    },
+    "launcher": {
+      "title": "Rollenboard öffnen",
+      "occupancy": "Belegung",
+      "discharge": "Entlassung",
+      "bedManager": "Bettenmanagement",
+      "orSteering": "OP-Steuerung",
+      "staffing": "Personal",
+      "crisis": "Krise & Szenarien"
+    }
   },
   "settings": {
     "preferences": "Einstellungen"

@@ -104,7 +104,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Coordonner la capacité hospitalière du réseau de soins suisse.",
-    "disclaimer": "Vitrine Microsoft Innovation Hub — données simulées et génériques, à des fins de démonstration uniquement."
+    "disclaimer": "Vitrine Microsoft Innovation Hub — données simulées et génériques, à des fins de démonstration uniquement.",
+    "mode": {
+      "demo": "Démo — vitrine du fil rouge simulé",
+      "user": "Utilisateur — mode de travail en direct"
+    },
+    "launcher": {
+      "title": "Entrer dans un tableau de rôle",
+      "occupancy": "Occupation",
+      "discharge": "Sorties",
+      "bedManager": "Gestion des lits",
+      "orSteering": "Pilotage du bloc",
+      "staffing": "Personnel",
+      "crisis": "Crise & scénarios"
+    }
   },
   "settings": {
     "preferences": "Préférences"
