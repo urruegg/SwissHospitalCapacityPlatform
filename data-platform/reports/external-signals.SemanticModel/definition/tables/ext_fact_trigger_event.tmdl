@@ -9,7 +9,7 @@ table ext_fact_trigger_event
 	measure 'Triggers Fired (24h)' = ```
 			CALCULATE(
 			    COUNTROWS(ext_fact_trigger_event),
-			    ext_fact_trigger_event[ext_trigger_status] = "fired",
+			    ext_fact_trigger_event[ext_trigger_status] = "trigger-fired",
 			    ext_fact_trigger_event[ext_triggered_at] >= NOW() - 1
 			)
 		```
@@ -38,7 +38,7 @@ table ext_fact_trigger_event
 	measure 'Signals Quarantined' = ```
 			CALCULATE(
 			    COUNTROWS(ext_fact_trigger_event),
-			    ext_fact_trigger_event[ext_trigger_status] = "quarantined"
+			    ext_fact_trigger_event[ext_trigger_status] = "quarantined-status"
 			)
 		```
 		formatString: #,0
