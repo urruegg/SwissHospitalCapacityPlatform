@@ -59,9 +59,12 @@
       "crisis": "Krise"
     },
     "discharge": "Entlassungsbereitschaft (72h)",
+    "orSteering": "OP-Steuerung (72h)",
     "bedsNeeded": "Benötigte Betten",
     "bedsFreeable": "Freisetzbare Betten",
     "bedsShort": "Fehlende Betten",
+    "casesDeferred": "Verschobene Eingriffe",
+    "bedsFreed": "Freigewordene Betten",
     "bedsReallocated": "Umverteilte Betten",
     "residual": "Restbedarf"
   },
@@ -73,7 +76,8 @@
   "insight": {
     "occupancyRising": "{{channel}} steigt",
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
-    "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben"
+    "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
+    "orDefer": "Eingriff {{specialty}} verschieben"
   },
   "copilot": {
     "title": "Copilot",

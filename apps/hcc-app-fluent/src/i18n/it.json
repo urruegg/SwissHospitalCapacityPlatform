@@ -59,9 +59,12 @@
       "crisis": "Crisi"
     },
     "discharge": "Preparazione dimissioni (72h)",
+    "orSteering": "Gestione sala operatoria (72h)",
     "bedsNeeded": "Letti necessari",
     "bedsFreeable": "Letti liberabili",
     "bedsShort": "Letti mancanti",
+    "casesDeferred": "Interventi rinviati",
+    "bedsFreed": "Letti liberati",
     "bedsReallocated": "Letti riallocati",
     "residual": "Residuo"
   },
@@ -73,7 +76,8 @@
   "insight": {
     "occupancyRising": "{{channel}} in aumento",
     "dischargeExpedite": "Accelera la dimissione {{ward}}",
-    "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}"
+    "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
+    "orDefer": "Rinvia il caso {{specialty}}"
   },
   "copilot": {
     "title": "Copilot",

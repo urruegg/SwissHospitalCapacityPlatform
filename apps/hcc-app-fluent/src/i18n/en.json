@@ -59,9 +59,12 @@
       "crisis": "Crisis"
     },
     "discharge": "Discharge readiness (72h)",
+    "orSteering": "OR steering (72h)",
     "bedsNeeded": "Beds needed",
     "bedsFreeable": "Beds freeable",
     "bedsShort": "Beds short",
+    "casesDeferred": "Cases deferred",
+    "bedsFreed": "Beds freed",
     "bedsReallocated": "Beds reallocated",
     "residual": "Residual"
   },
@@ -73,7 +76,8 @@
   "insight": {
     "occupancyRising": "{{channel}} rising",
     "dischargeExpedite": "Expedite {{ward}} discharge",
-    "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}"
+    "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
+    "orDefer": "Defer {{specialty}} case"
   },
   "copilot": {
     "title": "Copilot",
