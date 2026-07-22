@@ -69,7 +69,11 @@
     "residual": "Restbedarf",
     "staffing": "Personalabgleich (72h)",
     "surgeBeds": "Surge-Betten",
-    "fte": "VZÄ"
+    "fte": "VZÄ",
+    "crisis": "Krisenbereitschaft (72h)",
+    "signals": "Externe Signale",
+    "scenarios": "Szenarien",
+    "bedDays": "Bettentage"
   },
   "handoff": {
     "live": "live",
@@ -81,7 +85,8 @@
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
     "orDefer": "Eingriff {{specialty}} verschieben",
-    "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben"
+    "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
+    "stressTest": "{{scenario}} durchspielen"
   },
   "copilot": {
     "title": "Copilot",

@@ -69,7 +69,11 @@
     "residual": "Residual",
     "staffing": "Staffing balance (72h)",
     "surgeBeds": "Surge beds",
-    "fte": "FTE"
+    "fte": "FTE",
+    "crisis": "Crisis readiness (72h)",
+    "signals": "External signals",
+    "scenarios": "Scenarios",
+    "bedDays": "bed-days"
   },
   "handoff": {
     "live": "live",
@@ -81,7 +85,8 @@
     "dischargeExpedite": "Expedite {{ward}} discharge",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
     "orDefer": "Defer {{specialty}} case",
-    "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}"
+    "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",
+    "stressTest": "Stress-test {{scenario}}"
   },
   "copilot": {
     "title": "Copilot",

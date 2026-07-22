@@ -69,7 +69,11 @@
     "residual": "Residuo",
     "staffing": "Bilanciamento del personale (72h)",
     "surgeBeds": "Letti surge",
-    "fte": "ETP"
+    "fte": "ETP",
+    "crisis": "Preparazione alle crisi (72h)",
+    "signals": "Segnali esterni",
+    "scenarios": "Scenari",
+    "bedDays": "giornate-letto"
   },
   "handoff": {
     "live": "live",
@@ -81,7 +85,8 @@
     "dischargeExpedite": "Accelera la dimissione {{ward}}",
     "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
     "orDefer": "Rinvia il caso {{specialty}}",
-    "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}"
+    "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",
+    "stressTest": "Testa {{scenario}}"
   },
   "copilot": {
     "title": "Copilot",

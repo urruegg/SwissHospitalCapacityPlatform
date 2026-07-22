@@ -69,7 +69,11 @@
     "residual": "Résiduel",
     "staffing": "Équilibrage du personnel (72 h)",
     "surgeBeds": "Lits de renfort",
-    "fte": "ETP"
+    "fte": "ETP",
+    "crisis": "Préparation aux crises (72 h)",
+    "signals": "Signaux externes",
+    "scenarios": "Scénarios",
+    "bedDays": "jours-lits"
   },
   "handoff": {
     "live": "en direct",
@@ -81,7 +85,8 @@
     "dischargeExpedite": "Accélérer la sortie {{ward}}",
     "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}",
     "orDefer": "Reporter le cas {{specialty}}",
-    "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}"
+    "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}",
+    "stressTest": "Simuler {{scenario}}"
   },
   "copilot": {
     "title": "Copilot",

@@ -4,6 +4,7 @@ import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
 import { BED_MANAGER_PINNED, type BedManagerPayload } from './bed-manager-data';
 import { OR_STEERING_PINNED, type OrSteeringPayload } from './or-steering-data';
 import { STAFFING_PINNED, type StaffingPayload } from './staffing-data';
+import { CRISIS_PINNED, type CrisisPayload } from './crisis-data';
 
 /**
  * Sprint 1 (parity) — trusted-data read adapter. When the Sprint 22 golden
@@ -90,5 +91,21 @@ export async function loadStaffing(
   );
   if (!res.ok) throw new Error(`staffing load failed: ${res.status}`);
   const payload = (await res.json()) as StaffingPayload;
+  return { provenance: 'live', scope: pinnedScope, payload };
+}
+
+export async function loadCrisis(
+  scope: ScenarioScope,
+  mode: Mode,
+): Promise<RoleBoardData<CrisisPayload>> {
+  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
+  if (!goldenSourceUrl) {
+    return { provenance: 'simulated', scope: pinnedScope, payload: CRISIS_PINNED };
+  }
+  const res = await fetch(
+    `${goldenSourceUrl}/crisis?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  );
+  if (!res.ok) throw new Error(`crisis load failed: ${res.status}`);
+  const payload = (await res.json()) as CrisisPayload;
   return { provenance: 'live', scope: pinnedScope, payload };
 }
