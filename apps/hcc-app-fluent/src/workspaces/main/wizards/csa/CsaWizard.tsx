@@ -2,7 +2,7 @@
  * Sprint 16.1 · S16.5 — top-level CSA wizard component.
  *
  * Composes:
- *   - CsaRoleGuard (role gate: HCC.CrisisManager / OperationsLead / PlatformAdmin / SuperAdmin)
+ *   - CsaRoleGuard (role gate: the active RBAC lens's `csa` nav capability)
  *   - CsaStepper (4-step progress: Prepare → Run → Evaluate → Recommend)
  *   - CsaStepBody (per-step content; Prepare is wired live, Run/Evaluate stubs, Recommend read-only)
  *   - CopilotDrawer with `agent="csa-agent"` in the right rail

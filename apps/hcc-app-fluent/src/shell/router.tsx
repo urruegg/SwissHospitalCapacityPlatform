@@ -2,7 +2,6 @@ import { Navigate, type RouteObject } from 'react-router-dom';
 import { AppShell } from './AppShell';
 import { StartView } from '../workspaces/start/StartView';
 import { MainView } from '../workspaces/main/MainView';
-import { CsaView } from '../workspaces/main/wizards/csa/CsaView';
 import { BackstageView } from '../workspaces/backstage/BackstageView';
 import { SettingsView } from '../workspaces/settings/SettingsView';
 
@@ -21,7 +20,6 @@ export const routes: RouteObject[] = [
       { index: true, element: <Navigate to="/start" replace /> },
       { path: 'start', element: <StartView /> },
       { path: 'main/:board?', element: <MainView /> },
-      { path: 'csa', element: <CsaView /> },
       { path: 'backstage/:widget?', element: <BackstageView /> },
       { path: 'settings', element: <SettingsView /> },
       { path: '*', element: <Navigate to="/start" replace /> },

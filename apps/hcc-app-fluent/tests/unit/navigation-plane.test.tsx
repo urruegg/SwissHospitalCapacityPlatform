@@ -21,17 +21,18 @@ function renderNav(roles: string[]) {
 }
 
 describe('NavigationPlane', () => {
-  it('renders all five destinations for an admin', () => {
+  it('renders the four top-level destinations for an admin', () => {
     renderNav(['HCC.PlatformAdmin']);
-    ['Start', 'Main', 'CSA', 'Backstage', 'Settings'].forEach((n) =>
+    ['Start', 'Main', 'Backstage', 'Settings'].forEach((n) =>
       expect(screen.getByRole('tab', { name: n })).toBeInTheDocument(),
     );
+    expect(screen.queryByRole('tab', { name: 'CSA' })).not.toBeInTheDocument();
   });
 
-  it('disables (but keeps visible) CSA/Settings for a bed manager', () => {
+  it('disables Settings but keeps Main enabled for a bed manager', () => {
     renderNav(['HCC.BedManager']);
-    expect(screen.getByRole('tab', { name: 'CSA' })).toBeDisabled();
     expect(screen.getByRole('tab', { name: 'Settings' })).toBeDisabled();
     expect(screen.getByRole('tab', { name: 'Main' })).not.toBeDisabled();
+    expect(screen.queryByRole('tab', { name: 'CSA' })).not.toBeInTheDocument();
   });
 });

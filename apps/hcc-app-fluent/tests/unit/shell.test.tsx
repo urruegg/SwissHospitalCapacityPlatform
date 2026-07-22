@@ -24,11 +24,12 @@ describe('App (routed five-plane shell)', () => {
     expect(screen.getByTestId('start-view')).toBeInTheDocument();
   });
 
-  it('exposes all five navigation destinations (disabled-not-hidden gating)', () => {
+  it('exposes the four top-level navigation destinations', () => {
     render(<App />);
-    ['Start', 'Main', 'CSA', 'Backstage', 'Settings'].forEach((n) =>
+    ['Start', 'Main', 'Backstage', 'Settings'].forEach((n) =>
       expect(screen.getByRole('tab', { name: n })).toBeInTheDocument(),
     );
+    expect(screen.queryByRole('tab', { name: 'CSA' })).not.toBeInTheDocument();
   });
 
   it('renders the header brand mark and role lens for a SIT PlatformAdmin', () => {
