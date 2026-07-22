@@ -57,7 +57,11 @@
       "or-steering": "OP-Steuerung",
       "staffing": "Personal",
       "crisis": "Krise"
-    }
+    },
+    "discharge": "Entlassungsbereitschaft (72h)",
+    "bedsNeeded": "Ben?tigte Betten",
+    "bedsFreeable": "Freisetzbare Betten",
+    "residual": "Restbedarf"
   },
   "handoff": {
     "live": "live",
@@ -65,7 +69,8 @@
     "loopBack": "führt zurück zur Auslastungsprognose"
   },
   "insight": {
-    "occupancyRising": "{{channel}} steigt"
+    "occupancyRising": "{{channel}} steigt",
+    "dischargeExpedite": "Entlassung {{ward}} beschleunigen"
   },
   "copilot": {
     "title": "Copilot",
