@@ -1,0 +1,11 @@
+version: 1
+# A signal fires a CSA handoff only when ALL gate conditions hold.
+gate:
+  min_severity: Severe        # Severe or Extreme
+  min_danger_level: 3         # applies when dangerLevel present
+  required_status: Actual
+  required_trust_tier: A
+# Arbitration precedence when multiple distinct hazards overlap.
+arbitration:
+  order: [lage_tier, severity, certainty]
+severity_rank: { Minor: 1, Moderate: 2, Severe: 3, Extreme: 4 }

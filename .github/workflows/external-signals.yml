@@ -1,0 +1,69 @@
+name: external-signals
+
+# Sprint 21 — offline quality gate for trusted external-signal scripts,
+# notebooks, schemas, and CI wiring. This workflow is dependency-light and
+# does not call live Fabric services.
+
+on:
+  pull_request:
+    paths:
+      - 'data-platform/scripts/external-signals/**'
+      - 'data-platform/notebooks/external-signals/**'
+      - 'data/synthetic/schema/dc-ext-signal-v1.schema.json'
+      - '.github/workflows/external-signals.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data-platform/scripts/external-signals/**'
+      - 'data-platform/notebooks/external-signals/**'
+      - 'data/synthetic/schema/dc-ext-signal-v1.schema.json'
+      - '.github/workflows/external-signals.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-signals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  external-signals-tests:
+    name: External signals offline tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
+      - name: Run external-signal script tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts/external-signals
+          PYTHONPATH=. python3 -m unittest discover -s tests -v
+
+      - name: Run external-signal notebook pure-function tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d data-platform/notebooks/external-signals/tests ]; then
+            cd data-platform/notebooks/external-signals
+            PYTHONPATH=. python3 -m unittest discover -s tests -v
+          else
+            echo '::notice::No external-signal notebook tests yet — skipping.'
+          fi
+
+      - name: Dry-run synthetic external-signal seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts/external-signals
+          PYTHONPATH=. python3 signals_synth.py --dry-run

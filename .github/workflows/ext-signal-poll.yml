@@ -1,0 +1,133 @@
+name: ext-signal-poll
+
+# Sprint 21 M6 — poller bridge for trusted external signals. The live Fabric
+# read is gated on deployed credentials and agent-host availability; default
+# operation is a dry-run over the synthetic seed so CI remains offline-safe.
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Use synthetic seed instead of live Fabric read.'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: ext-signal-poll-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  poll:
+    name: Evaluate external signal triggers
+    runs-on: ubuntu-latest
+    env:
+      LIVE_CONFIGURED: ${{ secrets.AZURE_CLIENT_ID != '' && vars.AZURE_TENANT_ID != '' && vars.AZURE_SUBSCRIPTION_ID != '' && vars.FABRIC_WORKSPACE_ID != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
+      - name: Dry-run over synthetic external-signal seed
+        id: dry_run
+        if: >-
+          github.event_name == 'schedule' ||
+          inputs.dry_run == true ||
+          env.LIVE_CONFIGURED != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts/external-signals
+          python3 signals_synth.py --dry-run
+          PYTHONPATH=. python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          from signals_synth import build_records
+          from trigger_rules import load_rules, evaluate, arbitrate
+
+          rules = load_rules()
+          records = build_records()
+          fired = [rec for rec in records if evaluate(rec, rules).fired]
+          primary = None
+          secondaries = []
+          if fired:
+              primary, secondaries = arbitrate(fired)
+
+          issue_path = Path(os.environ['GITHUB_WORKSPACE']) / '.external-signal-triage.md'
+          lines = [
+              '@signal-triage-agent dry-run bridge evaluation for trusted external signals.',
+              '',
+              f'* Records evaluated: {len(records)}',
+              f'* Fired triggers: {len(fired)}',
+              '* Source: synthetic `DC-EXT-SIGNAL-v1` seed (`signals_synth.py --dry-run`)',
+              '* Side-effect ceiling: advisory GitHub issue only; CSA Run still requires `approved-to-apply`.',
+          ]
+          if primary:
+              lines.extend([
+                  '',
+                  '## Primary advisory handoff',
+                  '',
+                  f'* Signal: `{primary.get("signalId")}`',
+                  f'* Hazard: `{primary.get("hazardType")}`',
+                  f'* Severity: `{primary.get("severity")}`',
+                  f'* Lage tier: `{primary.get("defaultLageTier")}`',
+                  f'* Scenario template: `{primary.get("mappedScenarioTemplate")}`',
+                  f'* Secondary overlaps: {len(secondaries)}',
+              ])
+          else:
+              lines.extend(['', 'No advisory handoff is required for this run.'])
+          issue_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as fh:
+              fh.write(f'fired_count={len(fired)}\n')
+          PY
+
+      - name: Live Fabric read via agent-host/fabric-mcp
+        id: live_read
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          inputs.dry_run == false &&
+          env.LIVE_CONFIGURED == 'true'
+        shell: bash
+        env:
+          FABRIC_WORKSPACE_ID: ${{ vars.FABRIC_WORKSPACE_ID }}
+        run: |
+          set -euo pipefail
+          if ! command -v agent-host >/dev/null 2>&1; then
+            echo 'agent-host is required for live fabric-mcp reads.' >&2
+            exit 1
+          fi
+          agent-host fabric-mcp query \
+            --workspace "$FABRIC_WORKSPACE_ID" \
+            --query 'gold.ext_fact_signal | where status == "Actual" and trustTier == "A"'
+
+      - name: Open or update signal triage issue
+        if: >-
+          steps.dry_run.outputs.fired_count != '' &&
+          steps.dry_run.outputs.fired_count != '0'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: 'External signal triage handoff (poller bridge)'
+          BODY_FILE: ${{ github.workspace }}/.external-signal-triage.md
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body-file "$BODY_FILE"
+          else
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE"
+          fi
