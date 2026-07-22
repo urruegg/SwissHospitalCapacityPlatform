@@ -1,0 +1,12 @@
+relationship a9d018ed-143a-47e3-b0f2-ad551a0c2073
+	fromColumn: ext_fact_signal.ext_source_id
+	toColumn: ext_dim_source.ext_source_id
+
+relationship 117b9805-c45f-4303-bfe0-bce993e63c29
+	fromColumn: ext_fact_signal.ext_hazard_type
+	toColumn: ext_dim_hazard_type.ext_hazard_type
+
+relationship cadb58e4-d3a3-4556-9712-eaa85121a3ba
+	fromColumn: ext_fact_trigger_event.ext_hazard_type
+	toColumn: ext_dim_hazard_type.ext_hazard_type
+

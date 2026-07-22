@@ -1,0 +1,172 @@
+/// Trusted External Signals trigger audit fact (Sprint 21 M5). One row per
+/// trigger evaluation or fire, materialised to gold.ext_fact_trigger_event.
+/// Direct Lake over lh_ihzhhpf_sit.
+table ext_fact_trigger_event
+	lineageTag: 02b814ee-1c00-4128-8015-bd386a363d85
+	sourceLineageTag: [gold].[ext_fact_trigger_event]
+
+	/// Trigger audit rows fired in the last 24 hours.
+	measure 'Triggers Fired (24h)' = ```
+			CALCULATE(
+			    COUNTROWS(ext_fact_trigger_event),
+			    ext_fact_trigger_event[ext_trigger_status] = "trigger-fired",
+			    ext_fact_trigger_event[ext_triggered_at] >= NOW() - 1
+			)
+		```
+		formatString: #,0
+		lineageTag: 0e6bb9e6-9d53-4056-86ca-701c46395d35
+
+	/// Average elapsed minutes from source onset to trigger evaluation/fire.
+	measure 'Mean Time Source->Trigger' = ```
+			AVERAGEX(
+			    FILTER(
+			        ext_fact_trigger_event,
+			        NOT ISBLANK(ext_fact_trigger_event[ext_source_onset])
+			            && NOT ISBLANK(ext_fact_trigger_event[ext_triggered_at])
+			    ),
+			    DATEDIFF(
+			        ext_fact_trigger_event[ext_source_onset],
+			        ext_fact_trigger_event[ext_triggered_at],
+			        MINUTE
+			    )
+			)
+		```
+		formatString: 0.0
+		lineageTag: fdbc9dfd-8d7e-4416-a00f-6cd3126af1b1
+
+	/// Count of non-Actual signals recorded as quarantined in the trigger audit.
+	measure 'Signals Quarantined' = ```
+			CALCULATE(
+			    COUNTROWS(ext_fact_trigger_event),
+			    ext_fact_trigger_event[ext_trigger_status] = "quarantined-status"
+			)
+		```
+		formatString: #,0
+		lineageTag: baaa080f-c944-4e08-8b83-ce75139e0d4c
+
+	column ext_trigger_event_id
+		dataType: string
+		lineageTag: 007b6836-b2cd-42de-9f81-1cf4f54eb2dd
+		sourceLineageTag: ext_trigger_event_id
+		summarizeBy: none
+		sourceColumn: ext_trigger_event_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_signal_id
+		dataType: string
+		lineageTag: c52d08b0-7cc3-406f-9f42-72b5cea7c6fe
+		sourceLineageTag: ext_signal_id
+		summarizeBy: none
+		sourceColumn: ext_signal_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_hazard_type
+		dataType: string
+		lineageTag: fea4117b-cfc1-4fd0-995f-b4b318b9d04a
+		sourceLineageTag: ext_hazard_type
+		summarizeBy: none
+		sourceColumn: ext_hazard_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_severity
+		dataType: string
+		lineageTag: 393c0164-8307-4761-bc1a-0191263089bd
+		sourceLineageTag: ext_severity
+		summarizeBy: none
+		sourceColumn: ext_severity
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_lage_tier
+		dataType: int64
+		formatString: #,0
+		lineageTag: cba29f70-6f05-4ba9-b1ef-4df74532bc17
+		sourceLineageTag: ext_lage_tier
+		summarizeBy: max
+		sourceColumn: ext_lage_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_scenario_template
+		dataType: string
+		lineageTag: 9efedf4b-1a28-4c6e-934f-e2289ca2c51d
+		sourceLineageTag: ext_scenario_template
+		summarizeBy: none
+		sourceColumn: ext_scenario_template
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_sources
+		dataType: string
+		lineageTag: 91d6e9ba-1275-4ccb-8440-d7aad9224c8c
+		sourceLineageTag: ext_sources
+		summarizeBy: none
+		sourceColumn: ext_sources
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_signal_ids
+		dataType: string
+		lineageTag: 1bf40dd2-15e6-4cd8-9b36-8cd3166bbe5a
+		sourceLineageTag: ext_signal_ids
+		summarizeBy: none
+		sourceColumn: ext_signal_ids
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_dedup_keys
+		dataType: string
+		lineageTag: e068ea16-24c1-481f-8db8-f1e4e6b8487a
+		sourceLineageTag: ext_dedup_keys
+		summarizeBy: none
+		sourceColumn: ext_dedup_keys
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_trigger_status
+		dataType: string
+		lineageTag: e54f0bc0-2800-4aa7-af73-d6e81b25f9e3
+		sourceLineageTag: ext_trigger_status
+		summarizeBy: none
+		sourceColumn: ext_trigger_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_source_onset
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: edc290a7-8d48-42c5-8d00-cb1df1bc9f02
+		sourceLineageTag: ext_source_onset
+		summarizeBy: none
+		sourceColumn: ext_source_onset
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_triggered_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f25af826-42f6-4c37-a089-12aecd0a07e1
+		sourceLineageTag: ext_triggered_at
+		summarizeBy: none
+		sourceColumn: ext_triggered_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_run_id
+		dataType: string
+		lineageTag: 055672cf-c0a7-4848-9e92-8c153d94c70a
+		sourceLineageTag: ext_run_id
+		summarizeBy: none
+		sourceColumn: ext_run_id
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ext_fact_trigger_event = entity
+		mode: directLake
+		source
+			entityName: ext_fact_trigger_event
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

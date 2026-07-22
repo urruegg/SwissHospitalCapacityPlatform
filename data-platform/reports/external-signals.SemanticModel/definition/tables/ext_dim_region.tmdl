@@ -1,0 +1,21 @@
+/// Affected canton dimension for gold.ext_dim_region, derived by
+/// build_gold_signals.py (to_gold_dims). Direct Lake over lh_ihzhhpf_sit.
+table ext_dim_region
+	lineageTag: bbde9fd0-04f9-4180-86d4-4795f60a4344
+	sourceLineageTag: [gold].[ext_dim_region]
+
+	column ext_canton
+		dataType: string
+		lineageTag: 78159374-6a78-46aa-b345-0d6eda9979a9
+		sourceLineageTag: ext_canton
+		summarizeBy: none
+		sourceColumn: ext_canton
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ext_dim_region = entity
+		mode: directLake
+		source
+			entityName: ext_dim_region
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

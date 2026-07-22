@@ -1,0 +1,40 @@
+/// Hazard type dimension for gold.ext_dim_hazard_type, derived by
+/// build_gold_signals.py (to_gold_dims). Direct Lake over lh_ihzhhpf_sit.
+table ext_dim_hazard_type
+	lineageTag: e8bdd67b-1f61-40b0-b691-d033f16ce378
+	sourceLineageTag: [gold].[ext_dim_hazard_type]
+
+	column ext_hazard_type
+		dataType: string
+		lineageTag: d358e68a-ba5b-46ff-80ed-34c1cac44f85
+		sourceLineageTag: ext_hazard_type
+		summarizeBy: none
+		sourceColumn: ext_hazard_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_scenario_template
+		dataType: string
+		lineageTag: 34ea3aa7-3f88-441d-8cea-946c2bae6df3
+		sourceLineageTag: ext_scenario_template
+		summarizeBy: none
+		sourceColumn: ext_scenario_template
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_default_lage_tier
+		dataType: int64
+		formatString: #,0
+		lineageTag: 1b8e1817-30a2-49fb-92c4-272f3d30195e
+		sourceLineageTag: ext_default_lage_tier
+		summarizeBy: max
+		sourceColumn: ext_default_lage_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ext_dim_hazard_type = entity
+		mode: directLake
+		source
+			entityName: ext_dim_hazard_type
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

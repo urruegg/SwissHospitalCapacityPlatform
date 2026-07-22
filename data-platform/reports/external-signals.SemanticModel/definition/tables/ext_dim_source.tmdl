@@ -1,0 +1,39 @@
+/// Trusted source dimension for gold.ext_dim_source, derived by
+/// build_gold_signals.py (to_gold_dims). Direct Lake over lh_ihzhhpf_sit.
+table ext_dim_source
+	lineageTag: c91bf332-893b-4494-ba60-9665b094062c
+	sourceLineageTag: [gold].[ext_dim_source]
+
+	column ext_source_id
+		dataType: string
+		lineageTag: 67f28b31-5659-4347-b372-c8e3777c7130
+		sourceLineageTag: ext_source_id
+		summarizeBy: none
+		sourceColumn: ext_source_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_source_authority
+		dataType: string
+		lineageTag: 2358be65-047a-4c72-a213-46e86ff1fa6e
+		sourceLineageTag: ext_source_authority
+		summarizeBy: none
+		sourceColumn: ext_source_authority
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_trust_tier
+		dataType: string
+		lineageTag: 5f437003-ecab-4a63-9006-0e8e916ebae7
+		sourceLineageTag: ext_trust_tier
+		summarizeBy: none
+		sourceColumn: ext_trust_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ext_dim_source = entity
+		mode: directLake
+		source
+			entityName: ext_dim_source
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

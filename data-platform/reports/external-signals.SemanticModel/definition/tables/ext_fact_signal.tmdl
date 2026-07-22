@@ -1,0 +1,116 @@
+/// Trusted External Signals fact (Sprint 21 M5). One row per active normalized
+/// signal, materialised to gold.ext_fact_signal by build_gold_signals.py
+/// (to_gold_signal). Direct Lake over lh_ihzhhpf_sit.
+table ext_fact_signal
+	lineageTag: eec7f59f-2e38-4030-a0ae-4c54d38fe505
+	sourceLineageTag: [gold].[ext_fact_signal]
+
+	/// Count of currently surfaced Actual external signals.
+	measure 'Active Signals' = ```
+			CALCULATE(
+			    DISTINCTCOUNT(ext_fact_signal[ext_signal_id]),
+			    ext_fact_signal[ext_status] = "Actual"
+			)
+		```
+		formatString: #,0
+		lineageTag: ce7db5d9-9be1-467b-9b0e-676b424ca791
+
+	/// Count of signals in the current severity filter context.
+	measure 'Signals by Severity' = DISTINCTCOUNT(ext_fact_signal[ext_signal_id])
+		formatString: #,0
+		lineageTag: c1457ed5-21e4-4809-bb2c-474d952ada3d
+
+	/// Highest default Lage tier in the current signal context.
+	measure 'Highest Lage Tier' = MAX(ext_fact_signal[ext_lage_tier])
+		formatString: #,0
+		lineageTag: 3353adfd-5e56-4c3f-b321-01c19f37be92
+
+	column ext_signal_id
+		dataType: string
+		lineageTag: 3502d231-2669-4482-a920-3fd5fbea9c08
+		sourceLineageTag: ext_signal_id
+		summarizeBy: none
+		sourceColumn: ext_signal_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_source_id
+		dataType: string
+		lineageTag: 279625bc-7bab-4e7d-aca0-35e7f700339b
+		sourceLineageTag: ext_source_id
+		summarizeBy: none
+		sourceColumn: ext_source_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_hazard_type
+		dataType: string
+		lineageTag: a951c893-21ac-4acb-a42a-098a7d9170cf
+		sourceLineageTag: ext_hazard_type
+		summarizeBy: none
+		sourceColumn: ext_hazard_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_severity
+		dataType: string
+		lineageTag: 1c321534-c792-4da0-bb6e-8277bedd9cd9
+		sourceLineageTag: ext_severity
+		summarizeBy: none
+		sourceColumn: ext_severity
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_scenario_template
+		dataType: string
+		lineageTag: 7ca21ee7-e7c7-490c-8827-0d9d4226bc36
+		sourceLineageTag: ext_scenario_template
+		summarizeBy: none
+		sourceColumn: ext_scenario_template
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_lage_tier
+		dataType: int64
+		formatString: #,0
+		lineageTag: a45b6578-ca23-4a9c-8e68-cd4da568e46f
+		sourceLineageTag: ext_lage_tier
+		summarizeBy: max
+		sourceColumn: ext_lage_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_cantons
+		dataType: string
+		lineageTag: 80c3869c-ea9f-430b-bb72-bd6aed5ffadd
+		sourceLineageTag: ext_cantons
+		summarizeBy: none
+		sourceColumn: ext_cantons
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_onset
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4f8c4351-6e00-4cf1-a3bf-1251e575b2f7
+		sourceLineageTag: ext_onset
+		summarizeBy: none
+		sourceColumn: ext_onset
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_status
+		dataType: string
+		lineageTag: 855f5cb4-1192-40a3-baaa-17fe39b491bb
+		sourceLineageTag: ext_status
+		summarizeBy: none
+		sourceColumn: ext_status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ext_fact_signal = entity
+		mode: directLake
+		source
+			entityName: ext_fact_signal
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
