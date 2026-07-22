@@ -33,7 +33,31 @@
     "roles": "Roles & RBAC",
     "rolesDescription": "Live view of app roles from Microsoft Entra (read-only).",
     "evidence": "Evidence",
-    "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI)."
+    "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI).",
+    "nav": {
+      "label": "Backstage sections"
+    },
+    "story": {
+      "tab": "Story",
+      "title": "How Curavias is built",
+      "lead": "A simple executive view of the platform foundations behind the showcase.",
+      "agents": {
+        "title": "Built by agents",
+        "body": "GitHub Copilot coding agents plan, build, and review the platform through governed MCP tools."
+      },
+      "fabricFhir": {
+        "title": "Fabric + FHIR",
+        "body": "A trusted Microsoft Fabric data platform speaks FHIR for Swiss healthcare interoperability."
+      },
+      "dsg": {
+        "title": "Swiss data protection",
+        "body": "Swiss DSG and cantonal governance controls are built into every layer."
+      },
+      "alm": {
+        "title": "Dev → SIT → Prod",
+        "body": "Enterprise ALM promotes changes safely from development through SIT to production."
+      }
+    }
   },
   "evidence": {
     "readinessSummary": "Readiness summary",

@@ -33,7 +33,31 @@
     "roles": "Ruoli e RBAC",
     "rolesDescription": "Vista in tempo reale dei ruoli dell'app da Microsoft Entra (sola lettura).",
     "evidence": "Prove",
-    "evidenceDescription": "Lavagna del presentatore: schede BOM, ADR, requisiti, prove GA e dipendenze (sintetiche, senza PHI)."
+    "evidenceDescription": "Lavagna del presentatore: schede BOM, ADR, requisiti, prove GA e dipendenze (sintetiche, senza PHI).",
+    "nav": {
+      "label": "Sezioni backstage"
+    },
+    "story": {
+      "tab": "Storia",
+      "title": "Come è costruito Curavias",
+      "lead": "Una vista esecutiva semplice sulle fondamenta della piattaforma dietro la vetrina.",
+      "agents": {
+        "title": "Costruito dagli agenti",
+        "body": "Gli agenti di codifica GitHub Copilot pianificano, costruiscono e revisionano la piattaforma tramite strumenti MCP governati."
+      },
+      "fabricFhir": {
+        "title": "Fabric + FHIR",
+        "body": "Una piattaforma dati Microsoft Fabric affidabile parla FHIR per l'interoperabilità sanitaria svizzera."
+      },
+      "dsg": {
+        "title": "Protezione dati svizzera",
+        "body": "La DSG svizzera e i controlli di governance cantonale sono integrati in ogni livello."
+      },
+      "alm": {
+        "title": "Dev → SIT → Prod",
+        "body": "L'ALM enterprise promuove le modifiche in sicurezza dallo sviluppo alla SIT fino alla produzione."
+      }
+    }
   },
   "evidence": {
     "readinessSummary": "Riepilogo di preparazione",

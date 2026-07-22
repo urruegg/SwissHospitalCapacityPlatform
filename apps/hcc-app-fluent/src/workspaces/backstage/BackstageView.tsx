@@ -1,7 +1,43 @@
 import type { JSX } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { makeStyles, tokens } from '@fluentui/react-components';
+import { useTranslation } from 'react-i18next';
 import { EvidenceTab } from './tabs/evidence/EvidenceTab';
 import { RolesTab } from './tabs/roles/RolesTab';
+import { StoryTab } from './tabs/story/StoryTab';
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalL,
+  },
+  nav: {
+    display: 'flex',
+    gap: tokens.spacingHorizontalS,
+    flexWrap: 'wrap',
+  },
+  navLink: {
+    color: tokens.colorBrandForegroundLink,
+    textDecorationLine: 'none',
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
+    borderRadius: tokens.borderRadiusMedium,
+    ':hover': {
+      textDecorationLine: 'underline',
+    },
+  },
+  activeNavLink: {
+    backgroundColor: tokens.colorBrandBackground2,
+    color: tokens.colorBrandForeground1,
+    fontWeight: tokens.fontWeightSemibold,
+  },
+});
+
+const NAV_ITEMS = [
+  { key: 'story', to: '/backstage/story', labelKey: 'backstage.story.tab' },
+  { key: 'evidence', to: '/backstage/evidence', labelKey: 'backstage.evidence' },
+  { key: 'roles', to: '/backstage/roles', labelKey: 'backstage.roles' },
+];
 
 /**
  * Sprint 20 M5 — Backstage surface.
@@ -12,6 +48,11 @@ import { RolesTab } from './tabs/roles/RolesTab';
  * and mounts the widget.
  */
 const WIDGETS: Record<string, () => JSX.Element> = {
+  story: () => (
+    <div data-testid="widget-story">
+      <StoryTab />
+    </div>
+  ),
   evidence: () => (
     <div data-testid="widget-evidence">
       <EvidenceTab />
@@ -25,7 +66,31 @@ const WIDGETS: Record<string, () => JSX.Element> = {
 };
 
 export function BackstageView() {
+  const styles = useStyles();
+  const { t } = useTranslation();
   const { widget = 'evidence' } = useParams();
   const W = WIDGETS[widget] ?? WIDGETS.evidence;
-  return <W />;
+  const selectedWidget = WIDGETS[widget] ? widget : 'evidence';
+
+  return (
+    <div className={styles.root}>
+      <nav className={styles.nav} aria-label={t('backstage.nav.label', 'Backstage sections')}>
+        {NAV_ITEMS.map((item) => {
+          const active = item.key === selectedWidget;
+          return (
+            <Link
+              key={item.key}
+              to={item.to}
+              data-testid={`backstage-nav-${item.key}`}
+              className={`${styles.navLink} ${active ? styles.activeNavLink : ''}`}
+              aria-current={active ? 'page' : undefined}
+            >
+              {t(item.labelKey)}
+            </Link>
+          );
+        })}
+      </nav>
+      <W />
+    </div>
+  );
 }
