@@ -18,6 +18,7 @@
 - e2e/a11y: `npm run test:e2e`
 
 **Commit convention:** Conventional Commits; commit with `git -c core.hooksPath=/dev/null commit` (the pre-commit mojibake hook false-positives on the `python3` Windows alias — validate docs with `python scripts/lint/check_mojibake.py --staged` instead). Include trailers:
+
 ```text
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 Copilot-Session: d4d39dea-2b6c-4739-980e-02102d370bf9
