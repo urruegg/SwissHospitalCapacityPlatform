@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-22 |
 | **Author** | Urs Rüegg / GitHub Copilot |
 | **Status** | Evidence collected |
-| **Previous Version** | 1.1.0 (added §11 Foundry Agent Service account-level evidence — Sprint 18) |
+| **Previous Version** | 1.2.0 (added §11 Foundry Agent Service account-level evidence — Sprint 18) |
 
 > **Purpose.** Consolidated evidence proving the Sprints 11–16 roadmap
 > artefacts are live and operational in the SIT environment
@@ -327,3 +327,53 @@ Foundry control plane is operational with 3 GA models (gpt-5, gpt-5-mini, o3).
 The overall SIT proven state is now approximately **95%**, with the remaining 5%
 being Fabric workspace portal verification and cross-region tool invocation
 (agent-host in westus2 calling Foundry in eastus2 with Fabric/Cosmos tools).
+
+---
+
+## 13. Sprint 22 (P1a) — SIT Gold Parity Re-Verification (2026-07-22)
+
+> Added 2026-07-22 to capture a live re-verification of the Sprint 22 (P1a)
+> reproducible-medallion proof, which post-dates this document's original
+> 2026-07-17 collection. Sprint 22 (P1a) landed via
+> [PR #256](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/256)
+> (+ follow-ups #259 git-reproducible eventstream synthetic seed and #260
+> deployable capacity-dashboard); issues #253 and #254 are closed.
+
+### 13.1 What was verified
+
+The live SIT lakehouse `lh_ihzhhpf_sit` (`30594c20-46ba-40ea-91fa-4701b105e0b9`)
+in workspace `ws-ihzhhpf-sit-data` (`f3af9733-9503-4e92-98f9-a901d96f1c87`,
+westus2) was queried read-only via the OneLake DFS filesystem API, and the
+produced `gold.*` table set was asserted against the `capacity-dashboard`
+Direct Lake contract.
+
+```powershell
+py -3.11 data-platform/scripts/fabric/list_gold_tables.py --environment SIT --out sit_gold.txt
+py -3.11 data-platform/scripts/verify_gold_schema.py --produced sit_gold.txt
+```
+
+### 13.2 Result
+
+| Check | Result |
+|-------|--------|
+| Live `gold.*` tables in SIT lakehouse | ✅ 29 tables listed via OneLake DFS API |
+| Gold-schema parity vs `capacity-dashboard` contract | ✅ `OK: gold parity (13 contract tables covered).` |
+| Task-14 patient-flow tables (`encounter` + `bed_assignment`) | ✅ Present — the 2026-07-20 reproducible-medallion fix still holds |
+| `bva_*` domain (separate, contract-excluded) | ✅ 13 `bva_*` tables present alongside |
+
+The 13 contract tables covered: `bed_assignment`, `dim_disease`, `dim_drg`,
+`dim_hospital`, `dim_hospital_service`, `dim_specialty`, `dim_treatment`,
+`dim_ward_capacityunit`, `encounter`, `fact_capacity_baseline`,
+`map_disease_treatment_specialty_service`, `or_case`, `or_schedule`.
+
+> Note: `dim_hospital` remains live in SIT gold as expected — Sprint 23 (P1b,
+> issue #255) is what replaces it with the unified `dim_tenant` /
+> `dim_org_unit` / `dim_department` spine.
+
+### 13.3 Effect on §10 gaps
+
+Partially advances §10 gap #1 (Fabric workspace data verification): the SIT
+`gold` schema table set is now **programmatically re-verified** against the
+Direct Lake contract via the OneLake DFS API (no portal login required).
+Semantic-model/report publish verification in the Fabric portal remains the
+residual portion of that gap.
