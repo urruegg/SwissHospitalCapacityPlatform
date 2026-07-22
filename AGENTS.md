@@ -1,12 +1,12 @@
-# AGENTS.md — Agent Registry
+﻿# AGENTS.md — Agent Registry
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.7.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 2.8.0 |
+| **Date** | 2026-07-22 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft |
-| **Previous Version** | 2.6.0 (added the `ux-design-agent` registry row + `playwright-mcp` allow-list entry for UX visual + accessibility verification; issue #258) |
+| **Previous Version** | 2.7.0 (added the `product-marketing-agent` registry row for Curavias messaging; issue #262) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -109,7 +109,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 ### Trigger conditions (any one)
 
 1. Task requires domain expertise beyond what installed `SKILL.md` files cover (e.g. Fabric Real-Time Intelligence, Direct Lake optimisation, agent evaluation patterns)
-2. A failure pattern surfaces that a specialised skill would have prevented or diagnosed faster (e.g. today's `System_Cancelled_Session_Statements_Failed` on silver notebook → `spark-operations` skill installed via [PR #134](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/134))
+2. A failure pattern surfaces that a specialised skill would have prevented or diagnosed faster (e.g. today's `System_Cancelled_Session_Statements_Failed` on silver notebook â†’ `spark-operations` skill installed via [PR #134](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/134))
 3. A public best-practice source (Microsoft Learn, ADR, GitHub best-practice repo) references a skill / plugin the agent doesn't have loaded
 4. User explicitly asks about additional skills
 
@@ -190,7 +190,8 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `orsa-agent` | OR-steering copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@orsa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/orsa-agent/AGENT.md`](agents/orsa-agent/AGENT.md) | [`agents/orsa-agent/golden-tasks.md`](agents/orsa-agent/golden-tasks.md) |
 | `sba-agent` | Staffing-balance copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@sba-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/sba-agent/AGENT.md`](agents/sba-agent/AGENT.md) | [`agents/sba-agent/golden-tasks.md`](agents/sba-agent/golden-tasks.md) |
 | `csa-agent` | Crisis / scenario copilot — full **Prepare/Run/Evaluate/Recommend** body (S16 T4; expanded from the S11 scaffold). Supersedes the Sprint 09 v2.0.0 Foundry-hosted CSA body per the 2.0.0 restructure (git log for the old body). | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@csa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp`, `cosmos-mcp` | `deploy` (gated by `approved-to-apply`; Run triggers the `csa-simulate` notebook) | [`agents/csa-agent/AGENT.md`](agents/csa-agent/AGENT.md) | [`agents/csa-agent/golden-tasks.md`](agents/csa-agent/golden-tasks.md) |
-| `data-quality-agent` | Bronze/Silver/Gold contract-check + drift alerts (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or workflow-scheduled invocation; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/data-quality-agent/AGENT.md`](agents/data-quality-agent/AGENT.md) | [`agents/data-quality-agent/golden-tasks.md`](agents/data-quality-agent/golden-tasks.md) |
+| `signal-triage-agent` | Trusted external-signal triage - dedup, conflict arbitration, TriggerRule match, and advisory CSA handoff for `DC-EXT-SIGNAL-v1` facts (S21 M7) | @urruegg | Activator/Reflex webhook, scheduled poller bridge, or `@signal-triage-agent` mention | `github-mcp`, `fabric-mcp` | `write` | [`agents/signal-triage-agent/AGENT.md`](agents/signal-triage-agent/AGENT.md) | [`agents/signal-triage-agent/golden-tasks.md`](agents/signal-triage-agent/golden-tasks.md) |
+| `data-quality-agent` | Bronze/Silver/Gold contract-check + drift alerts (S11), including the Sprint 21 `DC-EXT-SIGNAL-v1` external-signal gate for schema, dedup, quarantine, provenance, and licence checks | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or workflow-scheduled invocation; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/data-quality-agent/AGENT.md`](agents/data-quality-agent/AGENT.md) | [`agents/data-quality-agent/golden-tasks.md`](agents/data-quality-agent/golden-tasks.md) |
 | `onboarding-agent` | Onboarding welcome-PR bot (S11 stretch) | @urruegg | Entra audit-log new-sign-in event via workflow; runs as a workflow-scheduled bot (not through the agent-host) | `github-mcp`, `entra-mcp` (read-only) | `write` (repo); `read` (entra-mcp) | [`agents/onboarding-agent/AGENT.md`](agents/onboarding-agent/AGENT.md) | [`agents/onboarding-agent/golden-tasks.md`](agents/onboarding-agent/golden-tasks.md) |
 | `fabric-data-agent` | Read-only ontology + semantic-model query surface (Sprint 09 v2). Retained through the 2.0.0 restructure as a Fabric IQ-hosted read-only agent; runtime posture reconciliation with ADR-0008 is a separate follow-up. **Live demo artefact:** `da_hospital_capacity` (`b2e53c23-182a-452d-9321-e63f6009e80b`) published in SIT workspace `f3af9733-9503-4e92-98f9-a901d96f1c87` (`westus2`, endpoint `https://api.fabric.microsoft.com/v1/workspaces/f3af9733-.../aiskills/b2e53c23-.../aiassistant/openai`), consumed live by the Foundry `ooa-agent` per [ADR-0034](docs/adr/0034-fabric-iq-demo-scope-artefacts.md) + [evidence doc](docs/architecture/fabric-iq-ready-evidence.md). | @urruegg | Runtime-only; not invoked from repo issues | Fabric IQ (Preview per ADR-0002) | `read` | [`agents/fabric-data-agent/AGENT.md`](agents/fabric-data-agent/AGENT.md) | *(none; Sprint 11 shape not yet applied)* |
 | `pr-review` | UC3 — PR Review | @urruegg | GitHub pull request or issue from [`uc3-pr-review.yml`](.github/ISSUE_TEMPLATE/uc3-pr-review.yml) | `github-mcp` | `write` (GitHub review comments only) | `agents/pr-review/AGENT.md` *(planned, S4)* | `agents/pr-review/golden-tasks.md` *(planned, S4)* |
@@ -217,6 +218,10 @@ Any new MCP server requires a CODEOWNERS-approved PR documenting purpose +
 required permissions + at least one golden-task that exercises a representative
 tool.
 
+Sprint 21 M7 adds `signal-triage-agent` using existing `github-mcp` and
+`fabric-mcp`; **no allow-list change** is required because both MCP servers
+already exist.
+
 | MCP Server | Identifier | Purpose | Auth Mode |
 | ------------ | ----------- | --------- | ----------- |
 | Azure | `azure-mcp` | Read Azure resources, run `what-if`, push UC1-output Bicep deployments to customer subscriptions | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
@@ -225,7 +230,7 @@ tool.
 | Fabric | `fabric-mcp` | Read Fabric workspace items (lakehouses, semantic models); query synthetic Gold Delta tables; trigger data-quality notebooks — dispatched by the Sprint 13 agent-host on behalf of the Sprint 11 application-hosted agents | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered |
 | Entra | `entra-mcp` | Read Microsoft Entra audit-log new-sign-in events for the `onboarding-agent` (read-only; the only write is a welcome PR into the repo) | `Directory.AuditLog.Read.All` application permission (consent-gated, revocable) |
 | Cosmos | `cosmos-mcp` | Read/write the CSA Cosmos DB for NoSQL (scenarios, agent-memory, response-levers, simulation-runs); vector + hybrid search; per-run agent memory — dispatched by the Sprint 13 agent-host on behalf of the `csa-agent` (Sprint 16) | Workload Identity Federation (OIDC) for autonomous runs; OBO for human-triggered. `Cosmos DB Built-in Data Contributor` scoped to the `cosmos-csa-ihzhhpf-sit` account |
-| Foundry Agents (eastus2) | `foundry-agents` | The 8 platform agents (bmca, ooa, dca, orsa, sba, csa, data-quality, onboarding) registered in the **project-scoped Foundry Agent Service** (`https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project/agents`, api-version `2025-05-15-preview`, portal Build → Agents: 8/8 Running, `prompt`, v2), backed by the account-level OpenAI Assistants API (`https://ai-ihzhhpf-sit-eastus2.openai.azure.com/openai`) for inference. Per [ADR-0032](docs/adr/0032-foundry-control-plane-eastus2.md) — eastus2 is the only MCAP region with OpenAI quota + Foundry Agent Service GA. | Workload Identity Federation (OIDC); `Cognitive Services User` on `ai-ihzhhpf-sit-eastus2` |
+| Foundry Agents (eastus2) | `foundry-agents` | The 8 platform agents (bmca, ooa, dca, orsa, sba, csa, data-quality, onboarding) registered in the **project-scoped Foundry Agent Service** (`https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project/agents`, api-version `2025-05-15-preview`, portal Build â†’ Agents: 8/8 Running, `prompt`, v2), backed by the account-level OpenAI Assistants API (`https://ai-ihzhhpf-sit-eastus2.openai.azure.com/openai`) for inference. Per [ADR-0032](docs/adr/0032-foundry-control-plane-eastus2.md) — eastus2 is the only MCAP region with OpenAI quota + Foundry Agent Service GA. | Workload Identity Federation (OIDC); `Cognitive Services User` on `ai-ihzhhpf-sit-eastus2` |
 | Repo-managed markdown specs | `github-mcp` | Read canonical source material from `docs/` and `docs/specs/` for planning and review flows | GitHub Copilot coding-agent identity |
 | Playwright | `playwright-mcp` | Drive a headless browser for UX visual + accessibility verification (screenshots, responsive breakpoints, DOM/snapshot inspection, WCAG/axe scans) of rendered Curavias mockups and the `hcc-app-fluent` shell — the "within VS Code / share context with GitHub Copilot" mode for the `ux-design-agent`; the standalone mode uses the repo's local Playwright CLI (`@playwright/test` + `@axe-core/playwright`) | Local stdio server (`npx @playwright/mcp`); no external auth; read-oriented (no repo/cloud mutation) |
 
@@ -295,10 +300,11 @@ All agents refuse to:
 2. The Copilot coding agent opens a branch and a draft PR containing:
    - `agents/<name>/AGENT.md` (Identity, Scope, Tools, Refusal Rules,
      Output Contract, Confirmation Rules).
-   - `agents/<name>/golden-tasks.md` with ≥ 1 happy-path and ≥ 1
+   - `agents/<name>/golden-tasks.md` with â‰¥ 1 happy-path and â‰¥ 1
      failure-mode fixture.
    - A new row in [§1](#1-registry).
    - Updates to [.github/copilot/mcp.json](.github/copilot/mcp.json) if a
      new MCP server is required (CODEOWNERS review mandatory).
 3. A human reviewer verifies the side-effect ceiling, refusal rules, and
    golden-task coverage before merging.
+
