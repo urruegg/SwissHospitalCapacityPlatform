@@ -1,0 +1,26 @@
+# Governed hazard-uplift map for the forecast overlay (FR-EXT-011).
+# upliftFactor is the INCREMENTAL demand delta over the seasonal baseline
+# already present in gold.forecast_output. Combined multiplicatively as
+# (1 + f) and clamped to `clamp`. Unit-tested offline; no PHI.
+clamp: 2.0
+rules:
+  - hazardType: heat
+    severity: [Severe, Extreme]
+    decay: none
+    specialties: { geriatrics: 0.25, cardiology: 0.15, emergency: 0.20, pulmonology: 0.15, SPEC_INNERE: 0.25, SPEC_KARDIO: 0.15, SPEC_NOTFALL: 0.20, SPEC_PNEUMO: 0.15 }
+  - hazardType: heat
+    severity: [Moderate]
+    decay: none
+    specialties: { geriatrics: 0.10, emergency: 0.08, SPEC_INNERE: 0.10, SPEC_NOTFALL: 0.08 }
+  - hazardType: epidemic
+    severity: [Severe, Extreme]
+    decay: none
+    specialties: { pulmonology: 0.30, emergency: 0.20, paediatrics: 0.20, SPEC_PNEUMO: 0.30, SPEC_NOTFALL: 0.20, SPEC_NEONAT: 0.20 }
+  - hazardType: earthquake
+    severity: [Severe, Extreme]
+    decay: none
+    specialties: { emergency: 0.40, trauma: 0.50, surgery: 0.25, SPEC_NOTFALL: 0.40, SPEC_TRAUMA: 0.50, SPEC_CHIR: 0.25 }
+  - hazardType: flood
+    severity: [Severe, Extreme]
+    decay: none
+    specialties: { emergency: 0.15, SPEC_NOTFALL: 0.15 }
