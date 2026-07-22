@@ -28,6 +28,14 @@ from the DC-EXT-SIGNAL-v1 Silver records.
 `ext_fact_signal.ext_cantons` preserves the Gold fact's canton-membership field;
 `ext_dim_region.ext_canton` provides the dimension list for canton browsing.
 
+## Relationships
+
+| From | To |
+| --- | --- |
+| `ext_fact_signal.ext_source_id` | `ext_dim_source.ext_source_id` |
+| `ext_fact_signal.ext_hazard_type` | `ext_dim_hazard_type.ext_hazard_type` |
+| `ext_fact_trigger_event.ext_hazard_type` | `ext_dim_hazard_type.ext_hazard_type` |
+
 ## Measures
 
 | Measure | Meaning |
