@@ -58,12 +58,12 @@
       "staffing": "Personnel",
       "crisis": "Crise"
     },
-    "discharge": "Pr?paration des sorties (72 h)",
-    "bedsNeeded": "Lits n?cessaires",
-    "bedsFreeable": "Lits lib?rables",
+    "discharge": "Préparation des sorties (72 h)",
+    "bedsNeeded": "Lits nécessaires",
+    "bedsFreeable": "Lits libérables",
     "bedsShort": "Lits manquants",
     "bedsReallocated": "Lits réaffectés",
-    "residual": "R?siduel"
+    "residual": "Résiduel"
   },
   "handoff": {
     "live": "en direct",
@@ -72,7 +72,7 @@
   },
   "insight": {
     "occupancyRising": "{{channel}} augmente",
-    "dischargeExpedite": "Acc?l?rer la sortie {{ward}}",
+    "dischargeExpedite": "Accélérer la sortie {{ward}}",
     "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}"
   },
   "copilot": {
