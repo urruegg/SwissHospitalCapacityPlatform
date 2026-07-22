@@ -202,6 +202,67 @@ hcp:hasExplanation a owl:DatatypeProperty ;
     rdfs:range  xsd:string .
 
 # ===========================================================================
+# Trusted External Signals ontology extension (Sprint 21 M4)
+# ===========================================================================
+
+hcp:TrustedSource a owl:Class ;
+    rdfs:label   "Trusted Source"@en ;
+    rdfs:comment "An authoritative organisation or feed source for trusted external hazard signals. Anchored to OOSTT organisation patterns and IAO information-source semantics; operational Fabric IQ binding is GA-gated per ADR-0014."@en .
+
+hcp:HazardType a owl:Class ;
+    rdfs:label   "Hazard Type"@en ;
+    rdfs:comment "A governed taxonomy entry for a public hazard such as heat, flood, earthquake, epidemic surge, or civil-protection alert. Anchored to environmental-hazard terminology; represented by the DC-EXT-SIGNAL-v1 hazardType field."@en .
+
+hcp:ExternalSignal a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "External Signal"@en ;
+    rdfs:comment    "A CAP-aligned public warning or authority signal ingested from a TrustedSource. Anchored to IAO information content entity; dual-bound to Eventhouse and Lakehouse history for advisory CSA trigger evaluation."@en .
+
+hcp:HazardEvent a owl:Class ;
+    rdfs:label   "Hazard Event"@en ;
+    rdfs:comment "A real-world hazardous occurrent inferred or deduplicated from one or more ExternalSignal records. Anchored to BFO occurrent; used as the event-level object handed to CSA."@en .
+
+hcp:TriggerRule a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Trigger Rule"@en ;
+    rdfs:comment    "A directive information entity that maps qualifying external signals or hazard events to advisory ScenarioTemplate and LageTier pre-seeds. Anchored to IAO directive information entity; operational rules live in trigger_rules.yaml."@en .
+
+hcp:AffectedRegion a owl:Class ;
+    rdfs:subClassOf hcp:Location ;
+    rdfs:label      "Affected Region"@en ;
+    rdfs:comment    "A geographic Location affected by an ExternalSignal or HazardEvent, represented by canton, NUTS, or polygon fields in DC-EXT-SIGNAL-v1. Reuses the existing Location concept for the reference-layer region block."@en .
+
+hcp:signalFromSource a owl:ObjectProperty ;
+    rdfs:label   "signal from source"@en ;
+    rdfs:comment "Links an ExternalSignal to the TrustedSource that published or originated it."@en ;
+    rdfs:domain  hcp:ExternalSignal ;
+    rdfs:range   hcp:TrustedSource .
+
+hcp:signalIndicatesHazard a owl:ObjectProperty ;
+    rdfs:label   "signal indicates hazard"@en ;
+    rdfs:comment "Links an ExternalSignal to the HazardType or HazardEvent it indicates after normalization and deduplication."@en ;
+    rdfs:domain  hcp:ExternalSignal ;
+    rdfs:range   hcp:HazardType .
+
+hcp:signalAffectsRegion a owl:ObjectProperty ;
+    rdfs:label   "signal affects region"@en ;
+    rdfs:comment "Links an ExternalSignal to the AffectedRegion in its normalized region block."@en ;
+    rdfs:domain  hcp:ExternalSignal ;
+    rdfs:range   hcp:AffectedRegion .
+
+hcp:triggerRuleMapsScenario a owl:ObjectProperty ;
+    rdfs:label   "trigger rule maps scenario"@en ;
+    rdfs:comment "Links a TriggerRule to the ScenarioTemplate that should be pre-seeded when the rule qualifies."@en ;
+    rdfs:domain  hcp:TriggerRule ;
+    rdfs:range   hcp:ScenarioTemplate .
+
+hcp:signalPreseeds a owl:ObjectProperty ;
+    rdfs:label   "signal pre-seeds"@en ;
+    rdfs:comment "Links an ExternalSignal to the LageTier that it proposes as an advisory pre-seed; the CSA classifier remains authoritative."@en ;
+    rdfs:domain  hcp:ExternalSignal ;
+    rdfs:range   hcp:LageTier .
+
+# ===========================================================================
 # Provider-extension pattern (per FR-ONT-007).
 # Providers add subclasses under their own namespace, importing this
 # skeleton. Example (informal, not axiomatic in this file):
