@@ -1,6 +1,8 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './i18n';
 import { ThemeModeProvider } from './theme/theme-context';
+import { ModeProvider } from './context/mode-context';
+import { CopilotRailProvider } from './copilot-rail/rail-context';
 import { HospitalProvider } from './context/hospital-context';
 import { RoleProvider } from './context/role-context';
 import { parseClaims, type ParsedClaims, type RawClaims } from './auth/claim-parser';
@@ -25,11 +27,15 @@ export function App({ rawClaims }: { rawClaims?: RawClaims }) {
 
   return (
     <ThemeModeProvider>
-      <RoleProvider claims={claims}>
-        <HospitalProvider claims={claims}>
-          <RouterProvider router={router} />
-        </HospitalProvider>
-      </RoleProvider>
+      <ModeProvider>
+        <CopilotRailProvider>
+          <RoleProvider claims={claims}>
+            <HospitalProvider claims={claims}>
+              <RouterProvider router={router} />
+            </HospitalProvider>
+          </RoleProvider>
+        </CopilotRailProvider>
+      </ModeProvider>
     </ThemeModeProvider>
   );
 }

@@ -16,4 +16,22 @@ describe('i18n', () => {
       expect(i18n.t('nav.settings')).not.toBe('nav.settings');
     }
   });
+
+  it('has occupancy board, handoff, and insight keys in every language', async () => {
+    const keys = [
+      'board.loading',
+      'board.occupancy',
+      'board.beds',
+      'handoff.live',
+      'handoff.simulated',
+      'handoff.loopBack',
+      'insight.occupancyRising',
+    ];
+    for (const lng of ['de', 'en', 'fr', 'it']) {
+      await i18n.changeLanguage(lng);
+      for (const key of keys) {
+        expect(i18n.t(key, { channel: 'Medicine A' })).not.toBe(key);
+      }
+    }
+  });
 });

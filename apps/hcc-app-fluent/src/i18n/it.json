@@ -18,6 +18,11 @@
     "signOut": "Disconnetti",
     "signIn": "Accedi"
   },
+  "mode": {
+    "toggle": "Modalità",
+    "demo": "Demo",
+    "user": "Utente"
+  },
   "hospitals": {
     "usz": "USZ",
     "luks": "LUKS",
@@ -40,6 +45,27 @@
   "bedManager": {
     "title": "Gestione dei letti — USZ",
     "askBmca": "Chiedi a BMCA"
+  },
+  "board": {
+    "loading": "Caricamento...",
+    "occupancy": "Previsione dell'occupazione (72h)",
+    "beds": "letti",
+    "nav": {
+      "occupancy": "Occupazione",
+      "discharge": "Dimissioni",
+      "bed-manager": "Gestione letti",
+      "or-steering": "Coordinamento sala operatoria",
+      "staffing": "Personale",
+      "crisis": "Crisi"
+    }
+  },
+  "handoff": {
+    "live": "live",
+    "simulated": "simulato",
+    "loopBack": "ritorna alla previsione dell'occupazione"
+  },
+  "insight": {
+    "occupancyRising": "{{channel}} in aumento"
   },
   "copilot": {
     "title": "Copilot",

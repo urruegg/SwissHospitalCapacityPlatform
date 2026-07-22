@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import i18n from '../../src/i18n';
 import { AgentPlane } from '../../src/shell/planes/AgentPlane';
 import { RoleProvider } from '../../src/context/role-context';
+import { CopilotRailProvider } from '../../src/copilot-rail/rail-context';
 
 // Sprint 20 M7 — assert the English affordance copy deterministically.
 beforeAll(async () => {
@@ -14,7 +15,9 @@ function renderAgent(roles: string[], path = '/csa') {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <RoleProvider testRoles={roles as never[]} testHomeSite="usz">
-        <AgentPlane />
+        <CopilotRailProvider>
+          <AgentPlane />
+        </CopilotRailProvider>
       </RoleProvider>
     </MemoryRouter>,
   );

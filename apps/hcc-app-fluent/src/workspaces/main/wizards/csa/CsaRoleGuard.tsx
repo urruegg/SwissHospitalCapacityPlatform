@@ -9,17 +9,15 @@
  */
 import type { ReactNode } from 'react';
 import { Body1, MessageBar, Title2 } from '@fluentui/react-components';
-import { useRole } from '../../../../context/role-context';
+import { useRoleLens } from '../../../../context/role-context';
 
 /**
- * Roles authorised to render the CSA wizard (S16 design spec §8).
- * Extend here when new personas require access.
+ * Roles whose RBAC lens grants the `csa` nav capability.
  */
 export const CSA_WIZARD_ROLES: readonly string[] = [
-  'HCC.CrisisManager',
-  'HCC.OperationsLead',
+  'HCC.DemoOperator',
   'HCC.PlatformAdmin',
-  'HCC.SuperAdmin',
+  'HCC.RegionalCrisisLead',
 ];
 
 interface CsaRoleGuardProps {
@@ -28,8 +26,8 @@ interface CsaRoleGuardProps {
 
 /** Render children only for callers with any CSA-wizard role, deny otherwise. */
 export function CsaRoleGuard({ children }: CsaRoleGuardProps) {
-  const role = useRole();
-  const allowed = role.has([...CSA_WIZARD_ROLES]);
+  const { capabilities } = useRoleLens();
+  const allowed = capabilities.nav.csa;
   if (allowed) return <>{children}</>;
   return (
     <section aria-label="CSA wizard access denied" data-testid="CsaRoleGuardDenied">

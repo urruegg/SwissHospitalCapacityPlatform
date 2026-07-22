@@ -18,6 +18,11 @@
     "signOut": "Sign out",
     "signIn": "Sign in"
   },
+  "mode": {
+    "toggle": "Mode",
+    "demo": "Demo",
+    "user": "User"
+  },
   "hospitals": {
     "usz": "USZ",
     "luks": "LUKS",
@@ -40,6 +45,27 @@
   "bedManager": {
     "title": "Bed Management — USZ",
     "askBmca": "Ask BMCA"
+  },
+  "board": {
+    "loading": "Loading...",
+    "occupancy": "Occupancy forecast (72h)",
+    "beds": "beds",
+    "nav": {
+      "occupancy": "Occupancy",
+      "discharge": "Discharge",
+      "bed-manager": "Bed management",
+      "or-steering": "OR steering",
+      "staffing": "Staffing",
+      "crisis": "Crisis"
+    }
+  },
+  "handoff": {
+    "live": "live",
+    "simulated": "simulated",
+    "loopBack": "loops back to occupancy forecast"
+  },
+  "insight": {
+    "occupancyRising": "{{channel}} rising"
   },
   "copilot": {
     "title": "Copilot",

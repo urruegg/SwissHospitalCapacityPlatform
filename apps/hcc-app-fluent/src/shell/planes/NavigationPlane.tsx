@@ -2,7 +2,6 @@ import { TabList, Tab } from '@fluentui/react-components';
 import {
   HomeRegular,
   GridRegular,
-  WarningRegular,
   DataTrendingRegular,
   SettingsRegular,
 } from '@fluentui/react-icons';
@@ -13,7 +12,6 @@ import { useRoleLens } from '../../context/role-context';
 const ITEMS = [
   { key: 'start', to: '/start', icon: <HomeRegular />, label: 'Start' },
   { key: 'main', to: '/main', icon: <GridRegular />, label: 'Main' },
-  { key: 'csa', to: '/csa', icon: <WarningRegular />, label: 'CSA' },
   { key: 'backstage', to: '/backstage', icon: <DataTrendingRegular />, label: 'Backstage' },
   { key: 'settings', to: '/settings', icon: <SettingsRegular />, label: 'Settings' },
 ] as const;

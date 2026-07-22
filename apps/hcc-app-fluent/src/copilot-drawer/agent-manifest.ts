@@ -58,3 +58,17 @@ export async function invokeAgent(
   if (!res.ok) throw new Error(`agent chat failed: ${res.status}`);
   return (await res.json()) as GroundedReply;
 }
+
+/**
+ * Sprint 1 (parity) — fetch a systemic recommendation for a clicked context
+ * insight. Grounded by the agent-host; when no host URL is configured returns a
+ * deterministic reply derived FROM the passed context (the no-fabrication rule
+ * is enforced here at the agent boundary, never inside a board component).
+ */
+export async function invokeInsight(
+  agent: string,
+  context: Record<string, unknown>,
+): Promise<GroundedReply> {
+  const prompt = `Recommend a systemic action for: ${JSON.stringify(context)}`;
+  return invokeAgent(agent, prompt);
+}

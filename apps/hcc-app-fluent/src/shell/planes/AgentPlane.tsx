@@ -12,6 +12,7 @@ import {
 import { BotRegular, DismissRegular } from '@fluentui/react-icons';
 import { ConversationView } from '../../copilot-drawer/ConversationView';
 import { useAgentInvoker } from '../../copilot-drawer/AgentInvoker';
+import { useCopilotRail } from '../../copilot-rail/rail-context';
 import { agentForRoute } from './agent-context-map';
 import { useRoleLens } from '../../context/role-context';
 
@@ -78,7 +79,7 @@ export function AgentPlane() {
   const { capabilities } = useRoleLens();
   const agent = agentForRoute(loc.pathname);
   const { turns, busy, send } = useAgentInvoker(agent);
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useCopilotRail();
   const [draft, setDraft] = useState('');
 
   if (!open) {

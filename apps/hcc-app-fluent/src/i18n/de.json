@@ -18,6 +18,11 @@
     "signOut": "Abmelden",
     "signIn": "Anmelden"
   },
+  "mode": {
+    "toggle": "Modus",
+    "demo": "Demo",
+    "user": "Benutzer"
+  },
   "hospitals": {
     "usz": "USZ",
     "luks": "LUKS",
@@ -40,6 +45,27 @@
   "bedManager": {
     "title": "Bettenmanagement — USZ",
     "askBmca": "BMCA fragen"
+  },
+  "board": {
+    "loading": "Wird geladen...",
+    "occupancy": "Auslastungsprognose (72h)",
+    "beds": "Betten",
+    "nav": {
+      "occupancy": "Belegung",
+      "discharge": "Entlassung",
+      "bed-manager": "Bettenmanagement",
+      "or-steering": "OP-Steuerung",
+      "staffing": "Personal",
+      "crisis": "Krise"
+    }
+  },
+  "handoff": {
+    "live": "live",
+    "simulated": "simuliert",
+    "loopBack": "führt zurück zur Auslastungsprognose"
+  },
+  "insight": {
+    "occupancyRising": "{{channel}} steigt"
   },
   "copilot": {
     "title": "Copilot",
