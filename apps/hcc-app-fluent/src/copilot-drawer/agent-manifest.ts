@@ -25,7 +25,14 @@ const agentHostBaseUrl: string = import.meta.env.VITE_AGENT_HOST_URL ?? '';
 /** Fetch the deployed agent list from the agent-host, or a static fallback. */
 export async function fetchAgents(): Promise<AgentManifestEntry[]> {
   if (!agentHostBaseUrl) {
-    return [{ name: 'bmca-agent', displayName: 'BMCA', ceiling: 'write' }];
+    return [
+      { name: 'ooa-agent', displayName: 'OOA', ceiling: 'read' },
+      { name: 'dca-agent', displayName: 'DCA', ceiling: 'write' },
+      { name: 'bmca-agent', displayName: 'BMCA', ceiling: 'write' },
+      { name: 'orsa-agent', displayName: 'ORSA', ceiling: 'write' },
+      { name: 'sba-agent', displayName: 'SBA', ceiling: 'write' },
+      { name: 'csa-agent', displayName: 'CSA', ceiling: 'deploy' },
+    ];
   }
   const res = await fetch(`${agentHostBaseUrl}/agents`);
   if (!res.ok) throw new Error(`agent list failed: ${res.status}`);

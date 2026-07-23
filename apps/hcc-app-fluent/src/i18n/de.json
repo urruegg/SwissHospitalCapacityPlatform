@@ -33,7 +33,31 @@
     "roles": "Rollen & RBAC",
     "rolesDescription": "Live-Ansicht der App-Rollen aus Microsoft Entra (schreibgeschützt).",
     "evidence": "Nachweise",
-    "evidenceDescription": "Presenter-Whiteboard: BOM-, ADR-, Anforderungs-, GA-Nachweis- und Abhängigkeitskarten (synthetisch, keine PHI)."
+    "evidenceDescription": "Presenter-Whiteboard: BOM-, ADR-, Anforderungs-, GA-Nachweis- und Abhängigkeitskarten (synthetisch, keine PHI).",
+    "nav": {
+      "label": "Backstage-Bereiche"
+    },
+    "story": {
+      "tab": "Story",
+      "title": "Wie Curavias gebaut ist",
+      "lead": "Eine einfache C-Level-Sicht auf die Plattformgrundlagen hinter der Showcase-App.",
+      "agents": {
+        "title": "Von Agenten gebaut",
+        "body": "GitHub Copilot Coding Agents planen, bauen und prüfen die Plattform über gesteuerte MCP-Tools."
+      },
+      "fabricFhir": {
+        "title": "Fabric + FHIR",
+        "body": "Eine vertrauenswürdige Microsoft-Fabric-Datenplattform spricht FHIR für Schweizer Gesundheitsinteroperabilität."
+      },
+      "dsg": {
+        "title": "Schweizer Datenschutz",
+        "body": "Schweizer DSG und kantonale Governance-Kontrollen sind in jede Ebene eingebaut."
+      },
+      "alm": {
+        "title": "Dev → SIT → Prod",
+        "body": "Enterprise-ALM bringt Änderungen sicher von der Entwicklung über SIT bis in die Produktion."
+      }
+    }
   },
   "evidence": {
     "readinessSummary": "Bereitschaftsübersicht",
@@ -59,11 +83,21 @@
       "crisis": "Krise"
     },
     "discharge": "Entlassungsbereitschaft (72h)",
+    "orSteering": "OP-Steuerung (72h)",
     "bedsNeeded": "Benötigte Betten",
     "bedsFreeable": "Freisetzbare Betten",
     "bedsShort": "Fehlende Betten",
+    "casesDeferred": "Verschobene Eingriffe",
+    "bedsFreed": "Freigewordene Betten",
     "bedsReallocated": "Umverteilte Betten",
-    "residual": "Restbedarf"
+    "residual": "Restbedarf",
+    "staffing": "Personalabgleich (72h)",
+    "surgeBeds": "Surge-Betten",
+    "fte": "VZÄ",
+    "crisis": "Krisenbereitschaft (72h)",
+    "signals": "Externe Signale",
+    "scenarios": "Szenarien",
+    "bedDays": "Bettentage"
   },
   "handoff": {
     "live": "live",
@@ -73,7 +107,10 @@
   "insight": {
     "occupancyRising": "{{channel}} steigt",
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
-    "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben"
+    "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
+    "orDefer": "Eingriff {{specialty}} verschieben",
+    "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
+    "stressTest": "{{scenario}} durchspielen"
   },
   "copilot": {
     "title": "Copilot",
@@ -91,7 +128,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Koordination der Spitalkapazität im Schweizer Versorgungsnetz.",
-    "disclaimer": "Microsoft Innovation Hub Showcase — ausschliesslich simulierte und generische Daten, nur zu Demonstrationszwecken."
+    "disclaimer": "Microsoft Innovation Hub Showcase — ausschliesslich simulierte und generische Daten, nur zu Demonstrationszwecken.",
+    "mode": {
+      "demo": "Demo — simulierte Golden-Thread-Präsentation",
+      "user": "Benutzer — Live-Arbeitsmodus"
+    },
+    "launcher": {
+      "title": "Rollenboard öffnen",
+      "occupancy": "Belegung",
+      "discharge": "Entlassung",
+      "bedManager": "Bettenmanagement",
+      "orSteering": "OP-Steuerung",
+      "staffing": "Personal",
+      "crisis": "Krise & Szenarien"
+    }
   },
   "settings": {
     "preferences": "Einstellungen"

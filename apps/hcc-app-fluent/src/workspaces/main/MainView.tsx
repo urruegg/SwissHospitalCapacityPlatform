@@ -4,6 +4,8 @@ import { makeStyles, tokens } from '@fluentui/react-components';
 import { BedManagerBoard } from './boards/bed-manager/BedManagerBoard';
 import { DischargeBoard } from './boards/discharge/DischargeBoard';
 import { OccupancyBoard } from './boards/occupancy/OccupancyBoard';
+import { OrSteeringBoard } from './boards/or-steering/OrSteeringBoard';
+import { StaffingBoard } from './boards/staffing/StaffingBoard';
 import { CsaView } from './wizards/csa/CsaView';
 import { MainSubNav } from './MainSubNav';
 
@@ -28,6 +30,16 @@ const BOARDS: Record<string, () => JSX.Element> = {
   'bed-manager': () => (
     <div data-testid="board-bed-manager">
       <BedManagerBoard />
+    </div>
+  ),
+  'or-steering': () => (
+    <div data-testid="board-or-steering-slot">
+      <OrSteeringBoard />
+    </div>
+  ),
+  staffing: () => (
+    <div data-testid="board-staffing-slot">
+      <StaffingBoard />
     </div>
   ),
   crisis: () => (

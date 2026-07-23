@@ -33,7 +33,31 @@
     "roles": "Rôles et RBAC",
     "rolesDescription": "Vue en direct des rôles de l'application depuis Microsoft Entra (lecture seule).",
     "evidence": "Preuves",
-    "evidenceDescription": "Tableau blanc du présentateur : cartes BOM, ADR, exigences, preuves GA et dépendances (synthétiques, sans PHI)."
+    "evidenceDescription": "Tableau blanc du présentateur : cartes BOM, ADR, exigences, preuves GA et dépendances (synthétiques, sans PHI).",
+    "nav": {
+      "label": "Sections des coulisses"
+    },
+    "story": {
+      "tab": "Histoire",
+      "title": "Comment Curavias est construit",
+      "lead": "Une vue exécutive simple des fondations de plateforme derrière la vitrine.",
+      "agents": {
+        "title": "Construit par des agents",
+        "body": "Les agents de codage GitHub Copilot planifient, construisent et relisent la plateforme via des outils MCP gouvernés."
+      },
+      "fabricFhir": {
+        "title": "Fabric + FHIR",
+        "body": "Une plateforme de données Microsoft Fabric fiable parle FHIR pour l'interopérabilité sanitaire suisse."
+      },
+      "dsg": {
+        "title": "Protection des données suisse",
+        "body": "La DSG suisse et les contrôles de gouvernance cantonale sont intégrés à chaque couche."
+      },
+      "alm": {
+        "title": "Dev → SIT → Prod",
+        "body": "L'ALM d'entreprise promeut les changements en sécurité du développement à la SIT puis à la production."
+      }
+    }
   },
   "evidence": {
     "readinessSummary": "Résumé de préparation",
@@ -59,11 +83,21 @@
       "crisis": "Crise"
     },
     "discharge": "Préparation des sorties (72 h)",
+    "orSteering": "Pilotage du bloc (72 h)",
     "bedsNeeded": "Lits nécessaires",
     "bedsFreeable": "Lits libérables",
     "bedsShort": "Lits manquants",
+    "casesDeferred": "Interventions reportées",
+    "bedsFreed": "Lits libérés",
     "bedsReallocated": "Lits réaffectés",
-    "residual": "Résiduel"
+    "residual": "Résiduel",
+    "staffing": "Équilibrage du personnel (72 h)",
+    "surgeBeds": "Lits de renfort",
+    "fte": "ETP",
+    "crisis": "Préparation aux crises (72 h)",
+    "signals": "Signaux externes",
+    "scenarios": "Scénarios",
+    "bedDays": "jours-lits"
   },
   "handoff": {
     "live": "en direct",
@@ -73,7 +107,10 @@
   "insight": {
     "occupancyRising": "{{channel}} augmente",
     "dischargeExpedite": "Accélérer la sortie {{ward}}",
-    "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}"
+    "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}",
+    "orDefer": "Reporter le cas {{specialty}}",
+    "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}",
+    "stressTest": "Simuler {{scenario}}"
   },
   "copilot": {
     "title": "Copilot",
@@ -91,7 +128,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Coordonner la capacité hospitalière du réseau de soins suisse.",
-    "disclaimer": "Vitrine Microsoft Innovation Hub — données simulées et génériques, à des fins de démonstration uniquement."
+    "disclaimer": "Vitrine Microsoft Innovation Hub — données simulées et génériques, à des fins de démonstration uniquement.",
+    "mode": {
+      "demo": "Démo — vitrine du fil rouge simulé",
+      "user": "Utilisateur — mode de travail en direct"
+    },
+    "launcher": {
+      "title": "Entrer dans un tableau de rôle",
+      "occupancy": "Occupation",
+      "discharge": "Sorties",
+      "bedManager": "Gestion des lits",
+      "orSteering": "Pilotage du bloc",
+      "staffing": "Personnel",
+      "crisis": "Crise & scénarios"
+    }
   },
   "settings": {
     "preferences": "Préférences"
