@@ -168,6 +168,24 @@ def test_gap_care_setting_matches_demand_on_shared_grain():
         assert g["source_mode"] == d["source_mode"]
 
 
+def test_gap_gold_rejects_bad_care_setting():
+    with pytest.raises(ValueError):
+        to_gold_skill_gap({
+            "gap_id": "GAP-BAD", "care_setting_id": "theatre",
+            "source_mode": "live", "headcount_required": "1",
+            "valid_supply": "0", "gap": "1", "redeploy_candidates_count": "0",
+        })
+
+
+def test_gap_gold_rejects_bad_source_mode():
+    with pytest.raises(ValueError):
+        to_gold_skill_gap({
+            "gap_id": "GAP-BAD", "care_setting_id": "bed",
+            "source_mode": "guessed", "headcount_required": "1",
+            "valid_supply": "0", "gap": "1", "redeploy_candidates_count": "0",
+        })
+
+
 # --- supply (assertion) + eligibility -----------------------------------------
 
 def test_assertion_gold_validates_source_mode():
@@ -175,6 +193,14 @@ def test_assertion_gold_validates_source_mode():
             for r in _read(MASTER / "fact_skill_assertion.csv")]
     assert all(r["source_mode"] in SOURCE_MODES for r in rows)
     assert all(isinstance(r["proficiency_level"], int) for r in rows)
+
+
+def test_assertion_gold_rejects_bad_source_mode():
+    with pytest.raises(ValueError):
+        to_gold_skill_assertion({
+            "assertion_id": "ASR-BAD", "source_mode": "guessed",
+            "proficiency_level": "3",
+        })
 
 
 def test_skill_gold_casts_boolean_flags():
