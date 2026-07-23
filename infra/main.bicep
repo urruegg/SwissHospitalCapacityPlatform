@@ -129,6 +129,16 @@ param eventHubsBmCopilotMiPrincipalId string = ''
 @description('Object ID of the CSA (Capacity Simulation Agent) managed identity that reads from cg-csa-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped.')
 param eventHubsCsaAgentMiPrincipalId string = ''
 
+// Sprint 23 WS-A1 (#255) — ADLS Gen2 landing zone for Curavias org/skills master data.
+@description('Enable the Sprint 23 masterdata landing-zone module (ADLS Gen2 storage + landing filesystem for synthetic org/skills extracts).')
+param enableMasterdataLandingModule bool = false
+
+@description('Object ID of the ingestion pipeline managed identity that writes org/skills extracts to the landing container. Empty = Storage Blob Data Contributor role assignment skipped.')
+param masterdataLandingPipelinePrincipalId string = ''
+
+@description('Resource ID of the Log Analytics workspace for masterdata landing blob diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD.')
+param masterdataLandingLogAnalyticsWorkspaceId string = ''
+
 @description('Enable AI/ML foundation module deployment.')
 param enableAiMlFoundationModule bool = false
 
@@ -372,6 +382,18 @@ module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFou
   }
 }
 
+// Sprint 23 WS-A1 (#255) — ADLS Gen2 landing zone for Curavias org/skills master data.
+module masterdataLanding './modules/data-foundation/masterdata-landing/main.bicep' = if (enableMasterdataLandingModule) {
+  name: 'masterdata-landing-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    pipelinePrincipalId: masterdataLandingPipelinePrincipalId
+    logAnalyticsWorkspaceId: masterdataLandingLogAnalyticsWorkspaceId
+  }
+}
+
 module aiMlFoundation './modules/ai-ml-foundation/main.bicep' = if (enableAiMlFoundationModule) {
   name: 'ai-ml-foundation-${environmentName}'
   params: {
@@ -605,6 +627,7 @@ output moduleStatuses object = {
   curaviasWeb: enableCuraviasWebModule ? curaviasWeb!.outputs.moduleStatus : 'curavias-web-disabled'
   apiRuntime: enableApiRuntimeModule ? apiRuntime!.outputs.moduleStatus : 'api-runtime-disabled'
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
+  masterdataLanding: enableMasterdataLandingModule ? masterdataLanding!.outputs.moduleStatus : 'masterdata-landing-disabled'
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'

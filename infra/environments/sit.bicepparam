@@ -107,7 +107,14 @@ param eventHubsSimulatorMiPrincipalId = ''
 param eventHubsBmCopilotMiPrincipalId = ''
 param eventHubsCsaAgentMiPrincipalId = ''
 
-// Sprint 13 T5 — agent-host (Container App + Cosmos + Redis per ADR-0007).
+// Sprint 23 WS-A1 (#255) — ADLS Gen2 landing zone for Curavias org/skills master data.
+// Enabled in SIT for the demo scope (synthetic, no-PHI extracts per D5). The pipeline
+// managed identity is created by WS-A3 (Container Apps Jobs); until then the principal
+// ID is empty so the role assignment is conditionally skipped. Blob diagnostics stay
+// off in SIT (populated in PROD).
+param enableMasterdataLandingModule = true
+param masterdataLandingPipelinePrincipalId = ''
+param masterdataLandingLogAnalyticsWorkspaceId = ''
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
 // 2026-07-10 sprint-review checklist). Image is a placeholder — matches
 // sim-capacity pattern — until agent-host-build.yml is extended to push

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "17275698459840797735"
+      "templateHash": "4053445784245520227"
     }
   },
   "parameters": {
@@ -284,6 +284,27 @@
       "defaultValue": "",
       "metadata": {
         "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity that reads from cg-csa-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped."
+      }
+    },
+    "enableMasterdataLandingModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 23 masterdata landing-zone module (ADLS Gen2 storage + landing filesystem for synthetic org/skills extracts)."
+      }
+    },
+    "masterdataLandingPipelinePrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the ingestion pipeline managed identity that writes org/skills extracts to the landing container. Empty = Storage Blob Data Contributor role assignment skipped."
+      }
+    },
+    "masterdataLandingLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace for masterdata landing blob diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD."
       }
     },
     "enableAiMlFoundationModule": {
@@ -2772,6 +2793,217 @@
                 "description": "Sprint 09 v2.0.0 consumer group names."
               },
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.consumerGroupNames.value]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enableMasterdataLandingModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('masterdata-landing-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "pipelinePrincipalId": {
+            "value": "[parameters('masterdataLandingPipelinePrincipalId')]"
+          },
+          "logAnalyticsWorkspaceId": {
+            "value": "[parameters('masterdataLandingLogAnalyticsWorkspaceId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "535917255065045059"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the storage account."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "pipelinePrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the ingestion pipeline managed identity that writes extracts to the landing container. When set, receives Storage Blob Data Contributor scoped to the account. Empty string skips the role assignment."
+              }
+            },
+            "pipelinePrincipalType": {
+              "type": "string",
+              "defaultValue": "ServicePrincipal",
+              "allowedValues": [
+                "ServicePrincipal",
+                "User",
+                "Group"
+              ],
+              "metadata": {
+                "description": "Principal type for the pipeline role assignment."
+              }
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the Log Analytics workspace for blob diagnostic settings. Empty string skips diagnostics (SIT). Populated in PROD per the copilot-instructions §3 \"diagnostics for every production resource\" rule."
+              }
+            }
+          },
+          "variables": {
+            "storageAccountName": "[toLower(format('stmasterdata{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "storageBlobDataContributorRoleId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[variables('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "isHnsEnabled": true,
+                "accessTier": "Hot",
+                "allowBlobPublicAccess": false,
+                "supportsHttpsTrafficOnly": true,
+                "minimumTlsVersion": "TLS1_2",
+                "publicNetworkAccess": "Enabled",
+                "allowSharedKeyAccess": false,
+                "networkAcls": {
+                  "defaultAction": "Allow",
+                  "bypass": "AzureServices"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'landing')]",
+              "properties": {
+                "publicAccess": "None"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('pipelinePrincipalId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('pipelinePrincipalId'), variables('storageBlobDataContributorRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
+                "principalId": "[parameters('pipelinePrincipalId')]",
+                "principalType": "[parameters('pipelinePrincipalType')]",
+                "description": "Sprint 23 WS-A1 (#255) — ingestion pipeline MI writes synthetic org/skills extracts to landing/curavias-org-skills/."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]",
+              "name": "[format('diag-blob-{0}', variables('storageAccountName'))]",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "StorageWrite",
+                    "enabled": true
+                  },
+                  {
+                    "category": "StorageDelete",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "Transaction",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Masterdata landing module implementation marker."
+              },
+              "value": "masterdata-landing-implemented"
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "ADLS Gen2 landing storage account name."
+              },
+              "value": "[variables('storageAccountName')]"
+            },
+            "landingContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Landing filesystem (container) name."
+              },
+              "value": "landing"
+            },
+            "dfsEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "DFS (ADLS Gen2) endpoint for the landing storage account."
+              },
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.dfs]"
             }
           }
         }
@@ -5693,6 +5925,7 @@
         "curaviasWeb": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'curavias-web-disabled')]",
         "apiRuntime": "[if(parameters('enableApiRuntimeModule'), reference(resourceId('Microsoft.Resources/deployments', format('api-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'api-runtime-disabled')]",
         "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
+        "masterdataLanding": "[if(parameters('enableMasterdataLandingModule'), reference(resourceId('Microsoft.Resources/deployments', format('masterdata-landing-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'masterdata-landing-disabled')]",
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
         "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]",
         "fabricEventstream": "[if(parameters('enableFabricEventstreamModule'), reference(resourceId('Microsoft.Resources/deployments', format('fabric-eventstream-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'fabric-eventstream-disabled')]"
