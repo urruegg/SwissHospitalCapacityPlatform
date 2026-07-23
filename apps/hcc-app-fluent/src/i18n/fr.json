@@ -233,6 +233,35 @@
       "slaRisk": "Quelles unités ont un risque SLA ?"
     }
   },
+  "orsa": {
+    "askAbout": {
+      "deferrableCases": "Quelles interventions peuvent être reportées ?",
+      "orroomPressure": "Où est la plus grande pression au bloc opératoire ?",
+      "sbaHandoff": "Comment transmettre l'écart résiduel au service du personnel ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions de pilotage du bloc",
+      "specialty": "Spécialité",
+      "slot": "Créneau bloc",
+      "bedsImpact": "Impact lits",
+      "bedsProtected": "Lits protégés",
+      "deferable": "Reportable",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "levers": {
+      "hint": "Leviers de reprogrammation triés par lits protégés",
+      "rank": "Rang",
+      "label": "Levier",
+      "bedsProtected": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par impact →"
+    },
+    "gap": {
+      "label": "Écart bloc projeté",
+      "cta": "Résoudre l'écart bloc"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Quelles unités basculent en 72 h ?",

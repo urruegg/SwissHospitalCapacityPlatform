@@ -233,6 +233,35 @@
       "slaRisk": "Which wards have SLA risk?"
     }
   },
+  "orsa": {
+    "askAbout": {
+      "deferrableCases": "Which procedures can be deferred?",
+      "orroomPressure": "Where is the biggest OR pressure?",
+      "sbaHandoff": "How do we hand off the residual gap to staffing?"
+    },
+    "table": {
+      "hint": "Click a row → OR steering actions",
+      "specialty": "Specialty",
+      "slot": "OR slot",
+      "bedsImpact": "Beds impact",
+      "bedsProtected": "Beds protected",
+      "deferable": "Deferable",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "levers": {
+      "hint": "Reslot levers sorted by beds protected",
+      "rank": "Rank",
+      "label": "Lever",
+      "bedsProtected": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by impact →"
+    },
+    "gap": {
+      "label": "Projected OR gap",
+      "cta": "Resolve OR gap"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Which wards tip over in 72h?",

@@ -233,6 +233,35 @@
       "slaRisk": "Quali reparti hanno rischio SLA?"
     }
   },
+  "orsa": {
+    "askAbout": {
+      "deferrableCases": "Quali interventi possono essere rinviati?",
+      "orroomPressure": "Dove c'è la maggiore pressione in sala operatoria?",
+      "sbaHandoff": "Come trasferiamo il divario residuo al personale?"
+    },
+    "table": {
+      "hint": "Fai clic su una riga → azioni di coordinamento sala operatoria",
+      "specialty": "Specialità",
+      "slot": "Slot sala operatoria",
+      "bedsImpact": "Impatto letti",
+      "bedsProtected": "Letti protetti",
+      "deferable": "Rinviabile",
+      "yes": "Sì",
+      "no": "No"
+    },
+    "levers": {
+      "hint": "Leve di riprogrammazione ordinate per letti protetti",
+      "rank": "Rango",
+      "label": "Leva",
+      "bedsProtected": "Letti",
+      "detail": "Dettaglio",
+      "cta": "Sequenza automatica per impatto →"
+    },
+    "gap": {
+      "label": "Divario sala operatoria previsto",
+      "cta": "Risolvere il divario sala operatoria"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Quali reparti sforano in 72 h?",

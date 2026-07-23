@@ -233,6 +233,35 @@
       "slaRisk": "Welche Stationen haben SLA-Risiko?"
     }
   },
+  "orsa": {
+    "askAbout": {
+      "deferrableCases": "Welche Eingriffe sind verschiebbar?",
+      "orroomPressure": "Wo ist der grösste OP-Druck?",
+      "sbaHandoff": "Wie übergeben wir den Restbedarf ans Personalmanagement?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → OP-Steuerungsaktionen",
+      "specialty": "Fachbereich",
+      "slot": "OP-Slot",
+      "bedsImpact": "Bettenbedarf",
+      "bedsProtected": "Betten geschützt",
+      "deferable": "Verschiebbar",
+      "yes": "Ja",
+      "no": "Nein"
+    },
+    "levers": {
+      "hint": "Reslot-Hebel nach geschützten Betten sortiert",
+      "rank": "Rang",
+      "label": "Hebel",
+      "bedsProtected": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Auswirkung →"
+    },
+    "gap": {
+      "label": "Prognostizierte OP-Lücke",
+      "cta": "OP-Lücke schliessen"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Welche Stationen kippen in 72 h?",
