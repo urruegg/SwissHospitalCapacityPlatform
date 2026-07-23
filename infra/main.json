@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "16560716462720530928"
+      "templateHash": "17275698459840797735"
     }
   },
   "parameters": {
@@ -482,6 +482,20 @@
       "metadata": {
         "description": "When true and appFluentCustomHostname is set, provision a managed cert + bind the CA to the custom hostname. Deploy is a two-step process: (1) merge with this false to create the DNS zone + records, (2) do GoDaddy NS delegation, (3) flip to true and redeploy so the CAE can validate ownership + issue a Let's Encrypt cert. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md."
       }
+    },
+    "manageCuraviasDnsZone": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "When true, this deployment OWNS the curavias.ch public DNS zone (zone + records) in its own resource group. SIT sets this true (the zone lives in rg-ihzhhpf-sit). PROD MUST set this false: the zone is shared and owned by SIT, so the PROD RG only claims the custom hostname on its Container App (customHostname + cert) while the `app` CNAME + `asuid.app` TXT records stay in the SIT-owned zone. Setting this false lets PROD bind app.curavias.ch to the PROD CA without creating a conflicting second curavias.ch zone. See ADR-0030 and the module note in infra/modules/dns/curavias.bicep."
+      }
+    },
+    "keyVaultNameOverride": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield)."
+      }
     }
   },
   "variables": {
@@ -518,6 +532,9 @@
           },
           "logAnalyticsRetentionInDays": {
             "value": "[parameters('logAnalyticsRetentionInDays')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('keyVaultNameOverride')]"
           }
         },
         "template": {
@@ -527,7 +544,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "6858679607564891496"
+              "templateHash": "14701785748605252136"
             }
           },
           "parameters": {
@@ -557,10 +574,19 @@
               "metadata": {
                 "description": "Log Analytics retention in days."
               }
+            },
+            "keyVaultName": {
+              "type": "string",
+              "defaultValue": "",
+              "maxLength": 24,
+              "metadata": {
+                "description": "Optional explicit Key Vault name. When empty (default), a deterministic per-(subscription, RG) name is generated. Set this only to sidestep a soft-delete + purge-protection name collision on a same-RG region rebuild (e.g. the Sprint 19 Switzerland North greenfield, where the decommissioned westus2 RG left kv-ihzhhpf-prod-i62t purge-protected until 2026-10-16)."
+              }
             }
           },
           "variables": {
-            "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]"
+            "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]",
+            "effectiveKeyVaultName": "[if(empty(parameters('keyVaultName')), format('kv-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('keyVaultName'))]"
           },
           "resources": [
             {
@@ -579,7 +605,7 @@
             {
               "type": "Microsoft.KeyVault/vaults",
               "apiVersion": "2023-07-01",
-              "name": "[format('kv-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]",
+              "name": "[variables('effectiveKeyVaultName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
@@ -600,7 +626,7 @@
           "outputs": {
             "keyVaultName": {
               "type": "string",
-              "value": "[format('kv-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix'))]"
+              "value": "[variables('effectiveKeyVaultName')]"
             },
             "logAnalyticsWorkspaceName": {
               "type": "string",
@@ -5257,7 +5283,7 @@
       ]
     },
     {
-      "condition": "[and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname'))))]",
+      "condition": "[and(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), parameters('manageCuraviasDnsZone'))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('curavias-dns-{0}', parameters('environmentName'))]",
@@ -5610,7 +5636,7 @@
       "metadata": {
         "description": "Azure DNS name servers for curavias.ch. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md."
       },
-      "value": "[if(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), reference(resourceId('Microsoft.Resources/deployments', format('curavias-dns-{0}', parameters('environmentName'))), '2025-04-01').outputs.nameServers.value, createArray())]"
+      "value": "[if(and(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), parameters('manageCuraviasDnsZone')), reference(resourceId('Microsoft.Resources/deployments', format('curavias-dns-{0}', parameters('environmentName'))), '2025-04-01').outputs.nameServers.value, createArray())]"
     },
     "curaviasWebStaticWebAppName": {
       "type": "string",
