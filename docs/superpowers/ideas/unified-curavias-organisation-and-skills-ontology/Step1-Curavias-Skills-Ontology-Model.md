@@ -93,7 +93,7 @@ Classes marked **(reused)** come from the two prior designs; **(new)** are intro
 
 The ontology's organisation spine is exactly the hierarchy already present in `Demo-Hospitals-Master-Data`, now typed and extended down to the person and the skill:
 
-```
+```text
 Tenant (curanova | curalp | vialta)
   └─ HospitalOrganisation            (CN, CP, VT)
        └─ LegalEntity                (CN-LE1 … VT-LE5)     — Rechtsträger
@@ -113,7 +113,7 @@ Tenant (curanova | curalp | vialta)
 
 ## 4. Relations (RO-style) — the object properties
 
-```
+```text
 Tenant                 —— owns ——▶                 HospitalOrganisation
 HospitalOrganisation   —— has_legal_entity ——▶     LegalEntity
 LegalEntity            —— administers ——▶          Site
@@ -162,7 +162,7 @@ A `CapacityUnit` (a bed, a ward, an OR slot, an ED bay) does not demand "a nurse
 
 `view_skill_supply` counts, per (unit-or-pool × skill × window), the assertions where **all** hold:
 
-```
+```text
 assurance_level ≥ demand.min_assurance
 AND window ∈ [valid_from, valid_until]         -- currency: expired = not supply
 AND proficiency_level ≥ demand.min_proficiency

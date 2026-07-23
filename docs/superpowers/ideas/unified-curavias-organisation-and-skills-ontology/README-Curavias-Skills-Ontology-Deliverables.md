@@ -35,7 +35,7 @@ Sample scale: **3 tenants · 48 org units · 24 departments · 50 capacity units
 
 ## How it all fits together
 
-```
+```text
 Demo-Hospitals-Master-Data (given)  ──▶  dim_tenant / dim_org_unit / dim_department      (organisation spine)
 Step 2 competency catalogue         ──▶  dim_skill / dim_issuing_authority / dim_specialisation
 Employees (synthetic)               ──▶  dim_employee / dim_workforce_position           (keyed on GLN)

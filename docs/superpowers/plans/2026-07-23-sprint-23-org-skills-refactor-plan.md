@@ -23,7 +23,7 @@
 
 ## Dependency order between work streams
 
-```
+```text
 PR #309 (design) ── merged ──┐
                              ▼
 WS-B0 (relocate generator)   WS-A1..A4 (infra, independent)   WS-D1..D4 (governance, alongside)
@@ -41,7 +41,7 @@ WS-A and WS-D can start in parallel with WS-B0/B1 the moment #309 merges. WS-C i
 
 ## File Structure
 
-**WS-A — Infra (Bicep, UC-style outputs under `infra/`)**
+### WS-A — Infra (Bicep, UC-style outputs under `infra/`)
 - Create: `infra/modules/data-foundation/masterdata-landing/main.bicep` — ADLS Gen2 account/container `landing/curavias-org-skills/` + role assignments.
 - Create: `infra/modules/data-foundation/masterdata-landing/onelake-shortcut.md` — OneLake shortcut creation runbook (portal/REST; shortcuts are not Bicep-provisionable).
 - Create: `infra/modules/experience-hosting/skills-sim-jobs/main.bicep` — Container Apps **Jobs** (manual trigger) for the four simulators.
@@ -49,7 +49,7 @@ WS-A and WS-D can start in parallel with WS-B0/B1 the moment #309 merges. WS-C i
 - Modify: `infra/main.bicep` — wire the three new modules; `infra/environments/sit.bicepparam` + `prod.bicepparam` — parameters.
 - Create: `docs/runbooks/curavias-org-skills-upload.md` — `az`/portal upload + on-demand pipeline-run runbook.
 
-**WS-B — Data (plugin + medallion), mirrors `external-signals/` + Sprint 22**
+### WS-B — Data (plugin + medallion), mirrors `external-signals/` + Sprint 22
 - Move: `docs/superpowers/ideas/unified-curavias-organisation-and-skills-ontology/**` generator + 20 CSVs -> `data/master-data/curavias-org-skills/` (+ `README.md` with provenance).
 - Create: `data-platform/scripts/skills-evidence/connectors/base_connector.py` — abstract adapter (`mode`, `fetch`, `parse`/`to_canonical`).
 - Create: `data-platform/scripts/skills-evidence/connectors/{successfactors,lms,skills_manager,work_id}.py` — four adapters (simulated now, real-API-ready).
@@ -61,14 +61,14 @@ WS-A and WS-D can start in parallel with WS-B0/B1 the moment #309 merges. WS-C i
 - Create: `data-platform/notebooks/skills-evidence/{ingest_bronze_skills.py,build_silver_skills.py,build_gold_skills.py}` — medallion.
 - Modify: `data/master-data/validate_master_data.py` (or a lane-local `validate_org_skills.py`) — add GLN mod-10, enum-domain, load-order checks; reused inside the silver gate.
 
-**WS-C — Semantic / Ontology / Fabric IQ**
+### WS-C — Semantic / Ontology / Fabric IQ
 - Modify: `data-platform/reports/capacity-dashboard.SemanticModel/definition/tables/*.tmdl` — remove `dim_hospital`; add `dim_tenant`/`dim_org_unit`/`dim_department`, `care_setting`, skills tables + measures + live-vs-simulated measure.
 - Create: `_hospital_to_org_crosswalk.csv` under `data/master-data/curavias-org-skills/` — legacy `hospital_id` -> `tenant_id`/`org_unit_id`.
 - Modify: `docs/ontology/*.md` + `crosswalk.md` + conformance gate — org/skills + care-setting concepts.
 - Modify: Fabric IQ `ont_hospital_capacity` + Data Agent grounding.
 - Modify: `.github/workflows/verify-semantic-model.yml` — re-baseline exact counts; `data-platform/scripts/verify_gold_schema.py` — extend parity for new gold tables.
 
-**WS-D — Governance**
+### WS-D — Governance
 - Create: `docs/adr/00NN-curavias-landing-zone-and-skills-evidence-plugins.md` — Accepted before WS-B merges.
 - Modify: `docs/PRD.md` — FR/NFR rows (landing zone, plugin sources, bed-vs-ops) + §7 traceability matrix.
 - Modify: `docs/COMPLIANCE.md` / `docs/SECURITY.md` — DSG tagging of `fact_skill_assertion` + `dim_work_id_profile`; Work-ID consent lineage.
