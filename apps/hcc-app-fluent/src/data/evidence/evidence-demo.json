@@ -2544,6 +2544,78 @@
     },
     {
       "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-015",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Onboard new signal sources as manifest-driven provider plugins emitting `DC-EXT-SIGNAL-v1`."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-016",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Provide real API adapters (LiveBinding) for confirmed-ready channels (SED, Alertswiss)."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-017",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Provide simulator plugins (SimulatorBinding) for channels without a confirmed API."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-018",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Support internal signal channels (InternalBinding) derived from platform gold tables."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-019",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Surface a data-driven live/simulated/internal trust badge per channel on the CSA/OCA boards."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-020",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Host ingestion + simulation as Azure Container Apps services publishing to Event Hub/Eventstream (not GitHub Actions)."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
       "id": "FR-EXT-GOV-001",
       "kind": "FR",
       "mvp": false,
@@ -3369,6 +3441,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Operational (Fabric IQ) binding GA-gated per ADR-0014."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "NFR-EXT-PLG-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Live bindings are always mocked in CI; no external network calls in Actions."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "NFR-EXT-PLG-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "A schema-invalid manifest fails CI and is excluded from the runtime catalogue (fail-closed)."
     },
     {
       "family": "Governance And Audit (Sprint 09 T5)",

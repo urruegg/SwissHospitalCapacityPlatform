@@ -1,0 +1,12 @@
+sourceId: bafu
+authority: BAFU
+trustTier: A
+channelKind: external
+hazardTypes: [flood]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+licence: BAFU-open-data
+providerVersion: bafu-1.0.0
+scenarioMap:
+  flood: {template: F8, lageTier: 2}
