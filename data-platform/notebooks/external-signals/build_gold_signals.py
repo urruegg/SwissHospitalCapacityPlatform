@@ -150,10 +150,7 @@ def build_gold_signals(spark) -> None:  # pragma: no cover - Fabric runtime only
     rows = [r.asDict(recursive=True) for r in df.collect()]
     tables = gold_tables(rows)
     for name, data in tables.items():
-        if data:
-            out_df = spark.createDataFrame(data)
-        else:
-            out_df = spark.createDataFrame([], _empty_schema(name))
+        out_df = spark.createDataFrame(data, _empty_schema(name))
         _write(out_df, name)
 
 
