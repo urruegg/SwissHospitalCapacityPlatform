@@ -46,8 +46,25 @@ Live deployment to SIT or PROD:
 The provider-runner uses a **system-assigned managed identity**:
 
 - The identity is created automatically when the Container App is deployed.
-- It is scoped to publish messages to the Event Hub via the `Azure Event Hubs Data Sender` role.
+- It is scoped to publish messages to the Event Hub via the `Azure Event Hubs Data Sender` role. This role assignment is **provisioned declaratively by `main.bicep`** as a namespace-scoped assignment, so every environment (SIT, PROD) grants it consistently at deploy time.
 - Workload Identity Federation (OIDC) is configured in the Container Apps environment to allow the identity to assume Azure roles without storing credentials.
+
+## Target environment parameters
+
+The template is environment-parameterised. Discovered parameter sets for the
+`ihzhhpf` demo tenant (`MngEnvMCAP164444`, region `westus2` per ADR-0013):
+
+| Parameter | SIT (deployed) | PROD (prepared) |
+|-----------|----------------|-----------------|
+| `envSuffix` | `sit` | `prod` |
+| resource group | `rg-ihzhhpf-sit` | `rg-ihzhhpf-prod` |
+| `managedEnvironmentId` | `cae-sim-ihzhhpf-sit` | `cae-ihzhhpf-prod` |
+| `eventHubNamespace` | `evh-ihzhhpf-sit-y26y` | `evh-ihzhhpf-prod-i62t` |
+| `eventHubName` | `events` | `events` |
+
+PROD deployment follows the same gate: `what-if` plan, human `approved-to-apply`,
+then `az deployment group create`. PROD has no `cae-sim` environment, so the
+runner targets the general `cae-ihzhhpf-prod` managed environment.
 
 ## Configuration
 

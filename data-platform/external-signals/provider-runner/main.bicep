@@ -41,4 +41,22 @@ resource runner 'Microsoft.App/containerApps@2024-03-01' = {
   identity: { type: 'SystemAssigned' }
 }
 
+@description('Azure Event Hubs Data Sender built-in role definition id')
+var eventHubsDataSenderRoleId = '2b629674-e913-4c01-ae53-ef4638d8f975'
+
+resource ehNamespace 'Microsoft.EventHub/namespaces@2021-11-01' existing = {
+  name: eventHubNamespace
+}
+
+resource senderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(ehNamespace.id, runner.id, eventHubsDataSenderRoleId)
+  scope: ehNamespace
+  properties: {
+    principalId: runner.identity.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', eventHubsDataSenderRoleId)
+  }
+}
+
 output providerRunnerName string = runner.name
+output providerRunnerPrincipalId string = runner.identity.principalId
