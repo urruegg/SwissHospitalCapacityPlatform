@@ -439,6 +439,28 @@
       },
       "status": "Accepted",
       "title": "Trunk-based parallel-sprint development workflow"
+    },
+    {
+      "decisionSummary": "Adopt the following architecture for the Curavias org/skills master-data domain. These are the locked decisions D1-D6 from the Sprint 23 design.",
+      "id": "ADR-0039",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md"
+      },
+      "status": "Proposed",
+      "title": "Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport"
+    },
+    {
+      "decisionSummary": "**Proposed: bring PROD switzerlandnorth to SIT network parity, plus add a Key Vault private endpoint.**",
+      "id": "ADR-0039",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0039-prod-network-parity-vnet-private-endpoints.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0039-prod-network-parity-vnet-private-endpoints.md"
+      },
+      "status": "Proposed",
+      "title": "PROD Network Parity — VNet + Cosmos & Key Vault Private Endpoints (Switzerland North)"
     }
   ],
   "boms": [
@@ -3071,6 +3093,126 @@
       "title": "Foundry-hosted copilots shall consume the read-only **Fabric Data Agent as their primary grounding source** ahead of table grounding (the Fabric-to-Foundry consumption seam), propagate its RLS and [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) PHI-gate `REFUSE:` codes **verbatim** (no route-around), and surface at least one `hcp:*` ontology citation per grounded answer. Realised per [ADR-0033](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md); extends `FR-ONT-004`, `NFR-AI-002/004`. **Realised live (demo scope)** for the Foundry `ooa` surface — live E2E in [ADR-0034](adr/0034-fabric-iq-demo-scope-artefacts.md) + [evidence doc](architecture/fabric-iq-ready-evidence.md) (issue #251); the gpt-5 layer surfaces the refusal in natural language rather than the verbatim `REFUSE:` token (safety outcome preserved). App/agent-host surface pending."
     },
     {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-ORG-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Fold `dim_hospital` into a **Curavias organisation spine** (`dim_tenant` / `dim_org_unit` / `dim_department`) and re-key the dependent facts (`fact_capacity_baseline`, `encounter`, `bed_assignment`, `or_case`, `or_schedule`) onto it."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Gather skills evidence from external systems via a **plugin architecture** - real-API adapters where an API exists, simulators where none does - each record flagged **live-vs-simulated** (`sourceMode`) with a trust tier (`trustTier` A/B/C)."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Mimic **SuccessFactors** (HRIS), an **LMS** (learning/cert store), and **Skills-Manager with Work-ID** (worker-owned skills passport) as simulated sources, normalised to the `DC-SKILL-EVIDENCE-v1` contract."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Derive assurance from the evidence assertion (`self` -> L0, `employer_confirmed` -> L1); promote the `worker_gln` golden-thread key and set `consentScope` **only** when Work-ID consent was granted; Work-ID assertions are always `self`-declared."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Load the full synthetic Curavias master data (employees, assertions, org spine) **on demand** from a dedicated **ADLS Gen2 landing zone via a OneLake shortcut** and a Bronze->Silver->Gold pipeline, not from Microsoft Entra and not from git-committed extracts."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Use a **hybrid transport**: batch extract drops to the ADLS landing zone for HRIS/LMS master data; an Eventstream lane carries only near-real-time skills events (credential expiry, consent grant/revoke, newly-confirmed assertions)."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Validate landed data at the **pipeline silver gate** (PK/FK, GLN mod-10, enum domains, load order), quarantining bad rows in Silver rather than at PR time."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Preserve the live-vs-simulated badge and trust tier **end-to-end** through Bronze/Silver so they surface on `gold.fact_skill_assertion`; they are never invented downstream."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-008",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Express the **bed-vs-ops skill-demand split** on the semantic and ontology surface: bed side = Pflegepersonal / nursing, ops side = doctors and specialised teams."
+    },
+    {
+      "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+      "id": "FR-SKILL-ONT-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Extend the existing staff/person ontology view with the org spine, skill classes, and bed-vs-ops demand axis; keep `fact_skill_assertion` as the atomic unit and the proficiency (1-5) / assurance (L0-L4) axes and GLN golden thread unchanged (extend, don't replace)."
+    },
+    {
       "family": "Visualization And Dashboards (Sprint 09 T5)",
       "id": "FR-VIZ-001",
       "kind": "FR",
@@ -3789,6 +3931,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Onboarding identity and cross-tenant boundaries shall be explicit and auditable (Sprint 6)."
+    },
+    {
+      "family": "Curavias Org Spine And Skills Evidence Governance (Sprint 23)",
+      "id": "NFR-SKILL-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Skills-evidence ingestion and simulation run as **Azure Container Apps** services publishing to Event Hub/Eventstream, never as GitHub Actions workflows (Actions is CI-only)."
+    },
+    {
+      "family": "Curavias Org Spine And Skills Evidence Governance (Sprint 23)",
+      "id": "NFR-SKILL-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "All Curavias org/skills data is **synthetic, no-PHI**; the master-data generator is deterministic and git-owned for reproducibility, while the generated extracts are uploaded to the landing zone and not committed to git."
     }
   ],
   "summary": [
