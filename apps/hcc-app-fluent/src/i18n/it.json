@@ -172,6 +172,70 @@
       "orSteering": "Coordinamento sala operatoria",
       "staffing": "Personale",
       "crisis": "Crisi e scenari"
+    },
+    "capacityTeaser": {
+      "title": "Capacità del sito (live)",
+      "peakWard": "{{ward}} → {{pct}}%",
+      "siteGapDeficit": "Deficit {{beds}} posti",
+      "siteGapSurplus": "Surplus {{beds}} posti",
+      "breachEta": "Superamento ~{{hours}}h",
+      "asOf": "al {{time}}",
+      "firstSurfacedBy": "rilevato da {{agent}}"
+    },
+    "valueTiles": {
+      "title": "Valore e ROI",
+      "romLabel": "Stima ROM"
+    },
+    "copilotCount": {
+      "label": "{{count}} copiloti specializzati",
+      "caption": "Derivato dal registro agenti — uno per scheda di ruolo"
+    },
+    "whyNow": {
+      "title": "Perché ora?",
+      "caption": "Confronto illustrativo — contenuto editoriale, non metriche live",
+      "colAspect": "Dimensione",
+      "colToday": "Oggi",
+      "colCuravias": "Con Curavias",
+      "row1": {
+        "aspect": "Visibilità capacità",
+        "today": "Giri manuali — ore di ritardo",
+        "curavias": "Previsione AI 72h, reparto per reparto"
+      },
+      "row2": {
+        "aspect": "Coordinamento dimissioni",
+        "today": "Chiamate individuali per reparto",
+        "curavias": "Lista di lavoro coordinata, 8+ candidati pronti"
+      },
+      "row3": {
+        "aspect": "Pianificazione sala operatoria",
+        "today": "Carta e fogli di calcolo",
+        "curavias": "Leve di rislot classificate, posti protetti"
+      },
+      "row4": {
+        "aspect": "Equilibrio del personale",
+        "today": "Copertura reattiva delle lacune",
+        "curavias": "Ottimizzazione proattiva dei turni"
+      },
+      "row5": {
+        "aspect": "Preparazione alle crisi",
+        "today": "Risposta ad hoc agli incidenti",
+        "curavias": "Pipeline segnale → scenario → probabilità"
+      },
+      "row6": {
+        "aspect": "Prova del valore",
+        "today": "Rapporti qualitativi",
+        "curavias": "Provenienza BVA con timbro — ROM"
+      }
+    },
+    "patientPath": {
+      "title": "Copilota in ogni fase del percorso",
+      "caption": "Illustrativo — i copiloti supportano ogni fase senza accedere a dati reali del paziente (PHI)",
+      "admission": "Ammissione",
+      "triage": "Triage e assegnazione",
+      "treatment": "Trattamento",
+      "discharge": "Dimissione",
+      "postAcute": "Cure post-acute",
+      "occupancyNote": "{{ward}} → {{pct}}% in 72h"
     }
   },
   "settings": {

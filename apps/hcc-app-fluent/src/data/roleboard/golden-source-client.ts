@@ -1,5 +1,5 @@
 import type { Mode, RoleBoardData, ScenarioScope } from '../../journey/RoleBoard';
-import { OCCUPANCY_PINNED, type OccupancyPayload } from './occupancy-data';
+import { OCCUPANCY_PINNED, type OccupancyPayload, type SiteCapacitySummary, aggregateSiteCapacity } from './occupancy-data';
 import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
 import { BED_MANAGER_PINNED, type BedManagerPayload } from './bed-manager-data';
 import { OR_STEERING_PINNED, type OrSteeringPayload } from './or-steering-data';
@@ -108,4 +108,23 @@ export async function loadCrisis(
   if (!res.ok) throw new Error(`crisis load failed: ${res.status}`);
   const payload = (await res.json()) as CrisisPayload;
   return { provenance: 'live', scope: pinnedScope, payload };
+}
+
+/**
+ * Aggregates the OOA occupancy source into a site-level summary for the START
+ * surface teaser. START and OOA read the same golden source so their figures agree.
+ * Delegates to the pure `aggregateSiteCapacity` helper (testable without I/O mocking).
+ */
+export async function loadSiteCapacitySummary(
+  scope: ScenarioScope,
+  mode: Mode,
+): Promise<SiteCapacitySummary> {
+  const data = await loadOccupancy(scope, mode);
+  return aggregateSiteCapacity(
+    data.payload.wards,
+    data.payload.capacity,
+    scope.windowHours,
+    data.provenance,
+    new Date().toISOString(),
+  );
 }

@@ -172,6 +172,70 @@
       "orSteering": "OR steering",
       "staffing": "Staffing",
       "crisis": "Crisis & scenarios"
+    },
+    "capacityTeaser": {
+      "title": "Site capacity (live)",
+      "peakWard": "{{ward}} → {{pct}}%",
+      "siteGapDeficit": "Deficit {{beds}} beds",
+      "siteGapSurplus": "Surplus {{beds}} beds",
+      "breachEta": "Breach ~{{hours}}h",
+      "asOf": "as of {{time}}",
+      "firstSurfacedBy": "surfaced by {{agent}}"
+    },
+    "valueTiles": {
+      "title": "Value & ROI",
+      "romLabel": "ROM estimate"
+    },
+    "copilotCount": {
+      "label": "{{count}} specialised copilots",
+      "caption": "Registry-derived — one per role board"
+    },
+    "whyNow": {
+      "title": "Why now?",
+      "caption": "Illustrative comparison — editorial content, not live metrics",
+      "colAspect": "Dimension",
+      "colToday": "Today",
+      "colCuravias": "With Curavias",
+      "row1": {
+        "aspect": "Capacity visibility",
+        "today": "Manual rounds — hours of lag",
+        "curavias": "72h AI forecast, ward by ward"
+      },
+      "row2": {
+        "aspect": "Discharge coordination",
+        "today": "Individual calls per ward",
+        "curavias": "Coordinated worklist, 8+ candidates ready"
+      },
+      "row3": {
+        "aspect": "OR scheduling",
+        "today": "Paper-based & spreadsheets",
+        "curavias": "Ranked reslot levers, beds protected"
+      },
+      "row4": {
+        "aspect": "Staffing balance",
+        "today": "Reactive gap filling",
+        "curavias": "Proactive shift optimisation"
+      },
+      "row5": {
+        "aspect": "Crisis readiness",
+        "today": "Ad-hoc incident response",
+        "curavias": "Signal → scenario → probability pipeline"
+      },
+      "row6": {
+        "aspect": "Value evidence",
+        "today": "Qualitative reports",
+        "curavias": "BVA provenance-stamped — ROM"
+      }
+    },
+    "patientPath": {
+      "title": "Copilot at every care step",
+      "caption": "Illustrative — copilots support each stage without handling real patient data (PHI)",
+      "admission": "Admission",
+      "triage": "Triage & Placement",
+      "treatment": "Treatment",
+      "discharge": "Discharge",
+      "postAcute": "Post-acute",
+      "occupancyNote": "{{ward}} → {{pct}}% in 72h"
     }
   },
   "settings": {

@@ -172,6 +172,70 @@
       "orSteering": "Pilotage du bloc",
       "staffing": "Personnel",
       "crisis": "Crise & scénarios"
+    },
+    "capacityTeaser": {
+      "title": "Capacité du site (live)",
+      "peakWard": "{{ward}} → {{pct}} %",
+      "siteGapDeficit": "Déficit {{beds}} lits",
+      "siteGapSurplus": "Surplus {{beds}} lits",
+      "breachEta": "Dépassement ~{{hours}}h",
+      "asOf": "au {{time}}",
+      "firstSurfacedBy": "détecté par {{agent}}"
+    },
+    "valueTiles": {
+      "title": "Valeur & ROI",
+      "romLabel": "Estimation ROM"
+    },
+    "copilotCount": {
+      "label": "{{count}} copilotes spécialisés",
+      "caption": "Dérivé du registre d'agents — un par tableau de rôle"
+    },
+    "whyNow": {
+      "title": "Pourquoi maintenant ?",
+      "caption": "Comparaison illustrative — contenu éditorial, pas de métriques en direct",
+      "colAspect": "Dimension",
+      "colToday": "Aujourd'hui",
+      "colCuravias": "Avec Curavias",
+      "row1": {
+        "aspect": "Visibilité capacité",
+        "today": "Rondes manuelles — heures de retard",
+        "curavias": "Prévision IA 72h, unité par unité"
+      },
+      "row2": {
+        "aspect": "Coordination des sorties",
+        "today": "Appels individuels par unité",
+        "curavias": "Liste de travail coordonnée, 8+ candidats prêts"
+      },
+      "row3": {
+        "aspect": "Planification du bloc",
+        "today": "Papier et tableurs",
+        "curavias": "Leviers de reslot classés, lits protégés"
+      },
+      "row4": {
+        "aspect": "Équilibre du personnel",
+        "today": "Comblement réactif des lacunes",
+        "curavias": "Optimisation proactive des équipes"
+      },
+      "row5": {
+        "aspect": "Préparation aux crises",
+        "today": "Réponse ad hoc aux incidents",
+        "curavias": "Pipeline signal → scénario → probabilité"
+      },
+      "row6": {
+        "aspect": "Preuve de valeur",
+        "today": "Rapports qualitatifs",
+        "curavias": "Provenance BVA estampillée — ROM"
+      }
+    },
+    "patientPath": {
+      "title": "Copilote à chaque étape du parcours",
+      "caption": "Illustratif — les copilotes accompagnent chaque étape sans accéder aux données patients réelles (PHI)",
+      "admission": "Admission",
+      "triage": "Triage & affectation",
+      "treatment": "Traitement",
+      "discharge": "Sortie",
+      "postAcute": "Soins post-aigus",
+      "occupancyNote": "{{ward}} → {{pct}} % en 72h"
     }
   },
   "settings": {

@@ -172,6 +172,70 @@
       "orSteering": "OP-Steuerung",
       "staffing": "Personal",
       "crisis": "Krise & Szenarien"
+    },
+    "capacityTeaser": {
+      "title": "Standortkapazität (live)",
+      "peakWard": "{{ward}} → {{pct}} %",
+      "siteGapDeficit": "Unterdeckung {{beds}} Betten",
+      "siteGapSurplus": "Überkapazität {{beds}} Betten",
+      "breachEta": "Überschreitung ~{{hours}} h",
+      "asOf": "Stand {{time}}",
+      "firstSurfacedBy": "erkannt von {{agent}}"
+    },
+    "valueTiles": {
+      "title": "Wert & ROI",
+      "romLabel": "ROM-Schätzung"
+    },
+    "copilotCount": {
+      "label": "{{count}} spezialisierte Copilots",
+      "caption": "Aus dem Agenten-Register abgeleitet — einer pro Rollenboard"
+    },
+    "whyNow": {
+      "title": "Warum jetzt?",
+      "caption": "Illustrativer Vergleich — redaktioneller Inhalt, keine Live-Kennzahlen",
+      "colAspect": "Dimension",
+      "colToday": "Heute",
+      "colCuravias": "Mit Curavias",
+      "row1": {
+        "aspect": "Kapazitätsübersicht",
+        "today": "Manuelle Rundgänge — Stunden Verzögerung",
+        "curavias": "72-h-KI-Prognose, stationsgenau"
+      },
+      "row2": {
+        "aspect": "Entlasskoordination",
+        "today": "Einzelne Telefonate pro Station",
+        "curavias": "Koordinierte Arbeitsliste, 8+ Kandidaten bereit"
+      },
+      "row3": {
+        "aspect": "OP-Planung",
+        "today": "Papier & Tabellen",
+        "curavias": "Gereifte Reslot-Hebel, Betten gesichert"
+      },
+      "row4": {
+        "aspect": "Personalabgleich",
+        "today": "Reaktive Lückenfüllung",
+        "curavias": "Proaktive Schichtoptimierung"
+      },
+      "row5": {
+        "aspect": "Krisenbereitschaft",
+        "today": "Ad-hoc-Vorfallreaktion",
+        "curavias": "Signal → Szenario → Wahrscheinlichkeitspipeline"
+      },
+      "row6": {
+        "aspect": "Wertnachweis",
+        "today": "Qualitative Berichte",
+        "curavias": "BVA-Herkunftsstempel — ROM"
+      }
+    },
+    "patientPath": {
+      "title": "Copilot in jedem Versorgungsschritt",
+      "caption": "Illustrativ — Copilots unterstützen jeden Schritt ohne echte Patientendaten (PHI)",
+      "admission": "Eintritt",
+      "triage": "Triage & Bettenzuweisung",
+      "treatment": "Behandlung",
+      "discharge": "Entlassung",
+      "postAcute": "Nachversorgung",
+      "occupancyNote": "{{ward}} → {{pct}} % in 72 h"
     }
   },
   "settings": {
