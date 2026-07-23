@@ -133,11 +133,18 @@ param eventHubsCsaAgentMiPrincipalId string = ''
 @description('Enable the Sprint 23 masterdata landing-zone module (ADLS Gen2 storage + landing filesystem for synthetic org/skills extracts).')
 param enableMasterdataLandingModule bool = false
 
-@description('Object ID of the ingestion pipeline managed identity that writes org/skills extracts to the landing container. Empty = Storage Blob Data Contributor role assignment skipped.')
+@description('Object ID of the ingestion pipeline managed identity that writes org/skills extracts to the landing container. Empty = Storage Blob Data Contributor role assignment skipped. When enableSkillsSimJobsModule=true this is overridden with the skills-sim jobs MI principalId.')
 param masterdataLandingPipelinePrincipalId string = ''
 
 @description('Resource ID of the Log Analytics workspace for masterdata landing blob diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD.')
 param masterdataLandingLogAnalyticsWorkspaceId string = ''
+
+// Sprint 23 WS-A3 (#255) — Container Apps Jobs for the skills-evidence simulators.
+@description('Enable the Sprint 23 skills-sim jobs module (four manual-trigger Container Apps Jobs that seed synthetic extracts into the landing zone). Requires enableMasterdataLandingModule=true for the landing target + RBAC grant.')
+param enableSkillsSimJobsModule bool = false
+
+@description('Container image the skills-sim jobs run. Placeholder until the skills-sim CI workflow pushes a real image to ACR (parity with sim-capacity).')
+param skillsSimJobsImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
 @description('Enable AI/ML foundation module deployment.')
 param enableAiMlFoundationModule bool = false
@@ -241,6 +248,11 @@ param keyVaultNameOverride string = ''
 
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
+
+// Deterministic name of the WS-A1 landing storage account, mirrored from the
+// masterdata-landing module so the WS-A3 jobs can target it without a circular
+// module reference (jobs use it only as a runtime env var).
+var masterdataLandingStorageName = toLower('stmasterdata${replace(resourceSuffix, '-', '')}')
 
 var tags = {
   env: environmentName
@@ -389,8 +401,31 @@ module masterdataLanding './modules/data-foundation/masterdata-landing/main.bice
     location: location
     nameSuffix: resourceSuffix
     tags: tags
-    pipelinePrincipalId: masterdataLandingPipelinePrincipalId
+    // When the skills-sim jobs module is on, grant its MI write access to the
+    // landing container; otherwise fall back to the explicit param (empty = skip).
+    pipelinePrincipalId: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.principalId : masterdataLandingPipelinePrincipalId
     logAnalyticsWorkspaceId: masterdataLandingLogAnalyticsWorkspaceId
+  }
+}
+
+// Sprint 23 WS-A3 (#255) — Container Apps Jobs for the skills-evidence simulators.
+// Manual-trigger only; never started by a GitHub workflow. Writes synthetic
+// extracts to the WS-A1 landing zone via its User-Assigned Managed Identity.
+module skillsSimJobs './modules/experience-hosting/skills-sim-jobs/main.bicep' = if (enableSkillsSimJobsModule) {
+  name: 'skills-sim-jobs-${environmentName}'
+  params: {
+    location: simCapacityLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    containerAppEnvironmentName: 'cae-skills-sim-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: skillsSimJobsImage
+    // Reuse the sim-capacity ACR params — same registry serves all Container Apps.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    landingStorageAccountName: masterdataLandingStorageName
+    landingContainerName: 'landing'
+    demoScope: simCapacityDemoScope
   }
 }
 
@@ -628,6 +663,7 @@ output moduleStatuses object = {
   apiRuntime: enableApiRuntimeModule ? apiRuntime!.outputs.moduleStatus : 'api-runtime-disabled'
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
   masterdataLanding: enableMasterdataLandingModule ? masterdataLanding!.outputs.moduleStatus : 'masterdata-landing-disabled'
+  skillsSimJobs: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.moduleStatus : 'skills-sim-jobs-disabled'
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'

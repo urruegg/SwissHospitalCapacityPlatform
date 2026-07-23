@@ -115,6 +115,15 @@ param eventHubsCsaAgentMiPrincipalId = ''
 param enableMasterdataLandingModule = true
 param masterdataLandingPipelinePrincipalId = ''
 param masterdataLandingLogAnalyticsWorkspaceId = ''
+
+// Sprint 23 WS-A3 (#255) — Container Apps Jobs for the skills-evidence simulators.
+// Enabled in SIT for the demo scope. Four manual-trigger jobs seed synthetic
+// extracts into the WS-A1 landing zone via their MI (granted Storage Blob Data
+// Contributor by the landing module). Image is a placeholder until the skills-sim
+// CI workflow publishes a real one (parity with sim-capacity). NEVER triggered by
+// a GitHub workflow — on-demand `az containerapp job start` only.
+param enableSkillsSimJobsModule = true
+param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
 // 2026-07-10 sprint-review checklist). Image is a placeholder — matches
 // sim-capacity pattern — until agent-host-build.yml is extended to push
