@@ -1,0 +1,7 @@
+{
+  "source": "lms",
+  "completions": [
+    {"completionId": "lms-001", "learnerRef": "SF-EMP-1001", "courseCode": "BLS", "courseTitle": "Basic Life Support", "result": "passed", "completedOn": "2026-06-10"},
+    {"completionId": "lms-002", "learnerRef": "SF-EMP-1003", "courseCode": "WOUND", "courseTitle": "Wundmanagement", "result": "passed", "completedOn": "2026-06-12"}
+  ]
+}
