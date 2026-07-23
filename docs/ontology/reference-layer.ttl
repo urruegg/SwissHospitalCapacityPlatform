@@ -30,8 +30,8 @@
     dcterms:description "Reference layer of the two-layer ontology per ADR-0014. Skeleton only — full axiomatic content is Phase 3."@en ;
     dcterms:creator     "Urs Rüegg"@en ;
     dcterms:issued      "2026-07-02"^^xsd:date ;
-    owl:versionInfo     "0.3.0" ;
-    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block. See docs/ontology/README.md for scope discipline and versioning."@en ;
+    owl:versionInfo     "0.4.0" ;
+    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy). See docs/ontology/README.md for scope discipline and versioning."@en ;
 
     # Imports declared but not loaded axiomatically in this skeleton.
     # A follow-up PR (or an ontology-authoring tool) resolves these to full IRIs.
@@ -261,6 +261,44 @@ hcp:signalPreseeds a owl:ObjectProperty ;
     rdfs:comment "Links an ExternalSignal to the LageTier that it proposes as an advisory pre-seed; the CSA classifier remains authoritative."@en ;
     rdfs:domain  hcp:ExternalSignal ;
     rdfs:range   hcp:LageTier .
+
+# ===========================================================================
+# Foresight tier (Sprint 26 WS-A, issue #335, design spec §3.2).
+# Turns the descriptive occupancy surface into the predictive tier: a
+# ward-level occupancy Forecast, its Driver decomposition ('why'), and the
+# evidencing link to the existing Trusted-External-Signal spine. hcp:Signal is
+# intentionally NOT introduced — hcp:ExternalSignal is reused (univocity).
+# ===========================================================================
+
+hcp:Ward a owl:Class ;
+    rdfs:label   "Ward"@en ;
+    rdfs:comment "A hospital ward as a capacity-bearing organisational unit (bed rollup). Range target for hcp:forWard; source table is dim_ward_capacityunit (DC-MASTER-07). Full placement under omrse:hospital-part-of is Phase 3."@en .
+
+hcp:Forecast a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Forecast"@en ;
+    rdfs:comment    "A 72h occupancy forecast for one Ward across hourly horizons (0..72h), carrying forecast occupied beds / occupancy % and a capacity-breach flag. Distinct from hcp:ForecastOutput (specialty demand); bound to gold.fact_occupancy_forecast (DC-OCCUPANCY-FORECAST-v1). Deterministic synthetic generator today with a clean seam for a real model (design D2)."@en .
+
+hcp:Driver a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Driver"@en ;
+    rdfs:comment    "A decomposition factor explaining a Forecast (forecast_admissions / planned_discharges / transfers / seasonality) with a signed bed delta. Driver deltas reconcile to the net forecast change. Bound to gold.fact_forecast_driver (DC-FORECAST-DRIVER-v1). Grounds beat 2 ('Warum') of the actionable-insight pattern."@en .
+
+hcp:forWard a owl:ObjectProperty ;
+    rdfs:label  "for ward"@en ;
+    rdfs:domain hcp:Forecast ;
+    rdfs:range  hcp:Ward .
+
+hcp:explainedBy a owl:ObjectProperty ;
+    rdfs:label  "explained by"@en ;
+    rdfs:domain hcp:Forecast ;
+    rdfs:range  hcp:Driver .
+
+hcp:evidencedBy a owl:ObjectProperty ;
+    rdfs:label   "evidenced by"@en ;
+    rdfs:comment "Links a Driver to the ExternalSignal that evidences it (e.g. a seasonality driver evidenced by a BAG epidemic signal). Reuses the Sprint 21 signal spine; advisory only."@en ;
+    rdfs:domain  hcp:Driver ;
+    rdfs:range   hcp:ExternalSignal .
 
 # ===========================================================================
 # Curavias organisation spine + skills ontology extension (Sprint 23, #255)
