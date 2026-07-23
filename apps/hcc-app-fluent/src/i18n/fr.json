@@ -324,5 +324,44 @@
       "aria": "Lits nécessaires dans les 72 h",
       "cta": "Résoudre l'écart à 72 h"
     }
+  },
+  "csa": {
+    "askAbout": {
+      "heatwaveImpact": "Quel est l'impact de la vague de chaleur sur la capacité ?",
+      "signalReadiness": "Tous les signaux Trust-A sont-ils surveillés ?",
+      "scenarioSimulation": "Quel scénario simuler en premier ?"
+    },
+    "signals": {
+      "title": "Signaux externes (Trust-A)",
+      "hint": "Cliquez sur une ligne → actions de signal",
+      "source": "Source",
+      "feed": "Flux",
+      "status": "Statut",
+      "trustClass": "Classe de confiance",
+      "certainty": "Certitude",
+      "probability": "Probabilité"
+    },
+    "scenarios": {
+      "title": "Scénarios classés par probabilité",
+      "hint": "Cliquez sur une ligne → lancer la simulation (approbation requise)",
+      "rank": "Rang",
+      "name": "Scénario",
+      "bedImpact": "Impact lits",
+      "probability": "Probabilité (%)",
+      "spof": "SPOF",
+      "cta": "Simuler le scénario principal →"
+    },
+    "status": {
+      "filtered": "En quarantaine",
+      "nominal": "Nominal"
+    },
+    "kpi": {
+      "residualBeds": "Lits résiduels",
+      "balanced": "Équilibré"
+    },
+    "gap": {
+      "label": "Statut de préparation aux crises",
+      "cta": "Examiner la préparation aux crises"
+    }
   }
 }

@@ -324,5 +324,44 @@
       "aria": "Beds needed within 72h",
       "cta": "Resolve the 72h gap"
     }
+  },
+  "csa": {
+    "askAbout": {
+      "heatwaveImpact": "What is the heatwave capacity impact?",
+      "signalReadiness": "Are all Trust-A signals being monitored?",
+      "scenarioSimulation": "Which scenario should we simulate first?"
+    },
+    "signals": {
+      "title": "External signals (Trust-A)",
+      "hint": "Click a row → signal actions",
+      "source": "Source",
+      "feed": "Feed",
+      "status": "Status",
+      "trustClass": "Trust class",
+      "certainty": "Certainty",
+      "probability": "Probability"
+    },
+    "scenarios": {
+      "title": "Scenarios ranked by probability",
+      "hint": "Click a row → run simulation (approval required)",
+      "rank": "Rank",
+      "name": "Scenario",
+      "bedImpact": "Bed impact",
+      "probability": "Probability (%)",
+      "spof": "SPOF",
+      "cta": "Simulate top scenario →"
+    },
+    "status": {
+      "filtered": "Quarantined",
+      "nominal": "Nominal"
+    },
+    "kpi": {
+      "residualBeds": "Residual beds",
+      "balanced": "Balanced"
+    },
+    "gap": {
+      "label": "Crisis readiness status",
+      "cta": "Review crisis readiness"
+    }
   }
 }

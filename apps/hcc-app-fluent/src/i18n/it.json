@@ -324,5 +324,44 @@
       "aria": "Posti letto necessari entro 72 h",
       "cta": "Risolvi il divario a 72 h"
     }
+  },
+  "csa": {
+    "askAbout": {
+      "heatwaveImpact": "Qual è l'impatto dell'ondata di calore sulla capacità?",
+      "signalReadiness": "Tutti i segnali Trust-A sono monitorati?",
+      "scenarioSimulation": "Quale scenario simulare per primo?"
+    },
+    "signals": {
+      "title": "Segnali esterni (Trust-A)",
+      "hint": "Fai clic su una riga → azioni segnale",
+      "source": "Fonte",
+      "feed": "Feed",
+      "status": "Stato",
+      "trustClass": "Classe di fiducia",
+      "certainty": "Certezza",
+      "probability": "Probabilità"
+    },
+    "scenarios": {
+      "title": "Scenari classificati per probabilità",
+      "hint": "Fai clic su una riga → avvia simulazione (approvazione richiesta)",
+      "rank": "Rango",
+      "name": "Scenario",
+      "bedImpact": "Impatto letti",
+      "probability": "Probabilità (%)",
+      "spof": "SPOF",
+      "cta": "Simula lo scenario principale →"
+    },
+    "status": {
+      "filtered": "In quarantena",
+      "nominal": "Nominale"
+    },
+    "kpi": {
+      "residualBeds": "Letti residui",
+      "balanced": "Bilanciato"
+    },
+    "gap": {
+      "label": "Stato di preparazione alle crisi",
+      "cta": "Esaminare la preparazione alle crisi"
+    }
   }
 }

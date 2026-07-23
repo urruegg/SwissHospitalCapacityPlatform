@@ -324,5 +324,44 @@
       "aria": "In 72 h benötigte Betten",
       "cta": "72-h-Lücke schliessen"
     }
+  },
+  "csa": {
+    "askAbout": {
+      "heatwaveImpact": "Wie wirkt sich die Hitzewelle auf die Kapazität aus?",
+      "signalReadiness": "Werden alle Trust-A-Signale überwacht?",
+      "scenarioSimulation": "Welches Szenario sollten wir zuerst simulieren?"
+    },
+    "signals": {
+      "title": "Externe Signale (Trust-A)",
+      "hint": "Zeile anklicken → Signalaktionen",
+      "source": "Quelle",
+      "feed": "Feed",
+      "status": "Status",
+      "trustClass": "Vertrauensklasse",
+      "certainty": "Gewissheit",
+      "probability": "Wahrscheinlichkeit"
+    },
+    "scenarios": {
+      "title": "Szenarien nach Wahrscheinlichkeit sortiert",
+      "hint": "Zeile anklicken → Simulation starten (Freigabe erforderlich)",
+      "rank": "Rang",
+      "name": "Szenario",
+      "bedImpact": "Bettenbedarf",
+      "probability": "Wahrscheinlichkeit (%)",
+      "spof": "SPOF",
+      "cta": "Top-Szenario simulieren →"
+    },
+    "status": {
+      "filtered": "Quarantäne",
+      "nominal": "Nominal"
+    },
+    "kpi": {
+      "residualBeds": "Restbetten",
+      "balanced": "Ausgeglichen"
+    },
+    "gap": {
+      "label": "Krisenbereitschaftsstatus",
+      "cta": "Krisenbereitschaft prüfen"
+    }
   }
 }
