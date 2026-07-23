@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 0.7.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.5.0 (added DC-EXT-SIGNAL-v1 trusted external signal contract) |
+| **Previous Version** | 0.6.0 (added DC-EXT-SIGNAL-v1 provenance plugin fields and ext_dim_source badge columns) |
 
 ## Purpose
 
@@ -208,6 +208,9 @@ Required record fields and governed optional fields:
 | `provenance.connectorVersion` | string | Connector version that produced the record. |
 | `provenance.licence` | string | Source licence and attribution obligation; mandatory per signal. |
 | `provenance.rawHash` | string | Hash of the raw source payload. |
+| `provenance.activeBinding` | `live`, `simulated`, `internal` | Binding mode that produced this record; drives the trust badge. |
+| `provenance.fellBackFrom` | `live` or null | Set when the runner fell back from a live binding; null otherwise. |
+| `provenance.channelKind` | `external`, `internal` | `internal` for InternalBinding channels derived from gold tables; `external` for all others. |
 
 The derived deduplication key is `sourceId + capIdentifier + hazardType +
 region + onset`, bucketed to a time window so overlapping re-publishes collapse
@@ -215,6 +218,23 @@ before trigger evaluation. Noise governance is strict: `Test`, `Exercise`, and
 `System` records are quarantined and never trigger CSA (`FR-EXT-005`). Only
 Trust-A, `Actual` records that satisfy threshold rules can open an advisory CSA
 handoff; external signals never mutate capacity, roster, or bed state directly.
+
+#### ext_dim_source trust-badge columns (Sprint 21 provider-plugin refactor)
+
+The `ext_dim_source` dimension table carries per-channel trust-badge columns
+populated by the provider-runner service from `provenance.activeBinding`. These
+columns flow through the semantic-model measures to CSA/OCA board cards as a
+data-driven live/simulated/internal trust badge (FR-EXT-019).
+
+| Column | Type / allowed values | Notes |
+| ------ | --------------------- | ----- |
+| `dataMode` | `live`, `simulated`, `internal` | Current binding mode; set from `provenance.activeBinding` on the latest ingested record. |
+| `trustTier` | `A`, `B`, `C` | Inherited from the source trust-tier catalogue entry. |
+| `lastLiveAt` | date-time or null | Timestamp of the most recent successfully ingested live record; null if live binding has never succeeded. |
+| `fellBackFrom` | `live` or null | Mirrors `provenance.fellBackFrom`; set when the channel is in simulated mode due to a live-binding failure. |
+
+The trust-badge propagation chain is:
+`provenance.activeBinding` -> `ext_dim_source.dataMode` -> semantic-model measures -> board cards.
 
 ### Deprecations
 
