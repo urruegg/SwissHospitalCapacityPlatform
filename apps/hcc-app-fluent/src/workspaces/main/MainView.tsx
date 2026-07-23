@@ -2,6 +2,7 @@ import type { JSX } from 'react';
 import { useParams } from 'react-router-dom';
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { BedManagerBoard } from './boards/bed-manager/BedManagerBoard';
+import { DischargeBoard } from './boards/discharge/DischargeBoard';
 import { OccupancyBoard } from './boards/occupancy/OccupancyBoard';
 import { CsaView } from './wizards/csa/CsaView';
 import { MainSubNav } from './MainSubNav';
@@ -17,6 +18,11 @@ const BOARDS: Record<string, () => JSX.Element> = {
   occupancy: () => (
     <div data-testid="board-occupancy-slot">
       <OccupancyBoard />
+    </div>
+  ),
+  discharge: () => (
+    <div data-testid="board-discharge-slot">
+      <DischargeBoard />
     </div>
   ),
   'bed-manager': () => (

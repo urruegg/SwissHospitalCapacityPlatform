@@ -57,7 +57,13 @@
       "or-steering": "OR steering",
       "staffing": "Staffing",
       "crisis": "Crisis"
-    }
+    },
+    "discharge": "Discharge readiness (72h)",
+    "bedsNeeded": "Beds needed",
+    "bedsFreeable": "Beds freeable",
+    "bedsShort": "Beds short",
+    "bedsReallocated": "Beds reallocated",
+    "residual": "Residual"
   },
   "handoff": {
     "live": "live",
@@ -65,7 +71,9 @@
     "loopBack": "loops back to occupancy forecast"
   },
   "insight": {
-    "occupancyRising": "{{channel}} rising"
+    "occupancyRising": "{{channel}} rising",
+    "dischargeExpedite": "Expedite {{ward}} discharge",
+    "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}"
   },
   "copilot": {
     "title": "Copilot",

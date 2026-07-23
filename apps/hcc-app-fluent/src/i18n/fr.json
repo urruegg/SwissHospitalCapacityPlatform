@@ -57,7 +57,13 @@
       "or-steering": "Pilotage du bloc",
       "staffing": "Personnel",
       "crisis": "Crise"
-    }
+    },
+    "discharge": "Préparation des sorties (72 h)",
+    "bedsNeeded": "Lits nécessaires",
+    "bedsFreeable": "Lits libérables",
+    "bedsShort": "Lits manquants",
+    "bedsReallocated": "Lits réaffectés",
+    "residual": "Résiduel"
   },
   "handoff": {
     "live": "en direct",
@@ -65,7 +71,9 @@
     "loopBack": "revient à la prévision d'occupation"
   },
   "insight": {
-    "occupancyRising": "{{channel}} augmente"
+    "occupancyRising": "{{channel}} augmente",
+    "dischargeExpedite": "Accélérer la sortie {{ward}}",
+    "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}"
   },
   "copilot": {
     "title": "Copilot",

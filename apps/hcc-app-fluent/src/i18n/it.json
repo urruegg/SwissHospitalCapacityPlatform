@@ -57,7 +57,13 @@
       "or-steering": "Coordinamento sala operatoria",
       "staffing": "Personale",
       "crisis": "Crisi"
-    }
+    },
+    "discharge": "Preparazione dimissioni (72h)",
+    "bedsNeeded": "Letti necessari",
+    "bedsFreeable": "Letti liberabili",
+    "bedsShort": "Letti mancanti",
+    "bedsReallocated": "Letti riallocati",
+    "residual": "Residuo"
   },
   "handoff": {
     "live": "live",
@@ -65,7 +71,9 @@
     "loopBack": "ritorna alla previsione dell'occupazione"
   },
   "insight": {
-    "occupancyRising": "{{channel}} in aumento"
+    "occupancyRising": "{{channel}} in aumento",
+    "dischargeExpedite": "Accelera la dimissione {{ward}}",
+    "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}"
   },
   "copilot": {
     "title": "Copilot",
