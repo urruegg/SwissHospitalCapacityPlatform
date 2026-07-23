@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-23 |
 | **Author** | @urruegg |
-| **Status** | Planned (refactor scope added; Sprint 22 landed) |
-| **Previous Version** | 1.0.0 (initial; blocked on Sprint 22) |
+| **Status** | In progress — repo scope complete + all CI gates green; live SIT/PROD deploy + ADR-0039 acceptance pending |
+| **Previous Version** | 1.1.0 (refactor scope added; Sprint 22 landed) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -77,17 +77,23 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 
 ## 5. Definition of Done
 
-* [ ] Sprint 22 (P1a) landed — modernized `gold.*` notebooks available
-* [ ] P1b implementation plan authored and approved
-* [ ] Org/skills CSVs + generator under `data/master-data/curavias-org-skills/`; validator green
-* [ ] Org/skills medallion produces the 19 `gold.*` tables; parity check extended
-* [ ] `dim_hospital` replaced by `dim_tenant` / `dim_org_unit` / `dim_department`; all references re-pointed; facts re-keyed
-* [ ] Semantic model extended (skills measures); `verify-semantic-model.yml` re-baselined + green
-* [ ] Ontology + crosswalk + conformance gate extended and green
-* [ ] Fabric IQ `ont_hospital_capacity` + Data Agent grounding cover the org/skills domain
-* [ ] New ADR (unified org spine) Accepted; PRD FR/NFR rows + §7 matrix updated
-* [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed
-* [ ] All CI checks pass
+> **Reconciliation (2026-07-23).** Verified against merged PRs and a full local
+> gate sweep. Repo-artifact scope is complete; the two unticked items are live
+> infra/governance operations that run outside this repo (Container Apps →
+> Event Hub/Eventstream deploy, gated by `approved-to-apply`) or need human
+> sign-off (ADR acceptance).
+
+* [x] Sprint 22 (P1a) landed — modernized `gold.*` notebooks available
+* [x] P1b implementation plan authored and approved (design PR #309; plan `docs/superpowers/plans/2026-07-23-sprint-23-org-skills-refactor-plan.md`)
+* [x] Org/skills CSVs + generator under `data/master-data/curavias-org-skills/`; validator green (#314; `validate_master_data.py` + 13 tests green)
+* [ ] Org/skills medallion produces the 19 `gold.*` tables; parity check extended — *build scripts + parity contract green in-repo (#330/#334/#341, gold-build 28 + contract 5 tests); live Fabric run to land gold **deferred** (needs landing zone deployed + `approved-to-apply`)*
+* [x] `dim_hospital` replaced by `dim_tenant` / `dim_org_unit` / `dim_department`; all references re-pointed; facts re-keyed — *delivered via the **1:1 re-brand fold** (#330 gold, #332 semantic); the D2 `_hospital_to_org_crosswalk.csv` approach was superseded (tenant_id = hospital_id)*
+* [x] Semantic model extended (skills measures); `verify-semantic-model.yml` re-baselined + green (#339/#341; verifier 35 rel / 69 measures / 8 roles)
+* [x] Ontology + crosswalk + conformance gate extended and green (#344; conformance strict PASS, 0 WARN / 0 FAIL)
+* [x] Fabric IQ `ont_hospital_capacity` + Data Agent grounding cover the org/skills domain — *repo grounding landed (#344, `fabric-data-agent/AGENT.md` 1.1.0); live Fabric IQ ontology regeneration is GA-gated per ADR-0014*
+* [ ] New ADR (unified org spine) Accepted; PRD FR/NFR rows + §7 matrix updated — *ADR-0039 authored (#319, status **Proposed**) + PRD `FR-ORG` / `FR-SKILL` / `NFR-SKILL` rows + §7 matrix (#320); **ADR acceptance pending human sign-off***
+* [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed — *live deploy **deferred** (Container Apps → Event Hub/Eventstream, not GitHub workflows); all PR merges to date human-performed*
+* [x] All CI checks pass — *re-verified 2026-07-23: ontology conformance, master-data (13), skills-evidence (21), gold-build (28), gold-contract (5), semantic verifier, mojibake (1154 files), markdownlint*
 
 ---
 
