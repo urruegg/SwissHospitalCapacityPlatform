@@ -1,0 +1,51 @@
+unit_id,department_id,tenant_id,unit_type,unit_name,beds_or_slots,canton,staffing_ratio_rule,is_safety_critical
+CN-D1-U01,CN-D1,CN,ward,Herz- & Gefässzentrum — Station,120,HN,1:4 (Tag) / 1:8 (Nacht),FALSE
+CN-D1-U02,CN-D1,CN,OR_slot,Herz- & Gefässzentrum — OP-Slots,4,HN,Scrub + Anästhesie / Slot,TRUE
+CN-D2-U01,CN-D2,CN,ward,Neuro- & Kopfzentrum — Station,110,HN,1:4 (Tag) / 1:8 (Nacht),FALSE
+CN-D2-U02,CN-D2,CN,OR_slot,Neuro- & Kopfzentrum — OP-Slots,4,HN,Scrub + Anästhesie / Slot,TRUE
+CN-D3-U01,CN-D3,CN,ward,Innere Medizin & Onkologie — Onkologie-Station,180,HN,1:4 (Chemo-Handling),TRUE
+CN-D4-U01,CN-D4,CN,ward,Trauma & Bewegungsapparat — Station,130,HN,1:4 (Tag) / 1:8 (Nacht),FALSE
+CN-D4-U02,CN-D4,CN,OR_slot,Trauma & Bewegungsapparat — OP-Slots,4,HN,Scrub + Anästhesie / Slot,TRUE
+CN-D5-U01,CN-D5,CN,delivery_room,Frauen- & Kinderzentrum — Gebärsäle,4,HN,1 Hebamme / Geburt,TRUE
+CN-D5-U02,CN-D5,CN,ward,Frauen- & Kinderzentrum — Wochenbett/Neo,95,HN,1:4,TRUE
+CN-D6-U01,CN-D6,CN,imaging,"Diagnostik, Radiologie & Labor — CT/MRT",3,HN,1 MTRA / Modalität,TRUE
+CN-D6-U02,CN-D6,CN,imaging,"Diagnostik, Radiologie & Labor — PET-CT/SPECT",2,HN,1 MTRA / Modalität,TRUE
+CN-D7-U01,CN-D7,CN,ICU,Intensiv- & Notfallmedizin — IPS 1,15,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+CN-D7-U02,CN-D7,CN,ICU,Intensiv- & Notfallmedizin — IPS 2,15,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+CN-D7-U03,CN-D7,CN,ICU,Intensiv- & Notfallmedizin — IPS 3,15,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+CN-D7-U04,CN-D7,CN,ICU,Intensiv- & Notfallmedizin — IPS 4,15,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+CN-D7-U05,CN-D7,CN,ICU,Intensiv- & Notfallmedizin — IPS 5,15,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+CN-D7-U06,CN-D7,CN,ICU,Intensiv- & Notfallmedizin — IPS 6,15,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+CN-D7-U07,CN-D7,CN,ED_bay,Notfallzentrum — Schockraum,6,HN,Triage-basiert,TRUE
+CN-D7-U08,CN-D7,CN,OR_slot,Anästhesie — OP-Slots,8,HN,1 Anästhesie-Team / Slot,TRUE
+CN-D8-U01,CN-D8,CN,ward,Zentrum für Klinische Forschung — Station,15,HN,1:4 / 1:8,FALSE
+CP-D1-U01,CP-D1,CP,ward,Herzzentrum Curalp — Station,90,CA,1:4 (Tag) / 1:8 (Nacht),FALSE
+CP-D1-U02,CP-D1,CP,OR_slot,Herzzentrum Curalp — OP-Slots,4,CA,Scrub + Anästhesie / Slot,TRUE
+CP-D2-U01,CP-D2,CP,ward,Neurozentrum Curalp — Station,70,CA,1:4 (Tag) / 1:8 (Nacht),FALSE
+CP-D2-U02,CP-D2,CP,OR_slot,Neurozentrum Curalp — OP-Slots,4,CA,Scrub + Anästhesie / Slot,TRUE
+CP-D3-U01,CP-D3,CP,ward,Tumorzentrum Curalp — Onkologie-Station,80,CA,1:4 (Chemo-Handling),TRUE
+CP-D4-U01,CP-D4,CP,delivery_room,Frauenklinik & Geburtshilfe — Gebärsäle,4,CA,1 Hebamme / Geburt,TRUE
+CP-D4-U02,CP-D4,CP,ward,Frauenklinik & Geburtshilfe — Wochenbett/Neo,85,CA,1:4,TRUE
+CP-D5-U01,CP-D5,CP,ward,Kinderspital Curalp — Station,75,CA,1:4,TRUE
+CP-D6-U01,CP-D6,CP,ED_bay,Notfallzentrum & Rettungsdienst 144 — Akut-/Schockraum,20,CA,Triage-basiert,TRUE
+CP-D6-U02,CP-D6,CP,ED_bay,Notfallzentrum & Rettungsdienst 144 — Behandlungsplätze,20,CA,Triage-basiert,TRUE
+CP-D6-U03,CP-D6,CP,transport,Notfallzentrum & Rettungsdienst 144 — Rettungswagen 144,4,CA,2 pro Fahrzeug,TRUE
+CP-D7-U01,CP-D7,CP,ward,Orthopädie & Unfallchirurgie — Station,80,CA,1:4 (Tag) / 1:8 (Nacht),FALSE
+CP-D7-U02,CP-D7,CP,OR_slot,Orthopädie & Unfallchirurgie — OP-Slots,4,CA,Scrub + Anästhesie / Slot,TRUE
+CP-D8-U01,CP-D8,CP,imaging,Radiologie & Nuklearmedizin — CT/MRT,3,CA,1 MTRA / Modalität,TRUE
+CP-D8-U02,CP-D8,CP,imaging,Radiologie & Nuklearmedizin — PET-CT/SPECT,2,CA,1 MTRA / Modalität,TRUE
+VT-D1-U01,VT-D1,VT,ward,Innere Medizin — Station,60,HN,1:4 / 1:8,FALSE
+VT-D1-U02,VT-D1,VT,ward,Innere Medizin — Palliativstation,8,HN,1:3,TRUE
+VT-D2-U01,VT-D2,VT,delivery_room,Gynäkologie & Geburtshilfe mit Neonatologie — Gebärsäle,4,HN,1 Hebamme / Geburt,TRUE
+VT-D2-U02,VT-D2,VT,ward,Gynäkologie & Geburtshilfe mit Neonatologie — Wochenbett/Neo,34,HN,1:4,TRUE
+VT-D3-U01,VT-D3,VT,ward,Allgemeine Chirurgie — Station,30,HN,1:4 (Tag) / 1:8 (Nacht),FALSE
+VT-D3-U02,VT-D3,VT,OR_slot,Allgemeine Chirurgie — OP-Slots,4,HN,Scrub + Anästhesie / Slot,TRUE
+VT-D4-U01,VT-D4,VT,ward,Orthopädie & Wirbelsäulenchirurgie — Station,26,HN,1:4 (Tag) / 1:8 (Nacht),FALSE
+VT-D4-U02,VT-D4,VT,OR_slot,Orthopädie & Wirbelsäulenchirurgie — OP-Slots,4,HN,Scrub + Anästhesie / Slot,TRUE
+VT-D5-U01,VT-D5,VT,ED_bay,Interdisziplinäres Notfallzentrum — Akut-/Schockraum,6,HN,Triage-basiert,TRUE
+VT-D5-U02,VT-D5,VT,ED_bay,Interdisziplinäres Notfallzentrum — Behandlungsplätze,6,HN,Triage-basiert,TRUE
+VT-D6-U01,VT-D6,VT,ICU,Intensivstation — IPS 1,6,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+VT-D6-U02,VT-D6,VT,ICU,Intensivstation — IPS 2,6,HN,1:1 / 1:2 (Betten:Pflege),TRUE
+VT-D7-U01,VT-D7,VT,dialysis_station,Nephrologie & Dialysezentrum — Dialyseplätze,23,HN,1:3 (Pflege:Plätze),TRUE
+VT-D8-U01,VT-D8,VT,imaging,Radiologie & BrustCentrum — CT/MRT,3,HN,1 MTRA / Modalität,TRUE
+VT-D8-U02,VT-D8,VT,imaging,Radiologie & BrustCentrum — Mammographie,2,HN,1 MTRA / Modalität,TRUE

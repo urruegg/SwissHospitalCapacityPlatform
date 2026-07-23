@@ -1,0 +1,6 @@
+proficiency_level,name,description
+1,Novice,Requires supervision for all tasks
+2,Advanced beginner,Handles routine tasks with occasional support
+3,Competent,Works independently within scope
+4,Proficient,Handles complex cases; can supervise juniors
+5,Expert,"Reference competency; leads, teaches, sets standard"
