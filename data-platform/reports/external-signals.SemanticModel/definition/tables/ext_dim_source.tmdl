@@ -4,6 +4,36 @@ table ext_dim_source
 	lineageTag: c91bf332-893b-4494-ba60-9665b094062c
 	sourceLineageTag: [gold].[ext_dim_source]
 
+	/// Count of source channels currently reporting Live data.
+	measure 'Channels Live' = ```
+			CALCULATE(DISTINCTCOUNT(ext_dim_source[ext_source_id]), ext_dim_source[ext_data_mode] = "Live")
+		```
+		formatString: 0
+		lineageTag: 3fba90b2-15ec-400b-bfa1-88def532177a
+
+	/// Count of source channels currently reporting Simulated data.
+	measure 'Channels Simulated' = ```
+			CALCULATE(DISTINCTCOUNT(ext_dim_source[ext_source_id]), ext_dim_source[ext_data_mode] = "Simulated")
+		```
+		formatString: 0
+		lineageTag: 342896f4-7e4e-4c5e-a513-301f005d7386
+
+	/// Count of source channels currently reporting Internal data.
+	measure 'Channels Internal' = ```
+			CALCULATE(DISTINCTCOUNT(ext_dim_source[ext_source_id]), ext_dim_source[ext_data_mode] = "Internal")
+		```
+		formatString: 0
+		lineageTag: d757a90c-a7db-482d-a7b5-a82296e4d99f
+
+	/// Most recent live timestamp across all source channels in context.
+	measure 'Last Live Signal' = MAX(ext_dim_source[ext_last_live_at])
+		formatString: General Date
+		lineageTag: 869e8adf-7a96-47c3-b39c-e1f6d0610ad1
+
+	/// Data mode for the currently selected source channel, or "-" if none selected.
+	measure 'Channel Data Mode' = SELECTEDVALUE(ext_dim_source[ext_data_mode], "-")
+		lineageTag: d8df8aa1-7631-4c96-bf94-7143ae308da8
+
 	column ext_source_id
 		dataType: string
 		lineageTag: 67f28b31-5659-4347-b372-c8e3777c7130
@@ -28,6 +58,34 @@ table ext_dim_source
 		sourceLineageTag: ext_trust_tier
 		summarizeBy: none
 		sourceColumn: ext_trust_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_data_mode
+		dataType: string
+		lineageTag: 8dc2b6e0-0e60-4173-aced-cb3f7cd3591e
+		sourceLineageTag: ext_data_mode
+		summarizeBy: none
+		sourceColumn: ext_data_mode
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_fell_back_from
+		dataType: string
+		lineageTag: 7145a1bf-1542-4b44-9a5d-8dd0a9922c7b
+		sourceLineageTag: ext_fell_back_from
+		summarizeBy: none
+		sourceColumn: ext_fell_back_from
+
+		annotation SummarizationSetBy = Automatic
+
+	column ext_last_live_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a66e98f4-e6bb-45f9-b230-f6135ae25cfe
+		sourceLineageTag: ext_last_live_at
+		summarizeBy: none
+		sourceColumn: ext_last_live_at
 
 		annotation SummarizationSetBy = Automatic
 

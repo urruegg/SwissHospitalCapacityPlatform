@@ -106,9 +106,9 @@ export function StaffingBoard() {
             key={insight.id}
             appearance="subtle"
             onClick={() =>
-              void routeInsight(insight, {
+              void routeInsight(insight, staffingBoard.recoFor(insight, data), {
                 agent: staffingBoard.agent,
-                openWithContext: rail.openWithContext,
+                openWithReco: rail.openWithReco,
               })
             }
           >

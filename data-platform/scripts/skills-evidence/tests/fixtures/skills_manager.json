@@ -1,0 +1,8 @@
+{
+  "source": "skills_manager",
+  "mode": "C",
+  "inventory": [
+    {"entryId": "sm-001", "personRef": "SM-PER-2001", "skillCode": "LANG-FR", "skillLabel": "Franzoesisch (Konversation)", "level": "B2", "capturedAt": "2026-06-20"},
+    {"entryId": "sm-002", "personRef": "SM-PER-2002", "skillCode": "WOUND", "skillLabel": "Wundversorgung", "level": "beginner", "capturedAt": "2026-06-21"}
+  ]
+}

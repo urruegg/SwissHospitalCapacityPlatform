@@ -45,6 +45,9 @@ param networkAppSubnetPrefix string = '10.60.1.0/24'
 @description('Address prefix for the platform data subnet (private endpoints).')
 param networkDataSubnetPrefix string = '10.60.2.0/24'
 
+@description('Address prefix for the Container Apps Environment (CAE) infrastructure subnet (ADR-0029 Option A). Delegated to Microsoft.App/environments. MUST fall inside networkVnetAddressPrefix — set explicitly whenever the VNet prefix is changed from the 10.60.0.0/16 default (e.g. PROD swn uses 10.70.0.0/16).')
+param networkCaeSubnetPrefix string = '10.60.4.0/23'
+
 @description('Enable observability module deployment scaffold.')
 param enableObservabilityModule bool = false
 
@@ -95,6 +98,15 @@ param fabricEventstreamWorkspaceId string = ''
 @description('Optional Fabric Lakehouse ID for the Eventstream destination. Empty defers destination wiring (Eventstream created source-only). Optional at Bicep composition time; required at post-deploy time for full wiring.')
 param fabricEventstreamDestinationLakehouseId string = ''
 
+@description('Enable the Sprint 23 skills-events Eventstream lane (WS-A4, design D4). Scaffold-only Bicep + REST-API post-deploy carrying ONLY the three near-real-time skills events. Requires enableDataFoundationModule=true for the Event Hub source. See modules/integration-orchestration/skills-eventstream/main.bicep.')
+param enableSkillsEventstreamModule bool = false
+
+@description('Fabric workspace ID that hosts the skills-events Eventstream. Required at post-deploy time when enableSkillsEventstreamModule=true. Obtain via configure-fabric.ps1 post-deploy output.')
+param skillsEventstreamWorkspaceId string = ''
+
+@description('Optional Fabric Lakehouse ID for the skills-events Eventstream destination. Empty defers destination wiring (Eventstream created source-only).')
+param skillsEventstreamDestinationLakehouseId string = ''
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -128,6 +140,23 @@ param eventHubsBmCopilotMiPrincipalId string = ''
 
 @description('Object ID of the CSA (Capacity Simulation Agent) managed identity that reads from cg-csa-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped.')
 param eventHubsCsaAgentMiPrincipalId string = ''
+
+// Sprint 23 WS-A1 (#255) — ADLS Gen2 landing zone for Curavias org/skills master data.
+@description('Enable the Sprint 23 masterdata landing-zone module (ADLS Gen2 storage + landing filesystem for synthetic org/skills extracts).')
+param enableMasterdataLandingModule bool = false
+
+@description('Object ID of the ingestion pipeline managed identity that writes org/skills extracts to the landing container. Empty = Storage Blob Data Contributor role assignment skipped. When enableSkillsSimJobsModule=true this is overridden with the skills-sim jobs MI principalId.')
+param masterdataLandingPipelinePrincipalId string = ''
+
+@description('Resource ID of the Log Analytics workspace for masterdata landing blob diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD.')
+param masterdataLandingLogAnalyticsWorkspaceId string = ''
+
+// Sprint 23 WS-A3 (#255) — Container Apps Jobs for the skills-evidence simulators.
+@description('Enable the Sprint 23 skills-sim jobs module (four manual-trigger Container Apps Jobs that seed synthetic extracts into the landing zone). Requires enableMasterdataLandingModule=true for the landing target + RBAC grant.')
+param enableSkillsSimJobsModule bool = false
+
+@description('Container image the skills-sim jobs run. Placeholder until the skills-sim CI workflow pushes a real image to ACR (parity with sim-capacity).')
+param skillsSimJobsImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
 @description('Enable AI/ML foundation module deployment.')
 param enableAiMlFoundationModule bool = false
@@ -223,8 +252,22 @@ param appFluentCustomHostname string = ''
 @description('When true and appFluentCustomHostname is set, provision a managed cert + bind the CA to the custom hostname. Deploy is a two-step process: (1) merge with this false to create the DNS zone + records, (2) do GoDaddy NS delegation, (3) flip to true and redeploy so the CAE can validate ownership + issue a Let\'s Encrypt cert. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md.')
 param appFluentEnableCustomDomainCert bool = false
 
+@description('When true, this deployment OWNS the curavias.ch public DNS zone (zone + records) in its own resource group. SIT sets this true (the zone lives in rg-ihzhhpf-sit). PROD MUST set this false: the zone is shared and owned by SIT, so the PROD RG only claims the custom hostname on its Container App (customHostname + cert) while the `app` CNAME + `asuid.app` TXT records stay in the SIT-owned zone. Setting this false lets PROD bind app.curavias.ch to the PROD CA without creating a conflicting second curavias.ch zone. See ADR-0030 and the module note in infra/modules/dns/curavias.bicep.')
+param manageCuraviasDnsZone bool = true
+
+@description('Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield).')
+param keyVaultNameOverride string = ''
+
+@description('Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity.')
+param enableKeyVaultPrivateEndpoint bool = false
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
+
+// Deterministic name of the WS-A1 landing storage account, mirrored from the
+// masterdata-landing module so the WS-A3 jobs can target it without a circular
+// module reference (jobs use it only as a runtime env var).
+var masterdataLandingStorageName = toLower('stmasterdata${replace(resourceSuffix, '-', '')}')
 
 var tags = {
   env: environmentName
@@ -240,6 +283,14 @@ module platformFoundation './modules/platform-foundation/main.bicep' = {
     nameSuffix: resourceSuffix
     tags: tags
     logAnalyticsRetentionInDays: logAnalyticsRetentionInDays
+    keyVaultName: keyVaultNameOverride
+    // ADR-0038 — Key Vault private endpoint. vnetResourceId is only consumed by
+    // the module when enableKeyVaultPrivateEndpoint=true (which requires
+    // enableNetworkModule=true — see the param description). Single-condition
+    // guard mirrors the agent-host CAE wiring so Bicep can prove non-null.
+    enableKeyVaultPrivateEndpoint: enableKeyVaultPrivateEndpoint
+    vnetResourceId: enableNetworkModule ? network!.outputs.vnetResourceId : ''
+    keyVaultPrivateEndpointSubnetName: 'snet-data'
   }
 }
 
@@ -261,6 +312,7 @@ module network './modules/network/main.bicep' = if (enableNetworkModule) {
     vnetAddressPrefix: networkVnetAddressPrefix
     appSubnetPrefix: networkAppSubnetPrefix
     dataSubnetPrefix: networkDataSubnetPrefix
+    caeSubnetPrefix: networkCaeSubnetPrefix
   }
 }
 
@@ -362,6 +414,41 @@ module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFou
     simulatorMiPrincipalId: eventHubsSimulatorMiPrincipalId
     bmCopilotMiPrincipalId: eventHubsBmCopilotMiPrincipalId
     csaAgentMiPrincipalId: eventHubsCsaAgentMiPrincipalId
+  }
+}
+
+// Sprint 23 WS-A1 (#255) — ADLS Gen2 landing zone for Curavias org/skills master data.
+module masterdataLanding './modules/data-foundation/masterdata-landing/main.bicep' = if (enableMasterdataLandingModule) {
+  name: 'masterdata-landing-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    // When the skills-sim jobs module is on, grant its MI write access to the
+    // landing container; otherwise fall back to the explicit param (empty = skip).
+    pipelinePrincipalId: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.principalId : masterdataLandingPipelinePrincipalId
+    logAnalyticsWorkspaceId: masterdataLandingLogAnalyticsWorkspaceId
+  }
+}
+
+// Sprint 23 WS-A3 (#255) — Container Apps Jobs for the skills-evidence simulators.
+// Manual-trigger only; never started by a GitHub workflow. Writes synthetic
+// extracts to the WS-A1 landing zone via its User-Assigned Managed Identity.
+module skillsSimJobs './modules/experience-hosting/skills-sim-jobs/main.bicep' = if (enableSkillsSimJobsModule) {
+  name: 'skills-sim-jobs-${environmentName}'
+  params: {
+    location: simCapacityLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    containerAppEnvironmentName: 'cae-skills-sim-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: skillsSimJobsImage
+    // Reuse the sim-capacity ACR params — same registry serves all Container Apps.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    landingStorageAccountName: masterdataLandingStorageName
+    landingContainerName: 'landing'
+    demoScope: simCapacityDemoScope
   }
 }
 
@@ -518,7 +605,7 @@ var appFluentSubdomainLabel = (enableAppFluentModule && !empty(appFluentCustomHo
   ? substring(appFluentCustomHostname, 0, indexOf(appFluentCustomHostname, '.'))
   : ''
 
-module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule && !empty(appFluentCustomHostname)) {
+module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule && !empty(appFluentCustomHostname) && manageCuraviasDnsZone) {
   name: 'curavias-dns-${environmentName}'
   params: {
     zoneName: 'curavias.ch'
@@ -541,7 +628,7 @@ module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule &&
 }
 
 @description('Azure DNS name servers for curavias.ch. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md.')
-output curaviasNameServers array = (enableAppFluentModule && !empty(appFluentCustomHostname)) ? curaviasDns!.outputs.nameServers : []
+output curaviasNameServers array = (enableAppFluentModule && !empty(appFluentCustomHostname) && manageCuraviasDnsZone) ? curaviasDns!.outputs.nameServers : []
 
 // Sprint 24 — Curavias web hosting outputs (consumed by curavias-web-deploy.yml + DNS wiring).
 @description('Curavias Static Web App name (empty when the module is disabled).')
@@ -569,6 +656,22 @@ module fabricEventstream './modules/data-platform/fabric-eventstream/main.bicep'
   }
 }
 
+// Sprint 23 WS-A4 (#255) — Skills-events Eventstream lane (design D4). Scaffold-only Bicep +
+// REST-API post-deploy; carries ONLY the three near-real-time skills events. Reuses the
+// Sprint 21 real-time rail (Event Hub source). Region constrained as above.
+module skillsEventstream './modules/integration-orchestration/skills-eventstream/main.bicep' = if (enableSkillsEventstreamModule) {
+  name: 'skills-eventstream-${environmentName}'
+  params: {
+    workspaceId: skillsEventstreamWorkspaceId
+    eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
+    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
+    eventHubConsumerGroup: 'cg-skills-eventstream'
+    location: location == 'switzerlandnorth' ? 'switzerlandnorth' : 'westus2'
+    demoScope: location != 'switzerlandnorth'
+    destinationLakehouseId: skillsEventstreamDestinationLakehouseId
+  }
+}
+
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
 output sourceSqlGatingWarning string = enableSourceSqlModule && !enableDataPlatformModule
@@ -586,6 +689,13 @@ output fabricEventstreamGatingWarning string = enableFabricEventstreamModule && 
     : (enableFabricEventstreamModule && empty(fabricEventstreamDestinationLakehouseId))
       ? 'INFO: fabricEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.'
       : 'ok'
+output skillsEventstreamGatingWarning string = enableSkillsEventstreamModule && !enableDataFoundationModule
+  ? 'WARN: enableSkillsEventstreamModule=true requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source.'
+  : (enableSkillsEventstreamModule && empty(skillsEventstreamWorkspaceId))
+    ? 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.'
+    : (enableSkillsEventstreamModule && empty(skillsEventstreamDestinationLakehouseId))
+      ? 'INFO: skillsEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.'
+      : 'ok'
 output moduleStatuses object = {
   identity: enableIdentityModule ? identity!.outputs.moduleStatus : 'identity-disabled'
   network: enableNetworkModule ? network!.outputs.moduleStatus : 'network-disabled'
@@ -598,9 +708,12 @@ output moduleStatuses object = {
   curaviasWeb: enableCuraviasWebModule ? curaviasWeb!.outputs.moduleStatus : 'curavias-web-disabled'
   apiRuntime: enableApiRuntimeModule ? apiRuntime!.outputs.moduleStatus : 'api-runtime-disabled'
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
+  masterdataLanding: enableMasterdataLandingModule ? masterdataLanding!.outputs.moduleStatus : 'masterdata-landing-disabled'
+  skillsSimJobs: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.moduleStatus : 'skills-sim-jobs-disabled'
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'
+  skillsEventstream: enableSkillsEventstreamModule ? skillsEventstream!.outputs.moduleStatus : 'skills-eventstream-disabled'
 }
 
 output foundryHostedAgentsStatus string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.moduleStatus : 'foundry-hosted-agents-disabled'

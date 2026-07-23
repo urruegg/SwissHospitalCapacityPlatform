@@ -1,0 +1,12 @@
+sourceId: nabel
+authority: BAFU-NABEL
+trustTier: A
+channelKind: external
+hazardTypes: [air-quality]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+licence: NABEL-open-data
+providerVersion: nabel-1.0.0
+scenarioMap:
+  air-quality: {template: F8, lageTier: 1}

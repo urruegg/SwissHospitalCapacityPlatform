@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.1 |
-| **Date** | 2026-07-17 |
+| **Version** | 0.8.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.7.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
+| **Previous Version** | 0.7.1 (added Sprint 23 skills-evidence DSG tagging + Work-ID consent lineage) |
 
 ## Purpose
 
@@ -167,6 +167,31 @@ Per [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md), the MVP demo scope carries
 4. **Dashboard gate** — Workspace RLS empty-set filter on any `phi=true` column
 
 This ADR applies only to the demo scope defined by [ADR-0013](adr/0013-temporary-us-region-demo-scope.md). Future PROD Swiss deployments remain governed by [ADR-0003](adr/0003-swiss-regional-inference-for-phi.md) + [ADR-0004](adr/0004-block-global-and-data-zone-for-phi.md) + [ADR-0006](adr/0006-preview-features-non-production-rule.md).
+
+### Sprint 23 Skills-Evidence DSG Tagging and Consent Lineage
+
+Sprint 23 introduces workforce skills evidence (synthetic, no-PHI) via the
+plugin architecture recorded in
+[ADR-0039](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md). Although
+the demo data is synthetic (`classification: personal-synthetic`), the records are
+**personal in shape** (they describe individual workers), so the Swiss DSG
+(revised Federal Act on Data Protection) control model is applied as if they were
+real personal data. This strengthens `CH-C01` (purpose limitation, minimization)
+and `CH-C05` (residency) for the skills-evidence lane.
+
+| Skills-evidence control | Requirement | Enforcement | Owner role |
+| ----- | ----- | ----- | ----- |
+| Tag `gold.fact_skill_assertion` and `gold.dim_work_id_profile` as `PII-personal` | `FR-SKILL-007`, `NFR-SKILL-002`, `CH-C01` | Purview / catalog classification label on both gold assets; RLS + PHI-gate posture inherited from the demo-scope no-PHI baseline | SEC |
+| Source-system + consent lineage on every assertion | `FR-SKILL-002`, `FR-SKILL-003`, `CH-C03` | `provenance.connectorVersion` + `externalSystem` record `source_system`; `consentScope` records the `consent_basis`; raw lineage in `provenance.rawHash` | ARCH |
+| Work-ID consent is first-class and revocable | `FR-SKILL-003`, `CH-C01`, `CH-C05` | `worker_gln` promotion and `consentScope` are set **only** when Work-ID consent is granted (Step-3 §4); revocation removes the GLN promotion and the consented scope on the next load; Work-ID assertions stay `self`-declared (L0) regardless of consent | SEC |
+| Purpose limitation on skills datasets | `NFR-SKILL-002`, `CH-C01` | `purposeTags` (`skills-evidence`, `workforce-capability`) required by the `DC-SKILL-EVIDENCE-v1` schema | SEC |
+| Swiss residency tag on skills datasets | `CH-C05` | `residency: CH` required by contract (`demo-westus2` only under [ADR-0013](adr/0013-temporary-us-region-demo-scope.md)) | LEGAL |
+
+The enforcement point for landed data is the **pipeline silver gate**
+(`FR-SKILL-006`): PK/FK, GLN mod-10, enum domains, and load order are validated
+against landed Bronze, quarantining bad rows in Silver rather than at PR time.
+Assurance derivation (`self` -> L0, `employer_confirmed` -> L1) and the live-vs-simulated
+badge are preserved end-to-end and never invented downstream (`FR-SKILL-007`).
 
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 

@@ -67,6 +67,33 @@ resource platformVnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 	}
 }
 
+// ADR-0029 Option A / Sprint 19 — Cosmos SQL private DNS zone.
+// Created here (early, before any Cosmos private endpoint) so BOTH the
+// agent-host Cosmos PE and the CSA Cosmos PE can attach zone groups without a
+// creation-ordering race. Previously csa.bicep created this zone, but csaCosmos
+// deploys AFTER agentHost (it consumes the agent-host MI principalId), so the
+// agent-host Cosmos PE ran first and hit InvalidPrivateDnsZoneIds on a fresh RG
+// (first PROD create). Both PE modules depend on this module via vnetResourceId,
+// so the zone exists before either private DNS zone group is created.
+resource cosmosPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+	name: 'privatelink.documents.azure.com'
+	location: 'global'
+	tags: tags
+}
+
+resource cosmosPrivateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+	parent: cosmosPrivateDnsZone
+	name: '${platformVnet.name}-link'
+	location: 'global'
+	tags: tags
+	properties: {
+		registrationEnabled: false
+		virtualNetwork: {
+			id: platformVnet.id
+		}
+	}
+}
+
 @description('Network module implementation marker.')
 output moduleStatus string = 'network-implemented'
 

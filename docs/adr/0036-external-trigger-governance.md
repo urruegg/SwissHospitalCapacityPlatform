@@ -3,7 +3,7 @@
 | Field | Value |
 | ----- | ----- |
 | **Status** | Accepted |
-| **Date** | 2026-07-21 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Decision-makers** | @urruegg |
 | **Related issue** | #247 |
@@ -107,3 +107,58 @@ Adopt the following governance policy for external hazard-trigger signals:
 * [ADR-0024: CSA Tier Classifier Rules](0024-csa-tier-classifier-rules.md)
 * [ADR-0026: Evidence Readiness Measure Ownership](0026-evidence-readiness-measure-ownership.md)
 * Issue #247
+
+## Addendum: Provider-Plugin Architecture Decisions (Sprint 21 Refactor)
+
+The following decisions extend this ADR to record the provider-plugin
+architecture refactor approved in the Sprint 21 signal-provider refactor
+workstream. The original governance decisions above remain in effect unchanged.
+Cross-reference: [Sprint 21 signal-provider plugin architecture design](../superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md).
+
+### Decision A: Manifest-driven provider-plugin architecture
+
+External signal sources are onboarded as manifest-driven provider plugins.
+Each plugin declares its binding configuration in a versioned manifest file.
+Bindings are swappable at deploy time:
+
+* `LiveBinding` - real API adapter for confirmed-ready channels (SED, Alertswiss).
+* `SimulatorBinding` - deterministic fixture replay for channels without a confirmed API.
+* `InternalBinding` - derived from platform gold tables (see Decision D).
+
+A live-to-simulated fallback is supported: when a LiveBinding call fails, the
+runner automatically promotes the SimulatorBinding for that channel and records
+`provenance.fellBackFrom = "live"` on every produced record. A schema-invalid
+manifest fails CI and is excluded from the runtime catalogue (fail-closed,
+NFR-EXT-PLG-002). Live bindings are always mocked in CI; no external network
+calls occur in GitHub Actions (NFR-EXT-PLG-001).
+
+### Decision B: 3-state trust-badge data contract
+
+A data-driven trust badge flows end-to-end through the platform using three
+possible states (`live`, `simulated`, `internal`) carried in `provenance.activeBinding`
+on each `DC-EXT-SIGNAL-v1` record. The propagation chain is:
+
+`provenance.activeBinding` -> `ext_dim_source.ext_data_mode` -> semantic-model measures -> board cards.
+
+The `ext_dim_source` dimension table exposes `ext_data_mode`, `ext_trust_tier`,
+`ext_last_live_at`, and `ext_fell_back_from` columns. Semantic-model measures read these
+columns to drive per-channel trust badges on CSA and OCA board cards (FR-EXT-019).
+This contract is defined in `DC-EXT-SIGNAL-v1` and the `ext_dim_source` badge
+columns documented in `docs/DATA.md`.
+
+### Decision C: Ingestion and simulation hosted on Azure Container Apps
+
+The provider-runner service (ingestion + simulation) is hosted on Azure Container
+Apps, NOT in GitHub Actions. Actions is CI-only. The Container Apps service
+publishes normalized `DC-EXT-SIGNAL-v1` records to Event Hub/Eventstream.
+This preserves the CI boundary rule (NFR-EXT-PLG-001) and keeps long-running
+polling and simulation workloads out of short-lived workflow runners.
+
+### Decision D: Internal signal channels are first-class providers
+
+Internal signal channels derived from platform gold tables are supported as
+first-class provider plugins with `channelKind = internal`. They use an
+`InternalBinding` that queries gold Delta tables directly rather than calling
+an external API. Internal channels participate in the same manifest registry,
+trust-badge pipeline, and deduplication logic as external channels, but are
+classified separately (`provenance.channelKind = "internal"`).

@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Button,
   Badge,
   Body1,
+  Button,
+  Divider,
   Input,
+  InteractionTag,
+  InteractionTagPrimary,
+  TagGroup,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
@@ -13,7 +17,10 @@ import { BotRegular, DismissRegular } from '@fluentui/react-icons';
 import { ConversationView } from '../../copilot-drawer/ConversationView';
 import { useAgentInvoker } from '../../copilot-drawer/AgentInvoker';
 import { useCopilotRail } from '../../copilot-rail/rail-context';
+import { RecoPanel } from '../../copilot-rail/RecoPanel';
+import type { RecoCta } from '../../copilot-rail/reco';
 import { agentForRoute } from './agent-context-map';
+import { boardForRoute } from './board-registry';
 import { useRoleLens } from '../../context/role-context';
 
 const useStyles = makeStyles({
@@ -52,6 +59,14 @@ const useStyles = makeStyles({
     flex: 1,
     overflow: 'auto',
     padding: tokens.spacingHorizontalM,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalM,
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalXS,
   },
   inputRow: {
     display: 'flex',
@@ -63,14 +78,11 @@ const useStyles = makeStyles({
 });
 
 /**
- * Sprint 20 M7 — dockable, context-aware Agent plane.
+ * Sprint 20 M7 — three-state dockable, context-aware Agent plane.
  *
- * Collapsed it is a 48px icon rail; open it is a 360px docked panel that shows
- * the context agent for the active route (see `agentForRoute`), the caller's
- * action-ceiling badge derived from the role lens, and the reused conversation
- * engine (`ConversationView` + `useAgentInvoker`). The conversation UI is
- * embedded inline rather than as an overlay drawer because the plane already
- * owns the right-hand shell column.
+ * Collapsed: 48px icon rail.
+ * Open + default reco: shows proactive reco from the board, chips, chat.
+ * Open + active reco: shows context reco with back button, chips, chat.
  */
 export function AgentPlane() {
   const s = useStyles();
@@ -78,9 +90,15 @@ export function AgentPlane() {
   const loc = useLocation();
   const { capabilities } = useRoleLens();
   const agent = agentForRoute(loc.pathname);
+  const board = boardForRoute(loc.pathname);
   const { turns, busy, send } = useAgentInvoker(agent);
-  const { open, setOpen } = useCopilotRail();
+  const { open, setOpen, activeReco, defaultReco, backToDefault, resetReco } = useCopilotRail();
   const [draft, setDraft] = useState('');
+
+  // Reco state is app-global; clear it when leaving a board so one board's
+  // grounded recommendation never leaks onto another. Runs on route change
+  // (cleanup fires before the next board's async default-reco seed).
+  useEffect(() => resetReco, [loc.pathname, resetReco]);
 
   if (!open) {
     return (
@@ -100,6 +118,9 @@ export function AgentPlane() {
     setDraft('');
   };
 
+  const onCta = (_cta: RecoCta) => { /* Parity build: CTA presentational; handoff wiring later. */ };
+  const shownReco = activeReco ?? defaultReco;
+
   return (
     <aside role="complementary" aria-label={t('agent.title', 'Agent')} className={s.panel}>
       <div className={s.header}>
@@ -116,6 +137,24 @@ export function AgentPlane() {
         />
       </div>
       <div className={s.body}>
+        {shownReco && (
+          <RecoPanel
+            reco={shownReco}
+            showBack={activeReco != null}
+            onBack={backToDefault}
+            onCta={onCta}
+          />
+        )}
+        {board && board.askAbout.length > 0 && (
+          <TagGroup className={s.chips} aria-label={t('agent.askAbout', 'Ask about')}>
+            {board.askAbout.map((q) => (
+              <InteractionTag key={q} value={q}>
+                <InteractionTagPrimary onClick={() => void send(q)}>{q}</InteractionTagPrimary>
+              </InteractionTag>
+            ))}
+          </TagGroup>
+        )}
+        {turns.length > 0 && <Divider />}
         <ConversationView turns={turns} />
       </div>
       <div className={s.inputRow}>

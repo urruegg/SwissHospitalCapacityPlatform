@@ -1,0 +1,49 @@
+org_unit_id,tenant_id,entity_type,org_unit_name,parent_org_unit_id,org_level,legal_form_or_role,beds,fte_approx,location,canton,gln,grounded_on,is_active
+CN,CN,Hospital-Org,Uniklinik CuraNova,,0,"Öffentlich-rechtliche Anstalt, eigene Rechtspersönlichkeit",~900,8600,Stadt Helvetia-Nord,HN,7601001000010,USZ (Gesamthaus),TRUE
+CN-LE1,CN,Legal-Entity,Uniklinik CuraNova (Anstalt öR),CN,1,"Kantonale Anstalt, Träger des Leistungsauftrags",,,Stadt Helvetia-Nord,HN,7601001000027,USZ Rechtsträger,TRUE
+CN-LE2,CN,Legal-Entity,CuraNova Forschung & Lehre AG,CN,1,"Tochter-AG (Aus-, Weiter- & Fortbildung, Studien)",,240,Campus Helvetia-Nord,HN,7601001000034,USZ Uni/ETH-Kopplung,TRUE
+CN-GOV1,CN,Governance-Body,Spitalrat CuraNova,CN,1,Oberstes strategisches Organ (9 externe Mitglieder),,,Stadt Helvetia-Nord,HN,7601001000041,USZ Spitalrat,TRUE
+CN-GOV2,CN,Governance-Body,Spitaldirektion CuraNova,CN,1,Operatives Führungsgremium,,,Stadt Helvetia-Nord,HN,7601001000058,USZ Spitaldirektion,TRUE
+CN-S1,CN,Site,Campus Zentrum CuraNova,CN,1,"Hauptstandort (Akut, Notfall, 6 Intensivstationen)",780,,Stadt Helvetia-Nord,HN,7601001000065,USZ Hauptareal,TRUE
+CN-S2,CN,Site,CuraNova Aussenstandort Flughafen,CN,1,Ambulantes Zentrum / Aussenstandort,120,,Helvetia-Nord Flughafen,HN,7601001000072,USZ Standorte,TRUE
+CN-D1,CN,Department,Herz- & Gefässzentrum,CN-S1,2,"Medizinbereich (Herzchirurgie, Kardiologie, Angiologie)",120,620,Campus Zentrum,HN,7601001000089,USZ Herz-Gefäss,TRUE
+CN-D2,CN,Department,Neuro- & Kopfzentrum,CN-S1,2,"Medizinbereich (Neurochirurgie, Neurologie, HNO)",110,560,Campus Zentrum,HN,7601001000096,USZ Neuro-Kopf,TRUE
+CN-D3,CN,Department,Innere Medizin & Onkologie,CN-S1,2,"Medizinbereich (Innere, Onkologie, Infektiologie)",180,940,Campus Zentrum,HN,7601001000102,USZ Innere/Onko,TRUE
+CN-D4,CN,Department,Trauma & Bewegungsapparat,CN-S1,2,"Medizinbereich (Traumatologie, Orthopädie, Rheuma)",130,610,Campus Zentrum,HN,7601001000119,USZ Trauma,TRUE
+CN-D5,CN,Department,Frauen- & Kinderzentrum,CN-S1,2,"Medizinbereich (Geburtshilfe, Gynäkologie, Neonatologie)",95,520,Campus Zentrum,HN,7601001000126,USZ Frauen-Kind,TRUE
+CN-D6,CN,Department,"Diagnostik, Radiologie & Labor",CN-S1,2,"Medizinbereich (Radiologie, Nuklearmedizin, Pathologie)",20,480,Campus Zentrum,HN,7601001000133,USZ Diagnostik,TRUE
+CN-D7,CN,Department,Intensiv- & Notfallmedizin,CN-S1,2,"Medizinbereich (6 IPS, Notfallzentrum, Brandverletzte)",90,720,Campus Zentrum,HN,7601001000140,USZ Intensiv/Notfall,TRUE
+CN-D8,CN,Department,Zentrum für Klinische Forschung,CN-LE2,2,Forschungsbereich (Clinical Trials Center),,260,Campus Helvetia-Nord,HN,7601001000157,USZ ZKF,TRUE
+CP,CP,Hospital-Group,Curalp Gruppe AG,,0,"Holding-AG, 100% kantonseigen",~840,8600,Curalp-Stadt,CA,7601002000013,LUKS Gruppe AG,TRUE
+CP-LE1,CP,Legal-Entity,Kantonsspital Curalp AG,CP,1,Rechtsträgerin (100% Kanton Curalp),,,Curalp-Stadt,CA,7601002000020,Luzerner Kantonsspital AG,TRUE
+CP-LE2,CP,Legal-Entity,Spital Talkirchen AG,CP,1,Tochter-AG (Kanton Talkirchen 40%),,,Talkirchen,TK,7601002000037,Spital Nidwalden AG,TRUE
+CP-LE3,CP,Legal-Entity,Augenzentrum Curalp AG,CP,1,Tochter-AG (spezialärztlicher Betrieb),,90,Curalp-Stadt,CA,7601002000044,LUKS Augenärzte Zentralschweiz AG,TRUE
+CP-GOV1,CP,Governance-Body,Verwaltungsrat Curalp Gruppe,CP,1,Strategisches Organ (VR),,,Curalp-Stadt,CA,7601002000051,LUKS Verwaltungsrat,TRUE
+CP-S1,CP,Site,Curalp Stadt (Zentrumsspital),CP-LE1,2,"Zentrums-/Tertiärversorgung, Lehre & Forschung",560,,Curalp-Stadt,CA,7601002000068,LUKS Luzern,TRUE
+CP-S2,CP,Site,Curalp Seetal,CP-LE1,2,Grundversorgungsspital,130,,Seetal,CA,7601002000075,LUKS Sursee,TRUE
+CP-S3,CP,Site,Curalp Bergland,CP-LE1,2,Grundversorgungsspital,90,,Bergland,CA,7601002000082,LUKS Wolhusen,TRUE
+CP-S4,CP,Site,Spital Talkirchen,CP-LE2,2,Grundversorgung (Tochtergesellschaft),60,,Talkirchen,TK,7601002000099,Spital Nidwalden / Stans,TRUE
+CP-S5,CP,Site,Höhenklinik Curalp-Bergsee,CP-LE1,2,Rehabilitation / Höhenklinik,60,,Bergsee,VS,7601002000105,Höhenklinik Montana,TRUE
+CP-D1,CP,Department,Herzzentrum Curalp,CP-S1,3,"Klinik (Kardiologie, Herzchirurgie)",90,480,Curalp Stadt,CA,7601002000112,LUKS Herzzentrum,TRUE
+CP-D2,CP,Department,Neurozentrum Curalp,CP-S1,3,"Klinik (Neurologie, Neurochirurgie)",70,360,Curalp Stadt,CA,7601002000129,LUKS Neurozentrum,TRUE
+CP-D3,CP,Department,Tumorzentrum Curalp,CP-S1,3,"Zentrum (Onkologie, Radio-Onkologie)",80,420,Curalp Stadt,CA,7601002000136,LUKS Tumorzentrum,TRUE
+CP-D4,CP,Department,Frauenklinik & Geburtshilfe,CP-S1,3,"Klinik (Gynäkologie, Geburtshilfe, Perinatalzentrum)",85,440,Curalp Stadt,CA,7601002000143,LUKS Frauenklinik,TRUE
+CP-D5,CP,Department,Kinderspital Curalp,CP-S1,3,"Klinik (Pädiatrie, Neonatologie)",75,400,Curalp Stadt,CA,7601002000150,LUKS Kinderspital,TRUE
+CP-D6,CP,Department,Notfallzentrum & Rettungsdienst 144,CP-S1,3,"Interdisziplinäres Notfallzentrum, Rettung",40,520,Curalp Stadt,CA,7601002000167,LUKS Notfall/144,TRUE
+CP-D7,CP,Department,Orthopädie & Unfallchirurgie,CP-S2,3,"Klinik (Ortho, Traumatologie, Wirbelsäule)",80,360,Seetal,CA,7601002000174,LUKS Ortho/Unfall,TRUE
+CP-D8,CP,Department,Radiologie & Nuklearmedizin,CP-S1,3,"Institut (Bildgebung, PET-CT, SPECT-CT)",,300,Curalp Stadt,CA,7601002000181,LUKS Radiologie,TRUE
+VT,VT,Hospital-Org,Spital Vialta,,0,Privates Akutspital mit öffentlichem Leistungsauftrag,174,1200,Vialtaberg,HN,7601003000016,Spital Zollikerberg,TRUE
+VT-LE1,VT,Legal-Entity,Stiftung Diakoniewerk Vialtaberg,VT,1,"Stiftung (Trägerschaft, gemeinnützig)",,,Vialtaberg,HN,7601003000023,Stiftung Diakoniewerk Neumünster,TRUE
+VT-LE2,VT,Legal-Entity,Residenz Vialta Park,VT-LE1,2,Betrieb (Alterswohnen / Langzeitpflege),,180,Vialtaberg,HN,7601003000030,Residenz Neumünster Park,TRUE
+VT-LE3,VT,Legal-Entity,Alterszentrum Seehalden,VT-LE1,2,Betrieb (Langzeitpflege),,110,Seehalden,HN,7601003000047,Alterszentrum Hottingen,TRUE
+VT-LE4,VT,Legal-Entity,Vialta Fachzentren- & Praxen AG,VT-LE1,2,"Betrieb (Belegarzt-Praxen, Fachzentren)",,140,Vialtaberg,HN,7601003000054,Fachzentren- und Praxen AG,TRUE
+VT-LE5,VT,Legal-Entity,Institut Vialta,VT-LE1,2,Betrieb (Aus- & Weiterbildung Pflege),,40,Vialtaberg,HN,7601003000061,Institut Neumünster,TRUE
+VT-S1,VT,Site,Spital Vialta (Hauptareal),VT,1,"Akutspital-Areal (Zentrum-, West-, Ost-, Nordbau)",174,,Vialtaberg,HN,7601003000078,Zollikerberg Areal,TRUE
+VT-D1,VT,Department,Innere Medizin,VT-S1,2,Klinik (inkl. Palliativstation),60,260,Vialtaberg,HN,7601003000085,Zollikerberg Innere,TRUE
+VT-D2,VT,Department,Gynäkologie & Geburtshilfe mit Neonatologie,VT-S1,2,"Klinik (>2'000 Geburten/Jahr, Geburtshaus)",34,220,Vialtaberg,HN,7601003000092,Zollikerberg Gyn/Geburt,TRUE
+VT-D3,VT,Department,Allgemeine Chirurgie,VT-S1,2,"Klinik (Viszeral-, plastische Chirurgie)",30,180,Vialtaberg,HN,7601003000108,Zollikerberg Chirurgie,TRUE
+VT-D4,VT,Department,Orthopädie & Wirbelsäulenchirurgie,VT-S1,2,Klinik (spezialisierte Wirbelsäulenchirurgie),26,150,Vialtaberg,HN,7601003000115,Zollikerberg Ortho/Spine,TRUE
+VT-D5,VT,Department,Interdisziplinäres Notfallzentrum,VT-S1,2,"Notfall 24/7, 365 Tage, Kinder-Permanence",12,160,Vialtaberg,HN,7601003000122,Zollikerberg Notfall,TRUE
+VT-D6,VT,Department,Intensivstation,VT-S1,2,IPS,12,110,Vialtaberg,HN,7601003000139,Zollikerberg IPS,TRUE
+VT-D7,VT,Department,Nephrologie & Dialysezentrum,VT-S1,2,"Klinik + Dialyse (23 Plätze, grösstes im Kanton)",,90,Vialtaberg,HN,7601003000146,Zollikerberg Dialyse,TRUE
+VT-D8,VT,Department,Radiologie & BrustCentrum,VT-S1,2,Institut (Radiologie) + zertifiziertes BrustCentrum,,80,Vialtaberg,HN,7601003000153,Zollikerberg Radiologie/Brust,TRUE

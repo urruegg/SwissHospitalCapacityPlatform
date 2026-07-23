@@ -1,5 +1,6 @@
 import i18n from '../../../../i18n';
-import type { RoleBoard, RoleBoardData } from '../../../../journey/RoleBoard';
+import type { GroundedReco } from '../../../../copilot-rail/reco';
+import type { RoleBoard, RoleBoardData, ContextInsight } from '../../../../journey/RoleBoard';
 import type { StaffingPayload } from '../../../../data/roleboard/staffing-data';
 import { loadStaffing } from '../../../../data/roleboard/golden-source-client';
 
@@ -20,6 +21,30 @@ export const staffingBoard: RoleBoard<StaffingPayload> = {
         fte: m.fte,
       },
     })),
+  askAbout: [
+    'What changed since last shift?',
+    'Where is the biggest pressure?',
+  ],
+  defaultReco(): GroundedReco {
+    return {
+      agentLabel: 'Staffing Copilot',
+      contextChip: { subject: 'Shift summary', tone: 'ok' },
+      read: 'No proactive recommendation wired for this board yet (parity build focuses on occupancy).',
+      levers: [],
+      citations: [],
+      provenance: 'simulated',
+    };
+  },
+  recoFor(insight: ContextInsight): GroundedReco {
+    return {
+      agentLabel: 'Staffing Copilot',
+      contextChip: { subject: insight.label, tone: 'watch' },
+      read: `Context picked up for ${insight.label}. Detailed recommendation lands in a later sprint.`,
+      levers: [],
+      citations: [],
+      provenance: 'simulated',
+    };
+  },
   toHandoff: (data: RoleBoardData<StaffingPayload>) => {
     const p = data.payload;
     return {

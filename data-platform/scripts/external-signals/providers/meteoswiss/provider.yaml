@@ -1,0 +1,14 @@
+sourceId: meteoswiss
+authority: MeteoSwiss
+trustTier: A
+channelKind: external
+hazardTypes: [heat, flood]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+endpoint: https://data.geo.admin.ch/api/stac/v1
+licence: MeteoSwiss-open-government-data
+providerVersion: meteoswiss-2.0.0
+scenarioMap:
+  heat: {template: F8, lageTier: 2}
+  flood: {template: F8, lageTier: 2}

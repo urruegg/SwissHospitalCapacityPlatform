@@ -31,7 +31,9 @@ def build_record(*, signal_id, source_id, source_authority, hazard_type,
                  connector_version, licence, raw,
                  cap_identifier=None, danger_level=None, effective=None,
                  expires=None, uri=None, mapped_scenario_template=None,
-                 default_lage_tier=None, trust_tier="A") -> dict:
+                 default_lage_tier=None, trust_tier="A",
+                 active_binding="live", fell_back_from=None,
+                 channel_kind="external") -> dict:
     return {
         "signalId": signal_id,
         "sourceId": source_id,
@@ -56,6 +58,9 @@ def build_record(*, signal_id, source_id, source_authority, hazard_type,
             "connectorVersion": connector_version,
             "licence": licence,
             "rawHash": raw_hash(raw if isinstance(raw, bytes) else json.dumps(raw, sort_keys=True).encode()),
+            "activeBinding": active_binding,
+            "fellBackFrom": fell_back_from,
+            "channelKind": channel_kind,
         },
     }
 

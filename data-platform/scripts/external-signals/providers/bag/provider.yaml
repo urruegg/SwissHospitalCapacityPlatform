@@ -1,0 +1,13 @@
+sourceId: bag
+authority: FOPH/BAG
+trustTier: A
+channelKind: external
+hazardTypes: [epidemic]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+endpoint: https://idd.bag.admin.ch/api
+licence: BAG-open-data
+providerVersion: bag-2.0.0
+scenarioMap:
+  epidemic: {template: F6, lageTier: 2}

@@ -1,0 +1,7 @@
+{
+  "source": "successfactors",
+  "assignments": [
+    {"assignmentId": "sf-001", "employeeRef": "SF-EMP-1001", "skillCode": "NURS-ICU", "skillLabel": "Intensivpflege", "proficiency": "advanced", "effectiveDate": "2026-05-01"},
+    {"assignmentId": "sf-002", "employeeRef": "SF-EMP-1002", "skillCode": "ANAES", "skillLabel": "Anaesthesie", "proficiency": "expert", "effectiveDate": "2026-05-03"}
+  ]
+}
