@@ -38,6 +38,16 @@ param workload = 'hospital-capacity'
 
 param logAnalyticsRetentionInDays = 90
 
+// Key Vault name override — sidesteps a soft-delete + purge-protection name
+// collision: the decommissioned westus2 rg-ihzhhpf-prod (same sub + same RG
+// name) left kv-ihzhhpf-prod-i62t soft-deleted AND purge-protected until
+// 2026-10-16, and the deterministic uniqueString(sub, rg.id) seed resolves to
+// the identical `i62t` token. The name is globally reserved and cannot be
+// purged early, so the greenfield rebuild uses an explicit distinct name.
+// (EVH/SB namespaces reuse the same seed but have no soft-delete, so their
+// names free up when the old RG is deleted — only the Key Vault collides.)
+param keyVaultNameOverride = 'kv-ihzhhpf-prod-swn1'
+
 // --- Foundation ---
 param enableIdentityModule = true
 // Network module OFF for the baseline slice (parity with the eastus2 first

@@ -12,6 +12,10 @@ param tags object
 @maxValue(730)
 param logAnalyticsRetentionInDays int = 90
 
+@description('Optional explicit Key Vault name. When empty (default), a deterministic per-(subscription, RG) name is generated. Set this only to sidestep a soft-delete + purge-protection name collision on a same-RG region rebuild (e.g. the Sprint 19 Switzerland North greenfield, where the decommissioned westus2 RG left kv-ihzhhpf-prod-i62t purge-protected until 2026-10-16).')
+@maxLength(24)
+param keyVaultName string = ''
+
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: 'log-${nameSuffix}'
   location: location
@@ -27,9 +31,10 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
 // Key Vault names are globally unique across all Azure and soft-delete-locked for 90 days.
 // Add a short, deterministic per-(subscription, RG) suffix so ihzhhpf-based names don't collide.
 var globalUniquenessSuffix = take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)
+var effectiveKeyVaultName = empty(keyVaultName) ? 'kv-${nameSuffix}-${globalUniquenessSuffix}' : keyVaultName
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: 'kv-${nameSuffix}-${globalUniquenessSuffix}'
+  name: effectiveKeyVaultName
   location: location
   tags: tags
   properties: {

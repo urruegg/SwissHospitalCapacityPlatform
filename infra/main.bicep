@@ -223,6 +223,9 @@ param appFluentCustomHostname string = ''
 @description('When true and appFluentCustomHostname is set, provision a managed cert + bind the CA to the custom hostname. Deploy is a two-step process: (1) merge with this false to create the DNS zone + records, (2) do GoDaddy NS delegation, (3) flip to true and redeploy so the CAE can validate ownership + issue a Let\'s Encrypt cert. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md.')
 param appFluentEnableCustomDomainCert bool = false
 
+@description('Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield).')
+param keyVaultNameOverride string = ''
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -240,6 +243,7 @@ module platformFoundation './modules/platform-foundation/main.bicep' = {
     nameSuffix: resourceSuffix
     tags: tags
     logAnalyticsRetentionInDays: logAnalyticsRetentionInDays
+    keyVaultName: keyVaultNameOverride
   }
 }
 
