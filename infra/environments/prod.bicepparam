@@ -61,6 +61,20 @@ param eventHubsSimulatorMiPrincipalId = ''
 param eventHubsBmCopilotMiPrincipalId = ''
 param eventHubsCsaAgentMiPrincipalId = ''
 
+// Sprint 23 WS-A1 (#255) — ADLS Gen2 landing zone for Curavias org/skills master data.
+// Opt-out in PROD until the demo scope is retired and PROD ingestion is approved.
+// When PROD comes online: flip enable to true, set the pipeline MI principal ID, and
+// wire masterdataLandingLogAnalyticsWorkspaceId to the PROD Log Analytics workspace so
+// blob StorageWrite/StorageDelete diagnostics are captured (copilot-instructions §3).
+param enableMasterdataLandingModule = false
+param masterdataLandingPipelinePrincipalId = ''
+param masterdataLandingLogAnalyticsWorkspaceId = ''
+
+// Sprint 23 WS-A3 (#255) — Container Apps Jobs for the skills-evidence simulators.
+// Opt-out in PROD until the demo scope is retired and PROD ingestion is approved.
+param enableSkillsSimJobsModule = false
+param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
 // Sprint 13.1 T-DNS (ADR-0030) - dormant in PROD until PROD RG is provisioned + PROD deploy is approved.
 // When PROD comes online, this env must be refactored to use an existing reference on the
 // SIT-owned curavias.ch zone (or the zone moved to a shared RG) - see docs/adr/0030-*.md follow-ups.

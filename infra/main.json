@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "14638736647775813116"
+      "templateHash": "7653479104938368726"
     }
   },
   "parameters": {
@@ -314,6 +314,41 @@
         "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity that reads from cg-csa-agent (Sprint 09 v2.0.0 T2.1/T4.5). Empty = role assignment skipped."
       }
     },
+    "enableMasterdataLandingModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 23 masterdata landing-zone module (ADLS Gen2 storage + landing filesystem for synthetic org/skills extracts)."
+      }
+    },
+    "masterdataLandingPipelinePrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the ingestion pipeline managed identity that writes org/skills extracts to the landing container. Empty = Storage Blob Data Contributor role assignment skipped. When enableSkillsSimJobsModule=true this is overridden with the skills-sim jobs MI principalId."
+      }
+    },
+    "masterdataLandingLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace for masterdata landing blob diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD."
+      }
+    },
+    "enableSkillsSimJobsModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 23 skills-sim jobs module (four manual-trigger Container Apps Jobs that seed synthetic extracts into the landing zone). Requires enableMasterdataLandingModule=true for the landing target + RBAC grant."
+      }
+    },
+    "skillsSimJobsImage": {
+      "type": "string",
+      "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+      "metadata": {
+        "description": "Container image the skills-sim jobs run. Placeholder until the skills-sim CI workflow pushes a real image to ACR (parity with sim-capacity)."
+      }
+    },
     "enableAiMlFoundationModule": {
       "type": "bool",
       "defaultValue": false,
@@ -536,6 +571,7 @@
   "variables": {
     "envSuffix": "[if(equals(parameters('environmentName'), 'dev'), '', format('-{0}', parameters('environmentName')))]",
     "resourceSuffix": "[format('{0}{1}', parameters('solutionShortName'), variables('envSuffix'))]",
+    "masterdataLandingStorageName": "[toLower(format('stmasterdata{0}', replace(variables('resourceSuffix'), '-', '')))]",
     "tags": {
       "env": "[parameters('environmentName')]",
       "owner": "[parameters('owner')]",
@@ -2943,6 +2979,577 @@
           }
         }
       }
+    },
+    {
+      "condition": "[parameters('enableMasterdataLandingModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('masterdata-landing-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "pipelinePrincipalId": "[if(parameters('enableSkillsSimJobsModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('skills-sim-jobs-{0}', parameters('environmentName'))), '2025-04-01').outputs.principalId.value), createObject('value', parameters('masterdataLandingPipelinePrincipalId')))]",
+          "logAnalyticsWorkspaceId": {
+            "value": "[parameters('masterdataLandingLogAnalyticsWorkspaceId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "535917255065045059"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the storage account."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "pipelinePrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the ingestion pipeline managed identity that writes extracts to the landing container. When set, receives Storage Blob Data Contributor scoped to the account. Empty string skips the role assignment."
+              }
+            },
+            "pipelinePrincipalType": {
+              "type": "string",
+              "defaultValue": "ServicePrincipal",
+              "allowedValues": [
+                "ServicePrincipal",
+                "User",
+                "Group"
+              ],
+              "metadata": {
+                "description": "Principal type for the pipeline role assignment."
+              }
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the Log Analytics workspace for blob diagnostic settings. Empty string skips diagnostics (SIT). Populated in PROD per the copilot-instructions §3 \"diagnostics for every production resource\" rule."
+              }
+            }
+          },
+          "variables": {
+            "storageAccountName": "[toLower(format('stmasterdata{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "storageBlobDataContributorRoleId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[variables('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "isHnsEnabled": true,
+                "accessTier": "Hot",
+                "allowBlobPublicAccess": false,
+                "supportsHttpsTrafficOnly": true,
+                "minimumTlsVersion": "TLS1_2",
+                "publicNetworkAccess": "Enabled",
+                "allowSharedKeyAccess": false,
+                "networkAcls": {
+                  "defaultAction": "Allow",
+                  "bypass": "AzureServices"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'landing')]",
+              "properties": {
+                "publicAccess": "None"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('pipelinePrincipalId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('pipelinePrincipalId'), variables('storageBlobDataContributorRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
+                "principalId": "[parameters('pipelinePrincipalId')]",
+                "principalType": "[parameters('pipelinePrincipalType')]",
+                "description": "Sprint 23 WS-A1 (#255) — ingestion pipeline MI writes synthetic org/skills extracts to landing/curavias-org-skills/."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]",
+              "name": "[format('diag-blob-{0}', variables('storageAccountName'))]",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "StorageWrite",
+                    "enabled": true
+                  },
+                  {
+                    "category": "StorageDelete",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "Transaction",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Masterdata landing module implementation marker."
+              },
+              "value": "masterdata-landing-implemented"
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "ADLS Gen2 landing storage account name."
+              },
+              "value": "[variables('storageAccountName')]"
+            },
+            "landingContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Landing filesystem (container) name."
+              },
+              "value": "landing"
+            },
+            "dfsEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "DFS (ADLS Gen2) endpoint for the landing storage account."
+              },
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.dfs]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('skills-sim-jobs-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableSkillsSimJobsModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('skills-sim-jobs-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('simCapacityLocation')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "containerAppEnvironmentName": {
+            "value": "[format('cae-skills-sim-{0}', variables('resourceSuffix'))]"
+          },
+          "logAnalyticsWorkspaceResourceId": {
+            "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
+          },
+          "containerImage": {
+            "value": "[parameters('skillsSimJobsImage')]"
+          },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('simCapacityContainerRegistryResourceId')]"
+          },
+          "landingStorageAccountName": {
+            "value": "[variables('masterdataLandingStorageName')]"
+          },
+          "landingContainerName": {
+            "value": "landing"
+          },
+          "demoScope": {
+            "value": "[parameters('simCapacityDemoScope')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "15390018866793242957"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "allowedValues": [
+                "switzerlandnorth",
+                "westus2"
+              ],
+              "metadata": {
+                "description": "Azure region. Region-pinned to the ADR-0013 demo-scope variant path."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Resource tags applied to every resource this module creates."
+              }
+            },
+            "containerAppEnvironmentId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional resource ID of an existing Container Apps managed environment. When empty, a consumption-only environment is created inside this module."
+              }
+            },
+            "containerAppEnvironmentName": {
+              "type": "string",
+              "defaultValue": "[format('cae-skills-sim-{0}', parameters('nameSuffix'))]",
+              "minLength": 2,
+              "maxLength": 60,
+              "metadata": {
+                "description": "Name for the managed environment when one is created by this module. Ignored when containerAppEnvironmentId is provided."
+              }
+            },
+            "logAnalyticsWorkspaceResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Log Analytics workspace resource ID for the managed environment. Ignored when containerAppEnvironmentId is provided."
+              }
+            },
+            "containerImage": {
+              "type": "string",
+              "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+              "metadata": {
+                "description": "Container image the seeder jobs run. Defaults to a placeholder; the real skills-sim image is published by a follow-up CI workflow (parity with the sim-capacity pattern)."
+              }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server the jobs pull containerImage from. Set together with containerRegistryResourceId to wire MI-based pull (no admin creds, no secrets)."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer."
+              }
+            },
+            "landingStorageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the WS-A1 ADLS Gen2 landing storage account the jobs write extracts to."
+              }
+            },
+            "landingContainerName": {
+              "type": "string",
+              "defaultValue": "landing",
+              "metadata": {
+                "description": "Name of the landing filesystem (container) inside the landing storage account."
+              }
+            },
+            "landingPrefix": {
+              "type": "string",
+              "defaultValue": "curavias-org-skills",
+              "metadata": {
+                "description": "Root prefix inside the landing container for org/skills extracts."
+              }
+            },
+            "sources": {
+              "type": "array",
+              "defaultValue": [
+                {
+                  "code": "sf",
+                  "system": "successfactors"
+                },
+                {
+                  "code": "lms",
+                  "system": "lms"
+                },
+                {
+                  "code": "skm",
+                  "system": "skills-manager"
+                },
+                {
+                  "code": "wid",
+                  "system": "work-id"
+                }
+              ],
+              "metadata": {
+                "description": "External source systems to seed, one Container Apps Job each. `code` drives the resource name (kept short for the 32-char job-name limit); `system` is the externalSystem value passed to the seeder."
+              }
+            },
+            "replicaTimeoutSeconds": {
+              "type": "int",
+              "defaultValue": 1800,
+              "minValue": 60,
+              "maxValue": 3600,
+              "metadata": {
+                "description": "Replica timeout (seconds) per job execution."
+              }
+            },
+            "demoScope": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, the deployment is scoped to the demo path (synthetic data only, ADR-0013). Emits a demoScope tag for provenance."
+              }
+            }
+          },
+          "variables": {
+            "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
+            "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+            "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('id-skills-sim-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]"
+            },
+            {
+              "condition": "[empty(parameters('containerAppEnvironmentId'))]",
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2024-03-01",
+              "name": "[parameters('containerAppEnvironmentName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "properties": {
+                "appLogsConfiguration": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('destination', 'log-analytics', 'logAnalyticsConfiguration', createObject('customerId', reference(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').customerId, 'sharedKey', listKeys(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').primarySharedKey)), createObject('destination', 'azure-monitor'))]",
+                "zoneRedundant": false
+              }
+            },
+            {
+              "copy": {
+                "name": "simJobs",
+                "count": "[length(parameters('sources'))]"
+              },
+              "type": "Microsoft.App/jobs",
+              "apiVersion": "2024-03-01",
+              "name": "[format('caj-sk-{0}-{1}', parameters('sources')[copyIndex()].code, parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))))]": {}
+                }
+              },
+              "properties": {
+                "environmentId": "[variables('effectiveEnvironmentId')]",
+                "configuration": {
+                  "triggerType": "Manual",
+                  "replicaTimeout": "[parameters('replicaTimeoutSeconds')]",
+                  "replicaRetryLimit": 1,
+                  "manualTriggerConfig": {
+                    "parallelism": 1,
+                    "replicaCompletionCount": 1
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))))), createArray())]"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "[format('skills-sim-{0}', parameters('sources')[copyIndex()].code)]",
+                      "image": "[parameters('containerImage')]",
+                      "resources": {
+                        "cpu": "[json('0.25')]",
+                        "memory": "0.5Gi"
+                      },
+                      "args": [
+                        "--source",
+                        "[parameters('sources')[copyIndex()].system]",
+                        "--output",
+                        "[format('/tmp/{0}.jsonl', parameters('sources')[copyIndex()].system)]"
+                      ],
+                      "env": [
+                        {
+                          "name": "AZURE_CLIENT_ID",
+                          "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                        },
+                        {
+                          "name": "SOURCE_SYSTEM",
+                          "value": "[parameters('sources')[copyIndex()].system]"
+                        },
+                        {
+                          "name": "LANDING_STORAGE_ACCOUNT",
+                          "value": "[parameters('landingStorageAccountName')]"
+                        },
+                        {
+                          "name": "LANDING_CONTAINER",
+                          "value": "[parameters('landingContainerName')]"
+                        },
+                        {
+                          "name": "LANDING_PREFIX",
+                          "value": "[parameters('landingPrefix')]"
+                        },
+                        {
+                          "name": "DEMO_SCOPE",
+                          "value": "[if(parameters('demoScope'), 'true', 'false')]"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix')))]",
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]"
+              ]
+            },
+            {
+              "condition": "[variables('useAcrMiPull')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 23 WS-A3 (#255) — skills-sim jobs MI pulls containerImage from ACR."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the skills-sim jobs User-Assigned Managed Identity. Consumed by the WS-A1 masterdata-landing module for the Storage Blob Data Contributor grant."
+              },
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+            },
+            "clientId": {
+              "type": "string",
+              "metadata": {
+                "description": "Client ID of the skills-sim jobs User-Assigned Managed Identity. Passed to each container as AZURE_CLIENT_ID."
+              },
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+            },
+            "identityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the skills-sim jobs User-Assigned Managed Identity."
+              },
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix')))]"
+            },
+            "jobNames": {
+              "type": "array",
+              "metadata": {
+                "description": "Names of the four manual-trigger Container Apps Jobs."
+              },
+              "copy": {
+                "count": "[length(parameters('sources'))]",
+                "input": "[format('caj-sk-{0}-{1}', parameters('sources')[copyIndex()].code, parameters('nameSuffix'))]"
+              }
+            },
+            "managedEnvironmentId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the managed environment used by these jobs (created by this module or supplied via containerAppEnvironmentId)."
+              },
+              "value": "[variables('effectiveEnvironmentId')]"
+            },
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Skills-sim jobs module implementation marker."
+              },
+              "value": "skills-sim-jobs-implemented"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
     },
     {
       "condition": "[parameters('enableAiMlFoundationModule')]",
@@ -6024,6 +6631,8 @@
         "curaviasWeb": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'curavias-web-disabled')]",
         "apiRuntime": "[if(parameters('enableApiRuntimeModule'), reference(resourceId('Microsoft.Resources/deployments', format('api-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'api-runtime-disabled')]",
         "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
+        "masterdataLanding": "[if(parameters('enableMasterdataLandingModule'), reference(resourceId('Microsoft.Resources/deployments', format('masterdata-landing-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'masterdata-landing-disabled')]",
+        "skillsSimJobs": "[if(parameters('enableSkillsSimJobsModule'), reference(resourceId('Microsoft.Resources/deployments', format('skills-sim-jobs-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'skills-sim-jobs-disabled')]",
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
         "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]",
         "fabricEventstream": "[if(parameters('enableFabricEventstreamModule'), reference(resourceId('Microsoft.Resources/deployments', format('fabric-eventstream-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'fabric-eventstream-disabled')]",
