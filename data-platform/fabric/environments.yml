@@ -26,6 +26,6 @@ environments:
     workspace_name: ws-ihzhhpf-prod-data
     workspace_id: 1c8408f4-6eb7-401f-aee9-77fe4c8a515e
     lakehouse_name: lh_ihzhhpf_prod
-    lakehouse_id: ac325a4d-9ab0-4934-a2b4-ddfacd507c4b
+    lakehouse_id: 57bd6e02-5248-439c-9f31-16bf9ee83cb4
     capacity_name: fabricihzhhpfprod
     region: switzerlandnorth

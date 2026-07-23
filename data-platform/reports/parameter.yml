@@ -23,6 +23,6 @@ find_replace:
   - find_value: 30594c20-46ba-40ea-91fa-4701b105e0b9
     replace_value:
       SIT: 30594c20-46ba-40ea-91fa-4701b105e0b9
-      PROD: ac325a4d-9ab0-4934-a2b4-ddfacd507c4b
+      PROD: 57bd6e02-5248-439c-9f31-16bf9ee83cb4
     item_type: SemanticModel
     item_name: capacity-dashboard
