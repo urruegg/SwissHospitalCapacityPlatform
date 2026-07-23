@@ -26,10 +26,15 @@ from build_gold_org_spine import (  # noqa: E402
     to_gold_org_unit,
 )
 
-# Real strings that must never reach the demo gold layer.
+# Distinctive real identifiers that must never reach a demo display/geo column.
+# Deliberately specific (full real names / cities / source domains) to avoid
+# false positives on legitimate Curavias text (e.g. archetype "Universitaeres
+# Zentrumsspital"). The opaque hospital_id PK is excluded from the scan below
+# because it is an internal join key, not a surfaced name.
 _REAL_NAME_FRAGMENTS = [
-    "Universit", "Zurich", "Zrich", "Zurich", "Hirslanden", "Zollikerberg",
-    "Luzern", "USZ", "LUKS", "HSL", "SZB", "ZH", "LU",
+    "Universitatsspital", "Universit\u00e4tsspital", "Luzerner", "Luzern",
+    "Hirslanden", "Zollikerberg", "Z\u00fcrich", "Zurich",
+    "usz.", "luks.", "hirslanden.", "spitalzollikerberg.",
 ]
 
 
@@ -79,9 +84,18 @@ def test_rebrand_uses_curavias_display_names():
 def test_no_real_names_or_geography_in_rebranded_hospitals():
     out = rebrand_hospital_dimension(_hospitals(), _tenants(), _org_units())
     for row in out:
-        display = f"{row['name']} {row['short_name']} {row['city']} {row['canton']} {row['source']}"
-        for frag in _REAL_NAME_FRAGMENTS:
-            assert frag not in display, f"real fragment {frag!r} leaked in {display!r}"
+        # Scan EVERY output column (except the opaque hospital_id join key) so a
+        # future dim_hospital schema column cannot silently leak a real value.
+        for col, val in row.items():
+            if col == "hospital_id":
+                continue
+            text = str(val)
+            for frag in _REAL_NAME_FRAGMENTS:
+                assert frag not in text, (
+                    f"real fragment {frag!r} leaked in column {col!r}={text!r}"
+                )
+        # Positive geography guard: only fictional Curavias cantons survive.
+        assert row["canton"] in {"HN", "CA"}
 
 
 def test_hospital_id_preserved_as_key():
