@@ -30,5 +30,21 @@ class TestExternalProviders(unittest.TestCase):
         self.assertEqual(recs[0]["mappedScenarioTemplate"], "F6")
 
 
+class TestLiveBindings(unittest.TestCase):
+    def test_sed_live_uses_injected_transport(self):
+        from providers.sed.live import LiveBinding
+        sample = load_fixture("sed_quake.json")
+        binding = LiveBinding(endpoint="https://example.invalid")
+        raw = binding.poll(transport=lambda url: sample)
+        self.assertEqual(raw, sample)
+
+    def test_alertswiss_live_uses_injected_transport(self):
+        from providers.alertswiss.live import LiveBinding
+        sample = load_fixture("alertswiss_cap.json")
+        binding = LiveBinding(endpoint="https://example.invalid")
+        raw = binding.poll(transport=lambda url: sample)
+        self.assertEqual(raw, sample)
+
+
 if __name__ == "__main__":
     unittest.main()
