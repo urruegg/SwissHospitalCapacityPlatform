@@ -1,0 +1,73 @@
+table bridge_worker_unit_eligibility
+	lineageTag: 87e3c10f-3987-46ec-9c5f-d99c0997eea8
+	sourceLineageTag: [gold].[bridge_worker_unit_eligibility]
+
+	column eligibility_id
+		dataType: string
+		lineageTag: 4fb3c0cf-33fc-40bd-acd6-689040245a73
+		sourceLineageTag: eligibility_id
+		summarizeBy: none
+		sourceColumn: eligibility_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column employee_id
+		dataType: string
+		lineageTag: dae6c5d5-e61c-41f6-9448-ef25bfc43b96
+		sourceLineageTag: employee_id
+		summarizeBy: none
+		sourceColumn: employee_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_id
+		dataType: string
+		lineageTag: 7122b725-554f-42ee-a108-90e325c6a9a1
+		sourceLineageTag: unit_id
+		summarizeBy: none
+		sourceColumn: unit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_id
+		dataType: string
+		lineageTag: 8d63f0b1-c4fe-4089-a4df-4a5929a8ba69
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_eligible
+		dataType: boolean
+		lineageTag: 5538861a-4290-4f98-ba9a-d98015ad4177
+		sourceLineageTag: is_eligible
+		summarizeBy: none
+		sourceColumn: is_eligible
+
+		annotation SummarizationSetBy = Automatic
+
+	column limiting_factor
+		dataType: string
+		lineageTag: 58b14314-37df-4ee9-bf57-957c7fc1a9cf
+		sourceLineageTag: limiting_factor
+		summarizeBy: none
+		sourceColumn: limiting_factor
+
+		annotation SummarizationSetBy = Automatic
+
+	column computed_at
+		dataType: string
+		lineageTag: 84689c59-3d9f-47ff-9307-a705d2ce7679
+		sourceLineageTag: computed_at
+		summarizeBy: none
+		sourceColumn: computed_at
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bridge_worker_unit_eligibility = entity
+		mode: directLake
+		source
+			entityName: bridge_worker_unit_eligibility
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
