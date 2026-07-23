@@ -1,0 +1,7 @@
+{
+  "source": "work_id",
+  "shares": [
+    {"shareId": "wid-001", "workIdRef": "WID-ANON-3001", "skillCode": "NURS-ICU", "skillLabel": "Intensivpflege", "selfLevel": "advanced", "sharedAt": "2026-07-01", "consentGranted": true, "workerGln": "7601190000010", "consentScope": "capacity-planning"},
+    {"shareId": "wid-002", "workIdRef": "WID-ANON-3002", "skillCode": "LANG-IT", "skillLabel": "Italienisch", "selfLevel": "C1", "sharedAt": "2026-07-02", "consentGranted": false}
+  ]
+}
