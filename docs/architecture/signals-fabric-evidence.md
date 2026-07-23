@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 21 M3 signal Fabric evidence) |
+| **Previous Version** | 1.0.0 (PROD workspace/lakehouse GUID refs corrected to Switzerland North greenfield ids) |
 | **Related** | [Signal Fabric evidence plan](../superpowers/plans/2026-07-23-sprint-21-signal-fabric-evidence.md), [Fabric IQ ready evidence](fabric-iq-ready-evidence.md), [ADR-0034](../adr/0034-fabric-iq-demo-scope-artefacts.md), [reference ontology PR #283](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/283), [GitHub issue #247](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/247) |
 
 ## Purpose
@@ -186,6 +186,7 @@ python data-platform\scripts\fabric\add_data_agent_source.py --workspace-id f3af
 - **Direct Lake latency** — SQL-endpoint metadata sync and dataset framing lag a
   few minutes after a notebook run; re-verify after ~150 s if counts read 0.
 - **PROD** — this evidence is **SIT-only**. Applying the same treatment to the PROD
-  workspace (`399b73f6-...`) is a separate gated follow-up, not covered here.
+  workspace (`1c8408f4-...`, Switzerland North) is a separate gated follow-up, not
+  covered here.
 - **Preview REST** — the Data Agent `updateDefinition` uses a Preview API surface;
   a full pre-change backup is retained for one-command rollback.

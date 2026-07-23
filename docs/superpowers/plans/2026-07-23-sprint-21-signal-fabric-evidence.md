@@ -58,8 +58,8 @@
 | Semantic model (signals) | `external-signals` - repo-only (`data-platform/reports/external-signals.SemanticModel`), NOT yet on SIT |
 | Ontology | `ont_hospital_capacity` - `265c18d1-234e-436c-8297-0ca0a3e3b789` |
 | Data agent | `da_hospital_capacity` - `b2e53c23-182a-452d-9321-e63f6009e80b` |
-| PROD data workspace | `ws-ihzhhpf-prod-data` - `399b73f6-4b1c-44da-b7f9-1b4a37525a2b` |
-| PROD lakehouse | `lh_ihzhhpf_prod` - `4f73c480-6c85-4823-bb98-4e66780c527f` |
+| PROD data workspace | `ws-ihzhhpf-prod-data` - `1c8408f4-6eb7-401f-aee9-77fe4c8a515e` |
+| PROD lakehouse | `lh_ihzhhpf_prod` - `57bd6e02-5248-439c-9f31-16bf9ee83cb4` |
 
 **Baseline verified (2026-07-23):** SIT `gold` schema has 28 tables, **none** `ext_*`; only `capacity-dashboard` is deployed to the SIT workspace; the data agent grounds on `capacity-dashboard` + `ont_hospital_capacity` with no external-signal content. Scope of this plan is to change all three.
 
@@ -353,13 +353,13 @@ Expected: the four `gold.ext_*` tables present and non-empty; `verify_ext_gold` 
   - find_value: f3af9733-9503-4e92-98f9-a901d96f1c87
     replace_value:
       SIT: f3af9733-9503-4e92-98f9-a901d96f1c87
-      PROD: 399b73f6-4b1c-44da-b7f9-1b4a37525a2b
+      PROD: 1c8408f4-6eb7-401f-aee9-77fe4c8a515e
     item_type: SemanticModel
     item_name: external-signals
   - find_value: 30594c20-46ba-40ea-91fa-4701b105e0b9
     replace_value:
       SIT: 30594c20-46ba-40ea-91fa-4701b105e0b9
-      PROD: 4f73c480-6c85-4823-bb98-4e66780c527f
+      PROD: 57bd6e02-5248-439c-9f31-16bf9ee83cb4
     item_type: SemanticModel
     item_name: external-signals
 ```
