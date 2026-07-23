@@ -51,6 +51,11 @@ param enableFabricEventstreamModule = false
 param fabricEventstreamWorkspaceId = ''
 param fabricEventstreamDestinationLakehouseId = ''
 
+// Sprint 23 WS-A4 (#255) — Skills-events Eventstream lane deferred in PROD until promotion.
+param enableSkillsEventstreamModule = false
+param skillsEventstreamWorkspaceId = ''
+param skillsEventstreamDestinationLakehouseId = ''
+
 // Sprint 09 v2.0.0 T2.1 — Event Hubs consumer group RBAC. MIs not provisioned in PROD yet.
 param eventHubsSimulatorMiPrincipalId = ''
 param eventHubsBmCopilotMiPrincipalId = ''
