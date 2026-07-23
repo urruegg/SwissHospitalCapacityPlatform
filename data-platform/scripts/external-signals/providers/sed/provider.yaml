@@ -1,0 +1,13 @@
+sourceId: sed
+authority: SED-ETH
+trustTier: A
+channelKind: external
+hazardTypes: [earthquake]
+defaultMode: live
+fallbackMode: simulated
+cadenceSeconds: 300
+endpoint: https://eida.ethz.ch/fdsnws/event/1/query
+licence: SED-ETH-open-data
+providerVersion: sed-2.0.0
+scenarioMap:
+  earthquake: {template: F1, lageTier: 3}
