@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.11.0 |
+| **Version** | 1.12.0 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.10.0 (added FR-ORG-001 + FR-SKILL/FR-SKILL-ONT + NFR-SKILL Sprint 23 org-spine and skills-evidence requirements) |
+| **Previous Version** | 1.11.0 (added NFR-EXT-EVID-001 + signals-fabric-evidence traceability row) |
 
 ## Purpose
 
@@ -323,6 +323,7 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-EXT-ONT-001` | Operational (Fabric IQ) binding GA-gated per ADR-0014. |
 | `NFR-EXT-GOV-001` | Record source licence/attribution for every ingested signal. |
 | `NFR-EXT-GOV-002` | No PHI/personal data; public authority feeds + synthetic fixtures only. |
+| `NFR-EXT-EVID-001` | External signals shall be demonstrably queryable on SIT via the `external-signals` Direct-Lake semantic model (trust-badge measures) and the `da_hospital_capacity` data agent, with the PHI refusal gate preserved; captured as a versioned evidence artefact. |
 
 ### K) Curavias Org Spine And Skills Evidence Governance (Sprint 23)
 
@@ -364,6 +365,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 forecast overlay and SIT IQ-layer proof extension)* | `FR-EXT-010` to `FR-EXT-014` |
 | [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
 | [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
+| [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
 
 ## Assumptions To Validate In Implementation Planning
 

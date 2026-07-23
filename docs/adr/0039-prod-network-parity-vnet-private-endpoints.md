@@ -79,11 +79,11 @@ private endpoint.**
 
 ### Scoping choices
 
-- **Dedicated KV-PE flag, not `enableNetworkModule`.** Gating the KV PE on its own
++ **Dedicated KV-PE flag, not `enableNetworkModule`.** Gating the KV PE on its own
   `enableKeyVaultPrivateEndpoint` flag keeps this change **PROD-only** and avoids an
   unplanned SIT KV change on the next SIT deploy. Extending the same flag to SIT for
   parity is a trivial follow-up (set it true in `sit.bicepparam`).
-- **KV PE is non-destructive on its own.** Adding a PE + flipping
++ **KV PE is non-destructive on its own.** Adding a PE + flipping
   `publicNetworkAccess=Disabled` does not recreate the vault. Only the CAE VNet
   integration is destructive.
 
@@ -91,10 +91,10 @@ private endpoint.**
 
 ### Positive
 
-- PROD KV and Cosmos gain a reachable **private** data plane; both match the
++ PROD KV and Cosmos gain a reachable **private** data plane; both match the
   policy-enforced `publicNetworkAccess=Disabled` state (no more what-if drift).
-- Full SIT↔PROD network parity; the agent-host reaches Cosmos over private link.
-- The SIT-discovered gotchas are **already pre-solved** for PROD: `Microsoft.App` +
++ Full SIT↔PROD network parity; the agent-host reaches Cosmos over private link.
++ The SIT-discovered gotchas are **already pre-solved** for PROD: `Microsoft.App` +
   `Microsoft.ContainerService` RP registration and the
   `AllowBringYourOwnPublicIpAddress` feature are handled by `cd-infra-deploy-prod.yml`;
   the `snet-cae` `Microsoft.App/environments` delegation is in the network module. PROD
@@ -102,28 +102,28 @@ private endpoint.**
 
 ### Negative / risks
 
-- **One-time ~5-10 min agent-host outage** during the destructive CAE recreate
++ **One-time ~5-10 min agent-host outage** during the destructive CAE recreate
   (`cae-ihzhhpf-prod` + `ca-agent-host` + `ca-signal-runner`). `app.curavias.ch` stays
   up (separate CAE).
-- **Operator KV/Cosmos access still requires an in-VNet path.** A private endpoint makes
++ **Operator KV/Cosmos access still requires an in-VNet path.** A private endpoint makes
   the vault reachable only from inside the VNet; interactive verification from a laptop
   needs a jumpbox/Bastion (not in scope here — a follow-up if interactive access is
   required). The agent-host, running in-VNet, is unaffected.
-- Expands ADR-0037's deliberately-lean PROD scope; recorded here as the amendment.
++ Expands ADR-0037's deliberately-lean PROD scope; recorded here as the amendment.
 
 ## Implementation notes
 
 **Bicep (this PR — non-destructive artefacts):**
 
-- `infra/modules/platform-foundation/main.bicep` — new `enableKeyVaultPrivateEndpoint`
++ `infra/modules/platform-foundation/main.bicep` — new `enableKeyVaultPrivateEndpoint`
   / `vnetResourceId` / `keyVaultPrivateEndpointSubnetName` params; conditional
   `privatelink.vaultcore.azure.net` zone + VNet link + PE (`groupIds: ['vault']`) + DNS
   zone group; `publicNetworkAccess` now `Disabled` when the PE is on.
-- `infra/main.bicep` — new top-level `enableKeyVaultPrivateEndpoint` param wired into
++ `infra/main.bicep` — new top-level `enableKeyVaultPrivateEndpoint` param wired into
   `platformFoundation`; new `networkCaeSubnetPrefix` param plumbed into the network
   module (required because a non-default VNet prefix moves the CAE subnet out of the
   hardcoded `10.60.4.0/23` default).
-- `infra/environments/prod-swn.bicepparam` — `enableNetworkModule=true`,
++ `infra/environments/prod-swn.bicepparam` — `enableNetworkModule=true`,
   `enableKeyVaultPrivateEndpoint=true`, `10.70.0.0/16` address space.
 
 **Gated deploy sequence (separate, `approved-to-apply`):**
@@ -140,9 +140,9 @@ private endpoint.**
 
 ## Cross-references
 
-- [ADR-0029](0029-agent-host-cosmos-reachability.md) — Option A pattern + the five-iteration
++ [ADR-0029](0029-agent-host-cosmos-reachability.md) — Option A pattern + the five-iteration
   SIT implementation trail this PROD promotion inherits.
-- [ADR-0037](0037-prod-region-switzerland-north-greenfield.md) — the PROD greenfield baseline
++ [ADR-0037](0037-prod-region-switzerland-north-greenfield.md) — the PROD greenfield baseline
   this ADR amends.
-- Issue [#311](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/311) — PROD CD
++ Issue [#311](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/311) — PROD CD
   repoint + KV/network follow-up tracking.

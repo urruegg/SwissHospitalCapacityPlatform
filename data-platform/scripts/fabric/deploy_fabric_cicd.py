@@ -44,7 +44,11 @@ ITEM_TYPE_IN_SCOPE = ["SemanticModel", "Report"]
 # Items in data-platform/reports/ that belong to OTHER products, excluded here.
 EXCLUDE_ITEM_NAME_REGEX = r"^(evidence|bva-boardroom)$"
 # Items this train deploys (used for the validate-mode disk check + plan output).
-DEPLOYABLE_ITEMS = ["capacity-dashboard.SemanticModel", "capacity-dashboard.Report"]
+DEPLOYABLE_ITEMS = [
+    "capacity-dashboard.SemanticModel",
+    "capacity-dashboard.Report",
+    "external-signals.SemanticModel",
+]
 
 
 def _load_yaml(path: Path) -> dict:
@@ -79,10 +83,6 @@ def validate(environment: str) -> None:
     if not find_replace:
         problems.append(f"{PARAMETER_FILE} has no find_replace entries")
 
-    tmdl_text = EXPRESSIONS_TMDL.read_text(encoding="utf-8") if EXPRESSIONS_TMDL.exists() else ""
-    if not tmdl_text:
-        problems.append(f"Missing Direct Lake TMDL: {EXPRESSIONS_TMDL}")
-
     # Map each parameter to the env id it should resolve to, for cross-checking.
     sit_ws = envs.get("SIT", {}).get("workspace_id")
     sit_lh = envs.get("SIT", {}).get("lakehouse_id")
@@ -93,9 +93,16 @@ def validate(environment: str) -> None:
     for entry in find_replace:
         find_value = entry.get("find_value")
         replace = entry.get("replace_value") or {}
+        item_name = entry.get("item_name")
+        tmdl_path = REPORTS_DIR / f"{item_name}.SemanticModel" / "definition" / "expressions.tmdl"
+
         # The find_value is the SIT-pinned coordinate; it must exist in the TMDL.
-        if tmdl_text and find_value not in tmdl_text:
-            problems.append(f"find_value '{find_value}' not present in expressions.tmdl")
+        if not tmdl_path.exists():
+            problems.append(f"Missing Direct Lake TMDL for item '{item_name}': {tmdl_path}")
+        else:
+            tmdl_text = tmdl_path.read_text(encoding="utf-8")
+            if find_value not in tmdl_text:
+                problems.append(f"find_value '{find_value}' not present in {tmdl_path}")
         # SIT replacement must be identity (repo is SIT-pinned).
         if replace.get("SIT") != find_value:
             problems.append(

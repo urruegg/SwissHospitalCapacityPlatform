@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.1 |
+| **Version** | 0.8.0 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.7.0 (added DC-EXT-SIGNAL-v1 provenance plugin fields and ext_dim_source badge columns) |
+| **Previous Version** | 0.7.1 (added SIT gold ext_* materialisation + external-signals Direct-Lake publish evidence) |
 
 ## Purpose
 
@@ -235,6 +235,26 @@ data-driven live/simulated/internal trust badge (FR-EXT-019).
 
 The trust-badge propagation chain is:
 `provenance.activeBinding` -> `ext_dim_source.ext_data_mode` -> semantic-model measures -> board cards.
+
+#### Gold materialisation + Direct-Lake publish (SIT evidence, Sprint 21 M3)
+
+The `DC-EXT-SIGNAL-v1` medallion is materialised and published on SIT (synthetic,
+Live-only seed). Gold lineage now includes these `ext_*` Delta tables in the
+lakehouse (`lh_ihzhhpf_sit`):
+
+| Gold table | Grain | Verified (2026-07-23) |
+| ---------- | ----- | --------------------- |
+| `gold.ext_fact_signal` | one row per normalised external signal | 4 rows |
+| `gold.ext_dim_source` | one row per trusted source channel (trust-badge cols) | 4 rows |
+| `gold.ext_dim_hazard_type` | governed hazard taxonomy entry | 3 rows |
+| `gold.ext_dim_region` | affected canton/region | 3 rows |
+| `gold.ext_fact_trigger_event` | one trigger-fired row per hazard (audit) | via `[Triggers Fired (24h)]` |
+
+These feed the **`external-signals`** Direct-Lake semantic model
+(`fa1087b3-568e-4984-9e36-19fe46846493`), published to the SIT workspace and
+grounded into the `da_hospital_capacity` data agent. Full proof (row counts,
+trust-badge DAX, data-agent probe, gate record) is in
+[`signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md).
 
 ### Deprecations
 

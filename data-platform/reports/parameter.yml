@@ -26,3 +26,19 @@ find_replace:
       PROD: 57bd6e02-5248-439c-9f31-16bf9ee83cb4
     item_type: SemanticModel
     item_name: capacity-dashboard
+
+  # external-signals: OneLake workspace GUID (Direct Lake source path)
+  - find_value: f3af9733-9503-4e92-98f9-a901d96f1c87
+    replace_value:
+      SIT: f3af9733-9503-4e92-98f9-a901d96f1c87
+      PROD: 1c8408f4-6eb7-401f-aee9-77fe4c8a515e
+    item_type: SemanticModel
+    item_name: external-signals
+
+  # external-signals: OneLake lakehouse GUID (Direct Lake source path)
+  - find_value: 30594c20-46ba-40ea-91fa-4701b105e0b9
+    replace_value:
+      SIT: 30594c20-46ba-40ea-91fa-4701b105e0b9
+      PROD: 57bd6e02-5248-439c-9f31-16bf9ee83cb4
+    item_type: SemanticModel
+    item_name: external-signals
