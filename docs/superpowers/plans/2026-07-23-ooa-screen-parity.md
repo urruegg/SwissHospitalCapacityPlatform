@@ -1765,16 +1765,26 @@ git commit --no-verify -m "feat(ooa): three-state AgentPlane rendering RecoPanel
 
 Assemble the full screen: `BoardHeader` (Task 4) + `WardForecastTable` (Task 5) + `CapacityFlowDiagram` (Task 6). On mount, seed the proactive reco via `rail.showDefault(occupancyBoard.defaultReco(data))`. Ward/stream/gap clicks route a context reco through `routeInsight` using `occupancyBoard.recoFor(insight, data)` and the extended `openWithReco` dep.
 
+> IMPORTANT reconciliation (controller-corrected): the current `OccupancyBoard.tsx`
+> loads data asynchronously via `occupancyBoard.load(scope, mode)` (returning a
+> `RoleBoardData<OccupancyPayload>` with `.provenance` and `.payload`) and renders
+> `HandoffBanner` from `../../../../shell/HandoffBanner` with props `banner` +
+> `provenance`. Preserve that pattern. The component prop names and the
+> `routeInsight(insight, reco, deps)` argument order below MUST match Tasks 4-8
+> exactly: `BoardHeader({agent,title,provenance,lens})`,
+> `WardForecastTable({wards,onSelectWard})`,
+> `CapacityFlowDiagram({channels,streams,capacity,onSelectStream,onSelectGap})`.
+
 - [ ] **Step 1: Rewrite the failing test**
 
 ```tsx
 import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
 import { ModeProvider } from '../../src/context/mode-context';
-import { CopilotRailProvider } from '../../src/copilot-rail/rail-context';
+import { CopilotRailProvider, useCopilotRail } from '../../src/copilot-rail/rail-context';
 import { HospitalProvider } from '../../src/context/hospital-context';
 import { RoleProvider } from '../../src/context/role-context';
 import { OccupancyBoard } from '../../src/workspaces/main/boards/occupancy/OccupancyBoard';
@@ -1788,6 +1798,11 @@ beforeAll(async () => {
   await i18n.changeLanguage('en');
 });
 
+function RecoProbe() {
+  const { activeReco } = useCopilotRail();
+  return <div data-testid="active-reco">{activeReco?.read ?? ''}</div>;
+}
+
 function renderBoard() {
   return render(
     <MemoryRouter initialEntries={['/main/occupancy']}>
@@ -1797,6 +1812,7 @@ function renderBoard() {
             <HospitalProvider>
               <RoleProvider testRoles={['HCC.PlatformAdmin'] as never[]} testHomeSite="usz">
                 <OccupancyBoard />
+                <RecoProbe />
               </RoleProvider>
             </HospitalProvider>
           </CopilotRailProvider>
@@ -1807,79 +1823,140 @@ function renderBoard() {
 }
 
 describe('OccupancyBoard surface', () => {
-  it('renders header, ward table rows, and the capacity-flow streams', () => {
+  it('renders header, ward table rows, and the capacity-flow streams', async () => {
     renderBoard();
-    expect(screen.getByText(/simulated/i)).toBeInTheDocument();
-    // ward rows
-    expect(screen.getByText('Medicine A')).toBeInTheDocument();
-    expect(screen.getByText('Surgery A')).toBeInTheDocument();
-    // a capacity-flow stream label
-    expect(screen.getByText(/Elective admits/i)).toBeInTheDocument();
+    expect(await screen.findByText('Medicine A')).toBeInTheDocument();
+    expect(screen.getByText('Surgery B')).toBeInTheDocument();
+    expect(screen.getByText(/Emergency & Acute Medicine/i)).toBeInTheDocument();
+    expect(screen.getByText(/simulated data/i)).toBeInTheDocument();
   });
 
-  it('routes a ward-row click into a context reco', () => {
+  it('routes a ward-row click into a context reco', async () => {
     renderBoard();
-    act(() => screen.getByRole('button', { name: /Medicine A/ }).click());
-    // reco read text from med-a
-    expect(screen.getByText(/tips to 102%/i)).toBeInTheDocument();
+    const row = await screen.findByRole('button', { name: /Medicine A/ });
+    act(() => row.click());
+    await waitFor(() =>
+      expect(screen.getByTestId('active-reco').textContent).toMatch(/tips to 102%/i),
+    );
   });
 });
 ```
 
-The ward/stream labels, `simulated` badge, and reco `read` text (`tips to 102%`) all come from Task 2 data. Adjust the exact assertion strings to match the transcribed content committed in Task 2.
+The ward/stream labels, `simulated data` badge, and reco `read` text (`tips to 102%`)
+all come from Task 2 data. Because the board loads asynchronously, use `findBy*`
+for the first assertion and `waitFor` for the reco. The `RecoProbe` reads the
+rail's `activeReco` (set by `openWithReco`) so the surface test can observe the
+stored reco without mounting `AgentPlane`.
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/hcc-app-fluent; npm test -- occupancy-surface.test.tsx`
-Expected: FAIL — old board renders the 3-card grid, no ward table / flow / reco.
+Expected: FAIL — old board renders the 3-card channel grid using the removed
+`channel.occupancyPct/deltaBeds` shape.
 
 - [ ] **Step 3: Write the implementation (full file replacement)**
 
 ```tsx
 // apps/hcc-app-fluent/src/workspaces/main/boards/occupancy/OccupancyBoard.tsx
-import { useEffect } from 'react';
-import { makeStyles, tokens } from '@fluentui/react-components';
-import { HandoffBanner } from '../../../../journey/HandoffBanner';
-import { BoardHeader } from '../../../../components/board/BoardHeader';
-import { WardForecastTable } from '../../../../components/board/WardForecastTable';
-import { CapacityFlowDiagram } from '../../../../components/board/CapacityFlowDiagram';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Text, makeStyles, tokens } from '@fluentui/react-components';
+import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
+import type { OccupancyPayload } from '../../../../data/roleboard/occupancy-data';
 import { occupancyBoard } from './occupancy-board';
-import { OCCUPANCY_PINNED } from '../../../../data/roleboard/occupancy-data';
-import { useCopilotRail } from '../../../../copilot-rail/rail-context';
+import { BoardHeader } from './BoardHeader';
+import { WardForecastTable } from './WardForecastTable';
+import { CapacityFlowDiagram } from './CapacityFlowDiagram';
+import { HandoffBanner } from '../../../../shell/HandoffBanner';
+import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
+import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
-import type { ContextInsight } from '../../../../journey/RoleBoard';
+import { useCopilotRail } from '../../../../copilot-rail/rail-context';
+import { useMode } from '../../../../context/mode-context';
+import { useHospital } from '../../../../context/hospital-context';
 
 const useStyles = makeStyles({
-  root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL, height: '100%', overflow: 'auto' },
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalL,
+    padding: tokens.spacingHorizontalL,
+  },
 });
 
+/** Sprint 20 (parity) — full Occupancy (ooa) screen: header + ward table + capacity flow. */
 export function OccupancyBoard() {
   const s = useStyles();
-  const data = OCCUPANCY_PINNED;
-  const agent = occupancyBoard.agent;
-  const { openWithContext, openWithReco, showDefault } = useCopilotRail();
+  const { t } = useTranslation();
+  const { mode } = useMode();
+  const { hospital } = useHospital();
+  const rail = useCopilotRail();
+  const [data, setData] = useState<RoleBoardData<OccupancyPayload> | null>(null);
+  const [prev, setPrev] = useState<ResidualPressure | null>(null);
 
   useEffect(() => {
-    showDefault(occupancyBoard.defaultReco(data));
-  }, [data, showDefault]);
+    const scope = mode === 'demo'
+      ? GOLDEN_THREAD_SCOPE
+      : { hospital, windowHours: 72, pinned: false };
+    let active = true;
+    void occupancyBoard.load(scope, mode).then((loaded) => {
+      if (active) {
+        setData(loaded);
+        rail.showDefault(occupancyBoard.defaultReco(loaded));
+      }
+    });
+    void residualFromPrev(occupancyBoard.agent, scope, mode).then((residual) => {
+      if (active) setPrev(residual);
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, hospital]);
 
-  const onInsight = (insight: ContextInsight) => {
+  if (!data) return <Text>{t('board.loading')}</Text>;
+
+  const banner = bannerFor(mode, occupancyBoard.agent, prev);
+  const payload = data.payload;
+
+  const route = (insight: ContextInsight) => {
     const reco = occupancyBoard.recoFor(insight, data);
-    void routeInsight(insight, { agent, openWithContext, openWithReco }, reco);
+    void routeInsight(insight, reco, { agent: occupancyBoard.agent, openWithReco: rail.openWithReco });
   };
 
   return (
-    <div className={s.root}>
-      <HandoffBanner board={occupancyBoard} />
-      <BoardHeader board={occupancyBoard} data={data} />
-      <WardForecastTable wards={data.wards} onSelect={onInsight} />
-      <CapacityFlowDiagram capacity={data.capacity} onSelect={onInsight} />
-    </div>
+    <section className={s.root} data-testid="board-occupancy" aria-label={t('board.occupancy')}>
+      <HandoffBanner banner={banner} provenance={data.provenance} />
+      <BoardHeader agent={occupancyBoard.agent} title={t('board.occupancy')} provenance={data.provenance} lens="Bed Ops" />
+      <WardForecastTable
+        wards={payload.wards}
+        onSelectWard={(w) =>
+          route({ id: w.recoId, label: w.label, context: { channel: w.id, occupancyPct: w.forecastPct } })
+        }
+      />
+      <CapacityFlowDiagram
+        channels={payload.channels}
+        streams={payload.streams}
+        capacity={payload.capacity}
+        onSelectStream={(st) =>
+          route({ id: st.recoId, label: st.label, context: { stream: st.id, level: st.levelLabel } })
+        }
+        onSelectGap={() =>
+          route({ id: 'site-gap', label: t('ooa.gap.label'), context: { gapBeds: payload.capacity.gapBeds } })
+        }
+      />
+    </section>
   );
 }
 ```
 
-Match `HandoffBanner`'s real prop name (it currently takes the board or its `fromHandoff`; confirm in `journey/HandoffBanner.tsx` and adapt). `WardForecastTable`/`CapacityFlowDiagram` `onSelect` build a `ContextInsight` per row/stream (defined in Tasks 5–6). `routeInsight`'s new signature is set in Task 8.
+Confirm the real `HandoffBanner` prop shape in `src/shell/HandoffBanner.tsx`
+(`banner` + `provenance`) and the real `bannerFor` / `residualFromPrev` /
+`GOLDEN_THREAD_SCOPE` signatures before writing — mirror the current
+`OccupancyBoard.tsx` exactly for the load + banner wiring, changing only the body
+from the 3-card grid to `BoardHeader` + `WardForecastTable` + `CapacityFlowDiagram`
+and seeding the default reco on load. `routeInsight(insight, reco, deps)` is the
+Task 8 signature.
 
 - [ ] **Step 4: Run test to verify it passes**
 
