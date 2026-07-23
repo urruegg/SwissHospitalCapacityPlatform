@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-23 |
 | **Author** | @urruegg |
 | **Status** | Reviewed |
-| **Previous Version** | n/a (new — Sprint 09 v2.0.0 T4.3) |
+| **Previous Version** | 1.0.0 (Sprint 09 v2.0.0 T4.3 — new) |
 
 > **Runtime agent.** This is a **user-facing operational agent** distinct from
 > the coding-agent registry in [`AGENTS.md`](../../AGENTS.md). Per
@@ -54,6 +54,17 @@
 - Ontology-to-data-field lookup ("which gold table backs
   `hcp:BedAssignment`?") using the crosswalk in
   [`docs/ontology/crosswalk.md`](../../docs/ontology/crosswalk.md).
+- **Organisation-spine, skills, and care-setting queries (Sprint 23,
+  [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255))**:
+  structural queries over the Curavias org spine (`hcp:Tenant`,
+  `hcp:OrgUnit`, `hcp:Department`) and the skills domain (`hcp:Skill`,
+  `hcp:OccupationRole`, `hcp:HealthWorker`, `hcp:SkillAssertion`,
+  `hcp:SkillDemand`, `hcp:SkillGap`, `hcp:WorkerUnitEligibility`,
+  `hcp:RoleSkillTemplate`), split by `hcp:CareSetting` (`bed` = nursing,
+  `ops` = doctors + specialised) — for example "which nursing skills are
+  short on ward X?" versus "which OR / anaesthesia skills are short in
+  theatre Y?". Skills answers carry the two orthogonal axes: proficiency
+  (1..5, how capable) and assurance (L0..L4, how proven).
 
 ### Out of scope
 
@@ -88,6 +99,25 @@
 - Reference-layer TTL via crosswalk annotations
   ([`docs/ontology/crosswalk.md`](../../docs/ontology/crosswalk.md))
   for concept ↔ table ↔ column resolution.
+
+### Sprint 23 grounding extension (org spine + skills, [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255))
+
+- **Org spine (folded 1:1 into the hospital dimension, T6):** the
+  operational `dim_hospital` now displays the Curavias tenants
+  (CuraNova / Curalp / Vialta; `tenant_id = hospital_id`, PR #332), joined
+  to `dim_org_unit` and `dim_department`. Grounds `hcp:Tenant`,
+  `hcp:OrgUnit`, `hcp:Department`. The real-named hospital surface (USZ /
+  LUKS / SZB) is superseded by the tenant re-brand; H_HSL is dropped (no
+  tenant).
+- **Skills + care-setting gold (T7 / T14):** `dim_skill`,
+  `dim_occupation_role`, `dim_care_setting`, `fact_skill_demand`,
+  `fact_skill_gap`, `fact_skill_assertion`, and
+  `bridge_worker_unit_eligibility` (Direct Lake tables added in PR #339,
+  no-PII surface). Grounds the skills `hcp:*` classes above and the
+  `ont_hospital_capacity` Fabric IQ ontology extension.
+- **GLN golden thread:** worker identity is keyed on GLN (mod-10 validated
+  at the silver gate); the operational binding carries **no PHI** per
+  [ADR-0016](../../docs/adr/0016-no-phi-in-mvp-demo-scope.md).
 
 ### MCP servers
 
