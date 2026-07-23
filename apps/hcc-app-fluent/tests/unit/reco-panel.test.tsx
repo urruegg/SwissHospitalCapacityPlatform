@@ -52,4 +52,41 @@ describe('RecoPanel', () => {
     );
     expect(screen.queryByRole('button', { name: /back to summary/i })).not.toBeInTheDocument();
   });
+
+  it('renders an approval-required gate and keeps the CTA actionable', () => {
+    const onCta = vi.fn();
+    const approvalReco: GroundedReco = {
+      ...reco,
+      primaryCta: { label: 'Move PT-4003 to overflow', kind: 'action', requiresApproval: true },
+    };
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <RecoPanel reco={approvalReco} showBack={false} onBack={vi.fn()} onCta={onCta} />
+      </FluentProvider>,
+    );
+    expect(screen.getByText(/approval required/i)).toBeInTheDocument();
+    expect(screen.getByText(/approved-to-apply/i)).toBeInTheDocument();
+    const cta = screen.getByRole('button', { name: /Move PT-4003 to overflow/ });
+    expect(cta).toBeEnabled();
+    act(() => cta.click());
+    expect(onCta).toHaveBeenCalledWith(approvalReco.primaryCta);
+  });
+
+  it('renders a refused badge and disables the CTA when refused', () => {
+    const onCta = vi.fn();
+    const refusedReco: GroundedReco = {
+      ...reco,
+      refused: true,
+      read: 'Move refused: no compliant downstream bed available.',
+      primaryCta: { label: 'Move PT-4004 to overflow', kind: 'action' },
+    };
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <RecoPanel reco={refusedReco} showBack={false} onBack={vi.fn()} onCta={onCta} />
+      </FluentProvider>,
+    );
+    expect(screen.getByText('Refused')).toBeInTheDocument();
+    const cta = screen.getByRole('button', { name: /Move PT-4004 to overflow/ });
+    expect(cta).toBeDisabled();
+  });
 });

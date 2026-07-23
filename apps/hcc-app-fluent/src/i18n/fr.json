@@ -191,7 +191,10 @@
   "reco": {
     "back": "Retour au résumé",
     "agentLine": "{{agent}} — contexte récupéré",
-    "projection": "Projection : {{text}}"
+    "projection": "Projection : {{text}}",
+    "refused": "Refusé",
+    "approvalRequired": "Approbation requise",
+    "approvalHint": "Répondez approved-to-apply pour continuer"
   },
   "bmca": {
     "table": {

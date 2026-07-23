@@ -191,7 +191,10 @@
   "reco": {
     "back": "Zurück zur Übersicht",
     "agentLine": "{{agent}} — Kontext übernommen",
-    "projection": "Prognose: {{text}}"
+    "projection": "Prognose: {{text}}",
+    "refused": "Abgelehnt",
+    "approvalRequired": "Freigabe erforderlich",
+    "approvalHint": "Mit approved-to-apply antworten, um fortzufahren"
   },
   "bmca": {
     "table": {
