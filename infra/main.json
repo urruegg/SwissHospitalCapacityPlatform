@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "17275698459840797735"
+      "templateHash": "4634770822224680196"
     }
   },
   "parameters": {
@@ -97,6 +97,13 @@
       "defaultValue": "10.60.2.0/24",
       "metadata": {
         "description": "Address prefix for the platform data subnet (private endpoints)."
+      }
+    },
+    "networkCaeSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.60.4.0/23",
+      "metadata": {
+        "description": "Address prefix for the Container Apps Environment (CAE) infrastructure subnet (ADR-0029 Option A). Delegated to Microsoft.App/environments. MUST fall inside networkVnetAddressPrefix — set explicitly whenever the VNet prefix is changed from the 10.60.0.0/16 default (e.g. PROD swn uses 10.70.0.0/16)."
       }
     },
     "enableObservabilityModule": {
@@ -496,6 +503,13 @@
       "metadata": {
         "description": "Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield)."
       }
+    },
+    "enableKeyVaultPrivateEndpoint": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity."
+      }
     }
   },
   "variables": {
@@ -535,6 +549,13 @@
           },
           "keyVaultName": {
             "value": "[parameters('keyVaultNameOverride')]"
+          },
+          "enableKeyVaultPrivateEndpoint": {
+            "value": "[parameters('enableKeyVaultPrivateEndpoint')]"
+          },
+          "vnetResourceId": "[if(parameters('enableNetworkModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName'))), '2025-04-01').outputs.vnetResourceId.value), createObject('value', ''))]",
+          "keyVaultPrivateEndpointSubnetName": {
+            "value": "snet-data"
           }
         },
         "template": {
@@ -544,7 +565,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "14701785748605252136"
+              "templateHash": "6831425938694866297"
             }
           },
           "parameters": {
@@ -582,11 +603,34 @@
               "metadata": {
                 "description": "Optional explicit Key Vault name. When empty (default), a deterministic per-(subscription, RG) name is generated. Set this only to sidestep a soft-delete + purge-protection name collision on a same-RG region rebuild (e.g. the Sprint 19 Switzerland North greenfield, where the decommissioned westus2 RG left kv-ihzhhpf-prod-i62t purge-protected until 2026-10-16)."
               }
+            },
+            "enableKeyVaultPrivateEndpoint": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0038, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false."
+              }
+            },
+            "vnetResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the VNet that hosts the Key Vault private-endpoint subnet + is linked to the private DNS zone. Ignored when enableKeyVaultPrivateEndpoint=false."
+              }
+            },
+            "keyVaultPrivateEndpointSubnetName": {
+              "type": "string",
+              "defaultValue": "snet-data",
+              "metadata": {
+                "description": "Name of the subnet inside vnetResourceId that hosts the Key Vault private endpoint. Ignored when enableKeyVaultPrivateEndpoint=false."
+              }
             }
           },
           "variables": {
             "globalUniquenessSuffix": "[take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)]",
-            "effectiveKeyVaultName": "[if(empty(parameters('keyVaultName')), format('kv-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('keyVaultName'))]"
+            "effectiveKeyVaultName": "[if(empty(parameters('keyVaultName')), format('kv-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('keyVaultName'))]",
+            "keyVaultPrivateEndpointName": "[format('pe-{0}', variables('effectiveKeyVaultName'))]",
+            "keyVaultPrivateDnsZoneName": "privatelink.vaultcore.azure.net"
           },
           "resources": [
             {
@@ -618,9 +662,81 @@
                 "enableSoftDelete": true,
                 "enablePurgeProtection": true,
                 "enabledForTemplateDeployment": true,
-                "publicNetworkAccess": "Enabled",
+                "publicNetworkAccess": "[if(parameters('enableKeyVaultPrivateEndpoint'), 'Disabled', 'Enabled')]",
                 "softDeleteRetentionInDays": 90
               }
+            },
+            {
+              "condition": "[parameters('enableKeyVaultPrivateEndpoint')]",
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[variables('keyVaultPrivateDnsZoneName')]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[parameters('enableKeyVaultPrivateEndpoint')]",
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', variables('keyVaultPrivateDnsZoneName'), format('{0}-link', last(split(parameters('vnetResourceId'), '/'))))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetResourceId')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enableKeyVaultPrivateEndpoint')]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-11-01",
+              "name": "[variables('keyVaultPrivateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "subnet": {
+                  "id": "[format('{0}/subnets/{1}', parameters('vnetResourceId'), parameters('keyVaultPrivateEndpointSubnetName'))]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('{0}-conn', variables('keyVaultPrivateEndpointName'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', variables('effectiveKeyVaultName'))]",
+                      "groupIds": [
+                        "vault"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('effectiveKeyVaultName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enableKeyVaultPrivateEndpoint')]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-11-01",
+              "name": "[format('{0}/{1}', variables('keyVaultPrivateEndpointName'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "privatelink-vaultcore-azure-net",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName'))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', variables('keyVaultPrivateEndpointName'))]"
+              ]
             }
           ],
           "outputs": {
@@ -638,7 +754,10 @@
             }
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName')))]"
+      ]
     },
     {
       "condition": "[parameters('enableIdentityModule')]",
@@ -772,6 +891,9 @@
           },
           "dataSubnetPrefix": {
             "value": "[parameters('networkDataSubnetPrefix')]"
+          },
+          "caeSubnetPrefix": {
+            "value": "[parameters('networkCaeSubnetPrefix')]"
           }
         },
         "template": {
