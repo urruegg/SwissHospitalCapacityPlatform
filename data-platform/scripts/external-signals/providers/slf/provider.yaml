@@ -1,0 +1,12 @@
+sourceId: slf
+authority: SLF
+trustTier: A
+channelKind: external
+hazardTypes: [avalanche]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+licence: SLF-open-data
+providerVersion: slf-1.0.0
+scenarioMap:
+  avalanche: {template: F8, lageTier: 2}

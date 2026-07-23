@@ -11,3 +11,8 @@ FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 def load_fixture(name: str) -> dict:
     """Load a raw source payload fixture by filename."""
     return json.loads((FIXTURES_DIR / name).read_text(encoding="utf-8"))
+
+
+def load_provider_fixture(source_id: str, name: str) -> dict:
+    """Load a raw fixture for a specific provider from tests/fixtures."""
+    return load_fixture(name)

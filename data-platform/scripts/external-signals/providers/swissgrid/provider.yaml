@@ -1,0 +1,12 @@
+sourceId: swissgrid
+authority: Swissgrid
+trustTier: A
+channelKind: external
+hazardTypes: [power]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+licence: Swissgrid-terms
+providerVersion: swissgrid-1.0.0
+scenarioMap:
+  power: {template: F1, lageTier: 2}

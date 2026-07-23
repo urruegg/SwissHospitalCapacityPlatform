@@ -1,0 +1,95 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "7844134687505676730"
+    }
+  },
+  "parameters": {
+    "envSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Environment suffix, e.g. sit or prod"
+      }
+    },
+    "managedEnvironmentId": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing Container Apps managed environment resource id"
+      }
+    },
+    "eventHubNamespace": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing Event Hub namespace name (evh-ihzhhpf...)"
+      }
+    },
+    "eventHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "Event Hub name for external signals"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    }
+  },
+  "variables": {
+    "appName": "[format('ca-signal-runner-ihzhhpf-{0}', parameters('envSuffix'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.App/containerApps",
+      "apiVersion": "2024-03-01",
+      "name": "[variables('appName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "env": "[parameters('envSuffix')]",
+        "owner": "urruegg",
+        "costCenter": "curavias-platform",
+        "workload": "external-signals"
+      },
+      "properties": {
+        "managedEnvironmentId": "[parameters('managedEnvironmentId')]",
+        "configuration": {
+          "activeRevisionsMode": "Single"
+        },
+        "template": {
+          "containers": [
+            {
+              "name": "provider-runner",
+              "image": "mcr.microsoft.com/azure-cli:latest",
+              "env": [
+                {
+                  "name": "EVENT_HUB_NAMESPACE",
+                  "value": "[parameters('eventHubNamespace')]"
+                },
+                {
+                  "name": "EVENT_HUB_NAME",
+                  "value": "[parameters('eventHubName')]"
+                }
+              ]
+            }
+          ],
+          "scale": {
+            "minReplicas": 0,
+            "maxReplicas": 1
+          }
+        }
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      }
+    }
+  ],
+  "outputs": {
+    "providerRunnerName": {
+      "type": "string",
+      "value": "[variables('appName')]"
+    }
+  }
+}

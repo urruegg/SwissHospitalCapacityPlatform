@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.9.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 1.10.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.8.0 (added FR-EXT trusted external signal requirements) |
+| **Previous Version** | 1.9.0 (added FR-EXT-015 to FR-EXT-020 and NFR-EXT-PLG plugin-architecture requirements) |
 
 ## Purpose
 
@@ -187,6 +187,14 @@ preparation.
 | `FR-EXT-ONT-001` | Add ExternalSignal/TrustedSource/HazardType/HazardEvent/TriggerRule classes. |
 | `FR-EXT-ONT-002` | Maintain reference<->operational<->contract crosswalk for the new classes. |
 | `FR-EXT-GOV-001` | Enforce trust-tier + HITL + advisory-only trigger policy. |
+| `FR-EXT-015` | Onboard new signal sources as manifest-driven provider plugins emitting `DC-EXT-SIGNAL-v1`. |
+| `FR-EXT-016` | Provide real API adapters (LiveBinding) for confirmed-ready channels (SED, Alertswiss). |
+| `FR-EXT-017` | Provide simulator plugins (SimulatorBinding) for channels without a confirmed API. |
+| `FR-EXT-018` | Support internal signal channels (InternalBinding) derived from platform gold tables. |
+| `FR-EXT-019` | Surface a data-driven live/simulated/internal trust badge per channel on the CSA/OCA boards. |
+| `FR-EXT-020` | Host ingestion + simulation as Azure Container Apps services publishing to Event Hub/Eventstream (not GitHub Actions). |
+| `NFR-EXT-PLG-001` | Live bindings are always mocked in CI; no external network calls in Actions. |
+| `NFR-EXT-PLG-002` | A schema-invalid manifest fails CI and is excluded from the runtime catalogue (fail-closed). |
 
 ## Non-Functional Requirements
 
@@ -324,6 +332,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21: trusted external signals contract, triggers, ontology, and governance)* | `FR-EXT-001` to `FR-EXT-006`, `FR-EXT-ONT-001` to `FR-EXT-ONT-002`, `FR-EXT-GOV-001`, `NFR-EXT-ONT-001`, `NFR-EXT-GOV-001` to `NFR-EXT-GOV-002` |
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 forecast overlay and SIT IQ-layer proof extension)* | `FR-EXT-010` to `FR-EXT-014` |
+| [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
 
 ## Assumptions To Validate In Implementation Planning
 

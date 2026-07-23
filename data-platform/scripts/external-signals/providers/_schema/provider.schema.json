@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SignalProvider manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sourceId", "authority", "trustTier", "channelKind",
+               "hazardTypes", "defaultMode", "licence", "providerVersion"],
+  "properties": {
+    "sourceId": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "authority": {"type": "string"},
+    "trustTier": {"type": "string", "enum": ["A", "B", "C"]},
+    "channelKind": {"type": "string", "enum": ["external", "internal"]},
+    "hazardTypes": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "defaultMode": {"type": "string", "enum": ["live", "simulated", "internal"]},
+    "fallbackMode": {"type": "string", "enum": ["simulated"]},
+    "cadenceSeconds": {"type": "integer", "minimum": 1},
+    "endpoint": {"type": "string"},
+    "licence": {"type": "string", "minLength": 1},
+    "providerVersion": {"type": "string"},
+    "scenarioMap": {"type": "object"}
+  }
+}
