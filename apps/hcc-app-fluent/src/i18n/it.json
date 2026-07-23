@@ -73,6 +73,7 @@
   "board": {
     "loading": "Caricamento...",
     "occupancy": "Previsione dell'occupazione (72h)",
+    "bedManager": "Gestione dei letti (72h)",
     "beds": "letti",
     "nav": {
       "occupancy": "Occupazione",
@@ -136,6 +137,8 @@
     "dischargeExpedite": "Accelera la dimissione {{ward}}",
     "dischargeExpediteDetail": "Accelera la dimissione {{ward}} — {{blocker}}",
     "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
+    "placementMove": "Sposta {{patientId}} da {{fromWard}} a {{toWard}}",
+    "placementBarrier": "Ostacolo: {{label}}",
     "orDefer": "Rinvia il caso {{specialty}}",
     "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Testa {{scenario}}"
@@ -189,6 +192,46 @@
     "back": "Torna al riepilogo",
     "agentLine": "{{agent}} — contesto acquisito",
     "projection": "Proiezione: {{text}}"
+  },
+  "bmca": {
+    "table": {
+      "hint": "Fai clic su una riga → azioni di collocazione",
+      "patient": "Paziente",
+      "priority": "Priorità",
+      "from": "Da",
+      "to": "A",
+      "wait": "Attesa (min)"
+    },
+    "barriers": {
+      "hint": "Ostacoli al collocamento ordinati per impatto sui letti",
+      "rank": "Rango",
+      "label": "Ostacolo",
+      "bedImpact": "Letti",
+      "detail": "Dettaglio",
+      "cta": "Sequenza automatica per impatto →"
+    },
+    "kpis": {
+      "utilPct": "Utilizzo",
+      "freeBeds": "Letti liberi",
+      "targetFree": "Obiettivo libero",
+      "slaRisk": "Rischio SLA"
+    },
+    "stream": {
+      "title": "Eventstream ammissioni / dimissioni",
+      "hint": "Ammissioni e dimissioni in tempo reale (simulato)"
+    },
+    "pbi": {
+      "title": "Dashboard capacità"
+    },
+    "gap": {
+      "label": "Divario di capacità del sito",
+      "cta": "Risolvere il divario di capacità"
+    },
+    "askAbout": {
+      "topPressure": "Dove c'è la maggiore pressione?",
+      "placementQueue": "Quanto è lunga la coda di assegnazione letti?",
+      "slaRisk": "Quali reparti hanno rischio SLA?"
+    }
   },
   "ooa": {
     "askAbout": {

@@ -73,6 +73,7 @@
   "board": {
     "loading": "Chargement...",
     "occupancy": "Prévision d'occupation (72 h)",
+    "bedManager": "Gestion des lits (72 h)",
     "beds": "lits",
     "nav": {
       "occupancy": "Occupation",
@@ -136,6 +137,8 @@
     "dischargeExpedite": "Accélérer la sortie {{ward}}",
     "dischargeExpediteDetail": "Accélérer la sortie {{ward}} — {{blocker}}",
     "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}",
+    "placementMove": "Déplacer {{patientId}} de {{fromWard}} vers {{toWard}}",
+    "placementBarrier": "Obstacle : {{label}}",
     "orDefer": "Reporter le cas {{specialty}}",
     "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Simuler {{scenario}}"
@@ -189,6 +192,46 @@
     "back": "Retour au résumé",
     "agentLine": "{{agent}} — contexte récupéré",
     "projection": "Projection : {{text}}"
+  },
+  "bmca": {
+    "table": {
+      "hint": "Cliquez sur une ligne → actions de placement",
+      "patient": "Patient",
+      "priority": "Priorité",
+      "from": "De",
+      "to": "Vers",
+      "wait": "Attente (min)"
+    },
+    "barriers": {
+      "hint": "Obstacles au placement triés par impact sur les lits",
+      "rank": "Rang",
+      "label": "Obstacle",
+      "bedImpact": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par impact →"
+    },
+    "kpis": {
+      "utilPct": "Utilisation",
+      "freeBeds": "Lits libres",
+      "targetFree": "Cible libre",
+      "slaRisk": "Risque SLA"
+    },
+    "stream": {
+      "title": "Eventstream admissions / sorties",
+      "hint": "Admissions et sorties en direct (simulé)"
+    },
+    "pbi": {
+      "title": "Tableau de bord de capacité"
+    },
+    "gap": {
+      "label": "Écart de capacité du site",
+      "cta": "Résoudre l'écart de capacité"
+    },
+    "askAbout": {
+      "topPressure": "Où est la plus grande pression ?",
+      "placementQueue": "Quelle est la longueur de la file d'attente d'attribution de lits ?",
+      "slaRisk": "Quelles unités ont un risque SLA ?"
+    }
   },
   "ooa": {
     "askAbout": {

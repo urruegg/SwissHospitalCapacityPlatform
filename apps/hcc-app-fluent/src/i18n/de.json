@@ -73,6 +73,7 @@
   "board": {
     "loading": "Wird geladen...",
     "occupancy": "Auslastungsprognose (72h)",
+    "bedManager": "Bettenmanagement (72h)",
     "beds": "Betten",
     "nav": {
       "occupancy": "Belegung",
@@ -136,6 +137,8 @@
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
     "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
+    "placementMove": "{{patientId}} von {{fromWard}} nach {{toWard}} verlegen",
+    "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
     "stressTest": "{{scenario}} durchspielen"
@@ -189,6 +192,46 @@
     "back": "Zurück zur Übersicht",
     "agentLine": "{{agent}} — Kontext übernommen",
     "projection": "Prognose: {{text}}"
+  },
+  "bmca": {
+    "table": {
+      "hint": "Zeile anklicken → Platzierungsaktionen",
+      "patient": "Patient",
+      "priority": "Priorität",
+      "from": "Von",
+      "to": "Nach",
+      "wait": "Wartezeit (min)"
+    },
+    "barriers": {
+      "hint": "Platzierungshindernisse nach Bettauswirkung sortiert",
+      "rank": "Rang",
+      "label": "Hindernis",
+      "bedImpact": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Auswirkung →"
+    },
+    "kpis": {
+      "utilPct": "Auslastung",
+      "freeBeds": "Freie Betten",
+      "targetFree": "Sollgrösse",
+      "slaRisk": "SLA-Risiko"
+    },
+    "stream": {
+      "title": "Zugänge / Einzug-Eventstream",
+      "hint": "Live-Zugänge und -Austritte (simuliert)"
+    },
+    "pbi": {
+      "title": "Kapazitäts-Dashboard"
+    },
+    "gap": {
+      "label": "Standortkapazitätslücke",
+      "cta": "Kapazitätslücke schliessen"
+    },
+    "askAbout": {
+      "topPressure": "Wo ist der grösste Druck?",
+      "placementQueue": "Wie lang ist die Bettenzuweisungswarteschlange?",
+      "slaRisk": "Welche Stationen haben SLA-Risiko?"
+    }
   },
   "ooa": {
     "askAbout": {

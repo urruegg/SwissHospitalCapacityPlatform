@@ -73,6 +73,7 @@
   "board": {
     "loading": "Loading...",
     "occupancy": "Occupancy forecast (72h)",
+    "bedManager": "Bed management (72h)",
     "beds": "beds",
     "nav": {
       "occupancy": "Occupancy",
@@ -136,6 +137,8 @@
     "dischargeExpedite": "Expedite {{ward}} discharge",
     "dischargeExpediteDetail": "Expedite {{ward}} discharge — {{blocker}}",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
+    "placementMove": "Move {{patientId}} from {{fromWard}} to {{toWard}}",
+    "placementBarrier": "Barrier: {{label}}",
     "orDefer": "Defer {{specialty}} case",
     "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Stress-test {{scenario}}"
@@ -189,6 +192,46 @@
     "back": "Back to summary",
     "agentLine": "{{agent}} — context picked up",
     "projection": "Projection: {{text}}"
+  },
+  "bmca": {
+    "table": {
+      "hint": "Click a row → placement actions",
+      "patient": "Patient",
+      "priority": "Priority",
+      "from": "From",
+      "to": "To",
+      "wait": "Wait (min)"
+    },
+    "barriers": {
+      "hint": "Placement barriers sorted by bed impact",
+      "rank": "Rank",
+      "label": "Barrier",
+      "bedImpact": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by impact →"
+    },
+    "kpis": {
+      "utilPct": "Utilisation",
+      "freeBeds": "Free beds",
+      "targetFree": "Target free",
+      "slaRisk": "SLA risk"
+    },
+    "stream": {
+      "title": "Admissions / discharge eventstream",
+      "hint": "Live admissions and discharges (simulated)"
+    },
+    "pbi": {
+      "title": "Capacity dashboard"
+    },
+    "gap": {
+      "label": "Site capacity gap",
+      "cta": "Resolve capacity gap"
+    },
+    "askAbout": {
+      "topPressure": "Where is the biggest pressure?",
+      "placementQueue": "How long is the bed placement queue?",
+      "slaRisk": "Which wards have SLA risk?"
+    }
   },
   "ooa": {
     "askAbout": {
