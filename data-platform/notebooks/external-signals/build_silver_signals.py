@@ -57,10 +57,11 @@ def _write(df, table: str) -> None:
 def build_silver_signals(spark) -> None:  # pragma: no cover - Fabric runtime only
     """Read Bronze ext_signals_raw, split, and write silver.ext_signals + quarantine."""
     df = spark.read.table(BRONZE_TABLE)
+    schema = df.schema
     rows = [r.asDict(recursive=True) for r in df.collect()]
     kept, quarantined = split_quarantine(rows)
-    _write(spark.createDataFrame(kept), SILVER_TABLE)
-    _write(spark.createDataFrame(quarantined), SILVER_QUARANTINE_TABLE)
+    _write(spark.createDataFrame(kept, schema), SILVER_TABLE)
+    _write(spark.createDataFrame(quarantined, schema), SILVER_QUARANTINE_TABLE)
 
 
 def run() -> None:  # pragma: no cover - Fabric runtime only
