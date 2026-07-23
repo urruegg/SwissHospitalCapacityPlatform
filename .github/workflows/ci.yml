@@ -13,6 +13,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+      workflows: ${{ steps.filter.outputs.workflows }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            infra:
+              - 'infra/**'
+              - '**/*.bicep'
+              - '**/*.bicepparam'
+            workflows:
+              - '.github/workflows/**'
+              - '.actionlint.yaml'
+              - '.actionlint.yml'
+
   markdown-lint:
     name: Markdown lint
     runs-on: ubuntu-latest
@@ -37,6 +64,8 @@ jobs:
 
   actionlint:
     name: actionlint (workflows)
+    needs: changes
+    if: needs.changes.outputs.workflows == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -68,6 +97,8 @@ jobs:
 
   bicep-build:
     name: Bicep build (infra/landing-zone)
+    needs: changes
+    if: needs.changes.outputs.infra == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
