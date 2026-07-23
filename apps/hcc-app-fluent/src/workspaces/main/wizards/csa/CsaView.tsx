@@ -138,9 +138,9 @@ function CrisisRoleBoardBlock() {
             key={insight.id}
             appearance="subtle"
             onClick={() =>
-              void routeInsight(insight, {
+              void routeInsight(insight, crisisBoard.recoFor(insight, data), {
                 agent: crisisBoard.agent,
-                openWithContext: rail.openWithContext,
+                openWithReco: rail.openWithReco,
               })
             }
           >
