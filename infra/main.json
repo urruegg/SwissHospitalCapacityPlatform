@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "7653479104938368726"
+      "templateHash": "2454473220205679511"
     }
   },
   "parameters": {
@@ -291,6 +291,13 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable data foundation module deployment."
+      }
+    },
+    "enableSignalRunnerModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the external-signals provider-runner (ca-signal-runner) module. Requires enableAgentHostModule + enableDataFoundationModule. Wires the runner into the CAE + Event Hub namespace so it survives future CAE redeploys."
       }
     },
     "eventHubsSimulatorMiPrincipalId": {
@@ -4430,7 +4437,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "17496594672362556061"
+              "templateHash": "14271685339274188062"
             }
           },
           "parameters": {
@@ -5009,7 +5016,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "10466398943931516285"
+                      "templateHash": "7213773335792771551"
                     }
                   },
                   "parameters": {
@@ -5214,6 +5221,10 @@
                     }
                   ],
                   "outputs": {
+                    "managedEnvironmentId": {
+                      "type": "string",
+                      "value": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
+                    },
                     "fqdn": {
                       "type": "string",
                       "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01').configuration.ingress.fqdn]"
@@ -5259,6 +5270,10 @@
             "redisEnabled": {
               "type": "bool",
               "value": "[parameters('enableRedisModule')]"
+            },
+            "managedEnvironmentId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-container-app'), '2025-04-01').outputs.managedEnvironmentId.value]"
             }
           }
         }
@@ -5727,6 +5742,153 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName')))]",
         "[resourceId('Microsoft.Resources/deployments', format('network-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[and(and(parameters('enableSignalRunnerModule'), parameters('enableAgentHostModule')), parameters('enableDataFoundationModule'))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('signal-runner-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "envSuffix": {
+            "value": "[parameters('environmentName')]"
+          },
+          "managedEnvironmentId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName'))), '2025-04-01').outputs.managedEnvironmentId.value]"
+          },
+          "eventHubNamespace": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceName.value]"
+          },
+          "eventHubName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "12112788262092548449"
+            }
+          },
+          "parameters": {
+            "envSuffix": {
+              "type": "string",
+              "metadata": {
+                "description": "Environment suffix, e.g. sit or prod"
+              }
+            },
+            "managedEnvironmentId": {
+              "type": "string",
+              "metadata": {
+                "description": "Existing Container Apps managed environment resource id"
+              }
+            },
+            "eventHubNamespace": {
+              "type": "string",
+              "metadata": {
+                "description": "Existing Event Hub namespace name (evh-ihzhhpf...)"
+              }
+            },
+            "eventHubName": {
+              "type": "string",
+              "metadata": {
+                "description": "Event Hub name for external signals"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            }
+          },
+          "variables": {
+            "appName": "[format('ca-signal-runner-ihzhhpf-{0}', parameters('envSuffix'))]",
+            "eventHubsDataSenderRoleId": "2b629674-e913-4c01-ae53-ef4638d8f975"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.App/containerApps",
+              "apiVersion": "2024-03-01",
+              "name": "[variables('appName')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "env": "[parameters('envSuffix')]",
+                "owner": "urruegg",
+                "costCenter": "curavias-platform",
+                "workload": "external-signals"
+              },
+              "properties": {
+                "managedEnvironmentId": "[parameters('managedEnvironmentId')]",
+                "configuration": {
+                  "activeRevisionsMode": "Single"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "provider-runner",
+                      "image": "mcr.microsoft.com/azure-cli:latest",
+                      "env": [
+                        {
+                          "name": "EVENT_HUB_NAMESPACE",
+                          "value": "[parameters('eventHubNamespace')]"
+                        },
+                        {
+                          "name": "EVENT_HUB_NAME",
+                          "value": "[parameters('eventHubName')]"
+                        }
+                      ]
+                    }
+                  ],
+                  "scale": {
+                    "minReplicas": 0,
+                    "maxReplicas": 1
+                  }
+                }
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespace'))]",
+              "name": "[guid(resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespace')), resourceId('Microsoft.App/containerApps', variables('appName')), variables('eventHubsDataSenderRoleId'))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.App/containerApps', variables('appName')), '2024-03-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.App/containerApps', variables('appName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "providerRunnerName": {
+              "type": "string",
+              "value": "[variables('appName')]"
+            },
+            "providerRunnerPrincipalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.App/containerApps', variables('appName')), '2024-03-01', 'full').identity.principalId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName')))]"
       ]
     },
     {

@@ -151,3 +151,7 @@ output cosmosAccountName string = cosmos.outputs.cosmosAccountName
 output agentHostMiPrincipalId string = agentHostMi.properties.principalId
 output redisName string = enableRedisModule ? redis!.outputs.redisName : ''
 output redisEnabled bool = enableRedisModule
+// Sprint 19 follow-up — expose the Container Apps managed environment resource
+// id so the external-signals provider-runner module (ca-signal-runner) can be
+// wired into main.bicep and survive future CAE redeploys.
+output managedEnvironmentId string = containerApp.outputs.managedEnvironmentId
