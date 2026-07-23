@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { EvidenceTab } from './tabs/evidence/EvidenceTab';
 import { RolesTab } from './tabs/roles/RolesTab';
@@ -27,8 +27,8 @@ const useStyles = makeStyles({
     },
   },
   activeNavLink: {
-    backgroundColor: tokens.colorBrandBackground2,
-    color: tokens.colorBrandForeground1,
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
     fontWeight: tokens.fontWeightSemibold,
   },
 });
@@ -82,7 +82,7 @@ export function BackstageView() {
               key={item.key}
               to={item.to}
               data-testid={`backstage-nav-${item.key}`}
-              className={`${styles.navLink} ${active ? styles.activeNavLink : ''}`}
+              className={mergeClasses(styles.navLink, active && styles.activeNavLink)}
               aria-current={active ? 'page' : undefined}
             >
               {t(item.labelKey)}
