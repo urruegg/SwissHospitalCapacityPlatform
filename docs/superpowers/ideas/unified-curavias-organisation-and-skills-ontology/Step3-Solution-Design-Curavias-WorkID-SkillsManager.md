@@ -34,7 +34,7 @@ Both products are operated by **Work-ID AG, Seestrasse 40, CH-8800 Thalwil** —
 
 The single most important decision: **Work-ID and Skills-Manager are *source systems*, not the evidence authority.** They feed the ontology's **Bronze** layer alongside HRIS and the LMS. Their skill assertions enter at **assurance L0–L1** (self-declared, or employer-confirmed inside Skills-Manager) and must **earn** any higher assurance by being reconciled — via **GLN** — against the federal registers (MedReg/GesReg/NAREG/PsyReg) that already anchor the Curavias evidence model.
 
-```
+```text
                         ┌─────────────────────────── Curavias ontology (Steps 1–2) ───────────────────────────┐
  Discovery / breadth    │  Bronze ─▶ Silber ─▶ Gold (deny-by-default)                                          │
  (L0–L1)                │                        ▲                                                             │
@@ -132,7 +132,7 @@ The **`WorkIdProfile`** class (Step 1) and its table **`dim_work_id_profile`** (
 
 ### 4.2 Consent-first flow (respecting Work-ID's ownership model)
 
-```
+```text
 1. Employee opts in inside their Work-ID to share their passport with the hospital's Curavias/Skills-Manager tenant.
 2. The share carries a consent_scope (which skills, for what purpose = capacity planning).
 3. Curavias links the Work-ID share to the employee's HRIS record → populates worker_gln in dim_work_id_profile.
@@ -188,7 +188,7 @@ The integration is realised as first-class artefacts in the OneLake/Fabric IQ da
 | **Connector job** | scheduled ingest (mode A/B/C) → Bronze; crosswalk resolve in Silber; GLN reconcile in verification step |
 | **Sync observability** | `fact_skills_manager_sync_log` — every run's direction, counts, status (Step 4) for the DQ agent |
 | **Data contract** | `DC-WORKID-SKILLS-v1` (§8) governs the inbound payload and the assurance floor |
-| **Governance** | consent captured in `dim_work_id_profile.consent_status`; Purview lineage tags `source_system = work_id | skills_manager` |
+| **Governance** | consent captured in `dim_work_id_profile.consent_status`; Purview lineage tags `source_system = work_id \| skills_manager` |
 
 ### 7.1 Data contract — `DC-WORKID-SKILLS-v1`
 
