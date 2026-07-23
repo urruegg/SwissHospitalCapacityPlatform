@@ -100,6 +100,13 @@ param enableFabricEventstreamModule = true
 param fabricEventstreamWorkspaceId = ''
 param fabricEventstreamDestinationLakehouseId = ''
 
+// Sprint 23 WS-A4 (#255) — Skills-events Eventstream lane (design D4, scaffold-only Bicep +
+// REST-API post-deploy). Enabled in SIT; carries only the three near-real-time skills events.
+// workspaceId/destinationLakehouseId populated post-deploy from configure-fabric.ps1 output.
+param enableSkillsEventstreamModule = true
+param skillsEventstreamWorkspaceId = ''
+param skillsEventstreamDestinationLakehouseId = ''
+
 // Sprint 09 v2.0.0 T2.1 — Event Hubs consumer group RBAC.
 // Simulator MI (T3.7) and agent MIs (T4.5) don't exist yet; leaving empty means the three
 // role assignments are conditionally skipped. Populate as those Sprint 09 v2.0.0 tasks land.

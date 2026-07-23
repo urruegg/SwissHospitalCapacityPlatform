@@ -1,0 +1,3 @@
+care_setting_id,label_de,label_en,staff_group,description
+bed,Bettenbezogen (Pflege),Bed-based (nursing),nursing,"Pflege-/Betreuungsbedarf gebunden an betriebene Betten (Pflegepersonal)"
+ops,Betrieblich (aerztlich/spezialisiert),Operational (medical/specialised),medical,"Aerztlicher und spezialisierter Funktionsbedarf (Aerzte + spezialisierte Rollen)"

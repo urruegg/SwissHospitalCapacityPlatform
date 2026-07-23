@@ -45,6 +45,9 @@ param networkAppSubnetPrefix string = '10.60.1.0/24'
 @description('Address prefix for the platform data subnet (private endpoints).')
 param networkDataSubnetPrefix string = '10.60.2.0/24'
 
+@description('Address prefix for the Container Apps Environment (CAE) infrastructure subnet (ADR-0029 Option A). Delegated to Microsoft.App/environments. MUST fall inside networkVnetAddressPrefix — set explicitly whenever the VNet prefix is changed from the 10.60.0.0/16 default (e.g. PROD swn uses 10.70.0.0/16).')
+param networkCaeSubnetPrefix string = '10.60.4.0/23'
+
 @description('Enable observability module deployment scaffold.')
 param enableObservabilityModule bool = false
 
@@ -94,6 +97,15 @@ param fabricEventstreamWorkspaceId string = ''
 
 @description('Optional Fabric Lakehouse ID for the Eventstream destination. Empty defers destination wiring (Eventstream created source-only). Optional at Bicep composition time; required at post-deploy time for full wiring.')
 param fabricEventstreamDestinationLakehouseId string = ''
+
+@description('Enable the Sprint 23 skills-events Eventstream lane (WS-A4, design D4). Scaffold-only Bicep + REST-API post-deploy carrying ONLY the three near-real-time skills events. Requires enableDataFoundationModule=true for the Event Hub source. See modules/integration-orchestration/skills-eventstream/main.bicep.')
+param enableSkillsEventstreamModule bool = false
+
+@description('Fabric workspace ID that hosts the skills-events Eventstream. Required at post-deploy time when enableSkillsEventstreamModule=true. Obtain via configure-fabric.ps1 post-deploy output.')
+param skillsEventstreamWorkspaceId string = ''
+
+@description('Optional Fabric Lakehouse ID for the skills-events Eventstream destination. Empty defers destination wiring (Eventstream created source-only).')
+param skillsEventstreamDestinationLakehouseId string = ''
 
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
@@ -246,6 +258,9 @@ param manageCuraviasDnsZone bool = true
 @description('Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield).')
 param keyVaultNameOverride string = ''
 
+@description('Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity.')
+param enableKeyVaultPrivateEndpoint bool = false
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -269,6 +284,13 @@ module platformFoundation './modules/platform-foundation/main.bicep' = {
     tags: tags
     logAnalyticsRetentionInDays: logAnalyticsRetentionInDays
     keyVaultName: keyVaultNameOverride
+    // ADR-0038 — Key Vault private endpoint. vnetResourceId is only consumed by
+    // the module when enableKeyVaultPrivateEndpoint=true (which requires
+    // enableNetworkModule=true — see the param description). Single-condition
+    // guard mirrors the agent-host CAE wiring so Bicep can prove non-null.
+    enableKeyVaultPrivateEndpoint: enableKeyVaultPrivateEndpoint
+    vnetResourceId: enableNetworkModule ? network!.outputs.vnetResourceId : ''
+    keyVaultPrivateEndpointSubnetName: 'snet-data'
   }
 }
 
@@ -290,6 +312,7 @@ module network './modules/network/main.bicep' = if (enableNetworkModule) {
     vnetAddressPrefix: networkVnetAddressPrefix
     appSubnetPrefix: networkAppSubnetPrefix
     dataSubnetPrefix: networkDataSubnetPrefix
+    caeSubnetPrefix: networkCaeSubnetPrefix
   }
 }
 
@@ -633,6 +656,22 @@ module fabricEventstream './modules/data-platform/fabric-eventstream/main.bicep'
   }
 }
 
+// Sprint 23 WS-A4 (#255) — Skills-events Eventstream lane (design D4). Scaffold-only Bicep +
+// REST-API post-deploy; carries ONLY the three near-real-time skills events. Reuses the
+// Sprint 21 real-time rail (Event Hub source). Region constrained as above.
+module skillsEventstream './modules/integration-orchestration/skills-eventstream/main.bicep' = if (enableSkillsEventstreamModule) {
+  name: 'skills-eventstream-${environmentName}'
+  params: {
+    workspaceId: skillsEventstreamWorkspaceId
+    eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
+    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
+    eventHubConsumerGroup: 'cg-skills-eventstream'
+    location: location == 'switzerlandnorth' ? 'switzerlandnorth' : 'westus2'
+    demoScope: location != 'switzerlandnorth'
+    destinationLakehouseId: skillsEventstreamDestinationLakehouseId
+  }
+}
+
 output keyVaultName string = platformFoundation.outputs.keyVaultName
 output logAnalyticsWorkspaceName string = platformFoundation.outputs.logAnalyticsWorkspaceName
 output sourceSqlGatingWarning string = enableSourceSqlModule && !enableDataPlatformModule
@@ -649,6 +688,13 @@ output fabricEventstreamGatingWarning string = enableFabricEventstreamModule && 
     ? 'WARN: enableFabricEventstreamModule=true but fabricEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output.'
     : (enableFabricEventstreamModule && empty(fabricEventstreamDestinationLakehouseId))
       ? 'INFO: fabricEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.'
+      : 'ok'
+output skillsEventstreamGatingWarning string = enableSkillsEventstreamModule && !enableDataFoundationModule
+  ? 'WARN: enableSkillsEventstreamModule=true requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source.'
+  : (enableSkillsEventstreamModule && empty(skillsEventstreamWorkspaceId))
+    ? 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.'
+    : (enableSkillsEventstreamModule && empty(skillsEventstreamDestinationLakehouseId))
+      ? 'INFO: skillsEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.'
       : 'ok'
 output moduleStatuses object = {
   identity: enableIdentityModule ? identity!.outputs.moduleStatus : 'identity-disabled'
@@ -667,6 +713,7 @@ output moduleStatuses object = {
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'
+  skillsEventstream: enableSkillsEventstreamModule ? skillsEventstream!.outputs.moduleStatus : 'skills-eventstream-disabled'
 }
 
 output foundryHostedAgentsStatus string = enableFoundryHostedAgents ? foundryHostedAgents!.outputs.moduleStatus : 'foundry-hosted-agents-disabled'
