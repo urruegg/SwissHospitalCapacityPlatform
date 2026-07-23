@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.3.0 |
-| **Date** | 2026-07-22 |
+| **Version** | 0.4.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft — Sprint 09 skeleton (RB-11) |
-| **Previous Version** | 0.2.1 (Sprint 09 MVO crosswalk skeleton with ForecastOutput and discharge rows) |
+| **Status** | Draft — Sprint 09 skeleton (RB-11); Sprint 26 WS-A Foresight tier |
+| **Previous Version** | 0.3.0 (Sprint 21 trusted-external-signal rows) |
 | **Governance** | Every PR that touches [reference-layer.ttl](reference-layer.ttl) OR the operational-layer semantic model MUST update this file in the same PR. Reviewed by semantic / ontology owner per [FR-GOV-ONT-002](../PRD.md#h-semantic-ontology). |
 | **Enforcement** | Manual review today; CI conformance check delivered by follow-up PR (RB-08) per [FR-GOV-ONT-003](../PRD.md#h-semantic-ontology). |
 
@@ -39,6 +39,9 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:HazardEvent` | `HazardEvent` *(GA-gated per ADR-0014)* | Derived from `DC-EXT-SIGNAL-v1` dedup key | Time-series trigger event (`gold.ext_fact_trigger_event`) | Deduplicated event-level object handed to CSA; records provenance and trigger audit. |
 | `hcp:TriggerRule` | `TriggerRule` *(GA-gated per ADR-0014)* | `trigger_rules.yaml` derived from `DC-EXT-SIGNAL-v1` fields | Static rule set | Maps qualifying signals to `ScenarioTemplate` + `LageTier`; bridge/Activator execution remains advisory and HITL. |
 | `hcp:AffectedRegion` | *(reuse Location; GA-gated operational region binding)* | `DC-EXT-SIGNAL-v1` (`region.cantons`, `region.nuts`, `region.geoPolygon`) | Region dimension (`gold.ext_dim_region`) | Reuses Location semantics for canton/NUTS/polygon targeting; operational binding deferred per `NFR-EXT-ONT-001`. |
+| `hcp:Ward` | `Ward` | `DC-MASTER-07` *(dim_ward_capacityunit — ward rollup)* | Static reference (bed rollup) | Sprint 26 WS-A range target for `hcp:forWard`; full `omrse:hospital-part-of` placement is Phase 3. |
+| `hcp:Forecast` | `Forecast` | **[`DC-OCCUPANCY-FORECAST-v1`](../../data/synthetic/schema/dc-occupancy-forecast-v1.schema.json)** *(Sprint 26 WS-A)* | Batch Gold Delta (`gold.fact_occupancy_forecast`) — deterministic synthetic, hourly horizons 0..72h | 72h occupancy forecast per ward; distinct from `hcp:ForecastOutput` (specialty demand). Deterministic generator with a real-model seam (design D2). |
+| `hcp:Driver` | `Driver` | **[`DC-FORECAST-DRIVER-v1`](../../data/synthetic/schema/dc-forecast-driver-v1.schema.json)** *(Sprint 26 WS-A)* | Batch Gold Delta (`gold.fact_forecast_driver`) | Forecast decomposition ('why'); deltas reconcile to the net forecast change. Grounds beat 2 of the actionable-insight pattern. |
 
 ### Reference-layer relations mapped to Fabric IQ relationships
 
@@ -51,6 +54,9 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:signalAffectsRegion` (ExternalSignal → AffectedRegion) | `signal_affects_region` *(GA-gated)* | Maps canton/NUTS/polygon region blocks to the governed region dimension. |
 | `hcp:triggerRuleMapsScenario` (TriggerRule → ScenarioTemplate) | `trigger_rule_maps_scenario` *(GA-gated)* | Maps trusted-signal rules to CSA scenario templates; advisory only. |
 | `hcp:signalPreseeds` (ExternalSignal → LageTier) | `signal_preseeds` *(GA-gated)* | Captures the default Lage-tier pre-seed from the signal contract; CSA remains authoritative. |
+| `hcp:forWard` (Forecast → Ward) | `for_ward` | Sprint 26 WS-A; binds `gold.fact_occupancy_forecast` to the ward rollup. |
+| `hcp:explainedBy` (Forecast → Driver) | `explained_by` | Sprint 26 WS-A; forecast → decomposition rows in `gold.fact_forecast_driver`. |
+| `hcp:evidencedBy` (Driver → ExternalSignal) | `evidenced_by` | Sprint 26 WS-A; links a driver (e.g. seasonality) to the Trust-A signal that evidences it. Advisory only. |
 
 ### Facility hierarchy (reused from AMA §11.2)
 

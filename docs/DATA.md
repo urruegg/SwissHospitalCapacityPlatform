@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.8.0 |
+| **Version** | 0.9.0 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.7.1 (added SIT gold ext_* materialisation + external-signals Direct-Lake publish evidence) |
+| **Previous Version** | 0.8.0 (added SIT gold ext_* materialisation + external-signals Direct-Lake publish evidence) |
 
 ## Purpose
 
@@ -255,6 +255,30 @@ These feed the **`external-signals`** Direct-Lake semantic model
 grounded into the `da_hospital_capacity` data agent. Full proof (row counts,
 trust-badge DAX, data-agent probe, gate record) is in
 [`signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md).
+
+### Sprint 26 WS-A — Foresight tier gold tables and contracts
+
+The Foresight tier (issue #335, design spec §3.2) adds a deterministic,
+synthetic **forecast + driver + signal** surface on top of the descriptive Gold
+occupancy model, turning "what is occupancy now" into "what will it be in 72h and
+why". The generator is Spark-free + unit-tested
+([`data-platform/notebooks/foresight/`](../data-platform/notebooks/foresight/README.md))
+with a clean seam (design D2) to swap in a real forecasting model later — no PHI,
+no LLM-guessed numbers (design D2/D4).
+
+| Gold table | Grain | Contract | Notes |
+| ---------- | ----- | -------- | ----- |
+| `gold.fact_occupancy_forecast` | one row per ward × horizon-hour (0..72h) | [`DC-OCCUPANCY-FORECAST-v1`](../data/synthetic/schema/dc-occupancy-forecast-v1.schema.json) | Forecast occupied beds / occupancy % + capacity-breach flag; grounds `hcp:Forecast`. |
+| `gold.fact_forecast_driver` | one row per forecast-point × driver factor | [`DC-FORECAST-DRIVER-v1`](../data/synthetic/schema/dc-forecast-driver-v1.schema.json) | Signed decomposition (`forecast_admissions` / `planned_discharges` / `transfers` / `seasonality`) that reconciles to the net forecast change; grounds `hcp:Driver`. |
+| `gold.fact_signal` | one row per Trust-A external signal | *(reuses `DC-EXT-SIGNAL-v1`)* | Deny-by-default Trust-A projection over `gold.ext_fact_signal` with a deterministic probability; evidences the seasonality driver (`hcp:Driver --evidencedBy--> hcp:ExternalSignal`). No new contract — the Sprint 21 signal spine is reused, not duplicated. |
+
+Both new contracts follow the `dc-*.schema.json` envelope (Draft-07,
+`_pseudonymisation_flag: true` per ADR-0016 gate 1); generator output is
+validated against them by the lane's offline schema-conformance test. Ontology
+bindings are recorded in
+[`docs/ontology/crosswalk.md`](ontology/crosswalk.md) (v0.4.0) and the STRICT
+two-layer conformance gate. The semantic-model measures + verify-gate rebaseline
+for these tables are a stacked WS-A2 follow-on (design §7 open item).
 
 ### Deprecations
 
