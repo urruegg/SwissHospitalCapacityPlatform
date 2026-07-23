@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-19 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-23 |
 | **Author** | @urruegg |
-| **Status** | Planned (blocked on Sprint 22) |
-| **Previous Version** | n/a (new document) |
+| **Status** | Planned (refactor scope added; Sprint 22 landed) |
+| **Previous Version** | 1.0.0 (initial; blocked on Sprint 22) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -28,7 +28,7 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 ## 2. Source baseline
 
 1. [Design Spec — Curavias shared master data + ontology](../superpowers/specs/2026-07-19-curavias-shared-master-data-and-ontology-design.md) — §4.5 (unified spine + org/skills), §5 (Part 2 agent design-only), §6 (governance)
-2. [Curavias idea package](../superpowers/ideas/curavias-organisation-skills-ontology-work-id/) — Step 1 (ontology extension), Step 2 (Swiss competency sources), Step 3 (Work-ID / Skills-Manager), Step 4 (master-data schema) + 20 CSVs + `generate_master_data.py`
+2. [Curavias idea package](../superpowers/ideas/unified-curavias-organisation-and-skills-ontology/) — Step 1 (ontology extension), Step 2 (Swiss competency sources), Step 3 (Work-ID / Skills-Manager), Step 4 (master-data schema) + 20 CSVs + `generate_master_data.py`
 3. [Sprint 22 — Golden-source + reproducible medallion (P1a)](sprint-22-curavias-golden-source-reproducible-medallion.md) — **prerequisite** (provides the modernized `gold.*` notebooks this sprint extends)
 4. [`docs/ontology/`](../ontology/) — reference ontology, crosswalk, and conformance design this sprint extends
 5. `data-platform/scripts/export_semantic_model_tmdl.ps1` + `.github/workflows/verify-semantic-model.yml` — the exact-count CI gate to re-baseline
@@ -51,6 +51,15 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 | T8 | Extend ontology | `docs/ontology/` + `crosswalk.md` + conformance gate | Conformance green |
 | T9 | Extend Fabric IQ | `ont_hospital_capacity` + Data Agent grounding cover org/skills | Data Agent cites org/skills concepts |
 | T10 | Governance | New ADR (unified spine) + PRD FR/NFR + §7 matrix | Doc gates green; ADR Accepted |
+| T11 | Dedicated landing zone (refactor) | ADLS Gen2 container + OneLake shortcut (Bicep) + upload runbook | `what-if` clean; extracts load on demand |
+| T12 | Skills-evidence plugins (refactor) | `data-platform/scripts/skills-evidence/` package (base connector + SuccessFactors/LMS/Skills-Manager/Work-ID adapters + simulators + tests) + `DC-SKILL-EVIDENCE-v1` | Tests green; live-vs-simulated badge preserved to gold |
+| T13 | Hybrid transport (refactor) | Container Apps batch simulator jobs -> landing zone; Eventstream lane for near-real-time skills events | Batch loads + event lane demonstrated |
+| T14 | Bed vs Ops demand split (refactor) | `care_setting` (bed/ops) dimension on demand templates + gap measures; ontology + Data Agent grounding | App reports nursing vs ops skill gaps separately |
+
+> **Refactor scope (2026-07-23).** T11-T14 add the dedicated Azure landing zone + on-demand
+> pipeline, the Sprint-21-style skills-evidence plugin architecture (all sources simulated now),
+> the hybrid batch/Eventstream transport, and the bed-vs-ops skill-demand split. Design:
+> [`2026-07-23-sprint-23-org-skills-refactor-design.md`](../superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md).
 
 ---
 
@@ -85,7 +94,7 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 ## 6. References
 
 * Design: [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](../superpowers/specs/2026-07-19-curavias-shared-master-data-and-ontology-design.md)
-* Idea package: [`curavias-organisation-skills-ontology-work-id/`](../superpowers/ideas/curavias-organisation-skills-ontology-work-id/)
+* Idea package: [`unified-curavias-organisation-and-skills-ontology/`](../superpowers/ideas/unified-curavias-organisation-and-skills-ontology/)
 * Prerequisite sprint: [Sprint 22 — Golden-source + reproducible medallion (P1a)](sprint-22-curavias-golden-source-reproducible-medallion.md)
 * Ontology: [`docs/ontology/`](../ontology/)
 * Issue: [#255 — Sprint 23: Unified Curavias organisation spine + org/skills ontology (P1b)](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255)
