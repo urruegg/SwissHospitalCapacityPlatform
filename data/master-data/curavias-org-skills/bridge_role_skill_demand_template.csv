@@ -1,0 +1,107 @@
+template_id,applies_to_type,applies_to_id,skill_id,min_proficiency,min_assurance,is_mandatory,rationale
+TMPL-001,occupation,OCC-RN,SK-LIC-NURSE,3,L4,TRUE,Sicherheitskritisch
+TMPL-002,occupation,OCC-RN,SK-MEDADMIN,2,L1,TRUE,Sicherheitskritisch
+TMPL-003,occupation,OCC-RN,SK-BLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-004,occupation,OCC-RN,SK-IPC,2,L2,TRUE,Sicherheitskritisch
+TMPL-005,occupation,OCC-RN,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-006,occupation,OCC-RN,SK-DOC,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-007,occupation,OCC-ICU-RN,SK-LIC-NURSE,3,L4,TRUE,Sicherheitskritisch
+TMPL-008,occupation,OCC-ICU-RN,SK-NDS-IPS,3,L3,TRUE,Sicherheitskritisch
+TMPL-009,occupation,OCC-ICU-RN,SK-VENT,2,L2,TRUE,Sicherheitskritisch
+TMPL-010,occupation,OCC-ICU-RN,SK-HAEMO,2,L1,TRUE,Sicherheitskritisch
+TMPL-011,occupation,OCC-ICU-RN,SK-ACLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-012,occupation,OCC-ICU-RN,SK-BLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-013,occupation,OCC-ICU-RN,SK-IPC,2,L2,TRUE,Sicherheitskritisch
+TMPL-014,occupation,OCC-ICU-RN,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-015,occupation,OCC-ANAES-RN,SK-LIC-NURSE,3,L4,TRUE,Sicherheitskritisch
+TMPL-016,occupation,OCC-ANAES-RN,SK-NDS-ANAES,3,L3,TRUE,Sicherheitskritisch
+TMPL-017,occupation,OCC-ANAES-RN,SK-ACLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-018,occupation,OCC-ANAES-RN,SK-BLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-019,occupation,OCC-ANAES-RN,SK-IPC,2,L2,TRUE,Sicherheitskritisch
+TMPL-020,occupation,OCC-ANAES-RN,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-021,occupation,OCC-ER-RN,SK-LIC-NURSE,3,L4,TRUE,Sicherheitskritisch
+TMPL-022,occupation,OCC-ER-RN,SK-NDS-NOTF,3,L3,TRUE,Sicherheitskritisch
+TMPL-023,occupation,OCC-ER-RN,SK-TRIAGE,2,L1,TRUE,Sicherheitskritisch
+TMPL-024,occupation,OCC-ER-RN,SK-ACLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-025,occupation,OCC-ER-RN,SK-PALS,2,L2,TRUE,Sicherheitskritisch
+TMPL-026,occupation,OCC-ER-RN,SK-BLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-027,occupation,OCC-ER-RN,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-028,occupation,OCC-SCRUB,SK-LIC-OTA,3,L4,TRUE,Sicherheitskritisch
+TMPL-029,occupation,OCC-SCRUB,SK-SCRUB,2,L1,TRUE,Sicherheitskritisch
+TMPL-030,occupation,OCC-SCRUB,SK-IPC,2,L2,TRUE,Sicherheitskritisch
+TMPL-031,occupation,OCC-SCRUB,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-032,occupation,OCC-MTRA,SK-LIC-MTRA,3,L4,TRUE,Sicherheitskritisch
+TMPL-033,occupation,OCC-MTRA,SK-RADPROT,2,L2,TRUE,Sicherheitskritisch
+TMPL-034,occupation,OCC-MTRA,SK-CT,2,L1,TRUE,Sicherheitskritisch
+TMPL-035,occupation,OCC-MTRA,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-036,occupation,OCC-PARA,SK-LIC-PARA,3,L4,TRUE,Sicherheitskritisch
+TMPL-037,occupation,OCC-PARA,SK-ACLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-038,occupation,OCC-PARA,SK-TRIAGE,2,L1,TRUE,Sicherheitskritisch
+TMPL-039,occupation,OCC-PARA,SK-BLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-040,occupation,OCC-PARA,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-041,occupation,OCC-MIDWIFE,SK-LIC-MIDWIFE,3,L4,TRUE,Sicherheitskritisch
+TMPL-042,occupation,OCC-MIDWIFE,SK-OBST,2,L4,TRUE,Sicherheitskritisch
+TMPL-043,occupation,OCC-MIDWIFE,SK-BLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-044,occupation,OCC-MIDWIFE,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-045,occupation,OCC-PHYS-ANAES,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-046,occupation,OCC-PHYS-ANAES,SK-FMH-ANAES,2,L3,TRUE,Sicherheitskritisch
+TMPL-047,occupation,OCC-PHYS-ANAES,SK-ACLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-048,occupation,OCC-PHYS-ANAES,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-049,occupation,OCC-PHYS-INTENS,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-050,occupation,OCC-PHYS-INTENS,SK-FMH-INTENS,2,L3,TRUE,Sicherheitskritisch
+TMPL-051,occupation,OCC-PHYS-INTENS,SK-ACLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-052,occupation,OCC-PHYS-INTENS,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-053,occupation,OCC-PHYS-EMERG,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-054,occupation,OCC-PHYS-EMERG,SK-FMH-NOTF,2,L3,TRUE,Sicherheitskritisch
+TMPL-055,occupation,OCC-PHYS-EMERG,SK-ACLS,2,L2,TRUE,Sicherheitskritisch
+TMPL-056,occupation,OCC-PHYS-EMERG,SK-PALS,2,L2,TRUE,Sicherheitskritisch
+TMPL-057,occupation,OCC-PHYS-EMERG,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-058,occupation,OCC-PHYS-SURG,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-059,occupation,OCC-PHYS-SURG,SK-FMH-SURG,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-060,occupation,OCC-PHYS-SURG,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-061,occupation,OCC-PHYS-INTMED,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-062,occupation,OCC-PHYS-INTMED,SK-FMH-INTMED,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-063,occupation,OCC-PHYS-INTMED,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-064,occupation,OCC-PHYS-CARD,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-065,occupation,OCC-PHYS-CARD,SK-FMH-CARD,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-066,occupation,OCC-PHYS-CARD,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-067,occupation,OCC-PHYS-NEURO,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-068,occupation,OCC-PHYS-NEURO,SK-FMH-NEURO,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-069,occupation,OCC-PHYS-NEURO,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-070,occupation,OCC-PHYS-ONCO,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-071,occupation,OCC-PHYS-ONCO,SK-FMH-ONCO,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-072,occupation,OCC-PHYS-ONCO,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-073,occupation,OCC-PHYS-GYN,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-074,occupation,OCC-PHYS-GYN,SK-FMH-GYN,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-075,occupation,OCC-PHYS-GYN,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-076,occupation,OCC-PHYS-PAED,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-077,occupation,OCC-PHYS-PAED,SK-FMH-PAED,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-078,occupation,OCC-PHYS-PAED,SK-PALS,2,L2,TRUE,Sicherheitskritisch
+TMPL-079,occupation,OCC-PHYS-PAED,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-080,occupation,OCC-PHYS-RADIOL,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-081,occupation,OCC-PHYS-RADIOL,SK-FMH-RADIOL,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-082,occupation,OCC-PHYS-RADIOL,SK-RADPROT,2,L2,TRUE,Sicherheitskritisch
+TMPL-083,occupation,OCC-PHYS-RADIOL,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-084,occupation,OCC-PHYS-NEPHRO,SK-LIC-PHYS,3,L4,TRUE,Sicherheitskritisch
+TMPL-085,occupation,OCC-PHYS-NEPHRO,SK-FMH-NEPHRO,2,L3,FALSE,Kernkompetenz Rolle
+TMPL-086,occupation,OCC-PHYS-NEPHRO,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-087,occupation,OCC-PHYSIO,SK-LIC-PHYSIO,3,L4,TRUE,Sicherheitskritisch
+TMPL-088,occupation,OCC-PHYSIO,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-089,occupation,OCC-BEDMGR,SK-BEDFLOW,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-090,occupation,OCC-BEDMGR,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-091,occupation,OCC-BEDMGR,SK-DOC,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-092,occupation,OCC-ORCOORD,SK-ORCOORD,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-093,occupation,OCC-ORCOORD,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-094,occupation,OCC-ORCOORD,SK-DOC,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-095,occupation,OCC-DISCHARGE,SK-LIC-NURSE,3,L4,TRUE,Sicherheitskritisch
+TMPL-096,occupation,OCC-DISCHARGE,SK-DISCHARGE,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-097,occupation,OCC-DISCHARGE,SK-WOUND,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-098,occupation,OCC-DISCHARGE,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-099,occupation,OCC-CRISIS,SK-CRISIS,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-100,occupation,OCC-CRISIS,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-101,occupation,OCC-DQ,SK-DQSTEWARD,2,L2,FALSE,Kernkompetenz Rolle
+TMPL-102,occupation,OCC-DQ,SK-DATA,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-103,occupation,OCC-DQ,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch
+TMPL-104,occupation,OCC-WARDLEAD,SK-LIC-NURSE,3,L4,TRUE,Sicherheitskritisch
+TMPL-105,occupation,OCC-WARDLEAD,SK-WARDLEAD,2,L1,FALSE,Kernkompetenz Rolle
+TMPL-106,occupation,OCC-WARDLEAD,SK-DE-B2,2,L2,TRUE,Sicherheitskritisch

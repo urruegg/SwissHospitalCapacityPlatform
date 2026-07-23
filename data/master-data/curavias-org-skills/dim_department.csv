@@ -1,0 +1,25 @@
+department_id,tenant_id,site_id,department_name,medical_area,beds,planned_fte,cost_centre,canton,gln,grounded_on
+CN-D1,CN,CN-S1,Herz- & Gefässzentrum,Kardiologie & Herzchirurgie,120,620,CC-CN-D1,HN,7601001000089,USZ Herz-Gefäss
+CN-D2,CN,CN-S1,Neuro- & Kopfzentrum,Neurologie & Neurochirurgie,110,560,CC-CN-D2,HN,7601001000096,USZ Neuro-Kopf
+CN-D3,CN,CN-S1,Innere Medizin & Onkologie,Onkologie,180,940,CC-CN-D3,HN,7601001000102,USZ Innere/Onko
+CN-D4,CN,CN-S1,Trauma & Bewegungsapparat,Chirurgie & Bewegungsapparat,130,610,CC-CN-D4,HN,7601001000119,USZ Trauma
+CN-D5,CN,CN-S1,Frauen- & Kinderzentrum,Frauen- & Kindermedizin,95,520,CC-CN-D5,HN,7601001000126,USZ Frauen-Kind
+CN-D6,CN,CN-S1,"Diagnostik, Radiologie & Labor",Radiologie & Diagnostik,20,480,CC-CN-D6,HN,7601001000133,USZ Diagnostik
+CN-D7,CN,CN-S1,Intensiv- & Notfallmedizin,Intensiv- & Notfallmedizin,90,720,CC-CN-D7,HN,7601001000140,USZ Intensiv/Notfall
+CN-D8,CN,CN-LE2,Zentrum für Klinische Forschung,Klinische Forschung,,260,CC-CN-D8,HN,7601001000157,USZ ZKF
+CP-D1,CP,CP-S1,Herzzentrum Curalp,Kardiologie & Herzchirurgie,90,480,CC-CP-D1,CA,7601002000112,LUKS Herzzentrum
+CP-D2,CP,CP-S1,Neurozentrum Curalp,Neurologie & Neurochirurgie,70,360,CC-CP-D2,CA,7601002000129,LUKS Neurozentrum
+CP-D3,CP,CP-S1,Tumorzentrum Curalp,Onkologie,80,420,CC-CP-D3,CA,7601002000136,LUKS Tumorzentrum
+CP-D4,CP,CP-S1,Frauenklinik & Geburtshilfe,Frauen- & Kindermedizin,85,440,CC-CP-D4,CA,7601002000143,LUKS Frauenklinik
+CP-D5,CP,CP-S1,Kinderspital Curalp,Frauen- & Kindermedizin,75,400,CC-CP-D5,CA,7601002000150,LUKS Kinderspital
+CP-D6,CP,CP-S1,Notfallzentrum & Rettungsdienst 144,Notfallmedizin,40,520,CC-CP-D6,CA,7601002000167,LUKS Notfall/144
+CP-D7,CP,CP-S2,Orthopädie & Unfallchirurgie,Chirurgie & Bewegungsapparat,80,360,CC-CP-D7,CA,7601002000174,LUKS Ortho/Unfall
+CP-D8,CP,CP-S1,Radiologie & Nuklearmedizin,Radiologie & Diagnostik,,300,CC-CP-D8,CA,7601002000181,LUKS Radiologie
+VT-D1,VT,VT-S1,Innere Medizin,Innere Medizin,60,260,CC-VT-D1,HN,7601003000085,Zollikerberg Innere
+VT-D2,VT,VT-S1,Gynäkologie & Geburtshilfe mit Neonatologie,Frauen- & Kindermedizin,34,220,CC-VT-D2,HN,7601003000092,Zollikerberg Gyn/Geburt
+VT-D3,VT,VT-S1,Allgemeine Chirurgie,Chirurgie & Bewegungsapparat,30,180,CC-VT-D3,HN,7601003000108,Zollikerberg Chirurgie
+VT-D4,VT,VT-S1,Orthopädie & Wirbelsäulenchirurgie,Chirurgie & Bewegungsapparat,26,150,CC-VT-D4,HN,7601003000115,Zollikerberg Ortho/Spine
+VT-D5,VT,VT-S1,Interdisziplinäres Notfallzentrum,Notfallmedizin,12,160,CC-VT-D5,HN,7601003000122,Zollikerberg Notfall
+VT-D6,VT,VT-S1,Intensivstation,Intensiv- & Notfallmedizin,12,110,CC-VT-D6,HN,7601003000139,Zollikerberg IPS
+VT-D7,VT,VT-S1,Nephrologie & Dialysezentrum,Nephrologie,,90,CC-VT-D7,HN,7601003000146,Zollikerberg Dialyse
+VT-D8,VT,VT-S1,Radiologie & BrustCentrum,Radiologie & Diagnostik,,80,CC-VT-D8,HN,7601003000153,Zollikerberg Radiologie/Brust

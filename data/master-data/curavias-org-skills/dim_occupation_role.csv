@@ -1,0 +1,28 @@
+occupation_id,label_de,label_en,isco_08_code,esco_occupation_uri,professional_register,licence_assurance
+OCC-RN,Pflegefachfrau/-mann (Station),Registered nurse (ward),2221,esco:occupation/nursing-professional,GesReg,L4
+OCC-ICU-RN,Intensivpflegefachperson,Intensive care nurse,2221,esco:occupation/specialist-nurse-icu,GesReg,L4
+OCC-ANAES-RN,Anästhesiepflegefachperson,Anaesthesia nurse,2221,esco:occupation/specialist-nurse-anaesthesia,GesReg,L4
+OCC-ER-RN,Notfallpflegefachperson,Emergency nurse,2221,esco:occupation/specialist-nurse-emergency,GesReg,L4
+OCC-SCRUB,Fachperson Operationstechnik HF,Scrub / OR technician,3211,esco:occupation/operating-theatre-technician,NAREG,L4
+OCC-MTRA,Fachperson Radiologie HF (MTRA),Radiographer,3211,esco:occupation/radiographer,NAREG,L4
+OCC-PARA,Rettungssanitäter/in HF,Paramedic,3258,esco:occupation/ambulance-paramedic,NAREG,L4
+OCC-MIDWIFE,Hebamme,Midwife,2222,esco:occupation/midwife,GesReg,L4
+OCC-PHYS-ANAES,Facharzt/-ärztin Anästhesiologie,Anaesthetist physician,2212,esco:occupation/specialist-anaesthetist,MedReg,L4
+OCC-PHYS-INTENS,Ärztin/Arzt Intensivmedizin,Intensive-care physician,2212,esco:occupation/specialist-intensivist,MedReg,L4
+OCC-PHYS-EMERG,Ärztin/Arzt Notfallmedizin,Emergency physician,2212,esco:occupation/specialist-emergency,MedReg,L4
+OCC-PHYS-SURG,Fachärztin/-arzt Chirurgie,Surgeon,2212,esco:occupation/specialist-surgeon,MedReg,L4
+OCC-PHYS-INTMED,Fachärztin/-arzt Innere Medizin,Internal-medicine physician,2212,esco:occupation/specialist-internal,MedReg,L4
+OCC-PHYS-CARD,Fachärztin/-arzt Kardiologie,Cardiologist,2212,esco:occupation/specialist-cardiologist,MedReg,L4
+OCC-PHYS-NEURO,Fachärztin/-arzt Neurologie,Neurologist,2212,esco:occupation/specialist-neurologist,MedReg,L4
+OCC-PHYS-ONCO,Fachärztin/-arzt Onkologie,Oncologist,2212,esco:occupation/specialist-oncologist,MedReg,L4
+OCC-PHYS-GYN,Fachärztin/-arzt Gynäkologie,Gynaecologist,2212,esco:occupation/specialist-gynaecologist,MedReg,L4
+OCC-PHYS-PAED,Fachärztin/-arzt Pädiatrie,Paediatrician,2212,esco:occupation/specialist-paediatrician,MedReg,L4
+OCC-PHYS-RADIOL,Fachärztin/-arzt Radiologie,Radiologist,2212,esco:occupation/specialist-radiologist,MedReg,L4
+OCC-PHYS-NEPHRO,Fachärztin/-arzt Nephrologie,Nephrologist,2212,esco:occupation/specialist-nephrologist,MedReg,L4
+OCC-PHYSIO,Physiotherapeut/in,Physiotherapist,2264,esco:occupation/physiotherapist,GesReg,L4
+OCC-BEDMGR,Bettenmanager/in (BMCA),Bed / flow manager,1342,esco:occupation/health-services-manager,none,L1
+OCC-ORCOORD,OP-Koordinator/in (ORSA),OR coordinator,1342,esco:occupation/health-services-manager,none,L1
+OCC-DISCHARGE,Austritts-/Care-Transition-Koordination (DCA),Discharge coordinator,2221,esco:occupation/case-manager-nurse,GesReg,L4
+OCC-CRISIS,Dienst-/Krisenmanager/in (CSA),Duty / crisis manager,1342,esco:occupation/emergency-response-coordinator,none,L1
+OCC-DQ,Datenqualität- & Ontologie-Steward (DQ),Data / ontology steward,2521,esco:occupation/data-steward,none,L1
+OCC-WARDLEAD,Stationsleitung,Ward lead,1342,esco:occupation/nurse-manager,GesReg,L4
