@@ -69,5 +69,55 @@ class TestSilverGoldPure(unittest.TestCase):
         self.assertEqual(cantons, {"ZH", "BE"})
 
 
+    def test_silver_kept_rows_carry_gold_consumer_keys(self):
+        silver = _load("build_silver_signals.py")
+        actual = {
+            "signalId": "cap-2026-heat-zh-1",
+            "sourceId": "alertswiss",
+            "sourceAuthority": "BABS/FOCP",
+            "trustTier": "A",
+            "hazardType": "heat",
+            "severity": "Severe",
+            "certainty": "Likely",
+            "urgency": "Immediate",
+            "region": {"cantons": ["ZH"]},
+            "onset": "2026-07-17T12:00:00Z",
+            "status": "Actual",
+            "mappedScenarioTemplate": "F8",
+            "defaultLageTier": 2,
+            "provenance": {
+                "ingestedAt": "2026-07-23T12:44:45Z",
+                "connectorVersion": "alertswiss-2.0.0",
+                "licence": "Alertswiss-CAP-open",
+                "activeBinding": "live",
+                "fellBackFrom": None,
+                "channelKind": "external",
+            },
+        }
+        exercise = {
+            "signalId": "test-001",
+            "status": "Exercise",
+            "hazardType": "heat",
+            "region": {"cantons": ["ZH"]},
+            "onset": "t",
+            "sourceId": "m",
+            "severity": "Minor",
+        }
+        kept, quarantined = silver.split_quarantine([actual, exercise])
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(len(quarantined), 1)
+        self.assertEqual(quarantined[0]["signalId"], "test-001")
+        required_top = {
+            "signalId", "sourceId", "sourceAuthority", "trustTier", "hazardType",
+            "severity", "mappedScenarioTemplate", "defaultLageTier", "onset", "status",
+        }
+        self.assertTrue(required_top <= set(kept[0]))
+        self.assertEqual(kept[0]["region"]["cantons"], ["ZH"])
+        prov = kept[0]["provenance"]
+        self.assertIn("activeBinding", prov)
+        self.assertIn("fellBackFrom", prov)
+        self.assertIn("ingestedAt", prov)
+
+
 if __name__ == "__main__":
     unittest.main()
