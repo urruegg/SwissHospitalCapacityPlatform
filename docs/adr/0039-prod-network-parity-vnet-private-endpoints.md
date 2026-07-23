@@ -67,7 +67,7 @@ private endpoint.**
    VNet-integrates the agent-host CAE — inheriting [ADR-0029](0029-agent-host-cosmos-reachability.md)
    Option A wholesale.
 2. **Add a Key Vault private endpoint** (new) — `privatelink.vaultcore.azure.net` zone
-   + PE into `snet-data` + DNS zone group, gated by a dedicated
+   plus a PE into `snet-data` and a DNS zone group, gated by a dedicated
    `enableKeyVaultPrivateEndpoint` flag (PROD=true). The vault flips to
    `publicNetworkAccess=Disabled` to match the enforced policy state and eliminate the
    perpetual what-if drift. Mirrors the Cosmos PE pattern in
@@ -89,7 +89,7 @@ private endpoint.**
 
 ## Consequences
 
-**Positive**
+### Positive
 
 - PROD KV and Cosmos gain a reachable **private** data plane; both match the
   policy-enforced `publicNetworkAccess=Disabled` state (no more what-if drift).
@@ -100,7 +100,7 @@ private endpoint.**
   the `snet-cae` `Microsoft.App/environments` delegation is in the network module. PROD
   should therefore avoid SIT iterations 1, 4, and 5.
 
-**Negative / risks**
+### Negative / risks
 
 - **One-time ~5-10 min agent-host outage** during the destructive CAE recreate
   (`cae-ihzhhpf-prod` + `ca-agent-host` + `ca-signal-runner`). `app.curavias.ch` stays
