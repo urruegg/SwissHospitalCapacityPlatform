@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-22 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.1 (linked pending grounding sources to the Sprint 10 backlog tracker) |
+| **Previous Version** | 1.2.0 (extended DC-EXT-SIGNAL-v1 gate for provider-manifest and trust-badge checks) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).
@@ -120,6 +120,19 @@ external-signal domain is in scope:
   source URI are present.
 - `dc-ext-licence-present` — `provenance.licence` is mandatory; missing licence
   is a **fail**, never a warning.
+- `dc-ext-manifest-schema-valid` — every provider manifest under
+  `data-platform/scripts/external-signals/providers/<id>/provider.yaml`
+  is schema-valid against `providers/_schema/provider.schema.json`; a
+  manifest that fails schema validation is a **fail**.
+- `dc-ext-active-binding-present` — every `DC-EXT-SIGNAL-v1` record
+  carries `provenance.activeBinding` (`live`, `simulated`, or
+  `internal`); a record missing this field is a **fail**.
+- `dc-ext-data-mode-populated` — `ext_dim_source.dataMode` is derived
+  from `provenance.activeBinding` and must be non-null for every
+  provider in Gold; a null or absent value is a **fail**.
+- `dc-ext-manifest-licence-present` — the provider manifest's top-level
+  `licence` field is mandatory; a manifest missing `licence` is a
+  **fail**, never a warning.
 
 ## 7. Confirmation rules
 

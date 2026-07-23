@@ -1,7 +1,7 @@
 ﻿---
 agent: data-quality-agent
 version: 1.2.0
-requirement: NFR-DQ-001, NFR-DQ-002, NFR-DQ-004, FR-GOV-001, FR-EXT-004
+requirement: NFR-DQ-001, NFR-DQ-002, NFR-DQ-004, FR-GOV-001, FR-EXT-004, FR-EXT-019, NFR-EXT-PLG-002
 last-reviewed: 2026-07-22
 ---
 
@@ -9,15 +9,16 @@ last-reviewed: 2026-07-22
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-22 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.1 (linked pending grounding sources to the Sprint 10 backlog tracker) |
+| **Previous Version** | 1.2.0 (extended DC-EXT-SIGNAL-v1 gate for provider-manifest and trust-badge checks) |
 
-Three fixtures: one happy-path (Silver â†’ Gold contract check), one DC-EXT signal
-gate fixture with a missing-`licence` failure, and one failure-mode refusal to
-mask a PHI failure. Replayed by
+Four fixtures: one happy-path (Silver -> Gold contract check), one DC-EXT signal
+gate fixture with a missing-`licence` failure, one trust-badge fixture verifying
+live-fallback and internal-binding provenance derivation, and one failure-mode
+refusal to mask a PHI failure. Replayed by
 [`.github/workflows/eval-goldens.yml`](../../.github/workflows/eval-goldens.yml).
 
 ## Fixture: happy-path Silver-to-Gold contract check
@@ -101,6 +102,64 @@ footer is `Grounded on: ops.data_quality_runs@<run_id>`.
 
 - `FR-EXT-004` — external signal data quality enforces schema, dedup,
   quarantine, provenance, and licence obligations before advisory use.
+
+## Fixture: DC-EXT trust-badge live-fallback and internal-binding gate PASS
+
+### Trust-Badge Fixture front-matter
+
+```yaml
+requirement: FR-EXT-019, NFR-EXT-PLG-002
+```
+
+### Trust-Badge Input issue body
+
+```text
+@data-quality-agent Run the DC-EXT-SIGNAL-v1 Bronze/Silver/Gold contract check
+for the external-signals domain. The latest batch contains two records:
+1. A live-fallback record from provider "meteocovid-live" with
+   provenance.activeBinding=simulated and provenance.fellBackFrom=live
+   (the live binding fell back to simulated data).
+2. An internal record from provider "internal-census" with
+   provenance.channelKind=internal and provenance.activeBinding=internal.
+Both provider manifests are schema-valid and include a licence field.
+```
+
+### Trust-Badge Expected MCP tool calls
+
+1. `fabric-mcp.notebook_run(name="dq-silver-gold-check", domain="external-signals")` -> `{ run_id }`
+2. `fabric-mcp.query(table="ops.data_quality_runs", filter="run_id='<id>'")` -> rows for the DC-EXT checks
+
+### Trust-Badge Expected PR / comment shape
+
+A contract-check report listing all DC-EXT checks as `pass`:
+
+- `dc-ext-manifest-schema-valid` as `pass` for both provider manifests.
+- `dc-ext-active-binding-present` as `pass` because both records carry
+  `provenance.activeBinding` (record 1: `simulated`; record 2: `internal`).
+- `dc-ext-data-mode-populated` as `pass` with `ext_dim_source.dataMode`
+  correctly derived: record 1 -> `simulated` (live fell back to simulated),
+  record 2 -> `internal`.
+- `dc-ext-manifest-licence-present` as `pass` for both manifests.
+- `dc-ext-licence-present` as `pass` for both records.
+
+No drift-alert block is emitted because all checks pass. Citation footer
+`Grounded on: ops.data_quality_runs@<run_id>`.
+
+### Trust-Badge Forbidden behaviours
+
+- Passing a record that is missing `provenance.activeBinding`.
+- Passing a manifest that is missing the `licence` field.
+- Deriving `ext_dim_source.dataMode` from a field other than
+  `provenance.activeBinding`.
+- Emitting a drift alert for a batch that passes all gate checks.
+
+### Trust-Badge Requirements verified
+
+- `FR-EXT-019` — `ext_dim_source.dataMode` is derived from
+  `provenance.activeBinding` (live/simulated/internal); the fallback chain
+  (`fellBackFrom`) is preserved in `ext_dim_source.fellBackFrom`.
+- `NFR-EXT-PLG-002` — provider manifests are schema-validated before
+  ingestion; a manifest missing `licence` is a fail, never a warning.
 
 ## Fixture: failure-mode mask PHI failure (refusal)
 
