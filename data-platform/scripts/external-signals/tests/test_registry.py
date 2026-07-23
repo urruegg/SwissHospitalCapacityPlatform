@@ -43,6 +43,19 @@ class TestRegistry(unittest.TestCase):
         errors = validate_manifest({"sourceId": "x"})  # missing required keys
         self.assertTrue(errors)
 
+    def test_internal_channel_rejects_endpoint_and_fallback_mode(self):
+        base = {
+            "sourceId": "occupancy-breach", "authority": "internal",
+            "trustTier": "A", "channelKind": "internal",
+            "hazardTypes": ["capacity"], "defaultMode": "internal",
+            "licence": "internal", "providerVersion": "1.0.0",
+        }
+        self.assertFalse(validate_manifest(dict(base)))
+        endpoint_errs = validate_manifest({**base, "endpoint": "https://x"})
+        self.assertIn("internal channel must not declare endpoint", endpoint_errs)
+        fallback_errs = validate_manifest({**base, "fallbackMode": "simulated"})
+        self.assertIn("internal channel must not declare fallbackMode", fallback_errs)
+
     def test_catalog_rows_shape(self):
         rows = catalog_rows(discover())
         sed = next(r for r in rows if r["sourceId"] == "sed")

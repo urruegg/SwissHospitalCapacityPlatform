@@ -46,6 +46,8 @@ def validate_manifest(doc: dict, schema: dict | None = None) -> list[str]:
         errors.append(f"unexpected keys: {sorted(extra)}")
     if doc.get("channelKind") == "internal" and doc.get("endpoint"):
         errors.append("internal channel must not declare endpoint")
+    if doc.get("channelKind") == "internal" and doc.get("fallbackMode"):
+        errors.append("internal channel must not declare fallbackMode")
     return errors
 
 
