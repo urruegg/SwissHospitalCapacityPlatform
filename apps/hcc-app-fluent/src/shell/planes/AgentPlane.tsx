@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -92,8 +92,13 @@ export function AgentPlane() {
   const agent = agentForRoute(loc.pathname);
   const board = boardForRoute(loc.pathname);
   const { turns, busy, send } = useAgentInvoker(agent);
-  const { open, setOpen, activeReco, defaultReco, backToDefault } = useCopilotRail();
+  const { open, setOpen, activeReco, defaultReco, backToDefault, resetReco } = useCopilotRail();
   const [draft, setDraft] = useState('');
+
+  // Reco state is app-global; clear it when leaving a board so one board's
+  // grounded recommendation never leaks onto another. Runs on route change
+  // (cleanup fires before the next board's async default-reco seed).
+  useEffect(() => resetReco, [loc.pathname, resetReco]);
 
   if (!open) {
     return (

@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { ContextInsight } from '../journey/RoleBoard';
 import type { GroundedReco } from './reco';
 
@@ -11,6 +11,7 @@ interface CopilotRailValue {
   openWithReco: (insight: ContextInsight, reco: GroundedReco) => void;
   showDefault: (reco: GroundedReco) => void;
   backToDefault: () => void;
+  resetReco: () => void;
   setOpen: (open: boolean) => void;
   close: () => void;
 }
@@ -22,6 +23,11 @@ export function CopilotRailProvider({ children }: { children: ReactNode }) {
   const [activeContext, setActiveContext] = useState<ContextInsight | null>(null);
   const [activeReco, setActiveReco] = useState<GroundedReco | null>(null);
   const [defaultReco, setDefaultReco] = useState<GroundedReco | null>(null);
+  const resetReco = useCallback(() => {
+    setActiveReco(null);
+    setActiveContext(null);
+    setDefaultReco(null);
+  }, []);
   const value = useMemo<CopilotRailValue>(
     () => ({
       open,
@@ -44,10 +50,11 @@ export function CopilotRailProvider({ children }: { children: ReactNode }) {
         setActiveReco(null);
         setActiveContext(null);
       },
+      resetReco,
       setOpen,
       close: () => setOpen(false),
     }),
-    [open, activeContext, activeReco, defaultReco],
+    [open, activeContext, activeReco, defaultReco, resetReco],
   );
   return <CopilotRailContext.Provider value={value}>{children}</CopilotRailContext.Provider>;
 }
