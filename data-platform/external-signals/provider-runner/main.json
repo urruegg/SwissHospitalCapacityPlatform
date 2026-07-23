@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "7844134687505676730"
+      "templateHash": "12112788262092548449"
     }
   },
   "parameters": {
@@ -39,7 +39,8 @@
     }
   },
   "variables": {
-    "appName": "[format('ca-signal-runner-ihzhhpf-{0}', parameters('envSuffix'))]"
+    "appName": "[format('ca-signal-runner-ihzhhpf-{0}', parameters('envSuffix'))]",
+    "eventHubsDataSenderRoleId": "2b629674-e913-4c01-ae53-ef4638d8f975"
   },
   "resources": [
     {
@@ -84,12 +85,30 @@
       "identity": {
         "type": "SystemAssigned"
       }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespace'))]",
+      "name": "[guid(resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespace')), resourceId('Microsoft.App/containerApps', variables('appName')), variables('eventHubsDataSenderRoleId'))]",
+      "properties": {
+        "principalId": "[reference(resourceId('Microsoft.App/containerApps', variables('appName')), '2024-03-01', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal",
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.App/containerApps', variables('appName'))]"
+      ]
     }
   ],
   "outputs": {
     "providerRunnerName": {
       "type": "string",
       "value": "[variables('appName')]"
+    },
+    "providerRunnerPrincipalId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.App/containerApps', variables('appName')), '2024-03-01', 'full').identity.principalId]"
     }
   }
 }
