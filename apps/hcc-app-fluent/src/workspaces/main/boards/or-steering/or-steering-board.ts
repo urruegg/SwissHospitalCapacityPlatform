@@ -1,5 +1,6 @@
 import i18n from '../../../../i18n';
-import type { RoleBoard, RoleBoardData } from '../../../../journey/RoleBoard';
+import type { GroundedReco } from '../../../../copilot-rail/reco';
+import type { RoleBoard, RoleBoardData, ContextInsight } from '../../../../journey/RoleBoard';
 import type { OrSteeringPayload } from '../../../../data/roleboard/or-steering-data';
 import { loadOrSteering } from '../../../../data/roleboard/golden-source-client';
 
@@ -21,6 +22,30 @@ export const orSteeringBoard: RoleBoard<OrSteeringPayload> = {
           bedsImpact: c.bedsImpact,
         },
       })),
+  askAbout: [
+    'What changed since last shift?',
+    'Where is the biggest pressure?',
+  ],
+  defaultReco(): GroundedReco {
+    return {
+      agentLabel: 'OR Steering Copilot',
+      contextChip: { subject: 'Shift summary', tone: 'ok' },
+      read: 'No proactive recommendation wired for this board yet (parity build focuses on occupancy).',
+      levers: [],
+      citations: [],
+      provenance: 'simulated',
+    };
+  },
+  recoFor(insight: ContextInsight): GroundedReco {
+    return {
+      agentLabel: 'OR Steering Copilot',
+      contextChip: { subject: insight.label, tone: 'watch' },
+      read: `Context picked up for ${insight.label}. Detailed recommendation lands in a later sprint.`,
+      levers: [],
+      citations: [],
+      provenance: 'simulated',
+    };
+  },
   toHandoff: (data: RoleBoardData<OrSteeringPayload>) => ({
     fromAgent: 'orsa-agent',
     headline: `${data.payload.casesDeferred} elective cases deferred, site still ${data.payload.residualBeds} beds`,

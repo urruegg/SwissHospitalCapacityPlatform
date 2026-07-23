@@ -15,12 +15,35 @@ describe('occupancyBoard (RoleBoard contract)', () => {
     expect(data.payload.siteDeltaBeds).toBe(-16);
   });
 
-  it('derives clickable insights from the loaded channels', async () => {
+  it('derives clickable insights for every ward, stream, and the site gap', async () => {
     const data = await occupancyBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
     const insights = occupancyBoard.insights(data);
-    expect(insights.map((i) => i.id)).toContain('med-a');
-    expect(insights[0].context).toHaveProperty('occupancyPct');
-    expect(insights[0].label).toContain(data.payload.channels[0].label);
+    const ids = insights.map((i) => i.id);
+    expect(ids).toContain('med-a');
+    expect(ids).toContain('surg-b');
+    expect(ids).toContain('cardio');
+    expect(ids).toContain('site-gap');
+  });
+
+  it('exposes a proactive default reco and resolves a reco per insight', async () => {
+    const data = await occupancyBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    expect(occupancyBoard.defaultReco(data).contextChip.tone).toBe('signal');
+    const medA = data.payload.wards[0];
+    const reco = occupancyBoard.recoFor(
+      { id: medA.recoId, label: medA.label, context: {} },
+      data,
+    );
+    expect(reco.contextChip.subject).toBe('Medicine A');
+  });
+
+  it('falls back to the site-gap reco for an unknown insight', async () => {
+    const data = await occupancyBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const reco = occupancyBoard.recoFor({ id: 'nope', label: 'x', context: {} }, data);
+    expect(reco.contextChip.subject).toBe('Site capacity');
+  });
+
+  it('exposes ask-about prompts for the rail', () => {
+    expect(occupancyBoard.askAbout.length).toBeGreaterThanOrEqual(3);
   });
 
   it('emits the site residual pressure as its handoff output', async () => {

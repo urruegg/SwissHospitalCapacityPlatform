@@ -89,9 +89,9 @@ export function BedManagerBoard() {
                 key={insight.id}
                 appearance="subtle"
                 onClick={() =>
-                  void routeInsight(insight, {
+                  void routeInsight(insight, bedManagerBoard.recoFor(insight, data), {
                     agent: bedManagerBoard.agent,
-                    openWithContext: rail.openWithContext,
+                    openWithReco: rail.openWithReco,
                   })
                 }
               >

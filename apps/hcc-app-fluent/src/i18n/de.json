@@ -149,6 +149,47 @@
   "agent": {
     "open": "Agent öffnen",
     "close": "Agent schliessen",
-    "title": "Agent"
+    "title": "Agent",
+    "askAbout": "Fragen zu"
+  },
+  "badge": {
+    "simulatedData": "Simulierte Daten",
+    "liveData": "Live-Daten",
+    "accessLens": "Zugriffslinse: {{lens}}"
+  },
+  "reco": {
+    "back": "Zurück zur Übersicht",
+    "agentLine": "{{agent}} — Kontext übernommen",
+    "projection": "Prognose: {{text}}"
+  },
+  "ooa": {
+    "askAbout": {
+      "wardTips": "Welche Stationen kippen in 72 h?",
+      "fluPeak": "Wann trifft der Grippe-Höhepunkt ein?",
+      "icuStaffing": "Ist die IPS-Besetzung ein Engpass?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → Copilot-Aktionen",
+      "ward": "Station",
+      "now": "Jetzt",
+      "trend": "72-h-Trend",
+      "forecast": "Prognose",
+      "flag": "Status"
+    },
+    "flow": {
+      "hint": "Signale speisen Fachbereichs-Ströme → Kapazitäts-Ausgaben. Für Copilot-Aktionen einen Strom oder die Lücke anklicken.",
+      "channels": "Signale",
+      "streams": "Ströme",
+      "outputs": "Ausgaben",
+      "current": "Aktuell",
+      "forecast72": "Prognose 72 h",
+      "fedBy": "Gespeist von {{channels}}"
+    },
+    "gap": {
+      "label": "Prognostizierte 72-h-Kapazitätslücke",
+      "card": "{{beds}} Betten Unterdeckung in 72 h",
+      "aria": "In 72 h benötigte Betten",
+      "cta": "72-h-Lücke schliessen"
+    }
   }
 }
