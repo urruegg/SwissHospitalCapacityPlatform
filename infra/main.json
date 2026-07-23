@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "5606352069322682326"
+      "templateHash": "14638736647775813116"
     }
   },
   "parameters": {
@@ -924,7 +924,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "17905240209304414901"
+              "templateHash": "15666986789757700592"
             }
           },
           "parameters": {
@@ -1018,6 +1018,30 @@
                   }
                 ]
               }
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "privatelink.documents.azure.com",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', 'privatelink.documents.azure.com', format('{0}-link', format('vnet-platform-{0}', parameters('nameSuffix'))))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-platform-{0}', parameters('nameSuffix')))]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.documents.azure.com')]",
+                "[resourceId('Microsoft.Network/virtualNetworks', format('vnet-platform-{0}', parameters('nameSuffix')))]"
+              ]
             }
           ],
           "outputs": {
@@ -4673,7 +4697,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "16346521696349718114"
+              "templateHash": "14873735851932254950"
             }
           },
           "parameters": {
@@ -5011,31 +5035,6 @@
             },
             {
               "condition": "[parameters('enablePrivateEndpoint')]",
-              "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2020-06-01",
-              "name": "[variables('privateDnsZoneName')]",
-              "location": "global",
-              "tags": "[parameters('tags')]"
-            },
-            {
-              "condition": "[parameters('enablePrivateEndpoint')]",
-              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-              "apiVersion": "2020-06-01",
-              "name": "[format('{0}/{1}', variables('privateDnsZoneName'), format('{0}-link', last(split(parameters('vnetResourceId'), '/'))))]",
-              "location": "global",
-              "tags": "[parameters('tags')]",
-              "properties": {
-                "registrationEnabled": false,
-                "virtualNetwork": {
-                  "id": "[parameters('vnetResourceId')]"
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]"
-              ]
-            },
-            {
-              "condition": "[parameters('enablePrivateEndpoint')]",
               "type": "Microsoft.Network/privateEndpoints",
               "apiVersion": "2023-11-01",
               "name": "[variables('privateEndpointName')]",
@@ -5077,7 +5076,6 @@
                 ]
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]",
                 "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
               ]
             }
