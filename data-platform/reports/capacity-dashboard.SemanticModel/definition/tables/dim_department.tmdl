@@ -1,0 +1,111 @@
+table dim_department
+	lineageTag: f2b5fa02-877c-4bfd-8457-ea68a841d5e6
+	sourceLineageTag: [gold].[dim_department]
+
+	column department_id
+		dataType: string
+		lineageTag: 86fd5983-5e1d-484c-9cfc-2241d3c4130b
+		sourceLineageTag: department_id
+		summarizeBy: none
+		sourceColumn: department_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_id
+		dataType: string
+		lineageTag: 9c97a963-1762-47fb-bc51-ce6041372c5b
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column site_id
+		dataType: string
+		lineageTag: 5b40965c-00a0-40f9-8cae-4587b397962d
+		sourceLineageTag: site_id
+		summarizeBy: none
+		sourceColumn: site_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column department_name
+		dataType: string
+		lineageTag: 614c59b7-3185-45b9-b456-c1608cf8d2a3
+		sourceLineageTag: department_name
+		summarizeBy: none
+		sourceColumn: department_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column medical_area
+		dataType: string
+		lineageTag: a89b1431-e2ef-49ae-9fbc-3f8dc494e8ed
+		sourceLineageTag: medical_area
+		summarizeBy: none
+		sourceColumn: medical_area
+
+		annotation SummarizationSetBy = Automatic
+
+	column beds
+		dataType: int64
+		formatString: 0
+		lineageTag: 328fb21a-bd28-4687-82a7-3994745e659f
+		sourceLineageTag: beds
+		summarizeBy: sum
+		sourceColumn: beds
+
+		annotation SummarizationSetBy = Automatic
+
+	column planned_fte
+		dataType: int64
+		formatString: 0
+		lineageTag: ad9afdae-7113-41bd-81f7-4a1d9b5ebdea
+		sourceLineageTag: planned_fte
+		summarizeBy: sum
+		sourceColumn: planned_fte
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_centre
+		dataType: string
+		lineageTag: db123ae2-f5f0-40e3-8df5-7f3819bae8cc
+		sourceLineageTag: cost_centre
+		summarizeBy: none
+		sourceColumn: cost_centre
+
+		annotation SummarizationSetBy = Automatic
+
+	column canton
+		dataType: string
+		lineageTag: b10d6a1d-e8f3-41ea-bf8a-b5d802f01928
+		sourceLineageTag: canton
+		summarizeBy: none
+		sourceColumn: canton
+
+		annotation SummarizationSetBy = Automatic
+
+	column gln
+		dataType: string
+		lineageTag: 1fdc868d-1d34-4544-8e90-fc13a03c5eb9
+		sourceLineageTag: gln
+		summarizeBy: none
+		sourceColumn: gln
+
+		annotation SummarizationSetBy = Automatic
+
+	column grounded_on
+		dataType: string
+		lineageTag: 698de317-6f34-43e7-8b26-b654973b25c4
+		sourceLineageTag: grounded_on
+		summarizeBy: none
+		sourceColumn: grounded_on
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_department = entity
+		mode: directLake
+		source
+			entityName: dim_department
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

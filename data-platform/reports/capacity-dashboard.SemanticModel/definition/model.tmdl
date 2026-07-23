@@ -15,6 +15,10 @@ annotation PBI_ProTooling = ["RemoteModeling","DirectLakeOnOneLakeCreatedInDeskt
 ref table or_schedule
 ref table or_case
 ref table dim_hospital
+ref table dim_tenant
+ref table dim_org_unit
+ref table dim_department
+ref table map_hospital_org
 ref table dim_specialty
 ref table dim_ward_capacityunit
 ref table map_disease_treatment_specialty_service

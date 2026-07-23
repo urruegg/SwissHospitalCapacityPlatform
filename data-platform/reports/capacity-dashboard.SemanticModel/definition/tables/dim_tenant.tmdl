@@ -1,0 +1,91 @@
+table dim_tenant
+	lineageTag: 94c063d2-c43f-4f96-b260-7c5e70f4d436
+	sourceLineageTag: [gold].[dim_tenant]
+
+	column tenant_id
+		dataType: string
+		lineageTag: 4fe90c6f-e6ef-47c2-9385-9ee02a36fa75
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_subdomain
+		dataType: string
+		lineageTag: 1e5f4020-c940-4822-9d79-97520a192a33
+		sourceLineageTag: tenant_subdomain
+		summarizeBy: none
+		sourceColumn: tenant_subdomain
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_name
+		dataType: string
+		lineageTag: 5a64550a-1bd2-4cc5-8b19-73d3d6db1c99
+		sourceLineageTag: tenant_name
+		summarizeBy: none
+		sourceColumn: tenant_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column archetype
+		dataType: string
+		lineageTag: 473e939f-4b97-4c84-8dfe-217fb5fee15f
+		sourceLineageTag: archetype
+		summarizeBy: none
+		sourceColumn: archetype
+
+		annotation SummarizationSetBy = Automatic
+
+	column primary_canton
+		dataType: string
+		lineageTag: aa508c35-a03e-4aca-88a0-302edd7ae486
+		sourceLineageTag: primary_canton
+		summarizeBy: none
+		sourceColumn: primary_canton
+
+		annotation SummarizationSetBy = Automatic
+
+	column beds_approx
+		dataType: string
+		lineageTag: d10add55-39b1-4390-aa56-562845e83b92
+		sourceLineageTag: beds_approx
+		summarizeBy: none
+		sourceColumn: beds_approx
+
+		annotation SummarizationSetBy = Automatic
+
+	column fte_approx
+		dataType: string
+		lineageTag: a585a4f3-1488-4f95-8127-af68f3c20e2e
+		sourceLineageTag: fte_approx
+		summarizeBy: none
+		sourceColumn: fte_approx
+
+		annotation SummarizationSetBy = Automatic
+
+	column legal_form
+		dataType: string
+		lineageTag: 2e00ca95-81e0-47c7-b958-184c5d12ada3
+		sourceLineageTag: legal_form
+		summarizeBy: none
+		sourceColumn: legal_form
+
+		annotation SummarizationSetBy = Automatic
+
+	column grounded_on
+		dataType: string
+		lineageTag: 63709c0c-8d23-4c23-a388-1e9a444b777f
+		sourceLineageTag: grounded_on
+		summarizeBy: none
+		sourceColumn: grounded_on
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_tenant = entity
+		mode: directLake
+		source
+			entityName: dim_tenant
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

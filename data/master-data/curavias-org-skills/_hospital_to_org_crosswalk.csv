@@ -1,0 +1,5 @@
+legacy_hospital_id,legacy_short_name,tenant_id,org_unit_id,mapping_basis,notes
+H_USZ,USZ,CN,CN-S1,grounded,USZ Hauptareal (Universitaetsspital Zuerich)
+H_LUKS,LUKS,CP,CP-S1,grounded,LUKS Luzern (Luzerner Kantonsspital)
+H_SZB,SZB,VT,VT-S1,grounded,Zollikerberg Areal (Spital Zollikerberg)
+H_HSL,HSL,VT,VT-S1,archetype,private acute -> Vialta private brand (no direct grounding)

@@ -1,0 +1,55 @@
+table map_hospital_org
+	lineageTag: 130cba5a-225b-4e62-86c3-a5884e2f97c6
+	sourceLineageTag: [gold].[map_hospital_org]
+
+	column legacy_hospital_id
+		dataType: string
+		lineageTag: e27f116c-0aa1-4092-abdb-b7b775fc70c7
+		sourceLineageTag: legacy_hospital_id
+		summarizeBy: none
+		sourceColumn: legacy_hospital_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column legacy_short_name
+		dataType: string
+		lineageTag: 9f42234c-32fe-4c6b-a52a-4ee8e2eef3b2
+		sourceLineageTag: legacy_short_name
+		summarizeBy: none
+		sourceColumn: legacy_short_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_id
+		dataType: string
+		lineageTag: 68e4b8ce-dcce-4c12-8ae7-1a3b02d1180d
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column org_unit_id
+		dataType: string
+		lineageTag: 185c0f0f-e8a1-4c43-9796-333abd0e466f
+		sourceLineageTag: org_unit_id
+		summarizeBy: none
+		sourceColumn: org_unit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column mapping_basis
+		dataType: string
+		lineageTag: 84969ef5-3b29-4f6f-849d-2b5472d9be50
+		sourceLineageTag: mapping_basis
+		summarizeBy: none
+		sourceColumn: mapping_basis
+
+		annotation SummarizationSetBy = Automatic
+
+	partition map_hospital_org = entity
+		mode: directLake
+		source
+			entityName: map_hospital_org
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

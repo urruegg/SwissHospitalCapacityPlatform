@@ -1,0 +1,137 @@
+table dim_org_unit
+	lineageTag: d1bbd525-c54f-4de4-87d3-db99d4effa55
+	sourceLineageTag: [gold].[dim_org_unit]
+
+	column org_unit_id
+		dataType: string
+		lineageTag: 9e6f30b3-37dc-46d1-93b4-f6e4e8fe364e
+		sourceLineageTag: org_unit_id
+		summarizeBy: none
+		sourceColumn: org_unit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_id
+		dataType: string
+		lineageTag: 29f38949-f0d1-4a23-b329-bb84495a5174
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column entity_type
+		dataType: string
+		lineageTag: c70de843-378b-4182-a784-b0fab434a542
+		sourceLineageTag: entity_type
+		summarizeBy: none
+		sourceColumn: entity_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column org_unit_name
+		dataType: string
+		lineageTag: e5507d03-5a40-4669-b5aa-6c072a12f643
+		sourceLineageTag: org_unit_name
+		summarizeBy: none
+		sourceColumn: org_unit_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column parent_org_unit_id
+		dataType: string
+		lineageTag: 40f6425a-fef8-471d-a29c-acfbb47b3fbd
+		sourceLineageTag: parent_org_unit_id
+		summarizeBy: none
+		sourceColumn: parent_org_unit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column org_level
+		dataType: int64
+		formatString: 0
+		lineageTag: 9c1313ff-b0b2-4d3b-b3a8-aea9515c08f2
+		sourceLineageTag: org_level
+		summarizeBy: none
+		sourceColumn: org_level
+
+		annotation SummarizationSetBy = Automatic
+
+	column legal_form_or_role
+		dataType: string
+		lineageTag: 4371851c-7300-4eb2-96db-8ab53c73ab10
+		sourceLineageTag: legal_form_or_role
+		summarizeBy: none
+		sourceColumn: legal_form_or_role
+
+		annotation SummarizationSetBy = Automatic
+
+	column beds
+		dataType: string
+		lineageTag: 3bbcad3b-7dba-485c-9ee9-c7c5a44230b6
+		sourceLineageTag: beds
+		summarizeBy: none
+		sourceColumn: beds
+
+		annotation SummarizationSetBy = Automatic
+
+	column fte_approx
+		dataType: string
+		lineageTag: 98b759de-811a-40b2-a782-3565c9d7ef77
+		sourceLineageTag: fte_approx
+		summarizeBy: none
+		sourceColumn: fte_approx
+
+		annotation SummarizationSetBy = Automatic
+
+	column location
+		dataType: string
+		lineageTag: 4d01d834-1046-433f-86c7-eaa99dd3c033
+		sourceLineageTag: location
+		summarizeBy: none
+		sourceColumn: location
+
+		annotation SummarizationSetBy = Automatic
+
+	column canton
+		dataType: string
+		lineageTag: c3f6f1e5-39b9-415f-88c3-c442443a3c55
+		sourceLineageTag: canton
+		summarizeBy: none
+		sourceColumn: canton
+
+		annotation SummarizationSetBy = Automatic
+
+	column gln
+		dataType: string
+		lineageTag: 167fb243-1c75-449e-890d-6ab51ac1c0d8
+		sourceLineageTag: gln
+		summarizeBy: none
+		sourceColumn: gln
+
+		annotation SummarizationSetBy = Automatic
+
+	column grounded_on
+		dataType: string
+		lineageTag: d175e13d-af3f-4d09-9804-822fd4c700be
+		sourceLineageTag: grounded_on
+		summarizeBy: none
+		sourceColumn: grounded_on
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_active
+		dataType: string
+		lineageTag: d329b945-30fa-4428-abef-3857983f4eb1
+		sourceLineageTag: is_active
+		summarizeBy: none
+		sourceColumn: is_active
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_org_unit = entity
+		mode: directLake
+		source
+			entityName: dim_org_unit
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

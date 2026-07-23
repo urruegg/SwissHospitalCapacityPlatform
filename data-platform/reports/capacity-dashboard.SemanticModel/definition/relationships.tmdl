@@ -100,3 +100,20 @@ relationship e6184523-a628-4b9d-8332-225c6c3f0514
 relationship 19a7df51-a630-498e-8ff8-6afe91e76c26
 	fromColumn: bva_dim_exec_role.capability_key
 	toColumn: bva_dim_capability.capability_key
+
+relationship 786425d4-8e39-4f6d-8d8c-ded92c4f921d
+	crossFilteringBehavior: bothDirections
+	fromColumn: map_hospital_org.legacy_hospital_id
+	toColumn: dim_hospital.hospital_id
+
+relationship 35f3b69b-a652-4421-9e9c-90b769274790
+	fromColumn: map_hospital_org.org_unit_id
+	toColumn: dim_org_unit.org_unit_id
+
+relationship a3f3485f-6886-4212-8792-435300ba4c65
+	fromColumn: dim_org_unit.tenant_id
+	toColumn: dim_tenant.tenant_id
+
+relationship f9a6bba3-bedb-45f7-9446-887bb4eab401
+	fromColumn: dim_department.site_id
+	toColumn: dim_org_unit.org_unit_id
