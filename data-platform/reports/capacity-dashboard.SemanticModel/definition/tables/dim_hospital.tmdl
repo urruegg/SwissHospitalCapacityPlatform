@@ -222,6 +222,42 @@ table dim_hospital
 
 		annotation SummarizationSetBy = Automatic
 
+	column tenant_id
+		dataType: string
+		lineageTag: 46ed7770-8d98-422c-ad02-10d6a97bd99b
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_subdomain
+		dataType: string
+		lineageTag: 1c00f271-f378-4192-923b-dac1bf817c7e
+		sourceLineageTag: tenant_subdomain
+		summarizeBy: none
+		sourceColumn: tenant_subdomain
+
+		annotation SummarizationSetBy = Automatic
+
+	column archetype
+		dataType: string
+		lineageTag: 9153f41f-8c70-45a9-8c4e-ce465fbf336d
+		sourceLineageTag: archetype
+		summarizeBy: none
+		sourceColumn: archetype
+
+		annotation SummarizationSetBy = Automatic
+
+	column legal_form
+		dataType: string
+		lineageTag: 9f759dc5-8775-43e7-a5aa-6f0e0e3d2b61
+		sourceLineageTag: legal_form
+		summarizeBy: none
+		sourceColumn: legal_form
+
+		annotation SummarizationSetBy = Automatic
+
 	partition dim_hospital = entity
 		mode: directLake
 		source
