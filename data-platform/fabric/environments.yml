@@ -4,9 +4,11 @@
 # same parameterized `fabric-cicd` deploy targets a different workspace by
 # changing the `--environment` value only (readiness design D5/D7).
 #
-# Region note: both SIT and PROD Fabric run in westus2 per ADR-0035 (the
-# subscription has 0 CU Fabric quota in eastus2). Re-pointing to eastus2 later is
-# a value change here + in parameter.yml, not a rebuild.
+# Region note: SIT Fabric runs in westus2 per ADR-0035 (the subscription has 0
+# CU Fabric quota in eastus2). PROD Fabric was rebuilt greenfield in
+# switzerlandnorth in Sprint 19 (ADR-0037 DR-style teardown + rebuild).
+# Re-pointing a workspace to a new region is a value change here + in
+# parameter.yml plus a capacity reassign, not a code rebuild.
 #
 # These GUIDs are deployment coordinates, not secrets. The SIT workspace +
 # lakehouse GUIDs already appear in the committed Direct Lake TMDL
@@ -22,8 +24,8 @@ environments:
     region: westus2
   PROD:
     workspace_name: ws-ihzhhpf-prod-data
-    workspace_id: 399b73f6-4b1c-44da-b7f9-1b4a37525a2b
+    workspace_id: 1c8408f4-6eb7-401f-aee9-77fe4c8a515e
     lakehouse_name: lh_ihzhhpf_prod
-    lakehouse_id: 4f73c480-6c85-4823-bb98-4e66780c527f
+    lakehouse_id: 57bd6e02-5248-439c-9f31-16bf9ee83cb4
     capacity_name: fabricihzhhpfprod
-    region: westus2
+    region: switzerlandnorth
