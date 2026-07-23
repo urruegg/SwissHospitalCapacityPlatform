@@ -107,9 +107,9 @@ export function OrSteeringBoard() {
             key={insight.id}
             appearance="subtle"
             onClick={() =>
-              void routeInsight(insight, {
+              void routeInsight(insight, orSteeringBoard.recoFor(insight, data), {
                 agent: orSteeringBoard.agent,
-                openWithContext: rail.openWithContext,
+                openWithReco: rail.openWithReco,
               })
             }
           >

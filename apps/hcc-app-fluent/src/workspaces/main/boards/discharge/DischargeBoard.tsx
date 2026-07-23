@@ -106,9 +106,9 @@ export function DischargeBoard() {
             key={insight.id}
             appearance="subtle"
             onClick={() =>
-              void routeInsight(insight, {
+              void routeInsight(insight, dischargeBoard.recoFor(insight, data), {
                 agent: dischargeBoard.agent,
-                openWithContext: rail.openWithContext,
+                openWithReco: rail.openWithReco,
               })
             }
           >

@@ -149,6 +149,47 @@
   "agent": {
     "open": "Apri agente",
     "close": "Chiudi agente",
-    "title": "Agente"
+    "title": "Agente",
+    "askAbout": "Chiedi informazioni su"
+  },
+  "badge": {
+    "simulatedData": "Dati simulati",
+    "liveData": "Dati in tempo reale",
+    "accessLens": "Lente di accesso: {{lens}}"
+  },
+  "reco": {
+    "back": "Torna al riepilogo",
+    "agentLine": "{{agent}} — contesto acquisito",
+    "projection": "Proiezione: {{text}}"
+  },
+  "ooa": {
+    "askAbout": {
+      "wardTips": "Quali reparti sforano in 72 h?",
+      "fluPeak": "Quando arriva il picco influenzale?",
+      "icuStaffing": "Il personale della terapia intensiva è un vincolo?"
+    },
+    "table": {
+      "hint": "Fai clic su una riga → azioni Copilot",
+      "ward": "Reparto",
+      "now": "Ora",
+      "trend": "Tendenza 72 h",
+      "forecast": "Previsione",
+      "flag": "Stato"
+    },
+    "flow": {
+      "hint": "I segnali alimentano i flussi di specialità → gli output di capacità. Fai clic su un flusso o sul divario per le azioni Copilot.",
+      "channels": "Segnali",
+      "streams": "Flussi",
+      "outputs": "Output",
+      "current": "Attuale",
+      "forecast72": "Previsione 72 h",
+      "fedBy": "Alimentato da {{channels}}"
+    },
+    "gap": {
+      "label": "Divario di capacità previsto a 72 h",
+      "card": "{{beds}} posti letto in meno in 72 h",
+      "aria": "Posti letto necessari entro 72 h",
+      "cta": "Risolvi il divario a 72 h"
+    }
   }
 }

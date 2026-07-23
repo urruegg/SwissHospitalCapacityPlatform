@@ -1,5 +1,6 @@
 import i18n from '../../../../i18n';
-import type { RoleBoard, RoleBoardData } from '../../../../journey/RoleBoard';
+import type { GroundedReco } from '../../../../copilot-rail/reco';
+import type { RoleBoard, RoleBoardData, ContextInsight } from '../../../../journey/RoleBoard';
 import type { CrisisPayload } from '../../../../data/roleboard/crisis-data';
 import { loadCrisis } from '../../../../data/roleboard/golden-source-client';
 
@@ -18,6 +19,30 @@ export const crisisBoard: RoleBoard<CrisisPayload> = {
         bedDayImpact: s.bedDayImpact,
       },
     })),
+  askAbout: [
+    'What changed since last shift?',
+    'Where is the biggest pressure?',
+  ],
+  defaultReco(): GroundedReco {
+    return {
+      agentLabel: 'Crisis Copilot',
+      contextChip: { subject: 'Shift summary', tone: 'ok' },
+      read: 'No proactive recommendation wired for this board yet (parity build focuses on occupancy).',
+      levers: [],
+      citations: [],
+      provenance: 'simulated',
+    };
+  },
+  recoFor(insight: ContextInsight): GroundedReco {
+    return {
+      agentLabel: 'Crisis Copilot',
+      contextChip: { subject: insight.label, tone: 'watch' },
+      read: `Context picked up for ${insight.label}. Detailed recommendation lands in a later sprint.`,
+      levers: [],
+      citations: [],
+      provenance: 'simulated',
+    };
+  },
   toHandoff: (data: RoleBoardData<CrisisPayload>) => {
     const top = data.payload.scenarios.reduce((best, s) =>
       s.probability > best.probability ? s : best,

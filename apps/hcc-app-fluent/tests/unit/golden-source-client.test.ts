@@ -9,7 +9,7 @@ describe('golden-source-client.loadOccupancy', () => {
     const data = await loadOccupancy(scope, 'user');
     expect(data.provenance).toBe('simulated');
     expect(data.payload.siteDeltaBeds).toBe(-16);
-    expect(data.payload.channels[0].occupancyPct).toBe(102);
+    expect(data.payload.wards[0].forecastPct).toBe(102);
   });
 
   it('pins the scenario window in demo mode', async () => {
