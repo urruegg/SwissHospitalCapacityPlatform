@@ -45,6 +45,9 @@ param networkAppSubnetPrefix string = '10.60.1.0/24'
 @description('Address prefix for the platform data subnet (private endpoints).')
 param networkDataSubnetPrefix string = '10.60.2.0/24'
 
+@description('Address prefix for the Container Apps Environment (CAE) infrastructure subnet (ADR-0029 Option A). Delegated to Microsoft.App/environments. MUST fall inside networkVnetAddressPrefix — set explicitly whenever the VNet prefix is changed from the 10.60.0.0/16 default (e.g. PROD swn uses 10.70.0.0/16).')
+param networkCaeSubnetPrefix string = '10.60.4.0/23'
+
 @description('Enable observability module deployment scaffold.')
 param enableObservabilityModule bool = false
 
@@ -229,6 +232,9 @@ param manageCuraviasDnsZone bool = true
 @description('Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield).')
 param keyVaultNameOverride string = ''
 
+@description('Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity.')
+param enableKeyVaultPrivateEndpoint bool = false
+
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
 var resourceSuffix = '${solutionShortName}${envSuffix}'
 
@@ -247,6 +253,13 @@ module platformFoundation './modules/platform-foundation/main.bicep' = {
     tags: tags
     logAnalyticsRetentionInDays: logAnalyticsRetentionInDays
     keyVaultName: keyVaultNameOverride
+    // ADR-0038 — Key Vault private endpoint. vnetResourceId is only consumed by
+    // the module when enableKeyVaultPrivateEndpoint=true (which requires
+    // enableNetworkModule=true — see the param description). Single-condition
+    // guard mirrors the agent-host CAE wiring so Bicep can prove non-null.
+    enableKeyVaultPrivateEndpoint: enableKeyVaultPrivateEndpoint
+    vnetResourceId: enableNetworkModule ? network!.outputs.vnetResourceId : ''
+    keyVaultPrivateEndpointSubnetName: 'snet-data'
   }
 }
 
@@ -268,6 +281,7 @@ module network './modules/network/main.bicep' = if (enableNetworkModule) {
     vnetAddressPrefix: networkVnetAddressPrefix
     appSubnetPrefix: networkAppSubnetPrefix
     dataSubnetPrefix: networkDataSubnetPrefix
+    caeSubnetPrefix: networkCaeSubnetPrefix
   }
 }
 
