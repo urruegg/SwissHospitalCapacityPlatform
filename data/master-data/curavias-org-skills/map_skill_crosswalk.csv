@@ -1,0 +1,67 @@
+crosswalk_id,internal_skill_id,esco_uri,snomed_code,skills_manager_skill_code,work_id_skill_label,mapping_confidence
+CW-SK-BLS,SK-BLS,esco:skill/bls,,SM-BLS,Basale Reanimation BLS-AED,high
+CW-SK-ACLS,SK-ACLS,esco:skill/acls,,SM-ACLS,Erweiterte Reanimation ACLS/ALS,medium
+CW-SK-PALS,SK-PALS,esco:skill/pals,,SM-PALS,Pädiatrische Reanimation PALS,low
+CW-SK-IPC,SK-IPC,esco:skill/ipc,,SM-IPC,Infektionsprävention & Hygiene,medium
+CW-SK-MEDADMIN,SK-MEDADMIN,esco:skill/medadmin,,SM-MEDADMIN,Sichere Medikamentenverabreichung,low
+CW-SK-DOC,SK-DOC,esco:skill/doc,,SM-DOC,Klinische Dokumentation (KIS),high
+CW-SK-DEESC,SK-DEESC,esco:skill/deesc,,SM-DEESC,Deeskalation / Patientensicherheit,medium
+CW-SK-DE-B2,SK-DE-B2,esco:skill/de-b2,,SM-DE-B2,Deutsch Stationssprache B2+,high
+CW-SK-FR-B2,SK-FR-B2,esco:skill/fr-b2,,SM-FR-B2,Französisch B2+,low
+CW-SK-IT-B2,SK-IT-B2,esco:skill/it-b2,,SM-IT-B2,Italienisch B2+,high
+CW-SK-DATA,SK-DATA,esco:skill/data,,SM-DATA,Datenschutz DSG / Informationssicherheit,high
+CW-SK-LIC-NURSE,SK-LIC-NURSE,esco:skill/lic-nurse,,SM-LIC-NURSE,Berufsausübung Pflege HF/BSc,high
+CW-SK-LIC-MIDWIFE,SK-LIC-MIDWIFE,esco:skill/lic-midwife,,SM-LIC-MIDWIFE,Berufsausübung Hebamme BSc,high
+CW-SK-LIC-OTA,SK-LIC-OTA,esco:skill/lic-ota,,SM-LIC-OTA,Berufsausübung Operationstechnik HF,high
+CW-SK-LIC-MTRA,SK-LIC-MTRA,esco:skill/lic-mtra,,SM-LIC-MTRA,Berufsausübung Radiologie HF,high
+CW-SK-LIC-PARA,SK-LIC-PARA,esco:skill/lic-para,,SM-LIC-PARA,Berufsausübung Rettungssanität HF,high
+CW-SK-LIC-PHYS,SK-LIC-PHYS,esco:skill/lic-phys,,SM-LIC-PHYS,Ärztliche Berufsausübungsbewilligung,high
+CW-SK-LIC-PHYSIO,SK-LIC-PHYSIO,esco:skill/lic-physio,,SM-LIC-PHYSIO,Berufsausübung Physiotherapie,high
+CW-SK-LIC-PSY,SK-LIC-PSY,esco:skill/lic-psy,,SM-LIC-PSY,Weiterbildungstitel Psychotherapie,high
+CW-SK-NDS-IPS,SK-NDS-IPS,esco:skill/nds-ips,,SM-NDS-IPS,NDS HF Intensivpflege,high
+CW-SK-NDS-ANAES,SK-NDS-ANAES,esco:skill/nds-anaes,,SM-NDS-ANAES,NDS HF Anästhesiepflege,high
+CW-SK-NDS-NOTF,SK-NDS-NOTF,esco:skill/nds-notf,,SM-NDS-NOTF,NDS HF Notfallpflege,high
+CW-SK-VENT,SK-VENT,esco:skill/vent,,SM-VENT,Beatmung / Ventilator-Management,medium
+CW-SK-HAEMO,SK-HAEMO,esco:skill/haemo,,SM-HAEMO,Hämodynamisches Monitoring,medium
+CW-SK-ECMO,SK-ECMO,esco:skill/ecmo,,SM-ECMO,ECMO-Betreuung,low
+CW-SK-DIAL,SK-DIAL,esco:skill/dial,,SM-DIAL,Dialyse / Nierenersatzverfahren,low
+CW-SK-SCRUB,SK-SCRUB,esco:skill/scrub,,SM-SCRUB,Perioperative Instrumentierung (Scrub),high
+CW-SK-TRIAGE,SK-TRIAGE,esco:skill/triage,,SM-TRIAGE,Notfall-Triage,medium
+CW-SK-OBST,SK-OBST,esco:skill/obst,,SM-OBST,Geburtshilfliche Betreuung,high
+CW-SK-NEO,SK-NEO,esco:skill/neo,,SM-NEO,Neonatologische Pflege,high
+CW-SK-WOUND,SK-WOUND,esco:skill/wound,,SM-WOUND,Komplexes Wundmanagement,low
+CW-SK-ONCO-NURSE,SK-ONCO-NURSE,esco:skill/onco-nurse,,SM-ONCO-NURSE,Onkologiepflege / Chemo-Handling,high
+CW-SK-FMH-ANAES,SK-FMH-ANAES,esco:skill/fmh-anaes,,SM-FMH-ANAES,FMH Anästhesiologie,high
+CW-SK-FMH-INTENS,SK-FMH-INTENS,esco:skill/fmh-intens,,SM-FMH-INTENS,Schwerpunkt Intensivmedizin,high
+CW-SK-FMH-NOTF,SK-FMH-NOTF,esco:skill/fmh-notf,,SM-FMH-NOTF,Schwerpunkt Klinische Notfallmedizin,high
+CW-SK-FMH-CARD,SK-FMH-CARD,esco:skill/fmh-card,,SM-FMH-CARD,FMH Kardiologie,high
+CW-SK-FMH-CARDSURG,SK-FMH-CARDSURG,esco:skill/fmh-cardsurg,,SM-FMH-CARDSURG,FMH Herz-/Gefässchirurgie,high
+CW-SK-FMH-NEURO,SK-FMH-NEURO,esco:skill/fmh-neuro,,SM-FMH-NEURO,FMH Neurologie,high
+CW-SK-FMH-NEUROSURG,SK-FMH-NEUROSURG,esco:skill/fmh-neurosurg,,SM-FMH-NEUROSURG,FMH Neurochirurgie,high
+CW-SK-FMH-ONCO,SK-FMH-ONCO,esco:skill/fmh-onco,,SM-FMH-ONCO,FMH Medizinische Onkologie,high
+CW-SK-FMH-RADONC,SK-FMH-RADONC,esco:skill/fmh-radonc,,SM-FMH-RADONC,FMH Radio-Onkologie,high
+CW-SK-FMH-SURG,SK-FMH-SURG,esco:skill/fmh-surg,,SM-FMH-SURG,FMH Chirurgie,high
+CW-SK-FMH-ORTHO,SK-FMH-ORTHO,esco:skill/fmh-ortho,,SM-FMH-ORTHO,FMH Orthopädie & Traumatologie,high
+CW-SK-FMH-GYN,SK-FMH-GYN,esco:skill/fmh-gyn,,SM-FMH-GYN,FMH Gynäkologie & Geburtshilfe,high
+CW-SK-FMH-PAED,SK-FMH-PAED,esco:skill/fmh-paed,,SM-FMH-PAED,FMH Kinder- & Jugendmedizin,high
+CW-SK-FMH-NEONAT,SK-FMH-NEONAT,esco:skill/fmh-neonat,,SM-FMH-NEONAT,Schwerpunkt Neonatologie,high
+CW-SK-FMH-INTMED,SK-FMH-INTMED,esco:skill/fmh-intmed,,SM-FMH-INTMED,FMH Allgemeine Innere Medizin,high
+CW-SK-FMH-RADIOL,SK-FMH-RADIOL,esco:skill/fmh-radiol,,SM-FMH-RADIOL,FMH Radiologie,high
+CW-SK-FMH-NUCMED,SK-FMH-NUCMED,esco:skill/fmh-nucmed,,SM-FMH-NUCMED,FMH Nuklearmedizin,high
+CW-SK-FMH-NEPHRO,SK-FMH-NEPHRO,esco:skill/fmh-nephro,,SM-FMH-NEPHRO,FMH Nephrologie,high
+CW-SK-FMH-PALL,SK-FMH-PALL,esco:skill/fmh-pall,,SM-FMH-PALL,Schwerpunkt Palliativmedizin,high
+CW-SK-FMH-OPHT,SK-FMH-OPHT,esco:skill/fmh-opht,,SM-FMH-OPHT,FMH Ophthalmologie,high
+CW-SK-RADPROT,SK-RADPROT,esco:skill/radprot,,SM-RADPROT,Strahlenschutz-Sachkunde,medium
+CW-SK-CT,SK-CT,esco:skill/ct,,SM-CT,CT-Bildgebung,high
+CW-SK-MRI,SK-MRI,esco:skill/mri,,SM-MRI,MRT-Bildgebung,medium
+CW-SK-PETCT,SK-PETCT,esco:skill/petct,,SM-PETCT,PET-CT / SPECT-CT,medium
+CW-SK-MAMMO,SK-MAMMO,esco:skill/mammo,,SM-MAMMO,Mammographie / BrustCentrum,medium
+CW-SK-LAB,SK-LAB,esco:skill/lab,,SM-LAB,Biomedizinische Analytik,high
+CW-SK-PATH,SK-PATH,esco:skill/path,,SM-PATH,Pathologie-Aufarbeitung,medium
+CW-SK-BEDFLOW,SK-BEDFLOW,esco:skill/bedflow,,SM-BEDFLOW,Bettenmanagement / Patientenfluss,medium
+CW-SK-ORCOORD,SK-ORCOORD,esco:skill/orcoord,,SM-ORCOORD,OP-Koordination / Slate-Management,high
+CW-SK-DISCHARGE,SK-DISCHARGE,esco:skill/discharge,,SM-DISCHARGE,Austrittsplanung / Care-Transition,low
+CW-SK-CRISIS,SK-CRISIS,esco:skill/crisis,,SM-CRISIS,Krisen-/Lagemanagement,low
+CW-SK-ROSTER,SK-ROSTER,esco:skill/roster,,SM-ROSTER,Dienstplanung / Personaleinsatz,high
+CW-SK-DQSTEWARD,SK-DQSTEWARD,esco:skill/dqsteward,,SM-DQSTEWARD,Datenqualität / Ontologie-Stewardship,medium
+CW-SK-WARDLEAD,SK-WARDLEAD,esco:skill/wardlead,,SM-WARDLEAD,Stationsleitung (Leadership),low

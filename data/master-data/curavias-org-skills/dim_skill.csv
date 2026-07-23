@@ -1,0 +1,67 @@
+skill_id,label_de,label_en,skill_category,skill_type,anchor_authority_id,default_min_assurance,is_safety_critical,has_expiry,typical_validity_months
+SK-BLS,Basale Reanimation BLS-AED,Basic life support BLS-AED,clinical,skill,AUTH-SRC,L2,TRUE,TRUE,24
+SK-ACLS,Erweiterte Reanimation ACLS/ALS,Advanced life support ACLS,clinical,skill,AUTH-SRC,L2,TRUE,TRUE,24
+SK-PALS,Pädiatrische Reanimation PALS,Paediatric advanced life support,clinical,skill,AUTH-SRC,L2,TRUE,TRUE,24
+SK-IPC,Infektionsprävention & Hygiene,Infection prevention & control,clinical,skill,AUTH-SWISSNOSO,L2,TRUE,TRUE,12
+SK-MEDADMIN,Sichere Medikamentenverabreichung,Safe medication administration,clinical,skill,AUTH-LMS,L1,TRUE,FALSE,0
+SK-DOC,Klinische Dokumentation (KIS),Clinical documentation (HIS),digital,skill,AUTH-LMS,L1,FALSE,FALSE,0
+SK-DEESC,Deeskalation / Patientensicherheit,De-escalation / patient safety,clinical,transversal,AUTH-LMS,L1,FALSE,TRUE,24
+SK-DE-B2,Deutsch Stationssprache B2+,German ward language B2+,language,language,AUTH-FIDE,L2,TRUE,FALSE,0
+SK-FR-B2,Französisch B2+,French B2+,language,language,AUTH-FIDE,L2,FALSE,FALSE,0
+SK-IT-B2,Italienisch B2+,Italian B2+,language,language,AUTH-FIDE,L2,FALSE,FALSE,0
+SK-DATA,Datenschutz DSG / Informationssicherheit,Data protection / infosec,regulatory,knowledge,AUTH-LMS,L1,FALSE,TRUE,12
+SK-LIC-NURSE,Berufsausübung Pflege HF/BSc,Nursing practice licence,regulatory,skill,AUTH-GESREG,L4,TRUE,FALSE,0
+SK-LIC-MIDWIFE,Berufsausübung Hebamme BSc,Midwifery practice licence,regulatory,skill,AUTH-GESREG,L4,TRUE,FALSE,0
+SK-LIC-OTA,Berufsausübung Operationstechnik HF,OR-tech practice licence,regulatory,skill,AUTH-NAREG,L4,TRUE,FALSE,0
+SK-LIC-MTRA,Berufsausübung Radiologie HF,Radiography practice licence,regulatory,skill,AUTH-NAREG,L4,TRUE,FALSE,0
+SK-LIC-PARA,Berufsausübung Rettungssanität HF,Paramedic practice licence,regulatory,skill,AUTH-NAREG,L4,TRUE,FALSE,0
+SK-LIC-PHYS,Ärztliche Berufsausübungsbewilligung,Physician practice licence,regulatory,skill,AUTH-MEDREG,L4,TRUE,FALSE,0
+SK-LIC-PHYSIO,Berufsausübung Physiotherapie,Physiotherapy practice licence,regulatory,skill,AUTH-GESREG,L4,TRUE,FALSE,0
+SK-LIC-PSY,Weiterbildungstitel Psychotherapie,Psychotherapy title,regulatory,skill,AUTH-PSYREG,L4,TRUE,FALSE,0
+SK-NDS-IPS,NDS HF Intensivpflege,ICU nursing (NDS HF),clinical,skill,AUTH-ODASANTE,L3,TRUE,FALSE,0
+SK-NDS-ANAES,NDS HF Anästhesiepflege,Anaesthesia nursing (NDS HF),clinical,skill,AUTH-ODASANTE,L3,TRUE,FALSE,0
+SK-NDS-NOTF,NDS HF Notfallpflege,Emergency nursing (NDS HF),clinical,skill,AUTH-ODASANTE,L3,TRUE,FALSE,0
+SK-VENT,Beatmung / Ventilator-Management,Ventilator management,clinical,skill,AUTH-LMS,L2,TRUE,TRUE,24
+SK-HAEMO,Hämodynamisches Monitoring,Haemodynamic monitoring,clinical,skill,AUTH-LMS,L1,TRUE,FALSE,0
+SK-ECMO,ECMO-Betreuung,ECMO management,clinical,skill,AUTH-LMS,L2,TRUE,TRUE,24
+SK-DIAL,Dialyse / Nierenersatzverfahren,Dialysis / renal replacement,technical,skill,AUTH-LMS,L2,TRUE,TRUE,24
+SK-SCRUB,Perioperative Instrumentierung (Scrub),Perioperative scrub,clinical,skill,AUTH-LMS,L1,TRUE,FALSE,0
+SK-TRIAGE,Notfall-Triage,Emergency triage,clinical,skill,AUTH-LMS,L1,TRUE,TRUE,24
+SK-OBST,Geburtshilfliche Betreuung,Obstetric care,clinical,skill,AUTH-GESREG,L4,TRUE,FALSE,0
+SK-NEO,Neonatologische Pflege,Neonatal nursing,clinical,skill,AUTH-LMS,L1,TRUE,TRUE,24
+SK-WOUND,Komplexes Wundmanagement,Complex wound management,clinical,skill,AUTH-LMS,L1,FALSE,TRUE,36
+SK-ONCO-NURSE,Onkologiepflege / Chemo-Handling,Oncology nursing / chemo,clinical,skill,AUTH-LMS,L2,TRUE,TRUE,24
+SK-FMH-ANAES,FMH Anästhesiologie,FMH anaesthesiology,clinical,skill,AUTH-SIWF,L3,TRUE,FALSE,0
+SK-FMH-INTENS,Schwerpunkt Intensivmedizin,Intensive-care medicine,clinical,skill,AUTH-SIWF,L3,TRUE,FALSE,0
+SK-FMH-NOTF,Schwerpunkt Klinische Notfallmedizin,Clinical emergency medicine,clinical,skill,AUTH-SGNOR,L3,TRUE,FALSE,0
+SK-FMH-CARD,FMH Kardiologie,FMH cardiology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-CARDSURG,FMH Herz-/Gefässchirurgie,FMH cardiac surgery,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-NEURO,FMH Neurologie,FMH neurology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-NEUROSURG,FMH Neurochirurgie,FMH neurosurgery,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-ONCO,FMH Medizinische Onkologie,FMH medical oncology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-RADONC,FMH Radio-Onkologie,FMH radiation oncology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-SURG,FMH Chirurgie,FMH surgery,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-ORTHO,FMH Orthopädie & Traumatologie,FMH orthopaedics,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-GYN,FMH Gynäkologie & Geburtshilfe,FMH gynaecology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-PAED,FMH Kinder- & Jugendmedizin,FMH paediatrics,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-NEONAT,Schwerpunkt Neonatologie,Neonatology,clinical,skill,AUTH-SIWF,L3,TRUE,FALSE,0
+SK-FMH-INTMED,FMH Allgemeine Innere Medizin,FMH internal medicine,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-RADIOL,FMH Radiologie,FMH radiology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-NUCMED,FMH Nuklearmedizin,FMH nuclear medicine,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-NEPHRO,FMH Nephrologie,FMH nephrology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-PALL,Schwerpunkt Palliativmedizin,Palliative medicine,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-FMH-OPHT,FMH Ophthalmologie,FMH ophthalmology,clinical,skill,AUTH-SIWF,L3,FALSE,FALSE,0
+SK-RADPROT,Strahlenschutz-Sachkunde,Radiation-protection competence,regulatory,skill,AUTH-BAG-SSK,L2,TRUE,TRUE,60
+SK-CT,CT-Bildgebung,CT imaging,technical,skill,AUTH-LMS,L1,TRUE,FALSE,0
+SK-MRI,MRT-Bildgebung,MRI imaging,technical,skill,AUTH-LMS,L1,TRUE,FALSE,0
+SK-PETCT,PET-CT / SPECT-CT,PET-CT / SPECT-CT,technical,skill,AUTH-LMS,L1,TRUE,FALSE,0
+SK-MAMMO,Mammographie / BrustCentrum,Mammography,technical,skill,AUTH-LMS,L2,TRUE,TRUE,36
+SK-LAB,Biomedizinische Analytik,Biomedical analysis,technical,skill,AUTH-NAREG,L4,FALSE,FALSE,0
+SK-PATH,Pathologie-Aufarbeitung,Pathology processing,technical,skill,AUTH-LMS,L1,FALSE,FALSE,0
+SK-BEDFLOW,Bettenmanagement / Patientenfluss,Bed / flow management,leadership,skill,AUTH-LMS,L1,FALSE,TRUE,24
+SK-ORCOORD,OP-Koordination / Slate-Management,OR coordination,leadership,skill,AUTH-LMS,L1,FALSE,TRUE,24
+SK-DISCHARGE,Austrittsplanung / Care-Transition,Discharge / care transition,leadership,skill,AUTH-LMS,L1,FALSE,TRUE,24
+SK-CRISIS,Krisen-/Lagemanagement,Crisis / incident command,leadership,skill,AUTH-LMS,L1,FALSE,TRUE,24
+SK-ROSTER,Dienstplanung / Personaleinsatz,Rostering / staffing,leadership,skill,AUTH-LMS,L1,FALSE,FALSE,0
+SK-DQSTEWARD,Datenqualität / Ontologie-Stewardship,Data / ontology stewardship,digital,skill,AUTH-LMS,L2,FALSE,FALSE,0
+SK-WARDLEAD,Stationsleitung (Leadership),Ward leadership,leadership,skill,AUTH-LMS,L1,FALSE,FALSE,0
