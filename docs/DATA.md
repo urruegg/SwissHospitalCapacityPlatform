@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.0 |
+| **Version** | 0.7.1 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.6.0 (added DC-EXT-SIGNAL-v1 provenance plugin fields and ext_dim_source badge columns) |
+| **Previous Version** | 0.7.0 (added DC-EXT-SIGNAL-v1 provenance plugin fields and ext_dim_source badge columns) |
 
 ## Purpose
 
@@ -228,13 +228,13 @@ data-driven live/simulated/internal trust badge (FR-EXT-019).
 
 | Column | Type / allowed values | Notes |
 | ------ | --------------------- | ----- |
-| `dataMode` | `live`, `simulated`, `internal` | Current binding mode; set from `provenance.activeBinding` on the latest ingested record. |
-| `trustTier` | `A`, `B`, `C` | Inherited from the source trust-tier catalogue entry. |
-| `lastLiveAt` | date-time or null | Timestamp of the most recent successfully ingested live record; null if live binding has never succeeded. |
-| `fellBackFrom` | `live` or null | Mirrors `provenance.fellBackFrom`; set when the channel is in simulated mode due to a live-binding failure. |
+| `ext_data_mode` | `live`, `simulated`, `internal` | Current binding mode; set from `provenance.activeBinding` on the latest ingested record. |
+| `ext_trust_tier` | `A`, `B`, `C` | Inherited from the source trust-tier catalogue entry. |
+| `ext_last_live_at` | date-time or null | Timestamp of the most recent successfully ingested live record; null if live binding has never succeeded. |
+| `ext_fell_back_from` | `live` or null | Mirrors `provenance.fellBackFrom`; set when the channel is in simulated mode due to a live-binding failure. |
 
 The trust-badge propagation chain is:
-`provenance.activeBinding` -> `ext_dim_source.dataMode` -> semantic-model measures -> board cards.
+`provenance.activeBinding` -> `ext_dim_source.ext_data_mode` -> semantic-model measures -> board cards.
 
 ### Deprecations
 

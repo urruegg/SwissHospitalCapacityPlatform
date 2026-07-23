@@ -138,10 +138,10 @@ A data-driven trust badge flows end-to-end through the platform using three
 possible states (`live`, `simulated`, `internal`) carried in `provenance.activeBinding`
 on each `DC-EXT-SIGNAL-v1` record. The propagation chain is:
 
-`provenance.activeBinding` -> `ext_dim_source.dataMode` -> semantic-model measures -> board cards.
+`provenance.activeBinding` -> `ext_dim_source.ext_data_mode` -> semantic-model measures -> board cards.
 
-The `ext_dim_source` dimension table exposes `dataMode`, `trustTier`,
-`lastLiveAt`, and `fellBackFrom` columns. Semantic-model measures read these
+The `ext_dim_source` dimension table exposes `ext_data_mode`, `ext_trust_tier`,
+`ext_last_live_at`, and `ext_fell_back_from` columns. Semantic-model measures read these
 columns to drive per-channel trust badges on CSA and OCA board cards (FR-EXT-019).
 This contract is defined in `DC-EXT-SIGNAL-v1` and the `ext_dim_source` badge
 columns documented in `docs/DATA.md`.
