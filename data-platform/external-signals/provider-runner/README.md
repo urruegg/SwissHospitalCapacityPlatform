@@ -6,18 +6,18 @@ The provider-runner Container App hosts signal provider adapters, simulators, an
 
 The provider-runner is a stateless Container App that:
 
-1. **Hosts provider adapters** — adapters for live external bindings (SED, Alertswiss, etc.) and internal forecast generators.
-2. **Runs simulators** — synthetic data generators for CI/test environments and demo scenarios.
-3. **Publishes standardized signals** — all outputs conform to the `DC-EXT-SIGNAL-v1` schema and are sent to an Event Hub for downstream consumption.
-4. **Manages lifecycle** — scales from zero when idle; fires on-demand or on schedule.
+1. **Hosts provider adapters** - adapters for live external bindings (SED, Alertswiss, etc.) and internal forecast generators.
+2. **Runs simulators** - synthetic data generators for CI/test environments and demo scenarios.
+3. **Publishes standardized signals** - all outputs conform to the `DC-EXT-SIGNAL-v1` schema and are sent to an Event Hub for downstream consumption.
+4. **Manages lifecycle** - scales from zero when idle; fires on-demand or on schedule.
 
 ## Deployment
 
 Deployment of the provider-runner is **gated by human approval**:
 
-1. **Plan phase** — the landing-zone agent or drift analyzer generates a `what-if` summary showing the Container App resource delta (create or update).
-2. **Approval gate** — a human reviewer reads the plan and replies on the issue or PR thread with a comment containing the exact phrase: `approved-to-apply`.
-3. **Apply phase** — only after approval is the Container App provisioned or updated.
+1. **Plan phase** - the landing-zone agent or drift analyzer generates a `what-if` summary showing the Container App resource delta (create or update).
+2. **Approval gate** - a human reviewer reads the plan and replies on the issue or PR thread with a comment containing the exact phrase: `approved-to-apply`.
+3. **Apply phase** - only after approval is the Container App provisioned or updated.
 
 This gate ensures that any changes to provider connectivity, Event Hub bindings, or workload identity configuration are reviewed before live deployment.
 
@@ -38,7 +38,7 @@ Live deployment to SIT or PROD:
 
 - Requires explicit endpoint URLs and credential stores (Azure Key Vault references, not inline secrets).
 - Requires a vetted **license verification list** (provider credentials, API keys, OAuth scopes) approved by the compliance lane before promotion.
-- The Container App uses **Workload Identity Federation** — no connection strings, API keys, or secrets are embedded in code or configuration.
+- The Container App uses **Workload Identity Federation** - no connection strings, API keys, or secrets are embedded in code or configuration.
 - Each live binding is tagged with its data source, license status, and approval date in the Event Hub message envelope.
 
 ## Identity and Access
@@ -63,9 +63,9 @@ Key parameters passed to the Bicep template:
 
 The Container App is configured with:
 
-- **Image** — `mcr.microsoft.com/azure-cli:latest` (placeholder; replaced with a custom provider-runner image at deployment time).
-- **Scale** — min replicas: 0, max replicas: 1 (scales to zero when idle, up to 1 active instance when processing).
-- **Environment variables** — `EVENT_HUB_NAMESPACE` and `EVENT_HUB_NAME` injected at runtime.
+- **Image** - `mcr.microsoft.com/azure-cli:latest` (placeholder; replaced with a custom provider-runner image at deployment time).
+- **Scale** - min replicas: 0, max replicas: 1 (scales to zero when idle, up to 1 active instance when processing).
+- **Environment variables** - `EVENT_HUB_NAMESPACE` and `EVENT_HUB_NAME` injected at runtime.
 
 ## Schema and Output
 
@@ -108,7 +108,7 @@ az deployment group create \
 
 ## Related Artifacts
 
-- **Data contract** — `docs/data-contracts/DC-EXT-SIGNAL-v1.md`
-- **Signal-triage-agent** — `agents/signal-triage-agent/AGENT.md` (consumes, deduplicates, and triages signals)
-- **Data-quality-agent** — `agents/data-quality-agent/AGENT.md` (validates schema, handles quarantine)
-- **Eventstream topology** — Signal records are loaded into an Eventstream for real-time downstream consumption
+- **Data contract** - `docs/data-contracts/DC-EXT-SIGNAL-v1.md`
+- **Signal-triage-agent** - `agents/signal-triage-agent/AGENT.md` (consumes, deduplicates, and triages signals)
+- **Data-quality-agent** - `agents/data-quality-agent/AGENT.md` (validates schema, handles quarantine)
+- **Eventstream topology** - Signal records are loaded into an Eventstream for real-time downstream consumption
