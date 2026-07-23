@@ -262,6 +262,36 @@
       "cta": "Resolve OR gap"
     }
   },
+  "sba": {
+    "askAbout": {
+      "surgeGap": "How is the surge bed gap being covered?",
+      "orsaCoverage": "Are ORSA deferrals fully covered?",
+      "csaEscalation": "When should we escalate to crisis planning?"
+    },
+    "table": {
+      "hint": "Click a row → staffing actions",
+      "role": "Role",
+      "fromUnit": "From unit",
+      "toUnit": "To unit",
+      "fte": "FTE",
+      "shiftGap": "Shift"
+    },
+    "levers": {
+      "hint": "Staffing levers sorted by beds enabled",
+      "rank": "Rank",
+      "label": "Lever",
+      "bedsEnabled": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by coverage impact →"
+    },
+    "gap": {
+      "label": "Site staffing gap",
+      "cta": "Resolve staffing gap"
+    },
+    "kpi": {
+      "balanced": "Balanced"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Which wards tip over in 72h?",

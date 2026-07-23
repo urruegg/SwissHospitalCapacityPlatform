@@ -262,6 +262,36 @@
       "cta": "Risolvere il divario sala operatoria"
     }
   },
+  "sba": {
+    "askAbout": {
+      "surgeGap": "Come viene coperto il deficit di posti letto?",
+      "orsaCoverage": "I rinvii della sala operatoria sono completamente coperti?",
+      "csaEscalation": "Quando dobbiamo passare alla pianificazione di crisi?"
+    },
+    "table": {
+      "hint": "Fai clic su una riga → azioni del personale",
+      "role": "Ruolo",
+      "fromUnit": "Reparto di origine",
+      "toUnit": "Reparto di destinazione",
+      "fte": "ETP",
+      "shiftGap": "Turno"
+    },
+    "levers": {
+      "hint": "Leve del personale ordinate per letti coperti",
+      "rank": "Rango",
+      "label": "Leva",
+      "bedsEnabled": "Letti",
+      "detail": "Dettaglio",
+      "cta": "Sequenza automatica per impatto copertura →"
+    },
+    "gap": {
+      "label": "Carenza di personale del sito",
+      "cta": "Risolvere la carenza di personale"
+    },
+    "kpi": {
+      "balanced": "Bilanciato"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Quali reparti sforano in 72 h?",

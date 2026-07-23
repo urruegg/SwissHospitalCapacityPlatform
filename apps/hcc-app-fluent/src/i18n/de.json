@@ -262,6 +262,36 @@
       "cta": "OP-Lücke schliessen"
     }
   },
+  "sba": {
+    "askAbout": {
+      "surgeGap": "Wie wird die Surge-Bettenlücke abgedeckt?",
+      "orsaCoverage": "Sind die OP-Verschiebungen vollständig abgedeckt?",
+      "csaEscalation": "Wann sollten wir zur Krisenplanung eskalieren?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → Personalaktionen",
+      "role": "Rolle",
+      "fromUnit": "Von Station",
+      "toUnit": "Zur Station",
+      "fte": "VZÄ",
+      "shiftGap": "Schicht"
+    },
+    "levers": {
+      "hint": "Personalhebel nach abgedeckten Betten sortiert",
+      "rank": "Rang",
+      "label": "Hebel",
+      "bedsEnabled": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Abdeckungswirkung →"
+    },
+    "gap": {
+      "label": "Standort-Personalengpass",
+      "cta": "Personalengpass schliessen"
+    },
+    "kpi": {
+      "balanced": "Ausgeglichen"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Welche Stationen kippen in 72 h?",

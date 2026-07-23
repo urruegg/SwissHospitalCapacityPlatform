@@ -262,6 +262,36 @@
       "cta": "Résoudre l'écart bloc"
     }
   },
+  "sba": {
+    "askAbout": {
+      "surgeGap": "Comment le déficit de lits de capacité est-il couvert ?",
+      "orsaCoverage": "Les reports du bloc sont-ils entièrement couverts ?",
+      "csaEscalation": "Quand faut-il escalader vers la planification de crise ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions RH",
+      "role": "Rôle",
+      "fromUnit": "Unité source",
+      "toUnit": "Unité cible",
+      "fte": "ETP",
+      "shiftGap": "Plage horaire"
+    },
+    "levers": {
+      "hint": "Leviers RH triés par lits couverts",
+      "rank": "Rang",
+      "label": "Levier",
+      "bedsEnabled": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par impact couverture →"
+    },
+    "gap": {
+      "label": "Manque de personnel du site",
+      "cta": "Résoudre le manque de personnel"
+    },
+    "kpi": {
+      "balanced": "Équilibré"
+    }
+  },
   "ooa": {
     "askAbout": {
       "wardTips": "Quelles unités basculent en 72 h ?",
