@@ -1,0 +1,96 @@
+name: "Sprint tracker (epic)"
+description: "Persistent tracking issue for a sprint: links spec + plan + child task issues; deploys gated via PRs."
+title: "[Sprint <NN>] <topic> — tracker"
+labels: ["tracker"]
+assignees:
+  - urruegg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > One tracker per sprint — the sprint's home in the GitHub control plane.
+        > It links the spec and plan documents and lists the child task issues.
+        > Work runs trunk-based per [docs/DEV_WORKFLOW.md](../../docs/DEV_WORKFLOW.md)
+        > and [ADR-0038](../../docs/adr/0038-trunk-based-parallel-sprint-workflow.md):
+        > short-lived branches off `main`, one issue -> one branch -> one squash
+        > PR, CI is the merge gate, and a human merges every PR. Deploys are
+        > PR-gated and require an `approved-to-apply` comment per AGENTS.md §4.
+
+  - type: input
+    id: sprint-number
+    attributes:
+      label: Sprint number
+      placeholder: "30"
+    validations:
+      required: true
+
+  - type: input
+    id: milestone
+    attributes:
+      label: GitHub milestone
+      placeholder: "Sprint 30"
+    validations:
+      required: true
+
+  - type: input
+    id: spec
+    attributes:
+      label: Spec document path
+      placeholder: "docs/superpowers/specs/2026-<mm>-<dd>-sprint-30-<topic>-design.md"
+    validations:
+      required: true
+
+  - type: input
+    id: plan
+    attributes:
+      label: Plan document path
+      placeholder: "docs/superpowers/plans/2026-<mm>-<dd>-sprint-30-<topic>-implementation.md"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: lane
+    attributes:
+      label: Primary architecture lane
+      options:
+        - governance
+        - control
+        - infra
+        - data
+        - ai
+        - experience
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Sprint scope / definition of done
+      placeholder: "Bullet the sprint outcomes that define done."
+    validations:
+      required: true
+
+  - type: textarea
+    id: child-issues
+    attributes:
+      label: Child task issues
+      description: "One line per task. Each becomes one short-lived branch off main -> one squash PR."
+      placeholder: |
+        - [ ] #NNN <task>
+        - [ ] #NNN <task>
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: gates
+    attributes:
+      label: Workflow gates
+      options:
+        - label: "Spec + plan merged to main before execution"
+          required: true
+        - label: "Branches based on main (no stacking)"
+          required: true
+        - label: "CI green is the merge proof; a human merges every PR"
+          required: true
+        - label: "Deploy steps gated via PR + approved-to-apply"
+          required: true
