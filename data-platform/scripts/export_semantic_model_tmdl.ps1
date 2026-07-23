@@ -63,7 +63,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 # --- Contract constants (edit here if the model design changes; keep in sync with checkpoint doc) ---
-$script:ExpectedTotal    = 25    # Sprint 09: 14; +2 from M2 (encounter→dim_hospital, bed_assignment→dim_hospital); +9 from Sprint 15 BVA
+$script:ExpectedTotal    = 27    # Sprint 09: 14; +2 from M2 (encounter→dim_hospital, bed_assignment→dim_hospital); +9 from Sprint 15 BVA; +2 from Sprint 23 org spine (dim_org_unit→dim_hospital, dim_department→dim_org_unit)
 $script:ExpectedInactive = 2
 $script:ExpectedInactivePairs = @(
     @{ Left = 'dim_specialty'; Right = 'dim_hospital' },

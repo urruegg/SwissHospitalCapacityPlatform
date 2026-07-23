@@ -9,11 +9,11 @@
 // of that; the other half is the `vnetConfiguration` on the CAE.
 //
 // Private DNS zone reuse: the zone `privatelink.documents.azure.com` and its
-// VNet link are created by the CSA module the first time it deploys
-// (`infra/modules/cosmos/csa.bicep` lines ~308-323). This module references
-// that existing zone with `existing`; it does NOT create a duplicate. In a
-// fresh RG the CSA module must deploy first — enforced via `dependsOn` at
-// the top-level `infra/main.bicep`.
+// VNet link are created ONCE in the network module
+// (`infra/modules/network/main.bicep`, Sprint 19). This module references that
+// existing zone with `existing`; it does NOT create a duplicate. Ordering is
+// guaranteed because this module depends on the network module via
+// vnetResourceId, so the zone exists before this zone group is created.
 //
 // Ownership: user-assigned MI grants are configured elsewhere. This module
 // only wires networking (PE + DNS record via zone group).

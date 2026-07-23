@@ -16,6 +16,15 @@ param logAnalyticsRetentionInDays int = 90
 @maxLength(24)
 param keyVaultName string = ''
 
+@description('When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0038, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false.')
+param enableKeyVaultPrivateEndpoint bool = false
+
+@description('Resource ID of the VNet that hosts the Key Vault private-endpoint subnet + is linked to the private DNS zone. Ignored when enableKeyVaultPrivateEndpoint=false.')
+param vnetResourceId string = ''
+
+@description('Name of the subnet inside vnetResourceId that hosts the Key Vault private endpoint. Ignored when enableKeyVaultPrivateEndpoint=false.')
+param keyVaultPrivateEndpointSubnetName string = 'snet-data'
+
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: 'log-${nameSuffix}'
   location: location
@@ -48,8 +57,82 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enablePurgeProtection: true
     // Required so ARM can resolve keyVault.getSecret() parameter references at deploy time (Sprint 00 source-SQL enable).
     enabledForTemplateDeployment: true
-    publicNetworkAccess: 'Enabled'
+    // Pin publicNetworkAccess explicitly. Disabled when a private endpoint is
+    // provisioned (PROD swn — also what the MCAPSGov Modify-effect policy
+    // enforces subscription-wide); Enabled for the public/PE-off scope. Without
+    // this the API + policy interplay shows a perpetual what-if drift on this
+    // property (Bicep wants Enabled, policy re-disables). See ADR-0038.
+    publicNetworkAccess: enableKeyVaultPrivateEndpoint ? 'Disabled' : 'Enabled'
     softDeleteRetentionInDays: 90
+  }
+}
+
+// ============================================================================
+// Key Vault private endpoint + private DNS zone (ADR-0038, extends ADR-0029
+// Option A). Mirrors the Cosmos PE pattern in infra/modules/cosmos/csa.bicep.
+//
+// Required in PROD switzerlandnorth because the MCAPSGov policy force-disables
+// Key Vault public network access subscription-wide; without a PE the AAD-only
+// vault has no reachable data plane at all. The zone name is Azure-managed and
+// MUST be exactly privatelink.vaultcore.azure.net for auto-registration to work.
+// ============================================================================
+
+var keyVaultPrivateEndpointName = 'pe-${effectiveKeyVaultName}'
+var keyVaultPrivateDnsZoneName = 'privatelink.vaultcore.azure.net'
+
+resource keyVaultPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enableKeyVaultPrivateEndpoint) {
+  name: keyVaultPrivateDnsZoneName
+  location: 'global'
+  tags: tags
+}
+
+resource keyVaultPrivateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enableKeyVaultPrivateEndpoint) {
+  parent: keyVaultPrivateDnsZone
+  name: '${last(split(vnetResourceId, '/'))}-link'
+  location: 'global'
+  tags: tags
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: vnetResourceId
+    }
+  }
+}
+
+resource keyVaultPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = if (enableKeyVaultPrivateEndpoint) {
+  name: keyVaultPrivateEndpointName
+  location: location
+  tags: tags
+  properties: {
+    subnet: {
+      id: '${vnetResourceId}/subnets/${keyVaultPrivateEndpointSubnetName}'
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${keyVaultPrivateEndpointName}-conn'
+        properties: {
+          privateLinkServiceId: keyVault.id
+          groupIds: [
+            'vault'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource keyVaultPrivateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = if (enableKeyVaultPrivateEndpoint) {
+  parent: keyVaultPrivateEndpoint
+  name: 'default'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'privatelink-vaultcore-azure-net'
+        properties: {
+          privateDnsZoneId: keyVaultPrivateDnsZone.id
+        }
+      }
+    ]
   }
 }
 
