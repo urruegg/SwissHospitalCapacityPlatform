@@ -132,6 +132,9 @@ param enableApiRuntimeModule bool = false
 @description('Enable data foundation module deployment.')
 param enableDataFoundationModule bool = false
 
+@description('Enable the external-signals provider-runner (ca-signal-runner) module. Requires enableAgentHostModule + enableDataFoundationModule. Wires the runner into the CAE + Event Hub namespace so it survives future CAE redeploys.')
+param enableSignalRunnerModule bool = false
+
 @description('Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped.')
 param eventHubsSimulatorMiPrincipalId string = ''
 
@@ -574,6 +577,24 @@ module csaCosmos './modules/cosmos/csa.bicep' = if (enableCsaCosmosModule) {
 }
 
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle behind nginx on 8080).
+// Sprint 19 follow-up — external-signals provider-runner (ca-signal-runner).
+// Wired here so it survives future CAE delete/recreate (ADR-0029 Option A made
+// the CAE immutable-after-create; a redeploy previously destroyed the manually
+// provisioned runner). Consumes the agent-host CAE resource id + the
+// data-foundation Event Hub namespace/name — implicit output references make it
+// deploy after both. Grants the runner MI `Azure Event Hubs Data Sender` at the
+// namespace scope. Idempotent: same app name/config adopts the live runner.
+module signalRunner '../data-platform/external-signals/provider-runner/main.bicep' = if (enableSignalRunnerModule && enableAgentHostModule && enableDataFoundationModule) {
+  name: 'signal-runner-${environmentName}'
+  params: {
+    location: location
+    envSuffix: environmentName
+    managedEnvironmentId: agentHost!.outputs.managedEnvironmentId
+    eventHubNamespace: dataFoundation!.outputs.eventHubNamespaceName
+    eventHubName: dataFoundation!.outputs.eventHubName
+  }
+}
+
 // Same reasoning as agent-host for the Log Analytics wiring.
 module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluentModule) {
   name: 'app-fluent-${environmentName}'

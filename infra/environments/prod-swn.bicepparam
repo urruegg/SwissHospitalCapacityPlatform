@@ -120,6 +120,11 @@ param manageCuraviasDnsZone = false
 // EVH namespace + hub + consumer groups. Region-safe, public, self-contained.
 param enableDataFoundationModule = true
 param enableDataPlatformModule = false
+// Sprint 19 follow-up — external-signals provider-runner (ca-signal-runner).
+// Codified so it survives future CAE delete/recreate; adopts the live runner
+// idempotently. Requires enableAgentHostModule + enableDataFoundationModule
+// (both true above). Grants the runner MI EH Data Sender at the evh namespace.
+param enableSignalRunnerModule = true
 // CSA Cosmos DB wired into the orchestrator. With enableNetworkModule=true
 // (ADR-0038) it now gets a private endpoint (privatelink.documents.azure.com in
 // snet-data) — matching SIT and satisfying the MCAPSGov Modify-effect policy
