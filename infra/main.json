@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "8254567442145012802"
+      "templateHash": "14638736647775813116"
     }
   },
   "parameters": {
@@ -214,6 +214,27 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional Fabric Lakehouse ID for the Eventstream destination. Empty defers destination wiring (Eventstream created source-only). Optional at Bicep composition time; required at post-deploy time for full wiring."
+      }
+    },
+    "enableSkillsEventstreamModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 23 skills-events Eventstream lane (WS-A4, design D4). Scaffold-only Bicep + REST-API post-deploy carrying ONLY the three near-real-time skills events. Requires enableDataFoundationModule=true for the Event Hub source. See modules/integration-orchestration/skills-eventstream/main.bicep."
+      }
+    },
+    "skillsEventstreamWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Fabric workspace ID that hosts the skills-events Eventstream. Required at post-deploy time when enableSkillsEventstreamModule=true. Obtain via configure-fabric.ps1 post-deploy output."
+      }
+    },
+    "skillsEventstreamDestinationLakehouseId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric Lakehouse ID for the skills-events Eventstream destination. Empty defers destination wiring (Eventstream created source-only)."
       }
     },
     "enableAiPlatformModule": {
@@ -5748,6 +5769,192 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName')))]"
       ]
+    },
+    {
+      "condition": "[parameters('enableSkillsEventstreamModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('skills-eventstream-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "workspaceId": {
+            "value": "[parameters('skillsEventstreamWorkspaceId')]"
+          },
+          "eventHubNamespace": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value), createObject('value', ''))]",
+          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value), createObject('value', ''))]",
+          "eventHubConsumerGroup": {
+            "value": "cg-skills-eventstream"
+          },
+          "location": "[if(equals(parameters('location'), 'switzerlandnorth'), createObject('value', 'switzerlandnorth'), createObject('value', 'westus2'))]",
+          "demoScope": {
+            "value": "[not(equals(parameters('location'), 'switzerlandnorth'))]"
+          },
+          "destinationLakehouseId": {
+            "value": "[parameters('skillsEventstreamDestinationLakehouseId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "16344374991231825254"
+            }
+          },
+          "parameters": {
+            "workspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Fabric workspace ID (GUID) that hosts the Eventstream. Obtain via GET /v1/workspaces after workspace creation. Empty at Bicep composition time when provisioned post-deploy; the companion PS1 refuses to run until the manifest carries it."
+              }
+            },
+            "eventHubNamespace": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Fully-qualified Event Hubs namespace hostname (e.g. evh-ihzhhpf-sit-xxxx.servicebus.windows.net). Passed from the data-foundation/eventhubs module output."
+              }
+            },
+            "eventHubName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Event Hub name carrying the skills-event envelopes. Routing is by the eventKind message property; the Eventstream filters to the three allowed kinds."
+              }
+            },
+            "eventHubConsumerGroup": {
+              "type": "string",
+              "defaultValue": "cg-skills-eventstream",
+              "metadata": {
+                "description": "Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups."
+              }
+            },
+            "location": {
+              "type": "string",
+              "allowedValues": [
+                "switzerlandnorth",
+                "westus2"
+              ],
+              "metadata": {
+                "description": "Deployment region. switzerlandnorth (ADR-0003 default) or westus2 (ADR-0013 demo-scope carve-out)."
+              }
+            },
+            "demoScope": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "True when the module deploys under the ADR-0013 demo-scope carve-out (US region, synthetic data only, no PHI). Recorded in the manifest so post-deploy enforces the PHI-gate downstream."
+              }
+            },
+            "eventstreamDisplayName": {
+              "type": "string",
+              "defaultValue": "es-ihzhhpf-skills-events",
+              "metadata": {
+                "description": "Display name for the Eventstream item in the Fabric workspace."
+              }
+            },
+            "eventstreamDescription": {
+              "type": "string",
+              "defaultValue": "Sprint 23 WS-A4 (D4) — near-real-time skills events (credential expiry, consent grant/revoke, newly-confirmed assertion); routes by eventKind, appends to bronze/skills-events/ Delta.",
+              "metadata": {
+                "description": "Description for the Eventstream item."
+              }
+            },
+            "destinationLakehouseId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Destination Lakehouse ID (GUID) that receives Delta append writes at bronze/skills-events/. Empty defers destination wiring to a follow-up post-deploy pass."
+              }
+            },
+            "destinationTablePrefix": {
+              "type": "string",
+              "defaultValue": "bronze_skills_events",
+              "metadata": {
+                "description": "Destination Lakehouse table prefix under bronze/ for skills events."
+              }
+            }
+          },
+          "variables": {
+            "allowedEventKinds": [
+              "credential-expiry",
+              "consent-grant-or-revoke",
+              "newly-confirmed-assertion"
+            ],
+            "skillsEventstreamManifest": {
+              "provisioningMode": "fabric-rest-api-post-deploy",
+              "workspaceId": "[parameters('workspaceId')]",
+              "eventstream": {
+                "displayName": "[parameters('eventstreamDisplayName')]",
+                "description": "[parameters('eventstreamDescription')]"
+              },
+              "source": {
+                "kind": "EventHub",
+                "namespaceHost": "[parameters('eventHubNamespace')]",
+                "eventHubName": "[parameters('eventHubName')]",
+                "consumerGroup": "[parameters('eventHubConsumerGroup')]",
+                "routingProperty": "eventKind",
+                "allowedEventKinds": "[variables('allowedEventKinds')]",
+                "authMode": "fabric-managed-connection"
+              },
+              "destination": {
+                "kind": "Lakehouse",
+                "lakehouseId": "[parameters('destinationLakehouseId')]",
+                "tablePrefix": "[parameters('destinationTablePrefix')]",
+                "lakehousePath": "Files/bronze/skills-events/"
+              },
+              "guardrails": {
+                "location": "[parameters('location')]",
+                "demoScope": "[parameters('demoScope')]",
+                "phiGateEnforcedBy": "silver-skills-events-notebook (WS-B)",
+                "residencyTag": "[if(equals(parameters('location'), 'switzerlandnorth'), 'CH-North', 'US-West')]",
+                "eventSetScope": "narrow-D4-three-events"
+              }
+            }
+          },
+          "resources": [],
+          "outputs": {
+            "eventstreamManifest": {
+              "type": "object",
+              "metadata": {
+                "description": "Skills-events Eventstream configuration manifest consumed by the post-deploy REST script."
+              },
+              "value": "[variables('skillsEventstreamManifest')]"
+            },
+            "allowedEventKinds": {
+              "type": "array",
+              "metadata": {
+                "description": "The exact three near-real-time event kinds this lane carries (design D4)."
+              },
+              "value": "[variables('allowedEventKinds')]"
+            },
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Human-readable status for the parent orchestration."
+              },
+              "value": "skills-eventstream-scaffold-only-see-post-deploy-script"
+            },
+            "postDeployScriptPath": {
+              "type": "string",
+              "metadata": {
+                "description": "Path (repo-relative) to the companion post-deploy script that materialises the Eventstream via Fabric REST API."
+              },
+              "value": "infra/modules/integration-orchestration/skills-eventstream/post-deploy/configure-skills-eventstream.ps1"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName')))]"
+      ]
     }
   ],
   "outputs": {
@@ -5799,6 +6006,10 @@
       "type": "string",
       "value": "[if(and(parameters('enableFabricEventstreamModule'), not(parameters('enableDataFoundationModule'))), 'WARN: enableFabricEventstreamModule=true requires enableDataFoundationModule=true; Eventstream module will fail.', if(and(parameters('enableFabricEventstreamModule'), empty(parameters('fabricEventstreamWorkspaceId'))), 'WARN: enableFabricEventstreamModule=true but fabricEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output.', if(and(parameters('enableFabricEventstreamModule'), empty(parameters('fabricEventstreamDestinationLakehouseId'))), 'INFO: fabricEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.', 'ok')))]"
     },
+    "skillsEventstreamGatingWarning": {
+      "type": "string",
+      "value": "[if(and(parameters('enableSkillsEventstreamModule'), not(parameters('enableDataFoundationModule'))), 'WARN: enableSkillsEventstreamModule=true requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamWorkspaceId'))), 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamDestinationLakehouseId'))), 'INFO: skillsEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.', 'ok')))]"
+    },
     "moduleStatuses": {
       "type": "object",
       "value": {
@@ -5815,7 +6026,8 @@
         "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
         "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]",
-        "fabricEventstream": "[if(parameters('enableFabricEventstreamModule'), reference(resourceId('Microsoft.Resources/deployments', format('fabric-eventstream-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'fabric-eventstream-disabled')]"
+        "fabricEventstream": "[if(parameters('enableFabricEventstreamModule'), reference(resourceId('Microsoft.Resources/deployments', format('fabric-eventstream-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'fabric-eventstream-disabled')]",
+        "skillsEventstream": "[if(parameters('enableSkillsEventstreamModule'), reference(resourceId('Microsoft.Resources/deployments', format('skills-eventstream-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'skills-eventstream-disabled')]"
       }
     },
     "foundryHostedAgentsStatus": {
