@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
-| **Status** | Draft (design approved in brainstorm; pending spec review) |
-| **Previous Version** | n/a (initial design) |
+| **Status** | Implemented (all 17 plan tasks landed on `sprint-21/refactor-signals`; scripts 43 + notebook 13 suites green) |
+| **Previous Version** | 1.0.0 (initial design, approved in brainstorm) |
 | **Sprint** | [Sprint 21 - Trusted External Signals](../../sprints/SPRINT_PLAN.md) |
 | **Issue** | [#247](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/247) |
 | **Epic** | [sprint-21-refactor-epic.md](../ideas/sprint-21-refactor-epic.md) |
