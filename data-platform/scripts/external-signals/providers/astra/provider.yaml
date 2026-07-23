@@ -1,0 +1,12 @@
+sourceId: astra
+authority: ASTRA
+trustTier: A
+channelKind: external
+hazardTypes: [traffic]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+licence: ASTRA-DATEX-II
+providerVersion: astra-1.0.0
+scenarioMap:
+  traffic: {template: F3, lageTier: 1}
