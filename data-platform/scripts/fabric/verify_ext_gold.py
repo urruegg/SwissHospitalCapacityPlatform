@@ -37,6 +37,7 @@ Notes:
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -93,15 +94,52 @@ def get_token() -> str:  # pragma: no cover
     return out.stdout.strip()
 
 
+def get_fabric_token() -> str:  # pragma: no cover
+    out = subprocess.run(
+        ["az", "account", "get-access-token", "--resource",
+         "https://api.fabric.microsoft.com", "--query", "accessToken", "-o", "tsv"],
+        capture_output=True, text=True, check=True, shell=True,
+    )
+    return out.stdout.strip()
+
+
+def resolve_sql_endpoint(env: dict) -> tuple[str, str]:  # pragma: no cover
+    """Return ``(server, database)`` for the lakehouse SQL analytics endpoint.
+
+    Priority:
+    1. ``environments.yml`` explicit override (``sql_endpoint_server``).
+    2. Fabric REST API discovery via
+       ``GET /v1/workspaces/{workspace_id}/lakehouses/{lakehouse_id}``
+       → ``properties.sqlEndpointProperties.connectionString``.
+    """
+    if env.get("sql_endpoint_server"):
+        return (
+            env["sql_endpoint_server"],
+            env.get("sql_endpoint_database", env["lakehouse_name"]),
+        )
+    import requests
+    fabric_token = get_fabric_token()
+    workspace_id = env["workspace_id"]
+    lakehouse_id = env["lakehouse_id"]
+    url = (
+        f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}"
+        f"/lakehouses/{lakehouse_id}"
+    )
+    resp = requests.get(url, headers={"Authorization": f"Bearer {fabric_token}"}, timeout=30)
+    resp.raise_for_status()
+    server = resp.json()["properties"]["sqlEndpointProperties"]["connectionString"]
+    return server, env["lakehouse_name"]
+
+
 def _run_sql(server: str, database: str, token: str, query: str) -> list:  # pragma: no cover
     """Execute *query* via PowerShell + System.Data.SqlClient; return rows."""
     ps_script = f"""
 $conn = New-Object System.Data.SqlClient.SqlConnection
 $conn.ConnectionString = "Server={server};Database={database};Encrypt=True;"
-$conn.AccessToken = '{token}'
+$conn.AccessToken = $env:VERIFY_SQL_TOKEN
 $conn.Open()
 $cmd = $conn.CreateCommand()
-$cmd.CommandText = @'{query}'@
+$cmd.CommandText = '{query}'
 $reader = $cmd.ExecuteReader()
 $rows = @()
 while ($reader.Read()) {{
@@ -113,12 +151,18 @@ $reader.Close()
 $conn.Close()
 $rows | ForEach-Object {{ $_ -join "`t" }}
 """
-    result = subprocess.run(
-        ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps_script],
-        capture_output=True, text=True, check=True,
-    )
-    lines = [line for line in result.stdout.splitlines() if line.strip()]
-    return lines
+    child_env = dict(os.environ)
+    child_env["VERIFY_SQL_TOKEN"] = token
+    try:
+        result = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps_script],
+            capture_output=True, text=True, check=True, env=child_env,
+        )
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f"SQL query failed (exit {e.returncode}); check the Fabric SQL endpoint and token."
+        ) from None
+    return [line for line in result.stdout.splitlines() if line.strip()]
 
 
 def query_counts(server: str, database: str, token: str) -> dict[str, int]:  # pragma: no cover
@@ -149,10 +193,7 @@ def main(argv=None) -> int:  # pragma: no cover
     ns = parse_args(argv)
     env = load_env(ns.environment)
 
-    server = env.get("sql_endpoint_server") or (
-        f"{env['lakehouse_name']}.datawarehouse.fabric.microsoft.com"
-    )
-    database = env.get("sql_endpoint_database", env["lakehouse_name"])
+    server, database = resolve_sql_endpoint(env)
 
     print(f"[verify_ext_gold] environment={ns.environment}")
     print(f"[verify_ext_gold] server={server}  database={database}")
