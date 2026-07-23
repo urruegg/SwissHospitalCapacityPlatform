@@ -6,7 +6,7 @@
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (extended DC-EXT-SIGNAL-v1 gate for provider-manifest and trust-badge checks) |
+| **Previous Version** | 1.2.0 (added DC-EXT-SIGNAL-v1 gate: schema-conformance, dedup, quarantine, provenance, and licence checks; Sprint 21 M7) |
 
 > **Runtime**: Application-hosted per
 > [ADR-0008](../../docs/adr/0008-agent-runtime-pattern-scope-and-selection.md).

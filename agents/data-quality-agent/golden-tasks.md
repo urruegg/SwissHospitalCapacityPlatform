@@ -1,8 +1,8 @@
 ﻿---
 agent: data-quality-agent
-version: 1.2.0
+version: 1.3.0
 requirement: NFR-DQ-001, NFR-DQ-002, NFR-DQ-004, FR-GOV-001, FR-EXT-004, FR-EXT-019, NFR-EXT-PLG-002
-last-reviewed: 2026-07-22
+last-reviewed: 2026-07-23
 ---
 
 # `data-quality-agent` — Golden Tasks
@@ -13,7 +13,7 @@ last-reviewed: 2026-07-22
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (extended DC-EXT-SIGNAL-v1 gate for provider-manifest and trust-badge checks) |
+| **Previous Version** | 1.2.0 (added DC-EXT-SIGNAL-v1 gate: schema-conformance, dedup, quarantine, provenance, and licence checks; Sprint 21 M7) |
 
 Four fixtures: one happy-path (Silver -> Gold contract check), one DC-EXT signal
 gate fixture with a missing-`licence` failure, one trust-badge fixture verifying
