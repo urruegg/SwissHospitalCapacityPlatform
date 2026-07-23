@@ -1,0 +1,77 @@
+/// Curavias skills KPI catalogue (Sprint 23 - WS-C2 / T6, T14). Measures over
+/// the skills gold tables produced by
+/// data-platform/notebooks/skills-evidence/build_gold_skills.py. care_setting
+/// split (bed=nursing / ops) per T14; live-vs-simulated reads the validated
+/// source_mode flag (never invented) per D5.
+table skills_measures
+	lineageTag: 5f588190-eead-4fb7-add4-316f00bd35f4
+
+	column _kpi_home
+		isHidden
+		dataType: string
+		lineageTag: f932a464-492e-4f39-889a-f9aad32d9f80
+		summarizeBy: none
+		sourceColumn: _kpi_home
+
+		annotation SummarizationSetBy = Automatic
+
+	measure 'Total Skill Demand' = SUM(fact_skill_demand[headcount_required])
+		formatString: 0
+		lineageTag: 6aa6efd8-bdf0-4122-ba14-0a57eecef05e
+
+	measure 'Total Valid Supply' = SUM(fact_skill_gap[valid_supply])
+		formatString: 0
+		lineageTag: 5d00217b-7645-492a-8c38-d72158b71b62
+
+	measure 'Total Skill Gap' = SUM(fact_skill_gap[gap])
+		formatString: 0
+		lineageTag: cddfcb47-16f3-46b5-a47f-2c49a80b0b1b
+
+	measure 'Skill Coverage %' = DIVIDE([Total Valid Supply], [Total Skill Demand])
+		formatString: 0.0%
+		lineageTag: a96e960b-b351-462f-a46a-2b639d1b7ee3
+
+	measure 'Skill Assertions' = COUNTROWS(fact_skill_assertion)
+		formatString: 0
+		lineageTag: 5560a44f-9312-44a9-b42c-ac247ba2a710
+
+	measure 'Eligible Workers' = CALCULATE(DISTINCTCOUNT(bridge_worker_unit_eligibility[employee_id]), bridge_worker_unit_eligibility[is_eligible] = TRUE())
+		formatString: 0
+		lineageTag: cdaebde5-84ec-4032-9e18-cc15a90b2d22
+
+	measure 'Eligibility Coverage %' = DIVIDE([Eligible Workers], DISTINCTCOUNT(bridge_worker_unit_eligibility[employee_id]))
+		formatString: 0.0%
+		lineageTag: 2decf7b8-0052-4a57-bb86-26bc11be88f6
+
+	measure 'Demand (Nursing)' = CALCULATE([Total Skill Demand], dim_care_setting[care_setting_id] = "bed")
+		formatString: 0
+		lineageTag: b97453fe-b375-489f-bb1c-ed9ac47bc159
+
+	measure 'Demand (Ops)' = CALCULATE([Total Skill Demand], dim_care_setting[care_setting_id] = "ops")
+		formatString: 0
+		lineageTag: 2bf7394a-56a8-4cbf-a961-f16490a49601
+
+	measure 'Gap (Nursing)' = CALCULATE([Total Skill Gap], dim_care_setting[care_setting_id] = "bed")
+		formatString: 0
+		lineageTag: 7d255257-ac72-416b-a189-cfebaec997fd
+
+	measure 'Gap (Ops)' = CALCULATE([Total Skill Gap], dim_care_setting[care_setting_id] = "ops")
+		formatString: 0
+		lineageTag: f00988cc-c82b-4fee-ba0a-c2efe1f7a844
+
+	measure 'Live Demand' = CALCULATE([Total Skill Demand], fact_skill_demand[source_mode] = "live")
+		formatString: 0
+		lineageTag: 17d85f5b-2d43-4d06-9199-e61c6332f4fa
+
+	measure 'Simulated Demand' = CALCULATE([Total Skill Demand], fact_skill_demand[source_mode] = "simulated")
+		formatString: 0
+		lineageTag: c6ad3d58-d555-481a-bee7-d7f2ae991328
+
+	measure 'Skills Source Mode' = IF(DISTINCTCOUNT(fact_skill_demand[source_mode]) = 1, SELECTEDVALUE(fact_skill_demand[source_mode]), "mixed")
+		lineageTag: 4e2dfead-9e46-4a2a-ba1a-f48f373022ac
+
+	partition skills_measures = calculated
+		mode: import
+		source = ROW("_kpi_home", "Skills")
+
+	annotation PBI_Id = skills_measures

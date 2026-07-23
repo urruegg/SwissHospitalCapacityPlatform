@@ -57,7 +57,7 @@ jobs:
           {
             echo "## Semantic model contract verify"
             echo "- Trigger: ${{ github.event_name }}"
-            echo "- Contracts: 27 relationships (25 Active / 2 Inactive) + 55 measures + 8 roles"
+            echo "- Contracts: 35 relationships (33 Active / 2 Inactive) + 69 measures + 8 roles"
             echo "- Status: ${{ job.status }}"
             if [ "${{ job.status }}" != "success" ]; then
               echo "- **Blocks merge** — inspect the run log for the failing assertion, then either bump the expected constants in export_semantic_model_tmdl.ps1 (with justification) or restore the missing TMDL entities."
