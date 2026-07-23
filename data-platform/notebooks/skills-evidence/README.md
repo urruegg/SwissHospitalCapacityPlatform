@@ -22,10 +22,12 @@ hospitals **1:1** (beds/FTE grounded):
 
 | File | Layer | Purpose |
 | --- | --- | --- |
-| `build_gold_org_spine.py` | Gold | Pure transforms: `rebrand_hospital_dimension` (1:1 fold, drop H_HSL, strip real geography, keep `hospital_id` as PK) + org-spine projections that strip real-name provenance (`grounded_on`). `run()` is the Fabric entrypoint. |
-| `tests/test_build_gold_org_spine.py` | — | Spark-free unit tests over the real relocated CSVs asserting no real name/geography leaks and a clean tenant<->hospital 1:1. |
-| `build_gold_skills.py` | Gold | Pure transforms for the skills domain: supply / demand / gap / eligibility projections, `source_mode` (live vs simulated) validation, and the bed-vs-ops `care_setting` split. `run()` is the Fabric entrypoint. |
-| `tests/test_build_gold_skills.py` | — | Spark-free unit tests over the real skills CSVs asserting domain validation, the care-setting split, demand/gap consistency, and the source-mode badge flag. |
+| `build_gold_org_spine.py` | Gold | Pure transforms: `rebrand_hospital_dimension` (1:1 fold, drop H_HSL, strip real geography, keep `hospital_id` as PK) + org-spine projections that strip real-name provenance (`grounded_on`). `build_org_spine_gold()` assembles the four org-spine gold tables; `run()` is the Fabric entrypoint. |
+| `tests/test_build_gold_org_spine.py` | — | Spark-free unit tests over the real relocated CSVs asserting no real name/geography leaks, a clean tenant<->hospital 1:1, and the `build_org_spine_gold()` table set + row counts. |
+| `build_gold_skills.py` | Gold | Pure transforms for the skills domain: supply / demand / gap / eligibility projections, `source_mode` (live vs simulated) validation, and the bed-vs-ops `care_setting` split. `build_skills_gold()` assembles the eight skills gold tables; `run()` is the Fabric entrypoint. |
+| `tests/test_build_gold_skills.py` | — | Spark-free unit tests over the real skills CSVs asserting domain validation, the care-setting split, demand/gap consistency, the source-mode badge flag, and the `build_skills_gold()` table set + row counts. |
+| `_fabric_gold_io.py` | Gold | Deploy-class Spark I/O helpers shared by both `run()`s: read a Files-mount CSV / an existing Delta table into `list[dict]`, and write `gold.<name>` Delta with the sprint-09 seven-column governance stamp. Fabric-runtime only. |
+| `05_gold_org_skills.ipynb` | Gold | Thin Fabric notebook that imports the three modules from the `Files/skills-evidence/` mount and calls `build_gold_org_spine.run()` then `build_gold_skills.run()`. Wired into `run_medallion.py` after `03_gold_master_data`. |
 
 ## Skills care-setting split + live-vs-simulated badge (WS-C2)
 
@@ -55,6 +57,28 @@ hospitals **1:1** (beds/FTE grounded):
 
 ```bash
 python -m pytest data-platform/notebooks/skills-evidence/tests -v
+```
+
+## Run in Fabric (end-to-end, `approved-to-apply` gated)
+
+The gold build reads the Curavias CSVs and the three Python modules from the
+lakehouse `Files/` mount, so upload both once per environment, then run the
+medallion (which now includes `05_gold_org_skills` after `03_gold_master_data`):
+
+```bash
+# 1) upload the relocated Curavias master-data CSVs
+python data-platform/scripts/upload_to_onelake.py --workspace-id <ws> \
+  --lakehouse-id <lh> --source-root data/master-data/curavias-org-skills \
+  --target master-data/curavias-org-skills
+
+# 2) upload the skills-evidence Python modules (build_gold_*.py + _fabric_gold_io.py)
+python data-platform/scripts/upload_to_onelake.py --workspace-id <ws> \
+  --lakehouse-id <lh> --source "data-platform/notebooks/skills-evidence/*.py" \
+  --target skills-evidence
+
+# 3) plan, then apply (deploy gate: needs an approved-to-apply comment)
+python data-platform/scripts/fabric/run_medallion.py --environment SIT
+python data-platform/scripts/fabric/run_medallion.py --environment SIT --apply
 ```
 
 The end-to-end Fabric pipeline run needs the WS-A landing zone + `approved-to-apply`;

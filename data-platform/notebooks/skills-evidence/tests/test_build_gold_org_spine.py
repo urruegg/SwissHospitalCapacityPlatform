@@ -20,6 +20,7 @@ sys.path.insert(0, str(PKG_DIR))
 
 from build_gold_org_spine import (  # noqa: E402
     HOSPITAL_TENANT_MAP,
+    build_org_spine_gold,
     rebrand_hospital_dimension,
     to_gold_capacity_unit,
     to_gold_department,
@@ -129,3 +130,55 @@ def test_capacity_unit_safety_flag_cast_to_bool():
     rows = [to_gold_capacity_unit(r) for r in _read(MASTER / "dim_capacity_unit.csv")]
     assert all(isinstance(r["is_safety_critical"], bool) for r in rows)
     assert any(r["is_safety_critical"] for r in rows)  # at least one OR_slot
+
+
+# --- run() aggregator (the Fabric glue's pure core) ---------------------------
+
+def _org_spine_gold() -> dict:
+    return build_org_spine_gold(
+        hospital_rows=_hospitals(),
+        tenant_rows=_tenants(),
+        org_unit_rows=_org_units(),
+        department_rows=_read(MASTER / "dim_department.csv"),
+        capacity_unit_rows=_read(MASTER / "dim_capacity_unit.csv"),
+    )
+
+
+def test_org_spine_gold_produces_the_four_tables():
+    out = _org_spine_gold()
+    assert set(out) == {
+        "dim_hospital", "dim_org_unit", "dim_department", "dim_capacity_unit",
+    }
+
+
+def test_org_spine_gold_dim_hospital_is_rebranded_1to1():
+    out = _org_spine_gold()
+    hosp = out["dim_hospital"]
+    assert len(hosp) == 3
+    assert {r["name"] for r in hosp} == {
+        "Uniklinik CuraNova", "Kantonsspital Curalp", "Spital Vialta",
+    }
+    assert sorted(r["tenant_id"] for r in hosp) == ["CN", "CP", "VT"]
+
+
+def test_org_spine_gold_projections_preserve_row_counts_and_strip_provenance():
+    out = _org_spine_gold()
+    assert len(out["dim_org_unit"]) == len(_org_units())
+    assert len(out["dim_department"]) == len(_read(MASTER / "dim_department.csv"))
+    assert len(out["dim_capacity_unit"]) == len(_read(MASTER / "dim_capacity_unit.csv"))
+    for table in ("dim_org_unit", "dim_department", "dim_capacity_unit"):
+        for row in out[table]:
+            assert "grounded_on" not in row
+
+
+def test_org_spine_gold_leaks_no_real_names():
+    out = _org_spine_gold()
+    for rows in out.values():
+        for row in rows:
+            for col, val in row.items():
+                if col == "hospital_id":
+                    continue
+                for frag in _REAL_NAME_FRAGMENTS:
+                    assert frag not in str(val), (
+                        f"real fragment {frag!r} leaked in {col!r}={val!r}"
+                    )
