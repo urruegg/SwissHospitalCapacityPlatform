@@ -115,7 +115,50 @@ def compute_tables() -> dict[str, list[dict]]:
         "gold.ext_dim_source": gold_bundle["ext_dim_source"],
         "gold.ext_dim_hazard_type": gold_bundle["ext_dim_hazard_type"],
         "gold.ext_dim_region": gold_bundle["ext_dim_region"],
+        "gold.ext_fact_trigger_event": _collapse_trigger_events(kept),
     }
+
+
+def _collapse_trigger_events(kept: list[dict]) -> list[dict]:
+    """Collapse kept signals into HazardEvents (one trigger-fired audit row per
+    hazard type), mirroring the M2 ``dedup.collapse`` step so the modeled
+    ``gold.ext_fact_trigger_event`` table (Direct Lake) has referentially-intact
+    evidence rows for the trigger-audit badge measures."""
+    groups: dict[str, list[dict]] = {}
+    order: list[str] = []
+    for rec in kept:
+        hazard = rec.get("hazardType")
+        if hazard not in groups:
+            groups[hazard] = []
+            order.append(hazard)
+        groups[hazard].append(rec)
+
+    events: list[dict] = []
+    for index, hazard in enumerate(order, start=1):
+        members = groups[hazard]
+        first = members[0]
+        onsets = [m.get("onset") for m in members if m.get("onset")]
+        stamps = [
+            (m.get("provenance") or {}).get("ingestedAt")
+            for m in members
+            if (m.get("provenance") or {}).get("ingestedAt")
+        ]
+        events.append({
+            "ext_trigger_event_id": f"trg-{hazard}-{index:04d}",
+            "ext_signal_id": first.get("signalId"),
+            "ext_hazard_type": hazard,
+            "ext_severity": first.get("severity"),
+            "ext_lage_tier": first.get("defaultLageTier"),
+            "ext_scenario_template": first.get("mappedScenarioTemplate"),
+            "ext_sources": ",".join(m.get("sourceId") for m in members),
+            "ext_signal_ids": ",".join(m.get("signalId") for m in members),
+            "ext_dedup_keys": ",".join(f"{hazard}:{m.get('sourceId')}" for m in members),
+            "ext_trigger_status": "trigger-fired",
+            "ext_source_onset": min(onsets) if onsets else None,
+            "ext_triggered_at": max(stamps) if stamps else None,
+            "ext_run_id": "evidence-run",
+        })
+    return events
 
 
 def _md_cell(text: str) -> dict:
@@ -137,6 +180,7 @@ def _code_cell(text: str) -> dict:
 _FLAT_SCHEMA_SRC = """from pyspark.sql.types import (
     StructType, StructField, StringType, LongType, ArrayType,
 )
+from pyspark.sql import functions as F
 
 FLAT_SCHEMA = StructType([
     StructField("ext_signal_id", StringType(), True),
@@ -162,7 +206,7 @@ FACT_SCHEMA = StructType([
     StructField("ext_severity", StringType(), True),
     StructField("ext_scenario_template", StringType(), True),
     StructField("ext_lage_tier", LongType(), True),
-    StructField("ext_cantons", ArrayType(StringType()), True),
+    StructField("ext_cantons", StringType(), True),
     StructField("ext_onset", StringType(), True),
     StructField("ext_status", StringType(), True),
 ])
@@ -186,9 +230,29 @@ REGION_SCHEMA = StructType([
     StructField("ext_canton", StringType(), True),
 ])
 
+TRIGGER_SCHEMA = StructType([
+    StructField("ext_trigger_event_id", StringType(), True),
+    StructField("ext_signal_id", StringType(), True),
+    StructField("ext_hazard_type", StringType(), True),
+    StructField("ext_severity", StringType(), True),
+    StructField("ext_lage_tier", LongType(), True),
+    StructField("ext_scenario_template", StringType(), True),
+    StructField("ext_sources", StringType(), True),
+    StructField("ext_signal_ids", StringType(), True),
+    StructField("ext_dedup_keys", StringType(), True),
+    StructField("ext_trigger_status", StringType(), True),
+    StructField("ext_source_onset", StringType(), True),
+    StructField("ext_triggered_at", StringType(), True),
+    StructField("ext_run_id", StringType(), True),
+])
 
-def _write(rows, schema, table):
+
+def _write(rows, schema, table, ts_cols=()):
+    # Direct Lake models only consume scalar Delta columns; ISO-string date
+    # columns modeled as dateTime are cast to real Spark timestamps on write.
     df = spark.createDataFrame(rows, schema)
+    for col in ts_cols:
+        df = df.withColumn(col, F.to_timestamp(col))
     df.write.format("delta").mode("overwrite").option(
         "overwriteSchema", "true"
     ).saveAsTable(table)
@@ -215,10 +279,22 @@ def build_notebook(tables: dict[str, list[dict]]) -> dict:
                    "ext_data_mode", "ext_fell_back_from", "ext_last_live_at"]
     hazard_cols = ["ext_hazard_type", "ext_scenario_template", "ext_default_lage_tier"]
     region_cols = ["ext_canton"]
+    trigger_cols = ["ext_trigger_event_id", "ext_signal_id", "ext_hazard_type",
+                    "ext_severity", "ext_lage_tier", "ext_scenario_template",
+                    "ext_sources", "ext_signal_ids", "ext_dedup_keys",
+                    "ext_trigger_status", "ext_source_onset", "ext_triggered_at",
+                    "ext_run_id"]
 
     def lit(rows, cols):
-        # tuples must round-trip through JSON as lists; Spark accepts lists too.
+        # Rows serialize to Python list-of-lists literals; Spark accepts lists.
         return _rows_literal(rows, cols)
+
+    # ext_cantons is modeled as a scalar string (Direct Lake rejects arrays),
+    # so collapse the canton list to a comma-joined string for the gold fact.
+    fact_rows_scalar = [
+        {**r, "ext_cantons": ",".join(r.get("ext_cantons") or [])}
+        for r in tables["gold.ext_fact_signal"]
+    ]
 
     bronze_cell = (
         "# Bronze -- raw external signals landed verbatim (flat evidence shape)\n"
@@ -234,21 +310,27 @@ def build_notebook(tables: dict[str, list[dict]]) -> dict:
     )
     gold_cell = (
         "# Gold -- star schema consumed by the semantic model + data agent\n"
-        f"fact_rows = {lit(tables['gold.ext_fact_signal'], fact_cols)}\n"
+        f"fact_rows = {lit(fact_rows_scalar, fact_cols)}\n"
         f"source_rows = {lit(tables['gold.ext_dim_source'], source_cols)}\n"
         f"hazard_rows = {lit(tables['gold.ext_dim_hazard_type'], hazard_cols)}\n"
         f"region_rows = {lit(tables['gold.ext_dim_region'], region_cols)}\n"
-        "_write(fact_rows, FACT_SCHEMA, \"gold.ext_fact_signal\")\n"
-        "_write(source_rows, SOURCE_SCHEMA, \"gold.ext_dim_source\")\n"
+        "_write(fact_rows, FACT_SCHEMA, \"gold.ext_fact_signal\", ts_cols=(\"ext_onset\",))\n"
+        "_write(source_rows, SOURCE_SCHEMA, \"gold.ext_dim_source\", ts_cols=(\"ext_last_live_at\",))\n"
         "_write(hazard_rows, HAZARD_SCHEMA, \"gold.ext_dim_hazard_type\")\n"
         "_write(region_rows, REGION_SCHEMA, \"gold.ext_dim_region\")\n"
+    )
+    trigger_cell = (
+        "# Gold -- trigger-event audit fact (collapsed HazardEvents that fire a pre-seed)\n"
+        f"trigger_rows = {lit(tables['gold.ext_fact_trigger_event'], trigger_cols)}\n"
+        "_write(trigger_rows, TRIGGER_SCHEMA, \"gold.ext_fact_trigger_event\",\n"
+        "       ts_cols=(\"ext_source_onset\", \"ext_triggered_at\"))\n"
     )
     verify_cell = (
         "# Inline verification -- print counts + distinct data modes for the evidence doc\n"
         "for t in [\"bronze.ext_signals_raw\", \"silver.ext_signals\",\n"
         "          \"silver.ext_signals_quarantine\", \"gold.ext_fact_signal\",\n"
         "          \"gold.ext_dim_source\", \"gold.ext_dim_hazard_type\",\n"
-        "          \"gold.ext_dim_region\"]:\n"
+        "          \"gold.ext_dim_region\", \"gold.ext_fact_trigger_event\"]:\n"
         "    print(t, spark.table(t).count())\n"
         "display(spark.table(\"gold.ext_dim_source\").select(\n"
         "    \"ext_source_id\", \"ext_source_authority\", \"ext_trust_tier\", \"ext_data_mode\"))\n"
@@ -277,6 +359,7 @@ def build_notebook(tables: dict[str, list[dict]]) -> dict:
             _code_cell(bronze_cell),
             _code_cell(silver_cell),
             _code_cell(gold_cell),
+            _code_cell(trigger_cell),
             _code_cell(verify_cell),
         ],
     }
