@@ -81,14 +81,84 @@ def to_gold_dims(records: list[dict]) -> dict[str, list[dict]]:
     }
 
 
-def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
-    """Fabric entrypoint. Reads Silver, writes gold.ext_fact_signal + dims."""
-    from pyspark.sql import SparkSession  # noqa: F401 - Fabric-provided
+def gold_tables(records: list[dict]) -> dict[str, list[dict]]:
+    """Bundle the fact + three dimensions for a batch of Silver records."""
+    dims = to_gold_dims(records)
+    return {
+        "ext_fact_signal": [to_gold_signal(r) for r in records],
+        "ext_dim_source": dims["ext_dim_source"],
+        "ext_dim_hazard_type": dims["ext_dim_hazard_type"],
+        "ext_dim_region": dims["ext_dim_region"],
+    }
 
-    raise NotImplementedError(
-        "run() executes inside the Fabric Spark runtime; the offline seeder is "
-        "data-platform/scripts/external-signals/signals_synth.py."
+
+GOLD_SCHEMA = "gold"
+SILVER_TABLE = "silver.ext_signals"
+
+
+def _write(df, table: str) -> None:
+    df.write.format("delta").mode("overwrite").option(
+        "overwriteSchema", "true"
+    ).saveAsTable(f"{GOLD_SCHEMA}.{table}")
+    print(f"gold: wrote {GOLD_SCHEMA}.{table} ({df.count()} rows)")
+
+
+def _empty_schema(name: str):
+    from pyspark.sql.types import (  # noqa: PLC0415 - lazy import for offline compat
+        ArrayType,
+        LongType,
+        StringType,
+        StructField,
+        StructType,
     )
+
+    schemas = {
+        "ext_fact_signal": StructType([
+            StructField("ext_signal_id", StringType(), True),
+            StructField("ext_source_id", StringType(), True),
+            StructField("ext_hazard_type", StringType(), True),
+            StructField("ext_severity", StringType(), True),
+            StructField("ext_scenario_template", StringType(), True),
+            StructField("ext_lage_tier", LongType(), True),
+            StructField("ext_cantons", ArrayType(StringType()), True),
+            StructField("ext_onset", StringType(), True),
+            StructField("ext_status", StringType(), True),
+        ]),
+        "ext_dim_source": StructType([
+            StructField("ext_source_id", StringType(), True),
+            StructField("ext_source_authority", StringType(), True),
+            StructField("ext_trust_tier", StringType(), True),
+            StructField("ext_data_mode", StringType(), True),
+            StructField("ext_fell_back_from", StringType(), True),
+            StructField("ext_last_live_at", StringType(), True),
+        ]),
+        "ext_dim_hazard_type": StructType([
+            StructField("ext_hazard_type", StringType(), True),
+            StructField("ext_scenario_template", StringType(), True),
+            StructField("ext_default_lage_tier", LongType(), True),
+        ]),
+        "ext_dim_region": StructType([
+            StructField("ext_canton", StringType(), True),
+        ]),
+    }
+    return schemas[name]
+
+
+def build_gold_signals(spark) -> None:  # pragma: no cover - Fabric runtime only
+    """Read Silver ext_signals and write all Gold ext tables."""
+    df = spark.read.table(SILVER_TABLE)
+    rows = [r.asDict(recursive=True) for r in df.collect()]
+    tables = gold_tables(rows)
+    for name, data in tables.items():
+        out_df = spark.createDataFrame(data, _empty_schema(name))
+        _write(out_df, name)
+
+
+def run() -> None:  # pragma: no cover - Fabric runtime only
+    """Fabric entrypoint. Reads Silver, writes gold.ext_fact_signal + dims."""
+    from pyspark.sql import SparkSession  # noqa: PLC0415 - Fabric-provided
+
+    build_gold_signals(SparkSession.builder.getOrCreate())
 
 
 if __name__ == "__main__":  # pragma: no cover
