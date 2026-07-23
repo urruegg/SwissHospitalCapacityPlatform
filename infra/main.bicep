@@ -223,6 +223,9 @@ param appFluentCustomHostname string = ''
 @description('When true and appFluentCustomHostname is set, provision a managed cert + bind the CA to the custom hostname. Deploy is a two-step process: (1) merge with this false to create the DNS zone + records, (2) do GoDaddy NS delegation, (3) flip to true and redeploy so the CAE can validate ownership + issue a Let\'s Encrypt cert. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md.')
 param appFluentEnableCustomDomainCert bool = false
 
+@description('When true, this deployment OWNS the curavias.ch public DNS zone (zone + records) in its own resource group. SIT sets this true (the zone lives in rg-ihzhhpf-sit). PROD MUST set this false: the zone is shared and owned by SIT, so the PROD RG only claims the custom hostname on its Container App (customHostname + cert) while the `app` CNAME + `asuid.app` TXT records stay in the SIT-owned zone. Setting this false lets PROD bind app.curavias.ch to the PROD CA without creating a conflicting second curavias.ch zone. See ADR-0030 and the module note in infra/modules/dns/curavias.bicep.')
+param manageCuraviasDnsZone bool = true
+
 @description('Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield).')
 param keyVaultNameOverride string = ''
 
@@ -522,7 +525,7 @@ var appFluentSubdomainLabel = (enableAppFluentModule && !empty(appFluentCustomHo
   ? substring(appFluentCustomHostname, 0, indexOf(appFluentCustomHostname, '.'))
   : ''
 
-module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule && !empty(appFluentCustomHostname)) {
+module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule && !empty(appFluentCustomHostname) && manageCuraviasDnsZone) {
   name: 'curavias-dns-${environmentName}'
   params: {
     zoneName: 'curavias.ch'
@@ -545,7 +548,7 @@ module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule &&
 }
 
 @description('Azure DNS name servers for curavias.ch. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md.')
-output curaviasNameServers array = (enableAppFluentModule && !empty(appFluentCustomHostname)) ? curaviasDns!.outputs.nameServers : []
+output curaviasNameServers array = (enableAppFluentModule && !empty(appFluentCustomHostname) && manageCuraviasDnsZone) ? curaviasDns!.outputs.nameServers : []
 
 // Sprint 24 — Curavias web hosting outputs (consumed by curavias-web-deploy.yml + DNS wiring).
 @description('Curavias Static Web App name (empty when the module is disabled).')

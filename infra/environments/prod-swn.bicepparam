@@ -91,11 +91,16 @@ param fabricDataAgentId = ''
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
 param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:b796961'
-// DNS re-point (app.curavias.ch) is P7. Empty custom hostname here avoids
-// touching the existing curavias.ch DNS zone (in rg-ihzhhpf-sit). P7 re-points
-// the app CNAME to the new switzerlandnorth CA fqdn against the existing zone.
-param appFluentCustomHostname = ''
-param appFluentEnableCustomDomainCert = false
+// app.curavias.ch is bound to the switzerlandnorth CA. The custom hostname +
+// managed cert are codified here so CD redeploys preserve the binding (the
+// manual P7 `hostname add/bind` would otherwise be stripped on every deploy).
+// manageCuraviasDnsZone=false: the curavias.ch zone is SHARED and owned by SIT
+// (rg-ihzhhpf-sit); PROD only claims the hostname on its CA and must NOT create
+// a conflicting second zone. The `app` CNAME + `asuid.app` TXT records live in
+// the SIT-owned zone (asuid is subscription-scoped, so it already validates).
+param appFluentCustomHostname = 'app.curavias.ch'
+param appFluentEnableCustomDomainCert = true
+param manageCuraviasDnsZone = false
 
 // --- P4 data lane — Event Hubs / Service Bus / CSA Cosmos ---
 // EVH namespace + hub + consumer groups. Region-safe, public, self-contained.
