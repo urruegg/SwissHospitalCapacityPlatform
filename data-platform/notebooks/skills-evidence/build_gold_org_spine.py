@@ -118,14 +118,59 @@ def to_gold_capacity_unit(row: dict) -> dict:
     return out
 
 
-def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
-    """Fabric entrypoint. Reads silver, writes the re-branded gold org spine."""
-    from pyspark.sql import SparkSession  # noqa: F401 - Fabric-provided
+def build_org_spine_gold(
+    hospital_rows: list[dict],
+    tenant_rows: list[dict],
+    org_unit_rows: list[dict],
+    department_rows: list[dict],
+    capacity_unit_rows: list[dict],
+) -> dict[str, list[dict]]:
+    """Pure core of ``run()``: build every org-spine gold table as plain rows.
 
-    raise NotImplementedError(
-        "run() executes inside the Fabric Spark runtime; the pure transforms "
-        "above are exercised by tests/test_build_gold_org_spine.py."
+    Returns ``{gold_table_name: [row, ...]}`` for the four org-spine tables the
+    Curavias demo needs. The ``run()`` Spark bridge only has to read the source
+    CSVs / ``gold.dim_hospital`` and write these rows as Delta, so all the
+    re-brand + provenance-stripping logic stays unit-tested here (no Spark).
+    """
+    return {
+        "dim_hospital": rebrand_hospital_dimension(
+            hospital_rows, tenant_rows, org_unit_rows),
+        "dim_org_unit": [to_gold_org_unit(r) for r in org_unit_rows],
+        "dim_department": [to_gold_department(r) for r in department_rows],
+        "dim_capacity_unit": [to_gold_capacity_unit(r) for r in capacity_unit_rows],
+    }
+
+
+# --------------------------------------------------------------------------- #
+# Fabric Spark entrypoint (deploy-class; exercised only in the Fabric runtime) #
+# --------------------------------------------------------------------------- #
+# Lakehouse Files/ mount for the relocated Curavias master data (uploaded by
+# upload_to_onelake.py to Files/master-data/curavias-org-skills/).
+_MASTER_MOUNT = "/lakehouse/default/Files/master-data/curavias-org-skills"
+
+
+def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
+    """Fabric entrypoint. Folds ``gold.dim_hospital`` + lands the org spine.
+
+    Reads the Curavias master-data CSVs from the lakehouse ``Files/`` mount and
+    the existing ``gold.dim_hospital`` (so capacity/governance columns survive
+    the re-brand), applies :func:`build_org_spine_gold`, and overwrites each
+    ``gold.*`` table as Delta with the sprint-09 governance stamp.
+    """
+    from _fabric_gold_io import (  # provided alongside this module in Files/
+        read_csv_rows, rows_of_table, write_gold,
     )
+
+    hospital_rows = rows_of_table("gold.dim_hospital")
+    tables = build_org_spine_gold(
+        hospital_rows=hospital_rows,
+        tenant_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_tenant.csv"),
+        org_unit_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_org_unit.csv"),
+        department_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_department.csv"),
+        capacity_unit_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_capacity_unit.csv"),
+    )
+    for name, rows in tables.items():
+        write_gold(name, rows)
 
 
 if __name__ == "__main__":  # pragma: no cover
