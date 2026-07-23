@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.4.0 |
+| **Version** | 0.5.0 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft — Sprint 09 skeleton (RB-11); Sprint 26 WS-A Foresight tier |
-| **Previous Version** | 0.3.0 (Sprint 21 trusted-external-signal rows) |
+| **Status** | Draft — Sprint 09 skeleton (RB-11); Sprint 23 org-spine + skills rows (#255); Sprint 26 WS-A Foresight tier (#335) |
+| **Previous Version** | 0.4.0 (Sprint 23 org-spine + skills rows) |
 | **Governance** | Every PR that touches [reference-layer.ttl](reference-layer.ttl) OR the operational-layer semantic model MUST update this file in the same PR. Reviewed by semantic / ontology owner per [FR-GOV-ONT-002](../PRD.md#h-semantic-ontology). |
 | **Enforcement** | Manual review today; CI conformance check delivered by follow-up PR (RB-08) per [FR-GOV-ONT-003](../PRD.md#h-semantic-ontology). |
 
@@ -42,6 +42,18 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:Ward` | `Ward` | `DC-MASTER-07` *(dim_ward_capacityunit — ward rollup)* | Static reference (bed rollup) | Sprint 26 WS-A range target for `hcp:forWard`; full `omrse:hospital-part-of` placement is Phase 3. |
 | `hcp:Forecast` | `Forecast` | **[`DC-OCCUPANCY-FORECAST-v1`](../../data/synthetic/schema/dc-occupancy-forecast-v1.schema.json)** *(Sprint 26 WS-A)* | Batch Gold Delta (`gold.fact_occupancy_forecast`) — deterministic synthetic, hourly horizons 0..72h | 72h occupancy forecast per ward; distinct from `hcp:ForecastOutput` (specialty demand). Deterministic generator with a real-model seam (design D2). |
 | `hcp:Driver` | `Driver` | **[`DC-FORECAST-DRIVER-v1`](../../data/synthetic/schema/dc-forecast-driver-v1.schema.json)** *(Sprint 26 WS-A)* | Batch Gold Delta (`gold.fact_forecast_driver`) | Forecast decomposition ('why'); deltas reconcile to the net forecast change. Grounds beat 2 of the actionable-insight pattern. |
+| `hcp:Tenant` | `Tenant` *(folded 1:1 into Hospital)* | `DC-SUPPLY-ORGANIZATION-v1` | N/A (static reference; `gold.dim_hospital` re-branded to tenant, PR #332) | Sprint 23 T6/D6: CuraNova / Curalp / Vialta; `tenant_id = hospital_id`. Drops H_HSL (no tenant). |
+| `hcp:OrgUnit` | `OrgUnit` | `DC-SUPPLY-ORGANIZATION-v1` | N/A (static reference; `gold.dim_org_unit`) | Sprint 23 T6; site / org-unit level under a Tenant. |
+| `hcp:Department` | `Department` | `DC-SUPPLY-ORGANIZATION-v1` | N/A (static reference; `gold.dim_department`) | Sprint 23 T6; the demand / gap grain for skills. |
+| `hcp:CareSetting` | `CareSetting` | `gold.dim_care_setting` *(contract-pending-2026-Q3)* | N/A (static reference; 2 rows: `bed` / `ops`) | Sprint 23 T14: bed = nursing, ops = doctors + specialised; splits demand / gap answers. |
+| `hcp:Skill` | `Skill` | `gold.dim_skill` *(contract-pending-2026-Q3)*; referenced by `DC-SKILL-EVIDENCE-v1` | N/A (static reference; ESCO-aligned) | Sprint 23 T7; 66 skills across nursing + ops care settings. |
+| `hcp:OccupationRole` | `OccupationRole` | `gold.dim_occupation_role` *(contract-pending-2026-Q3)* | N/A (static reference; ISCO-08 aligned) | Sprint 23 T7; occupation held by a HealthWorker. |
+| `hcp:HealthWorker` | `HealthWorker` | `gold.dim_employee` (GLN key) *(contract-pending-2026-Q3)* | N/A (static reference; no PHI in binding) | Sprint 23 T7; GLN golden-thread identity (mod-10 validated at silver). |
+| `hcp:SkillAssertion` | `SkillAssertion` | `DC-SKILL-EVIDENCE-v1`; `gold.fact_skill_assertion` | Deferred to WS-B4 live gold run (assertion validity windows) | Sprint 23 T7; carries proficiency (1..5) + assurance (L0..L4). No-PII TMDL surface (PR #339). |
+| `hcp:SkillDemand` | `SkillDemand` | `gold.fact_skill_demand` *(contract-pending-2026-Q3)* | Deferred to WS-B4 live gold run | Sprint 23 T7/T14; min proficiency + min assurance per Department + CareSetting. |
+| `hcp:SkillGap` | `SkillGap` | `gold.fact_skill_gap` *(contract-pending-2026-Q3)* | Deferred to WS-B4 live gold run | Sprint 23 T14; demand − assurance-valid supply; grounds the gap measures (PR #339). |
+| `hcp:WorkerUnitEligibility` | `WorkerUnitEligibility` | `gold.bridge_worker_unit_eligibility` *(contract-pending-2026-Q3)* | Deferred to WS-B4 live gold run | Sprint 23 T7; pre-computed assurance-gated can-staff bridge. No-PII TMDL surface (PR #339). |
+| `hcp:RoleSkillTemplate` | `RoleSkillTemplate` | `gold.bridge_role_skill_demand_template` *(contract-pending-2026-Q3)* | N/A (static reference) | Sprint 23 T7; occupation → required-skills template driving demand + eligibility. |
 
 ### Reference-layer relations mapped to Fabric IQ relationships
 
@@ -57,6 +69,16 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:forWard` (Forecast → Ward) | `for_ward` | Sprint 26 WS-A; binds `gold.fact_occupancy_forecast` to the ward rollup. |
 | `hcp:explainedBy` (Forecast → Driver) | `explained_by` | Sprint 26 WS-A; forecast → decomposition rows in `gold.fact_forecast_driver`. |
 | `hcp:evidencedBy` (Driver → ExternalSignal) | `evidenced_by` | Sprint 26 WS-A; links a driver (e.g. seasonality) to the Trust-A signal that evidences it. Advisory only. |
+| `hcp:orgUnitOfTenant` (OrgUnit → Tenant) | `org_unit_of_tenant` | Sprint 23 T6 org-spine hierarchy; Tenant is folded 1:1 into the Hospital dimension. |
+| `hcp:departmentOfOrgUnit` (Department → OrgUnit) | `department_of_org_unit` | Sprint 23 T6; department is the demand / gap grain. |
+| `hcp:hasOccupationRole` (HealthWorker → OccupationRole) | `has_occupation_role` | Sprint 23 T7; ISCO-08 occupation held by a worker. |
+| `hcp:assertsSkill` (SkillAssertion → Skill) | `asserts_skill` | Sprint 23 T7; evidence-backed skill claim with proficiency + assurance. |
+| `hcp:assertedByWorker` (SkillAssertion → HealthWorker) | `asserted_by_worker` | Sprint 23 T7; GLN golden-thread link. |
+| `hcp:demandsSkill` (SkillDemand → Skill) | `demands_skill` | Sprint 23 T7; required skill at min proficiency + min assurance. |
+| `hcp:demandForCareSetting` (SkillDemand → CareSetting) | `demand_for_care_setting` | Sprint 23 T14; splits bed / ops demand. |
+| `hcp:gapForCareSetting` (SkillGap → CareSetting) | `gap_for_care_setting` | Sprint 23 T14; splits bed / ops gap answers. |
+| `hcp:roleRequiresSkill` (RoleSkillTemplate → Skill) | `role_requires_skill` | Sprint 23 T7; drives demand generation + eligibility. |
+| `hcp:eligibleForUnit` (WorkerUnitEligibility → CapacityUnit) | `eligible_for_unit` | Sprint 23 T7; assurance-gated can-staff bridge. |
 
 ### Facility hierarchy (reused from AMA §11.2)
 
