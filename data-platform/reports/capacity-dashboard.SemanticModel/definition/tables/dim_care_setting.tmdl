@@ -1,0 +1,55 @@
+table dim_care_setting
+	lineageTag: e9e0d4c6-c2e3-484e-a3b5-01f12aceea4c
+	sourceLineageTag: [gold].[dim_care_setting]
+
+	column care_setting_id
+		dataType: string
+		lineageTag: e55b7743-f7fa-45b5-ae76-c198f41303f7
+		sourceLineageTag: care_setting_id
+		summarizeBy: none
+		sourceColumn: care_setting_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column label_de
+		dataType: string
+		lineageTag: 9bc8db35-c18d-423e-927d-8d12808d8ac9
+		sourceLineageTag: label_de
+		summarizeBy: none
+		sourceColumn: label_de
+
+		annotation SummarizationSetBy = Automatic
+
+	column label_en
+		dataType: string
+		lineageTag: 16b8dc23-53d4-49c6-96ef-f458abfa1642
+		sourceLineageTag: label_en
+		summarizeBy: none
+		sourceColumn: label_en
+
+		annotation SummarizationSetBy = Automatic
+
+	column staff_group
+		dataType: string
+		lineageTag: 9b9d2719-d6bc-450e-8b1b-290aba7d8ba3
+		sourceLineageTag: staff_group
+		summarizeBy: none
+		sourceColumn: staff_group
+
+		annotation SummarizationSetBy = Automatic
+
+	column description
+		dataType: string
+		lineageTag: b61b1048-1f00-4b2b-8902-82819de3190d
+		sourceLineageTag: description
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_care_setting = entity
+		mode: directLake
+		source
+			entityName: dim_care_setting
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

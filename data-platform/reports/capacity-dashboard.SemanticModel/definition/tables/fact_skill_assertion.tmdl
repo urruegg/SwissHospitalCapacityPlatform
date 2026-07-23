@@ -1,0 +1,74 @@
+table fact_skill_assertion
+	lineageTag: 154afed0-56b7-4276-83d7-8b30fd33cc48
+	sourceLineageTag: [gold].[fact_skill_assertion]
+
+	column assertion_id
+		dataType: string
+		lineageTag: 40d2b7d4-c175-4b1a-b6af-6052e56f568e
+		sourceLineageTag: assertion_id
+		summarizeBy: none
+		sourceColumn: assertion_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column employee_id
+		dataType: string
+		lineageTag: fb92daac-83ea-4c7d-a307-94c6e6657c77
+		sourceLineageTag: employee_id
+		summarizeBy: none
+		sourceColumn: employee_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column skill_id
+		dataType: string
+		lineageTag: 4156e82c-140a-4cb8-b23e-5699b814c670
+		sourceLineageTag: skill_id
+		summarizeBy: none
+		sourceColumn: skill_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column proficiency_level
+		dataType: int64
+		formatString: 0
+		lineageTag: 86480630-30ba-4d7c-8261-b05ecaffbaf0
+		sourceLineageTag: proficiency_level
+		summarizeBy: none
+		sourceColumn: proficiency_level
+
+		annotation SummarizationSetBy = Automatic
+
+	column assurance_level
+		dataType: string
+		lineageTag: 53b47956-cc52-49e7-945f-cd9b03537563
+		sourceLineageTag: assurance_level
+		summarizeBy: none
+		sourceColumn: assurance_level
+
+		annotation SummarizationSetBy = Automatic
+
+	column verification_status
+		dataType: string
+		lineageTag: 70c588e6-5ad4-4981-a49f-3cde96f0e415
+		sourceLineageTag: verification_status
+		summarizeBy: none
+		sourceColumn: verification_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_mode
+		dataType: string
+		lineageTag: 493218a1-c026-44e7-ae44-3ba8976dae82
+		sourceLineageTag: source_mode
+		summarizeBy: none
+		sourceColumn: source_mode
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_skill_assertion = entity
+		mode: directLake
+		source
+			entityName: fact_skill_assertion
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

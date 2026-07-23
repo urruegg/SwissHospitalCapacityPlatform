@@ -109,3 +109,36 @@ relationship f867b5ee-4003-42f2-81d0-4ff7df88bf10
 relationship 45630cea-f5aa-45a0-8895-c2c2fbd23818
 	fromColumn: dim_department.site_id
 	toColumn: dim_org_unit.org_unit_id
+
+relationship 5fa410f9-20a4-4207-8628-63a1682017c5
+	fromColumn: fact_skill_demand.skill_id
+	toColumn: dim_skill.skill_id
+
+relationship c3c9999e-f84d-4b64-b8a3-7c18b1f78299
+	fromColumn: fact_skill_gap.skill_id
+	toColumn: dim_skill.skill_id
+
+relationship 2d88b6b0-d6fd-4e66-a48c-ae8681fb7219
+	fromColumn: fact_skill_assertion.skill_id
+	toColumn: dim_skill.skill_id
+
+relationship 39528f58-5a03-4f77-b522-cece553c090a
+	fromColumn: fact_skill_demand.care_setting_id
+	toColumn: dim_care_setting.care_setting_id
+
+relationship a6113a23-f3d8-4b7f-90a1-18f8f054faa9
+	fromColumn: fact_skill_gap.care_setting_id
+	toColumn: dim_care_setting.care_setting_id
+
+relationship eea0f176-4ac2-417a-9899-9c9e2a04295c
+	fromColumn: fact_skill_demand.department_id
+	toColumn: dim_department.department_id
+
+relationship 46894c57-2bba-4d9f-81b1-2504ea9899d7
+	fromColumn: fact_skill_gap.department_id
+	toColumn: dim_department.department_id
+
+relationship a1ff9fd1-05ae-4fcc-b3f8-8ada516d6905
+	fromColumn: bridge_worker_unit_eligibility.tenant_id
+	toColumn: dim_hospital.tenant_id
+

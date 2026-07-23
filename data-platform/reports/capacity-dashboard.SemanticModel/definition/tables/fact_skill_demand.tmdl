@@ -1,0 +1,120 @@
+table fact_skill_demand
+	lineageTag: df9989bc-bfec-4bf3-be8d-0bc40708a717
+	sourceLineageTag: [gold].[fact_skill_demand]
+
+	column demand_id
+		dataType: string
+		lineageTag: 9ba3bd7b-0f59-46aa-ad1b-acd8b42b1468
+		sourceLineageTag: demand_id
+		summarizeBy: none
+		sourceColumn: demand_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenant_id
+		dataType: string
+		lineageTag: 3db49f4f-3702-401a-b98c-11f89369f96d
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column department_id
+		dataType: string
+		lineageTag: 2a19df91-9553-4cfc-b66a-b1e3dab19970
+		sourceLineageTag: department_id
+		summarizeBy: none
+		sourceColumn: department_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_id
+		dataType: string
+		lineageTag: 9211f756-0dbd-4db6-b355-75c7fae65055
+		sourceLineageTag: unit_id
+		summarizeBy: none
+		sourceColumn: unit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column skill_id
+		dataType: string
+		lineageTag: 4c79e3b6-663c-423c-8627-88f8e5e625f8
+		sourceLineageTag: skill_id
+		summarizeBy: none
+		sourceColumn: skill_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column min_proficiency
+		dataType: int64
+		formatString: 0
+		lineageTag: 0a4386e3-373a-4105-a480-792877c7cf71
+		sourceLineageTag: min_proficiency
+		summarizeBy: none
+		sourceColumn: min_proficiency
+
+		annotation SummarizationSetBy = Automatic
+
+	column min_assurance
+		dataType: string
+		lineageTag: 3ed2e57c-91ad-4994-b87f-13658ab82c8a
+		sourceLineageTag: min_assurance
+		summarizeBy: none
+		sourceColumn: min_assurance
+
+		annotation SummarizationSetBy = Automatic
+
+	column headcount_required
+		dataType: int64
+		formatString: 0
+		lineageTag: b07bd864-0cf7-4c28-ad79-ca8ef971bbf9
+		sourceLineageTag: headcount_required
+		summarizeBy: none
+		sourceColumn: headcount_required
+
+		annotation SummarizationSetBy = Automatic
+
+	column shift_window
+		dataType: string
+		lineageTag: b1a4a549-6508-424a-a7a0-31e8ddaac7de
+		sourceLineageTag: shift_window
+		summarizeBy: none
+		sourceColumn: shift_window
+
+		annotation SummarizationSetBy = Automatic
+
+	column effective_date
+		dataType: string
+		lineageTag: df663f59-32be-4bc6-98c9-bd705149d7ec
+		sourceLineageTag: effective_date
+		summarizeBy: none
+		sourceColumn: effective_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column care_setting_id
+		dataType: string
+		lineageTag: 69e15944-6266-4a2b-993b-309a74aa34b7
+		sourceLineageTag: care_setting_id
+		summarizeBy: none
+		sourceColumn: care_setting_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_mode
+		dataType: string
+		lineageTag: efcd0004-7f1d-4878-bd21-7bfeec7d0077
+		sourceLineageTag: source_mode
+		summarizeBy: none
+		sourceColumn: source_mode
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_skill_demand = entity
+		mode: directLake
+		source
+			entityName: fact_skill_demand
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
