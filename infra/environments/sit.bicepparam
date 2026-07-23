@@ -146,11 +146,12 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image tag is bumped as a deliberate manual review step after
 // `ci-build-app-fluent.yml` pushes a new tag to ACR (per that workflow's
-// header comment + AGENTS.md §4). Bumped c9fc6f3 -> 9d91b1e to ship the
-// Sprint 20 Curavias UX shell plus the refreshed evidence data product
-// (ADR-0033, 35 ADRs) from PR #250 (merge commit 9d91b1e).
+// header comment + AGENTS.md §4). Bumped b796961 -> 43ace03 to ship Epic #276
+// (Curavias app prototype-parity, Sprints 1-6: dca/bmca/orsa/sba/csa RoleBoards,
+// golden-thread ring, START role launcher, BACKSTAGE story tab, Helvion->Curavias
+// title rebrand) from the #297 consolidation merge commit 43ace03.
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:b796961'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:43ace03'
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:
