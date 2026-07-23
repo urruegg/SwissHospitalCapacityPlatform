@@ -104,9 +104,37 @@
     "simulated": "simuliert",
     "loopBack": "führt zurück zur Auslastungsprognose"
   },
+  "dca": {
+    "askAbout": {
+      "readyCandidates": "Welche Patienten sind entlassbereit?",
+      "spitexBarrier": "Warum blockiert Spitex die Entlassung?",
+      "rehab": "Gibt es freie Reha-Plätze?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → Entlassaktionen",
+      "patient": "Patient",
+      "ward": "Station",
+      "readiness": "Bereitschaft",
+      "blocker": "Hindernis",
+      "estFree": "Frei in (h)"
+    },
+    "barriers": {
+      "hint": "Kapazitätshindernisse nach Bettauswirkung sortiert",
+      "rank": "Rang",
+      "label": "Hindernis",
+      "bedImpact": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Alter & Auswirkung →"
+    },
+    "gap": {
+      "label": "Prognostizierte Entlassungslücke",
+      "cta": "Entlassungslücke schliessen"
+    }
+  },
   "insight": {
     "occupancyRising": "{{channel}} steigt",
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
+    "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",

@@ -104,9 +104,37 @@
     "simulated": "simulato",
     "loopBack": "ritorna alla previsione dell'occupazione"
   },
+  "dca": {
+    "askAbout": {
+      "readyCandidates": "Quali pazienti sono pronti per la dimissione?",
+      "spitexBarrier": "Perché il Spitex blocca la dimissione?",
+      "rehab": "Ci sono posti liberi in riabilitazione?"
+    },
+    "table": {
+      "hint": "Fai clic su una riga → azioni di dimissione",
+      "patient": "Paziente",
+      "ward": "Reparto",
+      "readiness": "Preparazione",
+      "blocker": "Ostacolo",
+      "estFree": "Libero in (h)"
+    },
+    "barriers": {
+      "hint": "Ostacoli alla capacità ordinati per impatto sui letti",
+      "rank": "Rango",
+      "label": "Ostacolo",
+      "bedImpact": "Letti",
+      "detail": "Dettaglio",
+      "cta": "Sequenza automatica per anzianità e impatto →"
+    },
+    "gap": {
+      "label": "Divario dimissioni previsto",
+      "cta": "Risolvere il divario dimissioni"
+    }
+  },
   "insight": {
     "occupancyRising": "{{channel}} in aumento",
     "dischargeExpedite": "Accelera la dimissione {{ward}}",
+    "dischargeExpediteDetail": "Accelera la dimissione {{ward}} — {{blocker}}",
     "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
     "orDefer": "Rinvia il caso {{specialty}}",
     "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",

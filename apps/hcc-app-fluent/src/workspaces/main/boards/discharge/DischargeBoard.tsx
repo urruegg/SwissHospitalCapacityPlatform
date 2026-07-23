@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Card,
-  Text,
-  Title3,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components';
-import type { ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { DischargePayload } from '../../../../data/roleboard/discharge-data';
+import { Badge, Button, Text, makeStyles, tokens } from '@fluentui/react-components';
+import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
+import type { DischargePayload, DischargeCandidate, CapacityBarrier } from '../../../../data/roleboard/discharge-data';
 import { dischargeBoard } from './discharge-board';
+import { BoardHeader } from '../occupancy/BoardHeader';
+import { DischargeWorklistTable } from './DischargeWorklistTable';
+import { DischargeBarriersBoard } from './DischargeBarriersBoard';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
@@ -20,36 +16,19 @@ import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
 
 const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
-    padding: tokens.spacingHorizontalL,
-  },
-  summary: {
+  root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalL },
+  gapStrip: {
     display: 'flex',
     gap: tokens.spacingHorizontalM,
+    alignItems: 'center',
     flexWrap: 'wrap',
-  },
-  candidates: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-    gap: tokens.spacingHorizontalM,
-  },
-  candidate: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
-    padding: tokens.spacingHorizontalM,
-  },
-  insights: {
-    display: 'flex',
-    gap: tokens.spacingHorizontalS,
-    flexWrap: 'wrap',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
+    background: tokens.colorNeutralBackground2,
+    borderRadius: tokens.borderRadiusMedium,
   },
 });
 
-/** Sprint 2 (parity) — Discharge (dca) surface: readiness + actionable insights. */
+/** Sprint 20 (parity) — Discharge (dca) surface: BoardHeader + gap-strip + DischargeWorklistTable + DischargeBarriersBoard. */
 export function DischargeBoard() {
   const s = useStyles();
   const { t } = useTranslation();
@@ -65,7 +44,10 @@ export function DischargeBoard() {
       : { hospital, windowHours: 72, pinned: false };
     let active = true;
     void dischargeBoard.load(scope, mode).then((loaded) => {
-      if (active) setData(loaded);
+      if (active) {
+        setData(loaded);
+        rail.showDefault(dischargeBoard.defaultReco(loaded));
+      }
     });
     void residualFromPrev(dischargeBoard.agent, scope, mode).then((residual) => {
       if (active) setPrev(residual);
@@ -73,49 +55,57 @@ export function DischargeBoard() {
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, hospital]);
 
-  if (!data) return <Text>{t('board.loading')}</Text>;
+  if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 
   const banner = bannerFor(mode, dischargeBoard.agent, prev);
-  const insights = dischargeBoard.insights(data);
+  const payload = data.payload;
+
+  const route = (insight: ContextInsight) => {
+    const reco = dischargeBoard.recoFor(insight, data);
+    void routeInsight(insight, reco, { agent: dischargeBoard.agent, openWithReco: rail.openWithReco });
+  };
+
+  const onSelectCandidate = (c: DischargeCandidate) => {
+    route({
+      id: c.recoId,
+      label: t('insight.dischargeExpediteDetail', { ward: c.ward, blocker: c.blocker }),
+      context: { candidate: c.id, ward: c.ward, blocker: c.blocker, bedsFreeable: c.bedsFreeable },
+    });
+  };
+
+  const onSelectBarrier = (b: CapacityBarrier) => {
+    route({ id: b.recoId, label: b.label, context: { barrier: b.id, bedImpact: b.bedImpact } });
+  };
+
+  // Routes the site-level discharge-gap reco (mirrors OOA onSelectGap)
+  const onSelectGap = () => {
+    route({ id: 'discharge-gap', label: t('dca.gap.label'), context: { gapBeds: payload.residualBeds } });
+  };
+
+  // Auto-sequence CTA routes the top-impact barrier's systemic reco
+  const onAutoSequence = () => {
+    const top = [...payload.barriers].sort((a, b) => b.bedImpact - a.bedImpact || a.id.localeCompare(b.id))[0];
+    if (top) onSelectBarrier(top);
+  };
 
   return (
     <section className={s.root} data-testid="board-discharge" aria-label={t('board.discharge')}>
       <HandoffBanner banner={banner} provenance={data.provenance} />
-      <Title3>{t('board.discharge')}</Title3>
-      <Text className={s.summary}>
-        <span>{t('board.bedsNeeded')}: {data.payload.bedsNeeded}</span>
-        <span>{t('board.bedsFreeable')}: {data.payload.bedsFreeable}</span>
-        <span>{t('board.residual')}: {data.payload.residualBeds}</span>
-      </Text>
-      <div className={s.candidates}>
-        {data.payload.candidates.map((candidate) => (
-          <Card key={candidate.id} className={s.candidate}>
-            <Text weight="semibold">{candidate.ward}</Text>
-            <Text>{candidate.blocker}</Text>
-            <Text>
-              {candidate.bedsFreeable} {t('board.beds')}
-            </Text>
-          </Card>
-        ))}
+      <BoardHeader agent={dischargeBoard.agent} title={t('board.discharge')} provenance={data.provenance} lens="Discharge Ops" />
+      {/* Gap summary strip — mirrors OOA site-gap card; click opens the discharge-gap reco */}
+      <div className={s.gapStrip}>
+        <Text>{t('board.bedsNeeded')}: <strong>{payload.bedsNeeded}</strong></Text>
+        <Text>{t('board.bedsFreeable')}: <strong>{payload.bedsFreeable}</strong></Text>
+        <Badge appearance="tint" color="warning">{payload.residualBeds} {t('board.beds')}</Badge>
+        <Button appearance="outline" size="small" onClick={onSelectGap}>
+          {t('dca.gap.cta')}
+        </Button>
       </div>
-      <div className={s.insights}>
-        {insights.map((insight) => (
-          <Button
-            key={insight.id}
-            appearance="subtle"
-            onClick={() =>
-              void routeInsight(insight, dischargeBoard.recoFor(insight, data), {
-                agent: dischargeBoard.agent,
-                openWithReco: rail.openWithReco,
-              })
-            }
-          >
-            {insight.label}
-          </Button>
-        ))}
-      </div>
+      <DischargeWorklistTable candidates={payload.candidates} onSelectCandidate={onSelectCandidate} />
+      <DischargeBarriersBoard barriers={payload.barriers} onSelectBarrier={onSelectBarrier} onAutoSequence={onAutoSequence} />
     </section>
   );
 }

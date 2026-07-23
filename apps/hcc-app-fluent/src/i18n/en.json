@@ -104,9 +104,37 @@
     "simulated": "simulated",
     "loopBack": "loops back to occupancy forecast"
   },
+  "dca": {
+    "askAbout": {
+      "readyCandidates": "Which patients are discharge-ready?",
+      "spitexBarrier": "Why is Spitex blocking discharge?",
+      "rehab": "Are there free rehab slots?"
+    },
+    "table": {
+      "hint": "Click a row → discharge actions",
+      "patient": "Patient",
+      "ward": "Ward",
+      "readiness": "Readiness",
+      "blocker": "Blocker",
+      "estFree": "Free in (h)"
+    },
+    "barriers": {
+      "hint": "Capacity barriers sorted by bed impact",
+      "rank": "Rank",
+      "label": "Barrier",
+      "bedImpact": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by aging & impact →"
+    },
+    "gap": {
+      "label": "Projected discharge gap",
+      "cta": "Resolve discharge gap"
+    }
+  },
   "insight": {
     "occupancyRising": "{{channel}} rising",
     "dischargeExpedite": "Expedite {{ward}} discharge",
+    "dischargeExpediteDetail": "Expedite {{ward}} discharge — {{blocker}}",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
     "orDefer": "Defer {{specialty}} case",
     "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",

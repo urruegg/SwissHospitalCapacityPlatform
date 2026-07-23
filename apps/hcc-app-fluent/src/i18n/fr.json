@@ -104,9 +104,37 @@
     "simulated": "simulé",
     "loopBack": "revient à la prévision d'occupation"
   },
+  "dca": {
+    "askAbout": {
+      "readyCandidates": "Quels patients sont prêts à sortir ?",
+      "spitexBarrier": "Pourquoi le Spitex bloque-t-il la sortie ?",
+      "rehab": "Y a-t-il des places de réhabilitation disponibles ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions de sortie",
+      "patient": "Patient",
+      "ward": "Unité",
+      "readiness": "Préparation",
+      "blocker": "Obstacle",
+      "estFree": "Libre dans (h)"
+    },
+    "barriers": {
+      "hint": "Obstacles à la capacité triés par impact sur les lits",
+      "rank": "Rang",
+      "label": "Obstacle",
+      "bedImpact": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par ancienneté et impact →"
+    },
+    "gap": {
+      "label": "Écart de sorties projeté",
+      "cta": "Résoudre l'écart de sorties"
+    }
+  },
   "insight": {
     "occupancyRising": "{{channel}} augmente",
     "dischargeExpedite": "Accélérer la sortie {{ward}}",
+    "dischargeExpediteDetail": "Accélérer la sortie {{ward}} — {{blocker}}",
     "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}",
     "orDefer": "Reporter le cas {{specialty}}",
     "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}",
