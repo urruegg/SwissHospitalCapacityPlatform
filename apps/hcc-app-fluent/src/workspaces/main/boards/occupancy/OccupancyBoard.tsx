@@ -8,12 +8,12 @@ import {
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import type { RoleBoardData } from '../../../../journey/RoleBoard';
+import type { ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
 import type { OccupancyPayload } from '../../../../data/roleboard/occupancy-data';
 import { occupancyBoard } from './occupancy-board';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
-import { bannerFor } from '../../../../journey/handoff-orchestrator';
-import { GOLDEN_THREAD_SCOPE, SEED_SITUATION } from '../../../../journey/golden-thread';
+import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
+import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { useMode } from '../../../../context/mode-context';
@@ -52,6 +52,7 @@ export function OccupancyBoard() {
   const { hospital } = useHospital();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<OccupancyPayload> | null>(null);
+  const [prev, setPrev] = useState<ResidualPressure | null>(null);
 
   useEffect(() => {
     const scope = mode === 'demo'
@@ -61,6 +62,9 @@ export function OccupancyBoard() {
     void occupancyBoard.load(scope, mode).then((loaded) => {
       if (active) setData(loaded);
     });
+    void residualFromPrev(occupancyBoard.agent, scope, mode).then((residual) => {
+      if (active) setPrev(residual);
+    });
     return () => {
       active = false;
     };
@@ -68,7 +72,7 @@ export function OccupancyBoard() {
 
   if (!data) return <Text>{t('board.loading')}</Text>;
 
-  const banner = bannerFor(mode, occupancyBoard.agent, mode === 'demo' ? SEED_SITUATION : null);
+  const banner = bannerFor(mode, occupancyBoard.agent, prev);
   const insights = occupancyBoard.insights(data);
 
   return (

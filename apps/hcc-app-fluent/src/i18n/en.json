@@ -33,7 +33,31 @@
     "roles": "Roles & RBAC",
     "rolesDescription": "Live view of app roles from Microsoft Entra (read-only).",
     "evidence": "Evidence",
-    "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI)."
+    "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI).",
+    "nav": {
+      "label": "Backstage sections"
+    },
+    "story": {
+      "tab": "Story",
+      "title": "How Curavias is built",
+      "lead": "A simple executive view of the platform foundations behind the showcase.",
+      "agents": {
+        "title": "Built by agents",
+        "body": "GitHub Copilot coding agents plan, build, and review the platform through governed MCP tools."
+      },
+      "fabricFhir": {
+        "title": "Fabric + FHIR",
+        "body": "A trusted Microsoft Fabric data platform speaks FHIR for Swiss healthcare interoperability."
+      },
+      "dsg": {
+        "title": "Swiss data protection",
+        "body": "Swiss DSG and cantonal governance controls are built into every layer."
+      },
+      "alm": {
+        "title": "Dev → SIT → Prod",
+        "body": "Enterprise ALM promotes changes safely from development through SIT to production."
+      }
+    }
   },
   "evidence": {
     "readinessSummary": "Readiness summary",
@@ -59,11 +83,21 @@
       "crisis": "Crisis"
     },
     "discharge": "Discharge readiness (72h)",
+    "orSteering": "OR steering (72h)",
     "bedsNeeded": "Beds needed",
     "bedsFreeable": "Beds freeable",
     "bedsShort": "Beds short",
+    "casesDeferred": "Cases deferred",
+    "bedsFreed": "Beds freed",
     "bedsReallocated": "Beds reallocated",
-    "residual": "Residual"
+    "residual": "Residual",
+    "staffing": "Staffing balance (72h)",
+    "surgeBeds": "Surge beds",
+    "fte": "FTE",
+    "crisis": "Crisis readiness (72h)",
+    "signals": "External signals",
+    "scenarios": "Scenarios",
+    "bedDays": "bed-days"
   },
   "handoff": {
     "live": "live",
@@ -73,7 +107,10 @@
   "insight": {
     "occupancyRising": "{{channel}} rising",
     "dischargeExpedite": "Expedite {{ward}} discharge",
-    "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}"
+    "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
+    "orDefer": "Defer {{specialty}} case",
+    "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",
+    "stressTest": "Stress-test {{scenario}}"
   },
   "copilot": {
     "title": "Copilot",
@@ -91,7 +128,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Coordinating hospital capacity across the Swiss care network.",
-    "disclaimer": "Microsoft Innovation Hub Showcase — pure simulated and generic data for demo purposes only."
+    "disclaimer": "Microsoft Innovation Hub Showcase — pure simulated and generic data for demo purposes only.",
+    "mode": {
+      "demo": "Demo — simulated golden-thread showcase",
+      "user": "User — live working mode"
+    },
+    "launcher": {
+      "title": "Enter a role board",
+      "occupancy": "Occupancy",
+      "discharge": "Discharge",
+      "bedManager": "Bed management",
+      "orSteering": "OR steering",
+      "staffing": "Staffing",
+      "crisis": "Crisis & scenarios"
+    }
   },
   "settings": {
     "preferences": "Preferences"

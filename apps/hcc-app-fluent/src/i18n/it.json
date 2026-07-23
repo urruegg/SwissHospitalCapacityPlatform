@@ -33,7 +33,31 @@
     "roles": "Ruoli e RBAC",
     "rolesDescription": "Vista in tempo reale dei ruoli dell'app da Microsoft Entra (sola lettura).",
     "evidence": "Prove",
-    "evidenceDescription": "Lavagna del presentatore: schede BOM, ADR, requisiti, prove GA e dipendenze (sintetiche, senza PHI)."
+    "evidenceDescription": "Lavagna del presentatore: schede BOM, ADR, requisiti, prove GA e dipendenze (sintetiche, senza PHI).",
+    "nav": {
+      "label": "Sezioni backstage"
+    },
+    "story": {
+      "tab": "Storia",
+      "title": "Come è costruito Curavias",
+      "lead": "Una vista esecutiva semplice sulle fondamenta della piattaforma dietro la vetrina.",
+      "agents": {
+        "title": "Costruito dagli agenti",
+        "body": "Gli agenti di codifica GitHub Copilot pianificano, costruiscono e revisionano la piattaforma tramite strumenti MCP governati."
+      },
+      "fabricFhir": {
+        "title": "Fabric + FHIR",
+        "body": "Una piattaforma dati Microsoft Fabric affidabile parla FHIR per l'interoperabilità sanitaria svizzera."
+      },
+      "dsg": {
+        "title": "Protezione dati svizzera",
+        "body": "La DSG svizzera e i controlli di governance cantonale sono integrati in ogni livello."
+      },
+      "alm": {
+        "title": "Dev → SIT → Prod",
+        "body": "L'ALM enterprise promuove le modifiche in sicurezza dallo sviluppo alla SIT fino alla produzione."
+      }
+    }
   },
   "evidence": {
     "readinessSummary": "Riepilogo di preparazione",
@@ -59,11 +83,21 @@
       "crisis": "Crisi"
     },
     "discharge": "Preparazione dimissioni (72h)",
+    "orSteering": "Gestione sala operatoria (72h)",
     "bedsNeeded": "Letti necessari",
     "bedsFreeable": "Letti liberabili",
     "bedsShort": "Letti mancanti",
+    "casesDeferred": "Interventi rinviati",
+    "bedsFreed": "Letti liberati",
     "bedsReallocated": "Letti riallocati",
-    "residual": "Residuo"
+    "residual": "Residuo",
+    "staffing": "Bilanciamento del personale (72h)",
+    "surgeBeds": "Letti surge",
+    "fte": "ETP",
+    "crisis": "Preparazione alle crisi (72h)",
+    "signals": "Segnali esterni",
+    "scenarios": "Scenari",
+    "bedDays": "giornate-letto"
   },
   "handoff": {
     "live": "live",
@@ -73,7 +107,10 @@
   "insight": {
     "occupancyRising": "{{channel}} in aumento",
     "dischargeExpedite": "Accelera la dimissione {{ward}}",
-    "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}"
+    "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
+    "orDefer": "Rinvia il caso {{specialty}}",
+    "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",
+    "stressTest": "Testa {{scenario}}"
   },
   "copilot": {
     "title": "Copilot",
@@ -91,7 +128,20 @@
   "start": {
     "title": "Curavias",
     "mission": "Coordinare la capacità ospedaliera nella rete sanitaria svizzera.",
-    "disclaimer": "Vetrina Microsoft Innovation Hub — dati simulati e generici, solo a scopo dimostrativo."
+    "disclaimer": "Vetrina Microsoft Innovation Hub — dati simulati e generici, solo a scopo dimostrativo.",
+    "mode": {
+      "demo": "Demo — vetrina del filo conduttore simulata",
+      "user": "Utente — modalità di lavoro live"
+    },
+    "launcher": {
+      "title": "Entra in una board di ruolo",
+      "occupancy": "Occupazione",
+      "discharge": "Dimissioni",
+      "bedManager": "Gestione letti",
+      "orSteering": "Coordinamento sala operatoria",
+      "staffing": "Personale",
+      "crisis": "Crisi e scenari"
+    }
   },
   "settings": {
     "preferences": "Preferenze"

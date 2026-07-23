@@ -9,8 +9,8 @@ import {
   tokens,
 } from '@fluentui/react-components';
 import type { ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { DischargePayload } from '../../../../data/roleboard/discharge-data';
-import { dischargeBoard } from './discharge-board';
+import type { StaffingPayload } from '../../../../data/roleboard/staffing-data';
+import { staffingBoard } from './staffing-board';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
@@ -49,14 +49,14 @@ const useStyles = makeStyles({
   },
 });
 
-/** Sprint 2 (parity) — Discharge (dca) surface: readiness + actionable insights. */
-export function DischargeBoard() {
+/** Sprint 3 (parity) — Staffing (sba) surface: FTE shifts + actionable insights. */
+export function StaffingBoard() {
   const s = useStyles();
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
   const rail = useCopilotRail();
-  const [data, setData] = useState<RoleBoardData<DischargePayload> | null>(null);
+  const [data, setData] = useState<RoleBoardData<StaffingPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
 
   useEffect(() => {
@@ -64,10 +64,10 @@ export function DischargeBoard() {
       ? GOLDEN_THREAD_SCOPE
       : { hospital, windowHours: 72, pinned: false };
     let active = true;
-    void dischargeBoard.load(scope, mode).then((loaded) => {
+    void staffingBoard.load(scope, mode).then((loaded) => {
       if (active) setData(loaded);
     });
-    void residualFromPrev(dischargeBoard.agent, scope, mode).then((residual) => {
+    void residualFromPrev(staffingBoard.agent, scope, mode).then((residual) => {
       if (active) setPrev(residual);
     });
     return () => {
@@ -77,25 +77,25 @@ export function DischargeBoard() {
 
   if (!data) return <Text>{t('board.loading')}</Text>;
 
-  const banner = bannerFor(mode, dischargeBoard.agent, prev);
-  const insights = dischargeBoard.insights(data);
+  const banner = bannerFor(mode, staffingBoard.agent, prev);
+  const insights = staffingBoard.insights(data);
 
   return (
-    <section className={s.root} data-testid="board-discharge" aria-label={t('board.discharge')}>
+    <section className={s.root} data-testid="board-staffing" aria-label={t('board.staffing')}>
       <HandoffBanner banner={banner} provenance={data.provenance} />
-      <Title3>{t('board.discharge')}</Title3>
+      <Title3>{t('board.staffing')}</Title3>
       <Text className={s.summary}>
-        <span>{t('board.bedsNeeded')}: {data.payload.bedsNeeded}</span>
-        <span>{t('board.bedsFreeable')}: {data.payload.bedsFreeable}</span>
+        <span>{t('board.bedsShort')}: {data.payload.bedsShort}</span>
+        <span>{t('board.surgeBeds')}: {data.payload.surgeBedsEnabled}</span>
         <span>{t('board.residual')}: {data.payload.residualBeds}</span>
       </Text>
       <div className={s.candidates}>
-        {data.payload.candidates.map((candidate) => (
-          <Card key={candidate.id} className={s.candidate}>
-            <Text weight="semibold">{candidate.ward}</Text>
-            <Text>{candidate.blocker}</Text>
+        {data.payload.moves.map((move) => (
+          <Card key={move.id} className={s.candidate}>
+            <Text weight="semibold">{move.role}</Text>
+            <Text>{move.fromUnit} -&gt; {move.toUnit}</Text>
             <Text>
-              {candidate.bedsFreeable} {t('board.beds')}
+              {move.fte} {t('board.fte')}
             </Text>
           </Card>
         ))}
@@ -107,7 +107,7 @@ export function DischargeBoard() {
             appearance="subtle"
             onClick={() =>
               void routeInsight(insight, {
-                agent: dischargeBoard.agent,
+                agent: staffingBoard.agent,
                 openWithContext: rail.openWithContext,
               })
             }

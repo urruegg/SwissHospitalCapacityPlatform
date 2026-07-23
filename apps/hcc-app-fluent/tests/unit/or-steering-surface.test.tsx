@@ -2,21 +2,14 @@ import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import i18n from '../../src/i18n';
-import { BedManagerBoard } from '../../src/workspaces/main/boards/bed-manager/BedManagerBoard';
+import { OrSteeringBoard } from '../../src/workspaces/main/boards/or-steering/OrSteeringBoard';
 import { RoleProvider } from '../../src/context/role-context';
 import { ModeProvider } from '../../src/context/mode-context';
 import { CopilotRailProvider, useCopilotRail } from '../../src/copilot-rail/rail-context';
 import { HospitalProvider } from '../../src/context/hospital-context';
 import { parseClaims } from '../../src/auth/claim-parser';
 import { invokeInsight } from '../../src/copilot-drawer/agent-manifest';
-
-vi.mock('../../src/copilot-drawer/Drawer', () => ({
-  CopilotDrawer: () => null,
-}));
-
-vi.mock('../../src/whiteboard/Canvas', () => ({
-  Canvas: () => null,
-}));
+import { OR_STEERING_PINNED } from '../../src/data/roleboard/or-steering-data';
 
 vi.mock('../../src/copilot-drawer/agent-manifest', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../src/copilot-drawer/agent-manifest')>()),
@@ -35,7 +28,7 @@ beforeEach(() => {
 function Harness({ children }: { children: React.ReactNode }) {
   const claims = parseClaims(undefined);
   return (
-    <MemoryRouter initialEntries={['/main/bed-manager']}>
+    <MemoryRouter initialEntries={['/main/or-steering']}>
       <ModeProvider>
         <CopilotRailProvider>
           <HospitalProvider claims={claims}>
@@ -54,38 +47,41 @@ function RailState() {
   return <span data-testid="rail-open">{String(rail.open)}</span>;
 }
 
-describe('BedManagerBoard surface', () => {
-  it('renders the handoff banner and preserves the Ask BMCA action', async () => {
+describe('OrSteeringBoard surface', () => {
+  it('renders deferable OR cases, banner, and a simulated badge', async () => {
     render(
       <Harness>
-        <BedManagerBoard />
+        <OrSteeringBoard />
       </Harness>,
     );
 
-    expect(screen.getByRole('button', { name: /Ask BMCA/ })).toBeInTheDocument();
-    expect(await screen.findByText(/simulated/i)).toBeInTheDocument();
-    expect(screen.getByText(/Carried from dca-agent/i)).toBeInTheDocument();
+    for (const orCase of OR_STEERING_PINNED.cases.filter((c) => c.deferable)) {
+      await waitFor(() => expect(screen.getByText(orCase.specialty)).toBeInTheDocument());
+      expect(screen.getByText(orCase.slot)).toBeInTheDocument();
+    }
+    expect(screen.getByText(/simulated/i)).toBeInTheDocument();
+    expect(screen.getByText(/Carried from bmca-agent/i)).toBeInTheDocument();
   });
 
-  it('opens the Copilot rail and invokes the bmca-agent with reallocation context', async () => {
+  it('opens the Copilot rail and invokes the orsa-agent with insight context', async () => {
     render(
       <Harness>
         <RailState />
-        <BedManagerBoard />
+        <OrSteeringBoard />
       </Harness>,
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /Shift 2 beds Surgery A -> Medicine A/ })).toBeInTheDocument(),
+      expect(screen.getByRole('button', { name: /Defer Orthopedics case/ })).toBeInTheDocument(),
     );
-    act(() => screen.getByRole('button', { name: /Shift 2 beds Surgery A -> Medicine A/ }).click());
+    act(() => screen.getByRole('button', { name: /Defer Orthopedics case/ }).click());
 
     await waitFor(() => expect(screen.getByTestId('rail-open').textContent).toBe('true'));
-    expect(invokeInsight).toHaveBeenCalledWith('bmca-agent', {
-      reallocation: 'surg-a-to-med-a',
-      fromWard: 'Surgery A',
-      toWard: 'Medicine A',
-      beds: 2,
+    expect(invokeInsight).toHaveBeenCalledWith('orsa-agent', {
+      case: 'ortho-knee-tue',
+      specialty: 'Orthopedics',
+      slot: 'Tue 08:00',
+      bedsImpact: 1,
     });
   });
 });
