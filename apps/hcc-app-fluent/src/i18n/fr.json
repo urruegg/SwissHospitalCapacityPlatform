@@ -149,6 +149,47 @@
   "agent": {
     "open": "Ouvrir l'agent",
     "close": "Fermer l'agent",
-    "title": "Agent"
+    "title": "Agent",
+    "askAbout": "Poser une question sur"
+  },
+  "badge": {
+    "simulatedData": "Données simulées",
+    "liveData": "Données en direct",
+    "accessLens": "Lentille d'accès : {{lens}}"
+  },
+  "reco": {
+    "back": "Retour au résumé",
+    "agentLine": "{{agent}} — contexte récupéré",
+    "projection": "Projection : {{text}}"
+  },
+  "ooa": {
+    "askAbout": {
+      "wardTips": "Quelles unités basculent en 72 h ?",
+      "fluPeak": "Quand survient le pic de grippe ?",
+      "icuStaffing": "Le personnel des soins intensifs est-il un frein ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions Copilot",
+      "ward": "Unité",
+      "now": "Maintenant",
+      "trend": "Tendance 72 h",
+      "forecast": "Prévision",
+      "flag": "Statut"
+    },
+    "flow": {
+      "hint": "Les signaux alimentent les flux de spécialités → les sorties de capacité. Cliquez sur un flux ou l'écart pour les actions Copilot.",
+      "channels": "Signaux",
+      "streams": "Flux",
+      "outputs": "Sorties",
+      "current": "Actuel",
+      "forecast72": "Prévision 72 h",
+      "fedBy": "Alimenté par {{channels}}"
+    },
+    "gap": {
+      "label": "Écart de capacité projeté à 72 h",
+      "card": "{{beds}} lits manquants en 72 h",
+      "aria": "Lits nécessaires dans les 72 h",
+      "cta": "Résoudre l'écart à 72 h"
+    }
   }
 }

@@ -149,6 +149,47 @@
   "agent": {
     "open": "Open agent",
     "close": "Close agent",
-    "title": "Agent"
+    "title": "Agent",
+    "askAbout": "Ask about"
+  },
+  "badge": {
+    "simulatedData": "Simulated data",
+    "liveData": "Live data",
+    "accessLens": "Access-lens: {{lens}}"
+  },
+  "reco": {
+    "back": "Back to summary",
+    "agentLine": "{{agent}} — context picked up",
+    "projection": "Projection: {{text}}"
+  },
+  "ooa": {
+    "askAbout": {
+      "wardTips": "Which wards tip over in 72h?",
+      "fluPeak": "When does the flu peak hit?",
+      "icuStaffing": "Is ICU staffing a constraint?"
+    },
+    "table": {
+      "hint": "Click a row → Copilot actions",
+      "ward": "Ward",
+      "now": "Now",
+      "trend": "72h trend",
+      "forecast": "Forecast",
+      "flag": "Flag"
+    },
+    "flow": {
+      "hint": "Signals feed specialisation streams → capacity outputs. Click a stream or the gap for Copilot actions.",
+      "channels": "Signals",
+      "streams": "Streams",
+      "outputs": "Outputs",
+      "current": "Current",
+      "forecast72": "Forecast 72h",
+      "fedBy": "Fed by {{channels}}"
+    },
+    "gap": {
+      "label": "Projected 72h capacity gap",
+      "card": "{{beds}} beds short in 72h",
+      "aria": "Beds needed within 72h",
+      "cta": "Resolve the 72h gap"
+    }
   }
 }
