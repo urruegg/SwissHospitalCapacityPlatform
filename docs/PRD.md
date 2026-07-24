@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.12.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.14.0 |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.11.0 (added NFR-EXT-EVID-001 + signals-fabric-evidence traceability row) |
+| **Previous Version** | 1.13.0 (added NFR-DEC-001 advisory/HITL guard for the Sprint 26 prescriptive decision layer) |
 
 ## Purpose
 
@@ -73,6 +73,7 @@ Swiss cantonal hospital provider deployment at a time.
 | `FR-FC-004` | Forecast outputs shall be published to operations-facing dashboards. |
 | `FR-FC-005` | Forecast outputs shall be available as grounding context for the bed management copilot. |
 | `FR-FC-006` | Forecast generation runs shall persist execution timestamps and model run identifiers for auditability. |
+| `FR-FC-007` | The Fabric Data Agent shall emit the `DC-INSIGHT-v1` `signal`, `understanding`, and `provenance` beats as the governed grounding contract that prescriptive copilots consume (drivers, source-trust, and confidence for a forecast breach). |
 
 ### D) Discharge Coordination Intelligence
 
@@ -219,6 +220,26 @@ org/skills ontology, does not replace it.
 | `FR-SKILL-008` | Express the **bed-vs-ops skill-demand split** on the semantic and ontology surface: bed side = Pflegepersonal / nursing, ops side = doctors and specialised teams. |
 | `FR-SKILL-ONT-001` | Extend the existing staff/person ontology view with the org spine, skill classes, and bed-vs-ops demand axis; keep `fact_skill_assertion` as the atomic unit and the proficiency (1-5) / assurance (L0-L4) axes and GLN golden thread unchanged (extend, don't replace). |
 
+### M) Prescriptive Decision & Coordination Intelligence (Sprint 26)
+
+Sprint 26 deltas (Slice 1, OOA -> DCA) formalised per the
+[Sprint 26 decision-ontology design spec](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md),
+the
+[Sprint 26 Slice 1 implementation plan](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md),
+and [ADR-0040](adr/0040-prescriptive-decision-ontology-and-runtime-store.md).
+Extends the descriptive `DC-INSIGHT-v1` grounding contract (`FR-FC-007`) with
+RECOMMENDATION, ACTION, and COORDINATION beats assembled at runtime by the
+agent-host. Advisory-only and human-in-the-loop throughout; the deterministic
+impact function replaces LLM-estimated expected impact; the runtime decision
+store (Cosmos `proposed_actions` + `plans`) is agent-host-mediated so OOA/DCA
+keep their `write` side-effect ceiling.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-DEC-001` | Prescriptive copilots shall assemble a RECOMMENDATION beat that ranks response levers from a governed lever catalog, where each lever's `expected_impact` is computed by a deterministic, forecast-grounded impact function (never an LLM estimate). |
+| `FR-DEC-002` | Prescriptive copilots shall assemble an ACTION beat that is advisory and human-in-the-loop: an action may be PROPOSED autonomously but is only APPLIED after a human posts the `approved-to-apply` confirmation; the agent shall refuse to self-approve or accept a bot approver. |
+| `FR-DEC-003` | Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%). |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -286,6 +307,7 @@ org/skills ontology, does not replace it.
 | `NFR-AI-003` | Forecast and discharge model outputs shall be traceable to model version and execution time. |
 | `NFR-AI-004` | User-facing AI responses and coordination triggers shall be auditable to source context. |
 | `NFR-AI-005` | AI-serving behavior shall support provider-local governance and change control. |
+| `NFR-DEC-001` | Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver. |
 
 ### G) Maintainability And Delivery
 
@@ -366,6 +388,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
 | [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
 | [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
+| [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) + [`docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`](adr/0040-prescriptive-decision-ontology-and-runtime-store.md) + [`docs/superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md`](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md) *(Sprint 26 Slice 1: DC-INSIGHT-v1 descriptive -> prescriptive extension, OOA -> DCA)* | `FR-FC-007`, `FR-DEC-001` to `FR-DEC-003`, `NFR-DEC-001` |
 
 ## Assumptions To Validate In Implementation Planning
 

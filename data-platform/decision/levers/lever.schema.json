@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lever.schema.json",
+  "title": "Lever Catalog Template (Sprint 26 WS-B)",
+  "description": "Schema for a single lever template in the git-owned, versioned lever catalog (data-platform/decision/levers/<role>.yaml), per design spec Sec 3.3 (docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md). A lever is a typed recommendation template dispatched by lever_id from the recommendation beat of the DC-INSIGHT-v1 contract (data/synthetic/schema/dc-insight-v1.schema.json); role and owner_role may differ to encode a cross-role handoff (e.g. OOA recommends, DCA owns). impact_formula_ref is the stable dispatch key the compute_expected_impact tool implements.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lever_id",
+    "role",
+    "title_i18n",
+    "preconditions",
+    "params_schema",
+    "impact_formula_ref",
+    "owner_role",
+    "hitl"
+  ],
+  "properties": {
+    "lever_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Lever catalog identifier, e.g. OOA-EXPEDITE-DISCHARGE."
+    },
+    "role": {
+      "type": "string",
+      "enum": ["ooa", "dca", "bmca", "orsa", "sba", "csa"],
+      "description": "Role that recommends this lever."
+    },
+    "title_i18n": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["de", "en", "fr", "it"],
+      "properties": {
+        "de": { "type": "string", "minLength": 1 },
+        "en": { "type": "string", "minLength": 1 },
+        "fr": { "type": "string", "minLength": 1 },
+        "it": { "type": "string", "minLength": 1 }
+      }
+    },
+    "description_i18n": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["de", "en", "fr", "it"],
+      "properties": {
+        "de": { "type": "string", "minLength": 1 },
+        "en": { "type": "string", "minLength": 1 },
+        "fr": { "type": "string", "minLength": 1 },
+        "it": { "type": "string", "minLength": 1 }
+      }
+    },
+    "preconditions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Human-readable conditions that must hold before this lever is recommendable, e.g. ward.occupancy_pct > threshold."
+    },
+    "params_schema": {
+      "type": "object",
+      "description": "Nested JSON-schema-ish fragment describing this lever's params. Intentionally left open (not additionalProperties:false) because it is itself a schema fragment, not catalog data."
+    },
+    "impact_formula_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable dispatch key the compute_expected_impact tool implements, e.g. expedite_discharge_beds."
+    },
+    "owner_role": {
+      "type": "string",
+      "enum": ["ooa", "dca", "bmca", "orsa", "sba", "csa"],
+      "description": "Role responsible for executing this lever once approved; may differ from role to encode a cross-role handoff."
+    },
+    "hitl": {
+      "type": "boolean",
+      "enum": [true],
+      "description": "Always true: every lever requires human-in-the-loop approval before execution."
+    }
+  }
+}
