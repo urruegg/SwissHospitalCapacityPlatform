@@ -461,8 +461,12 @@ module aiMlFoundation './modules/ai-ml-foundation/main.bicep' = if (enableAiMlFo
     location: location
     nameSuffix: resourceSuffix
     tags: tags
+    // Pass the actual KV + ACR names so the ML workspace resolves them under
+    // environments that use override names / disable api-runtime (PROD swn).
+    // Empty falls back to the derived SIT names inside the module.
+    keyVaultName: platformFoundation.outputs.keyVaultName
+    containerRegistryName: empty(simCapacityContainerRegistryResourceId) ? '' : last(split(simCapacityContainerRegistryResourceId, '/'))
   }
-  // 2026-07-14 — force serial ordering after platform-foundation to avoid the
   // Key Vault parallel-operation race. This module resolves the KV via
   // `existing` (matched name), so Bicep cannot infer an implicit dependency;
   // without dependsOn, ARM may re-apply both modules concurrently and hit
