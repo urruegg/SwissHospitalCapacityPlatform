@@ -4,17 +4,42 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.1 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | Draft |
-| **Previous Version** | 1.0.0 (ADR-0039→0040 Task A3 retarget) |
+| **Status** | In progress (paused end-of-day 2026-07-24) |
+| **Previous Version** | 1.0.1 (ADR-0039→0040 Task A3 retarget) |
 
 **Goal:** Close every remaining SIT↔PROD gap so the two environments are provably at parity end-to-end, produce evidence at all levels (IaC, network, data, AI/agents, app, DNS/TLS, governance), and refresh the Curavias product documentation to reflect the live PROD-deployed (Switzerland North) status with a full requirements-traceability view (covered / open / not-relevant-per-ADR).
 
 **Architecture:** PROD was rebuilt greenfield in `switzerlandnorth` ([ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md)); SIT stays split `westus2`/`eastus2` ([ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md)). Both run synthetic data only, no PHI ([ADR-0016](../../adr/0016-no-phi-in-mvp-demo-scope.md)). This extension does **not** rebuild anything — it (a) reconciles governance to the three confirmed facts, (b) executes the one open infrastructure parity item (network hardening, [ADR-0039](../../adr/0039-prod-network-parity-vnet-private-endpoints.md)), (c) brings out-of-band resources under IaC, (d) captures an evidence-backed parity matrix on all levels, and (e) rewrites the product docs + traceability from the deployed reality.
 
 **Tech Stack:** Bicep (`az bicep build` / `what-if`), `az` CLI, Fabric REST, `gh` CLI, GitHub Actions (`cd-infra-deploy-*`, `ci-infra-validate`), Markdown docs governed by §9 versioning + `document-authoring` skill.
+
+---
+
+## Session status — paused end-of-day 2026-07-24
+
+> **Checkpoint:** The **core deliverable (SIT↔PROD end-to-end deploy + all-levels validation) is DONE and verified** — every level PASS. Remaining work is documentation refresh + close-out. Safe to resume from Phase G.
+>
+> Branch: `sprint-19/harden-signal-runner-identity` (4 commits this session, **not pushed**). All Azure actions applied under `@urruegg` `approved-to-apply`.
+
+**Done this session (evidence-backed):**
+
+- ✅ **Data/AI/integration-lane parity deploy** to `rg-ihzhhpf-prod` (switzerlandnorth) — sliced, additive (0 deletes), `Succeeded`. Substrate verified: ML workspace, ADLS masterdata, `sim-capacity` CA, 4 skills-sim jobs + 4 managed environments, Fabric F2, Logic App, 8 UAMIs.
+- ✅ **Two deploy-blocking Bicep bugs fixed + verified** — (1) ML-workspace KV/ACR override wiring (`e72ec67`); (2) `sim-capacity` Event Hubs Data Sender role via `eventHubsSimulatorMiPrincipalId` (`a402c35`) — logs confirm clean EH AMQP send, no auth errors.
+- ✅ **Phase 5 (Foundry)** verified complete — project + 3 models + 8 agents + RBAC at parity.
+- ✅ **Phase 6 (Fabric)** verified complete — `ws-ihzhhpf-prod-data`, schema-enabled lakehouse, 50 Delta tables, 2 semantic models + report.
+- ✅ **Live E2E verification** — Fabric / Foundry (live `gpt-5-mini` inference OK) / Experience (`app.curavias.ch` 200 + TLS) / agent-host (7 agents) / compute — **all levels PASS**.
+- ✅ **Phase D — Fabric IQ ontology (#270)** re-probed on the **new swn** workspace `1c8408f4-…` / capacity `59f0cacf-…`: still **`403 FeatureNotAvailable`** (requestId `9b3676c1-…`). Recorded as **availability-blocked (Microsoft-side Preview gate) per ADR-0042** — not a policy exclusion. `docs/operations/mcaps-ticket-fabric-iq-ontology-capacity-gate.md` bumped to v1.1.0 with the corrected swn coordinates. **N/A for GA parity.**
+
+**Remaining (resume here):**
+
+- ⏳ **Phase G — Curavias product docs + traceability** (`docs/CURAVIAS-PRODUCT-STATUS.md` + refresh `docs/*` to as-deployed swn reality + PRD §Traceability Covered/Open/N-A-per-ADR).
+- ⏳ **Phase H — Close-out** — update `prod-evidence-switzerlandnorth.md` DoD; flip parity-matrix data-lane row 🟥→✅ (new tally); PR contract; close #239 (keep #270 open as N/A-parity; #275 rescoped/deferred).
+- ⏳ **Follow-ups:** rescope #275 off deleted `prod-eastus2.bicepparam` (D6); backport `eventHubsSimulatorMiPrincipalId` to SIT (latent shared gap).
+
+**Commits this session (local, unpushed):** `dcf21af` (stage data-lane parity flags) · `988c479` (skills-sim placeholder image parity) · `e72ec67` (ML KV/ACR override fix) · `a402c35` (sim-capacity EH Data Sender) · plus the pending Phase D doc edit.
 
 ---
 
@@ -208,8 +233,8 @@ Expected: no unintended deletes; CSA Cosmos + ACR recognised as existing (no rec
 
 ### Phase D — Fabric IQ ontology disposition (#270) — D3
 
-- [ ] **Step 1:** Re-probe `POST …/items {type:"Ontology"}` on the swn PROD capacity to confirm the `403 FeatureNotAvailable` still holds; record DataAgent/GraphModel control probes.
-- [ ] **Step 2:** Record the disposition in `#270` and the parity matrix: **"open — not-relevant to GA parity per ADR-0006 (Preview, Microsoft-side per-capacity gate); SIT remains the live IQ seam."**
+- [x] **Step 1:** Re-probe `POST …/items {type:"Ontology"}` on the swn PROD capacity to confirm the `403 FeatureNotAvailable` still holds; record DataAgent/GraphModel control probes. — **DONE 2026-07-24**: swn workspace `1c8408f4-…`, capacity `59f0cacf-…` → `403 FeatureNotAvailable` (requestId `9b3676c1-…`).
+- [x] **Step 2:** Record the disposition in `#270` and the parity matrix: **"open — not-relevant to GA parity per ADR-0006 (Preview, Microsoft-side per-capacity gate); SIT remains the live IQ seam."** — **DONE**: `docs/operations/mcaps-ticket-fabric-iq-ontology-capacity-gate.md` v1.1.0.
 - [ ] **Step 3:** Add a revisit trigger to ADR-0037 §Revisit (already present) — confirm it links #270.
 - [ ] **Step 4: Commit** `docs: record PROD Fabric IQ ontology as Preview-gated (N/A for GA parity) (#270)`
 
