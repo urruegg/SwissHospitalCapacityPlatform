@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | Draft |
-| **Previous Version** | — (new) |
+| **Status** | Delivered (merged) — e2e hotfix in review (PR #355); SIT deploy pending |
+| **Previous Version** | 1.0.0 (initial plan, Draft) |
 | **Target app** | `apps/hcc-app-fluent` |
 | **Branch** | `sprint-20/full-parity` |
 | **Grounded in** | [findings](../specs/2026-07-23-curavias-app-parity-findings.md) · [review-outcome](../specs/2026-07-23-curavias-app-parity-review-outcome.md) · [design spec](../specs/2026-07-21-curavias-app-prototype-parity-design.md) (Approved) |
@@ -244,3 +244,67 @@ Restore the **Story tab** parity content and add provenance stamps.
 
 Tracked in the session SQL `todos` table (ids: `s2-dca`, `s2-bmca`, `s3-orsa`,
 `s3-sba`, `s4-csa`, `s5-start`, `s6-backstage`, `x1-theme`, `x2-a11y`).
+
+---
+
+## Delivery status (as executed) — 2026-07-24
+
+### What shipped
+
+| Phase | Task | Status | Evidence |
+|-------|------|--------|----------|
+| S2 | DCA discharge board | ✅ Done | PR #352 (`80de85e`) |
+| S2 | BMCA bed-manager consolidation (Power BI + eventstream preserved) | ✅ Done | PR #352 |
+| S3 | ORSA OR-steering board | ✅ Done | PR #352 |
+| S3 | SBA staffing board (residual ring → 0) | ✅ Done | PR #352 |
+| S4 | CSA crisis board (signal → scenario → probability, HITL Run) | ✅ Done | PR #352 |
+| S5 | START executive surface (BVA tiles, capacity teaser, why-now, patient-path) | ✅ Done | PR #352 (`2f05f93`) |
+| S6 | BACKSTAGE Story-tab parity + provenance stamps (Tier-1) | ✅ Done | PR #352 (`04035b9`) |
+| X1 | Curavias theme sweep + inline-docked rail | ✅ Done (rail already inline-docked; teal theme pre-existing; `routing-purple` token **deferred** — handoffs already distinguished via MessageBar + loop icon + provenance badge) | PR #352 (`be56d0c`) |
+| X2 | a11y + e2e gates | ✅ Done (Space-key `preventDefault()` fixed on all 4 tables; axe green on 5 surfaces) | PR #352 (`be56d0c`) |
+
+**PR #352** — `feat(hcc-app-fluent): Sprint 20 full screen parity (…)` — **MERGED**
+to `main` at `80de85e` (2026-07-24T03:59:48Z). All S2–S6 + X1–X2 boards delivered.
+
+### Regression found + fixed (post-merge)
+
+The #352 merge turned `main` **red on `app-e2e`** — this gate was never run locally
+during the sprint (only vitest + `npm run build`), so the failure slipped through.
+Three root causes, all fixed in **PR #355** (`sprint-20/fix-e2e-testid`, **open, not
+self-merged**):
+
+1. **Strict-mode testid collision** — `MainView` wrapped `<BedManagerBoard/>` in a
+   `data-testid="board-bed-manager"` div while the board `<section>` reuses the same
+   id → `getByTestId('board-bed-manager')` matched 2 elements. Wrapper renamed to
+   `board-bed-manager-slot` (the established `-slot` pattern). The **latent crisis
+   duplicate** (`CsaView` conditional panel vs. `MainView` `board-crisis` wrapper)
+   fixed the same way: panel → `board-crisis-panel`.
+2. **Stale `smoke.spec.ts`** — asserted the removed whiteboard `data-card-type`
+   cards; rewritten to the new bmca surface (board root + Power BI embed + worklist).
+3. **Stale `copilot-drawer-bmca.spec.ts`** — clicked the removed per-board "BMCA
+   fragen" drawer; rewritten to open the inline-docked `AgentPlane` and assert the
+   grounded `HITL-02` reply + `gold.` citations.
+
+Validation after fix: **13/13 Playwright e2e pass** (was 11/2); **394 unit pass**
+(the 4 failing `router.test.tsx`×3 + `shell.test.tsx`×1 are pre-existing jsdom/undici
+env failures, unchanged); `tsc` clean.
+
+### SIT deployment status — NOT yet showing full parity
+
+- `appsit.curavias.ch` serves bundle **`index-JxSB0PJl.js`** = image
+  **`hcc-app-fluent:cb21e2c`** (the **OOA-only** parity slice from PR #315,
+  2026-07-23). Pinned in `infra/environments/sit.bicepparam:179`.
+- The full-parity work (PR #352, `80de85e`) is **merged to `main` but NOT deployed
+  to SIT** — the `appFluentImage` tag has not been bumped past `cb21e2c`.
+- **SIT deploy is a deliberate manual, human-gated step** (per
+  `sit.bicepparam:170-171`): `ci-build-app-fluent.yml` pushes a new image tag to
+  ACR → bump `appFluentImage` in `sit.bicepparam` → run `cd-infra-deploy-sit.yml`.
+  There is **no CI workflow that auto-deploys the Fluent app** to SIT.
+
+## Next steps (sprint close-out)
+
+1. **Merge PR #355** to make `main` green on `app-e2e` (do not self-merge — awaiting review/approval).
+2. **Build + push** a new `hcc-app-fluent` image from the post-#355 `main` commit via `ci-build-app-fluent.yml`.
+3. **Bump `appFluentImage`** in `infra/environments/sit.bicepparam` to the new tag and run `cd-infra-deploy-sit.yml` (human-gated Azure deploy).
+4. **Validate SIT parity** at `appsit.curavias.ch/main` — confirm the new bundle hash + walk the 6 boards + START + BACKSTAGE against the prototype baseline (Playwright against the live SIT URL).
+5. **Deferred / follow-up** (not blockers): `routing-purple` cross-agent handoff token (X1); BACKSTAGE Tier-2 live reads (Azure Resource Graph + GitHub API) per review-outcome §10; consider adding a lightweight `app-e2e` pre-merge gate reminder so the Playwright suite is run locally before future app PRs.

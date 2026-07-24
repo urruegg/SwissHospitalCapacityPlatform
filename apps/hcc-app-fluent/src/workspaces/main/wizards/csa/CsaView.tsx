@@ -118,7 +118,7 @@ function CrisisRoleBoardBlock() {
   };
 
   return (
-    <div className={styles.panel} data-testid="board-crisis">
+    <div className={styles.panel} data-testid="board-crisis-panel">
       <HandoffBanner banner={banner} provenance={data.provenance} />
       <BoardHeader
         agent={crisisBoard.agent}
