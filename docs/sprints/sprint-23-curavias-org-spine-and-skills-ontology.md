@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion landed clean (org/skills + capacity + eventstream gold, no real names, no H_HSL orphan)**; PROD deploy + ADR-0039 acceptance pending |
-| **Previous Version** | 1.2.0 (T11-T14 refactor scope + DoD reconciliation) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion landed clean (org/skills + capacity + eventstream gold, no real names, no H_HSL orphan)**; **ADR-0039 Accepted (approved to proceed)**; **PROD parity prep done (T11/T13 flags enabled in `prod-swn.bicepparam`, `what-if` clean — 10 additive Creates, 0 deletes)**; PROD apply `approved-to-apply`-gated |
+| **Previous Version** | 1.4.0 (ADR-0039 Accepted) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -91,13 +91,29 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 * [x] Semantic model extended (skills measures); `verify-semantic-model.yml` re-baselined + green (#339/#341; verifier 35 rel / 69 measures / 8 roles)
 * [x] Ontology + crosswalk + conformance gate extended and green (#344; conformance strict PASS, 0 WARN / 0 FAIL)
 * [x] Fabric IQ `ont_hospital_capacity` + Data Agent grounding cover the org/skills domain — *repo grounding landed (#344, `fabric-data-agent/AGENT.md` 1.1.0); live Fabric IQ ontology regeneration is GA-gated per ADR-0014*
-* [ ] New ADR (unified org spine) Accepted; PRD FR/NFR rows + §7 matrix updated — *ADR-0039 authored (#319, status **Proposed**) + PRD `FR-ORG` / `FR-SKILL` / `NFR-SKILL` rows + §7 matrix (#320); **ADR acceptance pending human sign-off***
+* [x] New ADR (unified org spine) Accepted; PRD FR/NFR rows + §7 matrix updated — *ADR-0039 **Accepted** 2026-07-24 (approved by @urruegg, "approved to proceed") + PRD `FR-ORG` / `FR-SKILL` / `NFR-SKILL` rows + §7 matrix (#320)*
 * [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed — *live deploy **deferred** (Container Apps → Event Hub/Eventstream, not GitHub workflows); all PR merges to date human-performed*
 * [x] All CI checks pass — *re-verified 2026-07-23: ontology conformance, master-data (13), skills-evidence (21), gold-build (28), gold-contract (5), semantic verifier, mojibake (1154 files), markdownlint*
 
 ---
 
 ## 6. Status log
+
+### 2026-07-24 — PROD org/skills parity prep (T11/T13 flags + `what-if` clean)
+
+* **Goal:** close the last open DoD item — "SIT + PROD deployed identically" — for the Sprint 23 org/skills landing surface. **PROD platform/infra is owned by Sprint 19** (switzerlandnorth greenfield rebuild, ADR-0037, 2026-07-23); that rebuild predates this sprint's org/skills spine, so PROD still runs the pre-org/skills gold. This delta is Sprint 23's to close.
+* **Change (non-destructive prep):** enabled the three Sprint 23 module flags in [`infra/environments/prod-swn.bicepparam`](../../infra/environments/prod-swn.bicepparam) to mirror `sit.bicepparam` — `enableMasterdataLandingModule`, `enableSkillsSimJobsModule`, `enableSkillsEventstreamModule` = `true`, plus `simCapacityLocation = 'switzerlandnorth'` (single-region PROD; SIT uses westus2). Fabric destination IDs stay empty (scaffold, mirrors SIT); the sim-jobs image is the same public placeholder as SIT (no PROD ACR dependency).
+* **Evidence:** `az bicep build` clean (pre-existing warnings only); `az deployment group what-if -g rg-ihzhhpf-prod -f infra/main.bicep -p prod-swn.bicepparam` **Succeeded** — **0 deletes**, 10 additive Creates that map exactly to the enabled modules:
+  * `stmasterdataihzhhpfprod` + `blobServices/default` + `containers/landing` (T11 landing zone)
+  * `cae-skills-sim-ihzhhpf-prod` + jobs `caj-sk-{lms,sf,skm,wid}-ihzhhpf-prod` + `id-skills-sim-ihzhhpf-prod` UAMI + role assignment (T13 sim-jobs)
+  * skills-eventstream is scaffold-only (REST post-deploy; no ARM resource — consistent with the empty Fabric IDs)
+  * The other 31 `Modify` entries are pre-existing PROD drift (agent-host, cosmos, network, KV PE) unrelated to this change; the 2 `Unsupported` are what-if lambda-expression limitations on computed role-assignment names.
+* **SIT baseline confirmed deployed** (`rg-ihzhhpf-sit`): `stmasterdataihzhhpfsit`, `cae-skills-sim-ihzhhpf-sit`, `id-skills-sim-ihzhhpf-sit` present.
+* **Gate:** PROD apply is **`approved-to-apply`-gated** (AGENTS.md §4). Next steps after apply: replay the org/skills medallion to PROD (prune H_HSL, verify 0 real names via OneLake Delta), publish rebaselined semantic model + report, then e2e-test SIT + PROD.
+
+### 2026-07-24 — ADR-0039 accepted (approved to proceed)
+
+* **ADR-0039 moved Proposed → Accepted** — `docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md`, approved by @urruegg ("approved to proceed"). Closes the last governance DoD gate; the only remaining open DoD item is the live PROD deploy (Container Apps → Event Hub/Eventstream, `approved-to-apply` gated).
 
 ### 2026-07-24 — Live SIT medallion proven clean + H_HSL orphan fixed (break checkpoint)
 
@@ -121,7 +137,7 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 
 **Next steps (starting point after the break).**
 
-1. **ADR-0039 acceptance** — `docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md` is still **Proposed**; needs human sign-off to move to Accepted (DoD item + closes the last governance gap).
+1. **ADR-0039 acceptance** — **Done** (2026-07-24): moved Proposed → Accepted, approved by @urruegg. Governance DoD gate closed.
 2. **PROD deploy** — replay the same medallion against PROD once SIT is signed off (Container Apps → Event Hub/Eventstream for ingestion, not GitHub workflows; `approved-to-apply` gated).
 3. **SQL analytics endpoint** — confirm the SIT SQL endpoint has caught up with the new Delta tables (it lags async), so Direct-Lake / report consumers see the rebranded, orphan-free gold.
 4. **Downstream re-baseline check** — re-validate the semantic-model measures + report visuals against the freshly-landed org/skills gold (row counts shifted after the prune).

@@ -18,6 +18,7 @@ on:
       - 'docs/bom.yaml'
       - 'docs/region-availability.yaml'
       - 'docs/adr-requirement-map.yaml'
+      - 'apps/hcc-app-fluent/src/data/evidence/evidence-demo.json'
       - '.github/workflows/evidence-publish.yml'
   push:
     branches: [main]
@@ -29,6 +30,7 @@ on:
       - 'docs/bom.yaml'
       - 'docs/region-availability.yaml'
       - 'docs/adr-requirement-map.yaml'
+      - 'apps/hcc-app-fluent/src/data/evidence/evidence-demo.json'
       - 'infra/**'
       - '.github/workflows/evidence-publish.yml'
   workflow_dispatch:
