@@ -109,11 +109,14 @@ class TestFormulaRegistry(unittest.TestCase):
         self.assertEqual(result["metric"], "beds")
         self.assertEqual(result["delta"], 3)
 
-    def test_expedite_discharge_beds_capped_by_gap(self):
+    def test_expedite_discharge_beds_exceeds_over_capacity_gap_but_not_clipped(self):
+        # Requested n (20) exceeds the over-capacity gap (116 - 100 = 16), but the
+        # grounding rule no longer clips at the gap: it only clips at physically
+        # occupied beds (116), so delta == n here.
         gold = _gold()
         params = {"n": 20, "before": "08:00", "ward": "hcp:Ward/Medicine A"}
         result = expedite_discharge_beds(params, gold)
-        self.assertEqual(result["delta"], 16)
+        self.assertEqual(result["delta"], 20)
 
     def test_unblock_barrier_beds_within_gap(self):
         gold = _gold()
@@ -122,11 +125,33 @@ class TestFormulaRegistry(unittest.TestCase):
         self.assertEqual(result["metric"], "beds")
         self.assertEqual(result["delta"], 4)
 
-    def test_unblock_barrier_beds_capped_by_gap(self):
+    def test_unblock_barrier_beds_capped_by_physically_occupied_beds(self):
+        # n (50) is still below the physically-occupied cap (116), so delta == n.
         gold = _gold()
         params = {"barrier_type": "transport", "n": 50, "ward": "hcp:Ward/Medicine A"}
         result = unblock_barrier_beds(params, gold)
-        self.assertEqual(result["delta"], 16)
+        self.assertEqual(result["delta"], 50)
+
+    def test_unblock_barrier_beds_capped_when_n_exceeds_occupied_beds(self):
+        # n (200) exceeds the physically-occupied beds (116): the physical cap
+        # still binds, so delta == occupied beds, not n.
+        gold = _gold()
+        params = {"barrier_type": "transport", "n": 200, "ward": "hcp:Ward/Medicine A"}
+        result = unblock_barrier_beds(params, gold)
+        self.assertEqual(result["delta"], 116)
+
+    def test_expedite_discharge_beds_headline_case_below_100_percent(self):
+        # Regression guard for the Sprint-26 golden-thread headline: a ward at
+        # ~102% occupancy (bedCapacity=75, forecastOccupiedBeds=76) can now
+        # recover the full requested n=6 beds (previously clipped to the
+        # over-capacity gap of 1), enabling occupancy to drop below 100%.
+        row = dict(MEDICINE_A_FORECAST_ROW)
+        row["bedCapacity"] = 75
+        row["forecastOccupiedBeds"] = 76
+        gold = _gold(forecast_rows=[row], driver_rows=[])
+        params = {"n": 6, "before": "08:00", "ward": "hcp:Ward/Medicine A"}
+        result = expedite_discharge_beds(params, gold)
+        self.assertEqual(result["delta"], 6)
 
     def test_determinism_expedite(self):
         gold = _gold()

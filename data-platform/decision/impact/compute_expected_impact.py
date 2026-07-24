@@ -20,10 +20,16 @@ Two layers:
    ``lever_id`` / ``owner_role`` in the result so callers know the HITL
    handoff target.
 
-**Grounding rule (identical across all three formulas):** the impact is bounded
-by the actual forecast bed gap — a lever cannot recover more beds than the ward
-is short. ``bed_gap = max(0, round(forecastOccupiedBeds - bedCapacity))`` for
-the matched forecast row; ``delta = min(int(params["n"]), bed_gap)``.
+**Grounding rule (identical across all three formulas):** the impact is the
+requested ``n``, bounded only by the number of beds that are physically
+occupied in the matched forecast row — a lever cannot recover more beds than
+are actually occupied. ``delta = min(int(params["n"]), round(forecastOccupiedBeds))``
+for the deterministically-selected forecast row. This bound is **not** capped
+at the ward's over-capacity gap (``forecastOccupiedBeds - bedCapacity``), so an
+approved lever can legitimately move a ward from over-capacity down to
+below-100% occupancy. No randomness, never an LLM estimate: the delta and its
+assumptions are a pure, deterministic function of the injected gold forecast
+row.
 """
 from __future__ import annotations
 
@@ -114,7 +120,8 @@ def _bounded_bed_impact(
     params: Dict[str, Any], gold: Dict[str, Any], extra_assumptions: Optional[List[str]] = None
 ) -> Dict[str, Any]:
     """Shared grounding calculation used by all three formulas: bound the
-    requested ``n`` by the ward's actual forecast bed gap."""
+    requested ``n`` by the number of beds physically occupied in the matched
+    forecast row (not by the over-capacity gap — see module docstring)."""
     n = _require_positive_int(params, "n")
     row = _select_forecast_row(params, gold)
 
@@ -123,14 +130,15 @@ def _bounded_bed_impact(
     bed_capacity = _require_numeric_row_field(row, "bedCapacity", ward, horizon_h)
     forecast_occupied = _require_numeric_row_field(row, "forecastOccupiedBeds", ward, horizon_h)
     bed_gap = max(0, round(forecast_occupied - bed_capacity))
-    delta = min(n, bed_gap)
+    available = max(0, round(forecast_occupied))
+    delta = min(n, available)
 
     assumptions = [
         f"ward={ward}",
         f"horizon_h={horizon_h}",
         f"forecast_bed_gap={bed_gap}",
         f"requested_n={n}",
-        f"delta=min(n, bed_gap)={delta}",
+        f"delta=min(n, occupied_beds)={delta}",
     ]
     assumptions.extend(_driver_context_assumptions(params, gold, ward, horizon_h))
     if extra_assumptions:
@@ -144,21 +152,21 @@ def _bounded_bed_impact(
 # ---------------------------------------------------------------------------
 def expedite_discharge_beds(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[str, Any]:
     """OOA-EXPEDITE-DISCHARGE: expedite N discharge-ready patients before a
-    given time. Grounded by the ward's forecast bed gap (see module docstring)."""
+    given time. Grounded by the ward's physically occupied beds (see module docstring)."""
     before = _require_present(params, "before")
     return _bounded_bed_impact(params, gold, extra_assumptions=[f"before={before}"])
 
 
 def divert_low_acuity_beds(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[str, Any]:
     """OOA-DIVERT-LOW-ACUITY: divert N low-acuity patients to another ward.
-    Grounded by the ward's forecast bed gap (see module docstring)."""
+    Grounded by the ward's physically occupied beds (see module docstring)."""
     to_ward = _require_present(params, "to_ward")
     return _bounded_bed_impact(params, gold, extra_assumptions=[f"to_ward={to_ward}"])
 
 
 def unblock_barrier_beds(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[str, Any]:
     """DCA-UNBLOCK-BARRIER: resolve N cases of a given discharge-barrier type.
-    Grounded by the ward's forecast bed gap (see module docstring)."""
+    Grounded by the ward's physically occupied beds (see module docstring)."""
     barrier_type = _require_present(params, "barrier_type")
     return _bounded_bed_impact(params, gold, extra_assumptions=[f"barrier_type={barrier_type}"])
 
