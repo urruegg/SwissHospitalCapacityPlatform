@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, makeStyles, tokens } from '@fluentui/react-components';
+import { space, radii, elevation } from '../../../../theme/design-system';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
 import type { OccupancyPayload } from '../../../../data/roleboard/occupancy-data';
 import { occupancyBoard } from './occupancy-board';
@@ -16,7 +17,13 @@ import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
 
 const useStyles = makeStyles({
-  root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalL },
+  root: { display: 'flex', flexDirection: 'column', gap: space.l, padding: space.l },
+  panel: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: radii.card,
+    boxShadow: elevation.card,
+    padding: space.l,
+  },
 });
 
 /** Sprint 20 (parity) — Occupancy (ooa) surface: BoardHeader + WardForecastTable + CapacityFlowDiagram. */
@@ -63,17 +70,21 @@ export function OccupancyBoard() {
     <section className={s.root} data-testid="board-occupancy" aria-label={t('board.occupancy')}>
       <HandoffBanner banner={banner} provenance={data.provenance} />
       <BoardHeader agent={occupancyBoard.agent} title={t('board.occupancy')} provenance={data.provenance} lens="Bed Ops" />
-      <WardForecastTable
-        wards={payload.wards}
-        onSelectWard={(w) => route({ id: w.recoId, label: w.label, context: { channel: w.id, occupancyPct: w.forecastPct } })}
-      />
-      <CapacityFlowDiagram
-        channels={payload.channels}
-        streams={payload.streams}
-        capacity={payload.capacity}
-        onSelectStream={(st) => route({ id: st.recoId, label: st.label, context: { stream: st.id, level: st.levelLabel } })}
-        onSelectGap={() => route({ id: 'site-gap', label: t('ooa.gap.label'), context: { gapBeds: payload.capacity.gapBeds } })}
-      />
+      <div className={s.panel}>
+        <WardForecastTable
+          wards={payload.wards}
+          onSelectWard={(w) => route({ id: w.recoId, label: w.label, context: { channel: w.id, occupancyPct: w.forecastPct } })}
+        />
+      </div>
+      <div className={s.panel}>
+        <CapacityFlowDiagram
+          channels={payload.channels}
+          streams={payload.streams}
+          capacity={payload.capacity}
+          onSelectStream={(st) => route({ id: st.recoId, label: st.label, context: { stream: st.id, level: st.levelLabel } })}
+          onSelectGap={() => route({ id: 'site-gap', label: t('ooa.gap.label'), context: { gapBeds: payload.capacity.gapBeds } })}
+        />
+      </div>
     </section>
   );
 }
