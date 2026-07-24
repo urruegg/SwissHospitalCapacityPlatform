@@ -59,7 +59,7 @@ later run.
 
 ## File structure (new unless noted)
 
-```
+```text
 data/synthetic/schema/dc-insight-v1.schema.json
 data-platform/decision/levers/lever.schema.json
 data-platform/decision/levers/{ooa,dca,bmca,orsa,sba,csa}.yaml
