@@ -154,7 +154,9 @@ param enableMasterdataLandingModule = true
 param masterdataLandingPipelinePrincipalId = ''
 param masterdataLandingLogAnalyticsWorkspaceId = ''
 param enableSkillsSimJobsModule = true
-param skillsSimJobsImage = 'crihzhhpfprod.azurecr.io/skills-sim-jobs:latest'
+// SIT-parity: SIT uses the public placeholder (real skills-sim image deferred to
+// issue #181); PROD mirrors SIT exactly so both bump together when #181 lands.
+param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 // sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
 param enableSimCapacityModule = true
 param simCapacityLocation = 'switzerlandnorth'
