@@ -2,8 +2,8 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Status** | Proposed |
-| **Date** | 2026-07-02 |
+| **Status** | Accepted |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rüegg |
 | **Supersedes (scoped)** | [ADR-0003](0003-swiss-regional-inference-for-phi.md) and [ADR-0004](0004-block-global-and-data-zone-for-phi.md) — **for the specific scope defined below only; both ADRs remain in force for all other environments and any future PHI deployment.** |
 
@@ -18,6 +18,10 @@ The new tenant `1337187a-4c41-4da9-8fca-731bba7a4329` (`MngEnvMCAP164444.onmicro
 ## Decision
 
 For the **new-tenant demo scope only**, deploy Azure resources in **`westus2`** to unblock validation of services that are not yet GA in `switzerlandnorth`.
+
+**Promoted Proposed→Accepted 2026-07-24** on OWNER confirmation (F3 synthetic-only US scope; F4 SIT cross-region access permitted).
+
+SIT in `westus2` / `eastus2` is acceptable under the synthetic-only scope (F3), and cross-region access within the US SIT footprint is explicitly permitted because the data is synthetic (F4). This is a deliberate SIT↔PROD asymmetry: PROD in Switzerland North per [ADR-0037](0037-prod-greenfield-switzerland-north.md) is single-region with no cross-region hop, whereas SIT tolerates cross-region access for capability coverage.
 
 Scope boundary (all four conditions must hold; violating any one auto-invalidates the exception):
 
