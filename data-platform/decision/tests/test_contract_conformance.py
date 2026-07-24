@@ -21,6 +21,7 @@ FIXTURES_DIR = pathlib.Path(__file__).resolve().parent / "fixtures"
 
 VALID_FIXTURE = FIXTURES_DIR / "dc-insight-v1.valid.json"
 INVALID_FIXTURE = FIXTURES_DIR / "dc-insight-v1.invalid-missing-provenance.json"
+INVALID_BAD_SOURCE_TRUST_FIXTURE = FIXTURES_DIR / "dc-insight-v1.invalid-bad-source-trust.json"
 
 
 def _load_json(path: pathlib.Path) -> dict:
@@ -81,6 +82,20 @@ class TestDcInsightV1ContractConformance(unittest.TestCase):
         self.assertTrue(errors)
         self.assertTrue(any("provenance" in e for e in errors))
 
+    def test_invalid_fixture_bad_source_trust_is_reported(self):
+        doc = _load_json(INVALID_BAD_SOURCE_TRUST_FIXTURE)
+        errors = _structural_validate(doc, self.schema)
+        self.assertTrue(errors)
+        self.assertTrue(any("source_trust" in e for e in errors))
+
+    def test_empty_concepts_is_rejected_by_structural_validate(self):
+        doc = _load_json(VALID_FIXTURE)
+        doc = json.loads(json.dumps(doc))  # deep copy
+        doc["provenance"]["concepts"] = []
+        errors = _structural_validate(doc, self.schema)
+        self.assertTrue(errors)
+        self.assertTrue(any("concepts" in e for e in errors))
+
     def test_valid_fixture_validates_against_jsonschema_if_available(self):
         try:
             import jsonschema
@@ -95,6 +110,16 @@ class TestDcInsightV1ContractConformance(unittest.TestCase):
             self.skipTest("jsonschema not installed")
         with self.assertRaises(jsonschema.exceptions.ValidationError):
             jsonschema.validate(instance=_load_json(INVALID_FIXTURE), schema=self.schema)
+
+    def test_invalid_bad_source_trust_fixture_fails_jsonschema_validation_if_available(self):
+        try:
+            import jsonschema
+        except ImportError:
+            self.skipTest("jsonschema not installed")
+        with self.assertRaises(jsonschema.exceptions.ValidationError):
+            jsonschema.validate(
+                instance=_load_json(INVALID_BAD_SOURCE_TRUST_FIXTURE), schema=self.schema
+            )
 
 
 if __name__ == "__main__":

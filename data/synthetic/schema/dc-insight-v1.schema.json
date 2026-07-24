@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://curavias/schema/dc-insight-v1",
+  "$id": "dc-insight-v1.schema.json",
   "title": "Actionable-Insight Contract (DC-INSIGHT-v1)",
   "description": "Sprint 26 WS-D consumption contract for the 5-beat actionable-insight tuple (design spec Sec 3.1, docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md). A grounded copilot answer is a signal + understanding + recommendation + action + coordination + provenance tuple, not a free-form sentence. Unlike the dc-*-v1 dataset envelopes in this folder, this contract describes a single answer instance (not a {records:[...]} collection): the top level IS the six beats. The Fabric Data Agent (da_hospital_capacity) emits the signal, understanding, and provenance beats; the agent-host assembles the recommendation, action, and coordination beats at runtime. No PHI by construction: provenance.concepts reference only hcp:* reference-layer concepts (ward/bed aggregates), never patient identifiers. See docs/ontology/reference-layer.ttl and docs/ontology/crosswalk.md.",
   "type": "object",
