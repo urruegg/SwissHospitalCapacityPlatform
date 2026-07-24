@@ -148,3 +148,23 @@ param enableAiMlFoundationModule = false
 param enableIntegrationModule = true
 param enableIntegrationOrchestrationModule = false
 param enableSourceSqlModule = false
+
+// --- Sprint 23 (#255) — Curavias org/skills refactor: SIT→PROD parity ---
+// Brings PROD to SIT parity for the org/skills medallion landing surface
+// (ADR-0039). Mirrors sit.bicepparam module selection:
+//   * masterdata-landing (WS-A1): ADLS Gen2 `stmasterdataihzhhpfprod` + `landing`
+//     container + OneLake-shortcut runbook. Region-safe, self-contained.
+//   * skills-sim-jobs (WS-A3): manual-trigger Container Apps Jobs writing synthetic
+//     extracts to the landing zone via a UAMI; creates its OWN CAE
+//     (cae-skills-sim-ihzhhpf-prod), so it does NOT depend on the lean-PROD
+//     experience-hosting exclusion. Placeholder public image (same as SIT) — no
+//     PROD ACR image dependency.
+//   * skills-eventstream (WS-A4): scaffold-only Bicep; requires the EH source
+//     (enableDataFoundationModule=true above). Fabric destination IDs stay empty
+//     (mirrors SIT) — the Eventstream destination is wired post-deploy via REST
+//     once the PROD Fabric workspace/lakehouse are published (P6).
+// Single-region PROD: pin the skills-sim CAE to switzerlandnorth (SIT uses westus2).
+param enableMasterdataLandingModule = true
+param enableSkillsSimJobsModule = true
+param enableSkillsEventstreamModule = true
+param simCapacityLocation = 'switzerlandnorth'
