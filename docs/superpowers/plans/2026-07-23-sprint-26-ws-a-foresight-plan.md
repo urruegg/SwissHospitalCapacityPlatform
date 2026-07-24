@@ -1,5 +1,7 @@
 # Sprint 26 WS-A — Foresight Tier Implementation Plan
 
+> **Status: ✅ COMPLETE — merged to `main` 2026-07-24** (PR #346 core; #351/#353 Fabric SIT evidence). Live SIT: `fact_occupancy_forecast` 73 · `fact_forecast_driver` 292 · `fact_signal` 4 (Trust-A). See [`docs/architecture/foresight-fabric-evidence.md`](../../architecture/foresight-fabric-evidence.md) and design spec §9. Semantic-model TMDL + verify-gate rebaseline deferred to the **WS-A2** stacked slice (Open decision Q1). Next slice: **WS-B** (`sprint-26/ws-b-levers`).
+>
 > **For agentic workers:** REQUIRED SUB-SKILL — implement task-by-task with `superpowers:test-driven-development` (tests first) and `superpowers:e2e-medallion-architecture` + `superpowers:spark-authoring` (bronze/silver/gold + notebook patterns). Steps use checkbox (`- [ ]`) syntax. No completion claim without fresh command evidence (`superpowers:verification-before-completion`).
 
 **Issue:** #335 · **Branch:** `sprint-26/ws-a-foresight` (off `main`) · **Lane:** Data (+ AI grounding) · **Design source of truth:** [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](../specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) §3.2 / §4 WS-A / §5 Slice 1.
@@ -81,15 +83,15 @@ Python 3 stdlib only (`python`, not `python3`) for pure functions + `unittest`; 
 
 ---
 
-## Tasks (TDD order — tests before implementation)
+## Tasks (TDD order — tests before implementation) — ✅ all complete
 
-- [ ] **T1 — Contracts first.** Write `dc-occupancy-forecast-v1` + `dc-forecast-driver-v1` JSON schemas; add a `test_schema_conformance.py` asserting generator output validates (fails until T3).
-- [ ] **T2 — Pure-function tests.** `test_forecast_pure.py`: determinism (same seed ⇒ identical rows), driver decomposition sums reconcile to net forecast delta, empty input ⇒ empty typed frame. `test_signal_pure.py`: Trust-A filter, deterministic probability, `evidencedBy` linkage. (All red.)
-- [ ] **T3 — Implement pure functions** in `build_gold_forecast.py` + `build_gold_signal.py` until T1+T2 green.
-- [ ] **T4 — Spark wrappers** `run()` + `_empty_schema` + `write_gold_tables` (marked `# pragma: no cover`) + `run_foresight_medallion.ipynb`.
-- [ ] **T5 — Ontology extension** in `reference-layer.ttl` + `crosswalk.md`; run `python scripts/ontology/check_crosswalk_conformance.py --strict` → PASS.
-- [ ] **T6 — Docs** — `data-platform/notebooks/foresight/README.md`; update `docs/DATA.md`; SemVer bumps on every edited doc.
-- [ ] **T7 — Verify + evidence** — run the targeted test + lint commands below, paste output into the PR.
+- [x] **T1 — Contracts first.** Write `dc-occupancy-forecast-v1` + `dc-forecast-driver-v1` JSON schemas; add a `test_schema_conformance.py` asserting generator output validates (fails until T3).
+- [x] **T2 — Pure-function tests.** `test_forecast_pure.py`: determinism (same seed ⇒ identical rows), driver decomposition sums reconcile to net forecast delta, empty input ⇒ empty typed frame. `test_signal_pure.py`: Trust-A filter, deterministic probability, `evidencedBy` linkage. (All red.)
+- [x] **T3 — Implement pure functions** in `build_gold_forecast.py` + `build_gold_signal.py` until T1+T2 green.
+- [x] **T4 — Spark wrappers** `run()` + `_empty_schema` + `write_gold_tables` (marked `# pragma: no cover`) + `run_foresight_medallion.ipynb`.
+- [x] **T5 — Ontology extension** in `reference-layer.ttl` + `crosswalk.md`; run `python scripts/ontology/check_crosswalk_conformance.py --strict` → PASS.
+- [x] **T6 — Docs** — `data-platform/notebooks/foresight/README.md`; update `docs/DATA.md`; SemVer bumps on every edited doc.
+- [x] **T7 — Verify + evidence** — targeted tests + lint pasted in #346; **live Fabric SIT evidence** captured in #351/#353 → [`docs/architecture/foresight-fabric-evidence.md`](../../architecture/foresight-fabric-evidence.md).
 
 ## Test / verification strategy (the smallest targeted commands)
 
@@ -110,18 +112,18 @@ python scripts/lint/check_mojibake.py
 npx --yes markdownlint-cli2 "docs/ontology/**/*.md" "docs/DATA.md" "data-platform/notebooks/foresight/README.md"
 ```
 
-## Definition of done (this slice)
+## Definition of done (this slice) — ✅ met (semantic-model deferred to WS-A2)
 
-- [ ] Three Gold tables produced by deterministic pure functions; empty-input guarded; unit tests green.
-- [ ] Two contracts added; generated rows validate against them.
-- [ ] Ontology `hcp:Forecast`/`hcp:Driver`/`hcp:Ward` + relations live; `--strict` conformance PASS.
-- [ ] All edited docs SemVer-bumped; mojibake + markdownlint clean.
-- [ ] PR lists FR/NFR IDs, lane impact, test evidence, references #335. Not self-merged.
+- [x] Three Gold tables produced by deterministic pure functions; empty-input guarded; unit tests green.
+- [x] Two contracts added; generated rows validate against them.
+- [x] Ontology `hcp:Forecast`/`hcp:Driver` + relations live (reuse `hcp:ExternalSignal` per Q2); `--strict` conformance PASS.
+- [x] All edited docs SemVer-bumped; mojibake + markdownlint clean.
+- [x] PR lists FR/NFR IDs, lane impact, test evidence, references #335. Not self-merged (merged by @urruegg).
 
 ---
 
-## Open decisions — please confirm before I write code
+## Open decisions — RESOLVED (@urruegg, 2026-07-23/24)
 
-- **Q1 — Semantic model in-scope for THIS PR?** Design §3.2 lists forecast/driver measures + RLS + `verify-semantic-model.yml` count rebaseline (currently 35 rel / 69 measures / 8 roles) under WS-A. That is a heavy TMDL change. **Recommendation: defer to a stacked WS-A2 PR** so this Foresight-generator PR stays reviewable, and because the semantic-model measures are only consumed once the app/agent slice (WS-D) lands. OK to defer?
-- **Q2 — `hcp:Signal` naming.** `hcp:ExternalSignal` already exists (Sprint 21). **Recommendation: reuse `hcp:ExternalSignal` as the `evidencedBy` range** (ontology univocity) rather than add a duplicate `hcp:Signal`; add only `hcp:Forecast`, `hcp:Driver`, `hcp:Ward`. Agree?
-- **Q3 — PRD FR/NFR + ADR timing.** Design assigns the big descriptive→prescriptive **ADR** and new PRD FR/NFR rows to **WS-D**. **Recommendation: this PR references existing `FR-FC-001..006` + `FR-EXT-ONT-001` and defers new IDs + ADR to WS-D.** Or do you want a lightweight Foresight ADR + PRD rows in this PR?
+- **Q1 — Semantic model in-scope for THIS PR?** → **Deferred to WS-A2** stacked PR. This Foresight-generator PR stayed reviewable; the `verify-semantic-model.yml` count rebaseline lands with the measures when the app/agent slice needs them.
+- **Q2 — `hcp:Signal` naming.** → **Reused `hcp:ExternalSignal`** (Sprint 21) as the `evidencedBy` range; added only `hcp:Forecast` + `hcp:Driver` (+ `hcp:Ward` stub). No duplicate concept.
+- **Q3 — PRD FR/NFR + ADR timing.** → This PR referenced existing `FR-FC-001..006` + `FR-EXT-ONT-001`; new IDs + the descriptive→prescriptive ADR **deferred to WS-D**.
