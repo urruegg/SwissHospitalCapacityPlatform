@@ -8,6 +8,7 @@ sentinel, so tests and the seed script are fully deterministic.
 """
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List, Optional
 
 from impact.compute_expected_impact import compute_expected_impact
@@ -15,6 +16,12 @@ from impact.compute_expected_impact import compute_expected_impact
 #: Fixed sentinel used when no ``now`` is supplied, so timestamps never leak
 #: wall-clock nondeterminism into computed values or persisted records.
 DEFAULT_NOW = "1970-01-01T00:00:00Z"
+
+#: Word-boundary match for the "bot" token, delimited by string start/end or
+#: ``-``/``_``/``[``/``]``. Catches ``github-actions[bot]``, ``dependabot[bot]``,
+#: a bare ``bot`` handle, etc., WITHOUT matching human handles that merely
+#: contain the substring "bot" (e.g. "Talbot", "Abbott", "talbot-anna").
+_BOT_TOKEN_RE = re.compile(r"(^|[-_\[])bot([-_\]]|$)")
 
 
 def _is_bot_approver(approver: Optional[str]) -> bool:
@@ -27,7 +34,9 @@ def _is_bot_approver(approver: Optional[str]) -> bool:
     * it is falsy (``None`` / empty string) — no approver is never a human;
     * it ends with the GitHub App suffix ``"[bot]"`` (e.g. ``"github-actions[bot]"``);
     * it exactly equals ``"copilot"``;
-    * it contains the substring ``"bot"`` anywhere.
+    * it contains a word-boundary-delimited ``"bot"`` token (e.g.
+      ``dependabot[bot]``, ``ci-bot``, ``bot_runner``) — but NOT a mere
+      substring match, so human handles like "Talbot" or "Abbott" are accepted.
     """
     if not approver:
         return True
@@ -36,7 +45,7 @@ def _is_bot_approver(approver: Optional[str]) -> bool:
         return True
     if lowered == "copilot":
         return True
-    if "bot" in lowered:
+    if _BOT_TOKEN_RE.search(lowered):
         return True
     return False
 
@@ -193,7 +202,9 @@ def approve_action(
 
     delta = expected_impact["delta"]
     applied_total = sum(entry["delta"] for entry in plan["forecast_deltas"]) + delta
-    current_occupied = plan["baseline_occupied_beds"] - applied_total
+    # Clamp at zero: a ward cannot go below empty, however many beds are
+    # recovered by cumulative approved actions.
+    current_occupied = max(0, plan["baseline_occupied_beds"] - applied_total)
     current_pct = round(current_occupied / plan["bed_capacity"] * 100)
 
     plan["forecast_deltas"].append(
@@ -230,9 +241,17 @@ def reject_action(
 ) -> Dict[str, Any]:
     """Reject a proposed action. No plan mutation — symmetric with
     :func:`approve_action`'s double-approval guard: only actions currently in
-    status ``"proposed"`` may be rejected."""
+    status ``"proposed"`` may be rejected.
+
+    For parity with :func:`approve_action`, a falsy ``approver`` is refused.
+    (Bot/self-approval checks are intentionally not enforced here — rejecting
+    an action has no side effect ceiling to gate.)
+    """
     if now is None:
         now = DEFAULT_NOW
+
+    if not approver:
+        raise ValueError("approver is required")
 
     action = store.get_action(action_id)
     if action is None:

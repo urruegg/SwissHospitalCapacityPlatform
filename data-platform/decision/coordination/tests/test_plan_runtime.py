@@ -137,6 +137,40 @@ class TestRefuseBotApprover(unittest.TestCase):
             )
         self._assert_plan_unchanged(store, plan["id"])
 
+    def test_refuse_dependabot(self):
+        store = InMemoryStore()
+        plan = _open_medicine_a_plan(store)
+        action = _propose_expedite(store, plan["id"])
+
+        with self.assertRaises(PermissionError):
+            approve_action(
+                store,
+                action_id=action["id"],
+                approver="dependabot[bot]",
+                gold=GOLD,
+                catalog=CATALOG,
+            )
+        self._assert_plan_unchanged(store, plan["id"])
+
+    def test_accept_human_handle_containing_bot_substring(self):
+        # "talbot-anna" contains the substring "bot" (Tal-bot) but is a real
+        # human handle, not a bot/service identity. It must be ACCEPTED as an
+        # approver — regression guard for the word-boundary bot-token rule.
+        store = InMemoryStore()
+        plan = _open_medicine_a_plan(store)
+        action = _propose_expedite(store, plan["id"])
+
+        updated_plan = approve_action(
+            store,
+            action_id=action["id"],
+            approver="talbot-anna",
+            gold=GOLD,
+            catalog=CATALOG,
+        )
+        self.assertEqual(updated_plan["current_pct"], 94)
+        applied_action = store.get_action(action["id"])
+        self.assertEqual(applied_action["hitl_approver"], "talbot-anna")
+
 
 class TestRefuseSelfApproval(unittest.TestCase):
     def test_refuse_when_approver_equals_proposing_role(self):
@@ -223,6 +257,20 @@ class TestReject(unittest.TestCase):
         with self.assertRaises(ValueError):
             reject_action(store, action_id=action["id"], approver="charge-nurse-anna")
 
+    def test_reject_refuses_falsy_approver(self):
+        store = InMemoryStore()
+        plan = _open_medicine_a_plan(store)
+        action = _propose_expedite(store, plan["id"])
+
+        with self.assertRaises(ValueError):
+            reject_action(store, action_id=action["id"], approver="")
+        with self.assertRaises(ValueError):
+            reject_action(store, action_id=action["id"], approver=None)
+
+        # No mutation: action is still "proposed" and can still be rejected.
+        unchanged_action = store.get_action(action["id"])
+        self.assertEqual(unchanged_action["status"], "proposed")
+
 
 class TestSeedDeterminism(unittest.TestCase):
     def test_seed_runs_twice_produce_identical_plans(self):
@@ -272,6 +320,46 @@ class TestCumulativeDelta(unittest.TestCase):
         self.assertEqual(plan["forecast_deltas"][1]["delta"], 2)
         # Same role proposed + owns DCA-UNBLOCK-BARRIER -> no new handoff edge.
         self.assertEqual(len(plan["handoffs"]), 1)
+
+    def test_current_pct_floors_at_zero_not_negative(self):
+        # Cumulative approved deltas can exceed baseline_occupied_beds (76.5):
+        # expedite delta=6, then a large unblock request capped at the
+        # physically-occupied-beds ceiling (round(76.5)=76) -> applied_total
+        # = 6 + 76 = 82 > 76.5. current_occupied must clamp at 0, not go
+        # negative, and current_pct must floor at 0.
+        store = InMemoryStore()
+        plan = _open_medicine_a_plan(store)
+
+        expedite = _propose_expedite(store, plan["id"])
+        plan = approve_action(
+            store,
+            action_id=expedite["id"],
+            approver="charge-nurse-anna",
+            gold=GOLD,
+            catalog=CATALOG,
+        )
+
+        large_unblock = propose_action(
+            store,
+            plan_id=plan["id"],
+            role="dca",
+            lever_id="DCA-UNBLOCK-BARRIER",
+            params={"barrier_type": "transport", "n": 100},
+            gold=GOLD,
+            catalog=CATALOG,
+        )
+        self.assertEqual(large_unblock["expected_impact"]["delta"], 76)
+
+        plan = approve_action(
+            store,
+            action_id=large_unblock["id"],
+            approver="dr-mueller",
+            gold=GOLD,
+            catalog=CATALOG,
+        )
+
+        self.assertEqual(plan["current_pct"], 0)
+        self.assertGreaterEqual(plan["current_pct"], 0)
 
 
 class TestActionAndPlanNotFound(unittest.TestCase):
