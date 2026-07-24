@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "6752234803929019708"
+      "templateHash": "12301641679358128891"
     }
   },
   "parameters": {
@@ -571,7 +571,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity."
+        "description": "Enable a private endpoint for the platform Key Vault (ADR-0039, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity."
       }
     }
   },
@@ -629,7 +629,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "6831425938694866297"
+              "templateHash": "16810495867067195621"
             }
           },
           "parameters": {
@@ -672,7 +672,7 @@
               "type": "bool",
               "defaultValue": false,
               "metadata": {
-                "description": "When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0038, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false."
+                "description": "When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0039, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false."
               }
             },
             "vnetResourceId": {

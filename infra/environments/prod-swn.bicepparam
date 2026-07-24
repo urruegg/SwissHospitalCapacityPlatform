@@ -50,7 +50,7 @@ param keyVaultNameOverride = 'kv-ihzhhpf-prod-swn1'
 
 // --- Foundation ---
 param enableIdentityModule = true
-// Network module ON (ADR-0038, extends ADR-0029 Option A + ADR-0037). Brings
+// Network module ON (ADR-0039, extends ADR-0029 Option A + ADR-0037). Brings
 // PROD to SIT network parity: creates vnet-platform-ihzhhpf-prod, VNet-integrates
 // the agent-host CAE (cae-ihzhhpf-prod), and wires the Cosmos private endpoint.
 // NOTE: VNet integration is immutable after CAE creation — because the swn
@@ -64,7 +64,7 @@ param enableIdentityModule = true
 param enableNetworkModule = true
 param enableObservabilityModule = true
 
-// Key Vault private endpoint (ADR-0038). Gives the AAD-only, policy-locked
+// Key Vault private endpoint (ADR-0039). Gives the AAD-only, policy-locked
 // (publicNetworkAccess=Disabled) PROD vault a reachable data plane inside the
 // VNet via privatelink.vaultcore.azure.net. Non-destructive on its own.
 // Operator interactive access still needs an in-VNet jumpbox/Bastion.
@@ -126,7 +126,7 @@ param enableDataPlatformModule = false
 // (both true above). Grants the runner MI EH Data Sender at the evh namespace.
 param enableSignalRunnerModule = true
 // CSA Cosmos DB wired into the orchestrator. With enableNetworkModule=true
-// (ADR-0038) it now gets a private endpoint (privatelink.documents.azure.com in
+// (ADR-0039) it now gets a private endpoint (privatelink.documents.azure.com in
 // snet-data) — matching SIT and satisfying the MCAPSGov Modify-effect policy
 // that force-disables public Cosmos subscription-wide. Creates
 // cosmos-csa-ihzhhpf-prod + 4 vector containers.
