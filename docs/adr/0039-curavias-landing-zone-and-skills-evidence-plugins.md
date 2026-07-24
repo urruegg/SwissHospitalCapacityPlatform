@@ -2,10 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Status** | Proposed |
-| **Date** | 2026-07-23 |
+| **Status** | Accepted |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Decision-makers** | @urruegg |
+| **Accepted by** | @urruegg (2026-07-24) — approved to proceed |
 | **Related issue** | #255 |
 
 ## Context
