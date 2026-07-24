@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.0 |
+| **Version** | 1.6.0 |
 | **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion landed clean (org/skills + capacity + eventstream gold, no real names, no H_HSL orphan)**; **ADR-0039 Accepted (approved to proceed)**; **PROD parity prep done (T11/T13 flags enabled in `prod-swn.bicepparam`, `what-if` clean — 10 additive Creates, 0 deletes)**; PROD apply `approved-to-apply`-gated |
-| **Previous Version** | 1.4.0 (ADR-0039 Accepted) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED (`approved-to-apply` @urruegg): infra deployed (10 Creates), medallion replayed 9/9 green, gold parity proven (28 tables, 21 contract tables), authoritative OneLake Delta evidence clean — 3 Curavias tenants, no real names, 0 H_HSL orphans)**; **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14) + e2e SIT/PROD parity test** |
+| **Previous Version** | 1.5.0 (PROD parity prep — flags + what-if) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -98,6 +98,21 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 ---
 
 ## 6. Status log
+
+### 2026-07-24 — PROD org/skills parity APPLIED (infra + medallion + gold evidence)
+
+**Approved-to-apply** by @urruegg for the full PROD replay sequence. PR #368
+(param flags + what-if) merged to `main` first (human-merged, `status:approved`).
+
+* **PROD infra applied** — `az deployment group create -g rg-ihzhhpf-prod -f infra/main.bicep -p prod-swn.bicepparam` **Succeeded**. Verified live: `stmasterdataihzhhpfprod` (+ `landing` container), `cae-skills-sim-ihzhhpf-prod`, `id-skills-sim-ihzhhpf-prod` UAMI, jobs `caj-sk-{sf,wid,skm,lms}-ihzhhpf-prod` — all `Succeeded`. Matches the 10 additive Creates from the what-if; 0 deletes.
+* **PROD medallion replayed** — uploaded the 5 current source sets to PROD OneLake `Files/` (capacity master-data, curavias org/skills, skills-evidence modules, eventstream seed, or-samples), then `run_medallion.py --environment PROD --apply` → **9/9 notebooks green, "Medallion rebuild complete"**. `05_gold_org_skills` was net-new to PROD (`[create]`). The 07-23 greenfield rebuild predated the H_HSL-prune fix, so re-uploading the current seed/master-data was required.
+* **PROD gold parity proven** — `list_gold_tables.py --environment PROD` = **28 gold tables** (all org/skills + `dim_care_setting`); `verify_gold_schema.py` = **OK, 21 contract tables covered**.
+* **Authoritative OneLake Delta evidence (SQL endpoint lags, not used)** — new reusable reader [`data-platform/scripts/fabric/read_gold_evidence.py`](../../data-platform/scripts/fabric/read_gold_evidence.py):
+  * `dim_hospital` = **3 Curavias tenants only** — `H_USZ`→Uniklinik CuraNova, `H_LUKS`→Kantonsspital Curalp, `H_SZB`→Spital Vialta. Cities/cantons also fictionalised (Curalp-Stadt/CA, Vialtaberg/HN, Stadt Helvetia-Nord/HN) — **no real hospital names**.
+  * **0 H_HSL orphans** across hospital-keyed gold: `dim_specialty` 81, `dim_hospital_service` 22, `fact_capacity_baseline` 17; re-keyed facts (`bed_assignment`, `or_case`, `or_schedule`, `encounter`) carry no `hospital_id` (keyed to tenant/org). Mirrors the SIT §7 result below.
+* **Remaining (carried to next session):**
+  1. **PROD semantic-model + report publish** — `deploy_fabric_cicd.py --environment PROD --mode publish`. **Validate OK** (PROD workspace/lakehouse/params resolve). **Blocked locally**: `fabric-cicd` requires Python `>=3.9,<3.14`; this host's default is 3.14. Python 3.11 is present (`C:\Python311`) — finish the isolated `--user` install with a clean `PYTHONPATH`/`PYTHONHOME`, or run the publish from CI/another host. Then confirm the PROD SQL analytics endpoint has caught up (async).
+  2. **E2E SIT + PROD parity test** — sign-in → app → agent → data → response on both; capture a parity evidence doc; then tick the §5 DoD "SIT + PROD deployed identically" and the design-spec §5 DoD, and bump this doc.
 
 ### 2026-07-24 — PROD org/skills parity prep (T11/T13 flags + `what-if` clean)
 
