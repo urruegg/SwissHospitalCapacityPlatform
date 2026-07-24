@@ -1,0 +1,101 @@
+table dim_skill
+	lineageTag: 6e3d3ebc-a2d6-4f5c-8174-72d1d284268a
+	sourceLineageTag: [gold].[dim_skill]
+
+	column skill_id
+		dataType: string
+		lineageTag: aa886042-258d-42ef-8aea-a04a10091ae5
+		sourceLineageTag: skill_id
+		summarizeBy: none
+		sourceColumn: skill_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column label_de
+		dataType: string
+		lineageTag: 761cc7a7-20e9-44ca-8af8-95a59381ddfa
+		sourceLineageTag: label_de
+		summarizeBy: none
+		sourceColumn: label_de
+
+		annotation SummarizationSetBy = Automatic
+
+	column label_en
+		dataType: string
+		lineageTag: 7c681073-f936-467c-bcfe-b8ec24664edb
+		sourceLineageTag: label_en
+		summarizeBy: none
+		sourceColumn: label_en
+
+		annotation SummarizationSetBy = Automatic
+
+	column skill_category
+		dataType: string
+		lineageTag: 4dab2048-b7dc-44ff-8d5b-e2d3d75ab7f1
+		sourceLineageTag: skill_category
+		summarizeBy: none
+		sourceColumn: skill_category
+
+		annotation SummarizationSetBy = Automatic
+
+	column skill_type
+		dataType: string
+		lineageTag: 13a1cb54-7d7a-48c4-89b6-b48b1d6ad5ad
+		sourceLineageTag: skill_type
+		summarizeBy: none
+		sourceColumn: skill_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column anchor_authority_id
+		dataType: string
+		lineageTag: 259367d8-0dbf-40d5-b264-a21613c131db
+		sourceLineageTag: anchor_authority_id
+		summarizeBy: none
+		sourceColumn: anchor_authority_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column default_min_assurance
+		dataType: string
+		lineageTag: e0847951-3b65-4e0a-bcb6-d0e9db66e26e
+		sourceLineageTag: default_min_assurance
+		summarizeBy: none
+		sourceColumn: default_min_assurance
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_safety_critical
+		dataType: boolean
+		lineageTag: 59fe2ee8-004e-4b1f-afb4-cb0515f097f7
+		sourceLineageTag: is_safety_critical
+		summarizeBy: none
+		sourceColumn: is_safety_critical
+
+		annotation SummarizationSetBy = Automatic
+
+	column has_expiry
+		dataType: boolean
+		lineageTag: 5a84dd0e-7806-411f-b183-0a4baee4685f
+		sourceLineageTag: has_expiry
+		summarizeBy: none
+		sourceColumn: has_expiry
+
+		annotation SummarizationSetBy = Automatic
+
+	column typical_validity_months
+		dataType: int64
+		formatString: 0
+		lineageTag: eb2c2fb6-b0f6-4bf4-bc35-7f41d9d742df
+		sourceLineageTag: typical_validity_months
+		summarizeBy: none
+		sourceColumn: typical_validity_months
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_skill = entity
+		mode: directLake
+		source
+			entityName: dim_skill
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

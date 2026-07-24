@@ -56,6 +56,53 @@
       "alm": {
         "title": "Dev → SIT → Prod",
         "body": "Enterprise-ALM bringt Änderungen sicher von der Entwicklung über SIT bis in die Produktion."
+      },
+      "stats": {
+        "sectionLabel": "Plattform-Kennzahlen",
+        "adrCount": "Architekturentscheide",
+        "bomCount": "BOM-Einträge",
+        "requirementsTracked": "Anforderungen erfasst",
+        "hitlPct": "HITL-Freigabe",
+        "phiCount": "PHI-Einträge"
+      },
+      "provenance": {
+        "snapshot": "Snapshot",
+        "live": "Live",
+        "invariant": "Invariante"
+      },
+      "delivery": {
+        "sectionLabel": "Lieferkette & Umgebungsförderung",
+        "planTitle": "Lieferprozess",
+        "envTitle": "Umgebungsförderung",
+        "plan": {
+          "plan": "PLAN",
+          "spec": "SPEC",
+          "build": "BUILD",
+          "review": "REVIEW",
+          "release": "RELEASE"
+        },
+        "env": {
+          "dev": "DEV",
+          "sit": "SIT",
+          "prod": "PROD"
+        }
+      },
+      "roster": {
+        "sectionLabel": "Runtime-Copilots",
+        "countCaption": "{{count}} spezialisierte Copilots",
+        "lane": {
+          "bmca-agent": "Bettenmanagement",
+          "ooa-agent": "Belegung",
+          "dca-agent": "Entlassung",
+          "orsa-agent": "OP-Steuerung",
+          "sba-agent": "Personal",
+          "csa-agent": "Krise",
+          "data-quality-agent": "Datenplattform",
+          "onboarding-agent": "Plattform"
+        }
+      },
+      "pillars": {
+        "sectionLabel": "Plattformgrundlagen"
       }
     }
   },
@@ -73,6 +120,7 @@
   "board": {
     "loading": "Wird geladen...",
     "occupancy": "Auslastungsprognose (72h)",
+    "bedManager": "Bettenmanagement (72h)",
     "beds": "Betten",
     "nav": {
       "occupancy": "Belegung",
@@ -104,10 +152,40 @@
     "simulated": "simuliert",
     "loopBack": "führt zurück zur Auslastungsprognose"
   },
+  "dca": {
+    "askAbout": {
+      "readyCandidates": "Welche Patienten sind entlassbereit?",
+      "spitexBarrier": "Warum blockiert Spitex die Entlassung?",
+      "rehab": "Gibt es freie Reha-Plätze?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → Entlassaktionen",
+      "patient": "Patient",
+      "ward": "Station",
+      "readiness": "Bereitschaft",
+      "blocker": "Hindernis",
+      "estFree": "Frei in (h)"
+    },
+    "barriers": {
+      "hint": "Kapazitätshindernisse nach Bettauswirkung sortiert",
+      "rank": "Rang",
+      "label": "Hindernis",
+      "bedImpact": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Alter & Auswirkung →"
+    },
+    "gap": {
+      "label": "Prognostizierte Entlassungslücke",
+      "cta": "Entlassungslücke schliessen"
+    }
+  },
   "insight": {
     "occupancyRising": "{{channel}} steigt",
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
+    "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
+    "placementMove": "{{patientId}} von {{fromWard}} nach {{toWard}} verlegen",
+    "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
     "stressTest": "{{scenario}} durchspielen"
@@ -141,6 +219,70 @@
       "orSteering": "OP-Steuerung",
       "staffing": "Personal",
       "crisis": "Krise & Szenarien"
+    },
+    "capacityTeaser": {
+      "title": "Standortkapazität (live)",
+      "peakWard": "{{ward}} → {{pct}} %",
+      "siteGapDeficit": "Unterdeckung {{beds}} Betten",
+      "siteGapSurplus": "Überkapazität {{beds}} Betten",
+      "breachEta": "Überschreitung ~{{hours}} h",
+      "asOf": "Stand {{time}}",
+      "firstSurfacedBy": "erkannt von {{agent}}"
+    },
+    "valueTiles": {
+      "title": "Wert & ROI",
+      "romLabel": "ROM-Schätzung"
+    },
+    "copilotCount": {
+      "label": "{{count}} spezialisierte Copilots",
+      "caption": "Aus dem Agenten-Register abgeleitet — einer pro Rollenboard"
+    },
+    "whyNow": {
+      "title": "Warum jetzt?",
+      "caption": "Illustrativer Vergleich — redaktioneller Inhalt, keine Live-Kennzahlen",
+      "colAspect": "Dimension",
+      "colToday": "Heute",
+      "colCuravias": "Mit Curavias",
+      "row1": {
+        "aspect": "Kapazitätsübersicht",
+        "today": "Manuelle Rundgänge — Stunden Verzögerung",
+        "curavias": "72-h-KI-Prognose, stationsgenau"
+      },
+      "row2": {
+        "aspect": "Entlasskoordination",
+        "today": "Einzelne Telefonate pro Station",
+        "curavias": "Koordinierte Arbeitsliste, 8+ Kandidaten bereit"
+      },
+      "row3": {
+        "aspect": "OP-Planung",
+        "today": "Papier & Tabellen",
+        "curavias": "Gereifte Reslot-Hebel, Betten gesichert"
+      },
+      "row4": {
+        "aspect": "Personalabgleich",
+        "today": "Reaktive Lückenfüllung",
+        "curavias": "Proaktive Schichtoptimierung"
+      },
+      "row5": {
+        "aspect": "Krisenbereitschaft",
+        "today": "Ad-hoc-Vorfallreaktion",
+        "curavias": "Signal → Szenario → Wahrscheinlichkeitspipeline"
+      },
+      "row6": {
+        "aspect": "Wertnachweis",
+        "today": "Qualitative Berichte",
+        "curavias": "BVA-Herkunftsstempel — ROM"
+      }
+    },
+    "patientPath": {
+      "title": "Copilot in jedem Versorgungsschritt",
+      "caption": "Illustrativ — Copilots unterstützen jeden Schritt ohne echte Patientendaten (PHI)",
+      "admission": "Eintritt",
+      "triage": "Triage & Bettenzuweisung",
+      "treatment": "Behandlung",
+      "discharge": "Entlassung",
+      "postAcute": "Nachversorgung",
+      "occupancyNote": "{{ward}} → {{pct}} % in 72 h"
     }
   },
   "settings": {
@@ -149,6 +291,188 @@
   "agent": {
     "open": "Agent öffnen",
     "close": "Agent schliessen",
-    "title": "Agent"
+    "title": "Agent",
+    "askAbout": "Fragen zu"
+  },
+  "badge": {
+    "simulatedData": "Simulierte Daten",
+    "liveData": "Live-Daten",
+    "accessLens": "Zugriffslinse: {{lens}}"
+  },
+  "reco": {
+    "back": "Zurück zur Übersicht",
+    "agentLine": "{{agent}} — Kontext übernommen",
+    "projection": "Prognose: {{text}}",
+    "refused": "Abgelehnt",
+    "approvalRequired": "Freigabe erforderlich",
+    "approvalHint": "Mit approved-to-apply antworten, um fortzufahren"
+  },
+  "bmca": {
+    "table": {
+      "hint": "Zeile anklicken → Platzierungsaktionen",
+      "patient": "Patient",
+      "priority": "Priorität",
+      "from": "Von",
+      "to": "Nach",
+      "wait": "Wartezeit (min)"
+    },
+    "barriers": {
+      "hint": "Platzierungshindernisse nach Bettauswirkung sortiert",
+      "rank": "Rang",
+      "label": "Hindernis",
+      "bedImpact": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Auswirkung →"
+    },
+    "kpis": {
+      "utilPct": "Auslastung",
+      "freeBeds": "Freie Betten",
+      "targetFree": "Sollgrösse",
+      "slaRisk": "SLA-Risiko"
+    },
+    "stream": {
+      "title": "Zugänge / Einzug-Eventstream",
+      "hint": "Live-Zugänge und -Austritte (simuliert)"
+    },
+    "pbi": {
+      "title": "Kapazitäts-Dashboard"
+    },
+    "gap": {
+      "label": "Standortkapazitätslücke",
+      "cta": "Kapazitätslücke schliessen"
+    },
+    "askAbout": {
+      "topPressure": "Wo ist der grösste Druck?",
+      "placementQueue": "Wie lang ist die Bettenzuweisungswarteschlange?",
+      "slaRisk": "Welche Stationen haben SLA-Risiko?"
+    }
+  },
+  "orsa": {
+    "askAbout": {
+      "deferrableCases": "Welche Eingriffe sind verschiebbar?",
+      "orroomPressure": "Wo ist der grösste OP-Druck?",
+      "sbaHandoff": "Wie übergeben wir den Restbedarf ans Personalmanagement?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → OP-Steuerungsaktionen",
+      "specialty": "Fachbereich",
+      "slot": "OP-Slot",
+      "bedsImpact": "Bettenbedarf",
+      "bedsProtected": "Betten geschützt",
+      "deferable": "Verschiebbar",
+      "yes": "Ja",
+      "no": "Nein"
+    },
+    "levers": {
+      "hint": "Reslot-Hebel nach geschützten Betten sortiert",
+      "rank": "Rang",
+      "label": "Hebel",
+      "bedsProtected": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Auswirkung →"
+    },
+    "gap": {
+      "label": "Prognostizierte OP-Lücke",
+      "cta": "OP-Lücke schliessen"
+    }
+  },
+  "sba": {
+    "askAbout": {
+      "surgeGap": "Wie wird die Surge-Bettenlücke abgedeckt?",
+      "orsaCoverage": "Sind die OP-Verschiebungen vollständig abgedeckt?",
+      "csaEscalation": "Wann sollten wir zur Krisenplanung eskalieren?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → Personalaktionen",
+      "role": "Rolle",
+      "fromUnit": "Von Station",
+      "toUnit": "Zur Station",
+      "fte": "VZÄ",
+      "shiftGap": "Schicht"
+    },
+    "levers": {
+      "hint": "Personalhebel nach abgedeckten Betten sortiert",
+      "rank": "Rang",
+      "label": "Hebel",
+      "bedsEnabled": "Betten",
+      "detail": "Details",
+      "cta": "Auto-Reihenfolge nach Abdeckungswirkung →"
+    },
+    "gap": {
+      "label": "Standort-Personalengpass",
+      "cta": "Personalengpass schliessen"
+    },
+    "kpi": {
+      "balanced": "Ausgeglichen"
+    }
+  },
+  "ooa": {
+    "askAbout": {
+      "wardTips": "Welche Stationen kippen in 72 h?",
+      "fluPeak": "Wann trifft der Grippe-Höhepunkt ein?",
+      "icuStaffing": "Ist die IPS-Besetzung ein Engpass?"
+    },
+    "table": {
+      "hint": "Zeile anklicken → Copilot-Aktionen",
+      "ward": "Station",
+      "now": "Jetzt",
+      "trend": "72-h-Trend",
+      "forecast": "Prognose",
+      "flag": "Status"
+    },
+    "flow": {
+      "hint": "Signale speisen Fachbereichs-Ströme → Kapazitäts-Ausgaben. Für Copilot-Aktionen einen Strom oder die Lücke anklicken.",
+      "channels": "Signale",
+      "streams": "Ströme",
+      "outputs": "Ausgaben",
+      "current": "Aktuell",
+      "forecast72": "Prognose 72 h",
+      "fedBy": "Gespeist von {{channels}}"
+    },
+    "gap": {
+      "label": "Prognostizierte 72-h-Kapazitätslücke",
+      "card": "{{beds}} Betten Unterdeckung in 72 h",
+      "aria": "In 72 h benötigte Betten",
+      "cta": "72-h-Lücke schliessen"
+    }
+  },
+  "csa": {
+    "askAbout": {
+      "heatwaveImpact": "Wie wirkt sich die Hitzewelle auf die Kapazität aus?",
+      "signalReadiness": "Werden alle Trust-A-Signale überwacht?",
+      "scenarioSimulation": "Welches Szenario sollten wir zuerst simulieren?"
+    },
+    "signals": {
+      "title": "Externe Signale (Trust-A)",
+      "hint": "Zeile anklicken → Signalaktionen",
+      "source": "Quelle",
+      "feed": "Feed",
+      "status": "Status",
+      "trustClass": "Vertrauensklasse",
+      "certainty": "Gewissheit",
+      "probability": "Wahrscheinlichkeit"
+    },
+    "scenarios": {
+      "title": "Szenarien nach Wahrscheinlichkeit sortiert",
+      "hint": "Zeile anklicken → Simulation starten (Freigabe erforderlich)",
+      "rank": "Rang",
+      "name": "Szenario",
+      "bedImpact": "Bettenbedarf",
+      "probability": "Wahrscheinlichkeit (%)",
+      "spof": "SPOF",
+      "cta": "Top-Szenario simulieren →"
+    },
+    "status": {
+      "filtered": "Quarantäne",
+      "nominal": "Nominal"
+    },
+    "kpi": {
+      "residualBeds": "Restbetten",
+      "balanced": "Ausgeglichen"
+    },
+    "gap": {
+      "label": "Krisenbereitschaftsstatus",
+      "cta": "Krisenbereitschaft prüfen"
+    }
   }
 }

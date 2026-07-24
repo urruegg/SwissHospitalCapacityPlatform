@@ -43,6 +43,13 @@ jobs:
       - name: Install PyYAML
         run: python3 -m pip install --disable-pip-version-check pyyaml
 
+      - name: Validate provider manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd data-platform/scripts/external-signals
+          PYTHONPATH=. python3 -c "from providers.registry import discover, catalog_rows; rows = catalog_rows(discover()); print(f'validated {len(rows)} provider manifests'); assert rows"
+
       - name: Run external-signal script tests
         shell: bash
         run: |

@@ -19,14 +19,12 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import sys
 from pathlib import Path
 
-from connectors.meteoswiss import MeteoSwissConnector
-from connectors.sed import SedConnector
-from connectors.alertswiss import AlertswissConnector
-from connectors.bag import BagConnector
+from providers.registry import discover
 from normalize import envelope
 
 _HERE = Path(__file__).resolve().parent
@@ -37,13 +35,13 @@ SCHEMA_PATH = (
 )
 DEFAULT_DATASET_ID = "ext-signal-synthetic-seed"
 
-# (connector, fixture filename) — mirrors tests/test_connectors.py.
-_CONNECTORS = [
-    (MeteoSwissConnector(), "meteoswiss_heat.json"),
-    (SedConnector(), "sed_quake.json"),
-    (AlertswissConnector(), "alertswiss_cap.json"),
-    (BagConnector(), "bag_rsv.json"),
-]
+# fixture filename per provider (raw payloads live in tests/fixtures)
+_PROVIDER_FIXTURES = {
+    "meteoswiss": "meteoswiss_heat.json",
+    "sed": "sed_quake.json",
+    "alertswiss": "alertswiss_cap.json",
+    "bag": "bag_rsv.json",
+}
 
 
 def _load_fixture(name: str) -> dict:
@@ -51,10 +49,14 @@ def _load_fixture(name: str) -> dict:
 
 
 def build_records() -> list[dict]:
-    """Run every connector over its fixture and return the merged record list."""
+    """Run every provider parse over its fixture and return the merged record list."""
     records: list[dict] = []
-    for connector, fixture in _CONNECTORS:
-        records.extend(connector.parse(_load_fixture(fixture)))
+    for spec in discover():
+        fixture = _PROVIDER_FIXTURES.get(spec.source_id)
+        if not fixture:
+            continue  # simulator/internal-only providers seeded elsewhere
+        parse = importlib.import_module(f"providers.{spec.source_id}.parse").parse
+        records.extend(parse(_load_fixture(fixture)))
     return records
 
 

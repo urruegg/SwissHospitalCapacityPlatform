@@ -23,17 +23,14 @@ test('demo.guest lands on the Curavias shell and reaches the Backstage roles wid
   await expect(page.getByRole('table')).toBeVisible();
 });
 
-test('BedManager whiteboard renders all 6 card types', async ({ page }) => {
+test('BedManager board renders the parity surface (worklist + Power BI embed)', async ({ page }) => {
+  // Sprint 20 (parity) — the legacy whiteboard `data-card-type` cards were
+  // replaced by the bmca board surface (BoardHeader + placement worklist +
+  // barriers + KPIs + eventstream + Power BI embed). Assert the parity surface.
   await page.goto('/');
   await page.getByRole('tab', { name: 'Hauptbereich' }).click();
-  for (const type of [
-    'PowerBITile',
-    'AgentPanel',
-    'KpiCard',
-    'LiveStreamCard',
-    'ResponsibleCard',
-    'ScenarioCard',
-  ]) {
-    await expect(page.locator(`[data-card-type="${type}"]`).first()).toBeVisible();
-  }
+  await expect(page.getByTestId('board-bed-manager')).toBeVisible();
+  await expect(page.getByTestId('pbi-embed')).toBeVisible();
+  // Placement worklist renders as a real table (not the removed whiteboard Canvas).
+  await expect(page.getByRole('table').first()).toBeVisible();
 });

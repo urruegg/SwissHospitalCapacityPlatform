@@ -27,5 +27,31 @@ class TestNormalize(unittest.TestCase):
         self.assertEqual(len(rec["provenance"]["rawHash"]), 64)
 
 
+class TestProvenanceFields(unittest.TestCase):
+    def test_active_binding_defaults_and_override(self):
+        rec = build_record(
+            signal_id="s1", source_id="sed", source_authority="SED-ETH",
+            hazard_type="earthquake", severity="Severe", certainty="Observed",
+            urgency="Immediate", region={"cantons": ["ZH"]}, onset="2026-07-23T00:00:00Z",
+            status="Actual", connector_version="sed-2.0.0", licence="SED-ETH-open-data",
+            raw=b"{}", active_binding="simulated", fell_back_from="live",
+            channel_kind="external",
+        )
+        self.assertEqual(rec["provenance"]["activeBinding"], "simulated")
+        self.assertEqual(rec["provenance"]["fellBackFrom"], "live")
+        self.assertEqual(rec["provenance"]["channelKind"], "external")
+
+    def test_active_binding_default_is_live(self):
+        rec = build_record(
+            signal_id="s2", source_id="sed", source_authority="SED-ETH",
+            hazard_type="earthquake", severity="Severe", certainty="Observed",
+            urgency="Immediate", region={"cantons": ["ZH"]}, onset="2026-07-23T00:00:00Z",
+            status="Actual", connector_version="sed-2.0.0", licence="SED-ETH-open-data",
+            raw=b"{}",
+        )
+        self.assertEqual(rec["provenance"]["activeBinding"], "live")
+        self.assertIsNone(rec["provenance"]["fellBackFrom"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -30,8 +30,8 @@
     dcterms:description "Reference layer of the two-layer ontology per ADR-0014. Skeleton only — full axiomatic content is Phase 3."@en ;
     dcterms:creator     "Urs Rüegg"@en ;
     dcterms:issued      "2026-07-02"^^xsd:date ;
-    owl:versionInfo     "0.2.0" ;
-    rdfs:comment        "Sprint 09 RB-11 deliverable. See docs/ontology/README.md for scope discipline and versioning."@en ;
+    owl:versionInfo     "0.4.0" ;
+    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy). See docs/ontology/README.md for scope discipline and versioning."@en ;
 
     # Imports declared but not loaded axiomatically in this skeleton.
     # A follow-up PR (or an ontology-authoring tool) resolves these to full IRIs.
@@ -261,6 +261,181 @@ hcp:signalPreseeds a owl:ObjectProperty ;
     rdfs:comment "Links an ExternalSignal to the LageTier that it proposes as an advisory pre-seed; the CSA classifier remains authoritative."@en ;
     rdfs:domain  hcp:ExternalSignal ;
     rdfs:range   hcp:LageTier .
+
+# ===========================================================================
+# Foresight tier (Sprint 26 WS-A, issue #335, design spec §3.2).
+# Turns the descriptive occupancy surface into the predictive tier: a
+# ward-level occupancy Forecast, its Driver decomposition ('why'), and the
+# evidencing link to the existing Trusted-External-Signal spine. hcp:Signal is
+# intentionally NOT introduced — hcp:ExternalSignal is reused (univocity).
+# ===========================================================================
+
+hcp:Ward a owl:Class ;
+    rdfs:label   "Ward"@en ;
+    rdfs:comment "A hospital ward as a capacity-bearing organisational unit (bed rollup). Range target for hcp:forWard; source table is dim_ward_capacityunit (DC-MASTER-07). Full placement under omrse:hospital-part-of is Phase 3."@en .
+
+hcp:Forecast a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Forecast"@en ;
+    rdfs:comment    "A 72h occupancy forecast for one Ward across hourly horizons (0..72h), carrying forecast occupied beds / occupancy % and a capacity-breach flag. Distinct from hcp:ForecastOutput (specialty demand); bound to gold.fact_occupancy_forecast (DC-OCCUPANCY-FORECAST-v1). Deterministic synthetic generator today with a clean seam for a real model (design D2)."@en .
+
+hcp:Driver a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Driver"@en ;
+    rdfs:comment    "A decomposition factor explaining a Forecast (forecast_admissions / planned_discharges / transfers / seasonality) with a signed bed delta. Driver deltas reconcile to the net forecast change. Bound to gold.fact_forecast_driver (DC-FORECAST-DRIVER-v1). Grounds beat 2 ('Warum') of the actionable-insight pattern."@en .
+
+hcp:forWard a owl:ObjectProperty ;
+    rdfs:label  "for ward"@en ;
+    rdfs:domain hcp:Forecast ;
+    rdfs:range  hcp:Ward .
+
+hcp:explainedBy a owl:ObjectProperty ;
+    rdfs:label  "explained by"@en ;
+    rdfs:domain hcp:Forecast ;
+    rdfs:range  hcp:Driver .
+
+hcp:evidencedBy a owl:ObjectProperty ;
+    rdfs:label   "evidenced by"@en ;
+    rdfs:comment "Links a Driver to the ExternalSignal that evidences it (e.g. a seasonality driver evidenced by a BAG epidemic signal). Reuses the Sprint 21 signal spine; advisory only."@en ;
+    rdfs:domain  hcp:Driver ;
+    rdfs:range   hcp:ExternalSignal .
+
+# ===========================================================================
+# Curavias organisation spine + skills ontology extension (Sprint 23, #255)
+# ===========================================================================
+# Realises design D6 "reuse verbatim, extend don't replace": the org spine
+# folds dim_hospital into the Curavias tenants 1:1 (T6) and the skills domain
+# is expressed on two orthogonal axes -- Proficiency (1..5, how capable) and
+# Assurance (L0..L4, how proven; drives eligibility gating). The care-setting
+# split (T14) separates bed/nursing demand from ops/doctor demand. Operational
+# Fabric IQ bindings are GA-gated per ADR-0014; crosswalk.md records each row.
+
+# --- Organisation spine (aligns to OOSTT organisational structure) ---
+
+hcp:Tenant a owl:Class ;
+    rdfs:label   "Tenant"@en ;
+    rdfs:comment "A Curavias healthcare-provider organisation (CuraNova / Curalp / Vialta). Folded 1:1 into the operational Hospital dimension per Sprint 23 T6 (tenant_id = hospital_id). Anchored to OOSTT organisation patterns."@en .
+
+hcp:OrgUnit a owl:Class ;
+    rdfs:label   "Organisational Unit"@en ;
+    rdfs:comment "A site or organisational unit within a Tenant (e.g. a campus or building). Anchored to OOSTT organisational-part semantics."@en .
+
+hcp:Department a owl:Class ;
+    rdfs:label   "Department"@en ;
+    rdfs:comment "A clinical department (Klinik / Fachbereich) within an OrgUnit; the demand and gap grain for skills. Anchored to OOSTT administrative-part semantics."@en .
+
+hcp:CareSetting a owl:Class ;
+    rdfs:label   "Care Setting"@en ;
+    rdfs:comment "The care-setting split (Sprint 23 T14): 'bed' = nursing / Pflegepersonal demand; 'ops' = doctors + specialised (OR / anaesthesia) demand. Categorises SkillDemand and SkillGap so nursing and ops shortages are answered separately."@en .
+
+# --- Skills domain (ESCO / ISCO-08 aligned) ---
+
+hcp:Skill a owl:Class ;
+    rdfs:label   "Skill"@en ;
+    rdfs:comment "A demonstrable competency held by a HealthWorker and required by a WorkforcePosition; ESCO-aligned. Reused verbatim from the Curavias skills ontology (D6)."@en .
+
+hcp:OccupationRole a owl:Class ;
+    rdfs:label   "Occupation Role"@en ;
+    rdfs:comment "The occupation held by a HealthWorker (e.g. registered nurse, anaesthetist); ISCO-08 aligned. Reused verbatim from the Curavias skills ontology (D6)."@en .
+
+hcp:HealthWorker a owl:Class ;
+    rdfs:label   "Health Worker"@en ;
+    rdfs:comment "A person bearing an occupation role, identified by GLN -- the golden-thread worker-identity key validated (mod-10) at the silver gate. Reused verbatim from the Curavias skills ontology (D6). No PHI is carried in the operational binding."@en .
+
+hcp:SkillAssertion a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Skill Assertion"@en ;
+    rdfs:comment    "An evidence-backed statement that a HealthWorker holds a Skill at a given Proficiency (1..5) and Assurance (L0..L4) for a validity period. Carries hasProficiency, hasAssurance, assertsSkill, assertedByWorker. Grounds Sprint 23 T7."@en .
+
+hcp:SkillDemand a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Skill Demand"@en ;
+    rdfs:comment    "A required Skill at a minimum Proficiency and minimum Assurance for a Department and CareSetting over a time window. Carries demandsSkill, demandForCareSetting, hasProficiency, hasAssurance. Grounds Sprint 23 T7/T14."@en .
+
+hcp:SkillGap a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Skill Gap"@en ;
+    rdfs:comment    "The shortfall between SkillDemand and valid assurance-gated supply for a Skill, Department, CareSetting and time window. Carries gapForCareSetting. Grounds the skills gap measures (PR #339) and Sprint 23 T14."@en .
+
+hcp:WorkerUnitEligibility a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Worker Unit Eligibility"@en ;
+    rdfs:comment    "A pre-computed statement that a HealthWorker may safely staff a CapacityUnit, gated on assurance-valid SkillAssertions against the unit's RoleSkillTemplate. Carries eligibleForUnit. Grounds Sprint 23 T7."@en .
+
+hcp:RoleSkillTemplate a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Role Skill Template"@en ;
+    rdfs:comment    "The reusable template mapping an OccupationRole (and specialisation) to its required Skills, minimum Proficiency and minimum Assurance. Drives SkillDemand generation and eligibility checks. Reused verbatim from the Curavias skills ontology (D6)."@en .
+
+# --- Org spine + skills object / datatype properties ---
+
+hcp:orgUnitOfTenant a owl:ObjectProperty ;
+    rdfs:label  "org unit of tenant"@en ;
+    rdfs:domain hcp:OrgUnit ;
+    rdfs:range  hcp:Tenant .
+
+hcp:departmentOfOrgUnit a owl:ObjectProperty ;
+    rdfs:label  "department of org unit"@en ;
+    rdfs:domain hcp:Department ;
+    rdfs:range  hcp:OrgUnit .
+
+hcp:hasOccupationRole a owl:ObjectProperty ;
+    rdfs:label  "has occupation role"@en ;
+    rdfs:domain hcp:HealthWorker ;
+    rdfs:range  hcp:OccupationRole .
+
+hcp:assertsSkill a owl:ObjectProperty ;
+    rdfs:label  "asserts skill"@en ;
+    rdfs:domain hcp:SkillAssertion ;
+    rdfs:range  hcp:Skill .
+
+hcp:assertedByWorker a owl:ObjectProperty ;
+    rdfs:label  "asserted by worker"@en ;
+    rdfs:domain hcp:SkillAssertion ;
+    rdfs:range  hcp:HealthWorker .
+
+hcp:demandsSkill a owl:ObjectProperty ;
+    rdfs:label  "demands skill"@en ;
+    rdfs:domain hcp:SkillDemand ;
+    rdfs:range  hcp:Skill .
+
+hcp:demandForCareSetting a owl:ObjectProperty ;
+    rdfs:label  "demand for care setting"@en ;
+    rdfs:domain hcp:SkillDemand ;
+    rdfs:range  hcp:CareSetting .
+
+hcp:gapForCareSetting a owl:ObjectProperty ;
+    rdfs:label  "gap for care setting"@en ;
+    rdfs:domain hcp:SkillGap ;
+    rdfs:range  hcp:CareSetting .
+
+hcp:roleRequiresSkill a owl:ObjectProperty ;
+    rdfs:label  "role requires skill"@en ;
+    rdfs:domain hcp:RoleSkillTemplate ;
+    rdfs:range  hcp:Skill .
+
+hcp:eligibleForUnit a owl:ObjectProperty ;
+    rdfs:label  "eligible for unit"@en ;
+    rdfs:domain hcp:WorkerUnitEligibility ;
+    rdfs:range  hcp:CapacityUnit .
+
+hcp:workerGln a owl:DatatypeProperty ;
+    rdfs:label   "worker GLN (golden-thread identity key)"@en ;
+    rdfs:comment "The GLN worker-identity key, mod-10 validated at the silver gate; the golden thread across assertions, eligibility and demand."@en ;
+    rdfs:domain  hcp:HealthWorker ;
+    rdfs:range   xsd:string .
+
+hcp:hasProficiency a owl:DatatypeProperty ;
+    rdfs:label   "has proficiency (1..5, how capable)"@en ;
+    rdfs:comment "The Proficiency axis: 1 = novice .. 5 = expert. Orthogonal to Assurance. Applies to SkillAssertion (attained) and SkillDemand (minimum required)."@en ;
+    rdfs:domain  hcp:InformationContent ;
+    rdfs:range   xsd:integer .
+
+hcp:hasAssurance a owl:DatatypeProperty ;
+    rdfs:label   "has assurance (L0..L4, how proven)"@en ;
+    rdfs:comment "The Assurance axis: L0 = self-declared .. L4 = federally registered. Orthogonal to Proficiency and drives eligibility gating. Applies to SkillAssertion (attained) and SkillDemand (minimum required)."@en ;
+    rdfs:domain  hcp:InformationContent ;
+    rdfs:range   xsd:string .
 
 # ===========================================================================
 # Provider-extension pattern (per FR-ONT-007).

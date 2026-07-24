@@ -1,64 +1,66 @@
 import { useEffect, useState } from 'react';
-import { makeStyles, tokens, Title2, Button, Text } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import type { ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { BedManagerPayload } from '../../../../data/roleboard/bed-manager-data';
-import { Canvas } from '../../../../whiteboard/Canvas';
-import { useLayoutManager } from '../../../../whiteboard/LayoutManager';
-import { bedManagerCards } from './mock-data';
-import { CopilotDrawer } from '../../../../copilot-drawer/Drawer';
-import { useMode } from '../../../../context/mode-context';
-import { useHospital } from '../../../../context/hospital-context';
-import { useCopilotRail } from '../../../../copilot-rail/rail-context';
+import {
+  Body1,
+  Card,
+  CardHeader,
+  Caption1,
+  Text,
+  makeStyles,
+  tokens,
+} from '@fluentui/react-components';
+import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
+import type {
+  BedManagerPayload,
+  PlacementRequest,
+  PlacementBarrier,
+} from '../../../../data/roleboard/bed-manager-data';
+import { sortBarriers } from '../../../../data/roleboard/bed-manager-data';
+import { bedManagerBoard } from './bed-manager-board';
+import { BoardHeader } from '../occupancy/BoardHeader';
+import { PlacementRequestsTable } from './PlacementRequestsTable';
+import { PlacementBarriersBoard } from './PlacementBarriersBoard';
+import { BedStateKpis } from './BedStateKpis';
+import { AdmissionsEventstream } from './AdmissionsEventstream';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
-import { bedManagerBoard } from './bed-manager-board';
+import { useCopilotRail } from '../../../../copilot-rail/rail-context';
+import { useMode } from '../../../../context/mode-context';
+import { useHospital } from '../../../../context/hospital-context';
 
 const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
+    gap: tokens.spacingVerticalL,
+    padding: tokens.spacingHorizontalL,
   },
-  summary: {
-    display: 'flex',
-    gap: tokens.spacingHorizontalM,
-    flexWrap: 'wrap',
-  },
-  insights: {
-    display: 'flex',
-    gap: tokens.spacingHorizontalS,
-    flexWrap: 'wrap',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: tokens.spacingVerticalM,
-  },
+  pbiCard: { padding: tokens.spacingHorizontalM },
 });
 
-/** Sprint 13 T3/T6 — BedManager @ USZ reference operational whiteboard. */
+/** Sprint 20 (parity) — BedManager (bmca) surface: BoardHeader + placement worklist + barriers + KPIs + eventstream + Power BI embed. */
 export function BedManagerBoard() {
-  const styles = useStyles();
+  const s = useStyles();
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
   const rail = useCopilotRail();
-  const layout = useLayoutManager(bedManagerCards);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [data, setData] = useState<RoleBoardData<BedManagerPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
 
   useEffect(() => {
-    const scope = mode === 'demo'
-      ? GOLDEN_THREAD_SCOPE
-      : { hospital, windowHours: 72, pinned: false };
+    const scope =
+      mode === 'demo'
+        ? GOLDEN_THREAD_SCOPE
+        : { hospital, windowHours: 72, pinned: false };
     let active = true;
     void bedManagerBoard.load(scope, mode).then((loaded) => {
-      if (active) setData(loaded);
+      if (active) {
+        setData(loaded);
+        rail.showDefault(bedManagerBoard.defaultReco(loaded));
+      }
     });
     void residualFromPrev(bedManagerBoard.agent, scope, mode).then((residual) => {
       if (active) setPrev(residual);
@@ -66,53 +68,85 @@ export function BedManagerBoard() {
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, hospital]);
 
-  const banner = data
-    ? bannerFor(mode, bedManagerBoard.agent, prev)
-    : null;
-  const insights = data ? bedManagerBoard.insights(data) : [];
+  if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
+
+  const banner = bannerFor(mode, bedManagerBoard.agent, prev);
+  const payload = data.payload;
+
+  const route = (insight: ContextInsight) => {
+    const reco = bedManagerBoard.recoFor(insight, data);
+    void routeInsight(insight, reco, {
+      agent: bedManagerBoard.agent,
+      openWithReco: rail.openWithReco,
+    });
+  };
+
+  const onSelectRequest = (r: PlacementRequest) => {
+    route({
+      id: r.recoId,
+      label: t('insight.placementMove', {
+        patientId: r.patientId,
+        fromWard: r.fromWard,
+        toWard: r.toWard,
+      }),
+      context: {
+        placement: r.id,
+        patientId: r.patientId,
+        fromWard: r.fromWard,
+        toWard: r.toWard,
+      },
+    });
+  };
+
+  const onSelectBarrier = (b: PlacementBarrier) => {
+    route({ id: b.recoId, label: b.label, context: { barrier: b.id, bedImpact: b.bedImpact } });
+  };
+
+  const onAutoSequence = () => {
+    const top = sortBarriers(payload.barriers)[0];
+    if (top) onSelectBarrier(top);
+  };
 
   return (
-    <section className={styles.root} aria-label={t('bedManager.title')}>
-      {data && banner ? (
-        <>
-          <HandoffBanner banner={banner} provenance={data.provenance} />
-          <Text className={styles.summary}>
-            <span>{t('board.bedsShort')}: {data.payload.bedsShort}</span>
-            <span>{t('board.bedsReallocated')}: {data.payload.bedsReallocated}</span>
-            <span>{t('board.residual')}: {data.payload.residualBeds}</span>
-          </Text>
-          <div className={styles.insights}>
-            {insights.map((insight) => (
-              <Button
-                key={insight.id}
-                appearance="subtle"
-                onClick={() =>
-                  void routeInsight(insight, {
-                    agent: bedManagerBoard.agent,
-                    openWithContext: rail.openWithContext,
-                  })
-                }
-              >
-                {insight.label}
-              </Button>
-            ))}
-          </div>
-        </>
-      ) : null}
-      <div className={styles.header}>
-        <Title2>{t('bedManager.title')}</Title2>
-        <Button appearance="primary" onClick={() => setDrawerOpen(true)}>
-          {t('bedManager.askBmca')}
-        </Button>
-      </div>
-      <Canvas layout={layout} />
-      <CopilotDrawer
-        agent="bmca-agent"
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
+    <section
+      className={s.root}
+      data-testid="board-bed-manager"
+      aria-label={t('bedManager.title')}
+    >
+      <HandoffBanner banner={banner} provenance={data.provenance} />
+      <BoardHeader
+        agent={bedManagerBoard.agent}
+        title={t('board.bedManager')}
+        provenance={data.provenance}
+        lens="Bed Management"
       />
+
+      <PlacementRequestsTable
+        placements={payload.placements}
+        onSelectRequest={onSelectRequest}
+      />
+
+      <PlacementBarriersBoard
+        barriers={payload.barriers}
+        onSelectBarrier={onSelectBarrier}
+        onAutoSequence={onAutoSequence}
+      />
+
+      <BedStateKpis payload={payload} />
+
+      <AdmissionsEventstream admissions={payload.admissions} />
+
+      {/* Power BI embed — preserved from Sprint 13 (capacity-dashboard, Direct Lake, RLS by hospital) */}
+      <Card className={s.pbiCard} data-testid="pbi-embed">
+        <CardHeader
+          header={<Body1><b>{t('bmca.pbi.title')}</b></Body1>}
+          description={<Caption1>{payload.powerBiEmbed.reportName}</Caption1>}
+        />
+        <Body1>{payload.powerBiEmbed.embedPlaceholder}</Body1>
+      </Card>
     </section>
   );
 }

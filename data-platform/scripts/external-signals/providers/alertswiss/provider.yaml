@@ -1,0 +1,13 @@
+sourceId: alertswiss
+authority: BABS/FOCP
+trustTier: A
+channelKind: external
+hazardTypes: [govt-alert]
+defaultMode: live
+fallbackMode: simulated
+cadenceSeconds: 300
+endpoint: https://www.alert.swiss/api/v1/cap
+licence: Alertswiss-CAP-open
+providerVersion: alertswiss-2.0.0
+scenarioMap:
+  govt-alert: {template: F7, lageTier: 3}

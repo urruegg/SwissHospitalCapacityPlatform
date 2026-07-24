@@ -1,0 +1,6 @@
+assurance_level,name,evidence_source,verifiable,fit_for
+L4,Federally registered / licensed,"MedReg, GesReg, NAREG, PsyReg (GLN-keyed)",yes,Any safety-critical rostering; legal gate
+L3,Accredited diploma / specialist title,"SIWF/FMH, OdASanté/SBFI, SRK recognition",yes,"Scope-of-practice, sub-specialty allocation"
+L2,Issued dated certificate,"SRC, BAG radiation, fide, in-house course",partly,Task competency within validity window
+L1,Manager sign-off / supervised log,"Ward-lead confirmation, in-house LMS",internal,Refines currency; not a standalone gate
+L0,Self-declared / inferred,"Self-report, Work-ID, document mining",no,Discovery & suggestions only

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.5.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 0.6.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.4.0 (Sprint 05 CAF/WAF baseline pointers — policy-as-code, DSR, control-effectiveness telemetry) |
+| **Previous Version** | 0.5.0 (added Sprint 23 skills-evidence consent lineage + revocable Work-ID GLN promotion) |
 
 ## Purpose
 
@@ -119,6 +119,20 @@ application, data, and operations layers.
 ## Data Plane
 
 > **PHI Row-Level Security (2026-07-02, ADR-0016):** Workspace-level Row-Level Security enforces the ADR-0016 gate 4 policy: any semantic-model column tagged `phi=true` returns empty-set for all roles. See [ADR-0016 §Gate 4 — Dashboard gate](adr/0016-no-phi-in-mvp-demo-scope.md#gate-4-dashboard-gate).
+
+Workforce skills evidence adds a second data-plane control, consent lineage:
+
+> **Skills-evidence consent lineage (2026-07-23, ADR-0039):** Workforce skills
+> evidence (synthetic, no-PHI) is personal in shape and treated under the DSG
+> control model (see [COMPLIANCE.md §Sprint 23 Skills-Evidence DSG Tagging and Consent Lineage](COMPLIANCE.md#sprint-23-skills-evidence-dsg-tagging-and-consent-lineage)).
+> The `gold.fact_skill_assertion` and `gold.dim_work_id_profile` assets are tagged
+> `PII-personal`. Each assertion carries source-system and consent lineage:
+> `externalSystem` + `provenance.connectorVersion` record `source_system`, and
+> `consentScope` records the `consent_basis`. **Work-ID consent is first-class and
+> revocable** — the `worker_gln` promotion key and `consentScope` are populated
+> **only** when Work-ID consent was granted; revocation removes the GLN promotion
+> and the consented scope on the next on-demand load. Least-privilege access to the
+> promotion key follows the identity controls below (CH-C01, CH-C02, CH-C05).
 
 ## Threat Detection and Response
 

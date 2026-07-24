@@ -1,0 +1,10 @@
+sourceId: roster-shortfall
+authority: Curavias-internal
+trustTier: A
+channelKind: internal
+hazardTypes: [staffing-shortfall]
+defaultMode: internal
+licence: internal
+providerVersion: roster-shortfall-1.0.0
+scenarioMap:
+  staffing-shortfall: {template: F5, lageTier: 1}

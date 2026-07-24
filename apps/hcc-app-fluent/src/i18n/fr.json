@@ -56,6 +56,53 @@
       "alm": {
         "title": "Dev → SIT → Prod",
         "body": "L'ALM d'entreprise promeut les changements en sécurité du développement à la SIT puis à la production."
+      },
+      "stats": {
+        "sectionLabel": "Métriques de la plateforme",
+        "adrCount": "Décisions d'architecture",
+        "bomCount": "Éléments BOM",
+        "requirementsTracked": "Exigences suivies",
+        "hitlPct": "Portail HITL",
+        "phiCount": "Éléments PHI"
+      },
+      "provenance": {
+        "snapshot": "Instantané",
+        "live": "En direct",
+        "invariant": "Invariant"
+      },
+      "delivery": {
+        "sectionLabel": "Pipeline de livraison et promotion des environnements",
+        "planTitle": "Cycle de livraison",
+        "envTitle": "Promotion des environnements",
+        "plan": {
+          "plan": "PLAN",
+          "spec": "SPEC",
+          "build": "BUILD",
+          "review": "REVUE",
+          "release": "LIVRAISON"
+        },
+        "env": {
+          "dev": "DEV",
+          "sit": "SIT",
+          "prod": "PROD"
+        }
+      },
+      "roster": {
+        "sectionLabel": "Copilots d'exécution",
+        "countCaption": "{{count}} copilots spécialisés",
+        "lane": {
+          "bmca-agent": "Gestion des lits",
+          "ooa-agent": "Occupation",
+          "dca-agent": "Sorties",
+          "orsa-agent": "Gestion du bloc opératoire",
+          "sba-agent": "Ressources humaines",
+          "csa-agent": "Crise",
+          "data-quality-agent": "Plateforme de données",
+          "onboarding-agent": "Plateforme"
+        }
+      },
+      "pillars": {
+        "sectionLabel": "Fondations de la plateforme"
       }
     }
   },
@@ -73,6 +120,7 @@
   "board": {
     "loading": "Chargement...",
     "occupancy": "Prévision d'occupation (72 h)",
+    "bedManager": "Gestion des lits (72 h)",
     "beds": "lits",
     "nav": {
       "occupancy": "Occupation",
@@ -104,10 +152,40 @@
     "simulated": "simulé",
     "loopBack": "revient à la prévision d'occupation"
   },
+  "dca": {
+    "askAbout": {
+      "readyCandidates": "Quels patients sont prêts à sortir ?",
+      "spitexBarrier": "Pourquoi le Spitex bloque-t-il la sortie ?",
+      "rehab": "Y a-t-il des places de réhabilitation disponibles ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions de sortie",
+      "patient": "Patient",
+      "ward": "Unité",
+      "readiness": "Préparation",
+      "blocker": "Obstacle",
+      "estFree": "Libre dans (h)"
+    },
+    "barriers": {
+      "hint": "Obstacles à la capacité triés par impact sur les lits",
+      "rank": "Rang",
+      "label": "Obstacle",
+      "bedImpact": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par ancienneté et impact →"
+    },
+    "gap": {
+      "label": "Écart de sorties projeté",
+      "cta": "Résoudre l'écart de sorties"
+    }
+  },
   "insight": {
     "occupancyRising": "{{channel}} augmente",
     "dischargeExpedite": "Accélérer la sortie {{ward}}",
+    "dischargeExpediteDetail": "Accélérer la sortie {{ward}} — {{blocker}}",
     "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}",
+    "placementMove": "Déplacer {{patientId}} de {{fromWard}} vers {{toWard}}",
+    "placementBarrier": "Obstacle : {{label}}",
     "orDefer": "Reporter le cas {{specialty}}",
     "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Simuler {{scenario}}"
@@ -141,6 +219,70 @@
       "orSteering": "Pilotage du bloc",
       "staffing": "Personnel",
       "crisis": "Crise & scénarios"
+    },
+    "capacityTeaser": {
+      "title": "Capacité du site (live)",
+      "peakWard": "{{ward}} → {{pct}} %",
+      "siteGapDeficit": "Déficit {{beds}} lits",
+      "siteGapSurplus": "Surplus {{beds}} lits",
+      "breachEta": "Dépassement ~{{hours}}h",
+      "asOf": "au {{time}}",
+      "firstSurfacedBy": "détecté par {{agent}}"
+    },
+    "valueTiles": {
+      "title": "Valeur & ROI",
+      "romLabel": "Estimation ROM"
+    },
+    "copilotCount": {
+      "label": "{{count}} copilotes spécialisés",
+      "caption": "Dérivé du registre d'agents — un par tableau de rôle"
+    },
+    "whyNow": {
+      "title": "Pourquoi maintenant ?",
+      "caption": "Comparaison illustrative — contenu éditorial, pas de métriques en direct",
+      "colAspect": "Dimension",
+      "colToday": "Aujourd'hui",
+      "colCuravias": "Avec Curavias",
+      "row1": {
+        "aspect": "Visibilité capacité",
+        "today": "Rondes manuelles — heures de retard",
+        "curavias": "Prévision IA 72h, unité par unité"
+      },
+      "row2": {
+        "aspect": "Coordination des sorties",
+        "today": "Appels individuels par unité",
+        "curavias": "Liste de travail coordonnée, 8+ candidats prêts"
+      },
+      "row3": {
+        "aspect": "Planification du bloc",
+        "today": "Papier et tableurs",
+        "curavias": "Leviers de reslot classés, lits protégés"
+      },
+      "row4": {
+        "aspect": "Équilibre du personnel",
+        "today": "Comblement réactif des lacunes",
+        "curavias": "Optimisation proactive des équipes"
+      },
+      "row5": {
+        "aspect": "Préparation aux crises",
+        "today": "Réponse ad hoc aux incidents",
+        "curavias": "Pipeline signal → scénario → probabilité"
+      },
+      "row6": {
+        "aspect": "Preuve de valeur",
+        "today": "Rapports qualitatifs",
+        "curavias": "Provenance BVA estampillée — ROM"
+      }
+    },
+    "patientPath": {
+      "title": "Copilote à chaque étape du parcours",
+      "caption": "Illustratif — les copilotes accompagnent chaque étape sans accéder aux données patients réelles (PHI)",
+      "admission": "Admission",
+      "triage": "Triage & affectation",
+      "treatment": "Traitement",
+      "discharge": "Sortie",
+      "postAcute": "Soins post-aigus",
+      "occupancyNote": "{{ward}} → {{pct}} % en 72h"
     }
   },
   "settings": {
@@ -149,6 +291,188 @@
   "agent": {
     "open": "Ouvrir l'agent",
     "close": "Fermer l'agent",
-    "title": "Agent"
+    "title": "Agent",
+    "askAbout": "Poser une question sur"
+  },
+  "badge": {
+    "simulatedData": "Données simulées",
+    "liveData": "Données en direct",
+    "accessLens": "Lentille d'accès : {{lens}}"
+  },
+  "reco": {
+    "back": "Retour au résumé",
+    "agentLine": "{{agent}} — contexte récupéré",
+    "projection": "Projection : {{text}}",
+    "refused": "Refusé",
+    "approvalRequired": "Approbation requise",
+    "approvalHint": "Répondez approved-to-apply pour continuer"
+  },
+  "bmca": {
+    "table": {
+      "hint": "Cliquez sur une ligne → actions de placement",
+      "patient": "Patient",
+      "priority": "Priorité",
+      "from": "De",
+      "to": "Vers",
+      "wait": "Attente (min)"
+    },
+    "barriers": {
+      "hint": "Obstacles au placement triés par impact sur les lits",
+      "rank": "Rang",
+      "label": "Obstacle",
+      "bedImpact": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par impact →"
+    },
+    "kpis": {
+      "utilPct": "Utilisation",
+      "freeBeds": "Lits libres",
+      "targetFree": "Cible libre",
+      "slaRisk": "Risque SLA"
+    },
+    "stream": {
+      "title": "Eventstream admissions / sorties",
+      "hint": "Admissions et sorties en direct (simulé)"
+    },
+    "pbi": {
+      "title": "Tableau de bord de capacité"
+    },
+    "gap": {
+      "label": "Écart de capacité du site",
+      "cta": "Résoudre l'écart de capacité"
+    },
+    "askAbout": {
+      "topPressure": "Où est la plus grande pression ?",
+      "placementQueue": "Quelle est la longueur de la file d'attente d'attribution de lits ?",
+      "slaRisk": "Quelles unités ont un risque SLA ?"
+    }
+  },
+  "orsa": {
+    "askAbout": {
+      "deferrableCases": "Quelles interventions peuvent être reportées ?",
+      "orroomPressure": "Où est la plus grande pression au bloc opératoire ?",
+      "sbaHandoff": "Comment transmettre l'écart résiduel au service du personnel ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions de pilotage du bloc",
+      "specialty": "Spécialité",
+      "slot": "Créneau bloc",
+      "bedsImpact": "Impact lits",
+      "bedsProtected": "Lits protégés",
+      "deferable": "Reportable",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "levers": {
+      "hint": "Leviers de reprogrammation triés par lits protégés",
+      "rank": "Rang",
+      "label": "Levier",
+      "bedsProtected": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par impact →"
+    },
+    "gap": {
+      "label": "Écart bloc projeté",
+      "cta": "Résoudre l'écart bloc"
+    }
+  },
+  "sba": {
+    "askAbout": {
+      "surgeGap": "Comment le déficit de lits de capacité est-il couvert ?",
+      "orsaCoverage": "Les reports du bloc sont-ils entièrement couverts ?",
+      "csaEscalation": "Quand faut-il escalader vers la planification de crise ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions RH",
+      "role": "Rôle",
+      "fromUnit": "Unité source",
+      "toUnit": "Unité cible",
+      "fte": "ETP",
+      "shiftGap": "Plage horaire"
+    },
+    "levers": {
+      "hint": "Leviers RH triés par lits couverts",
+      "rank": "Rang",
+      "label": "Levier",
+      "bedsEnabled": "Lits",
+      "detail": "Détail",
+      "cta": "Séquence automatique par impact couverture →"
+    },
+    "gap": {
+      "label": "Manque de personnel du site",
+      "cta": "Résoudre le manque de personnel"
+    },
+    "kpi": {
+      "balanced": "Équilibré"
+    }
+  },
+  "ooa": {
+    "askAbout": {
+      "wardTips": "Quelles unités basculent en 72 h ?",
+      "fluPeak": "Quand survient le pic de grippe ?",
+      "icuStaffing": "Le personnel des soins intensifs est-il un frein ?"
+    },
+    "table": {
+      "hint": "Cliquez sur une ligne → actions Copilot",
+      "ward": "Unité",
+      "now": "Maintenant",
+      "trend": "Tendance 72 h",
+      "forecast": "Prévision",
+      "flag": "Statut"
+    },
+    "flow": {
+      "hint": "Les signaux alimentent les flux de spécialités → les sorties de capacité. Cliquez sur un flux ou l'écart pour les actions Copilot.",
+      "channels": "Signaux",
+      "streams": "Flux",
+      "outputs": "Sorties",
+      "current": "Actuel",
+      "forecast72": "Prévision 72 h",
+      "fedBy": "Alimenté par {{channels}}"
+    },
+    "gap": {
+      "label": "Écart de capacité projeté à 72 h",
+      "card": "{{beds}} lits manquants en 72 h",
+      "aria": "Lits nécessaires dans les 72 h",
+      "cta": "Résoudre l'écart à 72 h"
+    }
+  },
+  "csa": {
+    "askAbout": {
+      "heatwaveImpact": "Quel est l'impact de la vague de chaleur sur la capacité ?",
+      "signalReadiness": "Tous les signaux Trust-A sont-ils surveillés ?",
+      "scenarioSimulation": "Quel scénario simuler en premier ?"
+    },
+    "signals": {
+      "title": "Signaux externes (Trust-A)",
+      "hint": "Cliquez sur une ligne → actions de signal",
+      "source": "Source",
+      "feed": "Flux",
+      "status": "Statut",
+      "trustClass": "Classe de confiance",
+      "certainty": "Certitude",
+      "probability": "Probabilité"
+    },
+    "scenarios": {
+      "title": "Scénarios classés par probabilité",
+      "hint": "Cliquez sur une ligne → lancer la simulation (approbation requise)",
+      "rank": "Rang",
+      "name": "Scénario",
+      "bedImpact": "Impact lits",
+      "probability": "Probabilité (%)",
+      "spof": "SPOF",
+      "cta": "Simuler le scénario principal →"
+    },
+    "status": {
+      "filtered": "En quarantaine",
+      "nominal": "Nominal"
+    },
+    "kpi": {
+      "residualBeds": "Lits résiduels",
+      "balanced": "Équilibré"
+    },
+    "gap": {
+      "label": "Statut de préparation aux crises",
+      "cta": "Examiner la préparation aux crises"
+    }
   }
 }

@@ -1,0 +1,12 @@
+sourceId: ncsc
+authority: NCSC
+trustTier: A
+channelKind: external
+hazardTypes: [cyber]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 300
+licence: NCSC-open-data
+providerVersion: ncsc-1.0.0
+scenarioMap:
+  cyber: {template: F4, lageTier: 2}

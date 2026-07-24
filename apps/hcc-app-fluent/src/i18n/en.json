@@ -56,6 +56,53 @@
       "alm": {
         "title": "Dev → SIT → Prod",
         "body": "Enterprise ALM promotes changes safely from development through SIT to production."
+      },
+      "stats": {
+        "sectionLabel": "Platform metrics",
+        "adrCount": "Architecture decisions",
+        "bomCount": "BOM items",
+        "requirementsTracked": "Requirements tracked",
+        "hitlPct": "HITL gate",
+        "phiCount": "PHI items"
+      },
+      "provenance": {
+        "snapshot": "Snapshot",
+        "live": "Live",
+        "invariant": "Invariant"
+      },
+      "delivery": {
+        "sectionLabel": "Delivery pipeline & environment promotion",
+        "planTitle": "Delivery lifecycle",
+        "envTitle": "Environment promotion",
+        "plan": {
+          "plan": "PLAN",
+          "spec": "SPEC",
+          "build": "BUILD",
+          "review": "REVIEW",
+          "release": "RELEASE"
+        },
+        "env": {
+          "dev": "DEV",
+          "sit": "SIT",
+          "prod": "PROD"
+        }
+      },
+      "roster": {
+        "sectionLabel": "Runtime copilots",
+        "countCaption": "{{count}} specialised copilots",
+        "lane": {
+          "bmca-agent": "Bed management",
+          "ooa-agent": "Occupancy",
+          "dca-agent": "Discharge",
+          "orsa-agent": "OR steering",
+          "sba-agent": "Staffing",
+          "csa-agent": "Crisis",
+          "data-quality-agent": "Data platform",
+          "onboarding-agent": "Platform"
+        }
+      },
+      "pillars": {
+        "sectionLabel": "Platform foundations"
       }
     }
   },
@@ -73,6 +120,7 @@
   "board": {
     "loading": "Loading...",
     "occupancy": "Occupancy forecast (72h)",
+    "bedManager": "Bed management (72h)",
     "beds": "beds",
     "nav": {
       "occupancy": "Occupancy",
@@ -104,10 +152,40 @@
     "simulated": "simulated",
     "loopBack": "loops back to occupancy forecast"
   },
+  "dca": {
+    "askAbout": {
+      "readyCandidates": "Which patients are discharge-ready?",
+      "spitexBarrier": "Why is Spitex blocking discharge?",
+      "rehab": "Are there free rehab slots?"
+    },
+    "table": {
+      "hint": "Click a row → discharge actions",
+      "patient": "Patient",
+      "ward": "Ward",
+      "readiness": "Readiness",
+      "blocker": "Blocker",
+      "estFree": "Free in (h)"
+    },
+    "barriers": {
+      "hint": "Capacity barriers sorted by bed impact",
+      "rank": "Rank",
+      "label": "Barrier",
+      "bedImpact": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by aging & impact →"
+    },
+    "gap": {
+      "label": "Projected discharge gap",
+      "cta": "Resolve discharge gap"
+    }
+  },
   "insight": {
     "occupancyRising": "{{channel}} rising",
     "dischargeExpedite": "Expedite {{ward}} discharge",
+    "dischargeExpediteDetail": "Expedite {{ward}} discharge — {{blocker}}",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
+    "placementMove": "Move {{patientId}} from {{fromWard}} to {{toWard}}",
+    "placementBarrier": "Barrier: {{label}}",
     "orDefer": "Defer {{specialty}} case",
     "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Stress-test {{scenario}}"
@@ -141,6 +219,70 @@
       "orSteering": "OR steering",
       "staffing": "Staffing",
       "crisis": "Crisis & scenarios"
+    },
+    "capacityTeaser": {
+      "title": "Site capacity (live)",
+      "peakWard": "{{ward}} → {{pct}}%",
+      "siteGapDeficit": "Deficit {{beds}} beds",
+      "siteGapSurplus": "Surplus {{beds}} beds",
+      "breachEta": "Breach ~{{hours}}h",
+      "asOf": "as of {{time}}",
+      "firstSurfacedBy": "surfaced by {{agent}}"
+    },
+    "valueTiles": {
+      "title": "Value & ROI",
+      "romLabel": "ROM estimate"
+    },
+    "copilotCount": {
+      "label": "{{count}} specialised copilots",
+      "caption": "Registry-derived — one per role board"
+    },
+    "whyNow": {
+      "title": "Why now?",
+      "caption": "Illustrative comparison — editorial content, not live metrics",
+      "colAspect": "Dimension",
+      "colToday": "Today",
+      "colCuravias": "With Curavias",
+      "row1": {
+        "aspect": "Capacity visibility",
+        "today": "Manual rounds — hours of lag",
+        "curavias": "72h AI forecast, ward by ward"
+      },
+      "row2": {
+        "aspect": "Discharge coordination",
+        "today": "Individual calls per ward",
+        "curavias": "Coordinated worklist, 8+ candidates ready"
+      },
+      "row3": {
+        "aspect": "OR scheduling",
+        "today": "Paper-based & spreadsheets",
+        "curavias": "Ranked reslot levers, beds protected"
+      },
+      "row4": {
+        "aspect": "Staffing balance",
+        "today": "Reactive gap filling",
+        "curavias": "Proactive shift optimisation"
+      },
+      "row5": {
+        "aspect": "Crisis readiness",
+        "today": "Ad-hoc incident response",
+        "curavias": "Signal → scenario → probability pipeline"
+      },
+      "row6": {
+        "aspect": "Value evidence",
+        "today": "Qualitative reports",
+        "curavias": "BVA provenance-stamped — ROM"
+      }
+    },
+    "patientPath": {
+      "title": "Copilot at every care step",
+      "caption": "Illustrative — copilots support each stage without handling real patient data (PHI)",
+      "admission": "Admission",
+      "triage": "Triage & Placement",
+      "treatment": "Treatment",
+      "discharge": "Discharge",
+      "postAcute": "Post-acute",
+      "occupancyNote": "{{ward}} → {{pct}}% in 72h"
     }
   },
   "settings": {
@@ -149,6 +291,188 @@
   "agent": {
     "open": "Open agent",
     "close": "Close agent",
-    "title": "Agent"
+    "title": "Agent",
+    "askAbout": "Ask about"
+  },
+  "badge": {
+    "simulatedData": "Simulated data",
+    "liveData": "Live data",
+    "accessLens": "Access-lens: {{lens}}"
+  },
+  "reco": {
+    "back": "Back to summary",
+    "agentLine": "{{agent}} — context picked up",
+    "projection": "Projection: {{text}}",
+    "refused": "Refused",
+    "approvalRequired": "Approval required",
+    "approvalHint": "Reply approved-to-apply to proceed"
+  },
+  "bmca": {
+    "table": {
+      "hint": "Click a row → placement actions",
+      "patient": "Patient",
+      "priority": "Priority",
+      "from": "From",
+      "to": "To",
+      "wait": "Wait (min)"
+    },
+    "barriers": {
+      "hint": "Placement barriers sorted by bed impact",
+      "rank": "Rank",
+      "label": "Barrier",
+      "bedImpact": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by impact →"
+    },
+    "kpis": {
+      "utilPct": "Utilisation",
+      "freeBeds": "Free beds",
+      "targetFree": "Target free",
+      "slaRisk": "SLA risk"
+    },
+    "stream": {
+      "title": "Admissions / discharge eventstream",
+      "hint": "Live admissions and discharges (simulated)"
+    },
+    "pbi": {
+      "title": "Capacity dashboard"
+    },
+    "gap": {
+      "label": "Site capacity gap",
+      "cta": "Resolve capacity gap"
+    },
+    "askAbout": {
+      "topPressure": "Where is the biggest pressure?",
+      "placementQueue": "How long is the bed placement queue?",
+      "slaRisk": "Which wards have SLA risk?"
+    }
+  },
+  "orsa": {
+    "askAbout": {
+      "deferrableCases": "Which procedures can be deferred?",
+      "orroomPressure": "Where is the biggest OR pressure?",
+      "sbaHandoff": "How do we hand off the residual gap to staffing?"
+    },
+    "table": {
+      "hint": "Click a row → OR steering actions",
+      "specialty": "Specialty",
+      "slot": "OR slot",
+      "bedsImpact": "Beds impact",
+      "bedsProtected": "Beds protected",
+      "deferable": "Deferable",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "levers": {
+      "hint": "Reslot levers sorted by beds protected",
+      "rank": "Rank",
+      "label": "Lever",
+      "bedsProtected": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by impact →"
+    },
+    "gap": {
+      "label": "Projected OR gap",
+      "cta": "Resolve OR gap"
+    }
+  },
+  "sba": {
+    "askAbout": {
+      "surgeGap": "How is the surge bed gap being covered?",
+      "orsaCoverage": "Are ORSA deferrals fully covered?",
+      "csaEscalation": "When should we escalate to crisis planning?"
+    },
+    "table": {
+      "hint": "Click a row → staffing actions",
+      "role": "Role",
+      "fromUnit": "From unit",
+      "toUnit": "To unit",
+      "fte": "FTE",
+      "shiftGap": "Shift"
+    },
+    "levers": {
+      "hint": "Staffing levers sorted by beds enabled",
+      "rank": "Rank",
+      "label": "Lever",
+      "bedsEnabled": "Beds",
+      "detail": "Detail",
+      "cta": "Auto-sequence by coverage impact →"
+    },
+    "gap": {
+      "label": "Site staffing gap",
+      "cta": "Resolve staffing gap"
+    },
+    "kpi": {
+      "balanced": "Balanced"
+    }
+  },
+  "ooa": {
+    "askAbout": {
+      "wardTips": "Which wards tip over in 72h?",
+      "fluPeak": "When does the flu peak hit?",
+      "icuStaffing": "Is ICU staffing a constraint?"
+    },
+    "table": {
+      "hint": "Click a row → Copilot actions",
+      "ward": "Ward",
+      "now": "Now",
+      "trend": "72h trend",
+      "forecast": "Forecast",
+      "flag": "Flag"
+    },
+    "flow": {
+      "hint": "Signals feed specialisation streams → capacity outputs. Click a stream or the gap for Copilot actions.",
+      "channels": "Signals",
+      "streams": "Streams",
+      "outputs": "Outputs",
+      "current": "Current",
+      "forecast72": "Forecast 72h",
+      "fedBy": "Fed by {{channels}}"
+    },
+    "gap": {
+      "label": "Projected 72h capacity gap",
+      "card": "{{beds}} beds short in 72h",
+      "aria": "Beds needed within 72h",
+      "cta": "Resolve the 72h gap"
+    }
+  },
+  "csa": {
+    "askAbout": {
+      "heatwaveImpact": "What is the heatwave capacity impact?",
+      "signalReadiness": "Are all Trust-A signals being monitored?",
+      "scenarioSimulation": "Which scenario should we simulate first?"
+    },
+    "signals": {
+      "title": "External signals (Trust-A)",
+      "hint": "Click a row → signal actions",
+      "source": "Source",
+      "feed": "Feed",
+      "status": "Status",
+      "trustClass": "Trust class",
+      "certainty": "Certainty",
+      "probability": "Probability"
+    },
+    "scenarios": {
+      "title": "Scenarios ranked by probability",
+      "hint": "Click a row → run simulation (approval required)",
+      "rank": "Rank",
+      "name": "Scenario",
+      "bedImpact": "Bed impact",
+      "probability": "Probability (%)",
+      "spof": "SPOF",
+      "cta": "Simulate top scenario →"
+    },
+    "status": {
+      "filtered": "Quarantined",
+      "nominal": "Nominal"
+    },
+    "kpi": {
+      "residualBeds": "Residual beds",
+      "balanced": "Balanced"
+    },
+    "gap": {
+      "label": "Crisis readiness status",
+      "cta": "Review crisis readiness"
+    }
   }
 }

@@ -36,13 +36,14 @@ from pathlib import Path
 
 CONTRACT_ID = "DC-EVENTSTREAM-RAW-v1"
 
-# (hospitalId, 3-letter short code used inside identifiers). Matches the four
-# curavias tenants in data/master-data/capacity/01_dim_hospital.csv.
+# (hospitalId, 3-letter short code used inside identifiers). Matches the three
+# surviving Curavias tenants in gold.dim_hospital after the 1:1 fold
+# (data/master-data/capacity/01_dim_hospital.csv minus H_HSL, which has no
+# Curavias tenant and is dropped/parked — issue #349).
 HOSPITALS = [
     ("H_USZ", "USZ"),
     ("H_LUKS", "LUK"),
     ("H_SZB", "SZB"),
-    ("H_HSL", "HSL"),
 ]
 
 SPECIALTY_SERVICES = [

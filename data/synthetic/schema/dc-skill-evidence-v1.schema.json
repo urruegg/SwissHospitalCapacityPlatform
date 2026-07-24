@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-skill-evidence-v1.schema.json",
+  "title": "Curavias Skills Evidence Contract (DC-SKILL-EVIDENCE-v1)",
+  "description": "Envelope for workforce skills-evidence records gathered from external systems (SuccessFactors HRIS, LMS, Skills-Manager, Work-ID) via the Sprint 23 skills-evidence plugin architecture. Mirrors DC-EXT-SIGNAL-v1. Extends the Step-3 canonical inbound record with the Sprint-21 trust fields. The source_mode badge (live | simulated) travels in the contract, is preserved through Bronze/Silver, and surfaces as a live-vs-simulated indicator on gold.fact_skill_assertion. Synthetic / no-PHI only (ADR-0013 / ADR-0016). See docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md sec 3.2.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetId", "contractId", "contractVersion", "classification", "residency", "purposeTags", "records"],
+  "properties": {
+    "datasetId":       { "type": "string", "pattern": "^DS-SKILL-EVIDENCE-[a-z0-9-]+$" },
+    "contractId":      { "type": "string", "enum": ["DC-SKILL-EVIDENCE-v1"] },
+    "contractVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":  { "type": "string", "enum": ["personal-synthetic"] },
+    "residency":       { "type": "string", "enum": ["CH", "demo-westus2"] },
+    "purposeTags": {
+      "type": "array", "minItems": 1,
+      "items": { "type": "string", "enum": ["skills-evidence", "workforce-capability", "capacity-planning"] }
+    },
+    "records": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidenceId", "externalSystem", "sourceMode", "trustTier",
+                     "externalPersonRef", "externalSkillCode", "externalSkillLabel",
+                     "selfOrConfirmed", "capturedAt", "provenance"],
+        "properties": {
+          "evidenceId":        { "type": "string" },
+          "externalSystem":    { "type": "string", "enum": ["successfactors", "lms", "skills_manager", "work_id"] },
+          "sourceMode":        { "type": "string", "enum": ["live", "simulated"] },
+          "trustTier":         { "type": "string", "enum": ["A", "B", "C"] },
+          "externalPersonRef": { "type": "string" },
+          "workerGln":         { "type": ["string", "null"] },
+          "externalSkillCode": { "type": "string" },
+          "externalSkillLabel":{ "type": "string" },
+          "selfOrConfirmed":   { "type": "string", "enum": ["self", "employer_confirmed"] },
+          "externalLevel":     { "type": ["string", "null"] },
+          "consentScope":      { "type": ["string", "null"] },
+          "capturedAt":        { "type": "string", "format": "date" },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ingestedAt", "connectorVersion", "licence", "rawHash"],
+            "properties": {
+              "ingestedAt":       { "type": "string", "format": "date-time" },
+              "connectorVersion": { "type": "string" },
+              "licence":          { "type": "string" },
+              "rawHash":          { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

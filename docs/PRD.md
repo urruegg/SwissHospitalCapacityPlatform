@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.9.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 1.12.0 |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.8.0 (added FR-EXT trusted external signal requirements) |
+| **Previous Version** | 1.11.0 (added NFR-EXT-EVID-001 + signals-fabric-evidence traceability row) |
 
 ## Purpose
 
@@ -187,6 +187,37 @@ preparation.
 | `FR-EXT-ONT-001` | Add ExternalSignal/TrustedSource/HazardType/HazardEvent/TriggerRule classes. |
 | `FR-EXT-ONT-002` | Maintain reference<->operational<->contract crosswalk for the new classes. |
 | `FR-EXT-GOV-001` | Enforce trust-tier + HITL + advisory-only trigger policy. |
+| `FR-EXT-015` | Onboard new signal sources as manifest-driven provider plugins emitting `DC-EXT-SIGNAL-v1`. |
+| `FR-EXT-016` | Provide real API adapters (LiveBinding) for confirmed-ready channels (SED, Alertswiss). |
+| `FR-EXT-017` | Provide simulator plugins (SimulatorBinding) for channels without a confirmed API. |
+| `FR-EXT-018` | Support internal signal channels (InternalBinding) derived from platform gold tables. |
+| `FR-EXT-019` | Surface a data-driven live/simulated/internal trust badge per channel on the CSA/OCA boards. |
+| `FR-EXT-020` | Host ingestion + simulation as Azure Container Apps services publishing to Event Hub/Eventstream (not GitHub Actions). |
+| `NFR-EXT-PLG-001` | Live bindings are always mocked in CI; no external network calls in Actions. |
+| `NFR-EXT-PLG-002` | A schema-invalid manifest fails CI and is excluded from the runtime catalogue (fail-closed). |
+
+### L) Curavias Organisation Spine And Skills Evidence (Sprint 23)
+
+Sprint 23 deltas (P1b) formalised per the
+[Sprint 23 org-skills refactor design](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md),
+[Sprint 23 implementation plan](superpowers/plans/2026-07-23-sprint-23-org-skills-refactor-plan.md),
+and [ADR-0039](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md).
+Scope is synthetic, no-PHI master data loaded on demand; the skills-evidence
+plugin reuses the Sprint 21 provider-plugin pattern. Extends the Step 1-4
+org/skills ontology, does not replace it.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-ORG-001` | Fold `dim_hospital` into a **Curavias organisation spine** (`dim_tenant` / `dim_org_unit` / `dim_department`) and re-key the dependent facts (`fact_capacity_baseline`, `encounter`, `bed_assignment`, `or_case`, `or_schedule`) onto it. |
+| `FR-SKILL-001` | Gather skills evidence from external systems via a **plugin architecture** - real-API adapters where an API exists, simulators where none does - each record flagged **live-vs-simulated** (`sourceMode`) with a trust tier (`trustTier` A/B/C). |
+| `FR-SKILL-002` | Mimic **SuccessFactors** (HRIS), an **LMS** (learning/cert store), and **Skills-Manager with Work-ID** (worker-owned skills passport) as simulated sources, normalised to the `DC-SKILL-EVIDENCE-v1` contract. |
+| `FR-SKILL-003` | Derive assurance from the evidence assertion (`self` -> L0, `employer_confirmed` -> L1); promote the `worker_gln` golden-thread key and set `consentScope` **only** when Work-ID consent was granted; Work-ID assertions are always `self`-declared. |
+| `FR-SKILL-004` | Load the full synthetic Curavias master data (employees, assertions, org spine) **on demand** from a dedicated **ADLS Gen2 landing zone via a OneLake shortcut** and a Bronze->Silver->Gold pipeline, not from Microsoft Entra and not from git-committed extracts. |
+| `FR-SKILL-005` | Use a **hybrid transport**: batch extract drops to the ADLS landing zone for HRIS/LMS master data; an Eventstream lane carries only near-real-time skills events (credential expiry, consent grant/revoke, newly-confirmed assertions). |
+| `FR-SKILL-006` | Validate landed data at the **pipeline silver gate** (PK/FK, GLN mod-10, enum domains, load order), quarantining bad rows in Silver rather than at PR time. |
+| `FR-SKILL-007` | Preserve the live-vs-simulated badge and trust tier **end-to-end** through Bronze/Silver so they surface on `gold.fact_skill_assertion`; they are never invented downstream. |
+| `FR-SKILL-008` | Express the **bed-vs-ops skill-demand split** on the semantic and ontology surface: bed side = Pflegepersonal / nursing, ops side = doctors and specialised teams. |
+| `FR-SKILL-ONT-001` | Extend the existing staff/person ontology view with the org spine, skill classes, and bed-vs-ops demand axis; keep `fact_skill_assertion` as the atomic unit and the proficiency (1-5) / assurance (L0-L4) axes and GLN golden thread unchanged (extend, don't replace). |
 
 ## Non-Functional Requirements
 
@@ -292,6 +323,14 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-EXT-ONT-001` | Operational (Fabric IQ) binding GA-gated per ADR-0014. |
 | `NFR-EXT-GOV-001` | Record source licence/attribution for every ingested signal. |
 | `NFR-EXT-GOV-002` | No PHI/personal data; public authority feeds + synthetic fixtures only. |
+| `NFR-EXT-EVID-001` | External signals shall be demonstrably queryable on SIT via the `external-signals` Direct-Lake semantic model (trust-badge measures) and the `da_hospital_capacity` data agent, with the PHI refusal gate preserved; captured as a versioned evidence artefact. |
+
+### K) Curavias Org Spine And Skills Evidence Governance (Sprint 23)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-SKILL-001` | Skills-evidence ingestion and simulation run as **Azure Container Apps** services publishing to Event Hub/Eventstream, never as GitHub Actions workflows (Actions is CI-only). |
+| `NFR-SKILL-002` | All Curavias org/skills data is **synthetic, no-PHI**; the master-data generator is deterministic and git-owned for reproducibility, while the generated extracts are uploaded to the landing zone and not committed to git. |
 
 ## MVP Definition
 
@@ -324,6 +363,9 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21: trusted external signals contract, triggers, ontology, and governance)* | `FR-EXT-001` to `FR-EXT-006`, `FR-EXT-ONT-001` to `FR-EXT-ONT-002`, `FR-EXT-GOV-001`, `NFR-EXT-ONT-001`, `NFR-EXT-GOV-001` to `NFR-EXT-GOV-002` |
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 forecast overlay and SIT IQ-layer proof extension)* | `FR-EXT-010` to `FR-EXT-014` |
+| [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
+| [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
+| [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
 
 ## Assumptions To Validate In Implementation Planning
 

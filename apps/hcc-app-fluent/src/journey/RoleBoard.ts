@@ -1,3 +1,5 @@
+import type { GroundedReco } from '../copilot-rail/reco';
+
 /**
  * Sprint 1 (parity) — the FROZEN per-surface contract. Every MAIN role board
  * implements this identical shape so later role sprints are parallelizable.
@@ -42,8 +44,14 @@ export interface BannerContext {
 export interface RoleBoard<P = unknown> {
   agent: AgentId;
   ceiling: Ceiling;
+  /** Prompts shown as ask-about chips in the docked rail. */
+  askAbout: string[];
   load(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<P>>;
   insights(data: RoleBoardData<P>): ContextInsight[];
+  /** Proactive reco shown when the rail first opens (no insight clicked). */
+  defaultReco(data: RoleBoardData<P>): GroundedReco;
+  /** Grounded reco for a clicked insight; deterministic, from trusted data. */
+  recoFor(insight: ContextInsight, data: RoleBoardData<P>): GroundedReco;
   toHandoff(data: RoleBoardData<P>): ResidualPressure;
   fromHandoff(prev: ResidualPressure | null): BannerContext;
 }
