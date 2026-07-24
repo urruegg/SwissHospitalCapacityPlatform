@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Badge, Body1, Caption1, makeStyles, tokens } from '@fluentui/react-components';
+import { Body1, Caption1, makeStyles, tokens } from '@fluentui/react-components';
 import {
   WeatherSunnyRegular,
   PulseRegular,
@@ -14,7 +14,7 @@ import {
   CircleRegular,
   type FluentIcon,
 } from '@fluentui/react-icons';
-import { chipBadgeColor } from '../../../../copilot-rail/reco';
+import { RagBadge } from './RagBadge';
 import type { BoardSignal } from '../../../../data/roleboard/occupancy-data';
 import { space, radii, motion } from '../../../../theme/design-system';
 import { ragColors } from '../../../../theme/curavias-theme';
@@ -96,9 +96,7 @@ export function SignalsPanel({ signals }: SignalsPanelProps) {
           {sig.detail ? <span className={s.detail}>{` \u00b7 ${sig.detail}`}</span> : null}
         </Body1>
         <div className={s.badges}>
-          <Badge appearance="filled" color={chipBadgeColor(sig.statusTone)}>
-            {sig.statusLabel}
-          </Badge>
+          <RagBadge tone={sig.statusTone}>{sig.statusLabel}</RagBadge>
           <span
             className={s.provIcon}
             role="img"

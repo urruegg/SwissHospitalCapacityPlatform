@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { Badge, Body1, Caption1, Card, Text, makeStyles, tokens } from '@fluentui/react-components';
+import { Body1, Caption1, Card, Text, makeStyles, tokens } from '@fluentui/react-components';
 import { ArrowRightRegular } from '@fluentui/react-icons';
-import { chipBadgeColor } from '../../../../copilot-rail/reco';
 import { SignalsPanel } from './SignalsPanel';
+import { RagBadge } from './RagBadge';
 import type {
   BoardSignal,
   CapacitySummary,
@@ -95,7 +95,7 @@ export function CapacityFlowDiagram({
             >
               <span className={s.streamHead}>
                 <Body1>{st.label}</Body1>
-                <Badge appearance="filled" color={chipBadgeColor(st.level)}>{st.levelLabel}</Badge>
+                <RagBadge tone={st.level}>{st.levelLabel}</RagBadge>
               </span>
               <Caption1 className={s.fedBy}>
                 {t('ooa.flow.fedBy', { channels: st.fedBy.map(channelLabel).join(' \u00b7 ') })}
