@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-23 |
 | **Author** | @urruegg |
 | **Status** | Delivered |
-| **Previous Version** | 1.0.0 (ready for execution) |
+| **Previous Version** | 1.1.0 (added §6 references, delivered status) |
 
 > **Sprint theme.** Rebuild the `hcc-app-fluent` React app as a Teams-style five-plane shell (Header / Navigation / Main / Agent / Footer) themed with the Curavias brandkit, add a role dropdown that acts as an RBAC access lens, four-language i18n (EN/DE/FR/IT), a dockable context-aware agent plane, and Start/Main/CSA/Backstage/Settings surfaces.
 
@@ -88,3 +88,10 @@ Deliver a coherent, brand-aligned, accessible operator experience for Curavias b
 * Plan: [`2026-07-17-sprint-20-curavias-ux-plan.md`](../superpowers/plans/2026-07-17-sprint-20-curavias-ux-plan.md)
 * Interactive mockup (session artifact, not committed): validated five-plane wireframe with role dropdown
 * Issue: [#245 — Sprint 20: Curavias App UX Redesign](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/245)
+
+### Follow-on: app prototype parity (issue #305)
+
+* Design: [`2026-07-21-curavias-app-prototype-parity-design.md`](../superpowers/specs/2026-07-21-curavias-app-prototype-parity-design.md)
+* Review outcome (evidence-driven parity + live-data requirements): [`2026-07-23-curavias-app-parity-review-outcome.md`](../superpowers/specs/2026-07-23-curavias-app-parity-review-outcome.md)
+* Full findings dossier (screen-by-screen evidence): [`2026-07-23-curavias-app-parity-findings.md`](../superpowers/specs/2026-07-23-curavias-app-parity-findings.md)
+* Issue: [#305 — Sprint 20: App parity build](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/305)
