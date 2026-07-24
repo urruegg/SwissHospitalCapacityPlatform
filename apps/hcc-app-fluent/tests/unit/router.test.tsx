@@ -53,4 +53,9 @@ describe('routes', () => {
     expect(screen.getByTestId('start-view')).toBeInTheDocument();
     expect(screen.queryByTestId('csa-view')).not.toBeInTheDocument();
   });
+
+  it('renders the design-system gallery under /brand', async () => {
+    renderAt('/brand');
+    expect(await screen.findByTestId('brand-gallery')).toBeInTheDocument();
+  });
 });
