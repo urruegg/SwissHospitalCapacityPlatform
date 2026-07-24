@@ -7,7 +7,6 @@ import { OCCUPANCY_SIGNALS, type OccupancyPayload } from '../../../../data/roleb
 import { occupancyBoard } from './occupancy-board';
 import { BoardHeader } from './BoardHeader';
 import { WardForecastTable } from './WardForecastTable';
-import { SignalsPanel } from './SignalsPanel';
 import { CapacityFlowDiagram } from './CapacityFlowDiagram';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
@@ -78,10 +77,8 @@ export function OccupancyBoard() {
         />
       </div>
       <div className={s.panel}>
-        <SignalsPanel signals={OCCUPANCY_SIGNALS} />
-      </div>
-      <div className={s.panel}>
         <CapacityFlowDiagram
+          signals={OCCUPANCY_SIGNALS}
           channels={payload.channels}
           streams={payload.streams}
           capacity={payload.capacity}

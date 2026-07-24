@@ -2,7 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { Badge, Body1, Caption1, Card, Text, makeStyles, tokens } from '@fluentui/react-components';
 import { ArrowRightRegular } from '@fluentui/react-icons';
 import { chipBadgeColor } from '../../../../copilot-rail/reco';
+import { SignalsPanel } from './SignalsPanel';
 import type {
+  BoardSignal,
   CapacitySummary,
   SignalChannel,
   SpecStream,
@@ -12,7 +14,7 @@ const useStyles = makeStyles({
   hint: { color: tokens.colorNeutralForeground3, marginBottom: tokens.spacingVerticalXS },
   flow: {
     display: 'grid',
-    gridTemplateColumns: '1fr auto 1fr',
+    gridTemplateColumns: '1fr auto 1fr auto 1fr',
     alignItems: 'stretch',
     gap: tokens.spacingHorizontalS,
   },
@@ -54,6 +56,7 @@ const useStyles = makeStyles({
 });
 
 interface CapacityFlowDiagramProps {
+  signals: BoardSignal[];
   channels: SignalChannel[];
   streams: SpecStream[];
   capacity: CapacitySummary;
@@ -62,6 +65,7 @@ interface CapacityFlowDiagramProps {
 }
 
 export function CapacityFlowDiagram({
+  signals,
   channels,
   streams,
   capacity,
@@ -75,6 +79,10 @@ export function CapacityFlowDiagram({
     <div>
       <Caption1 className={s.hint}>{t('ooa.flow.hint')}</Caption1>
       <div className={s.flow}>
+        <div className={s.col}>
+          <SignalsPanel signals={signals} />
+        </div>
+        <div className={s.arrow}><ArrowRightRegular /></div>
         <div className={s.col}>
           <Caption1 className={s.colHead}>{t('ooa.flow.streams')}</Caption1>
           {streams.map((st) => (
@@ -97,7 +105,7 @@ export function CapacityFlowDiagram({
         </div>
         <div className={s.arrow}><ArrowRightRegular /></div>
         <div className={s.col}>
-          <Caption1 className={s.colHead}>{t('ooa.flow.outputs')}</Caption1>
+          <Caption1 className={s.colHead}>{t('ooa.flow.recommendation', 'Recommendation')}</Caption1>
           <Card className={s.output}>
             <Caption1>{t('ooa.flow.current')}</Caption1>
             <Text weight="semibold">

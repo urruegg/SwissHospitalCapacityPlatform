@@ -23,7 +23,7 @@ describe('SignalsPanel', () => {
     expect(screen.getByText('ELEVATED')).toBeInTheDocument();
     expect(screen.getByText('THIN')).toBeInTheDocument();
     // every signal carries a provenance badge (all simulated in demo scope)
-    const provenance = screen.getAllByText(/Simulated data|Live data/);
+    const provenance = screen.getAllByLabelText(/Simulated data|Live data/);
     expect(provenance.length).toBe(OCCUPANCY_SIGNALS.length);
   });
 });

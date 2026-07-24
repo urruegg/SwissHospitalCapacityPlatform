@@ -31,6 +31,7 @@ export interface BoardSignal {
   id: string;
   label: string;
   detail: string;
+  iconKey: string;
   scope: 'external' | 'internal';
   provenance: Provenance;
   trustClass?: 'Trust-A';
@@ -273,12 +274,12 @@ export const OCCUPANCY_PINNED: OccupancyPayload = {
  * to `live` when a real adapter binds (Sprint 21/25 LiveBinding).
  */
 export const OCCUPANCY_SIGNALS: BoardSignal[] = [
-  { id: 'meteoswiss-heat', label: 'MeteoSwiss', detail: 'heat L3/5', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTIVE', statusTone: 'watch' },
-  { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ELEVATED', statusTone: 'watch' },
-  { id: 'alertswiss-heat-test', label: 'Alertswiss/BABS', detail: 'quiet', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'Test quar.', statusTone: 'signal' },
-  { id: 'sed-seismic', label: 'SED-ETH', detail: 'seismic nominal', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'OK', statusTone: 'ok' },
-  { id: 'onco-rn-roster', label: 'Oncology RN roster', detail: '1 free', scope: 'internal', provenance: 'simulated', statusLabel: 'THIN', statusTone: 'over' },
-  { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
-  { id: 'transfer-in-queue', label: 'Transfer-in queue', detail: '3 pending', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
-  { id: 'evs-turnaround', label: 'EVS turnaround', detail: '+2h', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+  { id: 'meteoswiss-heat', label: 'MeteoSwiss', detail: 'heat L3/5', iconKey: 'weather', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTIVE', statusTone: 'watch' },
+  { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', iconKey: 'pulse', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ELEVATED', statusTone: 'watch' },
+  { id: 'alertswiss-heat-test', label: 'Alertswiss/BABS', detail: 'quiet', iconKey: 'alert', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'Test quar.', statusTone: 'signal' },
+  { id: 'sed-seismic', label: 'SED-ETH', detail: 'seismic nominal', iconKey: 'seismic', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'OK', statusTone: 'ok' },
+  { id: 'onco-rn-roster', label: 'Oncology RN roster', detail: '1 free', iconKey: 'people', scope: 'internal', provenance: 'simulated', statusLabel: 'THIN', statusTone: 'over' },
+  { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', iconKey: 'heartpulse', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+  { id: 'transfer-in-queue', label: 'Transfer-in queue', detail: '3 pending', iconKey: 'swap', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+  { id: 'evs-turnaround', label: 'EVS turnaround', detail: '+2h', iconKey: 'clock', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
 ];

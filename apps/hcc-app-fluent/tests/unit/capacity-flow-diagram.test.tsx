@@ -3,7 +3,7 @@ import { render, screen, act } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
 import { CapacityFlowDiagram } from '../../src/workspaces/main/boards/occupancy/CapacityFlowDiagram';
-import { OCCUPANCY_PINNED } from '../../src/data/roleboard/occupancy-data';
+import { OCCUPANCY_PINNED, OCCUPANCY_SIGNALS } from '../../src/data/roleboard/occupancy-data';
 
 beforeAll(async () => {
   await i18n.changeLanguage('en');
@@ -16,6 +16,7 @@ describe('CapacityFlowDiagram', () => {
     render(
       <FluentProvider theme={webLightTheme}>
         <CapacityFlowDiagram
+          signals={OCCUPANCY_SIGNALS}
           channels={OCCUPANCY_PINNED.channels}
           streams={OCCUPANCY_PINNED.streams}
           capacity={OCCUPANCY_PINNED.capacity}
