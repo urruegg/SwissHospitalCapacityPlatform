@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Pre-commit doc-steward gate for the Swiss Hospital Capacity Platform.
 #
-# Enforces two mechanical guarantees BEFORE a commit is written ("check before
-# we save"): encoding integrity (no double-encoded UTF-8 / mojibake) and a clean
-# markdownlint pass on staged Markdown. The matching CI jobs (ci.yml
-# mojibake-scan + markdown-lint) are the enforced backstop for everyone; this
-# hook is the fast local mirror.
+# Enforces mechanical guarantees BEFORE a commit is written ("check before
+# we save"): encoding integrity (no double-encoded UTF-8 / mojibake), a clean
+# markdownlint pass on staged Markdown, and a regenerated app evidence fixture
+# whenever its governance-doc inputs change. The matching CI jobs (ci.yml
+# mojibake-scan + markdown-lint, evidence-publish self-test) are the enforced
+# backstop for everyone; this hook is the fast local mirror.
 #
 # Enable once per clone:
 #     git config core.hooksPath .githooks
@@ -50,6 +51,34 @@ if [ "${#md_files[@]}" -gt 0 ]; then
     fi
   else
     echo "pre-commit: WARNING - npx/node not found; skipping markdown lint gate (CI still enforces it)." >&2
+  fi
+fi
+
+# 3. Evidence fixture gate: the committed app fixture
+# (apps/hcc-app-fluent/src/data/evidence/evidence-demo.json) is deterministically
+# regenerated from governance docs (ADR/PRD/BOM). When any of those inputs is
+# staged, regenerate and re-stage the fixture so it can never drift out of sync
+# (the evidence-publish self-test enforces this in CI). Mirrors the markdown
+# auto-fix pattern above: regenerate -> re-stage -> verify.
+if [ -n "$py" ]; then
+  evidence_trigger="$(git diff --cached --name-only --diff-filter=ACM -- \
+      'docs/adr/**' 'docs/PRD.md' 'docs/bom.yaml' 'docs/region-availability.yaml' \
+      'docs/adr-requirement-map.yaml' 'scripts/evidence/**' \
+      'apps/hcc-app-fluent/src/data/evidence/evidence-demo.json' || true)"
+  if [ -n "$evidence_trigger" ]; then
+    if PYTHONUTF8=1 "$py" -m scripts.evidence.build_app_fixture >/dev/null 2>&1; then
+      git add -- apps/hcc-app-fluent/src/data/evidence/evidence-demo.json
+      if ! PYTHONUTF8=1 "$py" -m unittest \
+          scripts.evidence.tests.test_app_fixture.TestAppFixture.test_committed_fixture_matches_regen \
+          >/dev/null 2>&1; then
+        echo ""
+        echo "pre-commit: evidence fixture is still stale after regeneration." >&2
+        echo "  Investigate:  $py -m scripts.evidence.build_app_fixture" >&2
+        exit 1
+      fi
+    else
+      echo "pre-commit: WARNING - evidence fixture regen failed (missing deps, e.g. PyYAML); CI still enforces it." >&2
+    fi
   fi
 fi
 
