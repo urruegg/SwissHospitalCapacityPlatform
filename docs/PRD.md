@@ -1,12 +1,12 @@
-# PRD
+﻿# PRD
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.12.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.13.0 |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.11.0 (added NFR-EXT-EVID-001 + signals-fabric-evidence traceability row) |
+| **Previous Version** | 1.12.0 (added NFR-EXT-EVID-001 + signals-fabric-evidence traceability row) |
 
 ## Purpose
 
@@ -219,6 +219,24 @@ org/skills ontology, does not replace it.
 | `FR-SKILL-008` | Express the **bed-vs-ops skill-demand split** on the semantic and ontology surface: bed side = Pflegepersonal / nursing, ops side = doctors and specialised teams. |
 | `FR-SKILL-ONT-001` | Extend the existing staff/person ontology view with the org spine, skill classes, and bed-vs-ops demand axis; keep `fact_skill_assertion` as the atomic unit and the proficiency (1-5) / assurance (L0-L4) axes and GLN golden thread unchanged (extend, don't replace). |
 
+### M) App Experience Polish And Design System (Sprint 27)
+
+Sprint 27 deltas formalised per the
+[Sprint 27 UX polish design](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md)
+and [implementation plan](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md).
+Experience-lane only: the internal app `apps/hcc-app-fluent` (app.curavias.ch);
+no backend / data-contract / agent-prompt / infrastructure change; no PHI; the
+public site `apps/curavias-web` and any Astro pattern are out of scope.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-UX-001` | The internal app shall provide a **codified design system** (semantic tokens + component recipes) derived from the Curavias brandkit and Fluent UI v9, used as the single source of visual truth by every polished screen. |
+| `FR-UX-002` | The solution shall publish an **app style-guide** mapping each design-system token and recipe to its Fluent v9 primitive and the current M365 app pattern (Outlook / Teams / M365 Copilot) it mirrors, including the reusable per-screen heuristic checklist. |
+| `FR-UX-003` | The internal app shall expose an **in-app brand gallery** route rendering every token and component-recipe state (light / dark) as a first-class accessibility-verified surface. |
+| `FR-UX-004` | The solution shall provide a documented **SIT-connected local visual-verify loop** in which the app runs locally against SIT, is opened in a VS Code browser tab whose context is shared with GitHub Copilot via a read-only browser-automation server, and supports an edit → hot-reload → re-snapshot → accessibility-scan cycle. |
+| `FR-UX-005` | The internal app shall deliver a **fully polished OOA reference vertical** (Start occupancy teaser, MAIN Occupancy board, OOA agent-plane context, and the shared five-plane chrome) meeting the acceptance bar, as the reference implementation for later role-board polish. |
+| `FR-UX-006` | The solution shall maintain an **ordered polish backlog** applying the same design-system recipe to the remaining role boards and surfaces in later sprints. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -332,6 +350,15 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-SKILL-001` | Skills-evidence ingestion and simulation run as **Azure Container Apps** services publishing to Event Hub/Eventstream, never as GitHub Actions workflows (Actions is CI-only). |
 | `NFR-SKILL-002` | All Curavias org/skills data is **synthetic, no-PHI**; the master-data generator is deterministic and git-owned for reproducibility, while the generated extracts are uploaded to the landing zone and not committed to git. |
 
+### L) App Experience Polish Governance (Sprint 27)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-UX-001` | Every polished screen shall pass **WCAG 2.1 AA** via automated `axe-core` scanning as a merge gate. |
+| `NFR-UX-002` | Every polished screen shall pass the **Fluent v9 + M365 heuristic checklist** (8 pt spacing grid, type ramp, elevation, motion, hover / pressed / focus states, explicit empty / loading / error states, dark-mode parity). |
+| `NFR-UX-003` | Every polished screen shall carry **before / after visual evidence** (light / dark, desktop / narrow) attached to its pull request. |
+| `NFR-UX-004` | UX polish shall remain **experience-lane only**: no backend / data-contract / agent-prompt / infrastructure change, no PHI, and no public-site (Astro) patterns introduced into the internal app. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -366,6 +393,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
 | [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
 | [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
+| [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
 
 ## Assumptions To Validate In Implementation Planning
 
