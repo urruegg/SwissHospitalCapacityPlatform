@@ -164,6 +164,12 @@ param simCapacityContainerImage = 'crihzhhpfprod.azurecr.io/sim-capacity:sprint1
 param simCapacityEventHubNamespace = ''
 param simCapacityEventHubName = 'events'
 param simCapacityDemoScope = true
+// Grant the sim-capacity MI (id-ca-sim-capacity-ihzhhpf-prod, principalId below)
+// Azure Event Hubs Data Sender on evh-ihzhhpf-prod-i62t/events so the live
+// simulator can publish. SIT leaves this empty (latent gap — sim-capacity MI has
+// no EH role in SIT either); PROD codifies it (drift-free, PROD-exceeds-SIT).
+// Backport to SIT tracked separately. dataFoundation consumes this (main.bicep).
+param eventHubsSimulatorMiPrincipalId = '7fa4687e-5c76-4154-a493-ad53f7647d45'
 // Legacy App Service / API topology already live; leave off in this data/AI/integration slice.
 param enableExperienceHostingModule = false
 param enableApiRuntimeModule = false
