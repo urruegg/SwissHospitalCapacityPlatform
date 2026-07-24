@@ -55,7 +55,8 @@ export function DischargeWorklistTable({ candidates, onSelectCandidate }: Discha
                 aria-label={rowLabel}
                 onClick={() => onSelectCandidate(c)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') onSelectCandidate(c);
+                  if (e.key === 'Enter') onSelectCandidate(c);
+                  else if (e.key === ' ') { e.preventDefault(); onSelectCandidate(c); }
                 }}
                 style={{ cursor: 'pointer' }}
               >

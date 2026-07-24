@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
 import { DischargeWorklistTable } from '../../src/workspaces/main/boards/discharge/DischargeWorklistTable';
@@ -67,6 +67,19 @@ describe('DischargeWorklistTable', () => {
         .getByRole('button', { name: /Expedite Medicine A discharge.*Awaiting Spitex slot/i })
         .click(),
     );
+    expect(onSelectCandidate).toHaveBeenCalledWith(DISCHARGE_PINNED.candidates[0]);
+  });
+
+  it('fires onSelectCandidate and prevents default on Space (no page scroll)', () => {
+    const onSelectCandidate = vi.fn();
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <DischargeWorklistTable candidates={DISCHARGE_PINNED.candidates} onSelectCandidate={onSelectCandidate} />
+      </FluentProvider>,
+    );
+    const row = screen.getByRole('button', { name: /Expedite Medicine A discharge.*Awaiting Spitex slot/i });
+    const notPrevented = fireEvent.keyDown(row, { key: ' ' });
+    expect(notPrevented).toBe(false);
     expect(onSelectCandidate).toHaveBeenCalledWith(DISCHARGE_PINNED.candidates[0]);
   });
 });

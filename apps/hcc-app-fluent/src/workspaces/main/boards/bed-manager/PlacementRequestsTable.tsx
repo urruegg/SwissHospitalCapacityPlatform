@@ -58,7 +58,8 @@ export function PlacementRequestsTable({ placements, onSelectRequest }: Placemen
                 aria-label={rowLabel}
                 onClick={() => onSelectRequest(r)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') onSelectRequest(r);
+                  if (e.key === 'Enter') onSelectRequest(r);
+                  else if (e.key === ' ') { e.preventDefault(); onSelectRequest(r); }
                 }}
                 style={{ cursor: 'pointer' }}
               >

@@ -49,7 +49,8 @@ export function OrCaseScheduleTable({ cases, onSelectCase }: OrCaseScheduleTable
                 aria-label={rowLabel}
                 onClick={() => onSelectCase(c)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') onSelectCase(c);
+                  if (e.key === 'Enter') onSelectCase(c);
+                  else if (e.key === ' ') { e.preventDefault(); onSelectCase(c); }
                 }}
                 style={{ cursor: 'pointer' }}
               >

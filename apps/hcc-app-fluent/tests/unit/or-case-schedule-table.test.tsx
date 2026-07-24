@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
 import { OrCaseScheduleTable } from '../../src/workspaces/main/boards/or-steering/OrCaseScheduleTable';
@@ -69,5 +69,18 @@ describe('OrCaseScheduleTable', () => {
       screen.getByRole('button', { name: /Defer General surgery case/i }).click(),
     );
     expect(onSelectCase).toHaveBeenCalledWith(herniaCase);
+  });
+
+  it('fires onSelectCase and prevents default on Space (no page scroll)', () => {
+    const onSelectCase = vi.fn();
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <OrCaseScheduleTable cases={OR_STEERING_PINNED.cases} onSelectCase={onSelectCase} />
+      </FluentProvider>,
+    );
+    const row = screen.getByRole('button', { name: /Defer Orthopedics case/i });
+    const notPrevented = fireEvent.keyDown(row, { key: ' ' });
+    expect(notPrevented).toBe(false);
+    expect(onSelectCase).toHaveBeenCalledWith(OR_STEERING_PINNED.cases[0]);
   });
 });

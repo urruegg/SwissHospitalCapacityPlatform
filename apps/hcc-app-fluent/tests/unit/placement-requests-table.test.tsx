@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
 import { PlacementRequestsTable } from '../../src/workspaces/main/boards/bed-manager/PlacementRequestsTable';
@@ -73,6 +73,28 @@ describe('PlacementRequestsTable', () => {
         })
         .click(),
     );
+    expect(onSelectRequest).toHaveBeenCalledWith(firstReq);
+  });
+
+  it('fires onSelectRequest and prevents default on Space (no page scroll)', () => {
+    const onSelectRequest = vi.fn();
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <PlacementRequestsTable
+          placements={BEDMANAGER_PINNED.placements}
+          onSelectRequest={onSelectRequest}
+        />
+      </FluentProvider>,
+    );
+    const firstReq = BEDMANAGER_PINNED.placements[0];
+    const row = screen.getByRole('button', {
+      name: new RegExp(
+        `Move ${firstReq.patientId} from ${firstReq.fromWard} to ${firstReq.toWard}`,
+        'i',
+      ),
+    });
+    const notPrevented = fireEvent.keyDown(row, { key: ' ' });
+    expect(notPrevented).toBe(false);
     expect(onSelectRequest).toHaveBeenCalledWith(firstReq);
   });
 
