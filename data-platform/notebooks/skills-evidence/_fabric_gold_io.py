@@ -15,6 +15,8 @@ Responsibilities:
 * ``rows_of_table`` - read an existing managed Delta table (e.g.
   ``gold.dim_hospital``) into ``list[dict]`` so the re-brand preserves the
   capacity/governance columns already in gold;
+* ``table_exists`` - guard so a targeted ``--only 05_gold_org_skills`` re-run
+  can skip pruning a capacity table that has not been landed yet;
 * ``write_gold`` - write ``list[dict]`` rows to ``gold.<name>`` as Delta,
   stamping the sprint-09 seven-column governance contract (mirrors
   ``03_gold_master_data.ipynb``).
@@ -57,6 +59,11 @@ def read_csv_rows(mount_path: str) -> list[dict]:
 def rows_of_table(table: str) -> list[dict]:
     """Read an existing managed table into ``list[dict]`` (driver-side)."""
     return [r.asDict(recursive=True) for r in _spark().table(table).collect()]
+
+
+def table_exists(table: str) -> bool:
+    """Return ``True`` if a managed table (``schema.name``) exists."""
+    return _spark().catalog.tableExists(table)
 
 
 def _stamp_governance(rows: list[dict], table: str, gold_ts: str) -> list[dict]:

@@ -18,11 +18,18 @@ hospitals **1:1** (beds/FTE grounded):
 | `VT` Spital Vialta | `H_SZB` | 174 / 1200 (exact) |
 | — | `H_HSL` (Hirslanden) | **no tenant -> dropped/parked** |
 
+Because `H_HSL` is dropped from `dim_hospital`, `run()` also prunes its rows
+from the hospital-keyed capacity gold tables (`dim_specialty`,
+`dim_hospital_service`, `dim_ward_capacityunit`, `fact_capacity_baseline`,
+`map_disease_treatment_specialty_service`) and the eventstream seed
+(`gen_eventstream_seed.py`) drops `H_HSL`, so no fact orphans under the
+Direct-Lake `(Blank)` member (issue #349).
+
 ## Files
 
 | File | Layer | Purpose |
 | --- | --- | --- |
-| `build_gold_org_spine.py` | Gold | Pure transforms: `rebrand_hospital_dimension` (1:1 fold, drop H_HSL, strip real geography, keep `hospital_id` as PK) + org-spine projections that strip real-name provenance (`grounded_on`). `build_org_spine_gold()` assembles the four org-spine gold tables; `run()` is the Fabric entrypoint. |
+| `build_gold_org_spine.py` | Gold | Pure transforms: `rebrand_hospital_dimension` (1:1 fold, drop H_HSL, strip real geography, keep `hospital_id` as PK), org-spine projections that strip real-name provenance (`grounded_on`), and `prune_orphan_hospital_rows` (drop dropped-hospital rows from the capacity gold tables, issue #349). `build_org_spine_gold()` assembles the four org-spine gold tables; `run()` is the Fabric entrypoint (org spine + capacity prune). |
 | `tests/test_build_gold_org_spine.py` | — | Spark-free unit tests over the real relocated CSVs asserting no real name/geography leaks, a clean tenant<->hospital 1:1, and the `build_org_spine_gold()` table set + row counts. |
 | `build_gold_skills.py` | Gold | Pure transforms for the skills domain: supply / demand / gap / eligibility projections, `source_mode` (live vs simulated) validation, and the bed-vs-ops `care_setting` split. `build_skills_gold()` assembles the eight skills gold tables; `run()` is the Fabric entrypoint. |
 | `tests/test_build_gold_skills.py` | — | Spark-free unit tests over the real skills CSVs asserting domain validation, the care-setting split, demand/gap consistency, the source-mode badge flag, and the `build_skills_gold()` table set + row counts. |
