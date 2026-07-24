@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; live SIT/PROD deploy + ADR-0039 acceptance pending |
-| **Previous Version** | 1.1.0 (refactor scope added; Sprint 22 landed) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion landed clean (org/skills + capacity + eventstream gold, no real names, no H_HSL orphan)**; PROD deploy + ADR-0039 acceptance pending |
+| **Previous Version** | 1.2.0 (T11-T14 refactor scope + DoD reconciliation) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -86,7 +86,7 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 * [x] Sprint 22 (P1a) landed — modernized `gold.*` notebooks available
 * [x] P1b implementation plan authored and approved (design PR #309; plan `docs/superpowers/plans/2026-07-23-sprint-23-org-skills-refactor-plan.md`)
 * [x] Org/skills CSVs + generator under `data/master-data/curavias-org-skills/`; validator green (#314; `validate_master_data.py` + 13 tests green)
-* [ ] Org/skills medallion produces the 19 `gold.*` tables; parity check extended — *build scripts + parity contract green in-repo (#330/#334/#341, gold-build 28 + contract 5 tests); live Fabric run to land gold **deferred** (needs landing zone deployed + `approved-to-apply`)*
+* [x] Org/skills medallion produces the `gold.*` tables; parity check extended — *build scripts + parity contract green in-repo (#330/#334/#341, gold-build 28 + contract 5 tests); **live SIT Fabric run landed 2026-07-24** (full `run_medallion.py --apply`, 9/9 notebooks green): org spine + 8 skills tables + rebranded `dim_hospital` + capacity + eventstream gold all present, verified 0 H_HSL / no real names via OneLake Delta read (see §7)*
 * [x] `dim_hospital` replaced by `dim_tenant` / `dim_org_unit` / `dim_department`; all references re-pointed; facts re-keyed — *delivered via the **1:1 re-brand fold** (#330 gold, #332 semantic); the D2 `_hospital_to_org_crosswalk.csv` approach was superseded (tenant_id = hospital_id)*
 * [x] Semantic model extended (skills measures); `verify-semantic-model.yml` re-baselined + green (#339/#341; verifier 35 rel / 69 measures / 8 roles)
 * [x] Ontology + crosswalk + conformance gate extended and green (#344; conformance strict PASS, 0 WARN / 0 FAIL)
@@ -97,7 +97,39 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 
 ---
 
-## 6. References
+## 6. Status log
+
+### 2026-07-24 — Live SIT medallion proven clean + H_HSL orphan fixed (break checkpoint)
+
+**Done this session.**
+
+* **H_HSL orphan fix merged** — [PR #350](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/350) (closes [#349](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/349)). The Curavias 1:1 fold drops `H_HSL` (Hirslanden, no tenant) from `dim_hospital`; the fix prunes its rows from the five hospital-keyed capacity gold tables (`build_gold_org_spine.prune_orphan_hospital_rows`, wired into `run()`) and drops `H_HSL` from the eventstream seed (`gen_eventstream_seed.py`, regenerated corpus). 7 new Spark-free unit tests; 116 tests + mojibake + markdownlint green.
+* **Live SIT medallion rebuilt** — full `run_medallion.py --environment SIT --apply` (`approved-to-apply` by @urruegg), 9/9 notebooks green. Uploaded the regenerated eventstream seed + updated skills-evidence modules to OneLake `Files/` first.
+* **Evidence (authoritative OneLake Delta read, SQL endpoint lags and is not used):** `dim_hospital` = 3 Curavias rows (`H_USZ`→CuraNova, `H_LUKS`→Curalp, `H_SZB`→Vialta), no real names. H_HSL orphans eliminated everywhere:
+
+  | gold table | before | after |
+  | --- | --- | --- |
+  | dim_specialty | 108 (27 H_HSL) | 81 (0) |
+  | dim_hospital_service | 41 (19) | 22 (0) |
+  | dim_ward_capacityunit | 19 (4) | 15 (0) |
+  | fact_capacity_baseline | 20 (3) | 17 (0) |
+  | map_disease_treatment_specialty_service | 60 (15) | 45 (0) |
+  | encounter | 309 (83) | 309 (0) |
+  | bed_assignment | 173 (41) | 173 (0) |
+
+  Plus the org spine + 8 skills gold tables (`dim_org_unit`, `dim_department`, `dim_capacity_unit`, `dim_care_setting`, `dim_skill`, `dim_occupation_role`, `bridge_role_skill_demand_template`, `fact_skill_demand`, `fact_skill_gap`, `fact_skill_assertion`, `bridge_worker_unit_eligibility`).
+
+**Next steps (starting point after the break).**
+
+1. **ADR-0039 acceptance** — `docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md` is still **Proposed**; needs human sign-off to move to Accepted (DoD item + closes the last governance gap).
+2. **PROD deploy** — replay the same medallion against PROD once SIT is signed off (Container Apps → Event Hub/Eventstream for ingestion, not GitHub workflows; `approved-to-apply` gated).
+3. **SQL analytics endpoint** — confirm the SIT SQL endpoint has caught up with the new Delta tables (it lags async), so Direct-Lake / report consumers see the rebranded, orphan-free gold.
+4. **Downstream re-baseline check** — re-validate the semantic-model measures + report visuals against the freshly-landed org/skills gold (row counts shifted after the prune).
+5. **T11–T14 refactor lane** — dedicated landing zone (T11), skills-evidence plugins (T12), hybrid transport (T13), bed-vs-ops split (T14) remain open per §3.
+
+---
+
+## 7. References
 
 * Design: [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](../superpowers/specs/2026-07-19-curavias-shared-master-data-and-ontology-design.md)
 * Idea package: [`unified-curavias-organisation-and-skills-ontology/`](../superpowers/ideas/unified-curavias-organisation-and-skills-ontology/)
