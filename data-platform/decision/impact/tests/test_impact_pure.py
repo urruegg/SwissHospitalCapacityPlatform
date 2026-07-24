@@ -99,8 +99,7 @@ class TestFormulaRegistry(unittest.TestCase):
         result = expedite_discharge_beds(params, gold)
         self.assertEqual(result["metric"], "beds")
         self.assertEqual(result["delta"], 6)
-        self.assertTrue(any("16" in a for a in result["assumptions"]))
-        self.assertTrue(any("6" in a for a in result["assumptions"]))
+        self.assertIn("delta=min(n, occupied_beds)=6", result["assumptions"])
 
     def test_divert_low_acuity_beds_within_gap(self):
         gold = _gold()

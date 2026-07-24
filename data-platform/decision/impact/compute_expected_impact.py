@@ -23,7 +23,7 @@ Two layers:
 **Grounding rule (identical across all three formulas):** the impact is the
 requested ``n``, bounded only by the number of beds that are physically
 occupied in the matched forecast row — a lever cannot recover more beds than
-are actually occupied. ``delta = min(int(params["n"]), round(forecastOccupiedBeds))``
+are actually occupied. ``delta = min(int(params["n"]), max(0, round(forecastOccupiedBeds)))``
 for the deterministically-selected forecast row. This bound is **not** capped
 at the ward's over-capacity gap (``forecastOccupiedBeds - bedCapacity``), so an
 approved lever can legitimately move a ward from over-capacity down to
