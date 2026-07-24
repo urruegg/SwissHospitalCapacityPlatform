@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | — (new evidence artefact) |
+| **Previous Version** | 1.0.0 (added CD-variable repoint + eastus2 retirement, #311) |
 
 Capstone evidence for the DR-style teardown + Switzerland North greenfield
 rebuild of PROD
@@ -76,3 +76,32 @@ Only PROD resources (`rg-ihzhhpf-prod` and the single `app` DNS record + the
 `ihzhhpf-app` PROD redirect URI in shared scope) were changed. All SIT resources
 (`rg-ihzhhpf-sit`, SIT Fabric workspace `f3af9733-...`, SIT Cosmos, SIT CA,
 `appsit` DNS) and all other shared resources remained untouched. No regression.
+
+## CD-variable repoint + eastus2 retirement (#311)
+
+After the manual DR rebuild, the automated `cd-infra-deploy-prod` pipeline still
+targeted the decommissioned **eastus2** environment. Repointed the PROD CD
+variables (repo-level + `prod` environment) so an automated PROD run deploys the
+switzerlandnorth environment, not the torn-down eastus2 one:
+
+| Variable | Old (eastus2) | New (switzerlandnorth) |
+|----------|---------------|------------------------|
+| `AZURE_RESOURCE_GROUP` | `rg-ihzhhpf-prod-eastus2` | `rg-ihzhhpf-prod` |
+| `BICEP_PARAM_FILE` | `infra/environments/prod-eastus2.bicepparam` | `infra/environments/prod-swn.bicepparam` |
+| `AZURE_LOCATION` | `eastus2` | `switzerlandnorth` |
+
+SIT CD variables were left unchanged (`rg-ihzhhpf-sit`, `sit.bicepparam`,
+`westus2`) - SIT was untouched by the rebuild.
+
+Verified end-to-end: `cd-infra-deploy-prod` run `30029098577` deployed
+`prod-swn.bicepparam` to `rg-ihzhhpf-prod` / switzerlandnorth (Deploy PROD +
+Policy gate green) - no destructive drift against the manually-built resources.
+
+Retired the stale eastus2 references so the wrong target cannot be selected again:
+
++ Deleted `infra/environments/prod-eastus2.bicepparam` (obsolete; not referenced
+  by any workflow or the policy pack). `prod.bicepparam` is retained - it is the
+  westus2 demo baseline still referenced by `policy/policy-pack.json`.
++ Repointed the SIT-to-PROD resource-parity job in
+  `.github/workflows/ci-infra-validate.yml` from `rg-ihzhhpf-prod-eastus2`
+  (which no longer exists) to `rg-ihzhhpf-prod`.

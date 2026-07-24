@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-forecast-driver-v1.schema.json",
+  "title": "Forecast Driver Contract (DC-FORECAST-DRIVER-v1)",
+  "description": "Sprint 26 WS-A Foresight tier contract. One flat record per forecast-point x driver factor: the deterministic decomposition ('why') behind an occupancy forecast, grounding the reference ontology hcp:Driver ICE (explainedBy from hcp:Forecast; evidencedBy to hcp:ExternalSignal). Driver deltas at a given horizon reconcile to the net change of the parent forecast from its baseline (invariant enforced by the generator + unit tests). Records materialise gold.fact_forecast_driver; row shape is 1:1 with the Gold Delta table. No PHI (ward-level aggregate). ADR-0013 / ADR-0016 apply. See docs/ontology/reference-layer.ttl and docs/ontology/crosswalk.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId", "contractId", "contractVersion",
+    "classification", "residency", "purposeTags",
+    "_pseudonymisation_flag", "records"
+  ],
+  "properties": {
+    "datasetId":              { "type": "string", "pattern": "^DS-FORECAST-DRIVER-[a-z0-9-]+$" },
+    "contractId":             { "type": "string", "enum": ["DC-FORECAST-DRIVER-v1"] },
+    "contractVersion":        { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":         { "type": "string", "enum": ["operational-confidential"] },
+    "residency":              { "type": "string", "enum": ["CH"] },
+    "purposeTags": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["capacity-planning", "demand-forecasting"] }
+    },
+    "_pseudonymisation_flag": {
+      "type": "boolean",
+      "const": true,
+      "description": "ADR-0016 gate 1: driver records are ward-level decomposition rows and contain no patient identifiers by construction."
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractId", "forecastId", "hospitalId", "wardId",
+          "horizonH", "factor", "delta", "note",
+          "purposeTag", "asOfTimestamp"
+        ],
+        "properties": {
+          "contractId":  { "type": "string", "enum": ["DC-FORECAST-DRIVER-v1"] },
+          "forecastId":  { "type": "string", "pattern": "^OF-[A-Z0-9-]+$", "description": "Parent occupancy-forecast id (hcp:Forecast the driver explains)." },
+          "hospitalId":  { "type": "string", "pattern": "^H_[A-Z0-9_]+$" },
+          "wardId":      { "type": "string", "minLength": 1 },
+          "horizonH":    { "type": "integer", "minimum": 0, "maximum": 72, "description": "Horizon offset the decomposition applies to." },
+          "factor":      { "type": "string", "enum": ["forecast_admissions", "planned_discharges", "transfers", "seasonality"], "description": "Driver factor category." },
+          "delta":       { "type": "number", "description": "Signed bed impact of this factor at the horizon (positive = adds occupancy, negative = frees beds)." },
+          "note":        { "type": "string", "minLength": 1, "description": "Human-readable rationale, e.g. 'flu season'." },
+          "signalId":    { "type": ["string", "null"], "description": "Optional link to the external signal that evidences this driver (evidencedBy -> hcp:ExternalSignal, DC-EXT-SIGNAL-v1)." },
+          "purposeTag":  { "type": "string", "enum": ["capacity-planning", "demand-forecasting"] },
+          "asOfTimestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

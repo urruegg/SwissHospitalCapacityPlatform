@@ -208,6 +208,7 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
   ]
 }
 
+output managedEnvironmentId string = managedEnvironment.id
 output fqdn string = agentHost.properties.configuration.ingress.fqdn
 output principalId string = agentHostIdentity.properties.principalId
 output identityResourceId string = agentHostIdentity.id

@@ -306,28 +306,19 @@ resource agentHostDataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRole
 //
 // Zone name is Azure-managed and MUST be exactly privatelink.documents.azure.com
 // for the private-endpoint auto-registration to work.
+//
+// Sprint 19: the zone + VNet link are now created ONCE in the network module
+// (infra/modules/network/main.bicep) so both this PE and the agent-host Cosmos
+// PE can attach zone groups without a creation-ordering race. This module only
+// references the zone with `existing`. Ordering is guaranteed because this
+// module depends on the network module via vnetResourceId.
 // ============================================================================
 
 var privateEndpointName = 'pe-${accountName}'
 var privateDnsZoneName = 'privatelink.documents.azure.com'
 
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateEndpoint) {
+resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
   name: privateDnsZoneName
-  location: 'global'
-  tags: tags
-}
-
-resource privateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateEndpoint) {
-  parent: privateDnsZone
-  name: '${last(split(vnetResourceId, '/'))}-link'
-  location: 'global'
-  tags: tags
-  properties: {
-    registrationEnabled: false
-    virtualNetwork: {
-      id: vnetResourceId
-    }
-  }
 }
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = if (enablePrivateEndpoint) {

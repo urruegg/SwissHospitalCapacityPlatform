@@ -50,19 +50,33 @@ param keyVaultNameOverride = 'kv-ihzhhpf-prod-swn1'
 
 // --- Foundation ---
 param enableIdentityModule = true
-// Network module OFF for the baseline slice (parity with the eastus2 first
-// slice). Enabling it wires a Cosmos private endpoint whose
-// privatelink.documents.azure.com zone is created only by the CSA-Cosmos module,
-// and VNet-integrated CAEs are a hardening concern. PROD runs public (synthetic
-// data, no PHI per ADR-0013/ADR-0016). VNet + private-endpoint is a later item.
-param enableNetworkModule = false
+// Network module ON (ADR-0038, extends ADR-0029 Option A + ADR-0037). Brings
+// PROD to SIT network parity: creates vnet-platform-ihzhhpf-prod, VNet-integrates
+// the agent-host CAE (cae-ihzhhpf-prod), and wires the Cosmos private endpoint.
+// NOTE: VNet integration is immutable after CAE creation — because the swn
+// rebuild already created cae-ihzhhpf-prod as a PUBLIC CAE, the gated deploy
+// that flips this flag REQUIRES a one-time destructive delete + recreate of
+// cae-ihzhhpf-prod (+ ca-agent-host + ca-signal-runner, ~5-10 min outage). The
+// separate cae-app-fluent-ihzhhpf-prod (app.curavias.ch) is UNAFFECTED. The SIT
+// pre-flight gotchas (Microsoft.App + Microsoft.ContainerService RP registration,
+// AllowBringYourOwnPublicIpAddress feature, snet-cae delegation) are already
+// handled by cd-infra-deploy-prod.yml + the network module.
+param enableNetworkModule = true
 param enableObservabilityModule = true
 
-// Region-isolated VNet address space (unused while enableNetworkModule=false;
-// kept for the hardening follow-up).
-param networkVnetAddressPrefix = '10.60.0.0/16'
-param networkAppSubnetPrefix = '10.60.1.0/24'
-param networkDataSubnetPrefix = '10.60.2.0/24'
+// Key Vault private endpoint (ADR-0038). Gives the AAD-only, policy-locked
+// (publicNetworkAccess=Disabled) PROD vault a reachable data plane inside the
+// VNet via privatelink.vaultcore.azure.net. Non-destructive on its own.
+// Operator interactive access still needs an in-VNet jumpbox/Bastion.
+param enableKeyVaultPrivateEndpoint = true
+
+// Region-isolated VNet address space. PROD uses 10.70.0.0/16 to stay
+// non-overlapping with SIT's 10.60.0.0/16 (same subscription, different RGs) so
+// the two platform VNets could be peered in future without renumbering.
+param networkVnetAddressPrefix = '10.70.0.0/16'
+param networkAppSubnetPrefix = '10.70.1.0/24'
+param networkDataSubnetPrefix = '10.70.2.0/24'
+param networkCaeSubnetPrefix = '10.70.4.0/23'
 
 // --- AI platform (Foundry account ai-ihzhhpf-prod in switzerlandnorth, GA) ---
 param enableAiPlatformModule = true
@@ -91,21 +105,31 @@ param fabricDataAgentId = ''
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
 param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:b796961'
-// DNS re-point (app.curavias.ch) is P7. Empty custom hostname here avoids
-// touching the existing curavias.ch DNS zone (in rg-ihzhhpf-sit). P7 re-points
-// the app CNAME to the new switzerlandnorth CA fqdn against the existing zone.
-param appFluentCustomHostname = ''
-param appFluentEnableCustomDomainCert = false
+// app.curavias.ch is bound to the switzerlandnorth CA. The custom hostname +
+// managed cert are codified here so CD redeploys preserve the binding (the
+// manual P7 `hostname add/bind` would otherwise be stripped on every deploy).
+// manageCuraviasDnsZone=false: the curavias.ch zone is SHARED and owned by SIT
+// (rg-ihzhhpf-sit); PROD only claims the hostname on its CA and must NOT create
+// a conflicting second zone. The `app` CNAME + `asuid.app` TXT records live in
+// the SIT-owned zone (asuid is subscription-scoped, so it already validates).
+param appFluentCustomHostname = 'app.curavias.ch'
+param appFluentEnableCustomDomainCert = true
+param manageCuraviasDnsZone = false
 
 // --- P4 data lane — Event Hubs / Service Bus / CSA Cosmos ---
 // EVH namespace + hub + consumer groups. Region-safe, public, self-contained.
 param enableDataFoundationModule = true
 param enableDataPlatformModule = false
-// CSA Cosmos DB wired into the orchestrator. Public (no PE) in swn PROD because
-// the network module is off (synthetic-only, ADR-0013); creates
-// cosmos-csa-ihzhhpf-prod + 4 vector containers. NOTE: the MCAPSGov Modify-effect
-// policy force-disables public Cosmos subscription-wide — provisioning succeeds
-// but runtime reachability folds into the VNet + private-endpoint hardening item.
+// Sprint 19 follow-up — external-signals provider-runner (ca-signal-runner).
+// Codified so it survives future CAE delete/recreate; adopts the live runner
+// idempotently. Requires enableAgentHostModule + enableDataFoundationModule
+// (both true above). Grants the runner MI EH Data Sender at the evh namespace.
+param enableSignalRunnerModule = true
+// CSA Cosmos DB wired into the orchestrator. With enableNetworkModule=true
+// (ADR-0038) it now gets a private endpoint (privatelink.documents.azure.com in
+// snet-data) — matching SIT and satisfying the MCAPSGov Modify-effect policy
+// that force-disables public Cosmos subscription-wide. Creates
+// cosmos-csa-ihzhhpf-prod + 4 vector containers.
 param enableCsaCosmosModule = true
 // P5 Foundry runtime agents — registered via the Sprint 18 v2 /agents API pattern
 // against the PROD project, not Bicep. Stays off here.

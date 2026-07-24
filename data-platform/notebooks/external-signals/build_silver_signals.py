@@ -1,7 +1,7 @@
 """Sprint 21 M3 — Silver transform for the Trusted External Signals lane.
 
-Splits raw DC-EXT-SIGNAL-v1 records into a clean ``silver.ext_signal`` stream
-(status == "Actual") and a ``silver.ext_signal_quarantine`` stream (drills,
+Splits raw DC-EXT-SIGNAL-v1 records into a clean ``silver.ext_signals`` stream
+(status == "Actual") and a ``silver.ext_signals_quarantine`` stream (drills,
 exercises, tests, expired) so downstream forecasting never pre-seeds on a
 non-actual warning. Overlapping actual warnings are collapsed into deduplicated
 ``HazardEvents`` via ``dedup.collapse``.
@@ -24,6 +24,11 @@ if str(_SCRIPTS) not in sys.path:
 
 from dedup import collapse  # noqa: E402 - path injected above
 
+SILVER_SCHEMA = "silver"
+SILVER_TABLE = "ext_signals"
+SILVER_QUARANTINE_TABLE = "ext_signals_quarantine"
+BRONZE_TABLE = "bronze.ext_signals_raw"
+
 
 def split_quarantine(records: list[dict]) -> tuple[list[dict], list[dict]]:
     """Partition records into (kept, quarantined).
@@ -42,14 +47,28 @@ def hazard_events(kept: list[dict]) -> list[dict]:
     return collapse(kept)
 
 
-def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
-    """Fabric entrypoint. Reads Bronze, writes silver.ext_signal(+quarantine)."""
-    from pyspark.sql import SparkSession  # noqa: F401 - Fabric-provided
+def _write(df, table: str) -> None:
+    df.write.format("delta").mode("overwrite").option(
+        "overwriteSchema", "true"
+    ).saveAsTable(f"{SILVER_SCHEMA}.{table}")
+    print(f"silver: wrote {SILVER_SCHEMA}.{table} ({df.count()} rows)")
 
-    raise NotImplementedError(
-        "run() executes inside the Fabric Spark runtime; the offline seeder is "
-        "data-platform/scripts/external-signals/signals_synth.py."
-    )
+
+def build_silver_signals(spark) -> None:  # pragma: no cover - Fabric runtime only
+    """Read Bronze ext_signals_raw, split, and write silver.ext_signals + quarantine."""
+    df = spark.read.table(BRONZE_TABLE)
+    schema = df.schema
+    rows = [r.asDict(recursive=True) for r in df.collect()]
+    kept, quarantined = split_quarantine(rows)
+    _write(spark.createDataFrame(kept, schema), SILVER_TABLE)
+    _write(spark.createDataFrame(quarantined, schema), SILVER_QUARANTINE_TABLE)
+
+
+def run() -> None:  # pragma: no cover - Fabric runtime only
+    """Fabric entrypoint. Reads Bronze, writes silver.ext_signals + quarantine."""
+    from pyspark.sql import SparkSession  # noqa: PLC0415 - Fabric-provided
+
+    build_silver_signals(SparkSession.builder.getOrCreate())
 
 
 if __name__ == "__main__":  # pragma: no cover

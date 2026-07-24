@@ -1,0 +1,309 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "15390018866793242957"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "allowedValues": [
+        "switzerlandnorth",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Azure region. Region-pinned to the ADR-0013 demo-scope variant path."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Resource tags applied to every resource this module creates."
+      }
+    },
+    "containerAppEnvironmentId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional resource ID of an existing Container Apps managed environment. When empty, a consumption-only environment is created inside this module."
+      }
+    },
+    "containerAppEnvironmentName": {
+      "type": "string",
+      "defaultValue": "[format('cae-skills-sim-{0}', parameters('nameSuffix'))]",
+      "minLength": 2,
+      "maxLength": 60,
+      "metadata": {
+        "description": "Name for the managed environment when one is created by this module. Ignored when containerAppEnvironmentId is provided."
+      }
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Log Analytics workspace resource ID for the managed environment. Ignored when containerAppEnvironmentId is provided."
+      }
+    },
+    "containerImage": {
+      "type": "string",
+      "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+      "metadata": {
+        "description": "Container image the seeder jobs run. Defaults to a placeholder; the real skills-sim image is published by a follow-up CI workflow (parity with the sim-capacity pattern)."
+      }
+    },
+    "containerRegistryLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR login server the jobs pull containerImage from. Set together with containerRegistryResourceId to wire MI-based pull (no admin creds, no secrets)."
+      }
+    },
+    "containerRegistryResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer."
+      }
+    },
+    "landingStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the WS-A1 ADLS Gen2 landing storage account the jobs write extracts to."
+      }
+    },
+    "landingContainerName": {
+      "type": "string",
+      "defaultValue": "landing",
+      "metadata": {
+        "description": "Name of the landing filesystem (container) inside the landing storage account."
+      }
+    },
+    "landingPrefix": {
+      "type": "string",
+      "defaultValue": "curavias-org-skills",
+      "metadata": {
+        "description": "Root prefix inside the landing container for org/skills extracts."
+      }
+    },
+    "sources": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "code": "sf",
+          "system": "successfactors"
+        },
+        {
+          "code": "lms",
+          "system": "lms"
+        },
+        {
+          "code": "skm",
+          "system": "skills-manager"
+        },
+        {
+          "code": "wid",
+          "system": "work-id"
+        }
+      ],
+      "metadata": {
+        "description": "External source systems to seed, one Container Apps Job each. `code` drives the resource name (kept short for the 32-char job-name limit); `system` is the externalSystem value passed to the seeder."
+      }
+    },
+    "replicaTimeoutSeconds": {
+      "type": "int",
+      "defaultValue": 1800,
+      "minValue": 60,
+      "maxValue": 3600,
+      "metadata": {
+        "description": "Replica timeout (seconds) per job execution."
+      }
+    },
+    "demoScope": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "When true, the deployment is scoped to the demo path (synthetic data only, ADR-0013). Emits a demoScope tag for provenance."
+      }
+    }
+  },
+  "variables": {
+    "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
+    "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]",
+    "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+    "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[format('id-skills-sim-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]"
+    },
+    {
+      "condition": "[empty(parameters('containerAppEnvironmentId'))]",
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('containerAppEnvironmentName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "properties": {
+        "appLogsConfiguration": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('destination', 'log-analytics', 'logAnalyticsConfiguration', createObject('customerId', reference(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').customerId, 'sharedKey', listKeys(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').primarySharedKey)), createObject('destination', 'azure-monitor'))]",
+        "zoneRedundant": false
+      }
+    },
+    {
+      "copy": {
+        "name": "simJobs",
+        "count": "[length(parameters('sources'))]"
+      },
+      "type": "Microsoft.App/jobs",
+      "apiVersion": "2024-03-01",
+      "name": "[format('caj-sk-{0}-{1}', parameters('sources')[copyIndex()].code, parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))))]": {}
+        }
+      },
+      "properties": {
+        "environmentId": "[variables('effectiveEnvironmentId')]",
+        "configuration": {
+          "triggerType": "Manual",
+          "replicaTimeout": "[parameters('replicaTimeoutSeconds')]",
+          "replicaRetryLimit": 1,
+          "manualTriggerConfig": {
+            "parallelism": 1,
+            "replicaCompletionCount": 1
+          },
+          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))))), createArray())]"
+        },
+        "template": {
+          "containers": [
+            {
+              "name": "[format('skills-sim-{0}', parameters('sources')[copyIndex()].code)]",
+              "image": "[parameters('containerImage')]",
+              "resources": {
+                "cpu": "[json('0.25')]",
+                "memory": "0.5Gi"
+              },
+              "args": [
+                "--source",
+                "[parameters('sources')[copyIndex()].system]",
+                "--output",
+                "[format('/tmp/{0}.jsonl', parameters('sources')[copyIndex()].system)]"
+              ],
+              "env": [
+                {
+                  "name": "AZURE_CLIENT_ID",
+                  "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                },
+                {
+                  "name": "SOURCE_SYSTEM",
+                  "value": "[parameters('sources')[copyIndex()].system]"
+                },
+                {
+                  "name": "LANDING_STORAGE_ACCOUNT",
+                  "value": "[parameters('landingStorageAccountName')]"
+                },
+                {
+                  "name": "LANDING_CONTAINER",
+                  "value": "[parameters('landingContainerName')]"
+                },
+                {
+                  "name": "LANDING_PREFIX",
+                  "value": "[parameters('landingPrefix')]"
+                },
+                {
+                  "name": "DEMO_SCOPE",
+                  "value": "[if(parameters('demoScope'), 'true', 'false')]"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix')))]",
+        "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]"
+      ]
+    },
+    {
+      "condition": "[variables('useAcrMiPull')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+      "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 23 WS-A3 (#255) — skills-sim jobs MI pulls containerImage from ACR."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "principalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal ID of the skills-sim jobs User-Assigned Managed Identity. Consumed by the WS-A1 masterdata-landing module for the Storage Blob Data Contributor grant."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+    },
+    "clientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Client ID of the skills-sim jobs User-Assigned Managed Identity. Passed to each container as AZURE_CLIENT_ID."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+    },
+    "identityResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the skills-sim jobs User-Assigned Managed Identity."
+      },
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skills-sim-{0}', parameters('nameSuffix')))]"
+    },
+    "jobNames": {
+      "type": "array",
+      "metadata": {
+        "description": "Names of the four manual-trigger Container Apps Jobs."
+      },
+      "copy": {
+        "count": "[length(parameters('sources'))]",
+        "input": "[format('caj-sk-{0}-{1}', parameters('sources')[copyIndex()].code, parameters('nameSuffix'))]"
+      }
+    },
+    "managedEnvironmentId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the managed environment used by these jobs (created by this module or supplied via containerAppEnvironmentId)."
+      },
+      "value": "[variables('effectiveEnvironmentId')]"
+    },
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Skills-sim jobs module implementation marker."
+      },
+      "value": "skills-sim-jobs-implemented"
+    }
+  }
+}

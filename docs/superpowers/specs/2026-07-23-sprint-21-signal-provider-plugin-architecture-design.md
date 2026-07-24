@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.1 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Status** | Implemented (all 17 plan tasks landed on `sprint-21/refactor-signals`; scripts 43 + notebook 13 suites green) |
-| **Previous Version** | 1.0.0 (initial design, approved in brainstorm) |
+| **Previous Version** | 1.0.1 (added the 2026-07-23 live SIT Fabric evidence scope-extension note + risk update) |
 | **Sprint** | [Sprint 21 - Trusted External Signals](../../sprints/SPRINT_PLAN.md) |
 | **Issue** | [#247](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/247) |
 | **Epic** | [sprint-21-refactor-epic.md](../ideas/sprint-21-refactor-epic.md) |
@@ -367,13 +367,24 @@ Detailed task breakdown expanded in the writing-plans step
 | M6 | Governance + agents | ADR update; `FR-EXT-*` in PRD + matrix; `data-quality-agent` gate; AGENTS.md note | eval-goldens green; docs bumped |
 | M7 | Integration + docs | end-to-end synthetic walk-through (sim + internal + one mocked-live); doc bumps | all gates green; DoD met |
 
+### Scope extension (2026-07-23): live SIT Fabric evidence
+
+The original design de-scoped live cloud proof (Container Apps runner and Fabric
+publish were scaffold-only "at demo"). A follow-up scope extension **proved the
+signal medallion live on SIT** across all three consumer layers — gold `ext_*`
+tables, the `external-signals` Direct-Lake semantic model (trust-badge measures),
+and the `da_hospital_capacity` data agent grounded on that model (with the PHI
+refusal gate intact). Data remains **synthetic** (Live-only seed). See the
+[signal Fabric evidence plan](../plans/2026-07-23-sprint-21-signal-fabric-evidence.md)
+and [`signals-fabric-evidence.md`](../../architecture/signals-fabric-evidence.md).
+
 ## 14. Risk register
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
 | Live endpoint/schema drift (SED, Alertswiss) | Medium | Medium | Live bindings isolate parsing; `parse()` is the single seam; automatic fallback to simulator; build-time verification list |
 | Open-Meteo / BAG licence + dataset-ID caveats | Medium | Medium | MeteoSwiss/BAG live adapters authored but **dormant** (Simulated default) until licence/IDs confirmed |
-| Container Apps provider-runner scaffold-only at demo | High | Low | Simulators + internal bindings run the demo deterministically; live is additive and gated |
+| Container Apps provider-runner scaffold-only at demo | High | Low | Simulators + internal bindings run the demo deterministically; live is additive and gated. **Update (2026-07-23):** the Fabric semantic + ontology/data-agent layers are now proven live on SIT (data still synthetic) — see [`signals-fabric-evidence.md`](../../architecture/signals-fabric-evidence.md) |
 | Badge misrepresents state (shows Live while on fallback) | Low | High | `dataMode` derives from `activeBinding` at emit time; fallback stamps `Simulated`; badge-propagation test enforces it |
 | Manifest sprawl / silent bad manifest | Low | Medium | Fail-closed schema validation in CI; malformed manifest excluded from catalogue |
 | Ingestion accidentally re-added to Actions | Low | Medium | ADR records the boundary; CI has no ingestion job; poller workflow removed |
