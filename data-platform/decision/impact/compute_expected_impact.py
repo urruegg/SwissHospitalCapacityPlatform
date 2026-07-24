@@ -28,7 +28,7 @@ the matched forecast row; ``delta = min(int(params["n"]), bed_gap)``.
 from __future__ import annotations
 
 import pathlib
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional
 
 try:
     import yaml  # noqa: F401
@@ -100,6 +100,16 @@ def _driver_context_assumptions(
     return [f"driver:{d.get('factor')}={d.get('delta'):+g}" for d in relevant if d.get("delta") is not None]
 
 
+def _require_numeric_row_field(row: Dict[str, Any], key: str, ward: Any, horizon_h: Any) -> float:
+    value = row.get(key)
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        raise ValueError(
+            f"forecast row missing numeric {key} for ward={ward!r} horizon={horizon_h!r} "
+            f"(got {value!r})"
+        )
+    return value
+
+
 def _bounded_bed_impact(
     params: Dict[str, Any], gold: Dict[str, Any], extra_assumptions: Optional[List[str]] = None
 ) -> Dict[str, Any]:
@@ -110,8 +120,8 @@ def _bounded_bed_impact(
 
     ward = row.get("wardId")
     horizon_h = row.get("horizonH")
-    bed_capacity = row.get("bedCapacity")
-    forecast_occupied = row.get("forecastOccupiedBeds")
+    bed_capacity = _require_numeric_row_field(row, "bedCapacity", ward, horizon_h)
+    forecast_occupied = _require_numeric_row_field(row, "forecastOccupiedBeds", ward, horizon_h)
     bed_gap = max(0, round(forecast_occupied - bed_capacity))
     delta = min(n, bed_gap)
 
@@ -180,20 +190,8 @@ def _load_real_catalog() -> List[Dict[str, Any]]:
     return records
 
 
-def _iter_catalog_records(catalog: Union[list, dict]):
-    if isinstance(catalog, dict):
-        # Support either a single role-file document ({"levers": [...]})
-        # or an already-flattened {lever_id: record} mapping.
-        if "levers" in catalog:
-            yield from catalog["levers"]
-        else:
-            yield from catalog.values()
-    else:
-        yield from catalog
-
-
-def _resolve_lever(lever_id: str, catalog: Optional[Union[list, dict]]) -> Dict[str, Any]:
-    records = _iter_catalog_records(catalog) if catalog is not None else _load_real_catalog()
+def _resolve_lever(lever_id: str, catalog: Optional[List[Dict[str, Any]]]) -> Dict[str, Any]:
+    records = catalog if catalog is not None else _load_real_catalog()
     for record in records:
         if record.get("lever_id") == lever_id:
             return record
@@ -204,12 +202,13 @@ def compute_expected_impact(
     lever_id: str,
     params: Dict[str, Any],
     gold: Dict[str, Any],
-    catalog: Optional[Union[list, dict]] = None,
+    catalog: Optional[List[Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """Resolve ``lever_id`` -> ``impact_formula_ref`` / ``owner_role`` via the
-    lever catalog (injected ``catalog``, or the real on-disk YAML catalog when
-    ``catalog`` is None), then dispatch to the matching pure formula in
-    ``FORMULA_REGISTRY``. Pure and deterministic end-to-end: no randomness, no
+    lever catalog (injected ``catalog`` as a flat list of lever records, or the
+    real on-disk YAML catalog when ``catalog`` is None), then dispatch to the
+    matching pure formula in ``FORMULA_REGISTRY``. Pure and deterministic
+    end-to-end: no randomness, no
     LLM estimate, no network/Fabric I/O (only local file reads for the catalog)."""
     lever = _resolve_lever(lever_id, catalog)
 

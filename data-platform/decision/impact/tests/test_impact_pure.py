@@ -169,6 +169,21 @@ class TestFormulaRegistry(unittest.TestCase):
         with self.assertRaises(ValueError):
             expedite_discharge_beds(params, gold)
 
+    def test_forecast_row_missing_forecast_occupied_beds_raises(self):
+        bad_row = dict(MEDICINE_A_FORECAST_ROW)
+        del bad_row["forecastOccupiedBeds"]
+        gold = _gold(forecast_rows=[bad_row])
+        params = {"n": 6, "before": "08:00", "ward": "hcp:Ward/Medicine A"}
+        with self.assertRaises(ValueError):
+            expedite_discharge_beds(params, gold)
+
+    def test_driver_context_assumption_format_is_pinned(self):
+        gold = _gold()
+        params = {"n": 6, "before": "08:00", "ward": "hcp:Ward/Medicine A"}
+        result = expedite_discharge_beds(params, gold)
+        self.assertIn("driver:forecast_admissions=+6", result["assumptions"])
+        self.assertIn("driver:planned_discharges=-2", result["assumptions"])
+
     def test_missing_ward_raises(self):
         gold = _gold(forecast_rows=[MEDICINE_A_FORECAST_ROW])
         params = {"n": 6, "before": "08:00", "ward": "hcp:Ward/No Such Ward"}
