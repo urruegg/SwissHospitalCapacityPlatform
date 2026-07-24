@@ -12,7 +12,7 @@ const useStyles = makeStyles({
   hint: { color: tokens.colorNeutralForeground3, marginBottom: tokens.spacingVerticalXS },
   flow: {
     display: 'grid',
-    gridTemplateColumns: '1fr auto 1fr auto 1fr',
+    gridTemplateColumns: '1fr auto 1fr',
     alignItems: 'stretch',
     gap: tokens.spacingHorizontalS,
   },
@@ -75,16 +75,6 @@ export function CapacityFlowDiagram({
     <div>
       <Caption1 className={s.hint}>{t('ooa.flow.hint')}</Caption1>
       <div className={s.flow}>
-        <div className={s.col}>
-          <Caption1 className={s.colHead}>{t('ooa.flow.channels')}</Caption1>
-          {channels.map((c) => (
-            <div key={c.id} className={s.channel}>
-              <ArrowRightRegular />
-              <Caption1>{c.label}</Caption1>
-            </div>
-          ))}
-        </div>
-        <div className={s.arrow}><ArrowRightRegular /></div>
         <div className={s.col}>
           <Caption1 className={s.colHead}>{t('ooa.flow.streams')}</Caption1>
           {streams.map((st) => (

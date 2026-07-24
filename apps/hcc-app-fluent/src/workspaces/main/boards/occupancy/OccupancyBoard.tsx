@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Text, makeStyles, tokens } from '@fluentui/react-components';
 import { space, radii, elevation } from '../../../../theme/design-system';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { OccupancyPayload } from '../../../../data/roleboard/occupancy-data';
+import { OCCUPANCY_SIGNALS, type OccupancyPayload } from '../../../../data/roleboard/occupancy-data';
 import { occupancyBoard } from './occupancy-board';
 import { BoardHeader } from './BoardHeader';
 import { WardForecastTable } from './WardForecastTable';
+import { SignalsPanel } from './SignalsPanel';
 import { CapacityFlowDiagram } from './CapacityFlowDiagram';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
@@ -75,6 +76,9 @@ export function OccupancyBoard() {
           wards={payload.wards}
           onSelectWard={(w) => route({ id: w.recoId, label: w.label, context: { channel: w.id, occupancyPct: w.forecastPct } })}
         />
+      </div>
+      <div className={s.panel}>
+        <SignalsPanel signals={OCCUPANCY_SIGNALS} />
       </div>
       <div className={s.panel}>
         <CapacityFlowDiagram

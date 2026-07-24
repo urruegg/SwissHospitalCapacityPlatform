@@ -21,6 +21,23 @@ export interface SignalChannel {
   label: string;
 }
 
+/**
+ * Sprint 27 — OOA Signals panel model. External rows mirror the real Sprint 21
+ * Trust-A feeds (crisis-data.ts); internal rows are simulated demo fixtures.
+ * Every row carries a live/simulated provenance and a RAG status; in this demo
+ * scope all rows are `simulated` (ADR-0016) and flip to `live` on real binding.
+ */
+export interface BoardSignal {
+  id: string;
+  label: string;
+  detail: string;
+  scope: 'external' | 'internal';
+  provenance: Provenance;
+  trustClass?: 'Trust-A';
+  statusLabel: string;
+  statusTone: ChipTone;
+}
+
 export interface SpecStream {
   id: string;
   label: string;
@@ -248,3 +265,20 @@ export const OCCUPANCY_PINNED: OccupancyPayload = {
   recoById,
   defaultReco,
 };
+
+/**
+ * OOA Signals feed. External rows reuse the real Trust-A Swiss authority feeds
+ * from `crisis-data.ts` (Sprint 21); internal rows are simulated operational
+ * fixtures. All rows are `simulated` in this demo scope (ADR-0016); a row flips
+ * to `live` when a real adapter binds (Sprint 21/25 LiveBinding).
+ */
+export const OCCUPANCY_SIGNALS: BoardSignal[] = [
+  { id: 'meteoswiss-heat', label: 'MeteoSwiss', detail: 'heat L3/5', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTIVE', statusTone: 'watch' },
+  { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ELEVATED', statusTone: 'watch' },
+  { id: 'alertswiss-heat-test', label: 'Alertswiss/BABS', detail: 'quiet', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'Test quar.', statusTone: 'signal' },
+  { id: 'sed-seismic', label: 'SED-ETH', detail: 'seismic nominal', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'OK', statusTone: 'ok' },
+  { id: 'onco-rn-roster', label: 'Oncology RN roster', detail: '1 free', scope: 'internal', provenance: 'simulated', statusLabel: 'THIN', statusTone: 'over' },
+  { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+  { id: 'transfer-in-queue', label: 'Transfer-in queue', detail: '3 pending', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+  { id: 'evs-turnaround', label: 'EVS turnaround', detail: '+2h', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+];
