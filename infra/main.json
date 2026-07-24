@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "6752234803929019708"
+      "templateHash": "6600803867412963793"
     }
   },
   "parameters": {
@@ -5319,7 +5319,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "14873735851932254950"
+              "templateHash": "5334056569644691563"
             }
           },
           "parameters": {
@@ -5642,6 +5642,62 @@
               ]
             },
             {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'proposed_actions')]",
+              "properties": {
+                "resource": {
+                  "id": "proposed_actions",
+                  "partitionKey": {
+                    "paths": [
+                      "/plan_id"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": []
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-12-01-preview",
+              "name": "[format('{0}/{1}/{2}', variables('accountName'), parameters('databaseName'), 'plans')]",
+              "properties": {
+                "resource": {
+                  "id": "plans",
+                  "partitionKey": {
+                    "paths": [
+                      "/episode_key"
+                    ],
+                    "kind": "Hash"
+                  },
+                  "indexingPolicy": {
+                    "indexingMode": "consistent",
+                    "includedPaths": [
+                      {
+                        "path": "/*"
+                      }
+                    ],
+                    "excludedPaths": []
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('accountName'), parameters('databaseName'))]"
+              ]
+            },
+            {
               "condition": "[not(empty(parameters('agentHostMiPrincipalId')))]",
               "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
               "apiVersion": "2024-12-01-preview",
@@ -5733,7 +5789,9 @@
                 "scenarios",
                 "agent-memory",
                 "response-levers",
-                "simulation-runs"
+                "simulation-runs",
+                "proposed_actions",
+                "plans"
               ]
             }
           }

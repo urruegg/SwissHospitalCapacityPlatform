@@ -1,11 +1,17 @@
 // Sprint 16 T1 — CSA Cosmos DB for NoSQL account + 4 containers for the
-// what-if scenario catalogue and agent memory.
+// what-if scenario catalogue and agent memory. Sprint 26 WS-C adds 2 more
+// containers (`proposed_actions`, `plans`) for the decision/coordination tier.
 //
 // Grounds design spec §4 (docs/superpowers/specs/2026-07-09-sprint-16-csa-design.md):
 //   scenarios       PK /scenarioId  vector DiskANN       on /descriptionEmbedding
 //   agent-memory    PK /threadId    vector DiskANN       on /contentEmbedding (sharded by /threadId)
 //   response-levers PK /leverId     vector quantizedFlat on /descriptionEmbedding
 //   simulation-runs PK /runId       (no vector)
+//
+// Sprint 26 WS-C adds 2 more containers for the decision/coordination tier per
+// design spec §3.3 / §3.4 (docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md):
+//   proposed_actions PK /plan_id      (no vector) — HITL-gated proposed levers
+//   plans            PK /episode_key (no vector) — CapacityEpisode golden-thread
 //
 // This Cosmos account is SEPARATE from the Sprint 13 conversations/audit Cosmos
 // (ADR-0007) — different concern, different account.
@@ -285,6 +291,56 @@ resource simulationRunsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatab
   }
 }
 
+resource proposedActionsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' = {
+  parent: database
+  name: 'proposed_actions'
+  properties: {
+    resource: {
+      id: 'proposed_actions'
+      partitionKey: {
+        paths: [
+          '/plan_id'
+        ]
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+        excludedPaths: []
+      }
+    }
+  }
+}
+
+resource plansContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' = {
+  parent: database
+  name: 'plans'
+  properties: {
+    resource: {
+      id: 'plans'
+      partitionKey: {
+        paths: [
+          '/episode_key'
+        ]
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+        excludedPaths: []
+      }
+    }
+  }
+}
+
 // Least-privilege data-plane RBAC for the Sprint 13 agent-host managed identity,
 // scoped to this account only. No account keys are used (disableLocalAuth=true).
 resource agentHostDataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-12-01-preview' = if (!empty(agentHostMiPrincipalId)) {
@@ -373,4 +429,6 @@ output containerNames array = [
   agentMemoryContainer.name
   responseLeversContainer.name
   simulationRunsContainer.name
+  proposedActionsContainer.name
+  plansContainer.name
 ]
