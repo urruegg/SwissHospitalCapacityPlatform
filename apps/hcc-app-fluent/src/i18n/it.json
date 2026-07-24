@@ -56,6 +56,53 @@
       "alm": {
         "title": "Dev → SIT → Prod",
         "body": "L'ALM enterprise promuove le modifiche in sicurezza dallo sviluppo alla SIT fino alla produzione."
+      },
+      "stats": {
+        "sectionLabel": "Metriche della piattaforma",
+        "adrCount": "Decisioni architetturali",
+        "bomCount": "Elementi BOM",
+        "requirementsTracked": "Requisiti tracciati",
+        "hitlPct": "Porta HITL",
+        "phiCount": "Elementi PHI"
+      },
+      "provenance": {
+        "snapshot": "Istantanea",
+        "live": "In diretta",
+        "invariant": "Invariante"
+      },
+      "delivery": {
+        "sectionLabel": "Pipeline di consegna e promozione degli ambienti",
+        "planTitle": "Ciclo di consegna",
+        "envTitle": "Promozione degli ambienti",
+        "plan": {
+          "plan": "PIANO",
+          "spec": "SPEC",
+          "build": "BUILD",
+          "review": "REVISIONE",
+          "release": "RILASCIO"
+        },
+        "env": {
+          "dev": "DEV",
+          "sit": "SIT",
+          "prod": "PROD"
+        }
+      },
+      "roster": {
+        "sectionLabel": "Copilot di runtime",
+        "countCaption": "{{count}} copilot specializzati",
+        "lane": {
+          "bmca-agent": "Gestione dei letti",
+          "ooa-agent": "Occupazione",
+          "dca-agent": "Dimissioni",
+          "orsa-agent": "Gestione del blocco operatorio",
+          "sba-agent": "Personale",
+          "csa-agent": "Crisi",
+          "data-quality-agent": "Piattaforma dati",
+          "onboarding-agent": "Piattaforma"
+        }
+      },
+      "pillars": {
+        "sectionLabel": "Fondamenta della piattaforma"
       }
     }
   },

@@ -56,6 +56,53 @@
       "alm": {
         "title": "Dev → SIT → Prod",
         "body": "Enterprise-ALM bringt Änderungen sicher von der Entwicklung über SIT bis in die Produktion."
+      },
+      "stats": {
+        "sectionLabel": "Plattform-Kennzahlen",
+        "adrCount": "Architekturentscheide",
+        "bomCount": "BOM-Einträge",
+        "requirementsTracked": "Anforderungen erfasst",
+        "hitlPct": "HITL-Freigabe",
+        "phiCount": "PHI-Einträge"
+      },
+      "provenance": {
+        "snapshot": "Snapshot",
+        "live": "Live",
+        "invariant": "Invariante"
+      },
+      "delivery": {
+        "sectionLabel": "Lieferkette & Umgebungsförderung",
+        "planTitle": "Lieferprozess",
+        "envTitle": "Umgebungsförderung",
+        "plan": {
+          "plan": "PLAN",
+          "spec": "SPEC",
+          "build": "BUILD",
+          "review": "REVIEW",
+          "release": "RELEASE"
+        },
+        "env": {
+          "dev": "DEV",
+          "sit": "SIT",
+          "prod": "PROD"
+        }
+      },
+      "roster": {
+        "sectionLabel": "Runtime-Copilots",
+        "countCaption": "{{count}} spezialisierte Copilots",
+        "lane": {
+          "bmca-agent": "Bettenmanagement",
+          "ooa-agent": "Belegung",
+          "dca-agent": "Entlassung",
+          "orsa-agent": "OP-Steuerung",
+          "sba-agent": "Personal",
+          "csa-agent": "Krise",
+          "data-quality-agent": "Datenplattform",
+          "onboarding-agent": "Plattform"
+        }
+      },
+      "pillars": {
+        "sectionLabel": "Plattformgrundlagen"
       }
     }
   },

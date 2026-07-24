@@ -56,6 +56,53 @@
       "alm": {
         "title": "Dev → SIT → Prod",
         "body": "Enterprise ALM promotes changes safely from development through SIT to production."
+      },
+      "stats": {
+        "sectionLabel": "Platform metrics",
+        "adrCount": "Architecture decisions",
+        "bomCount": "BOM items",
+        "requirementsTracked": "Requirements tracked",
+        "hitlPct": "HITL gate",
+        "phiCount": "PHI items"
+      },
+      "provenance": {
+        "snapshot": "Snapshot",
+        "live": "Live",
+        "invariant": "Invariant"
+      },
+      "delivery": {
+        "sectionLabel": "Delivery pipeline & environment promotion",
+        "planTitle": "Delivery lifecycle",
+        "envTitle": "Environment promotion",
+        "plan": {
+          "plan": "PLAN",
+          "spec": "SPEC",
+          "build": "BUILD",
+          "review": "REVIEW",
+          "release": "RELEASE"
+        },
+        "env": {
+          "dev": "DEV",
+          "sit": "SIT",
+          "prod": "PROD"
+        }
+      },
+      "roster": {
+        "sectionLabel": "Runtime copilots",
+        "countCaption": "{{count}} specialised copilots",
+        "lane": {
+          "bmca-agent": "Bed management",
+          "ooa-agent": "Occupancy",
+          "dca-agent": "Discharge",
+          "orsa-agent": "OR steering",
+          "sba-agent": "Staffing",
+          "csa-agent": "Crisis",
+          "data-quality-agent": "Data platform",
+          "onboarding-agent": "Platform"
+        }
+      },
+      "pillars": {
+        "sectionLabel": "Platform foundations"
       }
     }
   },
