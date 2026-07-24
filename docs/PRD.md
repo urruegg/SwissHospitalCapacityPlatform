@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.13.0 |
+| **Version** | 1.14.0 |
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.12.0 (added FR-FC-007 + FR-DEC-001..003 for the Sprint 26 prescriptive decision layer) |
+| **Previous Version** | 1.13.0 (added NFR-DEC-001 advisory/HITL guard for the Sprint 26 prescriptive decision layer) |
 
 ## Purpose
 
@@ -307,6 +307,7 @@ keep their `write` side-effect ceiling.
 | `NFR-AI-003` | Forecast and discharge model outputs shall be traceable to model version and execution time. |
 | `NFR-AI-004` | User-facing AI responses and coordination triggers shall be auditable to source context. |
 | `NFR-AI-005` | AI-serving behavior shall support provider-local governance and change control. |
+| `NFR-DEC-001` | Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver. |
 
 ### G) Maintainability And Delivery
 
@@ -387,7 +388,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
 | [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
 | [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
-| [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) + [`docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`](adr/0040-prescriptive-decision-ontology-and-runtime-store.md) + [`docs/superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md`](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md) *(Sprint 26 Slice 1: DC-INSIGHT-v1 descriptive -> prescriptive extension, OOA -> DCA)* | `FR-FC-007`, `FR-DEC-001` to `FR-DEC-003` |
+| [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) + [`docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`](adr/0040-prescriptive-decision-ontology-and-runtime-store.md) + [`docs/superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md`](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md) *(Sprint 26 Slice 1: DC-INSIGHT-v1 descriptive -> prescriptive extension, OOA -> DCA)* | `FR-FC-007`, `FR-DEC-001` to `FR-DEC-003`, `NFR-DEC-001` |
 
 ## Assumptions To Validate In Implementation Planning
 

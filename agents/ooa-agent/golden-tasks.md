@@ -1,6 +1,6 @@
 ---
 agent: ooa-agent
-version: 1.3.0
+version: 1.3.1
 requirement: FR-FC-001, FR-FC-004, FR-FC-005, FR-FC-007, FR-ONT-004, FR-DEC-001, FR-DEC-002, FR-DEC-003, NFR-AI-002, NFR-AI-004
 last-reviewed: 2026-07-24
 ---
@@ -9,11 +9,11 @@ last-reviewed: 2026-07-24
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.3.1 |
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (added grounded-via-Data-Agent + refusal-propagation fixtures) |
+| **Previous Version** | 1.3.0 (repaired 5 U+FFFD em-dashes) |
 
 Six fixtures: happy-path (72-h forecast), failure-mode (out-of-scope region
 refusal), grounded-via-Fabric-Data-Agent (Slice 0 seam), refusal-propagation
@@ -102,7 +102,7 @@ explains that forecasts are limited to hospitals in the caller's `roles` claim.
 1. `fabric-data-agent.ask("How many CapacityUnit beds are occupied in ward B at USZ right now?")`
    -> concept-level answer resolved through the MVO ontology + Direct-Lake model.
 
-(No direct `fabric-mcp.query` � the Fabric Data Agent is the primary grounding
+(No direct `fabric-mcp.query` — the Fabric Data Agent is the primary grounding
 source per the manifest `groundingAgent` binding.)
 
 ### Grounded Expected PR / comment shape
@@ -118,9 +118,9 @@ A grounded answer citing at least one `hcp:*` ontology entity, e.g.
 
 ### Grounded Requirements verified
 
-- `FR-FC-005` � forecast/query available as grounding context.
-- `FR-ONT-004` � answer grounded on ontology entities.
-- `NFR-AI-002` � grounded, cited response.
+- `FR-FC-005` — forecast/query available as grounding context.
+- `FR-ONT-004` — answer grounded on ontology entities.
+- `NFR-AI-002` — grounded, cited response.
 
 ## Fixture: refusal propagation from Fabric Data Agent
 
@@ -150,7 +150,7 @@ re-identification-risk`. The agent must not route around it or synthesise an ans
 
 ### Refusal Requirements verified
 
-- `NFR-AI-004` � refusal / guardrail propagation.
+- `NFR-AI-004` — refusal / guardrail propagation.
 
 ## Fixture: dc-insight decision-coordination (happy path)
 
