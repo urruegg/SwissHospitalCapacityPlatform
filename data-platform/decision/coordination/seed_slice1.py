@@ -5,9 +5,10 @@ Assembles the canonical OOA -> DCA coordination thread: a human
 for ward "Medicine A", which recovers 6 beds and drives forecast occupancy
 from 102% down to 94%, recording an ``ooa -> dca`` handoff on the plan.
 
-Run directly (``python data-platform/decision/coordination/seed_slice1.py``)
-to print the resulting plan as JSON, or import :func:`build_slice1` to get the
-plan dict programmatically (e.g. from tests, verifying determinism).
+Run as a module from the ``data-platform/decision`` directory
+(``python -m coordination.seed_slice1``) to print the resulting plan as JSON,
+or import :func:`build_slice1` to get the plan dict programmatically (e.g. from
+tests, verifying determinism).
 
 No PyYAML dependency: the lever catalog fields needed by
 ``compute_expected_impact`` (``lever_id``, ``impact_formula_ref``,
