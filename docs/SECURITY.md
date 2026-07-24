@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 0.6.1 |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.5.0 (added Sprint 23 skills-evidence consent lineage + revocable Work-ID GLN promotion) |
+| **Previous Version** | 0.6.0 (ADR-0039→0040 reference retarget) |
 
 ## Purpose
 
@@ -122,7 +122,7 @@ application, data, and operations layers.
 
 Workforce skills evidence adds a second data-plane control, consent lineage:
 
-> **Skills-evidence consent lineage (2026-07-23, ADR-0039):** Workforce skills
+> **Skills-evidence consent lineage (2026-07-23, ADR-0040):** Workforce skills
 > evidence (synthetic, no-PHI) is personal in shape and treated under the DSG
 > control model (see [COMPLIANCE.md §Sprint 23 Skills-Evidence DSG Tagging and Consent Lineage](COMPLIANCE.md#sprint-23-skills-evidence-dsg-tagging-and-consent-lineage)).
 > The `gold.fact_skill_assertion` and `gold.dim_work_id_profile` assets are tagged

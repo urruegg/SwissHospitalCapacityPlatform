@@ -442,11 +442,11 @@
     },
     {
       "decisionSummary": "Adopt the following architecture for the Curavias org/skills master-data domain. These are the locked decisions D1-D6 from the Sprint 23 design.",
-      "id": "ADR-0039",
+      "id": "ADR-0040",
       "provenance": {
         "asOf": "2026-07-10",
-        "sourcePath": "docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md"
+        "sourcePath": "docs/adr/0040-curavias-landing-zone-and-skills-evidence-plugins.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0040-curavias-landing-zone-and-skills-evidence-plugins.md"
       },
       "status": "Proposed",
       "title": "Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport"
