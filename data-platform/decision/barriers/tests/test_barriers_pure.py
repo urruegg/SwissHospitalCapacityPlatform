@@ -192,6 +192,13 @@ class TestEdgeCases(unittest.TestCase):
         with self.assertRaises(ValueError):
             derive_barriers(candidates)
 
+    def test_non_utc_clears_at_raises(self):
+        candidates = [
+            _candidate("X1", "pharmacy", MEDICINE_A, 5, "2026-07-24T10:00:00+02:00")
+        ]
+        with self.assertRaises(ValueError):
+            derive_barriers(candidates)
+
     def test_bool_bed_impact_raises(self):
         candidates = [
             _candidate("X1", "pharmacy", MEDICINE_A, 5, "2026-07-24T10:00:00Z", bed_impact=True)

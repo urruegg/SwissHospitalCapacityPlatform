@@ -50,22 +50,37 @@ def _require_bed_impact(candidate: Dict[str, Any]) -> int:
     return value
 
 
+def _require_utc_clears_at(candidate: Dict[str, Any]) -> Optional[str]:
+    clears_at = candidate.get("clears_at")
+    if clears_at is None:
+        return None
+    if not isinstance(clears_at, str) or not clears_at.endswith("Z"):
+        raise ValueError(
+            f"candidate clears_at must be a UTC ISO-8601 string ending in 'Z', "
+            f"got {clears_at!r} (candidate_key={candidate.get('candidate_key')!r})"
+        )
+    return clears_at
+
+
 def derive_barriers(
     candidates: List[Dict[str, Any]],
     owner_map: Optional[Dict[str, str]] = None,
-    now_h: Optional[float] = None,
 ) -> List[Dict[str, Any]]:
     """Collapse ``candidates`` (flat discharge-blocked patient rows) into a
     ranked list of systemic barrier dicts, grouped by ``barrier_type``.
 
     Each candidate dict may contain: ``candidate_key`` (opaque str),
     ``ward`` (ontology ward ID), ``barrier_type`` (required), ``aged_h``
-    (hours blocked), ``clears_at`` (ISO-8601 str), ``bed_impact`` (positive
-    int, defaults to 1). The input list/dicts are never mutated.
+    (hours blocked), ``clears_at`` (UTC ISO-8601 str ending in "Z" --
+    required precondition, see below), ``bed_impact`` (positive int,
+    defaults to 1). The input list/dicts are never mutated.
 
-    ``now_h`` is accepted for API symmetry with other decision-tier tools
-    (e.g. a future "as of" cutoff) but is not currently used by the pure
-    aggregation below -- there is no clock read inside this function.
+    Precondition: ``clears_at``, when present, must be a UTC ISO-8601 string
+    ending in "Z". The "latest clears_at" aggregation below uses a lexical
+    string max, which is only correct when every timestamp shares the same
+    (UTC) offset -- a mixed-offset input (e.g. "+02:00" vs "Z") would
+    otherwise silently produce a wrong "latest" value. Any candidate whose
+    ``clears_at`` doesn't end in "Z" raises ``ValueError``.
 
     Aggregation per barrier_type:
       - ``candidate_count``: number of member candidates.
@@ -75,15 +90,18 @@ def derive_barriers(
       - ``clears_at``: the LATEST (max) member ``clears_at`` -- the barrier
         is only fully cleared once its slowest member clears.
       - ``wards``: sorted unique list of member wards.
-      - ``owner_role``: looked up from ``owner_map`` (falling back to
-        ``DEFAULT_OWNER_MAP``, then to ``"dca"`` for unmapped types).
+      - ``owner_role``: looked up from ``owner_map`` when given (unlisted
+        barrier_types fall back to ``"dca"`` directly -- ``DEFAULT_OWNER_MAP``
+        is not consulted in that case); when ``owner_map`` is omitted,
+        ``DEFAULT_OWNER_MAP`` is used instead, with the same ``"dca"``
+        fallback for barrier_types it doesn't list.
 
     Ranking is deterministic: ``bed_impact`` DESC, then ``aged_h`` DESC,
     then ``barrier_type`` ASC as a stable tiebreak.
 
-    Raises ``ValueError`` if any candidate is missing ``barrier_type`` or
-    has an invalid ``bed_impact`` (missing/zero/negative/bool are all
-    rejected except "missing", which defaults to 1).
+    Raises ``ValueError`` if any candidate is missing ``barrier_type``, has
+    an invalid ``bed_impact`` (missing/zero/negative/bool are all rejected
+    except "missing", which defaults to 1), or has a non-UTC ``clears_at``.
     """
     effective_owner_map = owner_map if owner_map is not None else DEFAULT_OWNER_MAP
 
@@ -92,7 +110,7 @@ def derive_barriers(
         barrier_type = _require_barrier_type(candidate)
         bed_impact = _require_bed_impact(candidate)
         aged_h = candidate.get("aged_h")
-        clears_at = candidate.get("clears_at")
+        clears_at = _require_utc_clears_at(candidate)
         ward = candidate.get("ward")
 
         group = groups.setdefault(
