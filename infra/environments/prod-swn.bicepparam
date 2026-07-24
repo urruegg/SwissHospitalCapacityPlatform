@@ -119,7 +119,8 @@ param manageCuraviasDnsZone = false
 // --- P4 data lane — Event Hubs / Service Bus / CSA Cosmos ---
 // EVH namespace + hub + consumer groups. Region-safe, public, self-contained.
 param enableDataFoundationModule = true
-param enableDataPlatformModule = false
+// Sprint 19 SIT<->PROD data/AI/integration-lane parity (D8, ADR-0042) — rebuild phases P5 (Foundry agents) + P6 (Fabric); experience/API lane already live, reconciled separately.
+param enableDataPlatformModule = true
 // Sprint 19 follow-up — external-signals provider-runner (ca-signal-runner).
 // Codified so it survives future CAE delete/recreate; adopts the live runner
 // idempotently. Requires enableAgentHostModule + enableDataFoundationModule
@@ -131,20 +132,41 @@ param enableSignalRunnerModule = true
 // that force-disables public Cosmos subscription-wide. Creates
 // cosmos-csa-ihzhhpf-prod + 4 vector containers.
 param enableCsaCosmosModule = true
-// P5 Foundry runtime agents — registered via the Sprint 18 v2 /agents API pattern
-// against the PROD project, not Bicep. Stays off here.
-param enableFoundryHostedAgents = false
-// P6 Fabric F2 capacity + PROD workspace — co-located in switzerlandnorth
-// (quota 0/512). Enabled in the P6 phase flip per the runbook.
-param enableFabricFoundationModule = false
-param enableFabricEventstreamModule = false
-// sim-capacity needs an EH source and is region-locked to switzerlandnorth|westus2; defer.
-param enableSimCapacityModule = false
-// Legacy App Service / ML topology — excluded from PROD by design (design §7 v1.1.0).
+// P5 Foundry runtime agents — enabled for the D8 data/AI/integration parity plan.
+param enableFoundryHostedAgents = true
+param foundryHostedAgentsLocation = 'switzerlandnorth'
+param foundryHostedAgentsEventHubNamespace = 'evh-ihzhhpf-prod-i62t'
+param foundryHostedAgentsEventHubName = 'events'
+param foundryHostedAgentsBmCopilotConsumerGroup = 'cg-bm-copilot-agent'
+param foundryHostedAgentsCsaConsumerGroup = 'cg-csa-agent'
+// P6 Fabric F2 capacity + PROD workspace — co-located in switzerlandnorth.
+param enableFabricFoundationModule = true
+param fabricCapacityAdmins = [
+    'admin@mngenvmcap164444.onmicrosoft.com'
+]
+param enableFabricEventstreamModule = true
+param fabricEventstreamWorkspaceId = ''
+param fabricEventstreamDestinationLakehouseId = ''
+param enableSkillsEventstreamModule = true
+param skillsEventstreamWorkspaceId = ''
+param skillsEventstreamDestinationLakehouseId = ''
+param enableMasterdataLandingModule = true
+param masterdataLandingPipelinePrincipalId = ''
+param masterdataLandingLogAnalyticsWorkspaceId = ''
+param enableSkillsSimJobsModule = true
+param skillsSimJobsImage = 'crihzhhpfprod.azurecr.io/skills-sim-jobs:latest'
+// sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
+param enableSimCapacityModule = true
+param simCapacityLocation = 'switzerlandnorth'
+param simCapacityContainerImage = 'crihzhhpfprod.azurecr.io/sim-capacity:sprint10-t1'
+param simCapacityEventHubNamespace = ''
+param simCapacityEventHubName = 'events'
+param simCapacityDemoScope = true
+// Legacy App Service / API topology already live; leave off in this data/AI/integration slice.
 param enableExperienceHostingModule = false
 param enableApiRuntimeModule = false
-param enableAiMlFoundationModule = false
+param enableAiMlFoundationModule = true
 // P4 Service Bus namespace (integration module). Region-safe, self-contained.
 param enableIntegrationModule = true
-param enableIntegrationOrchestrationModule = false
+param enableIntegrationOrchestrationModule = true
 param enableSourceSqlModule = false
