@@ -2,23 +2,24 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | — |
+| **Previous Version** | 1.0.0 (initial evidence-based matrix) |
 
 ## 1. Summary
 
 Live read-only `az` evidence gathered on 2026-07-24 shows that SIT and PROD are
 aligned for the core production path (agent host, signal runner execution,
 Cosmos, Event Hubs, Key Vault posture, app ingress, and observability), while the
-known region/topology differences are deliberate. Three unintended divergences
-remain visible in the evidence: SIT has no Key Vault private endpoint/DNS zone,
-SIT signal runner still uses a system-assigned identity while PROD uses a UAMI,
-and PROD has no storage/ADLS landing-zone account corresponding to SIT storage.
+known region/topology differences are deliberate. Re-verification corrected two
+former red findings: PROD is more hardened than SIT for Key Vault private
+networking and signal-runner identity. The only genuine PROD gap is the disabled
+data/AI/integration lane, now in sprint remediation through D8 full-parity deploy
+slices.
 
-**Verdict tally:** ✅ **Parity** 9 · ⚠️ **Deliberate asymmetry** 3 · 🟥 **Gap** 3 ·
+**Verdict tally:** ✅ **Parity** 9 · ⚠️ **Deliberate asymmetry** 5 · 🟥 **Gap** 1 ·
 **N-A** 1.
 
 ## 2. Facts (F1–F4)
@@ -40,11 +41,11 @@ and PROD has no storage/ADLS landing-zone account corresponding to SIT storage.
 | 1 | Region and primary topology | `rg-ihzhhpf-sit` is `westus2`; main SIT resources are in `westus2`. | `rg-ihzhhpf-prod` is `switzerlandnorth`; PROD is single-region GA target. | ⚠️ **Deliberate asymmetry (F1/F3 / ADR-0013)** | [E1](#e1-region--topology) |
 | 1 | SIT eastus2 Foundry split | SIT also has `ai-ihzhhpf-sit-eastus2` in `eastus2` for the Foundry control plane. | No corresponding PROD eastus2 split is required. | ⚠️ **Deliberate asymmetry (F4 / ADR-0032)** | [E1](#e1-region--topology) |
 | 2 | VNet, subnets, and CAE VNet integration | `vnet-platform-ihzhhpf-sit` `10.60.0.0/16`; `cae-ihzhhpf-sit` integrated with `snet-cae`. | `vnet-platform-ihzhhpf-prod` `10.70.0.0/16`; `cae-ihzhhpf-prod` integrated with `snet-cae`. | ✅ **Parity** | [E2](#e2-network) |
-| 2 | Private endpoints and private DNS | Cosmos platform + CSA private endpoints are Approved; only `privatelink.documents.azure.com` exists. No Key Vault private endpoint or `privatelink.vaultcore.azure.net` zone was returned. | Cosmos platform + CSA and Key Vault private endpoints are Approved; documents and vaultcore private DNS zones exist. | 🟥 **Gap** | [E2](#e2-network) |
+| 2 | Private endpoints and private DNS | Cosmos platform + CSA private endpoints are Approved; only `privatelink.documents.azure.com` exists. No Key Vault private endpoint or `privatelink.vaultcore.azure.net` zone was returned; SIT KV `kv-ihzhhpf-sit-y26y` has `publicNetworkAccess=Disabled` but no PE. | Cosmos platform + CSA and Key Vault private endpoints are Approved; documents and vaultcore private DNS zones exist. PROD has Approved `pe-kv-ihzhhpf-prod-swn1` and KV `publicNetworkAccess=Disabled`. | ⚠️ **Deliberate asymmetry — PROD exceeds SIT (F4)**. SIT permits broader/cross-region access, so SIT KV needs no PE; SIT could adopt the PROD KV-PE pattern as future hardening, not required for GA parity. | [E2](#e2-network) |
 | 3 | Agent-host managed identity and platform roles | `ca-agent-host-ihzhhpf-sit` uses UAMI `id-ca-agent-host-ihzhhpf-sit`; has `AcrPull`, `Cognitive Services User`, and Cosmos SQL data-plane role `...0002` on platform + CSA accounts. | `ca-agent-host-ihzhhpf-prod` uses UAMI `id-ca-agent-host-ihzhhpf-prod`; has `AcrPull`, `Cognitive Services User`, and Cosmos SQL data-plane role `...0002` on platform + CSA accounts. | ✅ **Parity** | [E3](#e3-identity--rbac) |
-| 3 | Signal-runner identity and Event Hubs sender | `ca-signal-runner-ihzhhpf-sit` uses a **SystemAssigned** identity; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-sit-y26y`. | `ca-signal-runner-ihzhhpf-prod` uses UAMI `id-signal-runner-ihzhhpf-prod`; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-prod-i62t`. | 🟥 **Gap** | [E3](#e3-identity--rbac) |
+| 3 | Signal-runner identity and Event Hubs sender | `ca-signal-runner-ihzhhpf-sit` uses a **SystemAssigned** identity; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-sit-y26y`. | `ca-signal-runner-ihzhhpf-prod` uses UAMI `id-signal-runner-ihzhhpf-prod`; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-prod-i62t`. PROD was deliberately hardened to stable UAMI so role assignment survives CAE recreates. | ⚠️ **Deliberate asymmetry — PROD exceeds SIT**. SIT could adopt the stable-UAMI pattern as future hardening, not a GA-parity gap. | [E3](#e3-identity--rbac) |
 | 4 | Cosmos DB and Event Hubs data platform | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `West US 2`; Event Hubs namespace `Standard`, public access enabled. | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `Switzerland North`; Event Hubs namespace `Standard`, public access enabled. | ✅ **Parity** | [E4](#e4-data-platform) |
-| 4 | Storage / ADLS landing zone | Two StorageV2 accounts exist with public access disabled. | `az storage account list -g rg-ihzhhpf-prod` returned an empty array. | 🟥 **Gap** | [E4](#e4-data-platform) |
+| 4 | Storage / ADLS landing zone and data/AI/integration lane | Two StorageV2 accounts exist with public access disabled: `stdpihzhhpfsity26y` (data-platform storage) and `stmasterdataihzhhpfsit` (ADLS Gen2, HNS=true, masterdata landing). | `az storage account list -g rg-ihzhhpf-prod` returned an empty array because `prod-swn.bicepparam` disables the data/AI/integration lane (`enableDataPlatformModule=false`, `enableFabricFoundationModule=false`, `enableMasterdataLandingModule` unset/false, `enableSkillsSimJobsModule` unset/false). Remediation tiers: (a) ADLS masterdata + skills-sim, no Fabric dependency, deployable now; (b) Fabric F2 workspace/lakehouse/semantic-model + Foundry agents (P6/P5), deployable, GA; (c) Fabric IQ Ontology/Data Agent Preview, attempted under ADR-0042 and may hit the #270 per-capacity gate. PROD substrate already exists: `fabricihzhhpfprod` Fabric F2 capacity and `ai-ihzhhpf-prod` Foundry account. | 🟥 **Gap — remediation IN PROGRESS this sprint** via decision D8 (@urruegg, 2026-07-24): execute full P5/P6 data-lane parity as gated deploy slices. Required BOM items are GA in Switzerland North per ADR-0037 and `region-availability.yaml`; only Fabric IQ Ontology + Fabric Data Agent are Preview, now permitted in-region under the ADR-0042 standing Preview exception. | [E4](#e4-data-platform) |
 | 5 | Core Container Apps runtime | Core apps `ca-app-fluent-ihzhhpf-sit`, `ca-agent-host-ihzhhpf-sit`, and `ca-signal-runner-ihzhhpf-sit` are `Succeeded` / `Running`. | Core apps `ca-app-fluent-ihzhhpf-prod`, `ca-agent-host-ihzhhpf-prod`, and `ca-signal-runner-ihzhhpf-prod` are `Succeeded` / `Running`. | ✅ **Parity** | [E5](#e5-compute--runtime) |
 | 5 | SIT-only simulation runtime | SIT additionally has simulation CAEs/apps (`cae-sim-*`, `cae-skills-sim-*`, `ca-sim-capacity-*`) for synthetic testing. | PROD does not carry those SIT simulation-only runtime resources. | ⚠️ **Deliberate asymmetry (F3 / ADR-0013)** | [E5](#e5-compute--runtime) |
 | 6 | Key Vault / secrets control plane | `kv-ihzhhpf-sit-y26y`: RBAC authorization enabled; public network access disabled. | `kv-ihzhhpf-prod-swn1`: RBAC authorization enabled; public network access disabled. | ✅ **Parity** | [E6](#e6-key-vault--secrets) |
@@ -348,14 +349,12 @@ customer/patient PID/PHI per ADR-0016.
 
 ### 🟥 Gaps
 
-* **SIT Key Vault private networking:** SIT has Cosmos private endpoints and the
-  documents private DNS zone, but no Key Vault private endpoint or
-  `privatelink.vaultcore.azure.net` zone matching PROD.
-* **SIT signal-runner identity hardening:** SIT signal runner has the correct
-  Event Hubs sender permission but uses a system-assigned identity rather than a
-  dedicated UAMI like PROD.
-* **PROD storage/ADLS landing zone:** SIT has two locked-down StorageV2 accounts;
-  PROD returned no storage accounts in `rg-ihzhhpf-prod`.
+* **PROD data/AI/integration lane:** PROD currently has no storage accounts
+  because the Switzerland North rebuild has not yet executed P5/P6 data-lane
+  phases. Remediation is in progress this sprint via the D8 full-parity deploy,
+  tracked in
+  `docs/superpowers/plans/2026-07-24-sprint-19-sit-prod-parity-extension.md`
+  (Phase G/new deploy phase) and ADR-0042.
 
 ### Accepted asymmetries
 
@@ -365,6 +364,11 @@ customer/patient PID/PHI per ADR-0016.
   `ai-ihzhhpf-sit-eastus2`; PROD does not need the split (F4, ADR-0032).
 * **SIT simulation runtime:** SIT carries simulation-only Container Apps and
   environments for synthetic testing; PROD does not.
+* **Key Vault private endpoint:** PROD exceeds SIT with an Approved Key Vault PE
+  and vaultcore private DNS zone; SIT intentionally relies on disabled public
+  access without a KV PE under F4 and may adopt the pattern later.
+* **Signal-runner UAMI:** PROD exceeds SIT with stable
+  `id-signal-runner-ihzhhpf-prod`; SIT may adopt the UAMI pattern later.
 
 ### N/A-per-ADR
 
