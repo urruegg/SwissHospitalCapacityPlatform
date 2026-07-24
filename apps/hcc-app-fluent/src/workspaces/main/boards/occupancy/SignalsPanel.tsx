@@ -96,7 +96,7 @@ export function SignalsPanel({ signals }: SignalsPanelProps) {
           {sig.detail ? <span className={s.detail}>{` \u00b7 ${sig.detail}`}</span> : null}
         </Body1>
         <div className={s.badges}>
-          <Badge appearance="tint" color={chipBadgeColor(sig.statusTone)}>
+          <Badge appearance="filled" color={chipBadgeColor(sig.statusTone)}>
             {sig.statusLabel}
           </Badge>
           <span

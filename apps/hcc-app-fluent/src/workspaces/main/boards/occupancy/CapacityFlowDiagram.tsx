@@ -95,7 +95,7 @@ export function CapacityFlowDiagram({
             >
               <span className={s.streamHead}>
                 <Body1>{st.label}</Body1>
-                <Badge appearance="tint" color={chipBadgeColor(st.level)}>{st.levelLabel}</Badge>
+                <Badge appearance="filled" color={chipBadgeColor(st.level)}>{st.levelLabel}</Badge>
               </span>
               <Caption1 className={s.fedBy}>
                 {t('ooa.flow.fedBy', { channels: st.fedBy.map(channelLabel).join(' \u00b7 ') })}
