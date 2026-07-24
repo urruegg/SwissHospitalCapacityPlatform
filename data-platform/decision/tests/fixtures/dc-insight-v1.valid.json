@@ -1,0 +1,41 @@
+{
+  "signal": {
+    "metric": "occupancy_pct",
+    "value": 102,
+    "unit": "%",
+    "threshold": 100,
+    "breach": true,
+    "scope": "hcp:Ward/Medicine A",
+    "horizon_h": 72
+  },
+  "understanding": {
+    "drivers": [
+      { "factor": "forecast_admissions", "delta": 6, "note": "flu season" },
+      { "factor": "planned_discharges", "delta": -2 }
+    ]
+  },
+  "recommendation": [
+    {
+      "lever_id": "OOA-EXPEDITE-DISCHARGE",
+      "params": { "n": 6, "before": "17:00" },
+      "expected_impact": { "metric": "beds", "delta": 6 },
+      "owner_role": "dca",
+      "deadline": "2026-07-25T17:00:00Z"
+    }
+  ],
+  "action": {
+    "status": "proposed",
+    "hitl": "required",
+    "cosmos_id": "proposed_actions/1234"
+  },
+  "coordination": {
+    "plan_id": "plan-medicine-a-2026-07-25",
+    "golden_thread": "Medicine A 102% -> 94%",
+    "handoff": "dca"
+  },
+  "provenance": {
+    "concepts": ["hcp:Ward", "hcp:Bed"],
+    "confidence": 0.82,
+    "source_trust": "A"
+  }
+}

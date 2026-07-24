@@ -1,0 +1,20 @@
+# ORSA (OR-Steering Agent) lever catalog.
+# Sprint 26 Slice 1: STUB ONLY. This role is not part of the OOA/DCA vertical
+# slice; the single placeholder lever below exists so the catalog fan-out
+# (all 6 roles) is schema-valid ahead of full ORSA authoring in a later sprint.
+role: orsa
+levers:
+  - lever_id: ORSA-PLACEHOLDER
+    role: orsa
+    title_i18n:
+      de: "Platzhalter-Hebel (ORSA)"
+      en: "Placeholder lever (ORSA)"
+      fr: "Levier provisoire (ORSA)"
+      it: "Leva segnaposto (ORSA)"
+    preconditions: []
+    params_schema:
+      type: object
+      properties: {}
+    impact_formula_ref: placeholder
+    owner_role: orsa
+    hitl: true

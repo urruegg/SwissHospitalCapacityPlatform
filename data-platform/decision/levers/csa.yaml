@@ -1,0 +1,20 @@
+# CSA (Crisis/Scenario Agent) lever catalog.
+# Sprint 26 Slice 1: STUB ONLY. This role is not part of the OOA/DCA vertical
+# slice; the single placeholder lever below exists so the catalog fan-out
+# (all 6 roles) is schema-valid ahead of full CSA authoring in a later sprint.
+role: csa
+levers:
+  - lever_id: CSA-PLACEHOLDER
+    role: csa
+    title_i18n:
+      de: "Platzhalter-Hebel (CSA)"
+      en: "Placeholder lever (CSA)"
+      fr: "Levier provisoire (CSA)"
+      it: "Leva segnaposto (CSA)"
+    preconditions: []
+    params_schema:
+      type: object
+      properties: {}
+    impact_formula_ref: placeholder
+    owner_role: csa
+    hitl: true
