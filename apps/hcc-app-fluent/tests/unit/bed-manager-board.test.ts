@@ -16,14 +16,63 @@ describe('bedManagerBoard (RoleBoard contract)', () => {
     expect(data.payload.bedsShort).toBe(7);
   });
 
-  it('derives clickable insights from reallocations', async () => {
+  it('derives clickable insights from placements and barriers', async () => {
     const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
     const insights = bedManagerBoard.insights(data);
-    expect(insights.map((i) => i.id)).toContain('surg-a-to-med-a');
-    expect(insights[0].context).toHaveProperty('fromWard');
+    // Placement insights
+    expect(insights.some((i) => i.context['placement'] === 'place-pt-4001')).toBe(true);
+    // Barrier insights
+    expect(insights.some((i) => i.context['barrier'] === 'ward-overflow')).toBe(true);
+    // Gap insight
+    expect(insights.some((i) => i.id === 'placement-gap')).toBe(true);
   });
 
-  it('emits residual bed pressure as its handoff output', async () => {
+  it('all insight labels are distinct — no duplicate ids', async () => {
+    const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const insights = bedManagerBoard.insights(data);
+    const ids = insights.map((i) => i.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('defaultReco has non-empty levers, a handoff CTA, and gold citations', async () => {
+    const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const reco = bedManagerBoard.defaultReco(data);
+    expect(reco.levers.length).toBeGreaterThan(0);
+    expect(reco.primaryCta).toBeDefined();
+    expect(reco.citations.some((c) => c.startsWith('gold.'))).toBe(true);
+    expect(reco.provenance).toBe('simulated');
+  });
+
+  it('HITL move reco has requiresApproval: true on its primaryCta', async () => {
+    const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const hitlReco = data.payload.recoById['move-pt-4003-hitl'];
+    expect(hitlReco).toBeDefined();
+    expect(hitlReco.primaryCta?.requiresApproval).toBe(true);
+  });
+
+  it('refused reco exists with refused: true (blocked move awaiting approval)', async () => {
+    const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const refusedReco = data.payload.recoById['move-pt-4004-refused'];
+    expect(refusedReco).toBeDefined();
+    expect(refusedReco.refused).toBe(true);
+  });
+
+  it('recoFor resolves a placement reco for a known insight id', async () => {
+    const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const reco = bedManagerBoard.recoFor(
+      { id: 'move-pt-4001', label: 'test', context: {} },
+      data,
+    );
+    expect(reco.levers.length).toBeGreaterThan(0);
+  });
+
+  it('recoFor falls back to defaultReco for an unknown insight id', async () => {
+    const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const fallback = bedManagerBoard.recoFor({ id: 'no-such-id', label: 'x', context: {} }, data);
+    expect(fallback).toEqual(data.payload.defaultReco);
+  });
+
+  it('emits residual bed pressure -3 as its handoff output', async () => {
     const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
     const handoff = bedManagerBoard.toHandoff(data);
     expect(handoff.fromAgent).toBe('bmca-agent');

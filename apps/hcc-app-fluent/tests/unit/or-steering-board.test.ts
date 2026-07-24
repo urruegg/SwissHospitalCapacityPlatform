@@ -31,10 +31,42 @@ describe('orSteeringBoard (RoleBoard contract)', () => {
     expect(handoff.metrics.deltaBeds).toBe(-1);
   });
 
-  it('starts from OR steering when no prior handoff is present', () => {
+  it('starts with loopBackToOoa: true when no prior handoff is present (ORSA loops back to OOA)', () => {
     expect(orSteeringBoard.fromHandoff(null)).toEqual({
       situation: 'OR steering',
-      loopBackToOoa: false,
+      loopBackToOoa: true,
     });
+  });
+
+  it('all insight labels are distinct — no duplicate specialty text', async () => {
+    const data = await orSteeringBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const insights = orSteeringBoard.insights(data);
+    const labels = insights.map((i) => i.label);
+    const uniqueLabels = new Set(labels);
+    expect(uniqueLabels.size).toBe(labels.length);
+  });
+
+  it('defaultReco has non-empty levers and a CTA', async () => {
+    const data = await orSteeringBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const reco = orSteeringBoard.defaultReco(data);
+    expect(reco.levers.length).toBeGreaterThan(0);
+    expect(reco.primaryCta).toBeDefined();
+    expect(reco.citations.length).toBeGreaterThan(0);
+    expect(reco.provenance).toBe('simulated');
+  });
+
+  it('recoFor resolves a reco from the payload for a known insight id', async () => {
+    const data = await orSteeringBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const reco = orSteeringBoard.recoFor(
+      { id: 'ortho-knee-tue', label: 'test', context: {} },
+      data,
+    );
+    expect(reco.levers.length).toBeGreaterThan(0);
+  });
+
+  it('recoFor falls back to defaultReco for an unknown insight id', async () => {
+    const data = await orSteeringBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const fallback = orSteeringBoard.recoFor({ id: 'no-such-id', label: 'x', context: {} }, data);
+    expect(fallback).toEqual(data.payload.defaultReco);
   });
 });

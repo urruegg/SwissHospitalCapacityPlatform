@@ -1,5 +1,6 @@
 import type { GroundedReco } from '../../copilot-rail/reco';
 import type { ChipTone } from '../../copilot-rail/reco';
+import type { Provenance } from '../../journey/RoleBoard';
 
 export type WardTrend = 'rising' | 'flat' | 'falling';
 
@@ -37,6 +38,84 @@ export interface CapacitySummary {
   forecastTotal: number;
   forecastPct: number;
   gapBeds: number;
+}
+
+/**
+ * Derived summary of the OccupancyPayload for the START surface teaser.
+ * START and OOA share the same golden source so the figures agree.
+ */
+export interface SiteCapacitySummary {
+  /** Ward label with the highest forecastPct in the OccupancyPayload.wards array. */
+  peakWard: string;
+  /** 72h forecastPct of the peak ward. */
+  peakPct: number;
+  /**
+   * Equals capacity.gapBeds (negative = beds needed at 72h).
+   */
+  siteGapBeds: number;
+  /**
+   * Estimated hours until the peak ward breaches 100%.
+   * Derivation: linear interpolation across the forecast window —
+   *   round(windowHours × (100 − peakWard.nowPct) / (peakWard.forecastPct − peakWard.nowPct))
+   * Returns 0 if already ≥ 100%; returns windowHours when no breach is predicted.
+   */
+  breachEtaHours: number;
+  /** The agent that first surfaces this occupancy data. */
+  firstSurfacedBy: 'ooa-agent';
+  provenance: Provenance;
+  /** ISO-8601 timestamp of when this summary was computed. */
+  asOf: string;
+}
+
+/**
+ * Pure aggregation helper — converts an OccupancyPayload into a SiteCapacitySummary.
+ * Extracted so it can be unit-tested without I/O mocking.
+ *
+ * Empty `wards` guard: returns a safe fallback (peakWard='—', peakPct=0,
+ * breachEtaHours=windowHours) so the START teaser degrades gracefully if a live
+ * backend returns an empty ward list.
+ */
+export function aggregateSiteCapacity(
+  wards: WardRow[],
+  capacity: CapacitySummary,
+  windowHours: number,
+  provenance: Provenance,
+  asOf: string,
+): SiteCapacitySummary {
+  if (wards.length === 0) {
+    return {
+      peakWard: '—',
+      peakPct: 0,
+      siteGapBeds: capacity.gapBeds,
+      breachEtaHours: windowHours,
+      firstSurfacedBy: 'ooa-agent',
+      provenance,
+      asOf,
+    };
+  }
+
+  const peak = wards.reduce((a, b) => (b.forecastPct > a.forecastPct ? b : a));
+
+  let breachEtaHours: number;
+  if (peak.nowPct >= 100) {
+    breachEtaHours = 0;
+  } else if (peak.forecastPct > 100) {
+    breachEtaHours = Math.round(
+      (windowHours * (100 - peak.nowPct)) / (peak.forecastPct - peak.nowPct),
+    );
+  } else {
+    breachEtaHours = windowHours;
+  }
+
+  return {
+    peakWard: peak.label,
+    peakPct: peak.forecastPct,
+    siteGapBeds: capacity.gapBeds,
+    breachEtaHours,
+    firstSurfacedBy: 'ooa-agent',
+    provenance,
+    asOf,
+  };
 }
 
 export interface OccupancyPayload {

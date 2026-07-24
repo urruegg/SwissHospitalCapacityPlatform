@@ -48,7 +48,7 @@ function RailState() {
 }
 
 describe('StaffingBoard surface', () => {
-  it('renders staff moves, banner, and a simulated badge', async () => {
+  it('renders staff moves in the coverage table, banner, and a simulated badge', async () => {
     render(
       <Harness>
         <StaffingBoard />
@@ -57,9 +57,10 @@ describe('StaffingBoard surface', () => {
 
     for (const move of STAFFING_PINNED.moves) {
       await waitFor(() => expect(screen.getByText(move.role)).toBeInTheDocument());
-      expect(screen.getByText(`${move.fromUnit} -> ${move.toUnit}`)).toBeInTheDocument();
+      expect(screen.getByText(move.fromUnit)).toBeInTheDocument();
+      expect(screen.getByText(move.toUnit)).toBeInTheDocument();
     }
-    expect(screen.getByText(/simulated/i)).toBeInTheDocument();
+    expect(screen.getByText(/simulated data/i)).toBeInTheDocument();
     expect(screen.getByText(/Carried from orsa-agent/i)).toBeInTheDocument();
   });
 

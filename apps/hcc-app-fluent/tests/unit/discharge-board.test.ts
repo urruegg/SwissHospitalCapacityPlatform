@@ -37,4 +37,36 @@ describe('dischargeBoard (RoleBoard contract)', () => {
       loopBackToOoa: false,
     });
   });
+
+  it('all insight labels are distinct — no duplicate ward/candidate text', async () => {
+    const data = await dischargeBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const insights = dischargeBoard.insights(data);
+    const labels = insights.map((i) => i.label);
+    const uniqueLabels = new Set(labels);
+    expect(uniqueLabels.size).toBe(labels.length);
+  });
+
+  it('defaultReco has non-empty levers and a CTA', async () => {
+    const data = await dischargeBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const reco = dischargeBoard.defaultReco(data);
+    expect(reco.levers.length).toBeGreaterThan(0);
+    expect(reco.primaryCta).toBeDefined();
+    expect(reco.citations.length).toBeGreaterThan(0);
+    expect(reco.provenance).toBe('simulated');
+  });
+
+  it('recoFor resolves a reco from the payload for a known insight id', async () => {
+    const data = await dischargeBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const reco = dischargeBoard.recoFor(
+      { id: 'med-a-spitex', label: 'test', context: {} },
+      data,
+    );
+    expect(reco.levers.length).toBeGreaterThan(0);
+  });
+
+  it('recoFor falls back to defaultReco for an unknown insight id', async () => {
+    const data = await dischargeBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
+    const fallback = dischargeBoard.recoFor({ id: 'no-such-id', label: 'x', context: {} }, data);
+    expect(fallback).toEqual(data.payload.defaultReco);
+  });
 });

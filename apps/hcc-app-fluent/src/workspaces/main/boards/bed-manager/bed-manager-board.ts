@@ -1,54 +1,74 @@
 import i18n from '../../../../i18n';
 import type { GroundedReco } from '../../../../copilot-rail/reco';
 import type { RoleBoard, RoleBoardData, ContextInsight } from '../../../../journey/RoleBoard';
-import type { BedManagerPayload } from '../../../../data/roleboard/bed-manager-data';
+import type { BedManagerPayload, PlacementRequest, PlacementBarrier } from '../../../../data/roleboard/bed-manager-data';
 import { loadBedManager } from '../../../../data/roleboard/golden-source-client';
 
-/** Sprint 2 (parity) — the bmca RoleBoard implementation (bed reallocation). */
+/** Sprint 20 (parity) — the bmca RoleBoard implementation (placement + bed-state). */
 export const bedManagerBoard: RoleBoard<BedManagerPayload> = {
   agent: 'bmca-agent',
   ceiling: 'write',
   load: (scope, mode) => loadBedManager(scope, mode),
-  insights: (data: RoleBoardData<BedManagerPayload>) =>
-    data.payload.reallocations.map((r) => ({
-      id: r.id,
-      label: i18n.t('insight.bedShift', { beds: r.beds, fromWard: r.fromWard, toWard: r.toWard }),
-      context: {
-        reallocation: r.id,
-        fromWard: r.fromWard,
-        toWard: r.toWard,
-        beds: r.beds,
-      },
-    })),
+
+  insights: (data: RoleBoardData<BedManagerPayload>): ContextInsight[] => {
+    const seen = new Set<string>();
+
+    const placementInsights: ContextInsight[] = data.payload.placements.map(
+      (r: PlacementRequest) => ({
+        id: r.recoId,
+        label: i18n.t('insight.placementMove', {
+          patientId: r.patientId,
+          fromWard: r.fromWard,
+          toWard: r.toWard,
+        }),
+        context: {
+          placement: r.id,
+          patientId: r.patientId,
+          fromWard: r.fromWard,
+          toWard: r.toWard,
+        },
+      }),
+    );
+
+    const barrierInsights: ContextInsight[] = data.payload.barriers.map(
+      (b: PlacementBarrier) => ({
+        id: b.recoId,
+        label: b.label,
+        context: { barrier: b.id, bedImpact: b.bedImpact },
+      }),
+    );
+
+    const gapInsight: ContextInsight = {
+      id: 'placement-gap',
+      label: i18n.t('bmca.gap.label'),
+      context: { residualBeds: data.payload.residualBeds },
+    };
+
+    return [...placementInsights, ...barrierInsights, gapInsight].filter((ins) => {
+      if (seen.has(ins.id)) return false;
+      seen.add(ins.id);
+      return true;
+    });
+  },
+
   askAbout: [
-    'What changed since last shift?',
-    'Where is the biggest pressure?',
+    i18n.t('bmca.askAbout.topPressure'),
+    i18n.t('bmca.askAbout.placementQueue'),
+    i18n.t('bmca.askAbout.slaRisk'),
   ],
-  defaultReco(): GroundedReco {
-    return {
-      agentLabel: 'Bed Management Copilot',
-      contextChip: { subject: 'Shift summary', tone: 'ok' },
-      read: 'No proactive recommendation wired for this board yet (parity build focuses on occupancy).',
-      levers: [],
-      citations: [],
-      provenance: 'simulated',
-    };
-  },
-  recoFor(insight: ContextInsight): GroundedReco {
-    return {
-      agentLabel: 'Bed Management Copilot',
-      contextChip: { subject: insight.label, tone: 'watch' },
-      read: `Context picked up for ${insight.label}. Detailed recommendation lands in a later sprint.`,
-      levers: [],
-      citations: [],
-      provenance: 'simulated',
-    };
-  },
+
+  defaultReco: (data: RoleBoardData<BedManagerPayload>): GroundedReco =>
+    data.payload.defaultReco,
+
+  recoFor: (insight: ContextInsight, data: RoleBoardData<BedManagerPayload>): GroundedReco =>
+    data.payload.recoById[insight.id] ?? data.payload.defaultReco,
+
   toHandoff: (data: RoleBoardData<BedManagerPayload>) => ({
     fromAgent: 'bmca-agent',
     headline: `${data.payload.bedsReallocated} beds reallocated, site still ${data.payload.residualBeds} beds`,
     metrics: { bedsReallocated: data.payload.bedsReallocated, deltaBeds: data.payload.residualBeds },
   }),
+
   fromHandoff: (prev) => ({
     situation: prev ? prev.headline : 'Bed reallocation',
     loopBackToOoa: false,
