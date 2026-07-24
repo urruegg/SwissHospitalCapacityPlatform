@@ -8,12 +8,12 @@ levers:
     title_i18n:
       de: "Entlassbereite Patienten beschleunigen"
       en: "Expedite discharge-ready patients"
-      fr: "Accelerer la sortie des patients prets"
+      fr: "Accélérer la sortie des patients prêts"
       it: "Accelerare le dimissioni dei pazienti pronti"
     description_i18n:
-      de: "Empfiehlt, N entlassbereite Patienten vor einer Uhrzeit zu entlassen, um Bettenkapazitaet freizugeben."
+      de: "Empfiehlt, N entlassbereite Patienten vor einer Uhrzeit zu entlassen, um Bettenkapazität freizugeben."
       en: "Recommends discharging N discharge-ready patients before a given time to free bed capacity."
-      fr: "Recommande de faire sortir N patients prets avant une heure donnee pour liberer des lits."
+      fr: "Recommande de faire sortir N patients prêts avant une heure donnée pour libérer des lits."
       it: "Consiglia di dimettere N pazienti pronti entro un orario per liberare posti letto."
     preconditions:
       - "ward.occupancy_pct > threshold"
@@ -37,15 +37,15 @@ levers:
   - lever_id: OOA-DIVERT-LOW-ACUITY
     role: ooa
     title_i18n:
-      de: "Patienten mit niedriger Akuitaet umleiten"
+      de: "Patienten mit niedriger Akuität umleiten"
       en: "Divert low-acuity patients"
-      fr: "Rediriger les patients a faible acuite"
-      it: "Deviare i pazienti a bassa acuita"
+      fr: "Rediriger les patients à faible acuité"
+      it: "Deviare i pazienti a bassa acuità"
     description_i18n:
-      de: "Empfiehlt, N Patienten mit niedriger Akuitaet auf eine andere Station umzuleiten, um Kapazitaet freizugeben."
+      de: "Empfiehlt, N Patienten mit niedriger Akuität auf eine andere Station umzuleiten, um Kapazität freizugeben."
       en: "Recommends diverting N low-acuity patients to another ward to free bed capacity."
-      fr: "Recommande de rediriger N patients a faible acuite vers un autre service pour liberer des lits."
-      it: "Consiglia di deviare N pazienti a bassa acuita verso un altro reparto per liberare posti letto."
+      fr: "Recommande de rediriger N patients à faible acuité vers un autre service pour libérer des lits."
+      it: "Consiglia di deviare N pazienti a bassa acuità verso un altro reparto per liberare posti letto."
     preconditions:
       - "ward.occupancy_pct > threshold"
       - "low_acuity_count >= n"

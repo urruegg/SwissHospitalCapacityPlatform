@@ -8,12 +8,12 @@ levers:
     title_i18n:
       de: "Entlassungshindernis beseitigen"
       en: "Unblock discharge barrier"
-      fr: "Lever un obstacle a la sortie"
+      fr: "Lever un obstacle à la sortie"
       it: "Rimuovere un ostacolo alla dimissione"
     description_i18n:
-      de: "Empfiehlt, N Faelle eines bestimmten Hindernistyps zu beseitigen, um Entlassungen zu ermoeglichen."
+      de: "Empfiehlt, N Fälle eines bestimmten Hindernistyps zu beseitigen, um Entlassungen zu ermöglichen."
       en: "Recommends resolving N cases of a given barrier type to unblock discharges."
-      fr: "Recommande de resoudre N cas d'un type d'obstacle donne pour debloquer les sorties."
+      fr: "Recommande de résoudre N cas d'un type d'obstacle donné pour débloquer les sorties."
       it: "Consiglia di risolvere N casi di un dato tipo di ostacolo per sbloccare le dimissioni."
     preconditions:
       - "discharge_barrier.count(barrier_type) >= n"
