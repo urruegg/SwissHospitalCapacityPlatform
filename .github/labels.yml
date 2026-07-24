@@ -1,0 +1,90 @@
+# Source-of-truth label taxonomy for issues and pull requests.
+#
+# Aligns every issue/PR to the context in which we WORK, REVIEW, and APPROVE:
+#   - type:*    what kind of change      (Conventional Commits, docs/DEV_WORKFLOW.md 4)
+#   - lane:*    which architecture lane  (.github/copilot-instructions.md 1)
+#   - status:*  lifecycle state          (work -> review -> approve)
+#   - deploy:*  deployment intent         (SIT / PROD; PROD is approved-to-apply gated)
+#
+# Apply this file with:  python scripts/labels/sync_labels.py --apply
+# (or run the label-sync workflow via workflow_dispatch). The sync is additive by
+# default: it creates/updates the labels below and never deletes sprint-NN or
+# other legacy labels unless run with --prune.
+
+labels:
+  # --- type: what kind of change (Conventional Commits, blue) ---
+  - name: "type:spec"
+    color: "1d76db"
+    description: "Spec / requirements document work"
+  - name: "type:plan"
+    color: "1d76db"
+    description: "Implementation plan document work"
+  - name: "type:feat"
+    color: "1d76db"
+    description: "New feature"
+  - name: "type:fix"
+    color: "1d76db"
+    description: "Bug fix"
+  - name: "type:docs"
+    color: "1d76db"
+    description: "Documentation change"
+  - name: "type:infra"
+    color: "1d76db"
+    description: "Infrastructure / IaC change"
+  - name: "type:ci"
+    color: "1d76db"
+    description: "CI/CD, workflows, git hooks, or tooling change"
+  - name: "type:test"
+    color: "1d76db"
+    description: "Adding or updating tests / golden-task fixtures"
+  - name: "type:refactor"
+    color: "1d76db"
+    description: "Code change that neither fixes a bug nor adds a feature"
+  - name: "type:perf"
+    color: "1d76db"
+    description: "Performance improvement"
+  - name: "type:chore"
+    color: "1d76db"
+    description: "Maintenance (deps, config, housekeeping)"
+
+  # --- lane: which architecture lane (purple) ---
+  - name: "lane:governance"
+    color: "5319e7"
+    description: "Architecture lane: governance (docs, security-governance, compliance)"
+  - name: "lane:control"
+    color: "5319e7"
+    description: "Architecture lane: platform control plane (agents, .github, evals)"
+  - name: "lane:infra"
+    color: "5319e7"
+    description: "Architecture lane: infrastructure (infra, environment params)"
+  - name: "lane:data"
+    color: "5319e7"
+    description: "Architecture lane: data (data-platform, interoperability)"
+  - name: "lane:ai"
+    color: "5319e7"
+    description: "Architecture lane: AI (ai-models, copilot, evals)"
+  - name: "lane:experience"
+    color: "5319e7"
+    description: "Architecture lane: experience (apps, integrations)"
+
+  # --- status: lifecycle (work -> review -> approve) ---
+  - name: "status:wip"
+    color: "fbca04"
+    description: "WORK: in progress"
+  - name: "status:review"
+    color: "fbca04"
+    description: "REVIEW: ready for human review"
+  - name: "status:approved"
+    color: "0e8a16"
+    description: "APPROVE: reviewed and approved to proceed / merge (approved-to-apply for deploy)"
+  - name: "status:blocked"
+    color: "b60205"
+    description: "Blocked: cannot proceed (document why)"
+
+  # --- deploy: deployment intent ---
+  - name: "deploy:sit"
+    color: "0e8a16"
+    description: "Deployment intent: SIT"
+  - name: "deploy:prod"
+    color: "b60205"
+    description: "Deployment intent: PROD (approved-to-apply gated)"

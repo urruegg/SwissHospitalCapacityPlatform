@@ -1,0 +1,59 @@
+---
+name: label-sync
+
+# Sync the repository's issue/PR label taxonomy from the single source of truth
+# at .github/labels.yml. Manual-only (workflow_dispatch) so label changes are a
+# deliberate, reviewable act. Additive by default; set prune=true to also delete
+# labels that are absent from labels.yml (sprint-NN and legacy labels are only
+# removed when prune is explicitly requested).
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply changes (false = dry-run plan only)'
+        type: boolean
+        default: false
+      prune:
+        description: 'Delete labels not present in labels.yml'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: label-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync labels from .github/labels.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "PyYAML>=6.0"
+
+      - name: Sync labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ "${{ inputs.apply }}" = "true" ]; then args+=(--apply); fi
+          if [ "${{ inputs.prune }}" = "true" ]; then args+=(--prune); fi
+          python3 scripts/labels/sync_labels.py "${args[@]}"
