@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | Approved (brainstorming) |
-| **Previous Version** | n/a (initial version) |
+| **Status** | Approved — in delivery (WS-A done; WS-B next) |
+| **Previous Version** | 1.0.0 (added §9 delivery status & next step) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -21,6 +21,7 @@
 6. [Definition of done](#6-definition-of-done)
 7. [Open items](#7-open-items)
 8. [References](#8-references)
+9. [Status & next step](#9-status--next-step)
 
 ---
 
@@ -221,3 +222,45 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 - [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html) (6 role surfaces = the steering artefact)
 - Sprint 21 (#247) external signals; Sprint 23 (#255) org/skills ontology; Sprint 19 (#239) PROD Switzerland North
 - [ADR-0014 (Fabric IQ ontology backbone, GA-gated)](../../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md); [ADR-0034 (Fabric IQ demo scope)](../../adr/0034-fabric-iq-demo-scope-artefacts.md)
+
+---
+
+## 9. Status & next step
+
+> Delivery status as of **2026-07-24**. This sprint is paused after WS-A for a break;
+> WS-B is the next slice and is fully planned + scoped (see below).
+
+### 9.1 Work-stream progress
+
+| WS | Status | Evidence / notes |
+| -- | ------ | ---------------- |
+| **WS-A — Foresight tier** | ✅ **Done, merged to `main`** | Deterministic forecast+driver+signal generator, 3 Gold tables, `hcp:Forecast/Driver` + `hcp:ExternalSignal` reuse, 2 contracts (`DC-OCCUPANCY-FORECAST-v1`, `DC-FORECAST-DRIVER-v1`), 16 unit tests. Live SIT evidence captured. |
+| **WS-B — Lever catalog + deterministic impact** | ⏭ **Next (planned, not started)** | Branch `sprint-26/ws-b-levers` bookmarked off `main`. Scope + decisions locked in §9.3. |
+| **WS-C — Decision + Coordination runtime (Cosmos)** | ⬜ Not started | `proposed_actions` + `plans`, HITL approve → recompute → plan `current` 102%→94%, handoff edges. Depends on WS-B. |
+| **WS-D — Consumption + governance** | ⬜ Not started | `DC-INSIGHT-v1` Data Agent contract, 6 Foundry agent upgrades, descriptive→prescriptive ADR, PRD FR/NFR + traceability. |
+
+### 9.2 WS-A — what landed (merged PRs, issue #335)
+
+- **#346** — WS-A core: `data-platform/notebooks/foresight/build_gold_forecast.py` + `build_gold_signal.py`, tests, `DC-OCCUPANCY-FORECAST-v1` + `DC-FORECAST-DRIVER-v1` schemas, ontology (`reference-layer.ttl` + `crosswalk.md`), `docs/DATA.md`, WS-A plan doc.
+- **#351 / #353** — Live **Fabric SIT evidence**: self-contained evidence notebook + verify script + tests + [`docs/architecture/foresight-fabric-evidence.md`](../../architecture/foresight-fabric-evidence.md). Materialized under an `approved-to-apply` gate in `ws-ihzhhpf-sit-data` / `lh_ihzhhpf_sit` (westus2), notebook `50159429-bc58-4c3e-82ff-89871a2fbc1d` run Completed:
+  - `fact_occupancy_forecast` **73 rows** · `fact_forecast_driver` **292 rows** (= 4× forecast) · `fact_signal` **4 rows** (all Trust-A).
+  - Medicine A: h0 51 beds/102% → h72 55/110% breach; h72 drivers +6 −2 +0 +0 reconcile to +4.
+- **Deferred out of WS-A** (tracked, not regressions): the semantic-model TMDL measures/RLS + `verify-semantic-model.yml` count rebaseline (design §3.2) were split to a **WS-A2** stacked slice so the generator PR stayed reviewable; §6 DoD line 1 is therefore **partially** met (Gold tables + ontology live; verify-gate rebaseline pending WS-A2).
+
+### 9.3 WS-B — next slice (locked scope + decisions)
+
+One cohesive squash PR off `main` (branch `sprint-26/ws-b-levers`), Data/AI lane, TDD-first, **no Cosmos / no agent wiring** (those are WS-C / WS-D):
+
+1. **Lever catalog** — `data-platform/decision/levers/<role>.yaml` (6 roles; **OOA + DCA fully specified**), JSON-schema-validated (model on `data-platform/scripts/csa/schema/response-levers.schema.json`); `title_i18n` de/en/fr/it.
+2. **Deterministic impact tool** — pure, unit-tested `compute_expected_impact(lever_id, params, ctx)` — formula registry, **never an LLM estimate** (D4).
+3. **DCA barrier model** — deterministic pure builder + `dc-discharge-barrier-v1.schema.json`; **Gold materialization deferred** to a follow-up (confirmed).
+4. **Ontology** — add **only `hcp:Barrier`** (+ crosswalk MVO row, STRICT conformance); defer `hcp:Recommendation`/`hcp:Lever` to WS-C runtime (confirmed).
+5. **Docs** — `data-platform/decision/README.md`; PRD `FR-DEC-*` / `NFR-DEC-*` + §7 traceability; SemVer bumps.
+
+**Confirmed decisions (@urruegg, 2026-07-24):** barrier builder+schema now / defer Gold materialization · add only `hcp:Barrier` now · one cohesive PR.
+
+### 9.4 Resume checklist
+
+- [ ] Re-read this §9 + the design §3.3 / §4 (WS-B) + [`docs/AI.md`](../../AI.md), [`docs/DATA.md`](../../DATA.md), [`docs/COMPLIANCE.md`](../../COMPLIANCE.md).
+- [ ] On branch `sprint-26/ws-b-levers` (already off `main`): TDD — schemas + failing tests first, then lever yaml + impact tool + barrier builder.
+- [ ] Validate: `pytest`, catalog schema-validate, `check_crosswalk_conformance.py --strict`, mojibake + markdownlint. Commit hooks-off; open one squash PR, base `main`, refs #335, **no self-merge**.
