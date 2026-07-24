@@ -2,11 +2,22 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-17 |
+| **Version** | 2.0.0 |
+| **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | Pending (blocked on Sprint 18) |
-| **Previous Version** | n/a (new sprint) |
+| **Status** | Superseded — PROD pivoted to Switzerland North (ADR-0037); extended by the SIT↔PROD parity plan (2026-07-24) |
+| **Previous Version** | 1.0.0 (eastus2 charter; region reversed to Switzerland North per ADR-0037) |
+
+> **⚠️ Superseded / extended (2026-07-24).** The `eastus2` target in this charter was
+> **reversed to Switzerland North** ([ADR-0037](../adr/0037-prod-region-switzerland-north-greenfield.md));
+> the greenfield rebuild is complete and evidenced in
+> [`sprint-19/prod-evidence-switzerlandnorth.md`](sprint-19/prod-evidence-switzerlandnorth.md)
+> (11/11 Definition-of-Done ✅). Remaining SIT↔PROD end-to-end parity, all-levels evidence,
+> and the Curavias product-documentation refresh are driven by the
+> **[Sprint 19 Extension — SIT↔PROD parity plan (2026-07-24)](../superpowers/plans/2026-07-24-sprint-19-sit-prod-parity-extension.md)**.
+> This file is retained for history; read the extension plan for current scope.
+
+<!-- -->
 
 > **Sprint theme.** Deploy the entire PROD environment from scratch in eastus2 — all resources collocated in a single region — using Bicep-first IaC. Eliminates cross-region latency, simplifies network topology, and delivers a production-ready demo surface with full Foundry Agent Service capability.
 
@@ -98,4 +109,7 @@ Deliver a complete, collocated PROD environment in eastus2 with all 25 resources
 
 - Design: [`2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md`](../superpowers/specs/2026-07-17-sprint-19-prod-eastus2-full-deployment-design.md)
 - Plan: [`2026-07-17-sprint-19-prod-eastus2-full-deployment-plan.md`](../superpowers/plans/2026-07-17-sprint-19-prod-eastus2-full-deployment-plan.md)
-- Issue: See linked GitHub issue
+- **Extension plan (2026-07-24):** [`2026-07-24-sprint-19-sit-prod-parity-extension.md`](../superpowers/plans/2026-07-24-sprint-19-sit-prod-parity-extension.md)
+- **PROD Switzerland North evidence:** [`sprint-19/prod-evidence-switzerlandnorth.md`](sprint-19/prod-evidence-switzerlandnorth.md)
+- **Region pivot:** [ADR-0037](../adr/0037-prod-region-switzerland-north-greenfield.md)
+- Issue: [#239](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/239)
