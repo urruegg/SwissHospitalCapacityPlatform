@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | Approved |
-| **Previous Version** | n/a (new document) |
+| **Status** | In progress (session 2026-07-24 closed) |
+| **Previous Version** | 1.0.0 (approved planning baseline) |
 | **Design spec** | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](../superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) |
 | **Implementation plan** | [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](../superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) |
 | **Predecessors** | Sprint 20 (5-plane shell) · Curavias app prototype-parity · Sprint 25 / #276 (mockup ↔ app parity) |
@@ -103,6 +103,57 @@ role boards.
       compliance impact = none.
 * [ ] Ordered backlog handed off; design spec + this sprint doc `Status` moved to `Delivered`
       only after the validation checklist is fully green.
+
+---
+
+## 6. Session log
+
+### 2026-07-24 — Session 1 (OOA board + frame polish)
+
+Executed subagent-driven from the `sprint-27/curavias-ux-polish` worktree using the
+SIT-connected shared-context loop (local app + Playwright MCP in a VS Code tab). Commits on
+`sprint-27/curavias-ux-polish`, newest first:
+
+| Commit | Summary |
+|--------|---------|
+| `4440b76` | Status/level badges use brand RAG colours (`RagBadge`) to match the Flag/Trend amber |
+| `2818014` | Filled (full-colour) status/level badges |
+| `7bd2c73` | OOA actionable-insight 3-column flow (Signals → Streams → Recommendation) + signal & icon-only provenance icons |
+| `d9100ea` | Ward table full-width + ontology drill-down + icon-only colour-coded Flag/Trend |
+| `464da5f` | Frame polish — header elevation + navigation surface with pinned Settings |
+| `98bb1c3` | OOA external+internal Signals panel (Trust-A + live/simulated) + 2 unit tests |
+| `fc10719` | Patient-journey MAIN tab order (CSA last) + OOA card surfaces + ward-row interactions |
+| `cbbb9bd` / `275de02` / `cb3fb7a` / `5fa059b` | M1 design-system module · M0 loop runbook · M2 style-guide · M3 `/brand` gallery |
+| `8be073e` | Approved planning docs (spec + plan + this doc) + PRD `FR-UX`/`NFR-UX` |
+
+Verified: `tsc` clean on every increment; `ward-forecast-table`, `capacity-flow-diagram`,
+`signals-panel` unit tests pass; light + dark mode confirmed live in the shared tab. Branch
+is ahead of `origin/main` (rebase at closeout).
+
+Milestone status: M0–M3 done; M4 frame done (header + nav; footer/agent reviewed); OOA
+vertical board + Signals/actionable-insight redesign done; Start-teaser polish still open.
+Not yet run: full unit suite, `test:e2e` / `test:a11y` (axe), ADR-00NN, PRD status flip,
+rebase, PR.
+
+## 7. Next-session backlog (general wireframe + M365 Copilot alignment)
+
+Captured 2026-07-24 (requested, not yet implemented):
+
+1. **Wireframe / window fit** — the shell does not fill the window on the top/left/right and
+   the footer band is too tall. Make the five-plane grid use the full viewport and right-size
+   the footer. Cross-check Microsoft Teams, M365 Copilot, and Outlook (all Fluent UI React).
+2. **Header dropdown selectors** — add a leading icon in front of each dropdown (Language,
+   Hospital, Role) as done for the User account; size each dropdown to fit the max
+   option-text length (no clipping, no over-wide control).
+3. **Copilot pane** — collapsed state shows a **Copilot icon-only overlay in the lower-right**;
+   expanded state shows the chat panel. Refine the input ("Ask the agent…" + send) to match the
+   M365 Copilot "Message Copilot" input (see reference screenshot).
+4. **Navigation → M365 Copilot style** — align the left nav to the M365 Copilot layout
+   (New chat / Search / Library / Tasks / Notebooks / Agents / Pinned pattern). The top
+   Chat/Cowork switch maps to our **Demo / User** mode toggle. A selected menu item should
+   show a **light selected-background**.
+5. **Acceptance-bar closeout** — dark-mode re-verify on the final layout + `axe` a11y scan;
+   then M8 (full suite, ADR-00NN, PRD status → Delivered, rebase onto `main`, PR to #365).
 
 ---
 
