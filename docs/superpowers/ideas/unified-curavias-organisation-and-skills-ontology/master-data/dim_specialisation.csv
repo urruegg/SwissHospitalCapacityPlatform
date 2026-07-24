@@ -1,0 +1,29 @@
+specialisation_id,specialisation_name_de,specialisation_name_en,spec_type,anchor_source,esco_or_siwf_ref,related_skill_id
+SPEC-ANAES,Anästhesiologie,Anaesthesiology,medical_specialty,SIWF,siwf:facharzt/anaesthesiologie,SK-FMH-ANAES
+SPEC-INTENS,Intensivmedizin,Intensive care medicine,medical_specialty,SIWF,siwf:schwerpunkt/intensivmedizin,SK-FMH-INTENS
+SPEC-NOTF-MED,Klinische Notfallmedizin,Clinical emergency medicine,medical_specialty,SGNOR/SIWF,siwf:schwerpunkt/notfallmedizin,SK-FMH-NOTF
+SPEC-CARD,Kardiologie,Cardiology,medical_specialty,SIWF,siwf:facharzt/kardiologie,SK-FMH-CARD
+SPEC-CARDSURG,Herz- & Gefässchirurgie,Cardiac & vascular surgery,medical_specialty,SIWF,siwf:facharzt/herzchirurgie,SK-FMH-CARDSURG
+SPEC-NEURO,Neurologie,Neurology,medical_specialty,SIWF,siwf:facharzt/neurologie,SK-FMH-NEURO
+SPEC-NEUROSURG,Neurochirurgie,Neurosurgery,medical_specialty,SIWF,siwf:facharzt/neurochirurgie,SK-FMH-NEUROSURG
+SPEC-ONCO,Medizinische Onkologie,Medical oncology,medical_specialty,SIWF,siwf:facharzt/onkologie,SK-FMH-ONCO
+SPEC-RADONC,Radio-Onkologie,Radiation oncology,medical_specialty,SIWF,siwf:facharzt/radioonkologie,SK-FMH-RADONC
+SPEC-SURG,Chirurgie (Viszeral),Visceral surgery,medical_specialty,SIWF,siwf:facharzt/chirurgie,SK-FMH-SURG
+SPEC-ORTHO,Orthopädie & Traumatologie,Orthopaedics & traumatology,medical_specialty,SIWF,siwf:facharzt/orthopaedie,SK-FMH-ORTHO
+SPEC-GYN,Gynäkologie & Geburtshilfe,Gynaecology & obstetrics,medical_specialty,SIWF,siwf:facharzt/gynaekologie,SK-FMH-GYN
+SPEC-PAED,Kinder- & Jugendmedizin,Paediatrics,medical_specialty,SIWF,siwf:facharzt/paediatrie,SK-FMH-PAED
+SPEC-NEONAT,Neonatologie,Neonatology,medical_specialty,SIWF,siwf:schwerpunkt/neonatologie,SK-FMH-NEONAT
+SPEC-INTMED,Allgemeine Innere Medizin,General internal medicine,medical_specialty,SIWF,siwf:facharzt/innere-medizin,SK-FMH-INTMED
+SPEC-RADIOL,Radiologie,Radiology,medical_specialty,SIWF,siwf:facharzt/radiologie,SK-FMH-RADIOL
+SPEC-NUCMED,Nuklearmedizin,Nuclear medicine,medical_specialty,SIWF,siwf:facharzt/nuklearmedizin,SK-FMH-NUCMED
+SPEC-NEPHRO,Nephrologie,Nephrology,medical_specialty,SIWF,siwf:facharzt/nephrologie,SK-FMH-NEPHRO
+SPEC-PALL,Palliativmedizin,Palliative medicine,medical_specialty,SIWF,siwf:schwerpunkt/palliativmedizin,SK-FMH-PALL
+SPEC-OPHT,Ophthalmologie,Ophthalmology,medical_specialty,SIWF,siwf:facharzt/ophthalmologie,SK-FMH-OPHT
+SPEC-IPS-NURSE,NDS HF Intensivpflege,ICU nursing (NDS HF),nursing_specialisation,OdASanté/SBFI,odasante:nds-hf/intensivpflege,SK-NDS-IPS
+SPEC-ANAES-NURSE,NDS HF Anästhesiepflege,Anaesthesia nursing (NDS HF),nursing_specialisation,OdASanté/SBFI,odasante:nds-hf/anaesthesiepflege,SK-NDS-ANAES
+SPEC-NOTF-NURSE,NDS HF Notfallpflege,Emergency nursing (NDS HF),nursing_specialisation,OdASanté/SBFI,odasante:nds-hf/notfallpflege,SK-NDS-NOTF
+SPEC-OTA,Operationstechnik HF,Operating-theatre technology (HF),technical,NAREG,nareg:hf/operationstechnik,SK-LIC-OTA
+SPEC-MTRA,Radiologie HF (MTRA),Radiography (HF),technical,NAREG,nareg:hf/radiologie,SK-LIC-MTRA
+SPEC-PARA,Rettungssanität HF,Paramedic (HF),technical,NAREG,nareg:hf/rettungssanitaet,SK-LIC-PARA
+SPEC-MIDWIFE,Hebamme BSc,Midwifery (BSc),nursing_specialisation,GesReg,gesreg:bsc/hebamme,SK-LIC-MIDWIFE
+SPEC-DIAL,Dialyse / Nierenersatzverfahren,Dialysis / renal replacement,nursing_specialisation,In-house/HöFa,inhouse:spec/dialyse,SK-DIAL
