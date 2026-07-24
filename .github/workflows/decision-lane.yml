@@ -1,0 +1,57 @@
+name: decision-lane
+
+# Sprint 26 Slice 1 (WS-B/C) -- Decision-lane quality gate.
+#
+# Runs the decision-lane unit tests (data-platform/decision/**) and the
+# DC-INSIGHT-v1 contract-conformance test against
+# data/synthetic/schema/dc-insight-v1.schema.json. Installs jsonschema so the
+# contract-conformance test's jsonschema-backed assertions actually run
+# instead of skipping (data-platform/decision/tests/test_contract_conformance.py
+# falls back to a no-op when jsonschema is absent). The rest of the decision
+# lane is stdlib-only.
+
+on:
+  pull_request:
+    paths:
+      - 'data-platform/decision/**'
+      - 'data/synthetic/schema/dc-insight-v1.schema.json'
+      - '.github/workflows/decision-lane.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data-platform/decision/**'
+      - 'data/synthetic/schema/dc-insight-v1.schema.json'
+      - '.github/workflows/decision-lane.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: decision-lane-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  decision-lane-tests:
+    name: Decision-lane tests + DC-INSIGHT-v1 contract-conformance gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install jsonschema
+        shell: bash
+        run: |
+          set -euo pipefail
+          pip install jsonschema
+
+      - name: Run decision-lane tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s data-platform/decision -p "test_*.py" -v
