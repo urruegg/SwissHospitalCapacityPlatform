@@ -1,0 +1,65 @@
+# OOA (Occupancy/Outlook Agent) lever catalog.
+# Sprint 26 Slice 1 vertical slice: fully specified per design spec Sec 3.3.
+# Referenced by data/synthetic/schema/dc-insight-v1.schema.json recommendation[].lever_id.
+role: ooa
+levers:
+  - lever_id: OOA-EXPEDITE-DISCHARGE
+    role: ooa
+    title_i18n:
+      de: "Entlassbereite Patienten beschleunigen"
+      en: "Expedite discharge-ready patients"
+      fr: "Accelerer la sortie des patients prets"
+      it: "Accelerare le dimissioni dei pazienti pronti"
+    description_i18n:
+      de: "Empfiehlt, N entlassbereite Patienten vor einer Uhrzeit zu entlassen, um Bettenkapazitaet freizugeben."
+      en: "Recommends discharging N discharge-ready patients before a given time to free bed capacity."
+      fr: "Recommande de faire sortir N patients prets avant une heure donnee pour liberer des lits."
+      it: "Consiglia di dimettere N pazienti pronti entro un orario per liberare posti letto."
+    preconditions:
+      - "ward.occupancy_pct > threshold"
+      - "discharge_ready_count >= n"
+    params_schema:
+      type: object
+      required: ["n", "before"]
+      properties:
+        n:
+          type: integer
+          minimum: 1
+          description: "Number of discharge-ready patients to expedite."
+        before:
+          type: string
+          format: time
+          description: "Time of day (HH:MM) by which discharge should occur."
+    impact_formula_ref: expedite_discharge_beds
+    owner_role: dca
+    hitl: true
+
+  - lever_id: OOA-DIVERT-LOW-ACUITY
+    role: ooa
+    title_i18n:
+      de: "Patienten mit niedriger Akuitaet umleiten"
+      en: "Divert low-acuity patients"
+      fr: "Rediriger les patients a faible acuite"
+      it: "Deviare i pazienti a bassa acuita"
+    description_i18n:
+      de: "Empfiehlt, N Patienten mit niedriger Akuitaet auf eine andere Station umzuleiten, um Kapazitaet freizugeben."
+      en: "Recommends diverting N low-acuity patients to another ward to free bed capacity."
+      fr: "Recommande de rediriger N patients a faible acuite vers un autre service pour liberer des lits."
+      it: "Consiglia di deviare N pazienti a bassa acuita verso un altro reparto per liberare posti letto."
+    preconditions:
+      - "ward.occupancy_pct > threshold"
+      - "low_acuity_count >= n"
+    params_schema:
+      type: object
+      required: ["n", "to_ward"]
+      properties:
+        n:
+          type: integer
+          minimum: 1
+          description: "Number of low-acuity patients to divert."
+        to_ward:
+          type: string
+          description: "Identifier of the receiving ward."
+    impact_formula_ref: divert_low_acuity_beds
+    owner_role: bmca
+    hitl: true

@@ -1,0 +1,34 @@
+# DCA (Discharge Copilot Agent) lever catalog.
+# Sprint 26 Slice 1 vertical slice: fully specified per design spec Sec 3.3.
+# Referenced by data/synthetic/schema/dc-insight-v1.schema.json recommendation[].lever_id.
+role: dca
+levers:
+  - lever_id: DCA-UNBLOCK-BARRIER
+    role: dca
+    title_i18n:
+      de: "Entlassungshindernis beseitigen"
+      en: "Unblock discharge barrier"
+      fr: "Lever un obstacle a la sortie"
+      it: "Rimuovere un ostacolo alla dimissione"
+    description_i18n:
+      de: "Empfiehlt, N Faelle eines bestimmten Hindernistyps zu beseitigen, um Entlassungen zu ermoeglichen."
+      en: "Recommends resolving N cases of a given barrier type to unblock discharges."
+      fr: "Recommande de resoudre N cas d'un type d'obstacle donne pour debloquer les sorties."
+      it: "Consiglia di risolvere N casi di un dato tipo di ostacolo per sbloccare le dimissioni."
+    preconditions:
+      - "discharge_barrier.count(barrier_type) >= n"
+      - "discharge_barrier.aged_h > threshold"
+    params_schema:
+      type: object
+      required: ["barrier_type", "n"]
+      properties:
+        barrier_type:
+          type: string
+          description: "Barrier type identifier, e.g. transport, spitex, family-decision."
+        n:
+          type: integer
+          minimum: 1
+          description: "Number of barrier cases to resolve."
+    impact_formula_ref: unblock_barrier_beds
+    owner_role: dca
+    hitl: true

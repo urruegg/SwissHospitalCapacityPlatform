@@ -1,0 +1,20 @@
+# BMCA (Bed Management Copilot Agent) lever catalog.
+# Sprint 26 Slice 1: STUB ONLY. This role is not part of the OOA/DCA vertical
+# slice; the single placeholder lever below exists so the catalog fan-out
+# (all 6 roles) is schema-valid ahead of full BMCA authoring in a later sprint.
+role: bmca
+levers:
+  - lever_id: BMCA-PLACEHOLDER
+    role: bmca
+    title_i18n:
+      de: "Platzhalter-Hebel (BMCA)"
+      en: "Placeholder lever (BMCA)"
+      fr: "Levier provisoire (BMCA)"
+      it: "Leva segnaposto (BMCA)"
+    preconditions: []
+    params_schema:
+      type: object
+      properties: {}
+    impact_formula_ref: placeholder
+    owner_role: bmca
+    hitl: true
