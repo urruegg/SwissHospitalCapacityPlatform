@@ -54,7 +54,8 @@ export function WardForecastTable({ wards, onSelectWard }: WardForecastTableProp
               aria-label={`${w.label} ${w.forecastPct}%`}
               onClick={() => onSelectWard(w)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') onSelectWard(w);
+                if (e.key === 'Enter') onSelectWard(w);
+                else if (e.key === ' ') { e.preventDefault(); onSelectWard(w); }
               }}
               style={{ cursor: 'pointer' }}
             >

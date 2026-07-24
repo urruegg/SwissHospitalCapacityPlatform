@@ -59,7 +59,7 @@ describe('OrSteeringBoard surface', () => {
       await waitFor(() => expect(screen.getByText(orCase.specialty)).toBeInTheDocument());
       expect(screen.getByText(orCase.slot)).toBeInTheDocument();
     }
-    expect(screen.getByText(/simulated/i)).toBeInTheDocument();
+    expect(screen.getByText(/simulated data/i)).toBeInTheDocument();
     expect(screen.getByText(/Carried from bmca-agent/i)).toBeInTheDocument();
   });
 
