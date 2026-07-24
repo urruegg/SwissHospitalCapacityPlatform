@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion landed clean (org/skills + capacity + eventstream gold, no real names, no H_HSL orphan)**; **ADR-0039 Accepted (approved to proceed)**; PROD deploy pending |
-| **Previous Version** | 1.3.0 (live SIT medallion proof + H_HSL fix) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion landed clean (org/skills + capacity + eventstream gold, no real names, no H_HSL orphan)**; **ADR-0039 Accepted (approved to proceed)**; **PROD parity prep done (T11/T13 flags enabled in `prod-swn.bicepparam`, `what-if` clean — 10 additive Creates, 0 deletes)**; PROD apply `approved-to-apply`-gated |
+| **Previous Version** | 1.4.0 (ADR-0039 Accepted) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -98,6 +98,18 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 ---
 
 ## 6. Status log
+
+### 2026-07-24 — PROD org/skills parity prep (T11/T13 flags + `what-if` clean)
+
+* **Goal:** close the last open DoD item — "SIT + PROD deployed identically" — for the Sprint 23 org/skills landing surface. **PROD platform/infra is owned by Sprint 19** (switzerlandnorth greenfield rebuild, ADR-0037, 2026-07-23); that rebuild predates this sprint's org/skills spine, so PROD still runs the pre-org/skills gold. This delta is Sprint 23's to close.
+* **Change (non-destructive prep):** enabled the three Sprint 23 module flags in [`infra/environments/prod-swn.bicepparam`](../../infra/environments/prod-swn.bicepparam) to mirror `sit.bicepparam` — `enableMasterdataLandingModule`, `enableSkillsSimJobsModule`, `enableSkillsEventstreamModule` = `true`, plus `simCapacityLocation = 'switzerlandnorth'` (single-region PROD; SIT uses westus2). Fabric destination IDs stay empty (scaffold, mirrors SIT); the sim-jobs image is the same public placeholder as SIT (no PROD ACR dependency).
+* **Evidence:** `az bicep build` clean (pre-existing warnings only); `az deployment group what-if -g rg-ihzhhpf-prod -f infra/main.bicep -p prod-swn.bicepparam` **Succeeded** — **0 deletes**, 10 additive Creates that map exactly to the enabled modules:
+  * `stmasterdataihzhhpfprod` + `blobServices/default` + `containers/landing` (T11 landing zone)
+  * `cae-skills-sim-ihzhhpf-prod` + jobs `caj-sk-{lms,sf,skm,wid}-ihzhhpf-prod` + `id-skills-sim-ihzhhpf-prod` UAMI + role assignment (T13 sim-jobs)
+  * skills-eventstream is scaffold-only (REST post-deploy; no ARM resource — consistent with the empty Fabric IDs)
+  * The other 31 `Modify` entries are pre-existing PROD drift (agent-host, cosmos, network, KV PE) unrelated to this change; the 2 `Unsupported` are what-if lambda-expression limitations on computed role-assignment names.
+* **SIT baseline confirmed deployed** (`rg-ihzhhpf-sit`): `stmasterdataihzhhpfsit`, `cae-skills-sim-ihzhhpf-sit`, `id-skills-sim-ihzhhpf-sit` present.
+* **Gate:** PROD apply is **`approved-to-apply`-gated** (AGENTS.md §4). Next steps after apply: replay the org/skills medallion to PROD (prune H_HSL, verify 0 real names via OneLake Delta), publish rebaselined semantic model + report, then e2e-test SIT + PROD.
 
 ### 2026-07-24 — ADR-0039 accepted (approved to proceed)
 
