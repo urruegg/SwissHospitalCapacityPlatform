@@ -60,7 +60,7 @@ describe('CsaView crisis RoleBoard surface', () => {
 
     expect(screen.getByTestId('csa-view')).toBeInTheDocument();
     expect(screen.getByTestId('CsaWizard')).toBeInTheDocument();
-    expect(await screen.findByText(/simulated/i)).toBeInTheDocument();
+    expect((await screen.findAllByText(/simulated/i)).length).toBeGreaterThan(0);
     expect(screen.getByTestId('loop-back')).toBeInTheDocument();
     expect(screen.getByText('Summer heatwave demand surge')).toBeInTheDocument();
     expect(screen.getByText('Respiratory virus surge')).toBeInTheDocument();
@@ -75,15 +75,15 @@ describe('CsaView crisis RoleBoard surface', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /Stress-test Summer heatwave demand surge/ })).toBeInTheDocument(),
+      expect(screen.getByRole('button', { name: 'Summer heatwave demand surge' })).toBeInTheDocument(),
     );
-    act(() => screen.getByRole('button', { name: /Stress-test Summer heatwave demand surge/ }).click());
+    act(() => screen.getByRole('button', { name: 'Summer heatwave demand surge' }).click());
 
     await waitFor(() => expect(screen.getByTestId('rail-open').textContent).toBe('true'));
     expect(invokeInsight).toHaveBeenCalledWith('csa-agent', {
       scenario: 'heatwave-surge',
-      probability: 0.8,
-      bedDayImpact: 14,
+      probability: 68,
+      bedImpact: 14,
     });
   });
 });

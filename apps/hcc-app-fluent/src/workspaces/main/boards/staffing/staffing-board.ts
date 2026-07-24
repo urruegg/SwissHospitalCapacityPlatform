@@ -1,50 +1,41 @@
 import i18n from '../../../../i18n';
-import type { GroundedReco } from '../../../../copilot-rail/reco';
 import type { RoleBoard, RoleBoardData, ContextInsight } from '../../../../journey/RoleBoard';
 import type { StaffingPayload } from '../../../../data/roleboard/staffing-data';
 import { loadStaffing } from '../../../../data/roleboard/golden-source-client';
 
-/** Sprint 3 (parity) — the sba RoleBoard implementation (staffing balance). */
+/** Sprint 20 (parity) — the sba RoleBoard implementation (staffing balance, ring-closer). */
 export const staffingBoard: RoleBoard<StaffingPayload> = {
   agent: 'sba-agent',
   ceiling: 'write',
   load: (scope, mode) => loadStaffing(scope, mode),
-  insights: (data: RoleBoardData<StaffingPayload>) =>
-    data.payload.moves.map((m) => ({
-      id: m.id,
-      label: i18n.t('insight.staffShift', { role: m.role, fromUnit: m.fromUnit, toUnit: m.toUnit }),
-      context: {
-        move: m.id,
-        fromUnit: m.fromUnit,
-        toUnit: m.toUnit,
-        role: m.role,
-        fte: m.fte,
-      },
-    })),
+  insights: (data: RoleBoardData<StaffingPayload>): ContextInsight[] => {
+    const seen = new Set<string>();
+    return data.payload.moves
+      .map((m) => ({
+        id: m.recoId,
+        label: i18n.t('insight.staffShift', { role: m.role, fromUnit: m.fromUnit, toUnit: m.toUnit }),
+        context: {
+          move: m.id,
+          fromUnit: m.fromUnit,
+          toUnit: m.toUnit,
+          role: m.role,
+          fte: m.fte,
+        },
+      }))
+      .filter((ins) => {
+        if (seen.has(ins.id)) return false;
+        seen.add(ins.id);
+        return true;
+      });
+  },
   askAbout: [
-    'What changed since last shift?',
-    'Where is the biggest pressure?',
+    i18n.t('sba.askAbout.surgeGap'),
+    i18n.t('sba.askAbout.orsaCoverage'),
+    i18n.t('sba.askAbout.csaEscalation'),
   ],
-  defaultReco(): GroundedReco {
-    return {
-      agentLabel: 'Staffing Copilot',
-      contextChip: { subject: 'Shift summary', tone: 'ok' },
-      read: 'No proactive recommendation wired for this board yet (parity build focuses on occupancy).',
-      levers: [],
-      citations: [],
-      provenance: 'simulated',
-    };
-  },
-  recoFor(insight: ContextInsight): GroundedReco {
-    return {
-      agentLabel: 'Staffing Copilot',
-      contextChip: { subject: insight.label, tone: 'watch' },
-      read: `Context picked up for ${insight.label}. Detailed recommendation lands in a later sprint.`,
-      levers: [],
-      citations: [],
-      provenance: 'simulated',
-    };
-  },
+  defaultReco: (data: RoleBoardData<StaffingPayload>) => data.payload.defaultReco,
+  recoFor: (insight: ContextInsight, data: RoleBoardData<StaffingPayload>) =>
+    data.payload.recoById[insight.id] ?? data.payload.defaultReco,
   toHandoff: (data: RoleBoardData<StaffingPayload>) => {
     const p = data.payload;
     return {
@@ -55,6 +46,6 @@ export const staffingBoard: RoleBoard<StaffingPayload> = {
   },
   fromHandoff: (prev) => ({
     situation: prev ? prev.headline : 'Staffing balance',
-    loopBackToOoa: false,
+    loopBackToOoa: true, // SBA closes the ring; loops back to OOA (residual 0)
   }),
 };

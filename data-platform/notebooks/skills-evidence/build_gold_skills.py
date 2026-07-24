@@ -176,14 +176,70 @@ def to_gold_eligibility(row: dict) -> dict:
     return out
 
 
-def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
-    """Fabric entrypoint. Reads silver, writes the skills gold tables."""
-    from pyspark.sql import SparkSession  # noqa: F401 - Fabric-provided
+def build_skills_gold(
+    care_setting_rows: list[dict],
+    skill_rows: list[dict],
+    occupation_rows: list[dict],
+    demand_template_rows: list[dict],
+    demand_rows: list[dict],
+    gap_rows: list[dict],
+    assertion_rows: list[dict],
+    eligibility_rows: list[dict],
+) -> dict[str, list[dict]]:
+    """Pure core of ``run()``: build every skills-domain gold table as rows.
 
-    raise NotImplementedError(
-        "run() executes inside the Fabric Spark runtime; the pure transforms "
-        "above are exercised by tests/test_build_gold_skills.py."
+    Returns ``{gold_table_name: [row, ...]}`` for the eight skills tables. The
+    occupation care setting is derived once (ISCO-08) and threaded into the
+    occupation-grained tables; all domain validation happens in the row
+    transforms above so the ``run()`` Spark bridge only reads CSVs and writes
+    Delta.
+    """
+    occ_care_setting = derive_occupation_care_setting(occupation_rows)
+    return {
+        "dim_care_setting": [to_gold_care_setting(r) for r in care_setting_rows],
+        "dim_skill": [to_gold_skill(r) for r in skill_rows],
+        "dim_occupation_role": [
+            to_gold_occupation_role(r, occ_care_setting) for r in occupation_rows],
+        "bridge_role_skill_demand_template": [
+            to_gold_demand_template(r, occ_care_setting)
+            for r in demand_template_rows],
+        "fact_skill_demand": [to_gold_skill_demand(r) for r in demand_rows],
+        "fact_skill_gap": [to_gold_skill_gap(r) for r in gap_rows],
+        "fact_skill_assertion": [to_gold_skill_assertion(r) for r in assertion_rows],
+        "bridge_worker_unit_eligibility": [
+            to_gold_eligibility(r) for r in eligibility_rows],
+    }
+
+
+# --------------------------------------------------------------------------- #
+# Fabric Spark entrypoint (deploy-class; exercised only in the Fabric runtime) #
+# --------------------------------------------------------------------------- #
+_MASTER_MOUNT = "/lakehouse/default/Files/master-data/curavias-org-skills"
+
+
+def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
+    """Fabric entrypoint. Lands the eight skills-domain ``gold.*`` tables.
+
+    Reads the Curavias skills CSVs from the lakehouse ``Files/`` mount, applies
+    :func:`build_skills_gold`, and overwrites each ``gold.*`` table as Delta
+    with the sprint-09 governance stamp.
+    """
+    from _fabric_gold_io import read_csv_rows, write_gold  # in Files/ alongside
+
+    tables = build_skills_gold(
+        care_setting_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_care_setting.csv"),
+        skill_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_skill.csv"),
+        occupation_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_occupation_role.csv"),
+        demand_template_rows=read_csv_rows(
+            f"{_MASTER_MOUNT}/bridge_role_skill_demand_template.csv"),
+        demand_rows=read_csv_rows(f"{_MASTER_MOUNT}/fact_skill_demand.csv"),
+        gap_rows=read_csv_rows(f"{_MASTER_MOUNT}/fact_skill_gap.csv"),
+        assertion_rows=read_csv_rows(f"{_MASTER_MOUNT}/fact_skill_assertion.csv"),
+        eligibility_rows=read_csv_rows(
+            f"{_MASTER_MOUNT}/bridge_worker_unit_eligibility.csv"),
     )
+    for name, rows in tables.items():
+        write_gold(name, rows)
 
 
 if __name__ == "__main__":  # pragma: no cover

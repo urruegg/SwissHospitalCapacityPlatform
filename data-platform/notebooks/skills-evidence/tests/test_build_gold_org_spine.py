@@ -19,8 +19,12 @@ CAPACITY = REPO_ROOT / "data" / "master-data" / "capacity"
 sys.path.insert(0, str(PKG_DIR))
 
 from build_gold_org_spine import (  # noqa: E402
+    HOSPITAL_KEYED_CAPACITY_TABLES,
     HOSPITAL_TENANT_MAP,
+    build_org_spine_gold,
+    prune_orphan_hospital_rows,
     rebrand_hospital_dimension,
+    surviving_hospital_ids,
     to_gold_capacity_unit,
     to_gold_department,
     to_gold_org_unit,
@@ -129,3 +133,124 @@ def test_capacity_unit_safety_flag_cast_to_bool():
     rows = [to_gold_capacity_unit(r) for r in _read(MASTER / "dim_capacity_unit.csv")]
     assert all(isinstance(r["is_safety_critical"], bool) for r in rows)
     assert any(r["is_safety_critical"] for r in rows)  # at least one OR_slot
+
+
+# --- run() aggregator (the Fabric glue's pure core) ---------------------------
+
+def _org_spine_gold() -> dict:
+    return build_org_spine_gold(
+        hospital_rows=_hospitals(),
+        tenant_rows=_tenants(),
+        org_unit_rows=_org_units(),
+        department_rows=_read(MASTER / "dim_department.csv"),
+        capacity_unit_rows=_read(MASTER / "dim_capacity_unit.csv"),
+    )
+
+
+def test_org_spine_gold_produces_the_four_tables():
+    out = _org_spine_gold()
+    assert set(out) == {
+        "dim_hospital", "dim_org_unit", "dim_department", "dim_capacity_unit",
+    }
+
+
+def test_org_spine_gold_dim_hospital_is_rebranded_1to1():
+    out = _org_spine_gold()
+    hosp = out["dim_hospital"]
+    assert len(hosp) == 3
+    assert {r["name"] for r in hosp} == {
+        "Uniklinik CuraNova", "Kantonsspital Curalp", "Spital Vialta",
+    }
+    assert sorted(r["tenant_id"] for r in hosp) == ["CN", "CP", "VT"]
+
+
+def test_org_spine_gold_projections_preserve_row_counts_and_strip_provenance():
+    out = _org_spine_gold()
+    assert len(out["dim_org_unit"]) == len(_org_units())
+    assert len(out["dim_department"]) == len(_read(MASTER / "dim_department.csv"))
+    assert len(out["dim_capacity_unit"]) == len(_read(MASTER / "dim_capacity_unit.csv"))
+    for table in ("dim_org_unit", "dim_department", "dim_capacity_unit"):
+        for row in out[table]:
+            assert "grounded_on" not in row
+
+
+def test_org_spine_gold_leaks_no_real_names():
+    out = _org_spine_gold()
+    for rows in out.values():
+        for row in rows:
+            for col, val in row.items():
+                if col == "hospital_id":
+                    continue
+                for frag in _REAL_NAME_FRAGMENTS:
+                    assert frag not in str(val), (
+                        f"real fragment {frag!r} leaked in {col!r}={val!r}"
+                    )
+
+
+# --- H_HSL orphan prune of hospital-keyed capacity gold (issue #349) ----------
+
+def _capacity(name: str) -> list[dict]:
+    return _read(CAPACITY / name)
+
+
+def test_surviving_hospital_ids_are_the_three_curavias_hospitals():
+    assert surviving_hospital_ids() == {"H_USZ", "H_LUKS", "H_SZB"}
+    # The surviving set is exactly the domain of the 1:1 tenant map.
+    assert surviving_hospital_ids() == set(HOSPITAL_TENANT_MAP)
+
+
+def test_capacity_table_registry_covers_every_hospital_keyed_gold_table():
+    # These are the capacity gold tables that carry hospital_id and would
+    # otherwise orphan the dropped H_HSL rows under the (Blank) member.
+    assert HOSPITAL_KEYED_CAPACITY_TABLES == (
+        "dim_specialty",
+        "dim_hospital_service",
+        "dim_ward_capacityunit",
+        "fact_capacity_baseline",
+        "map_disease_treatment_specialty_service",
+    )
+
+
+def test_prune_drops_hsl_rows_only():
+    rows = _capacity("02_dim_specialty.csv")
+    assert any(r["hospital_id"] == "H_HSL" for r in rows)  # precondition
+    pruned = prune_orphan_hospital_rows(rows)
+    assert all(r["hospital_id"] != "H_HSL" for r in pruned)
+    assert {r["hospital_id"] for r in pruned} <= surviving_hospital_ids()
+    # Nothing but H_HSL rows removed.
+    dropped = len(rows) - len(pruned)
+    assert dropped == sum(1 for r in rows if r["hospital_id"] == "H_HSL")
+
+
+def test_prune_is_idempotent():
+    rows = _capacity("08_fact_capacity_baseline.csv")
+    once = prune_orphan_hospital_rows(rows)
+    twice = prune_orphan_hospital_rows(once)
+    assert once == twice
+
+
+def test_prune_preserves_surviving_rows_and_order():
+    rows = _capacity("09_map_disease_treatment_specialty_service.csv")
+    pruned = prune_orphan_hospital_rows(rows)
+    expected = [r for r in rows if r["hospital_id"] in surviving_hospital_ids()]
+    assert pruned == expected  # order + row content preserved
+
+
+def test_prune_removes_all_hsl_from_every_capacity_table():
+    for name in (
+        "02_dim_specialty.csv",
+        "03_dim_hospital_service.csv",
+        "07_dim_ward_capacityunit.csv",
+        "08_fact_capacity_baseline.csv",
+        "09_map_disease_treatment_specialty_service.csv",
+    ):
+        rows = _capacity(name)
+        pruned = prune_orphan_hospital_rows(rows)
+        assert not any(r["hospital_id"] == "H_HSL" for r in pruned), name
+        assert len(pruned) < len(rows), f"{name}: expected H_HSL rows removed"
+
+
+def test_prune_accepts_explicit_surviving_set():
+    rows = _capacity("07_dim_ward_capacityunit.csv")
+    pruned = prune_orphan_hospital_rows(rows, {"H_LUKS"})
+    assert {r["hospital_id"] for r in pruned} == {"H_LUKS"}
