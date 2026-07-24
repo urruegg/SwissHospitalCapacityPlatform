@@ -9,6 +9,24 @@ param eventHubName string
 param location string = resourceGroup().location
 
 var appName = 'ca-signal-runner-ihzhhpf-${envSuffix}'
+var identityName = 'id-signal-runner-ihzhhpf-${envSuffix}'
+
+// User-Assigned Managed Identity: unlike a SystemAssigned identity (whose
+// principalId is minted fresh on every container-app / CAE recreate), a UAMI
+// persists as its own resource, so its principalId is stable across recreates.
+// This keeps the Event Hubs role assignment fully idempotent — no
+// RoleAssignmentUpdateNotPermitted and no orphaned assignments after a
+// destructive CAE rebuild.
+resource runnerIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: identityName
+  location: location
+  tags: {
+    env: envSuffix
+    owner: 'urruegg'
+    costCenter: 'curavias-platform'
+    workload: 'external-signals'
+  }
+}
 
 resource runner 'Microsoft.App/containerApps@2024-03-01' = {
   name: appName
@@ -32,13 +50,19 @@ resource runner 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             { name: 'EVENT_HUB_NAMESPACE', value: eventHubNamespace }
             { name: 'EVENT_HUB_NAME', value: eventHubName }
+            { name: 'AZURE_CLIENT_ID', value: runnerIdentity.properties.clientId }
           ]
         }
       ]
       scale: { minReplicas: 0, maxReplicas: 1 }
     }
   }
-  identity: { type: 'SystemAssigned' }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${runnerIdentity.id}': {}
+    }
+  }
 }
 
 @description('Azure Event Hubs Data Sender built-in role definition id')
@@ -49,14 +73,18 @@ resource ehNamespace 'Microsoft.EventHub/namespaces@2021-11-01' existing = {
 }
 
 resource senderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(ehNamespace.id, runner.id, eventHubsDataSenderRoleId)
+  // Name is derived from the UAMI's resource id (deterministic, known at the
+  // start of deployment) and the UAMI principalId is stable across recreates,
+  // so this assignment is idempotent across destructive CAE rebuilds.
+  name: guid(ehNamespace.id, runnerIdentity.id, eventHubsDataSenderRoleId)
   scope: ehNamespace
   properties: {
-    principalId: runner.identity.principalId
+    principalId: runnerIdentity.properties.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', eventHubsDataSenderRoleId)
   }
 }
 
 output providerRunnerName string = runner.name
-output providerRunnerPrincipalId string = runner.identity.principalId
+output providerRunnerPrincipalId string = runnerIdentity.properties.principalId
+output providerRunnerIdentityName string = runnerIdentity.name
