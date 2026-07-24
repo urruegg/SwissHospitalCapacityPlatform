@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "2454473220205679511"
+      "templateHash": "6752234803929019708"
     }
   },
   "parameters": {
@@ -5778,7 +5778,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "12112788262092548449"
+              "templateHash": "2182119932369270733"
             }
           },
           "parameters": {
@@ -5813,9 +5813,22 @@
           },
           "variables": {
             "appName": "[format('ca-signal-runner-ihzhhpf-{0}', parameters('envSuffix'))]",
+            "identityName": "[format('id-signal-runner-ihzhhpf-{0}', parameters('envSuffix'))]",
             "eventHubsDataSenderRoleId": "2b629674-e913-4c01-ae53-ef4638d8f975"
           },
           "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[variables('identityName')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "env": "[parameters('envSuffix')]",
+                "owner": "urruegg",
+                "costCenter": "curavias-platform",
+                "workload": "external-signals"
+              }
+            },
             {
               "type": "Microsoft.App/containerApps",
               "apiVersion": "2024-03-01",
@@ -5845,6 +5858,10 @@
                         {
                           "name": "EVENT_HUB_NAME",
                           "value": "[parameters('eventHubName')]"
+                        },
+                        {
+                          "name": "AZURE_CLIENT_ID",
+                          "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').clientId]"
                         }
                       ]
                     }
@@ -5856,21 +5873,27 @@
                 }
               },
               "identity": {
-                "type": "SystemAssigned"
-              }
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')))]": {}
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"
+              ]
             },
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespace'))]",
-              "name": "[guid(resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespace')), resourceId('Microsoft.App/containerApps', variables('appName')), variables('eventHubsDataSenderRoleId'))]",
+              "name": "[guid(resourceId('Microsoft.EventHub/namespaces', parameters('eventHubNamespace')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('eventHubsDataSenderRoleId'))]",
               "properties": {
-                "principalId": "[reference(resourceId('Microsoft.App/containerApps', variables('appName')), '2024-03-01', 'full').identity.principalId]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').principalId]",
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.App/containerApps', variables('appName'))]"
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"
               ]
             }
           ],
@@ -5881,7 +5904,11 @@
             },
             "providerRunnerPrincipalId": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.App/containerApps', variables('appName')), '2024-03-01', 'full').identity.principalId]"
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').principalId]"
+            },
+            "providerRunnerIdentityName": {
+              "type": "string",
+              "value": "[variables('identityName')]"
             }
           }
         }
