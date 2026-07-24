@@ -62,11 +62,28 @@ Each decision below is required for "end-to-end parity". Recommendation is given
 |---|----------|---------|----------------|------|
 | **D1** ✅ **CONFIRMED (a)** 2026-07-24 | Execute the ADR-0039 **network parity** (VNet + Cosmos PE + KV PE) incl. the one-time destructive `cae-ihzhhpf-prod` + `ca-agent-host` + `ca-signal-runner` recreate (~5–10 min agent-host outage; `app.curavias.ch` unaffected)? | (a) Execute now, this sprint *(recommended)* · (b) Land Bicep+ADR only, defer destructive apply · (c) Accept public PROD as "parity-waived per no-PHI" | **(a) — CONFIRMED by @urruegg 2026-07-24**: execute now, gated by `approved-to-apply`. Promote ADR-0039 to **Accepted** on apply. | `approved-to-apply` |
 | **D2** | Close **IaC parity** (#252): bring CSA Cosmos + ACR into `infra/main.bicep`, gated, for **both** SIT and PROD, so they're `what-if`/drift-checked. | (a) Wire both into main.bicep + add PROD params *(recommended)* · (b) Keep out-of-band, document only | **(a)** — otherwise the SIT/PROD parity CI gate stays blind to two production-tier resources. | `approved-to-apply` for the re-deploy |
-| **D3** | **Fabric IQ Ontology** PROD parity (#270): PROD `Ontology` item is `403 FeatureNotAvailable` (Preview, per-capacity; DataAgent/GraphModel work). | (a) Declare **N/A for parity** — record as Preview-gated per ADR-0006/0037, keep SIT as the live IQ seam *(recommended)* · (b) Keep chasing a Microsoft support path | **(a)** — this is a Microsoft-side Preview gate, not our defect; classify as *"open, not-relevant-to-GA-parity per ADR-0006"* in the traceability view. | Doc decision |
+| **D3** ✅ **REVISED 2026-07-24** | **Fabric IQ Ontology** PROD parity (#270): PROD `Ontology` item was `403 FeatureNotAvailable` (Preview, per-capacity). | (a) ~~Declare N/A for parity~~ · (b) **Attempt in PROD under the new standing Preview exception (ADR-0042)** *(chosen)* | **(b) — per @urruegg 2026-07-24 + ADR-0042**: PROD Switzerland North = GA-target with a standing Preview exception to demo the full Curavias stack in-region. **Attempt** ontology + data-agent on the swn capacity; if the per-capacity `FeatureNotAvailable` gate still blocks it, record as **availability-blocked (Microsoft-side), not policy-excluded** — track under #270. | Doc + deploy |
+| **D8** ✅ **CONFIRMED 2026-07-24** | **Full data-lane parity** — flip the PROD-swn data/AI/integration lane ON (`enableDataPlatformModule`, `enableFabricFoundationModule`, `enableAiPlatformModule`, `enableAiMlFoundationModule`, `enableIntegrationOrchestrationModule`, `enableFoundryHostedAgents`, `enableSimCapacityModule`, `enableFabricEventstreamModule`, `enableSkillsEventstreamModule`, `enableMasterdataLandingModule`, `enableSkillsSimJobsModule`) to match SIT — essentially executing rebuild phases **P5 (Foundry agents) + P6 (Fabric workspace/lakehouse/semantic-model/eventstreams)** in switzerlandnorth. | (a) Document-and-defer · (b) Storage/ADLS tier only · (c) **Go for full parity** *(chosen)* | **(c) — CONFIRMED by @urruegg 2026-07-24**: execute the full P5/P6 data lane as a sequence of gated deploy slices. Blocker review (below) confirms every required BOM item is GA in swn except the two Preview IQ items (covered by ADR-0042). | `approved-to-apply` per slice |
 | **D4** | Promote **ADR-0013 + ADR-0016** Proposed→**Accepted**; make F2/F3 framing explicit. | (a) Promote both now *(recommended)* · (b) Leave Proposed | **(a)** — both are acted-upon and foundational; leaving them Proposed is stale governance. | CODEOWNERS review |
 | **D5** | Fix the **duplicate ADR-0039 / ADR-0021** numbering collision. | (a) Renumber the newer non-network 0039 (`curavias-landing-zone…`) and one 0021 to the next free numbers, add ADR redirect stubs + fix inbound links *(recommended, MAJOR bump on moved ADRs)* · (b) Leave as-is | **(a)** — one-number-per-ADR is a hard contract; collision will bite link-check + traceability. Needs an ADR to record the renumber. | CODEOWNERS review |
 | **D6** | **Curavias web PROD** (#275): rescope from deleted `prod-eastus2.bicepparam` to `prod-swn.bicepparam` and deploy, or defer. | (a) Rescope + deploy the SWA to swn this sprint · (b) Defer to Sprint 20/24 UX track *(recommended)* | **(b)** — it's a marketing-site item on the Sprint 24 track; rescope the issue but keep it out of the parity-critical path. | Doc decision |
 | **D7** | **Model residency posture** — agents run `gpt-5/-mini/o3` as `GlobalStandard` (cross-geo) in swn. | (a) Keep GlobalStandard, record deferral *(recommended, no-PHI)* · (b) Downgrade to regional `Standard` (`gpt-4.1`/`gpt-4o`) | **(a)** — not binding under F2 (no PHI); record as a PHI-onboarding revisit per ADR-0037. | Doc decision |
+
+### 2.1 Switzerland North availability-blocker review (pre-sprint parity check, re-confirmed 2026-07-24)
+
+Source: [ADR-0037](../../adr/0037-prod-region-switzerland-north-greenfield.md) evidence matrix (live `az` 2026-07-21) + [`docs/region-availability.yaml`](../../region-availability.yaml). **Verdict: no hard blockers to full parity.** Every BOM item the P5/P6 data lane needs is **GA** in Switzerland North; only two IQ items are Preview (covered by [ADR-0042](../../adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md)).
+
+| Capability | swn maturity | Parity impact |
+|------------|--------------|---------------|
+| Fabric F2 capacity (`fabricihzhhpfprod` already provisioned) | GA (quota 0/512) | ✅ deployable |
+| Fabric workspace / OneLake / lakehouse / eventstream / eventhouse / semantic-model / Power BI | GA | ✅ deployable |
+| Azure OpenAI (gpt-5/-mini/o3, gpt-4.1/4o) | GA | ✅ deployable (agents via `GlobalStandard`, D7) |
+| Foundry Agent Service (Responses + Agents; `ai-ihzhhpf-prod` already provisioned) | GA | ✅ deployable (no Class-A private-IP — not needed, F2) |
+| Container Apps / Logic Apps / FHIR / Cosmos / Event Hubs / Service Bus / Storage / Key Vault / Purview / Log Analytics | GA | ✅ deployable |
+| **Fabric IQ Ontology** | **Preview** (#270 per-capacity `FeatureNotAvailable`) | ⚠️ attempt under ADR-0042; if blocked → availability-blocked (Microsoft-side), not a parity defect |
+| **Fabric Data Agent** | **Preview** | ⚠️ attempt under ADR-0042 |
+
+Non-availability caveats (not blockers, not binding under synthetic/no-PHI F2/F3): Foundry "Class-A" private-IP agent topology absent in swn; agent-model in-region residency only via regional `Standard` (gpt-4.1/4o) — deferred to PHI onboarding per D7/ADR-0037.
 
 ---
 
@@ -138,11 +155,20 @@ Expected: PASS
 Expected: PASS (no dead links). Bump PRD header PATCH for the link retarget; update Previous Version.
 - [ ] **Step 6: Commit** `docs(adr): resolve ADR-0039 collision (curavias→0040); record 0021 collision follow-up (ADR-0041)`
 
-### Phase B — Network parity execution (ADR-0039, gated) — D1
+### Phase B — Network parity (ADR-0039) — D1
 
-> Bicep + ADR artefacts land **non-destructively first**; the destructive CAE recreate is a **separate `approved-to-apply` deploy**.
+> **STATUS 2026-07-24: ALREADY APPLIED IN CLOUD.** Live `az` verification shows PROD network parity is fully deployed and committed (`8213dd7`, `cb6b56c`): `vnet-platform-ihzhhpf-prod` (`10.70.0.0/16`), Cosmos CSA+platform PEs `Approved`, KV PE `Approved`, KV `publicNetworkAccess=Disabled`, and `cae-ihzhhpf-prod` VNet-integrated on `snet-cae` (`Succeeded`). The one-time destructive CAE recreate already occurred. **No `approved-to-apply` gate remains** — Phase B reduces to governance catch-up + evidence capture (B3 below).
 
-#### Task B1: Land the network-parity Bicep + params (non-destructive)
+#### Task B3: Promote ADR-0039 + capture applied evidence (governance catch-up)
+
+- [ ] Promote `docs/adr/0039-prod-network-parity-vnet-private-endpoints.md` `Status: Proposed`→`Accepted` (Date 2026-07-24), with a note that the parity was applied and verified live on 2026-07-24 (VNet + 3 PEs Approved + VNet-integrated CAE + KV Disabled).
+- [ ] Create `docs/sprints/sprint-19/evidence/2026-07-24-network-parity-verification.md` capturing the live `az` outputs.
+- [ ] Fix the stale `ADR-0038` references in `infra/main.bicep` + `infra/environments/prod-swn.bicepparam` comments (they should cite **ADR-0039** for network parity; ADR-0038 is trunk-based-workflow).
+- [ ] Commit `docs(adr): promote ADR-0039 to Accepted (PROD network parity applied + verified live)`.
+
+<!-- Original gated plan retained below for the audit trail; superseded by B3 status above. -->
+
+#### (Superseded) Task B1: Land the network-parity Bicep + params (non-destructive)
 
 **Files:** Modify `infra/main.bicep`, `infra/modules/platform-foundation/main.bicep`, `infra/environments/prod-swn.bicepparam`
 
@@ -166,6 +192,8 @@ Expected: plan shows **delete+recreate** of `cae-ihzhhpf-prod` + `ca-agent-host`
 - [ ] **Step 7: Commit** `feat(infra): PROD swn network parity applied; ADR-0039 Accepted (approved-to-apply by @<owner> <ts>)`
 
 ### Phase C — IaC parity for out-of-band resources (#252) — D2
+
+> **STATUS 2026-07-24: CSA Cosmos DONE.** `main.bicep` now wires the CSA Cosmos module (`enableCsaCosmosModule=true` in `prod-swn.bicepparam` + `sit.bicepparam`) and live PROD has `pe-cosmos-csa-ihzhhpf-prod` (Approved) — #252 Gap 1/2 closed. **Remaining:** verify the ACR portion (#252 Gap 3 — no `Microsoft.ContainerRegistry/registries` *creation* module; ACR is still referenced as `existing` by name) and confirm the CI parity job covers CSA Cosmos.
 
 **Files:** Modify `infra/main.bicep`, add `infra/modules/cosmos/parameters/prod-swn.bicepparam`, add an ACR module
 
