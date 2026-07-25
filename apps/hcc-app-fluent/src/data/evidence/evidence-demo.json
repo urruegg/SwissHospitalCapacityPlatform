@@ -505,6 +505,28 @@
       },
       "status": "Accepted",
       "title": "PROD Switzerland North GA Target + Standing Preview Exception for Curavias Demo"
+    },
+    {
+      "decisionSummary": "1. **Preview-tier Azure/Fabric services are permitted in PROD Switzerland North** strictly to demonstrate the Curavias stack under **synthetic / no-PHI** scope. This generalises ADR-0042 from two named features to a standing demo-scope posture, and satisfies ADR-0006's written-exception requirement for that scope. 2. The **GA-only gate applies solely to a real go-live (real-PHI) cut-over.** Proving value and the art of the possible in **Preview in Switzerland is sufficient** for the demo; work must not be re-parked behind a GA milestone unless it targets a real go-live cut-over. 3. **The skills-events `sourceMode=EventHub` flip is un-parked.** It is in fact **GA in Switzerland North** (Eventstream + Event Hubs), so it does not even consume this Preview exception; the \"parked until Swiss GA\" gate on it is lifted. Its only remaining prerequisite is the out-of-band Fabric-managed connection (`POST /v1/connections`). 4. **Environment isolation is preserved.** SIT (westus2 / eastus2, per enabled capacity) and PROD (Switzerland North) **do not share input services** — separate Event Hubs namespaces, resource groups, and regions (`evh-ihzhhpf-sit-y26y` vs `evh-ihzhhpf-prod-i62t`). New input services follow the per-environment, per-functional-domain pattern (a **dedicated skills-events Event Hub**, not shared with the capacity `events` rail).",
+      "id": "ADR-0043",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md"
+      },
+      "status": "Accepted",
+      "title": "Preview-tier services permitted in PROD Switzerland North for the Curavias demo (GA-only gate reserved for real go-live cut-over)"
+    },
+    {
+      "decisionSummary": "**The Curavias Product Owner Agent is registered as domain #1 on a shared Foundry IQ Knowledge Layer.**",
+      "id": "ADR-0043",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0043-product-owner-agent-foundry-iq-domain.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0043-product-owner-agent-foundry-iq-domain.md"
+      },
+      "status": "Accepted",
+      "title": "Curavias Product Owner Agent as Foundry IQ Knowledge-Layer Domain #1"
     }
   ],
   "boms": [
@@ -3197,6 +3219,114 @@
       "title": "Fold `dim_hospital` into a **Curavias organisation spine** (`dim_tenant` / `dim_org_unit` / `dim_department`) and re-key the dependent facts (`fact_capacity_baseline`, `encounter`, `bed_assignment`, `or_case`, `or_schedule`) onto it."
     },
     {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall answer product questions grounded only on the four knowledge classes (A corpus, B live-proof, C cost, D ontology), with mandatory citations."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall be embedded as a Copilot rail on the Curavias App START and BACKSTAGE surfaces using the MAIN-board pattern."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The knowledge layer shall be a shared Foundry IQ Knowledge Layer registering the PO Agent as domain #1 and supporting additional domains."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The corpus shall refresh daily GitHub -> ADLS -> OneLake -> knowledge source, PHI-excluded, interviews first-order."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class B live-proof shall answer the five reference questions read-only with reconcile-and-flag."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class C shall reconcile effective PROD Azure cost + GitHub Copilot token cost to the BVA/TCO baseline."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class D shall answer data questions via the ontology with concept + gold-binding citations."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-008",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall answer in DE and EN with source-language transparency."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-009",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail."
+    },
+    {
       "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
       "id": "FR-SKILL-001",
       "kind": "FR",
@@ -3927,6 +4057,54 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "End-user operational surfaces shall support interactive decision cycles without batch-only dependence."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Citation coverage >= 95%; zero hallucination on CFO/CISO/CLO classes."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "100% audit coverage (question -> sources -> answer -> caller)."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "All runtime + data in Switzerland North; no PHI; Preview services accepted per design D3."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Advisory-only, human-in-the-loop; the agent never mutates a system."
     },
     {
       "family": "Reliability And Operational Continuity",
