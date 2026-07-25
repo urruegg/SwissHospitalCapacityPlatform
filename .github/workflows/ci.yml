@@ -95,6 +95,25 @@ jobs:
           PYTHONUTF8: "1"
         run: python3 scripts/lint/tests/test_check_mojibake.py
 
+  conflict-marker-scan:
+    name: Conflict-marker scan (merge integrity)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan tracked files for leftover Git conflict markers
+        shell: bash
+        env:
+          PYTHONUTF8: "1"
+        run: python3 scripts/lint/check_conflict_markers.py
+
+      - name: Self-test the conflict-marker checker
+        shell: bash
+        env:
+          PYTHONUTF8: "1"
+        run: python3 scripts/lint/tests/test_check_conflict_markers.py
+
   bicep-build:
     name: Bicep build (infra/landing-zone)
     needs: changes

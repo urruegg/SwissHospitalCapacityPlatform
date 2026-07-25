@@ -2,11 +2,12 @@
 # Pre-commit doc-steward gate for the Swiss Hospital Capacity Platform.
 #
 # Enforces mechanical guarantees BEFORE a commit is written ("check before
-# we save"): encoding integrity (no double-encoded UTF-8 / mojibake), a clean
-# markdownlint pass on staged Markdown, and a regenerated app evidence fixture
-# whenever its governance-doc inputs change. The matching CI jobs (ci.yml
-# mojibake-scan + markdown-lint, evidence-publish self-test) are the enforced
-# backstop for everyone; this hook is the fast local mirror.
+# we save"): encoding integrity (no double-encoded UTF-8 / mojibake), no
+# leftover Git conflict markers, a clean markdownlint pass on staged Markdown,
+# and a regenerated app evidence fixture whenever its governance-doc inputs
+# change. The matching CI jobs (ci.yml mojibake-scan + conflict-marker-scan +
+# markdown-lint, evidence-publish self-test) are the enforced backstop for
+# everyone; this hook is the fast local mirror.
 #
 # Enable once per clone:
 #     git config core.hooksPath .githooks
@@ -32,6 +33,19 @@ if [ -n "$py" ]; then
   fi
 else
   echo "pre-commit: WARNING - python not found; skipping mojibake gate (CI still enforces it)." >&2
+fi
+
+# 1b. Conflict-marker gate on staged files (mechanical; needs only python + git).
+if [ -n "$py" ]; then
+  if ! PYTHONUTF8=1 "$py" scripts/lint/check_conflict_markers.py --staged; then
+    echo ""
+    echo "pre-commit: leftover Git conflict markers detected in staged files."
+    echo "  Finish the merge/resolution and remove every <<<<<<< / ======= / >>>>>>> line."
+    echo "  Or add a 'conflict-marker-allow' marker to any line that must show a literal example."
+    exit 1
+  fi
+else
+  echo "pre-commit: WARNING - python not found; skipping conflict-marker gate (CI still enforces it)." >&2
 fi
 
 # 2. Markdown lint gate on staged .md (auto-fix the safe rules, re-stage, verify).
@@ -82,4 +96,4 @@ if [ -n "$py" ]; then
   fi
 fi
 
-echo "pre-commit: doc-steward gates passed (encoding + markdown lint)."
+echo "pre-commit: doc-steward gates passed (encoding + conflict markers + markdown lint)."
