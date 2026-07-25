@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "2538395112464421570"
+      "templateHash": "9372228585454297705"
     }
   },
   "parameters": {
@@ -383,6 +383,13 @@
       ],
       "metadata": {
         "description": "Region for the Sprint 28 PO Agent modules (Search, runtime, Cosmos, Key Vault). Pinned to the ADR-0013 demo-scope variant path; PROD = switzerlandnorth per ADR-0037 / NFR-POA-003."
+      }
+    },
+    "poAgentOpenAiLocation": {
+      "type": "string",
+      "defaultValue": "[parameters('poAgentLocation')]",
+      "metadata": {
+        "description": "Region for the PO Agent runtime Azure OpenAI account. Separable from poAgentLocation per ADR-0032: SIT infra runs in westus2 but Azure OpenAI has no quota there, so SIT pins this to eastus2 (the ADR-0013 demo cross-region). Defaults to poAgentLocation to preserve single-region behaviour for PROD (switzerlandnorth per NFR-POA-003)."
       }
     },
     "enablePoAgentSearchModule": {
@@ -3955,7 +3962,7 @@
             "value": "[variables('poCorpusStorageName')]"
           },
           "openAiLocation": {
-            "value": "[parameters('poAgentLocation')]"
+            "value": "[parameters('poAgentOpenAiLocation')]"
           },
           "logAnalyticsWorkspaceId": {
             "value": "[parameters('poAgentLogAnalyticsWorkspaceId')]"
