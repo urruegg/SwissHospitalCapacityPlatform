@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.7.0 |
+| **Version** | 1.8.0 |
 | **Date** | 2026-07-25 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane now landed in-repo** (DC-SKILL-EVENT-v1 contract + seeder + Bronze/Silver/Gold notebooks + 23 unit tests); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), live Event Hub→Eventstream wiring (`approved-to-apply`), + e2e SIT/PROD parity test** |
-| **Previous Version** | 1.6.0 (PROD org/skills parity APPLIED + OneLake gold evidence reader) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed** (DC-SKILL-EVENT-v1 + seeder + Bronze/Silver/Gold + 23 unit tests) **and LIVE-WIRED in SIT** (Eventstream `es-ihzhhpf-skills-events` Running, CustomEndpoint source → `bronze_skills_events`, `approved-to-apply` #374); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), Container Apps publisher image, + e2e SIT/PROD parity test** |
+| **Previous Version** | 1.7.0 (skills-events medallion data lane landed in-repo) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -99,6 +99,41 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 
 ## 6. Status log
 
+### 2026-07-25 — Skills-events Eventstream lane LIVE-WIRED in SIT (WS-A4 / FR-SKILL-005)
+
+**Approved-to-apply** by @urruegg (PR #374 approved + merged first). This slice
+(branch `sprint-23/skills-events-live-wire`, off `main`) authors the **missing
+post-deploy script** and live-wires the lane the #374 data lane feeds:
+
+* **Transport decision — `CustomEndpoint` (demo-scope, ADR-0013).** The working
+  `es-capacity-events-sit` lane uses a CustomEndpoint source, and it is fully
+  live-deployable today (no out-of-band Fabric-managed connection). The Container
+  Apps publisher (`NFR-SKILL-001`) POSTs `DC-SKILL-EVENT-v1` envelopes to the
+  Eventstream ingestion endpoint. **EventHub source stays the Swiss-GA
+  target-state** (needs `POST /v1/connections`). The Bicep module gained a
+  backwards-compatible `sourceMode` param (`CustomEndpoint` default | `EventHub`).
+* **New post-deploy script** —
+  `infra/modules/integration-orchestration/skills-eventstream/post-deploy/configure-skills-eventstream.ps1`
+  (the module previously referenced a non-existent path). Asserts the exactly-three
+  D4 event-kind guardrail, `-DryRun` prints the topology, idempotent (skips on
+  existing display name), async-safe (Fabric returns 202; id resolved by
+  display-name lookup with retry). Mirrors the authoritative live schema
+  (streams + `compatibilityLevel: 1.1` + 3 parts).
+* **Live apply (SIT workspace `f3af9733-…`)** — created Eventstream
+  **`es-ihzhhpf-skills-events`** (id `2f5826c5-f7c4-4b87-8bcf-ee727e1e4704`):
+  CustomEndpoint source → DefaultStream → Lakehouse destination
+  `bronze_skills_events` in `lh_ihzhhpf_sit` (`30594c20-…`). All three nodes
+  verified **`status: Running`**. Re-run confirmed idempotent (clean skip).
+* **No secrets committed** — the CustomEndpoint ingestion connection string
+  (SharedAccessKey) is retrieved at publish-time via
+  `GET …/eventstreams/{id}/sources/{sourceId}/connection` and stored in Key Vault;
+  never in the repo.
+* **PHI gate unchanged** — the Eventstream lands raw synthetic envelopes; the
+  PHI/consent gate + kind allow-list stay in the silver notebook (deny-by-default).
+* **Remaining** — wire the Container Apps publisher image to the ingestion endpoint;
+  surface a live-vs-simulated event measure on the semantic model (documented
+  follow-up); EventHub-source flip at Swiss GA.
+
 ### 2026-07-25 — Skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed
 
 The WS-A4 Eventstream **infra** module (`es-ihzhhpf-skills-events`) already existed,
@@ -127,8 +162,9 @@ but the **data lane it feeds was empty**. This slice builds it in-repo (branch
   measure) is a documented follow-up.
 * **Tests** — 23 Spark-free unit tests (9 seeder schema/consent + 14 medallion gate /
   badge). Neighbouring suites regression-clean (skills-evidence 21+43, gold-contract 5).
-* **Remaining for this DoD item** — live Event Hub → Eventstream → `Files/bronze/skills-events/`
-  wiring is `approved-to-apply`-deferred (Container Apps, not GitHub workflows).
+* **Remaining for this DoD item** — live Eventstream wiring: **DONE 2026-07-25**
+  (see the LIVE-WIRED entry above; CustomEndpoint source, `es-ihzhhpf-skills-events`
+  Running in SIT). Container Apps publisher image + EventHub-source flip still open.
 
 
 ### 2026-07-24 — PROD org/skills parity APPLIED (infra + medallion + gold evidence)

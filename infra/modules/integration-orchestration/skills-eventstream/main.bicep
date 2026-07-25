@@ -27,8 +27,15 @@ param eventHubNamespace string = ''
 @description('Event Hub name carrying the skills-event envelopes. Routing is by the eventKind message property; the Eventstream filters to the three allowed kinds.')
 param eventHubName string = ''
 
-@description('Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups.')
+@description('Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups. Only used when sourceMode=EventHub.')
 param eventHubConsumerGroup string = 'cg-skills-eventstream'
+
+@description('Eventstream source transport. CustomEndpoint (design D4 demo-scope, ADR-0013) mirrors the working es-capacity-events-sit lane: the Container Apps publisher POSTs DC-SKILL-EVENT-v1 envelopes to the Eventstream ingestion URL — fully live-deployable today, no out-of-band Fabric-managed connection required. EventHub is the Swiss-GA target-state and requires a Fabric-managed connection to the Event Hubs namespace (POST /v1/connections) before the post-deploy script can wire it.')
+@allowed([
+  'CustomEndpoint'
+  'EventHub'
+])
+param sourceMode string = 'CustomEndpoint'
 
 @description('Deployment region. switzerlandnorth (ADR-0003 default) or westus2 (ADR-0013 demo-scope carve-out).')
 @allowed([
@@ -69,15 +76,18 @@ var skillsEventstreamManifest = {
     description: eventstreamDescription
   }
   source: {
-    kind: 'EventHub'
-    namespaceHost: eventHubNamespace
-    eventHubName: eventHubName
-    consumerGroup: eventHubConsumerGroup
+    // D4 demo-scope default is CustomEndpoint (mirrors es-capacity-events-sit); EventHub is
+    // the Swiss-GA target-state. The EH coordinates are only meaningful when sourceMode=EventHub.
+    kind: sourceMode
+    namespaceHost: sourceMode == 'EventHub' ? eventHubNamespace : ''
+    eventHubName: sourceMode == 'EventHub' ? eventHubName : ''
+    consumerGroup: sourceMode == 'EventHub' ? eventHubConsumerGroup : ''
     routingProperty: 'eventKind'
-    // D4 guardrail: the Eventstream filter admits ONLY these three kinds. Enforced by the
-    // post-deploy script and echoed here so operators can audit the narrow scope.
+    // D4 guardrail: the lane admits ONLY these three kinds. The post-deploy script asserts the
+    // manifest carries exactly this set; runtime enforcement of the kind allow-list + the
+    // PHI/consent gate is performed downstream by the silver notebook (deny-by-default).
     allowedEventKinds: allowedEventKinds
-    authMode: 'fabric-managed-connection'
+    authMode: sourceMode == 'EventHub' ? 'fabric-managed-connection' : 'custom-endpoint-ingestion'
   }
   destination: {
     kind: 'Lakehouse'

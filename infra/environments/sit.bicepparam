@@ -106,6 +106,10 @@ param fabricEventstreamDestinationLakehouseId = ''
 param enableSkillsEventstreamModule = true
 param skillsEventstreamWorkspaceId = ''
 param skillsEventstreamDestinationLakehouseId = ''
+// Design D4 demo-scope (ADR-0013): CustomEndpoint source mirrors the working
+// es-capacity-events-sit lane and is fully live-deployable via the post-deploy REST
+// script. EventHub is the Swiss-GA target-state (needs a Fabric-managed connection).
+param skillsEventstreamSourceMode = 'CustomEndpoint'
 
 // Sprint 09 v2.0.0 T2.1 — Event Hubs consumer group RBAC.
 // Simulator MI (T3.7) and agent MIs (T4.5) don't exist yet; leaving empty means the three

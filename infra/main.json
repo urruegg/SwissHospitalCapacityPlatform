@@ -4,12 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.45.6.27763",
-<<<<<<< HEAD
-      "templateHash": "1348015303216065300"
-=======
-      "templateHash": "6600803867412963793"
->>>>>>> origin/main
+      "version": "0.45.15.27210",
+      "templateHash": "7142471916764075785"
     }
   },
   "parameters": {
@@ -239,6 +235,17 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional Fabric Lakehouse ID for the skills-events Eventstream destination. Empty defers destination wiring (Eventstream created source-only)."
+      }
+    },
+    "skillsEventstreamSourceMode": {
+      "type": "string",
+      "defaultValue": "CustomEndpoint",
+      "allowedValues": [
+        "CustomEndpoint",
+        "EventHub"
+      ],
+      "metadata": {
+        "description": "Skills-events Eventstream source transport. CustomEndpoint (default, design D4 demo-scope) is fully live-deployable and mirrors es-capacity-events-sit; EventHub is the Swiss-GA target-state (requires a Fabric-managed connection). See modules/integration-orchestration/skills-eventstream/main.bicep."
       }
     },
     "enableAiPlatformModule": {
@@ -632,8 +639,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16810495867067195621"
+              "version": "0.45.15.27210",
+              "templateHash": "12709708007594594275"
             }
           },
           "parameters": {
@@ -854,8 +861,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "11092665246856310223"
+              "version": "0.45.15.27210",
+              "templateHash": "4775159143963604237"
             }
           },
           "parameters": {
@@ -970,8 +977,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15666986789757700592"
+              "version": "0.45.15.27210",
+              "templateHash": "7067348100293623422"
             }
           },
           "parameters": {
@@ -1176,8 +1183,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "11956369232816364156"
+              "version": "0.45.15.27210",
+              "templateHash": "6398321357455288559"
             }
           },
           "parameters": {
@@ -1303,8 +1310,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1833113154266341724"
+              "version": "0.45.15.27210",
+              "templateHash": "6638527015992601355"
             }
           },
           "parameters": {
@@ -1507,8 +1514,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "10689296495622946629"
+                      "version": "0.45.15.27210",
+                      "templateHash": "15430035442934461439"
                     }
                   },
                   "parameters": {
@@ -1746,8 +1753,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "13645867721578398029"
+                      "version": "0.45.15.27210",
+                      "templateHash": "16846858966586516040"
                     }
                   },
                   "parameters": {
@@ -1909,8 +1916,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15460063151507913680"
+              "version": "0.45.15.27210",
+              "templateHash": "13453687588716698482"
             }
           },
           "parameters": {
@@ -2014,8 +2021,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16248653206385140613"
+              "version": "0.45.15.27210",
+              "templateHash": "12859803335828411041"
             }
           },
           "parameters": {
@@ -2122,8 +2129,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1631660769778658010"
+              "version": "0.45.15.27210",
+              "templateHash": "6220424990052136252"
             }
           },
           "parameters": {
@@ -2265,8 +2272,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16503415288114807116"
+              "version": "0.45.15.27210",
+              "templateHash": "17304584953902525869"
             }
           },
           "parameters": {
@@ -2533,8 +2540,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1619298565780961527"
+              "version": "0.45.15.27210",
+              "templateHash": "7230076444948795540"
             }
           },
           "parameters": {
@@ -2655,8 +2662,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1765711980068583287"
+              "version": "0.45.15.27210",
+              "templateHash": "13624344099504165410"
             }
           },
           "parameters": {
@@ -2737,8 +2744,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "2157408807266904991"
+                      "version": "0.45.15.27210",
+                      "templateHash": "9490011764893617069"
                     }
                   },
                   "parameters": {
@@ -3022,8 +3029,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "535917255065045059"
+              "version": "0.45.15.27210",
+              "templateHash": "16860468050710324881"
             }
           },
           "parameters": {
@@ -3254,8 +3261,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15390018866793242957"
+              "version": "0.45.15.27210",
+              "templateHash": "4357772689202446892"
             }
           },
           "parameters": {
@@ -3593,8 +3600,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "13715455851406785891"
+              "version": "0.45.15.27210",
+              "templateHash": "1151250825559176912"
             }
           },
           "parameters": {
@@ -3712,8 +3719,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16191629345100508003"
+              "version": "0.45.15.27210",
+              "templateHash": "16801748558517643812"
             }
           },
           "parameters": {
@@ -3819,8 +3826,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "6335274266135485317"
+              "version": "0.45.15.27210",
+              "templateHash": "3597564066161008070"
             }
           },
           "parameters": {
@@ -3941,8 +3948,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "14841147772701149684"
+                      "version": "0.45.15.27210",
+                      "templateHash": "14003066579642311487"
                     }
                   },
                   "parameters": {
@@ -4135,8 +4142,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3518442302807315975"
+              "version": "0.45.15.27210",
+              "templateHash": "14583701867747923328"
             }
           },
           "parameters": {
@@ -4460,8 +4467,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "14271685339274188062"
+              "version": "0.45.15.27210",
+              "templateHash": "6087286758352572380"
             }
           },
           "parameters": {
@@ -4604,8 +4611,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "1418152727854971719"
+                      "version": "0.45.15.27210",
+                      "templateHash": "594335556098139955"
                     }
                   },
                   "parameters": {
@@ -4761,8 +4768,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "9808019470207933078"
+                      "version": "0.45.15.27210",
+                      "templateHash": "6646545455890169293"
                     }
                   },
                   "parameters": {
@@ -4896,8 +4903,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "15845063017917743907"
+                      "version": "0.45.15.27210",
+                      "templateHash": "9561529887383588834"
                     }
                   },
                   "parameters": {
@@ -5039,8 +5046,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "7213773335792771551"
+                      "version": "0.45.15.27210",
+                      "templateHash": "2899347056287564506"
                     }
                   },
                   "parameters": {
@@ -5342,8 +5349,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "5334056569644691563"
+              "version": "0.45.15.27210",
+              "templateHash": "8004220282630993017"
             }
           },
           "parameters": {
@@ -5859,8 +5866,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "2182119932369270733"
+              "version": "0.45.15.27210",
+              "templateHash": "3701687070672016687"
             }
           },
           "parameters": {
@@ -6045,8 +6052,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3570153104393533044"
+              "version": "0.45.15.27210",
+              "templateHash": "4290292779733550713"
             }
           },
           "parameters": {
@@ -6345,8 +6352,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "5703750538639136666"
+              "version": "0.45.15.27210",
+              "templateHash": "8626556854951557043"
             }
           },
           "parameters": {
@@ -6509,8 +6516,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "6946668985564645552"
+              "version": "0.45.15.27210",
+              "templateHash": "12725326629230136180"
             }
           },
           "parameters": {
@@ -6662,6 +6669,9 @@
           "workspaceId": {
             "value": "[parameters('skillsEventstreamWorkspaceId')]"
           },
+          "sourceMode": {
+            "value": "[parameters('skillsEventstreamSourceMode')]"
+          },
           "eventHubNamespace": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value), createObject('value', ''))]",
           "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value), createObject('value', ''))]",
           "eventHubConsumerGroup": {
@@ -6681,8 +6691,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16344374991231825254"
+              "version": "0.45.15.27210",
+              "templateHash": "4101742253533779156"
             }
           },
           "parameters": {
@@ -6711,7 +6721,18 @@
               "type": "string",
               "defaultValue": "cg-skills-eventstream",
               "metadata": {
-                "description": "Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups."
+                "description": "Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups. Only used when sourceMode=EventHub."
+              }
+            },
+            "sourceMode": {
+              "type": "string",
+              "defaultValue": "CustomEndpoint",
+              "allowedValues": [
+                "CustomEndpoint",
+                "EventHub"
+              ],
+              "metadata": {
+                "description": "Eventstream source transport. CustomEndpoint (design D4 demo-scope, ADR-0013) mirrors the working es-capacity-events-sit lane: the Container Apps publisher POSTs DC-SKILL-EVENT-v1 envelopes to the Eventstream ingestion URL — fully live-deployable today, no out-of-band Fabric-managed connection required. EventHub is the Swiss-GA target-state and requires a Fabric-managed connection to the Event Hubs namespace (POST /v1/connections) before the post-deploy script can wire it."
               }
             },
             "location": {
@@ -6774,13 +6795,13 @@
                 "description": "[parameters('eventstreamDescription')]"
               },
               "source": {
-                "kind": "EventHub",
-                "namespaceHost": "[parameters('eventHubNamespace')]",
-                "eventHubName": "[parameters('eventHubName')]",
-                "consumerGroup": "[parameters('eventHubConsumerGroup')]",
+                "kind": "[parameters('sourceMode')]",
+                "namespaceHost": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubNamespace'), '')]",
+                "eventHubName": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubName'), '')]",
+                "consumerGroup": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubConsumerGroup'), '')]",
                 "routingProperty": "eventKind",
                 "allowedEventKinds": "[variables('allowedEventKinds')]",
-                "authMode": "fabric-managed-connection"
+                "authMode": "[if(equals(parameters('sourceMode'), 'EventHub'), 'fabric-managed-connection', 'custom-endpoint-ingestion')]"
               },
               "destination": {
                 "kind": "Lakehouse",
@@ -6886,7 +6907,7 @@
     },
     "skillsEventstreamGatingWarning": {
       "type": "string",
-      "value": "[if(and(parameters('enableSkillsEventstreamModule'), not(parameters('enableDataFoundationModule'))), 'WARN: enableSkillsEventstreamModule=true requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamWorkspaceId'))), 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamDestinationLakehouseId'))), 'INFO: skillsEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.', 'ok')))]"
+      "value": "[if(and(and(parameters('enableSkillsEventstreamModule'), equals(parameters('skillsEventstreamSourceMode'), 'EventHub')), not(parameters('enableDataFoundationModule'))), 'WARN: enableSkillsEventstreamModule=true with sourceMode=EventHub requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source. (CustomEndpoint source needs no Event Hub.)', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamWorkspaceId'))), 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamDestinationLakehouseId'))), 'INFO: skillsEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.', 'ok')))]"
     },
     "moduleStatuses": {
       "type": "object",

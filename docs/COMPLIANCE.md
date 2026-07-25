@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.9.0 |
+| **Version** | 0.10.0 |
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.8.0 (Sprint 23 skills-evidence DSG tagging + Work-ID consent lineage) |
+| **Previous Version** | 0.9.0 (Sprint 23 skills-events lane consent enforcement) |
 
 ## Purpose
 
@@ -215,6 +215,7 @@ downstream PHI-gate the Eventstream module defers to, and it enforces the same
 | Grant carries the promotion, revoke never asserts one | `FR-SKILL-003` | A `grant` event must carry both `workerGln` and `consentScope` or it is quarantined (deny-by-default); non-consent events carrying a `consentAction` are quarantined |
 | Live-vs-simulated badge preserved on events | `FR-SKILL-007` | `sourceMode` (live \| simulated) + `trustTier` travel from the contract through Bronze/Silver and surface on `gold.skillevt_fact_event`; never invented downstream |
 | Synthetic-only event data | `NFR-SKILL-002` | The event seeder is deterministic and git-owned; envelopes are synthetic, no-PHI (ADR-0013 / ADR-0016) |
+| Live ingestion secrets never in repo | `CH-C05`, `NFR-SKILL-001` | The SIT lane is live-wired with a `CustomEndpoint` source (`es-ihzhhpf-skills-events`, demo-scope ADR-0013). Its Event-Hub-compatible ingestion connection string (SharedAccessKey) is retrieved at publish-time via `GET …/eventstreams/{id}/sources/{sourceId}/connection` and stored in Key Vault — **never committed**. The Container Apps publisher reads it from Key Vault at runtime |
 
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 
