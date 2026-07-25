@@ -24,10 +24,13 @@ apps/sim-capacity/src/**/*.egg-info
 !apps/hcc-agent-host/pyproject.toml
 !apps/hcc-agent-host/src/
 !agents/
+!data-platform/decision/
 apps/hcc-agent-host/src/**/__pycache__
 apps/hcc-agent-host/src/**/*.pyc
 apps/hcc-agent-host/src/**/*.egg-info
 agents/**/__pycache__
+data-platform/decision/**/__pycache__
+data-platform/decision/**/*.pyc
 
 # Review CSVs consumed by calibration modules at runtime
 !docs/reviews/2026-06-29-ama-capacity-metadata-review/*.csv
