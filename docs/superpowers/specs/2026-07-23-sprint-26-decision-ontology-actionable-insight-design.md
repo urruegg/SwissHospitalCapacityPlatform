@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-25 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out to BMCA/ORSA/SBA/CSA in delivery) |
-| **Previous Version** | 1.1.0 (added §9 delivery status & next step) |
+| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling in delivery) |
+| **Previous Version** | 1.2.0 (added §9 delivery status & next step) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -228,10 +228,10 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 ## 9. Status & next step
 
 > Delivery status as of **2026-07-25**. WS-A (Foresight) and the WS-B/C/D
-> **vertical slice** (OOA -> DCA, all 5 beats) are merged to `main` (#369). The
-> current slice **fans the proven pattern out** to the remaining four roles
-> (BMCA, ORSA, SBA, CSA) — one curated lever each, deterministic impact, and
-> agent-pack + golden-task upgrades (see §9.5).
+> **vertical slice** (OOA -> DCA, all 5 beats) are merged to `main` (#369); the
+> fan-out to BMCA/ORSA/SBA/CSA is merged (#376). The current slice adds the
+> **WS-C live-apply tooling** — a Cosmos-backed `PlanStore`, a HITL-gated live
+> seed, and a Foundry decision-tier registration tool (see §9.8).
 
 ### 9.1 Work-stream progress
 
@@ -239,7 +239,7 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 | -- | ------ | ---------------- |
 | **WS-A — Foresight tier** | ✅ **Done, merged to `main`** | Deterministic forecast+driver+signal generator, 3 Gold tables, `hcp:Forecast/Driver` + `hcp:ExternalSignal` reuse, 2 contracts (`DC-OCCUPANCY-FORECAST-v1`, `DC-FORECAST-DRIVER-v1`), 16 unit tests. Live SIT evidence captured. |
 | **WS-B — Lever catalog + deterministic impact** | ✅ **Vertical slice merged (#369); fan-out in delivery** | OOA+DCA levers, `compute_expected_impact`, `DC-INSIGHT-v1` contract, barrier model + `hcp:Barrier` landed via #369. Current slice adds the four fan-out levers (`BMCA-REBALANCE-CENSUS`, `ORSA-DEFER-ELECTIVE`, `SBA-FLEX-STAFF-BEDS`, `CSA-ACTIVATE-SURGE`) + formulas + tests. |
-| **WS-C — Decision + Coordination runtime (Cosmos)** | ✅ **Vertical slice merged (#369); fan-out in delivery** | `Store`/`plan_runtime` (102%→94% recompute + OOA→DCA handoff) landed via #369. Current slice adds `coordination/seed_fanout.py` (self-owned golden thread per fan-out role). Live Cosmos/Foundry `apply` still deferred. |
+| **WS-C — Decision + Coordination runtime (Cosmos)** | ✅ **Vertical slice (#369) + fan-out (#376) merged; live-apply tooling in delivery** | `Store`/`plan_runtime` (102%→94% recompute + OOA→DCA handoff) landed via #369; `seed_fanout.py` via #376. Current slice adds the Cosmos-backed `CosmosStore(PlanStore)`, the HITL-gated `coordination/seed_live.py`, and the Foundry `foundry/register_decision_tier.py` tool (§9.8). Live infra deploy + in-VNet apply still pending the `sit` environment approval + an in-VNet run. |
 | **WS-D — Consumption + governance** | ✅ **Vertical slice merged (#369); fan-out in delivery** | `DC-INSIGHT-v1` Data Agent contract + OOA/DCA agent upgrades + ADR-0040 + PRD `FR-DEC-*`/`NFR-DEC-*` landed via #369. Current slice upgrades the BMCA/ORSA/SBA/CSA agent packs + golden tasks. |
 
 ### 9.2 WS-A — what landed (merged PRs, issue #335)
@@ -326,3 +326,46 @@ golden thread (Medicine A, 102% → 94% at 72h, OOA→DCA handoff):
 > beats end-to-end before fanning out. Locked decisions from that plan still hold — barrier
 > builder+schema now / defer Gold materialization · add only `hcp:Barrier` now · one
 > cohesive PR.
+
+### 9.8 WS-C live-apply tooling — Cosmos store + Foundry registration (current)
+
+One cohesive squash PR off `main` (branch `sprint-26/ws-c-live-apply`),
+Data/AI lane, TDD-first. Turns the "definitions-only" decision store into
+**gated, executable apply tooling** without mutating cloud from CI. Confirmed
+scope A+B+C (@urruegg, 2026-07-25).
+
+1. **CosmosStore** — `coordination/cosmos_store.py`: a `CosmosStore(PlanStore)`
+   over the `plans` (`/episode_key`) + `proposed_actions` (`/plan_id`)
+   containers, RBAC-only (`DefaultAzureCredential`, no keys), lazy SDK import,
+   injectable container clients. Swap-compatible with `InMemoryStore` (contract
+   parity test). 12 unit tests.
+2. **Gated live seed** — `coordination/seed_live.py`: replays all six roles
+   (Slice-1 OOA→DCA + four fan-out threads) through the pure `plan_runtime`
+   into an injected store. `--action plan` prints the exact documents (dry run,
+   no cloud); `--action apply` requires a non-bot `--approved-to-apply` handle
+   AND a reachable Cosmos account, refusing a silent no-op. 13 unit tests.
+3. **Foundry registration** — `foundry/register_decision_tier.py`: mirrors
+   `register_fabric_data_agent_tool.py`; deterministic per-agent plan for the
+   six decision-tier agents (each pointed at its own role lever catalog + the
+   Cosmos containers + the deterministic impact tool), apply HITL-gated behind a
+   live registration factory. 15 unit tests.
+
+**Network reality (constrains "live").** The SIT Cosmos account is
+`publicNetworkAccess = Disabled` + private-endpoint only
+([ADR-0029](../../adr/0029-agent-host-cosmos-reachability.md)) and the Foundry
+project is eastus2 ([ADR-0032](../../adr/0032-foundry-control-plane-eastus2.md)),
+so neither is reachable from a laptop or a hosted CI runner. The real apply runs
+from inside the VNet (the agent-host). This branch therefore delivers the gated
+tooling + tests + dry-run evidence; the two remaining live steps are operational:
+
+- **(A) infra deploy** — the `proposed_actions` / `plans` container definitions
+  merged in #369 are still `waiting` on the `sit` GitHub environment reviewer
+  gate; @urruegg approving the pending `cd-infra-deploy-sit` run materializes
+  them (blast radius = the whole `infra/main.bicep` on latest `main`).
+- **(B/C) in-VNet apply** — once containers exist, run
+  `python -m coordination.seed_live --action apply --approved-to-apply <handle>`
+  and `python -m foundry.register_decision_tier --action apply --role <role>
+  --approved-to-apply <handle>` from the agent-host.
+
+**Still deferred (not this branch):** DCA barrier Gold materialization;
+ontology `hcp:Recommendation` / `hcp:Lever`.

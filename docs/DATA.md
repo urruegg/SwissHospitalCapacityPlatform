@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.10.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 0.11.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.9.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
+| **Previous Version** | 0.10.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
 
 ## Purpose
 
@@ -309,9 +309,21 @@ account (`cosmos-csa-ihzhhpf-sit`), defined in `infra/modules/cosmos/csa.bicep`:
 
 Per [ADR-0029](adr/0029-agent-host-cosmos-reachability.md), both containers are
 **agent-host-mediated** — OOA and DCA never call `cosmos-mcp` directly, so their
-side-effect ceiling stays `write` and no new MCP grant is required. No live
-Cosmos deploy is in scope for Slice 1 (IaC container definitions only,
-`what-if`-gated).
+side-effect ceiling stays `write` and no new MCP grant is required.
+
+The runtime persists through an abstract `PlanStore`
+([`data-platform/decision/coordination/store.py`](../data-platform/decision/coordination/store.py)):
+`InMemoryStore` for tests and dry runs, and `CosmosStore`
+([`coordination/cosmos_store.py`](../data-platform/decision/coordination/cosmos_store.py))
+for live use — RBAC-only (`DefaultAzureCredential`, no account keys), mapping
+`plans`/`proposed_actions` verbatim onto the two containers. A **HITL-gated live
+seed** ([`coordination/seed_live.py`](../data-platform/decision/coordination/seed_live.py))
+replays all six roles into an injected store: `--action plan` prints the exact
+documents (dry run, no cloud), `--action apply` requires a non-bot
+`--approved-to-apply` handle and a reachable account. Because the SIT account is
+`publicNetworkAccess = Disabled` + private-endpoint only, a real apply runs from
+inside the VNet (the agent-host), never from CI — the container definitions
+themselves deploy through the `what-if`-gated `cd-infra-deploy-sit` workflow.
 
 ### Deprecations
 

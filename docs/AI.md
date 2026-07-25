@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 0.8.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.6.0 (added Sprint 26 Prescriptive Decision Vocabulary — DC-INSIGHT-v1, deterministic impact, advisory/HITL) |
+| **Previous Version** | 0.7.0 (added Sprint 26 Prescriptive Decision Vocabulary — DC-INSIGHT-v1, deterministic impact, advisory/HITL) |
 
 ## Purpose
 
@@ -188,6 +188,15 @@ than a free-form sentence.
    descriptive `signal`/`understanding`/`provenance` beats; the agent-host
    assembles `recommendation`/`action`/`coordination` at runtime, keeping the
    copilots' `write` side-effect ceiling unchanged.
+4. WS-C ships **gated apply tooling** for the six decision-tier agents:
+   `foundry/register_decision_tier.py` (mirroring
+   `register_fabric_data_agent_tool.py`) emits a deterministic per-agent
+   registration plan — each agent pointed at its own role lever catalog, the
+   Cosmos `plans`/`proposed_actions` containers, and the deterministic impact
+   tool — and only mutates the eastus2 Foundry project
+   ([ADR-0032](adr/0032-foundry-control-plane-eastus2.md)) when handed a non-bot
+   `--approved-to-apply` handle and a live registration factory. A real apply
+   runs in-VNet, never from CI.
 
 ## Evaluation
 
