@@ -1,0 +1,174 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "4534820058123538298"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for the Azure AI Search service. PROD = switzerlandnorth (ADR-0037); SIT = westus2 (ADR-0013)."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Resource tags applied to all resources."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "standard",
+      "allowedValues": [
+        "basic",
+        "standard",
+        "standard2",
+        "standard3"
+      ],
+      "metadata": {
+        "description": "Search SKU. `standard` supports hybrid vector + keyword + semantic ranker (design D2)."
+      }
+    },
+    "replicaCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 12,
+      "metadata": {
+        "description": "Replica count (query throughput / SLA). 1 for SIT demo scope; raise in PROD as needed."
+      }
+    },
+    "partitionCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        12
+      ],
+      "metadata": {
+        "description": "Partition count (index size / write throughput)."
+      }
+    },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace for diagnostic settings. Empty string skips diagnostics (SIT). Populated in PROD per copilot-instructions §3."
+      }
+    }
+  },
+  "variables": {
+    "searchServiceName": "[toLower(format('srch-{0}', parameters('nameSuffix')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2024-06-01-preview",
+      "name": "[variables('searchServiceName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "replicaCount": "[parameters('replicaCount')]",
+        "partitionCount": "[parameters('partitionCount')]",
+        "hostingMode": "default",
+        "publicNetworkAccess": "enabled",
+        "disableLocalAuth": true,
+        "semanticSearch": "standard",
+        "networkRuleSet": {
+          "ipRules": []
+        }
+      }
+    },
+    {
+      "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]",
+      "name": "[format('diag-{0}', variables('searchServiceName'))]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+        "logs": [
+          {
+            "category": "OperationLogs",
+            "enabled": true
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure AI Search module implementation marker."
+      },
+      "value": "knowledge-layer-ai-search-implemented"
+    },
+    "searchServiceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure AI Search service name."
+      },
+      "value": "[variables('searchServiceName')]"
+    },
+    "searchServiceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure AI Search service resource ID."
+      },
+      "value": "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
+    },
+    "searchEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure AI Search query endpoint."
+      },
+      "value": "[format('https://{0}.search.windows.net', variables('searchServiceName'))]"
+    },
+    "searchPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal ID of the Search system-assigned managed identity (grant it read on OneLake / corpus storage)."
+      },
+      "value": "[reference(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2024-06-01-preview', 'full').identity.principalId]"
+    },
+    "pinnedSearchRestApiVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "Pinned data-plane agentic-retrieval REST api-version (see the knowledge-base runbook). Single reviewed value the runtime consumes."
+      },
+      "value": "2024-05-01-preview"
+    }
+  }
+}

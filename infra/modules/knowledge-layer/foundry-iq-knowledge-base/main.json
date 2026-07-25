@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "7635980439731798164"
+    }
+  },
+  "parameters": {
+    "nameSuffix": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod. Used to derive the knowledge-source / knowledge-base names in the runbook."
+      }
+    },
+    "searchRestApiVersion": {
+      "type": "string",
+      "defaultValue": "2024-05-01-preview",
+      "metadata": {
+        "description": "Pinned data-plane Search REST api-version for agentic retrieval. Threaded from the ai-search module output so a single reviewed version is used everywhere."
+      }
+    }
+  },
+  "variables": {
+    "knowledgeSourceName": "[toLower(format('ks-curavias-corpus-{0}', parameters('nameSuffix')))]",
+    "knowledgeBaseName": "[toLower(format('kb-curavias-po-{0}', parameters('nameSuffix')))]"
+  },
+  "resources": [],
+  "outputs": {
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Foundry IQ knowledge-base module marker (no resources; provisioned via knowledge-base-rest.md)."
+      },
+      "value": "knowledge-layer-foundry-iq-knowledge-base-marker"
+    },
+    "knowledgeSourceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Knowledge source name (Class A corpus) the runbook creates against AI Search."
+      },
+      "value": "[variables('knowledgeSourceName')]"
+    },
+    "knowledgeBaseName": {
+      "type": "string",
+      "metadata": {
+        "description": "Knowledge base name the PO Agent domain #1 binds to."
+      },
+      "value": "[variables('knowledgeBaseName')]"
+    },
+    "searchRestApiVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "Pinned data-plane Search REST api-version echoed for the runtime."
+      },
+      "value": "[parameters('searchRestApiVersion')]"
+    }
+  }
+}

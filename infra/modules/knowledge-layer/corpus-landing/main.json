@@ -1,0 +1,206 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "3182797218638393169"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for the storage account."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Resource tags applied to all resources."
+      }
+    },
+    "refreshJobPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the corpus-refresh job managed identity that writes documents to the landing container. When set, receives Storage Blob Data Contributor scoped to the account. Empty string skips the role assignment."
+      }
+    },
+    "searchPrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Object ID of the Azure AI Search system-assigned managed identity. When set, receives Storage Blob Data Reader so the knowledge source can index the corpus without keys. Empty string skips the role assignment."
+      }
+    },
+    "refreshJobPrincipalType": {
+      "type": "string",
+      "defaultValue": "ServicePrincipal",
+      "allowedValues": [
+        "ServicePrincipal",
+        "User",
+        "Group"
+      ],
+      "metadata": {
+        "description": "Principal type for the corpus-refresh job role assignment."
+      }
+    },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace for blob diagnostic settings. Empty string skips diagnostics (SIT). Populated in PROD per copilot-instructions §3."
+      }
+    }
+  },
+  "variables": {
+    "storageAccountName": "[toLower(format('stcorpus{0}', replace(parameters('nameSuffix'), '-', '')))]",
+    "storageBlobDataContributorRoleId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+    "storageBlobDataReaderRoleId": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "isHnsEnabled": true,
+        "accessTier": "Hot",
+        "allowBlobPublicAccess": false,
+        "supportsHttpsTrafficOnly": true,
+        "minimumTlsVersion": "TLS1_2",
+        "publicNetworkAccess": "Enabled",
+        "allowSharedKeyAccess": false,
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "bypass": "AzureServices"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'landing')]",
+      "properties": {
+        "publicAccess": "None"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('refreshJobPrincipalId')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('refreshJobPrincipalId'), variables('storageBlobDataContributorRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
+        "principalId": "[parameters('refreshJobPrincipalId')]",
+        "principalType": "[parameters('refreshJobPrincipalType')]",
+        "description": "Sprint 28 WS-INF (#377) — corpus-refresh job MI writes synthetic product docs to landing/curavias-product-corpus/."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('searchPrincipalId')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('searchPrincipalId'), variables('storageBlobDataReaderRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleId'))]",
+        "principalId": "[parameters('searchPrincipalId')]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 28 WS-INF (#377) — Azure AI Search MI reads the corpus for the Foundry IQ knowledge source (no keys)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]",
+      "name": "[format('diag-blob-{0}', variables('storageAccountName'))]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+        "logs": [
+          {
+            "category": "StorageWrite",
+            "enabled": true
+          },
+          {
+            "category": "StorageDelete",
+            "enabled": true
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "enabled": true
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Corpus landing module implementation marker."
+      },
+      "value": "knowledge-layer-corpus-landing-implemented"
+    },
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "ADLS Gen2 corpus storage account name."
+      },
+      "value": "[variables('storageAccountName')]"
+    },
+    "landingContainerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Landing filesystem (container) name."
+      },
+      "value": "landing"
+    },
+    "dfsEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "DFS (ADLS Gen2) endpoint for the corpus storage account."
+      },
+      "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.dfs]"
+    }
+  }
+}
