@@ -1,0 +1,8 @@
+{
+  "source": "work_id",
+  "eventKind": "consent-grant-or-revoke",
+  "decisions": [
+    {"decisionId": "wid-evt-001", "workIdRef": "WID-ANON-3001", "skillCode": "NURS-ICU", "skillLabel": "Intensivpflege", "action": "revoke", "workerGln": "7601190000010", "consentScope": "capacity-planning", "decidedAt": "2026-07-23T09:00:00Z"},
+    {"decisionId": "wid-evt-002", "workIdRef": "WID-ANON-3004", "skillCode": "ANAES", "skillLabel": "Anaesthesie", "action": "grant", "workerGln": "7601190000027", "consentScope": "capacity-planning", "decidedAt": "2026-07-23T10:30:00Z"}
+  ]
+}
