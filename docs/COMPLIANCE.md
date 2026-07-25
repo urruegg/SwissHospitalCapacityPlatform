@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.8.1 |
-| **Date** | 2026-07-24 |
+| **Version** | 0.9.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.8.0 (ADR-0039→0040 link retarget) |
+| **Previous Version** | 0.8.1 (ADR-0039→0040 link retarget) |
 
 ## Purpose
 
@@ -20,6 +20,13 @@ and operational evidence.
 > `switzerlandnorth`. See [ADR-0013](adr/0013-temporary-us-region-demo-scope.md)
 > and the exception `EX-2026-07-02-westus2-demo` in [policy/exceptions.json](../policy/exceptions.json).
 > This carve-out does NOT weaken ADR-0003 / ADR-0004 for any PHI or production scope.
+>
+> **PROD region (Sprint 19):** PROD was rebuilt greenfield in
+> **`switzerlandnorth`** (`rg-ihzhhpf-prod`), synthetic data only, no PHI, per
+> [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md) +
+> [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md). SIT stays US-region
+> (`westus2`/`eastus2`) per the carve-out above. Consolidated as-deployed +
+> compliance-posture view: [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 Scope of this version:
 - Swiss federal privacy and health-data obligations relevant to the platform.

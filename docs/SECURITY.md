@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.1 |
-| **Date** | 2026-07-24 |
+| **Version** | 0.7.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.6.0 (ADR-0039→0040 reference retarget) |
+| **Previous Version** | 0.6.1 (ADR-0039→0040 reference retarget) |
 
 ## Purpose
 
@@ -19,6 +19,14 @@ This document provides:
 - Mapping to requirement and compliance controls.
 - Implementation guardrails for GA and IaC-first delivery.
 - Evidence expectations for audit and release gates.
+
+> **As-deployed (Sprint 19):** PROD (`switzerlandnorth`, `rg-ihzhhpf-prod`) now
+> runs network parity with SIT — VNet + Cosmos private endpoints + **Key Vault
+> private endpoint** (PROD exceeds SIT on KV-PE and signal-runner UAMI
+> hardening), AAD-only Cosmos, and RBAC least-privilege — per
+> [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md). Synthetic
+> data only, no PHI. Consolidated security-posture view:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 ## Security Model
 
