@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (initial evidence-based matrix) |
+| **Previous Version** | 1.1.0 (evidence-based matrix; 2-of-3 flagged gaps reclassified PROD-exceeds-SIT) |
 
 ## 1. Summary
 
@@ -15,11 +15,16 @@ aligned for the core production path (agent host, signal runner execution,
 Cosmos, Event Hubs, Key Vault posture, app ingress, and observability), while the
 known region/topology differences are deliberate. Re-verification corrected two
 former red findings: PROD is more hardened than SIT for Key Vault private
-networking and signal-runner identity. The only genuine PROD gap is the disabled
-data/AI/integration lane, now in sprint remediation through D8 full-parity deploy
-slices.
+networking and signal-runner identity. The former data/AI/integration-lane gap
+was **closed on 2026-07-24 by the D8 full-parity deploy slices** (additive, 0
+deletes, `Succeeded`): PROD substrate now includes the ML workspace, ADLS
+masterdata, `sim-capacity` CA, skills-sim jobs + managed environments, Fabric F2
+workspace/lakehouse (50 Delta tables) + 2 semantic models, and the Foundry
+project (3 models + 8 agents). No genuine parity gap remains — the only
+non-parity item is the Fabric IQ ontology, excluded from GA parity per ADR
+(availability-blocked, #270).
 
-**Verdict tally:** ✅ **Parity** 9 · ⚠️ **Deliberate asymmetry** 5 · 🟥 **Gap** 1 ·
+**Verdict tally:** ✅ **Parity** 10 · ⚠️ **Deliberate asymmetry** 5 · 🟥 **Gap** 0 ·
 **N-A** 1.
 
 ## 2. Facts (F1–F4)
@@ -45,7 +50,7 @@ slices.
 | 3 | Agent-host managed identity and platform roles | `ca-agent-host-ihzhhpf-sit` uses UAMI `id-ca-agent-host-ihzhhpf-sit`; has `AcrPull`, `Cognitive Services User`, and Cosmos SQL data-plane role `...0002` on platform + CSA accounts. | `ca-agent-host-ihzhhpf-prod` uses UAMI `id-ca-agent-host-ihzhhpf-prod`; has `AcrPull`, `Cognitive Services User`, and Cosmos SQL data-plane role `...0002` on platform + CSA accounts. | ✅ **Parity** | [E3](#e3-identity--rbac) |
 | 3 | Signal-runner identity and Event Hubs sender | `ca-signal-runner-ihzhhpf-sit` uses a **SystemAssigned** identity; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-sit-y26y`. | `ca-signal-runner-ihzhhpf-prod` uses UAMI `id-signal-runner-ihzhhpf-prod`; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-prod-i62t`. PROD was deliberately hardened to stable UAMI so role assignment survives CAE recreates. | ⚠️ **Deliberate asymmetry — PROD exceeds SIT**. SIT could adopt the stable-UAMI pattern as future hardening, not a GA-parity gap. | [E3](#e3-identity--rbac) |
 | 4 | Cosmos DB and Event Hubs data platform | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `West US 2`; Event Hubs namespace `Standard`, public access enabled. | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `Switzerland North`; Event Hubs namespace `Standard`, public access enabled. | ✅ **Parity** | [E4](#e4-data-platform) |
-| 4 | Storage / ADLS landing zone and data/AI/integration lane | Two StorageV2 accounts exist with public access disabled: `stdpihzhhpfsity26y` (data-platform storage) and `stmasterdataihzhhpfsit` (ADLS Gen2, HNS=true, masterdata landing). | `az storage account list -g rg-ihzhhpf-prod` returned an empty array because `prod-swn.bicepparam` disables the data/AI/integration lane (`enableDataPlatformModule=false`, `enableFabricFoundationModule=false`, `enableMasterdataLandingModule` unset/false, `enableSkillsSimJobsModule` unset/false). Remediation tiers: (a) ADLS masterdata + skills-sim, no Fabric dependency, deployable now; (b) Fabric F2 workspace/lakehouse/semantic-model + Foundry agents (P6/P5), deployable, GA; (c) Fabric IQ Ontology/Data Agent Preview, attempted under ADR-0042 and may hit the #270 per-capacity gate. PROD substrate already exists: `fabricihzhhpfprod` Fabric F2 capacity and `ai-ihzhhpf-prod` Foundry account. | 🟥 **Gap — remediation IN PROGRESS this sprint** via decision D8 (@urruegg, 2026-07-24): execute full P5/P6 data-lane parity as gated deploy slices. Required BOM items are GA in Switzerland North per ADR-0037 and `region-availability.yaml`; only Fabric IQ Ontology + Fabric Data Agent are Preview, now permitted in-region under the ADR-0042 standing Preview exception. | [E4](#e4-data-platform) |
+| 4 | Storage / ADLS landing zone and data/AI/integration lane | Two StorageV2 accounts exist with public access disabled: `stdpihzhhpfsity26y` (data-platform storage) and `stmasterdataihzhhpfsit` (ADLS Gen2, HNS=true, masterdata landing). | Data/AI/integration lane **deployed** via the D8 full-parity slices (`prod-swn.bicepparam` overrides enable the lane): ML workspace, ADLS masterdata, `sim-capacity` CA + 4 skills-sim jobs + 4 managed environments, Fabric F2 workspace/lakehouse (50 Delta tables) + 2 semantic models, and Foundry project (3 models + 8 agents). Two deploy-blocking Bicep bugs fixed en route (ML KV/ACR override wiring `e72ec67`; `sim-capacity` Event Hubs Data Sender role `a402c35`). Only Fabric IQ Ontology/Data Agent remain Preview-gated (#270). | ✅ **Parity — closed 2026-07-24** by decision D8 (@urruegg, `approved-to-apply`): full P5/P6 data-lane parity applied as additive gated deploy slices (0 deletes, `Succeeded`). Required BOM items are GA in Switzerland North per ADR-0037 and `region-availability.yaml`; only Fabric IQ Ontology + Fabric Data Agent stay Preview (N/A for GA parity, #270). | [E4](#e4-data-platform) |
 | 5 | Core Container Apps runtime | Core apps `ca-app-fluent-ihzhhpf-sit`, `ca-agent-host-ihzhhpf-sit`, and `ca-signal-runner-ihzhhpf-sit` are `Succeeded` / `Running`. | Core apps `ca-app-fluent-ihzhhpf-prod`, `ca-agent-host-ihzhhpf-prod`, and `ca-signal-runner-ihzhhpf-prod` are `Succeeded` / `Running`. | ✅ **Parity** | [E5](#e5-compute--runtime) |
 | 5 | SIT-only simulation runtime | SIT additionally has simulation CAEs/apps (`cae-sim-*`, `cae-skills-sim-*`, `ca-sim-capacity-*`) for synthetic testing. | PROD does not carry those SIT simulation-only runtime resources. | ⚠️ **Deliberate asymmetry (F3 / ADR-0013)** | [E5](#e5-compute--runtime) |
 | 6 | Key Vault / secrets control plane | `kv-ihzhhpf-sit-y26y`: RBAC authorization enabled; public network access disabled. | `kv-ihzhhpf-prod-swn1`: RBAC authorization enabled; public network access disabled. | ✅ **Parity** | [E6](#e6-key-vault--secrets) |
