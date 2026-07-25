@@ -1,6 +1,7 @@
 import { makeStyles, Text, Title3, tokens } from '@fluentui/react-components';
 import { ds } from '../../theme/design-system';
 import { useSurfaceStyles, useStateStyles } from '../../theme/design-system/recipes';
+import copilotMarkUrl from '../../assets/brand/copilot.svg';
 
 /**
  * Sprint 27 M3 — dev-only design-system gallery.
@@ -84,6 +85,18 @@ export function BrandGalleryView() {
         </div>
         <div className={state.errorState}>
           <Text>Error state</Text>
+        </div>
+      </section>
+
+      <section className={s.section} aria-label="Copilot mark">
+        <Title3>Copilot mark</Title3>
+        <div className={s.row}>
+          {[16, 24, 32, 48].map((px) => (
+            <div key={px} className={s.swatch}>
+              <img src={copilotMarkUrl} alt="Microsoft Copilot" width={px} height={px} />
+              <Text size={200}>{px}px</Text>
+            </div>
+          ))}
         </div>
       </section>
     </div>
