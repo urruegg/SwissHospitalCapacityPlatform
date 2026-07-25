@@ -135,6 +135,20 @@ param masterdataLandingLogAnalyticsWorkspaceId = ''
 // a GitHub workflow — on-demand `az containerapp job start` only.
 param enableSkillsSimJobsModule = true
 param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// Enabled in SIT for the demo scope (synthetic, no-PHI corpus per D2). Region
+// pinned to westus2 (ADR-0013); diagnostics stay off in SIT (populated in PROD).
+// Runtime + refresh-job image is a placeholder until the PO Agent CI workflow
+// publishes a real one. The corpus refresh runs as a scheduled Container Apps
+// Job — NEVER a GitHub workflow.
+param poAgentLocation = 'westus2'
+param enablePoAgentSearchModule = true
+param enablePoAgentKnowledgeBaseModule = true
+param enablePoAgentCorpusLandingModule = true
+param enablePoAgentRuntimeModule = true
+param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param poAgentLogAnalyticsWorkspaceId = ''
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
 // 2026-07-10 sprint-review checklist). Image is a placeholder — matches
 // sim-capacity pattern — until agent-host-build.yml is extended to push
