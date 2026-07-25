@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.8.0 |
+| **Version** | 1.9.0 |
 | **Date** | 2026-07-25 |
 | **Author** | @urruegg |
 | **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed** (DC-SKILL-EVENT-v1 + seeder + Bronze/Silver/Gold + 23 unit tests) **and LIVE-WIRED in SIT** (Eventstream `es-ihzhhpf-skills-events` Running, CustomEndpoint source → `bronze_skills_events`, `approved-to-apply` #374); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), Container Apps publisher image, + e2e SIT/PROD parity test** |
-| **Previous Version** | 1.7.0 (skills-events medallion data lane landed in-repo) |
+| **Previous Version** | 1.8.0 (skills-events lane live-wired in SIT) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -99,6 +99,28 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 
 ## 6. Status log
 
+### 2026-07-25 — EventHub-source flip un-parked for PROD Switzerland North (ADR-0043)
+
+**Product-owner decision** by @urruegg: preview-tier services are approved in
+**PROD Switzerland North** to demonstrate the art of the possible under
+synthetic/no-PHI scope; the **GA-only gate is reserved for a real go-live
+(real-PHI) cut-over**. This un-parks the skills-events `sourceMode=EventHub`
+flip — recorded in
+[ADR-0043](../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md)
+(refines ADR-0006 + ADR-0042). Read-only verification confirmed the flip is in
+fact **GA in Switzerland North**: Eventstream is GA in swn
+(region-availability.yaml), Azure Event Hubs is GA there, PROD Fabric
+`fabricihzhhpfprod` runs in swn, and the PROD EH namespace
+`evh-ihzhhpf-prod-i62t` exists in-region — so the flip does not even consume the
+preview exception. Confirmed design points: a **dedicated skills-events Event
+Hub** (per-functional-domain envelope, not shared with the capacity `events`
+rail); a **simulator** feeds it until the live publisher is ready; **SIT and
+PROD do not share input services** (`evh-ihzhhpf-sit-y26y` westus2 vs
+`evh-ihzhhpf-prod-i62t` swn). Remaining prerequisite for the live flip: the
+out-of-band Fabric-managed connection (`POST /v1/connections`). Execution
+(dedicated EH + managed connection + `sourceMode=EventHub` + simulator) is a
+separate deploy-class slice gated by `approved-to-apply`.
+
 ### 2026-07-25 — Skills-events Eventstream lane LIVE-WIRED in SIT (WS-A4 / FR-SKILL-005)
 
 **Approved-to-apply** by @urruegg (PR #374 approved + merged first). This slice
@@ -110,7 +132,9 @@ post-deploy script** and live-wires the lane the #374 data lane feeds:
   live-deployable today (no out-of-band Fabric-managed connection). The Container
   Apps publisher (`NFR-SKILL-001`) POSTs `DC-SKILL-EVENT-v1` envelopes to the
   Eventstream ingestion endpoint. **EventHub source stays the Swiss-GA
-  target-state** (needs `POST /v1/connections`). The Bicep module gained a
+  target-state** (needs `POST /v1/connections`). *(Superseded 2026-07-25: the
+  EventHub flip is un-parked for PROD swn per ADR-0043 — see the top status-log
+  entry.)* The Bicep module gained a
   backwards-compatible `sourceMode` param (`CustomEndpoint` default | `EventHub`).
 * **New post-deploy script** —
   `infra/modules/integration-orchestration/skills-eventstream/post-deploy/configure-skills-eventstream.ps1`
@@ -132,7 +156,9 @@ post-deploy script** and live-wires the lane the #374 data lane feeds:
   PHI/consent gate + kind allow-list stay in the silver notebook (deny-by-default).
 * **Remaining** — wire the Container Apps publisher image to the ingestion endpoint;
   surface a live-vs-simulated event measure on the semantic model (documented
-  follow-up); EventHub-source flip at Swiss GA.
+  follow-up); EventHub-source flip at Swiss GA. *(Update 2026-07-25: EventHub
+  flip un-parked for PROD swn per ADR-0043 — GA-in-swn, needs the managed
+  connection; see top status-log entry.)*
 
 ### 2026-07-25 — Skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed
 
