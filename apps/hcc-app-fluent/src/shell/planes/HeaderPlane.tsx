@@ -4,7 +4,6 @@ import { ThemeToggle } from '../TopBar/ThemeToggle';
 import { LanguageSelector } from '../TopBar/LanguageSelector';
 import { HospitalScopeSelector } from '../TopBar/HospitalScopeSelector';
 import { RoleLensDropdown } from '../TopBar/RoleLensDropdown';
-import { ModeToggle } from '../TopBar/ModeToggle';
 import { UserMenu } from '../TopBar/UserMenu';
 
 const useStyles = makeStyles({
@@ -45,7 +44,6 @@ export function HeaderPlane() {
         <LanguageSelector />
         <HospitalScopeSelector />
         <RoleLensDropdown />
-        <ModeToggle />
         <UserMenu />
       </div>
     </header>
