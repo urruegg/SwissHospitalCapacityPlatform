@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.14.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.15.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.13.0 (added NFR-DEC-001 advisory/HITL guard for the Sprint 26 prescriptive decision layer) |
+| **Previous Version** | 1.14.0 (added FR-POA-001..009 + NFR-POA-001..004 for the Sprint 28 Curavias Product Owner Agent; issue #377) |
 
 ## Purpose
 
@@ -240,6 +240,27 @@ keep their `write` side-effect ceiling.
 | `FR-DEC-002` | Prescriptive copilots shall assemble an ACTION beat that is advisory and human-in-the-loop: an action may be PROPOSED autonomously but is only APPLIED after a human posts the `approved-to-apply` confirmation; the agent shall refuse to self-approve or accept a bot approver. |
 | `FR-DEC-003` | Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%). |
 
+### P) Curavias Product Owner Agent (Sprint 28)
+
+Sprint 28 deltas per the
+[Sprint 28 design spec Section 11](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md)
+and [ADR-0043](adr/0043-product-owner-agent-foundry-iq-domain.md). The Product
+Owner Agent is the advisory-only, source-grounded voice of the platform, embedded
+as a Copilot rail and grounded on the four knowledge classes over the frozen
+[`GroundedChunk` contract](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-POA-001` | The PO Agent shall answer product questions grounded only on the four knowledge classes (A corpus, B live-proof, C cost, D ontology), with mandatory citations. |
+| `FR-POA-002` | The PO Agent shall be embedded as a Copilot rail on the Curavias App START and BACKSTAGE surfaces using the MAIN-board pattern. |
+| `FR-POA-003` | The knowledge layer shall be a shared Foundry IQ Knowledge Layer registering the PO Agent as domain #1 and supporting additional domains. |
+| `FR-POA-004` | The corpus shall refresh daily GitHub -> ADLS -> OneLake -> knowledge source, PHI-excluded, interviews first-order. |
+| `FR-POA-005` | Class B live-proof shall answer the five reference questions read-only with reconcile-and-flag. |
+| `FR-POA-006` | Class C shall reconcile effective PROD Azure cost + GitHub Copilot token cost to the BVA/TCO baseline. |
+| `FR-POA-007` | Class D shall answer data questions via the ontology with concept + gold-binding citations. |
+| `FR-POA-008` | The PO Agent shall answer in DE and EN with source-language transparency. |
+| `FR-POA-009` | The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -354,6 +375,15 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-SKILL-001` | Skills-evidence ingestion and simulation run as **Azure Container Apps** services publishing to Event Hub/Eventstream, never as GitHub Actions workflows (Actions is CI-only). |
 | `NFR-SKILL-002` | All Curavias org/skills data is **synthetic, no-PHI**; the master-data generator is deterministic and git-owned for reproducibility, while the generated extracts are uploaded to the landing zone and not committed to git. |
 
+### L) Curavias Product Owner Agent (Sprint 28)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-POA-001` | Citation coverage >= 95%; zero hallucination on CFO/CISO/CLO classes. |
+| `NFR-POA-002` | 100% audit coverage (question -> sources -> answer -> caller). |
+| `NFR-POA-003` | All runtime + data in Switzerland North; no PHI; Preview services accepted per design D3. |
+| `NFR-POA-004` | Advisory-only, human-in-the-loop; the agent never mutates a system. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -390,6 +420,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
 | [`docs/CURAVIAS-PRODUCT-STATUS.md`](CURAVIAS-PRODUCT-STATUS.md) + [`docs/sprints/sprint-19/sit-prod-parity-matrix.md`](sprints/sprint-19/sit-prod-parity-matrix.md) + [`docs/sprints/sprint-19/prod-evidence-switzerlandnorth.md`](sprints/sprint-19/prod-evidence-switzerlandnorth.md) *(Sprint 19: as-deployed PROD Switzerland North status + SIT↔PROD parity; per [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md), [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md), [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md))* | Deployment coverage for `FR-DATA-*`, `FR-FC-*`, `FR-DC-*`, `FR-CX-*`, `FR-VIZ-*`, `FR-EXT-*`, `FR-ORG-001`, `FR-SKILL-*`, `NFR-SEC-*`, `NFR-COMP-*`, `NFR-REL-*` (Covered); `FR-ONT-002`, `NFR-ONT-001` (N/A-per-ADR, #270); `FR-WEB-001` to `FR-WEB-005` (Open, deferred #275) |
 | [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) + [`docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`](adr/0040-prescriptive-decision-ontology-and-runtime-store.md) + [`docs/superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md`](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md) *(Sprint 26 Slice 1: DC-INSIGHT-v1 descriptive -> prescriptive extension, OOA -> DCA)* | `FR-FC-007`, `FR-DEC-001` to `FR-DEC-003`, `NFR-DEC-001` |
+| [`docs/superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md`](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md) + [`docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md`](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md) + [`docs/adr/0043-product-owner-agent-foundry-iq-domain.md`](adr/0043-product-owner-agent-foundry-iq-domain.md) *(Sprint 28: Curavias Product Owner Agent full build; frozen GroundedChunk + A/B/C/D tool contracts; PO Agent as Foundry IQ domain #1; issue #377)* | `FR-POA-001` to `FR-POA-009`, `NFR-POA-001` to `NFR-POA-004` |
 
 ## Assumptions To Validate In Implementation Planning
 
