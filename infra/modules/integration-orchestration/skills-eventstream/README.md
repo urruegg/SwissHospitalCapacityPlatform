@@ -24,10 +24,12 @@ bronze → silver → gold chain (the silver notebook is the PHI/consent gate).
 | `sourceMode` | Status | Description |
 |--------------|--------|-------------|
 | `CustomEndpoint` (**default**) | **Live-deployable today** | Mirrors the working `es-capacity-events-sit` topology. Fabric exposes an Event-Hub-compatible ingestion endpoint on the Eventstream; the Container Apps publisher (NFR-SKILL-001) POSTs `DC-SKILL-EVENT-v1` envelopes to it. No out-of-band connection required. This is the ADR-0013 demo-scope path. |
-| `EventHub` | Swiss-GA target-state | Consumes the Sprint 21 real-time rail (Event Hub → Eventstream). Requires a **Fabric-managed connection** to the Event Hubs namespace (`POST /v1/connections`) that does not exist yet; the post-deploy script refuses to wire an EH source until it does. |
+| `EventHub` | **Un-parked for PROD swn** ([ADR-0043](../../../../docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md)) | Consumes a dedicated skills-events Event Hub → Eventstream. **GA in Switzerland North** (Eventstream + Event Hubs both GA; PROD namespace `evh-ihzhhpf-prod-i62t` exists in-region), so it does not consume the preview exception. Requires a **Fabric-managed connection** to the EH namespace (`POST /v1/connections`) that does not exist yet; the post-deploy script refuses to wire an EH source until it does. Fed by a **simulator** until the live publisher lands. The GA-only gate is reserved for a real go-live (real-PHI) cut-over. |
 
 The demo carve-out (CustomEndpoint) and the target-state (EventHub) share one Bicep source;
-flip `sourceMode` when the managed connection is provisioned. See design spec §6 open items.
+flip `sourceMode` when the managed connection is provisioned. The EventHub flip is un-parked for
+PROD Switzerland North per [ADR-0043](../../../../docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md).
+See design spec §6 open items.
 
 ## Why this module is scaffold-only
 
@@ -107,9 +109,13 @@ The script is **idempotent** (skips when the display name already exists) and **
 ## Swiss-region variant path
 
 `location` is constrained to `['switzerlandnorth', 'westus2']` so one source serves both the
-ADR-0013 demo (`westus2` today) and the Swiss-GA flip (`switzerlandnorth`). At flip time set
-`demoScope=false`, re-run the post-deploy script against the new-region workspace, and confirm
-the silver PHI gate is enforced.
+ADR-0013 SIT demo (`westus2`/`eastus2` per enabled capacity) and the PROD Switzerland North
+deployment (`switzerlandnorth`). SIT and PROD do **not** share input services — each environment
+uses its own Event Hubs namespace (`evh-ihzhhpf-sit-y26y` vs `evh-ihzhhpf-prod-i62t`). When flipping
+PROD swn to `sourceMode=EventHub` set `demoScope=false`, re-run the post-deploy script against the
+PROD-swn workspace, and confirm the silver PHI gate is enforced. Per
+[ADR-0043](../../../../docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md) the flip is
+un-parked (GA-in-swn); the GA-only gate is reserved for a real go-live cut-over.
 
 ## Known limitations
 
