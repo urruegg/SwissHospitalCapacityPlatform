@@ -132,6 +132,7 @@ SIT is **untouched** (remains split westus2/eastus2 until a separate later decis
 * [ADR-0032 — Foundry control plane in eastus2](0032-foundry-control-plane-eastus2.md)
 * [ADR-0035 — PROD Fabric IQ layer in westus2](0035-fabric-iq-layer-region-westus2.md)
 * [ADR-0006 — Preview features non-production rule](0006-preview-features-non-production-rule.md)
+* [ADR-0042 — PROD Switzerland North GA-target + standing Preview exception](0042-prod-switzerland-north-ga-target-standing-preview-exception.md)
 * [ADR-0016 — No PHI in MVP demo scope](0016-no-phi-in-mvp-demo-scope.md)
 * `docs/region-availability.yaml` (refreshed 2026-07-21 with the `az`-verified facts above)
 * Sprint 19 design + plan (retargeted to Switzerland North greenfield)

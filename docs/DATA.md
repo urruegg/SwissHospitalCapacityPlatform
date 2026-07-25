@@ -3,10 +3,17 @@
 | Field | Value |
 | ----- | ----- |
 | **Version** | 0.10.0 |
+<<<<<<< HEAD
+| **Date** | 2026-07-25 |
+| **Author** | Urs Rueegg |
+| **Status** | Reviewed |
+| **Previous Version** | 0.9.0 (added SIT gold ext_* materialisation + external-signals Direct-Lake publish evidence) |
+=======
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
 | **Previous Version** | 0.9.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
+>>>>>>> origin/main
 
 ## Purpose
 
@@ -18,6 +25,14 @@ This document is scoped to the approved MVP service pattern using:
 2. Microsoft Fabric for curation, serving, and analytics.
 3. Data lake storage layers (OneLake and controlled landing zones) for
 	scalable governed data persistence.
+
+> **As-deployed (Sprint 19):** the data/AI lane is live in PROD
+> **`switzerlandnorth`** — Fabric F2 capacity `fabricihzhhpfprod`, workspace
+> `ws-ihzhhpf-prod-data`, schemas-enabled lakehouse `lh_ihzhhpf_prod` with 50
+> Delta tables, plus 2 semantic models + report. Synthetic data only, no PHI
+> (metadata/episode-driven per [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md)).
+> Consolidated as-deployed view:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 ## Source Baseline
 

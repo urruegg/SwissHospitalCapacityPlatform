@@ -2,11 +2,19 @@
 
 | Field | Value |
 | ----- | ----- |
+<<<<<<< HEAD
+| **Version** | 1.2.1 |
+| **Date** | 2026-07-24 |
+| **Author** | @urruegg |
+| **Status** | In progress — repo scope complete + all CI gates green; live SIT/PROD deploy + ADR-0040 acceptance pending |
+| **Previous Version** | 1.2.0 (ADR-0039→0040 reference retarget) |
+=======
 | **Version** | 1.7.0 |
 | **Date** | 2026-07-25 |
 | **Author** | @urruegg |
 | **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane now landed in-repo** (DC-SKILL-EVENT-v1 contract + seeder + Bronze/Silver/Gold notebooks + 23 unit tests); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), live Event Hub→Eventstream wiring (`approved-to-apply`), + e2e SIT/PROD parity test** |
 | **Previous Version** | 1.6.0 (PROD org/skills parity APPLIED + OneLake gold evidence reader) |
+>>>>>>> origin/main
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -91,7 +99,11 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 * [x] Semantic model extended (skills measures); `verify-semantic-model.yml` re-baselined + green (#339/#341; verifier 35 rel / 69 measures / 8 roles)
 * [x] Ontology + crosswalk + conformance gate extended and green (#344; conformance strict PASS, 0 WARN / 0 FAIL)
 * [x] Fabric IQ `ont_hospital_capacity` + Data Agent grounding cover the org/skills domain — *repo grounding landed (#344, `fabric-data-agent/AGENT.md` 1.1.0); live Fabric IQ ontology regeneration is GA-gated per ADR-0014*
+<<<<<<< HEAD
+* [ ] New ADR (unified org spine) Accepted; PRD FR/NFR rows + §7 matrix updated — *ADR-0040 authored (#319, status **Proposed**) + PRD `FR-ORG` / `FR-SKILL` / `NFR-SKILL` rows + §7 matrix (#320); **ADR acceptance pending human sign-off***
+=======
 * [x] New ADR (unified org spine) Accepted; PRD FR/NFR rows + §7 matrix updated — *ADR-0039 **Accepted** 2026-07-24 (approved by @urruegg, "approved to proceed") + PRD `FR-ORG` / `FR-SKILL` / `NFR-SKILL` rows + §7 matrix (#320)*
+>>>>>>> origin/main
 * [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed — *live deploy **deferred** (Container Apps → Event Hub/Eventstream, not GitHub workflows); all PR merges to date human-performed*
 * [x] All CI checks pass — *re-verified 2026-07-23: ontology conformance, master-data (13), skills-evidence (21), gold-build (28), gold-contract (5), semantic verifier, mojibake (1154 files), markdownlint*
 

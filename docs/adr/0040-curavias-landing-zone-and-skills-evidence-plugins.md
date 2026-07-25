@@ -1,16 +1,14 @@
-# Moved — ADR-0039 (Curavias Landing Zone) renumbered to ADR-0040
+# ADR-0040: Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport
 
-<<<<<<< HEAD
-This ADR was renumbered to [ADR-0040](0040-curavias-landing-zone-and-skills-evidence-plugins.md); [the PROD network-parity ADR](0039-prod-network-parity-vnet-private-endpoints.md) now solely owns ADR-0039.
-=======
 | Field | Value |
 | ----- | ----- |
-| **Status** | Accepted |
-| **Date** | 2026-07-24 |
+| **Status** | Proposed |
+| **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Decision-makers** | @urruegg |
-| **Accepted by** | @urruegg (2026-07-24) — approved to proceed |
 | **Related issue** | #255 |
+
+> **Renumbered from ADR-0039 → ADR-0040 on 2026-07-24** (number-collision resolution; see [ADR-0041](0041-adr-number-collision-resolution.md)).
 
 ## Context
 
@@ -141,4 +139,3 @@ downstream.
 * [ADR-0014: Fabric IQ Ontology as target semantic backbone](0014-fabric-iq-ontology-target-backbone-ga-gated.md)
 * [ADR-0036: External Trigger Governance](0036-external-trigger-governance.md)
 * Issue #255
->>>>>>> origin/main

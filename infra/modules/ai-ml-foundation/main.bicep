@@ -8,15 +8,24 @@ param nameSuffix string
 @description('Resource tags applied to all resources.')
 param tags object
 
+@description('Key Vault name to attach to the ML workspace. Empty = derive from the platform-foundation naming convention (SIT). Set to the override name in environments that use keyVaultNameOverride, e.g. PROD switzerlandnorth (kv-ihzhhpf-prod-swn1).')
+param keyVaultName string = ''
+
+@description('Container Registry name to attach to the ML workspace. Empty = derive the api-runtime ACR name (SIT). Set to the in-RG ACR name where api-runtime is disabled or an override ACR is used, e.g. PROD switzerlandnorth (crihzhhpfprod).')
+param containerRegistryName string = ''
+
 // Must match the expression in data-platform/main.bicep so the existing reference resolves.
 var storageAccountName = toLower('stdp${replace(nameSuffix, '-', '')}${take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)}')
-var containerRegistryName = toLower('cr${uniqueString(resourceGroup().id, nameSuffix)}')
+// Derive the api-runtime ACR name (SIT); honour an explicit override (PROD swn where api-runtime is disabled).
+var derivedContainerRegistryName = toLower('cr${uniqueString(resourceGroup().id, nameSuffix)}')
+var effectiveContainerRegistryName = empty(containerRegistryName) ? derivedContainerRegistryName : containerRegistryName
 
 // Must match the expression in platform-foundation/main.bicep so the existing reference resolves.
-var keyVaultName = 'kv-${nameSuffix}-${take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)}'
+var derivedKeyVaultName = 'kv-${nameSuffix}-${take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)}'
+var effectiveKeyVaultName = empty(keyVaultName) ? derivedKeyVaultName : keyVaultName
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
+  name: effectiveKeyVaultName
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
@@ -28,7 +37,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing 
 }
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
-  name: containerRegistryName
+  name: effectiveContainerRegistryName
 }
 
 resource mlWorkspace 'Microsoft.MachineLearningServices/workspaces@2023-10-01' = {

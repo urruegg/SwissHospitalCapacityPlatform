@@ -27,3 +27,7 @@ unless an explicit exception is approved through governance review.
 
 No exception is valid without written approval from security and compliance
 owners and a documented rollback path.
+
+The first governance-approved standing exception under this rule is recorded in
+[ADR-0042](0042-prod-switzerland-north-ga-target-standing-preview-exception.md)
+(PROD Switzerland North Curavias demo, synthetic/no-PHI).

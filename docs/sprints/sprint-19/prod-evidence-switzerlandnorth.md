@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (added CD-variable repoint + eastus2 retirement, #311) |
+| **Previous Version** | 1.1.0 (added CD-variable repoint + eastus2 retirement, #311) |
 
 Capstone evidence for the DR-style teardown + Switzerland North greenfield
 rebuild of PROD
@@ -38,6 +38,10 @@ region **switzerlandnorth**. Synthetic data only, no PHI
 | 9 | E2E demo flow green (sign-in → app → agent → data → response) | ✅ | app 200 + agent-host 7 agents + live Foundry inference `PROD-SWN-OK` (gpt-5-mini, finish=stop) |
 | 10 | PROD evidence document committed | ✅ | This document |
 | 11 | SIT (westus2 + eastus2) unchanged — no regression | ✅ | `appsit` CNAME still westus2; `rg-ihzhhpf-sit` Succeeded; SIT Fabric/Cosmos/CA untouched |
+| 12 | PROD network parity — VNet + Cosmos PE + Key Vault PE applied (PROD ≥ SIT) | ✅ | [ADR-0039](../../adr/0039-prod-network-parity-vnet-private-endpoints.md) *(Accepted)*; parity matrix L2 [E2](sit-prod-parity-matrix.md#e2-network); PROD `pe-kv-ihzhhpf-prod-swn1` Approved, KV `publicNetworkAccess=Disabled` |
+| 13 | Signal-runner identity hardened — stable UAMI with Event Hubs Data Sender surviving CAE recreate | ✅ | `ca-signal-runner-ihzhhpf-prod` UAMI `id-signal-runner-ihzhhpf-prod`; parity matrix L3 [E3](sit-prod-parity-matrix.md#e3-identity--rbac) |
+| 14 | Data/AI/integration lane at parity — full P5/P6 slices deployed (D8, additive, 0 deletes) | ✅ | ML workspace, ADLS masterdata, `sim-capacity` CA + skills-sim jobs, Fabric F2 (50 Delta tables) + 2 semantic models, Foundry (3 models + 8 agents); parity matrix L4 [E4](sit-prod-parity-matrix.md#e4-data-platform) |
+| 15 | Fabric IQ operational ontology — N/A for GA parity (Microsoft Preview per-capacity gate) | ✅ (recorded) | `403 FeatureNotAvailable` on swn capacity; availability-blocked per [ADR-0042](../../adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md), tracked [#270](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/270) |
 
 ## Key resources (switzerlandnorth)
 
