@@ -1,9 +1,11 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { HeaderPlane } from './planes/HeaderPlane';
 import { NavigationPlane } from './planes/NavigationPlane';
 import { AgentPlane } from './planes/AgentPlane';
+import { ProductOwnerRail } from './planes/ProductOwnerRail';
 import { FooterPlane } from './planes/FooterPlane';
+import { useRoleLens } from '../context/role-context';
 
 const useStyles = makeStyles({
   root: {
@@ -23,6 +25,13 @@ const useStyles = makeStyles({
 
 export function AppShell() {
   const s = useStyles();
+  const { pathname } = useLocation();
+  const { capabilities } = useRoleLens();
+  const poSurface = pathname.startsWith('/start')
+    ? 'start'
+    : pathname.startsWith('/backstage')
+      ? 'backstage'
+      : null;
 
   return (
     <div className={s.root}>
@@ -36,7 +45,14 @@ export function AppShell() {
         <Outlet />
       </main>
       <div className={s.agent}>
-        <AgentPlane />
+        {poSurface ? (
+          <ProductOwnerRail
+            surface={poSurface}
+            partnerScoped={capabilities.agentCeiling === 'read'}
+          />
+        ) : (
+          <AgentPlane />
+        )}
       </div>
       <div className={s.footer}>
         <FooterPlane />
