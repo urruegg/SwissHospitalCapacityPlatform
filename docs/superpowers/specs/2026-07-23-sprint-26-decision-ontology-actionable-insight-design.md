@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-24 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B next) |
-| **Previous Version** | 1.0.0 (added §9 delivery status & next step) |
+| **Status** | Approved — in delivery (WS-A done; Slice 1 OOA→DCA merged via #369; fan-out next) |
+| **Previous Version** | 1.1.0 (added §9 delivery status & next step) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -227,17 +227,22 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 
 ## 9. Status & next step
 
-> Delivery status as of **2026-07-24**. This sprint is paused after WS-A for a break;
-> WS-B is the next slice and is fully planned + scoped (see below).
+> Delivery status as of **2026-07-24 (end of day)**. WS-A is done and, on top of it,
+> **Vertical Slice 1 (OOA→DCA, all 5 beats) is merged to `main` via #369** — spanning
+> WS-B + WS-C + WS-D for the Medicine A golden thread (forecast occupancy 102% → 94% at
+> 72h). CI green-up follow-up **#370** (MD040 fence + evidence fixture) is open and green.
+> The remaining work is the **fan-out** of the same slice pattern to BMCA / ORSA / SBA / CSA
+> plus live Cosmos/Foundry `apply` (all deferred behind `approved-to-apply`). Work paused
+> here for the day.
 
 ### 9.1 Work-stream progress
 
 | WS | Status | Evidence / notes |
 | -- | ------ | ---------------- |
 | **WS-A — Foresight tier** | ✅ **Done, merged to `main`** | Deterministic forecast+driver+signal generator, 3 Gold tables, `hcp:Forecast/Driver` + `hcp:ExternalSignal` reuse, 2 contracts (`DC-OCCUPANCY-FORECAST-v1`, `DC-FORECAST-DRIVER-v1`), 16 unit tests. Live SIT evidence captured. |
-| **WS-B — Lever catalog + deterministic impact** | ⏭ **Next (planned, not started)** | Branch `sprint-26/ws-b-levers` bookmarked off `main`. Scope + decisions locked in §9.3. |
-| **WS-C — Decision + Coordination runtime (Cosmos)** | ⬜ Not started | `proposed_actions` + `plans`, HITL approve → recompute → plan `current` 102%→94%, handoff edges. Depends on WS-B. |
-| **WS-D — Consumption + governance** | ⬜ Not started | `DC-INSIGHT-v1` Data Agent contract, 6 Foundry agent upgrades, descriptive→prescriptive ADR, PRD FR/NFR + traceability. |
+| **WS-B — Lever catalog + deterministic impact** | ✅ **Done for OOA + DCA (merged #369)** | `data-platform/decision/` lever catalog (`lever.schema.json` + OOA/DCA YAMLs fully specified, other 4 stubbed), pure `compute_expected_impact`, runtime-derived DCA barrier model, `DC-INSIGHT-v1` contract. Other 4 roles' levers = fan-out. |
+| **WS-C — Decision + Coordination runtime (Cosmos)** | ✅ **Done as git artefacts (merged #369)** | Pure coordination runtime (`open_plan → propose → HITL approve → recompute 102→94 → OOA→DCA handoff`); `proposed_actions` + `plans` containers as **Cosmos IaC definitions only**. **No live deploy** — apply gated behind `approved-to-apply`. |
+| **WS-D — Consumption + governance** | ✅ **Done for OOA + DCA (merged #369)** | `da_hospital_capacity` emits signal/understanding/provenance beats; OOA + DCA agents assemble the 5-beat tuple (host mediates Cosmos write, no `cosmos-mcp` grant); ADR-0040 (Accepted); PRD `FR-DEC-*`/`NFR-DEC-*` + traceability; golden tasks. Remaining 4 Foundry agents = fan-out. |
 
 ### 9.2 WS-A — what landed (merged PRs, issue #335)
 
@@ -259,8 +264,35 @@ One cohesive squash PR off `main` (branch `sprint-26/ws-b-levers`), Data/AI lane
 
 **Confirmed decisions (@urruegg, 2026-07-24):** barrier builder+schema now / defer Gold materialization · add only `hcp:Barrier` now · one cohesive PR.
 
-### 9.4 Resume checklist
+### 9.4 Resume checklist (next run — fan-out)
 
-- [ ] Re-read this §9 + the design §3.3 / §4 (WS-B) + [`docs/AI.md`](../../AI.md), [`docs/DATA.md`](../../DATA.md), [`docs/COMPLIANCE.md`](../../COMPLIANCE.md).
-- [ ] On branch `sprint-26/ws-b-levers` (already off `main`): TDD — schemas + failing tests first, then lever yaml + impact tool + barrier builder.
-- [ ] Validate: `pytest`, catalog schema-validate, `check_crosswalk_conformance.py --strict`, mojibake + markdownlint. Commit hooks-off; open one squash PR, base `main`, refs #335, **no self-merge**.
+Slice 1 (OOA→DCA) is merged. The next run is the **fan-out** of the identical 5-beat
+pattern to the remaining roles, plus optional live materialization:
+
+- [ ] Re-read this §9 + design §3.3 / §4 + [`docs/AI.md`](../../AI.md), [`docs/DATA.md`](../../DATA.md), [`docs/COMPLIANCE.md`](../../COMPLIANCE.md), and `docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`.
+- [ ] New branch off `main`; extend lever catalog to BMCA / ORSA / SBA / CSA (currently stubbed), upgrade those 4 Foundry agents to assemble the 5-beat tuple, and add golden-thread fixtures per role.
+- [ ] Reuse the pure `compute_expected_impact` + coordination runtime; keep advisory-only + HITL; **no live Cosmos/Foundry apply without `approved-to-apply`**.
+- [ ] Optional stacked slice: live-deploy the `proposed_actions` + `plans` Cosmos containers (definitions already merged) behind an explicit `approved-to-apply` gate.
+- [ ] Validate: decision-lane `unittest` suite, catalog schema-validate, `check_crosswalk_conformance.py --strict`, mojibake + markdownlint. Commit hooks-off; one squash PR, base `main`, refs #335, **no self-merge**.
+
+### 9.5 Slice 1 — what landed (merged PR #369, follow-up #370; issue #335)
+
+Vertical Slice 1 moved OOA + DCA from **descriptive → prescriptive** end-to-end on one
+golden thread (Medicine A, 102% → 94% at 72h, OOA→DCA handoff):
+
+- **Decision lane** — `DC-INSIGHT-v1` JSON-schema contract + conformance test; lever catalog (OOA + DCA fully specified, other 4 stubbed); pure `compute_expected_impact` (`delta = min(n, max(0, round(forecastOccupiedBeds)))`, **never an LLM estimate**); runtime-derived DCA barrier model.
+- **Coordination lane** — pure runtime `open_plan → propose_action → HITL approve → deterministic recompute (102→94) → OOA→DCA handoff`; HITL refuses bot/self/non-proposed approvers. Cosmos `proposed_actions` (pk `/plan_id`) + `plans` (pk `/episode_key`) added to `infra/modules/cosmos/csa.bicep` (+ recompiled `infra/main.json`) — **definitions only, no live deploy.**
+- **Consumption lane** — `da_hospital_capacity` emits signal/understanding/provenance beats (RLS + PHI-refuse preserved); OOA + DCA agents assemble the 5-beat tuple, agent-host mediates the Cosmos write so OOA/DCA keep `write` ceiling with **no `cosmos-mcp` grant**; golden tasks added (happy 5-beat / HITL self+bot refusal / OOA→DCA handoff).
+- **Governance + CI** — `docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md` (Accepted); new `.github/workflows/decision-lane.yml` gate (75 decision-lane tests + contract conformance); PRD `FR-FC-007`, `FR-DEC-001/002/003`, `NFR-DEC-001` + §7 traceability.
+- **Test evidence at merge** — 75 decision-lane tests OK · `az bicep build` exit 0 (`infra/main.json` byte-identical) · mojibake clean · markdownlint 0 new violations.
+- **Follow-up #370** (open, CI green) — MD040 fenced-code language + regenerated app evidence fixture to green `main` after #369.
+- **Explicitly deferred (fan-out, not regressions):** BMCA / ORSA / SBA / CSA lever specs + agent upgrades; live Cosmos/Foundry `apply`; DCA barrier Gold materialization.
+
+### 9.6 Superseded plan — original WS-B-first sequencing
+
+> Retained for history. The original §9.3 planned WS-B as a standalone next slice on
+> branch `sprint-26/ws-b-levers`. That was superseded by the **vertical-slice** decision
+> (@urruegg): deliver OOA→DCA across WS-B+C+D in one cohesive PR (#369) to prove all 5
+> beats end-to-end before fanning out. Locked decisions from that plan still hold — barrier
+> builder+schema now / defer Gold materialization · add only `hcp:Barrier` now · one
+> cohesive PR.
