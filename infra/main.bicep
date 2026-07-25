@@ -185,6 +185,9 @@ param skillsSimJobsImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 ])
 param poAgentLocation string = 'westus2'
 
+@description('Region for the PO Agent runtime Azure OpenAI account. Separable from poAgentLocation per ADR-0032: SIT infra runs in westus2 but Azure OpenAI has no quota there, so SIT pins this to eastus2 (the ADR-0013 demo cross-region). Defaults to poAgentLocation to preserve single-region behaviour for PROD (switzerlandnorth per NFR-POA-003).')
+param poAgentOpenAiLocation string = poAgentLocation
+
 @description('Enable the Sprint 28 AI Search module (srch-ihzhhpf-<env>) — GA substrate for the Foundry IQ Knowledge Layer.')
 param enablePoAgentSearchModule bool = false
 
@@ -543,7 +546,7 @@ module poAgentRuntime './modules/experience-hosting/po-agent-runtime/main.bicep'
     searchServiceId: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchServiceId : ''
     searchRestApiVersion: enablePoAgentSearchModule ? poAgentSearch!.outputs.pinnedSearchRestApiVersion : '2024-05-01-preview'
     corpusStorageAccountName: poCorpusStorageName
-    openAiLocation: poAgentLocation
+    openAiLocation: poAgentOpenAiLocation
     logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
     demoScope: simCapacityDemoScope
   }

@@ -143,6 +143,10 @@ param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 // publishes a real one. The corpus refresh runs as a scheduled Container Apps
 // Job — NEVER a GitHub workflow.
 param poAgentLocation = 'westus2'
+// SIT infra is westus2 but Azure OpenAI has no quota there — pin the PO Agent
+// OpenAI account to eastus2 (ADR-0013 demo cross-region / ADR-0032). Fixes the
+// SpecialFeatureOrQuotaIdRequired SIT what-if failure introduced by #384.
+param poAgentOpenAiLocation = 'eastus2'
 param enablePoAgentSearchModule = true
 param enablePoAgentKnowledgeBaseModule = true
 param enablePoAgentCorpusLandingModule = true
