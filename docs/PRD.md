@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.15.0 |
+| **Version** | 2.0.0 |
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.14.0 (added FR-POA-001..009 + NFR-POA-001..004 for the Sprint 28 Curavias Product Owner Agent; issue #377) |
+| **Previous Version** | 1.15.0 (retired FR-WEB-001..005 for the Sprint 28 public-website retirement; ADR-0044) |
 
 ## Purpose
 
@@ -151,18 +151,20 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 
 ### J) Product Marketing And Public Web (Sprint 24)
 
-Sprint 24 deltas formalised per [Sprint 24 plan](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) (epic #261). The product-marketing agent and public Curavias site are **showcase-scoped** (advisory-only, synthetic data, not a medical device) and carry a mandatory disclaimer.
+Sprint 24 deltas formalised per [Sprint 24 plan](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) (epic #261). The product-marketing agent is **showcase-scoped** (advisory-only, synthetic data, not a medical device) and carries a mandatory disclaimer.
+
+> **Retired (Sprint 28, [ADR-0044](adr/0044-retire-public-website.md)):** the public Curavias website (`apps/curavias-web`, `curavias.ch` / `www.curavias.ch`) was retired before go-live. `FR-WEB-001..005` below are **withdrawn** — kept for traceability, not reused. The `product-marketing-agent` (`FR-MKT-*`) is retained; only its website-copy deliverable is dropped. The shared `curavias.ch` DNS zone stays (it serves the `hcc-app-fluent` app, `app.curavias.ch`, per ADR-0030).
 
 | ID | Requirement |
 | -- | ----------- |
 | `FR-MKT-001` | The solution shall provide a **product-marketing copilot agent** grounded in the Curavias brandkit, vision, and mission to keep product communication stringent and aligned across customer-facing, user-facing, and devops-team-facing channels. |
 | `FR-MKT-002` | The product-marketing agent shall preserve the **advisory-only voice** (the platform *previews/recommends*, never *decides/diagnoses*) and enforce the showcase disclaimer across all generated messaging. |
 | `FR-MKT-003` | The product-marketing agent shall operate in an explicit RACI with the `ux-design-agent` for all customer-facing experience surfaces. |
-| `FR-WEB-001` | The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content. |
-| `FR-WEB-002` | The public site shall display the **showcase disclaimer** ("Kein reales Produkt…", synthetic data, advisory-only, not a medical device) on every page. |
-| `FR-WEB-003` | The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS. |
-| `FR-WEB-004` | The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap. |
-| `FR-WEB-005` | Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268). |
+| `FR-WEB-001` | **[Retired — ADR-0044]** The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content. |
+| `FR-WEB-002` | **[Retired — ADR-0044]** The public site shall display the **showcase disclaimer** ("Kein reales Produkt…", synthetic data, advisory-only, not a medical device) on every page. |
+| `FR-WEB-003` | **[Retired — ADR-0044]** The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS. |
+| `FR-WEB-004` | **[Retired — ADR-0044]** The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap. |
+| `FR-WEB-005` | **[Retired — ADR-0044]** Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268). |
 
 ### K) Trusted External Signals (Sprint 21)
 
@@ -411,14 +413,14 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 
 | [`docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md`](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md) *(Fabric-to-Foundry grounding seam, Slice 0)* | `FR-ONT-008` (extends `FR-ONT-004`, `NFR-AI-002/004`) |
 | [`docs/adr/0034-fabric-iq-demo-scope-artefacts.md`](adr/0034-fabric-iq-demo-scope-artefacts.md) + [`docs/architecture/fabric-iq-ready-evidence.md`](architecture/fabric-iq-ready-evidence.md) *(live demo-scope realisation)* | `FR-ONT-008` (Foundry `ooa` surface proven live, issue #251) |
-| [`docs/superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md`](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) *(Sprint 24: product-marketing agent + public Curavias site, epic #261, issues #262–#268)* | `FR-MKT-001` to `FR-MKT-003`, `FR-WEB-001` to `FR-WEB-005` |
+| [`docs/superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md`](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) *(Sprint 24: product-marketing agent + public Curavias site, epic #261, issues #262–#268)* | `FR-MKT-001` to `FR-MKT-003`; `FR-WEB-001` to `FR-WEB-005` **Retired ([ADR-0044](adr/0044-retire-public-website.md), Sprint 28)** |
 
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21: trusted external signals contract, triggers, ontology, and governance)* | `FR-EXT-001` to `FR-EXT-006`, `FR-EXT-ONT-001` to `FR-EXT-ONT-002`, `FR-EXT-GOV-001`, `NFR-EXT-ONT-001`, `NFR-EXT-GOV-001` to `NFR-EXT-GOV-002` |
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 forecast overlay and SIT IQ-layer proof extension)* | `FR-EXT-010` to `FR-EXT-014` |
 | [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
 | [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0040-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0040-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
 | [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
-| [`docs/CURAVIAS-PRODUCT-STATUS.md`](CURAVIAS-PRODUCT-STATUS.md) + [`docs/sprints/sprint-19/sit-prod-parity-matrix.md`](sprints/sprint-19/sit-prod-parity-matrix.md) + [`docs/sprints/sprint-19/prod-evidence-switzerlandnorth.md`](sprints/sprint-19/prod-evidence-switzerlandnorth.md) *(Sprint 19: as-deployed PROD Switzerland North status + SIT↔PROD parity; per [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md), [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md), [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md))* | Deployment coverage for `FR-DATA-*`, `FR-FC-*`, `FR-DC-*`, `FR-CX-*`, `FR-VIZ-*`, `FR-EXT-*`, `FR-ORG-001`, `FR-SKILL-*`, `NFR-SEC-*`, `NFR-COMP-*`, `NFR-REL-*` (Covered); `FR-ONT-002`, `NFR-ONT-001` (N/A-per-ADR, #270); `FR-WEB-001` to `FR-WEB-005` (Open, deferred #275) |
+| [`docs/CURAVIAS-PRODUCT-STATUS.md`](CURAVIAS-PRODUCT-STATUS.md) + [`docs/sprints/sprint-19/sit-prod-parity-matrix.md`](sprints/sprint-19/sit-prod-parity-matrix.md) + [`docs/sprints/sprint-19/prod-evidence-switzerlandnorth.md`](sprints/sprint-19/prod-evidence-switzerlandnorth.md) *(Sprint 19: as-deployed PROD Switzerland North status + SIT↔PROD parity; per [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md), [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md), [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md))* | Deployment coverage for `FR-DATA-*`, `FR-FC-*`, `FR-DC-*`, `FR-CX-*`, `FR-VIZ-*`, `FR-EXT-*`, `FR-ORG-001`, `FR-SKILL-*`, `NFR-SEC-*`, `NFR-COMP-*`, `NFR-REL-*` (Covered); `FR-ONT-002`, `NFR-ONT-001` (N/A-per-ADR, #270); `FR-WEB-001` to `FR-WEB-005` (Retired, [ADR-0044](adr/0044-retire-public-website.md)) |
 | [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) + [`docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`](adr/0040-prescriptive-decision-ontology-and-runtime-store.md) + [`docs/superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md`](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md) *(Sprint 26 Slice 1: DC-INSIGHT-v1 descriptive -> prescriptive extension, OOA -> DCA)* | `FR-FC-007`, `FR-DEC-001` to `FR-DEC-003`, `NFR-DEC-001` |
 | [`docs/superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md`](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md) + [`docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md`](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md) + [`docs/adr/0043-product-owner-agent-foundry-iq-domain.md`](adr/0043-product-owner-agent-foundry-iq-domain.md) *(Sprint 28: Curavias Product Owner Agent full build; frozen GroundedChunk + A/B/C/D tool contracts; PO Agent as Foundry IQ domain #1; issue #377)* | `FR-POA-001` to `FR-POA-009`, `NFR-POA-001` to `NFR-POA-004` |
 

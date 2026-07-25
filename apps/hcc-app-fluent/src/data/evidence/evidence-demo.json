@@ -505,6 +505,28 @@
       },
       "status": "Accepted",
       "title": "PROD Switzerland North GA Target + Standing Preview Exception for Curavias Demo"
+    },
+    {
+      "decisionSummary": "**The Curavias Product Owner Agent is registered as domain #1 on a shared Foundry IQ Knowledge Layer.**",
+      "id": "ADR-0043",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0043-product-owner-agent-foundry-iq-domain.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0043-product-owner-agent-foundry-iq-domain.md"
+      },
+      "status": "Accepted",
+      "title": "Curavias Product Owner Agent as Foundry IQ Knowledge-Layer Domain #1"
+    },
+    {
+      "decisionSummary": "1. **Retire the public Curavias website in full.** Remove the app, its hosting infrastructure, its deploy workflow, and its runbooks: * `apps/curavias-web/**` * `.github/workflows/curavias-web-deploy.yml` * `infra/modules/experience-hosting/curavias-web.bicep` * `infra/main.bicep`: the `curaviasWeb` module block, the `enableCuraviasWebModule` / `curaviasWebMediaPublisherPrincipalId` / `curaviasWebEnableCustomDomains` params, and the three `curaviasWeb*` outputs + `curaviasWeb` module-status entry. * `infra/environments/prod.bicepparam`: the three `curaviasWeb*` params. * `infra/modules/dns/curavias.bicep`: the website-only, never-wired `aliasARecords` param + alias-A resource. * `docs/runbooks/curavias-web-custom-domain.md`, `docs/runbooks/curavias-web-media-library.md`. 2. **Withdraw `FR-WEB-001..005`** in [docs/PRD.md](../PRD.md), marking them Retired and linking this ADR (the IDs are kept for traceability, not reused). 3. **Retain the shared `curavias.ch` DNS zone** and its Fluent-app records — the zone serves `hcc-app-fluent` (`app.curavias.ch`), not the website. ADR-0030 remains in force for the zone. 4. **Keep the `product-marketing-agent`.** Its `FR-MKT-*` charter (stringent, brand-aligned messaging across channels) stands; only its retired website-copy deliverable is dropped.",
+      "id": "ADR-0044",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0044-retire-public-website.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0044-retire-public-website.md"
+      },
+      "status": "Accepted",
+      "title": "Retire the public Curavias website (`apps/curavias-web` / curavias.ch)"
     }
   ],
   "boms": [
@@ -3197,6 +3219,114 @@
       "title": "Fold `dim_hospital` into a **Curavias organisation spine** (`dim_tenant` / `dim_org_unit` / `dim_department`) and re-key the dependent facts (`fact_capacity_baseline`, `encounter`, `bed_assignment`, `or_case`, `or_schedule`) onto it."
     },
     {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall answer product questions grounded only on the four knowledge classes (A corpus, B live-proof, C cost, D ontology), with mandatory citations."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall be embedded as a Copilot rail on the Curavias App START and BACKSTAGE surfaces using the MAIN-board pattern."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The knowledge layer shall be a shared Foundry IQ Knowledge Layer registering the PO Agent as domain #1 and supporting additional domains."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The corpus shall refresh daily GitHub -> ADLS -> OneLake -> knowledge source, PHI-excluded, interviews first-order."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class B live-proof shall answer the five reference questions read-only with reconcile-and-flag."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class C shall reconcile effective PROD Azure cost + GitHub Copilot token cost to the BVA/TCO baseline."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class D shall answer data questions via the ontology with concept + gold-binding citations."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-008",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall answer in DE and EN with source-language transparency."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-009",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail."
+    },
+    {
       "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
       "id": "FR-SKILL-001",
       "kind": "FR",
@@ -3338,7 +3468,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
+      "title": "**[Retired — ADR-0044]** The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3350,7 +3480,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
+      "title": "**[Retired — ADR-0044]** The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3362,7 +3492,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
+      "title": "**[Retired — ADR-0044]** The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3374,7 +3504,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
+      "title": "**[Retired — ADR-0044]** The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3386,7 +3516,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
+      "title": "**[Retired — ADR-0044]** Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
     },
     {
       "family": "Responsible AI And Auditability",
@@ -3927,6 +4057,54 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "End-user operational surfaces shall support interactive decision cycles without batch-only dependence."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Citation coverage >= 95%; zero hallucination on CFO/CISO/CLO classes."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "100% audit coverage (question -> sources -> answer -> caller)."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "All runtime + data in Switzerland North; no PHI; Preview services accepted per design D3."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Advisory-only, human-in-the-loop; the agent never mutates a system."
     },
     {
       "family": "Reliability And Operational Continuity",

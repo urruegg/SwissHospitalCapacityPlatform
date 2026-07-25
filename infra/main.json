@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.45.15.27210",
-      "templateHash": "7142471916764075785"
+      "version": "0.45.6.27763",
+      "templateHash": "16497292998698094414"
     }
   },
   "parameters": {
@@ -267,27 +267,6 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable experience hosting foundation module deployment."
-      }
-    },
-    "enableCuraviasWebModule": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Enable the Sprint 24 Curavias web hosting module (Static Web App + media storage). PROD-only per ADR-0030."
-      }
-    },
-    "curaviasWebMediaPublisherPrincipalId": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Object ID of the identity that publishes media to the Curavias media storage account. Empty string skips the role assignment."
-      }
-    },
-    "curaviasWebEnableCustomDomains": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "When true, bind curavias.ch + www.curavias.ch to the Curavias Static Web App. Two-step: deploy false first, add DNS records + delegation, then flip true. See ADR-0030."
       }
     },
     "enableApiRuntimeModule": {
@@ -639,8 +618,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "12709708007594594275"
+              "version": "0.45.6.27763",
+              "templateHash": "16810495867067195621"
             }
           },
           "parameters": {
@@ -861,8 +840,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4775159143963604237"
+              "version": "0.45.6.27763",
+              "templateHash": "11092665246856310223"
             }
           },
           "parameters": {
@@ -977,8 +956,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "7067348100293623422"
+              "version": "0.45.6.27763",
+              "templateHash": "15666986789757700592"
             }
           },
           "parameters": {
@@ -1183,8 +1162,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6398321357455288559"
+              "version": "0.45.6.27763",
+              "templateHash": "11956369232816364156"
             }
           },
           "parameters": {
@@ -1310,8 +1289,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6638527015992601355"
+              "version": "0.45.6.27763",
+              "templateHash": "1833113154266341724"
             }
           },
           "parameters": {
@@ -1514,8 +1493,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "15430035442934461439"
+                      "version": "0.45.6.27763",
+                      "templateHash": "10689296495622946629"
                     }
                   },
                   "parameters": {
@@ -1753,8 +1732,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "16846858966586516040"
+                      "version": "0.45.6.27763",
+                      "templateHash": "13645867721578398029"
                     }
                   },
                   "parameters": {
@@ -1916,8 +1895,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "13453687588716698482"
+              "version": "0.45.6.27763",
+              "templateHash": "15460063151507913680"
             }
           },
           "parameters": {
@@ -2021,8 +2000,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "12859803335828411041"
+              "version": "0.45.6.27763",
+              "templateHash": "16248653206385140613"
             }
           },
           "parameters": {
@@ -2129,8 +2108,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6220424990052136252"
+              "version": "0.45.6.27763",
+              "templateHash": "1631660769778658010"
             }
           },
           "parameters": {
@@ -2228,292 +2207,6 @@
       }
     },
     {
-      "condition": "[parameters('enableCuraviasWebModule')]",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2025-04-01",
-      "name": "[format('curavias-web-{0}', parameters('environmentName'))]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "location": {
-            "value": "[parameters('location')]"
-          },
-          "nameSuffix": {
-            "value": "[variables('resourceSuffix')]"
-          },
-          "tags": {
-            "value": "[variables('tags')]"
-          },
-          "mediaPublisherPrincipalId": {
-            "value": "[parameters('curaviasWebMediaPublisherPrincipalId')]"
-          },
-          "enableCustomDomains": {
-            "value": "[parameters('curaviasWebEnableCustomDomains')]"
-          },
-          "customDomains": {
-            "value": [
-              {
-                "name": "curavias.ch",
-                "validation": "dns-txt-token"
-              },
-              {
-                "name": "www.curavias.ch",
-                "validation": "cname-delegation"
-              }
-            ]
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "17304584953902525869"
-            }
-          },
-          "parameters": {
-            "location": {
-              "type": "string",
-              "metadata": {
-                "description": "Location for the media storage account. The Static Web App itself is a global resource; pass a supported control-plane region (e.g. westeurope)."
-              }
-            },
-            "staticWebAppLocation": {
-              "type": "string",
-              "defaultValue": "westeurope",
-              "allowedValues": [
-                "westeurope",
-                "northeurope",
-                "eastus2",
-                "eastasia"
-              ],
-              "metadata": {
-                "description": "Static Web App control-plane region. SWA is only available in a subset of regions; westeurope is the closest to Switzerland."
-              }
-            },
-            "nameSuffix": {
-              "type": "string",
-              "minLength": 3,
-              "metadata": {
-                "description": "Resource name suffix, e.g. ihzhhpf-prod."
-              }
-            },
-            "tags": {
-              "type": "object",
-              "metadata": {
-                "description": "Resource tags applied to all resources."
-              }
-            },
-            "staticWebAppSku": {
-              "type": "string",
-              "defaultValue": "Standard",
-              "allowedValues": [
-                "Free",
-                "Standard"
-              ],
-              "metadata": {
-                "description": "Static Web App SKU. Standard is required for custom domains with SLA + enterprise features."
-              }
-            },
-            "mediaPublisherPrincipalId": {
-              "type": "string",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Object ID of the identity (e.g. the media-publisher managed identity or the deploy service principal) that uploads media to the storage account. Empty string skips the role assignment."
-              }
-            },
-            "mediaPublisherPrincipalType": {
-              "type": "string",
-              "defaultValue": "ServicePrincipal",
-              "allowedValues": [
-                "ServicePrincipal",
-                "User",
-                "Group"
-              ],
-              "metadata": {
-                "description": "Principal type for the media publisher role assignment."
-              }
-            },
-            "enableCustomDomains": {
-              "type": "bool",
-              "defaultValue": false,
-              "metadata": {
-                "description": "When true, bind the custom domains in `customDomains` to the Static Web App. Keep false on the first deploy; flip true only after the DNS records + GoDaddy delegation are in place so SWA can validate ownership."
-              }
-            },
-            "customDomains": {
-              "type": "array",
-              "defaultValue": [],
-              "metadata": {
-                "description": "Custom domains to bind when enableCustomDomains is true. Apex (curavias.ch) must use dns-txt-token validation; subdomains (www.curavias.ch) use cname-delegation. Example: [ { name: \"curavias.ch\", validation: \"dns-txt-token\" }, { name: \"www.curavias.ch\", validation: \"cname-delegation\" } ]."
-              }
-            }
-          },
-          "variables": {
-            "storageAccountName": "[toLower(format('stmedia{0}', replace(parameters('nameSuffix'), '-', '')))]",
-            "storageBlobDataContributorRoleId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Storage/storageAccounts",
-              "apiVersion": "2023-05-01",
-              "name": "[variables('storageAccountName')]",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('tags')]",
-              "sku": {
-                "name": "Standard_LRS"
-              },
-              "kind": "StorageV2",
-              "properties": {
-                "accessTier": "Hot",
-                "allowBlobPublicAccess": true,
-                "supportsHttpsTrafficOnly": true,
-                "minimumTlsVersion": "TLS1_2",
-                "publicNetworkAccess": "Enabled",
-                "allowSharedKeyAccess": true,
-                "networkAcls": {
-                  "defaultAction": "Allow",
-                  "bypass": "AzureServices"
-                }
-              }
-            },
-            {
-              "type": "Microsoft.Storage/storageAccounts/blobServices",
-              "apiVersion": "2023-05-01",
-              "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
-              "properties": {
-                "cors": {
-                  "corsRules": [
-                    {
-                      "allowedOrigins": [
-                        "https://curavias.ch",
-                        "https://www.curavias.ch"
-                      ],
-                      "allowedMethods": [
-                        "GET",
-                        "HEAD",
-                        "OPTIONS"
-                      ],
-                      "allowedHeaders": [
-                        "*"
-                      ],
-                      "exposedHeaders": [
-                        "*"
-                      ],
-                      "maxAgeInSeconds": 3600
-                    }
-                  ]
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-              "apiVersion": "2023-05-01",
-              "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'media')]",
-              "properties": {
-                "publicAccess": "Blob"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
-              ]
-            },
-            {
-              "condition": "[not(empty(parameters('mediaPublisherPrincipalId')))]",
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('mediaPublisherPrincipalId'), variables('storageBlobDataContributorRoleId'))]",
-              "properties": {
-                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
-                "principalId": "[parameters('mediaPublisherPrincipalId')]",
-                "principalType": "[parameters('mediaPublisherPrincipalType')]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.Web/staticSites",
-              "apiVersion": "2023-12-01",
-              "name": "[format('stapp-{0}', parameters('nameSuffix'))]",
-              "location": "[parameters('staticWebAppLocation')]",
-              "tags": "[parameters('tags')]",
-              "sku": {
-                "name": "[parameters('staticWebAppSku')]",
-                "tier": "[parameters('staticWebAppSku')]"
-              },
-              "properties": {
-                "provider": "Custom",
-                "allowConfigFileUpdates": true,
-                "stagingEnvironmentPolicy": "Enabled",
-                "enterpriseGradeCdnStatus": "Disabled"
-              }
-            },
-            {
-              "copy": {
-                "name": "staticSiteDomains",
-                "count": "[length(if(parameters('enableCustomDomains'), parameters('customDomains'), createArray()))]"
-              },
-              "type": "Microsoft.Web/staticSites/customDomains",
-              "apiVersion": "2023-12-01",
-              "name": "[format('{0}/{1}', format('stapp-{0}', parameters('nameSuffix')), if(parameters('enableCustomDomains'), parameters('customDomains'), createArray())[copyIndex()].name)]",
-              "properties": {
-                "validationMethod": "[if(parameters('enableCustomDomains'), parameters('customDomains'), createArray())[copyIndex()].validation]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/staticSites', format('stapp-{0}', parameters('nameSuffix')))]"
-              ]
-            }
-          ],
-          "outputs": {
-            "moduleStatus": {
-              "type": "string",
-              "metadata": {
-                "description": "Curavias web hosting module implementation marker."
-              },
-              "value": "curavias-web-implemented"
-            },
-            "staticWebAppName": {
-              "type": "string",
-              "metadata": {
-                "description": "Static Web App name."
-              },
-              "value": "[format('stapp-{0}', parameters('nameSuffix'))]"
-            },
-            "staticWebAppDefaultHostname": {
-              "type": "string",
-              "metadata": {
-                "description": "Static Web App default hostname (e.g. <name>.azurestaticapps.net). Used as the CNAME target for www.curavias.ch."
-              },
-              "value": "[reference(resourceId('Microsoft.Web/staticSites', format('stapp-{0}', parameters('nameSuffix'))), '2023-12-01').defaultHostname]"
-            },
-            "mediaStorageAccountName": {
-              "type": "string",
-              "metadata": {
-                "description": "Media storage account name."
-              },
-              "value": "[variables('storageAccountName')]"
-            },
-            "mediaBaseUrl": {
-              "type": "string",
-              "metadata": {
-                "description": "Public base URL for media blobs."
-              },
-              "value": "[format('{0}media', reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.blob)]"
-            }
-          }
-        }
-      }
-    },
-    {
       "condition": "[parameters('enableApiRuntimeModule')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -2540,8 +2233,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "7230076444948795540"
+              "version": "0.45.6.27763",
+              "templateHash": "1619298565780961527"
             }
           },
           "parameters": {
@@ -2662,8 +2355,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "13624344099504165410"
+              "version": "0.45.6.27763",
+              "templateHash": "1765711980068583287"
             }
           },
           "parameters": {
@@ -2744,8 +2437,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "9490011764893617069"
+                      "version": "0.45.6.27763",
+                      "templateHash": "2157408807266904991"
                     }
                   },
                   "parameters": {
@@ -3029,8 +2722,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "16860468050710324881"
+              "version": "0.45.6.27763",
+              "templateHash": "535917255065045059"
             }
           },
           "parameters": {
@@ -3261,8 +2954,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4357772689202446892"
+              "version": "0.45.6.27763",
+              "templateHash": "15390018866793242957"
             }
           },
           "parameters": {
@@ -3600,8 +3293,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "1151250825559176912"
+              "version": "0.45.6.27763",
+              "templateHash": "13715455851406785891"
             }
           },
           "parameters": {
@@ -3719,8 +3412,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "16801748558517643812"
+              "version": "0.45.6.27763",
+              "templateHash": "16191629345100508003"
             }
           },
           "parameters": {
@@ -3826,8 +3519,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "3597564066161008070"
+              "version": "0.45.6.27763",
+              "templateHash": "6335274266135485317"
             }
           },
           "parameters": {
@@ -3948,8 +3641,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "14003066579642311487"
+                      "version": "0.45.6.27763",
+                      "templateHash": "14841147772701149684"
                     }
                   },
                   "parameters": {
@@ -4142,8 +3835,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "14583701867747923328"
+              "version": "0.45.6.27763",
+              "templateHash": "3518442302807315975"
             }
           },
           "parameters": {
@@ -4467,8 +4160,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6087286758352572380"
+              "version": "0.45.6.27763",
+              "templateHash": "14271685339274188062"
             }
           },
           "parameters": {
@@ -4611,8 +4304,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "594335556098139955"
+                      "version": "0.45.6.27763",
+                      "templateHash": "1418152727854971719"
                     }
                   },
                   "parameters": {
@@ -4768,8 +4461,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "6646545455890169293"
+                      "version": "0.45.6.27763",
+                      "templateHash": "9808019470207933078"
                     }
                   },
                   "parameters": {
@@ -4903,8 +4596,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "9561529887383588834"
+                      "version": "0.45.6.27763",
+                      "templateHash": "15845063017917743907"
                     }
                   },
                   "parameters": {
@@ -5046,8 +4739,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "2899347056287564506"
+                      "version": "0.45.6.27763",
+                      "templateHash": "7213773335792771551"
                     }
                   },
                   "parameters": {
@@ -5349,8 +5042,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "8004220282630993017"
+              "version": "0.45.6.27763",
+              "templateHash": "5334056569644691563"
             }
           },
           "parameters": {
@@ -5866,8 +5559,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "3701687070672016687"
+              "version": "0.45.6.27763",
+              "templateHash": "2182119932369270733"
             }
           },
           "parameters": {
@@ -6052,8 +5745,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4290292779733550713"
+              "version": "0.45.6.27763",
+              "templateHash": "3570153104393533044"
             }
           },
           "parameters": {
@@ -6352,8 +6045,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "8626556854951557043"
+              "version": "0.45.6.27763",
+              "templateHash": "7900345548352902027"
             }
           },
           "parameters": {
@@ -6383,13 +6076,6 @@
               "defaultValue": [],
               "metadata": {
                 "description": "TXT records for Container Apps custom-domain validation. Each item: { name: \"asuid.appsit\", values: [\"<verificationId>\"], ttl: 3600 }. Empty array creates no TXT records."
-              }
-            },
-            "aliasARecords": {
-              "type": "array",
-              "defaultValue": [],
-              "metadata": {
-                "description": "A alias records that target an Azure resource (e.g. a Static Web App apex domain). Each item: { name: \"@\", targetResourceId: \"<swa resourceId>\", ttl: 3600 }. Azure DNS alias A records enable apex (curavias.ch) to point at a Static Web App, which cannot use a CNAME. Empty array creates no A records."
               }
             }
           },
@@ -6437,24 +6123,6 @@
                     "value": "[parameters('txtRecords')[copyIndex()].values]"
                   }
                 ]
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
-              ]
-            },
-            {
-              "copy": {
-                "name": "aliasAs",
-                "count": "[length(parameters('aliasARecords'))]"
-              },
-              "type": "Microsoft.Network/dnsZones/A",
-              "apiVersion": "2018-05-01",
-              "name": "[format('{0}/{1}', parameters('zoneName'), parameters('aliasARecords')[copyIndex()].name)]",
-              "properties": {
-                "TTL": "[parameters('aliasARecords')[copyIndex()].ttl]",
-                "targetResource": {
-                  "id": "[parameters('aliasARecords')[copyIndex()].targetResourceId]"
-                }
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/dnsZones', parameters('zoneName'))]"
@@ -6516,8 +6184,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "12725326629230136180"
+              "version": "0.45.6.27763",
+              "templateHash": "6946668985564645552"
             }
           },
           "parameters": {
@@ -6691,8 +6359,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4101742253533779156"
+              "version": "0.45.6.27763",
+              "templateHash": "3641420194333204823"
             }
           },
           "parameters": {
@@ -6864,27 +6532,6 @@
       },
       "value": "[if(and(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), parameters('manageCuraviasDnsZone')), reference(resourceId('Microsoft.Resources/deployments', format('curavias-dns-{0}', parameters('environmentName'))), '2025-04-01').outputs.nameServers.value, createArray())]"
     },
-    "curaviasWebStaticWebAppName": {
-      "type": "string",
-      "metadata": {
-        "description": "Curavias Static Web App name (empty when the module is disabled)."
-      },
-      "value": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.staticWebAppName.value, '')]"
-    },
-    "curaviasWebDefaultHostname": {
-      "type": "string",
-      "metadata": {
-        "description": "Curavias Static Web App default hostname — CNAME target for www.curavias.ch (empty when disabled)."
-      },
-      "value": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.staticWebAppDefaultHostname.value, '')]"
-    },
-    "curaviasWebMediaStorageAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "Curavias media storage account name (empty when disabled)."
-      },
-      "value": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.mediaStorageAccountName.value, '')]"
-    },
     "keyVaultName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.keyVaultName.value]"
@@ -6920,7 +6567,6 @@
         "aiPlatform": "[if(parameters('enableAiPlatformModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-platform-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-platform-disabled')]",
         "integration": "[if(parameters('enableIntegrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-disabled')]",
         "experienceHosting": "[if(parameters('enableExperienceHostingModule'), reference(resourceId('Microsoft.Resources/deployments', format('experience-hosting-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'experience-hosting-disabled')]",
-        "curaviasWeb": "[if(parameters('enableCuraviasWebModule'), reference(resourceId('Microsoft.Resources/deployments', format('curavias-web-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'curavias-web-disabled')]",
         "apiRuntime": "[if(parameters('enableApiRuntimeModule'), reference(resourceId('Microsoft.Resources/deployments', format('api-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'api-runtime-disabled')]",
         "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
         "masterdataLanding": "[if(parameters('enableMasterdataLandingModule'), reference(resourceId('Microsoft.Resources/deployments', format('masterdata-landing-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'masterdata-landing-disabled')]",
