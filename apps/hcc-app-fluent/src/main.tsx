@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { MsalProvider } from '@azure/msal-react';
 import { App } from './App';
 import { msalInstance } from './auth/msal-provider';
+import './index.css';
 
 /**
  * Sprint 13 — app bootstrap.

@@ -8,7 +8,8 @@ import { FooterPlane } from './planes/FooterPlane';
 const useStyles = makeStyles({
   root: {
     display: 'grid',
-    height: '100vh',
+    height: '100%',
+    width: '100%',
     gridTemplateColumns: 'auto 1fr auto',
     gridTemplateRows: 'auto 1fr auto',
     gridTemplateAreas: `'header header header' 'nav main agent' 'footer footer footer'`,
