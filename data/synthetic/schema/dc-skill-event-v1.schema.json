@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-skill-event-v1.schema.json",
+  "title": "Curavias Skills Event Contract (DC-SKILL-EVENT-v1)",
+  "description": "Envelope for the three near-real-time workforce skills EVENTS carried by the Sprint 23 WS-A4 (design D4) Eventstream lane: credential-expiry, consent-grant-or-revoke, and newly-confirmed-assertion. This is an ADDITIVE, standalone contract that complements (and does not modify) the batch DC-SKILL-EVIDENCE-v1 master-data contract: evidence records are periodic HRIS/LMS master data, whereas these events must move faster than the next batch load. Routing is by the eventKind message property (mirrors infra/modules/integration-orchestration/skills-eventstream). The sourceMode badge (live | simulated) travels in the contract, is preserved through Bronze/Silver, and surfaces as a live-vs-simulated indicator on the gold skill-event fact -- never invented downstream. Synthetic / no-PHI only (ADR-0013 / ADR-0016). See docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md sec 3.3.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetId", "contractId", "contractVersion", "classification", "residency", "purposeTags", "records"],
+  "properties": {
+    "datasetId":       { "type": "string", "pattern": "^DS-SKILL-EVENT-[a-z0-9-]+$" },
+    "contractId":      { "type": "string", "enum": ["DC-SKILL-EVENT-v1"] },
+    "contractVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":  { "type": "string", "enum": ["personal-synthetic"] },
+    "residency":       { "type": "string", "enum": ["CH", "demo-westus2"] },
+    "purposeTags": {
+      "type": "array", "minItems": 1,
+      "items": { "type": "string", "enum": ["skills-evidence", "workforce-capability", "capacity-planning"] }
+    },
+    "records": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventId", "eventKind", "externalSystem", "sourceMode", "trustTier",
+                     "externalPersonRef", "externalSkillCode", "effectiveAt", "provenance"],
+        "properties": {
+          "eventId":           { "type": "string" },
+          "eventKind":         { "type": "string", "enum": ["credential-expiry", "consent-grant-or-revoke", "newly-confirmed-assertion"] },
+          "externalSystem":    { "type": "string", "enum": ["successfactors", "lms", "skills_manager", "work_id"] },
+          "sourceMode":        { "type": "string", "enum": ["live", "simulated"] },
+          "trustTier":         { "type": "string", "enum": ["A", "B", "C"] },
+          "externalPersonRef": { "type": "string" },
+          "workerGln":         { "type": ["string", "null"] },
+          "externalSkillCode": { "type": "string" },
+          "externalSkillLabel":{ "type": ["string", "null"] },
+          "consentAction":     { "type": ["string", "null"], "enum": ["grant", "revoke", null] },
+          "consentScope":      { "type": ["string", "null"] },
+          "credentialValid":   { "type": ["boolean", "null"] },
+          "confirmed":         { "type": ["boolean", "null"] },
+          "effectiveAt":       { "type": "string", "format": "date-time" },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ingestedAt", "connectorVersion", "licence", "rawHash"],
+            "properties": {
+              "ingestedAt":       { "type": "string", "format": "date-time" },
+              "connectorVersion": { "type": "string" },
+              "licence":          { "type": "string" },
+              "rawHash":          { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

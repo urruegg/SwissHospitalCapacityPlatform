@@ -1,0 +1,8 @@
+{
+  "source": "successfactors",
+  "eventKind": "newly-confirmed-assertion",
+  "confirmations": [
+    {"confirmationId": "sf-evt-001", "employeeRef": "SF-EMP-1002", "skillCode": "ANAES", "skillLabel": "Anaesthesie", "confirmedBy": "SF-MGR-9001", "confirmedAt": "2026-07-23T08:15:00Z"},
+    {"confirmationId": "sf-evt-002", "employeeRef": "SF-EMP-1001", "skillCode": "NURS-ICU", "skillLabel": "Intensivpflege", "confirmedBy": "SF-MGR-9002", "confirmedAt": "2026-07-23T08:45:00Z"}
+  ]
+}

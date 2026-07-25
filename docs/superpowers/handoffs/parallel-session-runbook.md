@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | - (initial runbook) |
+| **Previous Version** | 1.0.0 (added section 7 on per-worktree auto-approval) |
 
 > **Purpose**: The durable how-to for running the platform with multiple
 > parallel Copilot CLI sessions (one per sprint) on a trunk-based, short-lived
@@ -103,3 +103,35 @@ When pausing or finishing a stream:
 - Windows quirks: use `python` (not the `python3` Store stub); the pre-commit
   mojibake hook false-fails on Windows, so verify manually and commit with
   `git -c core.hooksPath=/dev/null commit`. CI mojibake-scan is the real backstop.
+- Tool auto-approval is **per-worktree** and not inherited from parent folders -
+  a fresh worktree re-prompts for everything until it is seeded (see section 7).
+
+## 7. Auto-approval permissions are per-worktree (not inherited)
+
+Copilot CLI persists **tool auto-approvals per directory** in
+`~/.copilot/permissions-config.json` under `locations`, keyed by the session's
+**git-worktree root**. Unlike `trustedFolders` in `config.json` (file-access
+trust, which **is** prefix/ancestor-based), tool approvals are **not** inherited
+from ancestor folders. So a worktree at `..\wt\<name>` starts with an **empty**
+approval set and re-prompts for every tool, even though the main checkout
+(`...\SwissHospitalCapacityPlatform`) is fully approved.
+
+The launcher runs `copilot --allow-all-tools`, which covers a launcher-started
+tab for its lifetime; this section is the fix for **persistent** approvals and
+for sessions started **without** that flag (plain `copilot`, `-NoKickstart`,
+manually attached tabs).
+
+**Seed a worktree's approvals** (clone the main checkout's `tool_approvals` block
+into each `..\wt\<name>` location key). Do this with **all CLI sessions closed** -
+a live session may rewrite `permissions-config.json` from its in-memory map on
+its next new approval and drop manual edits. Always keep the timestamped
+`.bak-seed-*` backup the script writes.
+
+```powershell
+# node one-liner: clone main checkout approvals into every current worktree root
+node -e "const fs=require('fs'),p='C:/Users/'+process.env.USERNAME+'/.copilot/permissions-config.json',c=JSON.parse(fs.readFileSync(p,'utf8')),cp=require('child_process');const root='C:\\Users\\'+process.env.USERNAME+'\\source\\urruegg\\SwissHospitalCapacityPlatform';const src=c.locations[root].tool_approvals;fs.writeFileSync(p+'.bak-seed-'+Date.now(),JSON.stringify(c,null,2));cp.execSync('git -C \"'+root+'\" worktree list --porcelain').toString().split(/\r?\n/).filter(l=>l.startsWith('worktree ')).map(l=>l.slice(9).replace(/\//g,'\\')).filter(w=>w!==root).forEach(w=>{c.locations[w]={tool_approvals:JSON.parse(JSON.stringify(src))}});fs.writeFileSync(p,JSON.stringify(c,null,2)+'\n');console.log('seeded '+Object.keys(c.locations).length+' locations');"
+```
+
+Then **restart the worktree sessions** so they load the seeded approvals. Repeat
+after adding any new worktree (section 5). A durable alternative to seeding is to
+rely on `--allow-all-tools` / autopilot for every worktree tab.
