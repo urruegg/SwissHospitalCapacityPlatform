@@ -39,6 +39,7 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusMedium,
     background: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
     font: 'inherit',
   },
   streamHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: tokens.spacingHorizontalXS },
@@ -51,6 +52,7 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorPaletteRedBorder2}`,
     borderRadius: tokens.borderRadiusMedium,
     background: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
     font: 'inherit',
   },
 });

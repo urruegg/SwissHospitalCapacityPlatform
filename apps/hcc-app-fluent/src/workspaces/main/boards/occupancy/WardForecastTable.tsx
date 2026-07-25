@@ -22,6 +22,7 @@ const useStyles = makeStyles({
   table: { width: '100%', borderCollapse: 'collapse' },
   th: {
     textAlign: 'left',
+    whiteSpace: 'nowrap',
     paddingTop: space.s,
     paddingBottom: space.s,
     paddingLeft: space.m,
