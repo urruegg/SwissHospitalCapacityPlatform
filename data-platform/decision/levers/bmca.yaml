@@ -1,20 +1,34 @@
 # BMCA (Bed Management Copilot Agent) lever catalog.
-# Sprint 26 Slice 1: STUB ONLY. This role is not part of the OOA/DCA vertical
-# slice; the single placeholder lever below exists so the catalog fan-out
-# (all 6 roles) is schema-valid ahead of full BMCA authoring in a later sprint.
+# Sprint 26 WS-B fan-out: fully specified per design spec Sec 3.3.
+# Referenced by data/synthetic/schema/dc-insight-v1.schema.json recommendation[].lever_id.
 role: bmca
 levers:
-  - lever_id: BMCA-PLACEHOLDER
+  - lever_id: BMCA-REBALANCE-CENSUS
     role: bmca
     title_i18n:
-      de: "Platzhalter-Hebel (BMCA)"
-      en: "Placeholder lever (BMCA)"
-      fr: "Levier provisoire (BMCA)"
-      it: "Leva segnaposto (BMCA)"
-    preconditions: []
+      de: "Belegung auf Nachbarstation ausgleichen"
+      en: "Rebalance census to a sister ward"
+      fr: "Rééquilibrer l'occupation vers un service voisin"
+      it: "Riequilibrare l'occupazione verso un reparto vicino"
+    description_i18n:
+      de: "Empfiehlt, N Patienten auf eine Nachbarstation zu verlegen, um die Belegung auszugleichen und Kapazität freizugeben."
+      en: "Recommends transferring N patients to a sister ward to rebalance census and free bed capacity."
+      fr: "Recommande de transférer N patients vers un service voisin pour rééquilibrer l'occupation et libérer des lits."
+      it: "Consiglia di trasferire N pazienti a un reparto vicino per riequilibrare l'occupazione e liberare posti letto."
+    preconditions:
+      - "ward.occupancy_pct > threshold"
+      - "sister_ward.free_beds >= n"
     params_schema:
       type: object
-      properties: {}
-    impact_formula_ref: placeholder
+      required: ["n", "to_ward"]
+      properties:
+        n:
+          type: integer
+          minimum: 1
+          description: "Number of patients to transfer to the receiving ward."
+        to_ward:
+          type: string
+          description: "Identifier of the receiving sister ward."
+    impact_formula_ref: rebalance_census_beds
     owner_role: bmca
     hitl: true
