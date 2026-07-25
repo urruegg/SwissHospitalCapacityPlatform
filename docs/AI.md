@@ -3,10 +3,17 @@
 | Field | Value |
 | ----- | ----- |
 | **Version** | 0.7.0 |
+<<<<<<< HEAD
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
 | **Previous Version** | 0.6.0 (pre Agent Registry) |
+=======
+| **Date** | 2026-07-24 |
+| **Author** | Urs Rueegg |
+| **Status** | Reviewed |
+| **Previous Version** | 0.6.0 (added Sprint 26 Prescriptive Decision Vocabulary — DC-INSIGHT-v1, deterministic impact, advisory/HITL) |
+>>>>>>> origin/main
 
 ## Purpose
 
@@ -165,6 +172,29 @@ Related architecture decisions:
 4. Keep role-aware prompt templates and explicit refusal behavior for
   out-of-scope or unsafe requests.
 5. Separate prompt bundles by environment (DEV, SIT, PROD) with promotion gates.
+
+## Prescriptive Decision Vocabulary (DC-INSIGHT-v1)
+
+Sprint 26 Slice 1 (issue #335,
+[ADR-0040](adr/0040-prescriptive-decision-ontology-and-runtime-store.md)) moves
+the OOA -> DCA copilot pair from descriptive-only to prescriptive: every
+grounded answer is assembled as the `DC-INSIGHT-v1` 5-beat vocabulary — SIGNAL,
+UNDERSTANDING, RECOMMENDATION, ACTION, COORDINATION — plus PROVENANCE, rather
+than a free-form sentence.
+
+1. The RECOMMENDATION beat's `expected_impact` (delta beds / delta %) is always
+   computed by a deterministic, unit-tested `compute_expected_impact` function
+   over governed forecast/driver data — **never an LLM estimate** — so the
+   number behind a ranked lever is auditable and reproducible.
+2. The ACTION beat is advisory and human-in-the-loop: an action may be
+   `PROPOSED` autonomously by a copilot, but is only `APPLIED` after a human
+   posts the `approved-to-apply` confirmation on the governing PR/issue/comment
+   thread ([AGENTS.md §4](../AGENTS.md#4-confirmation-rule-for-deploy--delete)).
+   The agent refuses to self-approve and refuses a bot-identity approver.
+3. The read-only Fabric Data Agent stays a grounding tool, emitting only the
+   descriptive `signal`/`understanding`/`provenance` beats; the agent-host
+   assembles `recommendation`/`action`/`coordination` at runtime, keeping the
+   copilots' `write` side-effect ceiling unchanged.
 
 ## Evaluation
 

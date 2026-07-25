@@ -448,7 +448,7 @@
         "sourcePath": "docs/adr/0040-curavias-landing-zone-and-skills-evidence-plugins.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0040-curavias-landing-zone-and-skills-evidence-plugins.md"
       },
-      "status": "Proposed",
+      "status": "Accepted",
       "title": "Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport"
     },
     {
@@ -461,6 +461,17 @@
       },
       "status": "Proposed",
       "title": "PROD Network Parity — VNet + Cosmos & Key Vault Private Endpoints (Switzerland North)"
+    },
+    {
+      "decisionSummary": "Adopt the following architecture for the descriptive -> prescriptive ontology extension and its runtime decision store.",
+      "id": "ADR-0040",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md"
+      },
+      "status": "Accepted",
+      "title": "Prescriptive Decision Ontology + Runtime Decision Store"
     }
   ],
   "boms": [
@@ -2433,6 +2444,42 @@
       "title": "The solution shall make discharge-readiness outputs available to dashboards and copilot interactions."
     },
     {
+      "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+      "id": "FR-DEC-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive copilots shall assemble a RECOMMENDATION beat that ranks response levers from a governed lever catalog, where each lever's `expected_impact` is computed by a deterministic, forecast-grounded impact function (never an LLM estimate)."
+    },
+    {
+      "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+      "id": "FR-DEC-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive copilots shall assemble an ACTION beat that is advisory and human-in-the-loop: an action may be PROPOSED autonomously but is only APPLIED after a human posts the `approved-to-apply` confirmation; the agent shall refuse to self-approve or accept a bot approver."
+    },
+    {
+      "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+      "id": "FR-DEC-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%)."
+    },
+    {
       "family": "Trusted External Signals (Sprint 21)",
       "id": "FR-EXT-001",
       "kind": "FR",
@@ -2743,6 +2790,18 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Forecast generation runs shall persist execution timestamps and model run identifiers for auditability."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The Fabric Data Agent shall emit the `DC-INSIGHT-v1` `signal`, `understanding`, and `provenance` beats as the governed grounding contract that prescriptive copilots consume (drivers, source-trust, and confidence for a forecast breach)."
     },
     {
       "family": "Governance, Delivery, And Operations",
@@ -3487,6 +3546,18 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Onboarding data contracts shall enforce minimum-sensitive-data controls and purpose tags (Sprint 6)."
+    },
+    {
+      "family": "Responsible AI And Auditability",
+      "id": "NFR-DEC-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver."
     },
     {
       "family": "Data Quality And Integrity",

@@ -1,0 +1,4 @@
+tenant_id,tenant_subdomain,tenant_name,archetype,primary_canton,beds_approx,fte_approx,legal_form,grounded_on
+CN,curanova.curavias.ch,Uniklinik CuraNova,Universitäres Zentrumsspital,HN,~900,8600,Öffentlich-rechtliche Anstalt (kantonal),USZ (Universitätsspital Zürich)
+CP,curalp.curavias.ch,Kantonsspital Curalp,Kantonale Multi-Site-Spitalgruppe,CA,~840,8600,Holding-AG (100% kantonseigen),LUKS Gruppe (Luzerner Kantonsspital)
+VT,vialta.curavias.ch,Spital Vialta,Regionales Grundversorgungsspital (privat),HN,174,1200,Stiftung mit angeschlossenen Betrieben,Spital Zollikerberg (Diakoniewerk Neumünster)

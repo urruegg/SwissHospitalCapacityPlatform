@@ -18,7 +18,10 @@ This transform:
 * projects the Curavias ``dim_org_unit`` / ``dim_department`` /
   ``dim_capacity_unit`` sub-hierarchy onto the ``gold.*`` layer, **stripping the
   real-name provenance** (``grounded_on``) and real geography so no real
-  hospital name/city/canton can surface in the demo.
+  hospital name/city/canton can surface in the demo;
+* prunes the dropped H_HSL rows from the hospital-keyed capacity gold tables
+  (:data:`HOSPITAL_KEYED_CAPACITY_TABLES`) so no capacity fact orphans under the
+  Direct-Lake ``(Blank)`` ``dim_hospital`` member (issue #349).
 
 The pure functions here are unit-tested without Spark (see
 ``tests/test_build_gold_org_spine.py``), following the external-signals /
@@ -39,6 +42,20 @@ HOSPITAL_TENANT_MAP = {
     "H_LUKS": "CP",
     "H_SZB": "VT",
 }
+
+# Capacity gold tables that carry a ``hospital_id`` foreign key. After the 1:1
+# fold drops H_HSL from ``gold.dim_hospital`` these tables still retain their
+# H_HSL rows, which then orphan under the Direct-Lake ``(Blank)`` dim_hospital
+# member and distort unfiltered bed/encounter/capacity totals (issue #349). The
+# fold owns the surviving-hospital set, so ``run()`` also prunes these
+# dependents to keep the demo a clean tenant<->hospital 1:1.
+HOSPITAL_KEYED_CAPACITY_TABLES = (
+    "dim_specialty",
+    "dim_hospital_service",
+    "dim_ward_capacityunit",
+    "fact_capacity_baseline",
+    "map_disease_treatment_specialty_service",
+)
 
 # Real-name / real-geography provenance columns that must never reach gold.
 _PROVENANCE_DROP = {"grounded_on"}
@@ -94,6 +111,27 @@ def rebrand_hospital_dimension(
     return sorted(out, key=lambda r: r["hospital_id"])
 
 
+def surviving_hospital_ids() -> set:
+    """The ``hospital_id`` set that survives the Curavias 1:1 fold.
+
+    Exactly the domain of :data:`HOSPITAL_TENANT_MAP` (H_HSL and any unmapped
+    legacy hospital are dropped/parked).
+    """
+    return set(HOSPITAL_TENANT_MAP)
+
+
+def prune_orphan_hospital_rows(rows: list, surviving: set | None = None) -> list:
+    """Drop rows whose ``hospital_id`` is not a surviving Curavias hospital.
+
+    Applied to the hospital-keyed capacity gold tables
+    (:data:`HOSPITAL_KEYED_CAPACITY_TABLES`) so no fact references the dropped
+    H_HSL member (issue #349). Order-preserving and idempotent: re-pruning an
+    already-pruned table returns an equal list.
+    """
+    keep = surviving_hospital_ids() if surviving is None else surviving
+    return [r for r in rows if r.get("hospital_id") in keep]
+
+
 def _strip_provenance(row: dict) -> dict:
     """Drop real-name provenance columns from an org/skills gold row."""
     return {k: v for k, v in row.items() if k not in _PROVENANCE_DROP}
@@ -118,14 +156,75 @@ def to_gold_capacity_unit(row: dict) -> dict:
     return out
 
 
-def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
-    """Fabric entrypoint. Reads silver, writes the re-branded gold org spine."""
-    from pyspark.sql import SparkSession  # noqa: F401 - Fabric-provided
+def build_org_spine_gold(
+    hospital_rows: list[dict],
+    tenant_rows: list[dict],
+    org_unit_rows: list[dict],
+    department_rows: list[dict],
+    capacity_unit_rows: list[dict],
+) -> dict[str, list[dict]]:
+    """Pure core of ``run()``: build every org-spine gold table as plain rows.
 
-    raise NotImplementedError(
-        "run() executes inside the Fabric Spark runtime; the pure transforms "
-        "above are exercised by tests/test_build_gold_org_spine.py."
+    Returns ``{gold_table_name: [row, ...]}`` for the four org-spine tables the
+    Curavias demo needs. The ``run()`` Spark bridge only has to read the source
+    CSVs / ``gold.dim_hospital`` and write these rows as Delta, so all the
+    re-brand + provenance-stripping logic stays unit-tested here (no Spark).
+    """
+    return {
+        "dim_hospital": rebrand_hospital_dimension(
+            hospital_rows, tenant_rows, org_unit_rows),
+        "dim_org_unit": [to_gold_org_unit(r) for r in org_unit_rows],
+        "dim_department": [to_gold_department(r) for r in department_rows],
+        "dim_capacity_unit": [to_gold_capacity_unit(r) for r in capacity_unit_rows],
+    }
+
+
+# --------------------------------------------------------------------------- #
+# Fabric Spark entrypoint (deploy-class; exercised only in the Fabric runtime) #
+# --------------------------------------------------------------------------- #
+# Lakehouse Files/ mount for the relocated Curavias master data (uploaded by
+# upload_to_onelake.py to Files/master-data/curavias-org-skills/).
+_MASTER_MOUNT = "/lakehouse/default/Files/master-data/curavias-org-skills"
+
+
+def run() -> None:  # pragma: no cover - requires a live Fabric Spark session
+    """Fabric entrypoint. Folds ``gold.dim_hospital`` + lands the org spine.
+
+    Reads the Curavias master-data CSVs from the lakehouse ``Files/`` mount and
+    the existing ``gold.dim_hospital`` (so capacity/governance columns survive
+    the re-brand), applies :func:`build_org_spine_gold`, and overwrites each
+    ``gold.*`` table as Delta with the sprint-09 governance stamp.
+
+    Finally prunes the H_HSL orphan rows from the hospital-keyed capacity gold
+    tables (:data:`HOSPITAL_KEYED_CAPACITY_TABLES`) so no capacity fact resolves
+    to the dropped ``dim_hospital`` member (issue #349). Missing capacity tables
+    are skipped, so a targeted ``--only 05_gold_org_skills`` re-run is safe when
+    the capacity medallion has not run in the same pass. Re-writing re-stamps the
+    lineage to record the fold/prune hop; the prune is idempotent.
+    """
+    from _fabric_gold_io import (  # provided alongside this module in Files/
+        read_csv_rows, rows_of_table, table_exists, write_gold,
     )
+
+    hospital_rows = rows_of_table("gold.dim_hospital")
+    tables = build_org_spine_gold(
+        hospital_rows=hospital_rows,
+        tenant_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_tenant.csv"),
+        org_unit_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_org_unit.csv"),
+        department_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_department.csv"),
+        capacity_unit_rows=read_csv_rows(f"{_MASTER_MOUNT}/dim_capacity_unit.csv"),
+    )
+    for name, rows in tables.items():
+        write_gold(name, rows)
+
+    survivors = surviving_hospital_ids()
+    for name in HOSPITAL_KEYED_CAPACITY_TABLES:
+        table = f"gold.{name}"
+        if not table_exists(table):
+            print(f"  gold.{name}: not present, skipping H_HSL prune")
+            continue
+        pruned = prune_orphan_hospital_rows(rows_of_table(table), survivors)
+        write_gold(name, pruned)
 
 
 if __name__ == "__main__":  # pragma: no cover

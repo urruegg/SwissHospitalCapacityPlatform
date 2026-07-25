@@ -59,7 +59,7 @@ describe('DischargeBoard surface', () => {
       await waitFor(() => expect(screen.getAllByText(candidate.ward)[0]).toBeInTheDocument());
       expect(screen.getByText(candidate.blocker)).toBeInTheDocument();
     }
-    expect(screen.getByText(/simulated/i)).toBeInTheDocument();
+    expect(screen.getByText(/simulated data/i)).toBeInTheDocument();
     expect(screen.getByText(/Carried from ooa-agent/i)).toBeInTheDocument();
   });
 

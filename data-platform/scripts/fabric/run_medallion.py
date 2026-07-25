@@ -49,16 +49,29 @@ class Notebook:
     path: Path
 
 
-# Dependency order: bronze -> silver -> gold master data -> OR samples ->
-# eventstream seed -> bronze/silver/gold eventstream (all reading the same
-# schemas-enabled lakehouse). The eventstream lane is fed from a committed
-# synthetic seed (00_seed_eventstream_raw) so the patient-flow gold tables
-# (encounter, bed_assignment, ...) rebuild reproducibly from git with no live
-# Eventstream dependency.
+# Dependency order: bronze -> silver -> gold master data -> gold org/skills
+# (Curavias re-brand, reads gold.dim_hospital) -> OR samples -> eventstream seed
+# -> bronze/silver/gold eventstream (all reading the same schemas-enabled
+# lakehouse). The eventstream lane is fed from a committed synthetic seed
+# (00_seed_eventstream_raw) so the patient-flow gold tables (encounter,
+# bed_assignment, ...) rebuild reproducibly from git with no live Eventstream
+# dependency.
+#
+# 05_gold_org_skills imports the three skills-evidence Python modules from the
+# lakehouse Files/ mount, so before an --apply run those modules and the
+# Curavias master-data CSVs must be uploaded once per environment:
+#   python data-platform/scripts/upload_to_onelake.py --workspace-id <ws> \
+#     --lakehouse-id <lh> --source-root data/master-data/curavias-org-skills \
+#     --target master-data/curavias-org-skills
+#   python data-platform/scripts/upload_to_onelake.py --workspace-id <ws> \
+#     --lakehouse-id <lh> \
+#     --source "data-platform/notebooks/skills-evidence/*.py" \
+#     --target skills-evidence
 _ORDER = [
     ("01_bronze_master_data", "reference/01_bronze_master_data.ipynb"),
     ("02_silver_master_data", "reference/02_silver_master_data.ipynb"),
     ("03_gold_master_data", "reference/03_gold_master_data.ipynb"),
+    ("05_gold_org_skills", "skills-evidence/05_gold_org_skills.ipynb"),
     ("04_load_or_samples", "reference/04_load_or_samples.ipynb"),
     ("00_seed_eventstream_raw", "eventstream/00_seed_eventstream_raw.ipynb"),
     ("01_bronze_eventstream", "eventstream/01_bronze_eventstream.ipynb"),

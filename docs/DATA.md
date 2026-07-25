@@ -3,10 +3,17 @@
 | Field | Value |
 | ----- | ----- |
 | **Version** | 0.10.0 |
+<<<<<<< HEAD
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
 | **Previous Version** | 0.9.0 (added SIT gold ext_* materialisation + external-signals Direct-Lake publish evidence) |
+=======
+| **Date** | 2026-07-24 |
+| **Author** | Urs Rueegg |
+| **Status** | Reviewed |
+| **Previous Version** | 0.9.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
+>>>>>>> origin/main
 
 ## Purpose
 
@@ -287,6 +294,31 @@ bindings are recorded in
 [`docs/ontology/crosswalk.md`](ontology/crosswalk.md) (v0.4.0) and the STRICT
 two-layer conformance gate. The semantic-model measures + verify-gate rebaseline
 for these tables are a stacked WS-A2 follow-on (design §7 open item).
+
+### Sprint 26 WS-B/C — Decision store and DC-INSIGHT-v1
+
+Slice 1 (issue #335,
+[design spec](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md),
+[ADR-0040](adr/0040-prescriptive-decision-ontology-and-runtime-store.md))
+extends the Foresight tier's descriptive grounding into a prescriptive
+5-beat `DC-INSIGHT-v1` insight contract
+([`data/synthetic/schema/dc-insight-v1.schema.json`](../data/synthetic/schema/dc-insight-v1.schema.json)) —
+SIGNAL / UNDERSTANDING / RECOMMENDATION / ACTION / COORDINATION plus
+PROVENANCE — consumed by the OOA -> DCA copilot pair.
+
+Two new Cosmos containers hold the runtime decision store in the existing CSA
+account (`cosmos-csa-ihzhhpf-sit`), defined in `infra/modules/cosmos/csa.bicep`:
+
+| Container | Partition key | Purpose |
+| --------- | -------------- | ------- |
+| `proposed_actions` | `/plan_id` | Persists lever-derived proposed actions (PROPOSED -> APPLIED on human `approved-to-apply`) with their deterministic `expected_impact`. |
+| `plans` | `/episode_key` | Persists the cross-role Plan / golden thread (e.g. the Medicine A 102% -> 94% capacity episode) including `forecast_deltas` and the OOA -> DCA handoff. |
+
+Per [ADR-0029](adr/0029-agent-host-cosmos-reachability.md), both containers are
+**agent-host-mediated** — OOA and DCA never call `cosmos-mcp` directly, so their
+side-effect ceiling stays `write` and no new MCP grant is required. No live
+Cosmos deploy is in scope for Slice 1 (IaC container definitions only,
+`what-if`-gated).
 
 ### Deprecations
 

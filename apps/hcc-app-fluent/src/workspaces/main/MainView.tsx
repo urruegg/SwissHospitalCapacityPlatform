@@ -28,7 +28,7 @@ const BOARDS: Record<string, () => JSX.Element> = {
     </div>
   ),
   'bed-manager': () => (
-    <div data-testid="board-bed-manager">
+    <div data-testid="board-bed-manager-slot">
       <BedManagerBoard />
     </div>
   ),

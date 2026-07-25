@@ -24,6 +24,7 @@ from build_gold_skills import (  # noqa: E402
     CARE_SETTINGS,
     ISCO_CARE_SETTING,
     SOURCE_MODES,
+    build_skills_gold,
     derive_occupation_care_setting,
     to_gold_care_setting,
     to_gold_demand_template,
@@ -214,3 +215,54 @@ def test_eligibility_gold_casts_flag():
     rows = [to_gold_eligibility(r)
             for r in _read(MASTER / "bridge_worker_unit_eligibility.csv")]
     assert all(isinstance(r["is_eligible"], bool) for r in rows)
+
+
+# --- run() aggregator (the Fabric glue's pure core) ---------------------------
+
+def _skills_gold() -> dict:
+    return build_skills_gold(
+        care_setting_rows=_read(MASTER / "dim_care_setting.csv"),
+        skill_rows=_read(MASTER / "dim_skill.csv"),
+        occupation_rows=_occupations(),
+        demand_template_rows=_read(MASTER / "bridge_role_skill_demand_template.csv"),
+        demand_rows=_read(MASTER / "fact_skill_demand.csv"),
+        gap_rows=_read(MASTER / "fact_skill_gap.csv"),
+        assertion_rows=_read(MASTER / "fact_skill_assertion.csv"),
+        eligibility_rows=_read(MASTER / "bridge_worker_unit_eligibility.csv"),
+    )
+
+
+def test_skills_gold_produces_the_eight_tables():
+    out = _skills_gold()
+    assert set(out) == {
+        "dim_care_setting",
+        "dim_skill",
+        "dim_occupation_role",
+        "bridge_role_skill_demand_template",
+        "fact_skill_demand",
+        "fact_skill_gap",
+        "fact_skill_assertion",
+        "bridge_worker_unit_eligibility",
+    }
+
+
+def test_skills_gold_preserves_row_counts():
+    out = _skills_gold()
+    assert len(out["dim_skill"]) == len(_read(MASTER / "dim_skill.csv"))
+    assert len(out["fact_skill_demand"]) == len(_read(MASTER / "fact_skill_demand.csv"))
+    assert len(out["fact_skill_gap"]) == len(_read(MASTER / "fact_skill_gap.csv"))
+    assert len(out["fact_skill_assertion"]) == len(
+        _read(MASTER / "fact_skill_assertion.csv"))
+
+
+def test_skills_gold_demand_carries_care_setting_and_source_mode():
+    out = _skills_gold()
+    dem = out["fact_skill_demand"]
+    assert {r["care_setting_id"] for r in dem} == {"bed", "ops"}
+    assert {r["source_mode"] for r in dem} == {"live", "simulated"}
+
+
+def test_skills_gold_occupation_role_has_derived_care_setting():
+    out = _skills_gold()
+    assert all(r["care_setting_id"] in CARE_SETTINGS
+               for r in out["dim_occupation_role"])

@@ -6,7 +6,11 @@
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
+<<<<<<< HEAD
 | **Previous Version** | 0.8.1 (ADR-0039→0040 link retarget) |
+=======
+| **Previous Version** | 0.8.0 (Sprint 23 skills-evidence DSG tagging + Work-ID consent lineage) |
+>>>>>>> origin/main
 
 ## Purpose
 
@@ -199,6 +203,22 @@ The enforcement point for landed data is the **pipeline silver gate**
 against landed Bronze, quarantining bad rows in Silver rather than at PR time.
 Assurance derivation (`self` -> L0, `employer_confirmed` -> L1) and the live-vs-simulated
 badge are preserved end-to-end and never invented downstream (`FR-SKILL-007`).
+
+#### Near-real-time skills-events lane consent enforcement (`FR-SKILL-005`)
+
+The narrow WS-A4 Eventstream lane (`DC-SKILL-EVENT-v1`) carries the three
+near-real-time events (credential expiry, consent grant/revoke, newly-confirmed
+assertion). Its silver gate
+(`data-platform/notebooks/skills-events/build_silver_skill_events.py`) is the
+downstream PHI-gate the Eventstream module defers to, and it enforces the same
+`CH-C01` / `CH-C05` consent posture as the batch lane at event granularity:
+
+| Skills-event control | Requirement | Enforcement |
+| ----- | ----- | ----- |
+| Consent revocation removes the GLN promotion | `FR-SKILL-003`, `CH-C01` | On a `revoke` event the silver gate **defensively clears** `workerGln` + `consentScope` even if the upstream payload still carried them, so a revoked worker can never be promoted on the next load |
+| Grant carries the promotion, revoke never asserts one | `FR-SKILL-003` | A `grant` event must carry both `workerGln` and `consentScope` or it is quarantined (deny-by-default); non-consent events carrying a `consentAction` are quarantined |
+| Live-vs-simulated badge preserved on events | `FR-SKILL-007` | `sourceMode` (live \| simulated) + `trustTier` travel from the contract through Bronze/Silver and surface on `gold.skillevt_fact_event`; never invented downstream |
+| Synthetic-only event data | `NFR-SKILL-002` | The event seeder is deterministic and git-owned; envelopes are synthetic, no-PHI (ADR-0013 / ADR-0016) |
 
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 

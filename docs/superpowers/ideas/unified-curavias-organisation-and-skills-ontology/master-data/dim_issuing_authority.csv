@@ -1,0 +1,29 @@
+authority_id,authority_name,authority_kind,base_assurance_level,gln_keyed,jurisdiction,verify_reference
+AUTH-MEDREG,MedReg — Medizinalberuferegister,federal_register,L4,yes,CH,bag.admin.ch/medreg
+AUTH-GESREG,GesReg — Gesundheitsberuferegister,federal_register,L4,yes,CH,gesreg.ch
+AUTH-NAREG,NAREG — Nat. Register der Gesundheitsberufe,federal_register,L4,yes,CH,nareg.ch
+AUTH-PSYREG,PsyReg — Psychologieberuferegister,federal_register,L4,yes,CH,bag.admin.ch/psyreg
+AUTH-SIWF,SIWF / ISFM (FMH),specialist_body,L3,no,CH,siwf.ch
+AUTH-SGAR,SGAR — Anästhesie-Fachgesellschaft,specialist_body,L3,no,CH,sgar-ssar.ch
+AUTH-SGI,SGI — Intensivmedizin-Fachgesellschaft,specialist_body,L3,no,CH,sgi-ssmi.ch
+AUTH-SGNOR,SGNOR — Notfall- & Rettungsmedizin,specialist_body,L3,no,CH,sgnor.ch
+AUTH-ODASANTE,OdASanté — Nat. OdA Gesundheit,education,L3,no,CH,odasante.ch
+AUTH-SBFI,SBFI/SEFRI — Staatssekretariat BFI,education,L3,no,CH,sbfi.admin.ch
+AUTH-EDK,EDK/CDIP — Diplomanerkennung,education,L3,no,CH,edk.ch
+AUTH-SBK-ELOG,SBK/ASI eLog — Pflege-CPD,specialist_body,L1,no,CH,sbk-asi.ch
+AUTH-SRC,SRC — Swiss Resuscitation Council,cert_body,L2,no,CH,resuscitation.ch
+AUTH-IVR,IVR-IAS — Interverband für Rettungswesen,cert_body,L2,no,CH,ivr-ias.ch
+AUTH-BAG-SSK,BAG Strahlenschutz-Sachkunde,cert_body,L2,no,CH,bag.admin.ch/strahlenschutz
+AUTH-SWISSNOSO,Swissnoso — Infektionsprävention,cert_body,L2,no,CH,swissnoso.ch
+AUTH-SRK,SRK — Schweizerisches Rotes Kreuz (Anerkennung),foreign_recognition,L3,no,CH,redcross.ch
+AUTH-MEBEKO,MEBEKO — Medizinalberufekommission,foreign_recognition,L4,no,CH,bag.admin.ch/mebeko
+AUTH-FIDE,fide — Schweizer Sprachkompetenzsystem,language,L2,no,CH,fide-info.ch
+AUTH-ORCID,ORCID,research,L2,no,INT,orcid.org
+AUTH-PUBMED,PubMed / MEDLINE (NCBI),research,L2,no,INT,pubmed.ncbi.nlm.nih.gov
+AUTH-SNSF,SNSF P3,research,L3,no,CH,p3.snf.ch
+AUTH-ESCO,ESCO (EU),taxonomy,L0,no,EU,esco.ec.europa.eu
+AUTH-FHIR,HL7 FHIR R5,taxonomy,L0,no,INT,hl7.org/fhir
+AUTH-SNOMED,SNOMED CT,taxonomy,L0,no,INT,snomed.org
+AUTH-LMS,In-house LMS / Skills-Passport,cert_body,L1,no,facility,internal
+AUTH-WORKID,Work-ID (Work-ID AG),labour_market,L0,no,CH,work-id.ch
+AUTH-SKILLSMGR,Skills-Manager (Work-ID AG),labour_market,L1,no,CH,skills-manager.ch

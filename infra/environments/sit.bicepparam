@@ -176,7 +176,7 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 // Bumped 43ace03 -> cb21e2c to ship Sprint 20 OOA (occupancy) screen parity
 // (PR #313, digest sha256:107137a07f48105e35922c43370e1d38dd65938716b72f0371b6350c6fcc4f2b).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:cb21e2c'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:5ee02a6'
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:
