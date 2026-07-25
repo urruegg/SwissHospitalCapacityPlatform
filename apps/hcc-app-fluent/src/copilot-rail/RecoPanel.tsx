@@ -107,7 +107,9 @@ export function RecoPanel({ reco, showBack, onBack, onCta }: RecoPanelProps) {
         </div>
       )}
       {reco.projection && <Caption1 className={s.projection}>{t('reco.projection', { text: reco.projection })}</Caption1>}
-      {reco.citations.length > 0 && <Caption1 className={s.cites}>{reco.citations.join(' \u00b7 ')}</Caption1>}
+      {reco.citations.length > 0 && (
+        <Caption1 className={s.cites} data-testid="citations">{reco.citations.join(' \u00b7 ')}</Caption1>
+      )}
     </div>
   );
 }

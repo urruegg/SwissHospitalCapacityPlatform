@@ -4,7 +4,7 @@
  * The Copilot Drawer is agent-agnostic; per-agent config comes from the
  * agent-host (`apps/hcc-agent-host`). The base URL is injected via Vite env so
  * the westus2 region (ADR-0013) is a config value, not code (design spec §9 risk).
- */
+ */import type { GroundedReco } from '../copilot-rail/reco';
 export interface AgentManifestEntry {
   name: string;
   displayName: string;
@@ -18,6 +18,13 @@ export interface GroundedReply {
   citations: string[];
   /** True when the agent refused (e.g. a HITL gate blocked a side effect). */
   refused: boolean;
+  /**
+   * Optional structured grounded artefact. When the agent-host (Foundry Agent)
+   * returns a grounded recommendation, the Copilot pane renders it through the
+   * shared RecoPanel block stack (context chip, levers, approval gate,
+   * citations) instead of a flat text bubble. Absent → plain-text reply.
+   */
+  reco?: GroundedReco;
 }
 
 const agentHostBaseUrl: string = import.meta.env.VITE_AGENT_HOST_URL ?? '';
@@ -39,6 +46,40 @@ export async function fetchAgents(): Promise<AgentManifestEntry[]> {
   return (await res.json()) as AgentManifestEntry[];
 }
 
+/** Display label per role agent, used as the artefact's attribution line. */
+const AGENT_LABELS: Record<string, string> = {
+  'ooa-agent': 'Occupancy Copilot',
+  'bmca-agent': 'Bed-Management Copilot',
+  'dca-agent': 'Discharge Copilot',
+  'orsa-agent': 'OR-Steering Copilot',
+  'sba-agent': 'Staffing Copilot',
+  'csa-agent': 'Crisis Copilot',
+};
+
+/**
+ * Deterministic structured grounded answer for dev/CI — mirrors the shape a
+ * Foundry Agent returns so the Copilot pane demonstrates the artefact rendering
+ * end-to-end without a live agent-host. Grounded, simulated values only; no PHI.
+ */
+function mockReco(agent: string): GroundedReco {
+  return {
+    agentLabel: AGENT_LABELS[agent] ?? agent,
+    contextChip: { subject: 'Station B', qualifiers: ['Auslastung'], status: '92%', tone: 'watch' },
+    read:
+      'Auslastung Station B liegt bei 92% und steigt weiter. Umschichtung Richtung ' +
+      'Notaufnahme empfohlen; die Aktion erfordert HITL-02-Freigabe.',
+    levers: [
+      { text: '2 Betten Richtung Notaufnahme umschichten', impact: { label: '+2 Betten', tone: 'beds' } },
+      { text: '1 verlegbaren Patienten auf Station A vormerken', impact: { label: '-1 Bett', tone: 'beds' } },
+    ],
+    primaryCta: { label: 'Umschichtung anstossen', kind: 'action', requiresApproval: true },
+    projection: '92% -> 85%',
+    citations: ['gold.bed_assignment', 'gold.fact_capacity_baseline'],
+    provenance: 'simulated',
+    refused: false,
+  };
+}
+
 /**
  * Send a prompt to one agent via the agent-host. When no host URL is configured
  * (dev/CI), returns a deterministic grounded mock so the drawer demonstrates the
@@ -49,12 +90,14 @@ export async function invokeAgent(
   prompt: string,
 ): Promise<GroundedReply> {
   if (!agentHostBaseUrl) {
+    const reco = mockReco(agent);
     return {
       answer:
         `Auslastung Station B liegt bei 92%. Empfehlung: 2 Betten Richtung ` +
         `Notaufnahme umschichten. Aktion erfordert HITL-02-Freigabe.`,
-      citations: ['gold.bed_assignment', 'gold.fact_capacity_baseline'],
+      citations: reco.citations,
       refused: false,
+      reco,
     };
   }
   const res = await fetch(`${agentHostBaseUrl}/agents/${agent}/chat`, {
