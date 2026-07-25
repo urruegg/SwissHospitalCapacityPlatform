@@ -2,13 +2,17 @@ import '../../src/i18n';
 import { render, screen, within } from '@testing-library/react';
 import { HeaderPlane } from '../../src/shell/planes/HeaderPlane';
 import { RoleProvider } from '../../src/context/role-context';
+import { HospitalProvider } from '../../src/context/hospital-context';
+import { parseClaims } from '../../src/auth/claim-parser';
 import { ThemeModeProvider } from '../../src/theme/theme-context';
 
 function renderHeader(roles: string[]) {
   return render(
     <ThemeModeProvider>
       <RoleProvider testRoles={roles} testHomeSite="usz">
-        <HeaderPlane />
+        <HospitalProvider claims={parseClaims(undefined)}>
+          <HeaderPlane />
+        </HospitalProvider>
       </RoleProvider>
     </ThemeModeProvider>,
   );
