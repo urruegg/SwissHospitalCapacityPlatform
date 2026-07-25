@@ -3,17 +3,10 @@
 | Field | Value |
 | ----- | ----- |
 | **Version** | 0.10.0 |
-<<<<<<< HEAD
-| **Date** | 2026-07-25 |
-| **Author** | Urs Rueegg |
-| **Status** | Reviewed |
-| **Previous Version** | 0.9.0 (added SIT gold ext_* materialisation + external-signals Direct-Lake publish evidence) |
-=======
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
 | **Previous Version** | 0.9.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
->>>>>>> origin/main
 
 ## Purpose
 

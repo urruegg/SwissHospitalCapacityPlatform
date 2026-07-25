@@ -3,17 +3,10 @@
 | Field | Value |
 | ----- | ----- |
 | **Version** | 0.7.0 |
-<<<<<<< HEAD
-| **Date** | 2026-07-25 |
-| **Author** | Urs Rueegg |
-| **Status** | Reviewed |
-| **Previous Version** | 0.6.0 (pre Agent Registry) |
-=======
 | **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
 | **Previous Version** | 0.6.0 (added Sprint 26 Prescriptive Decision Vocabulary — DC-INSIGHT-v1, deterministic impact, advisory/HITL) |
->>>>>>> origin/main
 
 ## Purpose
 

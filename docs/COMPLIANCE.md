@@ -6,11 +6,7 @@
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-<<<<<<< HEAD
-| **Previous Version** | 0.8.1 (ADR-0039→0040 link retarget) |
-=======
 | **Previous Version** | 0.8.0 (Sprint 23 skills-evidence DSG tagging + Work-ID consent lineage) |
->>>>>>> origin/main
 
 ## Purpose
 
