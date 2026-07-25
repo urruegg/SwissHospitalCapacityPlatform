@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "6600803867412963793"
+      "templateHash": "8677212942083303720"
     }
   },
   "parameters": {
@@ -235,6 +235,17 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional Fabric Lakehouse ID for the skills-events Eventstream destination. Empty defers destination wiring (Eventstream created source-only)."
+      }
+    },
+    "skillsEventstreamSourceMode": {
+      "type": "string",
+      "defaultValue": "CustomEndpoint",
+      "allowedValues": [
+        "CustomEndpoint",
+        "EventHub"
+      ],
+      "metadata": {
+        "description": "Skills-events Eventstream source transport. CustomEndpoint (default, design D4 demo-scope) is fully live-deployable and mirrors es-capacity-events-sit; EventHub is the Swiss-GA target-state (requires a Fabric-managed connection). See modules/integration-orchestration/skills-eventstream/main.bicep."
       }
     },
     "enableAiPlatformModule": {
@@ -6638,6 +6649,9 @@
           "workspaceId": {
             "value": "[parameters('skillsEventstreamWorkspaceId')]"
           },
+          "sourceMode": {
+            "value": "[parameters('skillsEventstreamSourceMode')]"
+          },
           "eventHubNamespace": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value), createObject('value', ''))]",
           "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value), createObject('value', ''))]",
           "eventHubConsumerGroup": {
@@ -6658,7 +6672,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "16344374991231825254"
+              "templateHash": "3641420194333204823"
             }
           },
           "parameters": {
@@ -6687,7 +6701,18 @@
               "type": "string",
               "defaultValue": "cg-skills-eventstream",
               "metadata": {
-                "description": "Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups."
+                "description": "Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups. Only used when sourceMode=EventHub."
+              }
+            },
+            "sourceMode": {
+              "type": "string",
+              "defaultValue": "CustomEndpoint",
+              "allowedValues": [
+                "CustomEndpoint",
+                "EventHub"
+              ],
+              "metadata": {
+                "description": "Eventstream source transport. CustomEndpoint (design D4 demo-scope, ADR-0013) mirrors the working es-capacity-events-sit lane: the Container Apps publisher POSTs DC-SKILL-EVENT-v1 envelopes to the Eventstream ingestion URL — fully live-deployable today, no out-of-band Fabric-managed connection required. EventHub is the Swiss-GA target-state and requires a Fabric-managed connection to the Event Hubs namespace (POST /v1/connections) before the post-deploy script can wire it."
               }
             },
             "location": {
@@ -6750,13 +6775,13 @@
                 "description": "[parameters('eventstreamDescription')]"
               },
               "source": {
-                "kind": "EventHub",
-                "namespaceHost": "[parameters('eventHubNamespace')]",
-                "eventHubName": "[parameters('eventHubName')]",
-                "consumerGroup": "[parameters('eventHubConsumerGroup')]",
+                "kind": "[parameters('sourceMode')]",
+                "namespaceHost": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubNamespace'), '')]",
+                "eventHubName": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubName'), '')]",
+                "consumerGroup": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubConsumerGroup'), '')]",
                 "routingProperty": "eventKind",
                 "allowedEventKinds": "[variables('allowedEventKinds')]",
-                "authMode": "fabric-managed-connection"
+                "authMode": "[if(equals(parameters('sourceMode'), 'EventHub'), 'fabric-managed-connection', 'custom-endpoint-ingestion')]"
               },
               "destination": {
                 "kind": "Lakehouse",
@@ -6862,7 +6887,7 @@
     },
     "skillsEventstreamGatingWarning": {
       "type": "string",
-      "value": "[if(and(parameters('enableSkillsEventstreamModule'), not(parameters('enableDataFoundationModule'))), 'WARN: enableSkillsEventstreamModule=true requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamWorkspaceId'))), 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamDestinationLakehouseId'))), 'INFO: skillsEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.', 'ok')))]"
+      "value": "[if(and(and(parameters('enableSkillsEventstreamModule'), equals(parameters('skillsEventstreamSourceMode'), 'EventHub')), not(parameters('enableDataFoundationModule'))), 'WARN: enableSkillsEventstreamModule=true with sourceMode=EventHub requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source. (CustomEndpoint source needs no Event Hub.)', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamWorkspaceId'))), 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.', if(and(parameters('enableSkillsEventstreamModule'), empty(parameters('skillsEventstreamDestinationLakehouseId'))), 'INFO: skillsEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.', 'ok')))]"
     },
     "moduleStatuses": {
       "type": "object",
