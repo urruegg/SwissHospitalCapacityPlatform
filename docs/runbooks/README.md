@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (indexed Superpowers cutover runbook) |
+| **Previous Version** | 1.2.0 (indexed Superpowers cutover runbook) |
 
 ## Purpose
 
@@ -21,6 +21,7 @@ Runbooks are distinct from application logic and infrastructure code — they ca
 | [Superpowers Cutover](superpowers-cutover.md) | Migrate from legacy per-agent execution to Superpowers-first workflow while preserving governance controls | `Platform owner` | Cutover plan executed with rollback and evidence criteria |
 | [Work IQ Teams Transcript Intake](work-iq-teams-transcript-intake.md) | Read Microsoft Teams meetings with transcripts and export raw content to repository | `urruegg@microsoft.com` | Raw transcript file placed in `docs/reviews/raw/` for downstream review-session-agent processing |
 | [DR Rehearsal and SIT Restore-Proof](dr-rehearsal-runbook.md) | Run SIT DR rehearsal and capture restore proof for R1/R2/R3 recovery classes | `OPS` | Rehearsal + restore-proof evidence under `docs/sprints/sprint-05/evidence/` (ADR-0009) |
+| [Decision-Tier Live Apply](decision-tier-live-apply.md) | Run the Sprint 26 WS-C `seed_live` + `register_decision_tier` apply CLIs in-VNet against private-endpoint Cosmos + eastus2 Foundry, HITL-gated | `urruegg` | Six-role plans/actions in SIT Cosmos + decision-tier tool registered on the six Foundry agents |
 
 ## Runbook Lifecycle
 
