@@ -19,9 +19,17 @@ describe('rbac model', () => {
     expect(narrowRoles(['HCC.PlatformAdmin', 'HCC.Viewer'], 'HCC.Viewer')).toBe('HCC.Viewer');
   });
 
-  it('keys of ROLE_MAP cover the five demo roles', () => {
-    expect(Object.keys(ROLE_MAP).sort()).toEqual(
-      ['HCC.BedManager', 'HCC.DemoOperator', 'HCC.PlatformAdmin', 'HCC.RegionalCrisisLead', 'HCC.Viewer'],
-    );
+  it('ROLE_MAP covers the real Entra app roles plus legacy aliases', () => {
+    const keys = Object.keys(ROLE_MAP);
+    // real app roles (data/entra/app-roles.csv)
+    expect(keys).toContain('HCC.SuperAdmin');
+    expect(keys).toContain('HCC.OperationsLead');
+    expect(keys).toContain('HCC.CrisisManager');
+    expect(keys).toContain('HCC.GuestReadOnly');
+    expect(keys).toContain('HCC.OntologySteward');
+    // legacy aliases retained for back-compat
+    expect(keys).toContain('HCC.RegionalCrisisLead');
+    expect(keys).toContain('HCC.Viewer');
+    expect(keys).toHaveLength(19);
   });
 });

@@ -58,7 +58,7 @@ describe('CSA wizard — pure module (csa-steps)', () => {
 describe('CSA wizard — role guard', () => {
   it('exposes the roles with the csa nav capability', () => {
     expect([...CSA_WIZARD_ROLES].sort()).toEqual(
-      ['HCC.DemoOperator', 'HCC.PlatformAdmin', 'HCC.RegionalCrisisLead'].sort(),
+      ['HCC.CrisisManager', 'HCC.DemoOperator', 'HCC.PlatformAdmin', 'HCC.RegionalCrisisLead'].sort(),
     );
   });
 });
