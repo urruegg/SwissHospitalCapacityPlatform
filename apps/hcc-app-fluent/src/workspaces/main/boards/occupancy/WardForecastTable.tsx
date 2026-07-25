@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Caption1, Text, makeStyles, tokens } from '@fluentui/react-components';
+import { Button, Caption1, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import {
   ArrowUpRegular,
   ArrowRightRegular,
@@ -32,6 +32,7 @@ const useStyles = makeStyles({
     fontWeight: tokens.fontWeightSemibold,
   },
   thIcon: { width: '48px', textAlign: 'center' },
+  colToggle: { width: '28px', textAlign: 'center', paddingLeft: space.xs, paddingRight: space.xs },
   td: {
     paddingTop: space.s,
     paddingBottom: space.s,
@@ -110,7 +111,7 @@ export function WardForecastTable({ wards, onSelectWard }: WardForecastTableProp
       <table className={s.table}>
         <thead>
           <tr>
-            <th className={`${s.th} ${s.thIcon}`} aria-label={t('ooa.table.details', 'Details')} />
+            <th className={mergeClasses(s.th, s.colToggle)} aria-label={t('ooa.table.details', 'Details')} />
             <th className={s.th}>{t('ooa.table.ward')}</th>
             <th className={s.th}>{t('ooa.table.now')}</th>
             <th className={`${s.th} ${s.thIcon}`}>{t('ooa.table.trend')}</th>
@@ -124,7 +125,7 @@ export function WardForecastTable({ wards, onSelectWard }: WardForecastTableProp
             return (
               <Fragment key={w.id}>
                 <tr className={s.row}>
-                  <td className={`${s.td} ${s.iconCell}`}>
+                  <td className={mergeClasses(s.td, s.colToggle)}>
                     <Button
                       appearance="subtle"
                       size="small"
@@ -155,7 +156,7 @@ export function WardForecastTable({ wards, onSelectWard }: WardForecastTableProp
                 </tr>
                 {isOpen && (
                   <tr className={s.detailRow}>
-                    <td className={s.detailCell} />
+                    <td className={mergeClasses(s.detailCell, s.colToggle)} />
                     <td className={s.detailCell} colSpan={5}>
                       <div className={s.detailGrid}>
                         <div className={s.detailItem}>
