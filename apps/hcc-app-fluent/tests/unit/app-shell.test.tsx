@@ -7,6 +7,8 @@ import { ThemeModeProvider } from '../../src/theme/theme-context';
 import { ModeProvider } from '../../src/context/mode-context';
 import { CopilotRailProvider } from '../../src/copilot-rail/rail-context';
 import { RoleProvider } from '../../src/context/role-context';
+import { HospitalProvider } from '../../src/context/hospital-context';
+import { parseClaims } from '../../src/auth/claim-parser';
 
 // Sprint 20 M7 — the agent affordance label is asserted in English.
 beforeAll(async () => {
@@ -19,13 +21,15 @@ function renderShell(path = '/start') {
       <ModeProvider>
         <CopilotRailProvider>
           <RoleProvider>
-            <MemoryRouter initialEntries={[path]}>
-              <Routes>
-                <Route element={<AppShell />}>
-                  <Route path="/start" element={<div>start-content</div>} />
-                </Route>
-              </Routes>
-            </MemoryRouter>
+            <HospitalProvider claims={parseClaims(undefined)}>
+              <MemoryRouter initialEntries={[path]}>
+                <Routes>
+                  <Route element={<AppShell />}>
+                    <Route path="/start" element={<div>start-content</div>} />
+                  </Route>
+                </Routes>
+              </MemoryRouter>
+            </HospitalProvider>
           </RoleProvider>
         </CopilotRailProvider>
       </ModeProvider>
