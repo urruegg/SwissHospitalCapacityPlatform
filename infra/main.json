@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.45.6.27763",
-      "templateHash": "8677212942083303720"
+      "version": "0.45.15.27210",
+      "templateHash": "7142471916764075785"
     }
   },
   "parameters": {
@@ -582,7 +582,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity."
+        "description": "Enable a private endpoint for the platform Key Vault (ADR-0039, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity."
       }
     }
   },
@@ -639,8 +639,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "6831425938694866297"
+              "version": "0.45.15.27210",
+              "templateHash": "12709708007594594275"
             }
           },
           "parameters": {
@@ -683,7 +683,7 @@
               "type": "bool",
               "defaultValue": false,
               "metadata": {
-                "description": "When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0038, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false."
+                "description": "When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0039, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false."
               }
             },
             "vnetResourceId": {
@@ -861,8 +861,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "11092665246856310223"
+              "version": "0.45.15.27210",
+              "templateHash": "4775159143963604237"
             }
           },
           "parameters": {
@@ -977,8 +977,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15666986789757700592"
+              "version": "0.45.15.27210",
+              "templateHash": "7067348100293623422"
             }
           },
           "parameters": {
@@ -1183,8 +1183,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "11956369232816364156"
+              "version": "0.45.15.27210",
+              "templateHash": "6398321357455288559"
             }
           },
           "parameters": {
@@ -1310,8 +1310,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1833113154266341724"
+              "version": "0.45.15.27210",
+              "templateHash": "6638527015992601355"
             }
           },
           "parameters": {
@@ -1514,8 +1514,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "10689296495622946629"
+                      "version": "0.45.15.27210",
+                      "templateHash": "15430035442934461439"
                     }
                   },
                   "parameters": {
@@ -1753,8 +1753,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "13645867721578398029"
+                      "version": "0.45.15.27210",
+                      "templateHash": "16846858966586516040"
                     }
                   },
                   "parameters": {
@@ -1916,8 +1916,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15460063151507913680"
+              "version": "0.45.15.27210",
+              "templateHash": "13453687588716698482"
             }
           },
           "parameters": {
@@ -2021,8 +2021,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16248653206385140613"
+              "version": "0.45.15.27210",
+              "templateHash": "12859803335828411041"
             }
           },
           "parameters": {
@@ -2129,8 +2129,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1631660769778658010"
+              "version": "0.45.15.27210",
+              "templateHash": "6220424990052136252"
             }
           },
           "parameters": {
@@ -2272,8 +2272,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16503415288114807116"
+              "version": "0.45.15.27210",
+              "templateHash": "17304584953902525869"
             }
           },
           "parameters": {
@@ -2540,8 +2540,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1619298565780961527"
+              "version": "0.45.15.27210",
+              "templateHash": "7230076444948795540"
             }
           },
           "parameters": {
@@ -2662,8 +2662,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1765711980068583287"
+              "version": "0.45.15.27210",
+              "templateHash": "13624344099504165410"
             }
           },
           "parameters": {
@@ -2744,8 +2744,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "2157408807266904991"
+                      "version": "0.45.15.27210",
+                      "templateHash": "9490011764893617069"
                     }
                   },
                   "parameters": {
@@ -3029,8 +3029,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "535917255065045059"
+              "version": "0.45.15.27210",
+              "templateHash": "16860468050710324881"
             }
           },
           "parameters": {
@@ -3261,8 +3261,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15390018866793242957"
+              "version": "0.45.15.27210",
+              "templateHash": "4357772689202446892"
             }
           },
           "parameters": {
@@ -3588,7 +3588,11 @@
           },
           "tags": {
             "value": "[variables('tags')]"
-          }
+          },
+          "keyVaultName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.keyVaultName.value]"
+          },
+          "containerRegistryName": "[if(empty(parameters('simCapacityContainerRegistryResourceId')), createObject('value', ''), createObject('value', last(split(parameters('simCapacityContainerRegistryResourceId'), '/'))))]"
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -3596,8 +3600,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16674682681449214876"
+              "version": "0.45.15.27210",
+              "templateHash": "1151250825559176912"
             }
           },
           "parameters": {
@@ -3619,12 +3623,28 @@
               "metadata": {
                 "description": "Resource tags applied to all resources."
               }
+            },
+            "keyVaultName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Key Vault name to attach to the ML workspace. Empty = derive from the platform-foundation naming convention (SIT). Set to the override name in environments that use keyVaultNameOverride, e.g. PROD switzerlandnorth (kv-ihzhhpf-prod-swn1)."
+              }
+            },
+            "containerRegistryName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Container Registry name to attach to the ML workspace. Empty = derive the api-runtime ACR name (SIT). Set to the in-RG ACR name where api-runtime is disabled or an override ACR is used, e.g. PROD switzerlandnorth (crihzhhpfprod)."
+              }
             }
           },
           "variables": {
             "storageAccountName": "[toLower(format('stdp{0}{1}', replace(parameters('nameSuffix'), '-', ''), take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)))]",
-            "containerRegistryName": "[toLower(format('cr{0}', uniqueString(resourceGroup().id, parameters('nameSuffix'))))]",
-            "keyVaultName": "[format('kv-{0}-{1}', parameters('nameSuffix'), take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4))]"
+            "derivedContainerRegistryName": "[toLower(format('cr{0}', uniqueString(resourceGroup().id, parameters('nameSuffix'))))]",
+            "effectiveContainerRegistryName": "[if(empty(parameters('containerRegistryName')), variables('derivedContainerRegistryName'), parameters('containerRegistryName'))]",
+            "derivedKeyVaultName": "[format('kv-{0}-{1}', parameters('nameSuffix'), take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4))]",
+            "effectiveKeyVaultName": "[if(empty(parameters('keyVaultName')), variables('derivedKeyVaultName'), parameters('keyVaultName'))]"
           },
           "resources": [
             {
@@ -3643,10 +3663,10 @@
               "properties": {
                 "publicNetworkAccess": "Enabled",
                 "friendlyName": "[format('mlw-{0}', parameters('nameSuffix'))]",
-                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('effectiveKeyVaultName'))]",
                 "applicationInsights": "[resourceId('Microsoft.Insights/components', format('appi-{0}', parameters('nameSuffix')))]",
                 "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "containerRegistry": "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]"
+                "containerRegistry": "[resourceId('Microsoft.ContainerRegistry/registries', variables('effectiveContainerRegistryName'))]"
               }
             }
           ],
@@ -3699,8 +3719,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16191629345100508003"
+              "version": "0.45.15.27210",
+              "templateHash": "16801748558517643812"
             }
           },
           "parameters": {
@@ -3806,8 +3826,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "6335274266135485317"
+              "version": "0.45.15.27210",
+              "templateHash": "3597564066161008070"
             }
           },
           "parameters": {
@@ -3928,8 +3948,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "14841147772701149684"
+                      "version": "0.45.15.27210",
+                      "templateHash": "14003066579642311487"
                     }
                   },
                   "parameters": {
@@ -4122,8 +4142,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3518442302807315975"
+              "version": "0.45.15.27210",
+              "templateHash": "14583701867747923328"
             }
           },
           "parameters": {
@@ -4447,8 +4467,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "14271685339274188062"
+              "version": "0.45.15.27210",
+              "templateHash": "6087286758352572380"
             }
           },
           "parameters": {
@@ -4591,8 +4611,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "1418152727854971719"
+                      "version": "0.45.15.27210",
+                      "templateHash": "594335556098139955"
                     }
                   },
                   "parameters": {
@@ -4748,8 +4768,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "9808019470207933078"
+                      "version": "0.45.15.27210",
+                      "templateHash": "6646545455890169293"
                     }
                   },
                   "parameters": {
@@ -4883,8 +4903,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "15845063017917743907"
+                      "version": "0.45.15.27210",
+                      "templateHash": "9561529887383588834"
                     }
                   },
                   "parameters": {
@@ -5026,8 +5046,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "7213773335792771551"
+                      "version": "0.45.15.27210",
+                      "templateHash": "2899347056287564506"
                     }
                   },
                   "parameters": {
@@ -5329,8 +5349,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "5334056569644691563"
+              "version": "0.45.15.27210",
+              "templateHash": "8004220282630993017"
             }
           },
           "parameters": {
@@ -5846,8 +5866,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "2182119932369270733"
+              "version": "0.45.15.27210",
+              "templateHash": "3701687070672016687"
             }
           },
           "parameters": {
@@ -6032,8 +6052,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3570153104393533044"
+              "version": "0.45.15.27210",
+              "templateHash": "4290292779733550713"
             }
           },
           "parameters": {
@@ -6332,8 +6352,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "5703750538639136666"
+              "version": "0.45.15.27210",
+              "templateHash": "8626556854951557043"
             }
           },
           "parameters": {
@@ -6496,8 +6516,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "6946668985564645552"
+              "version": "0.45.15.27210",
+              "templateHash": "12725326629230136180"
             }
           },
           "parameters": {
@@ -6671,8 +6691,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3641420194333204823"
+              "version": "0.45.15.27210",
+              "templateHash": "4101742253533779156"
             }
           },
           "parameters": {

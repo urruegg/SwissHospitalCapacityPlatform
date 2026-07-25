@@ -16,7 +16,7 @@ param logAnalyticsRetentionInDays int = 90
 @maxLength(24)
 param keyVaultName string = ''
 
-@description('When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0038, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false.')
+@description('When true, provisions a private endpoint for the Key Vault into the specified VNet subnet plus the Azure-managed `privatelink.vaultcore.azure.net` private DNS zone, and flips the vault to `publicNetworkAccess=Disabled`. Required in PROD switzerlandnorth to give the AAD-only vault a reachable data plane while satisfying the MCAPSGov policy that force-disables Key Vault public network access (ADR-0039, extends ADR-0029 Option A + ADR-0037). Ignored (public, no PE) when false.')
 param enableKeyVaultPrivateEndpoint bool = false
 
 @description('Resource ID of the VNet that hosts the Key Vault private-endpoint subnet + is linked to the private DNS zone. Ignored when enableKeyVaultPrivateEndpoint=false.')
@@ -61,14 +61,14 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     // provisioned (PROD swn — also what the MCAPSGov Modify-effect policy
     // enforces subscription-wide); Enabled for the public/PE-off scope. Without
     // this the API + policy interplay shows a perpetual what-if drift on this
-    // property (Bicep wants Enabled, policy re-disables). See ADR-0038.
+    // property (Bicep wants Enabled, policy re-disables). See ADR-0039.
     publicNetworkAccess: enableKeyVaultPrivateEndpoint ? 'Disabled' : 'Enabled'
     softDeleteRetentionInDays: 90
   }
 }
 
 // ============================================================================
-// Key Vault private endpoint + private DNS zone (ADR-0038, extends ADR-0029
+// Key Vault private endpoint + private DNS zone (ADR-0039, extends ADR-0029
 // Option A). Mirrors the Cosmos PE pattern in infra/modules/cosmos/csa.bicep.
 //
 // Required in PROD switzerlandnorth because the MCAPSGov policy force-disables

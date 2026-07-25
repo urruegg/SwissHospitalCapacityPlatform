@@ -117,11 +117,17 @@ def _require_numeric_row_field(row: Dict[str, Any], key: str, ward: Any, horizon
 
 
 def _bounded_bed_impact(
-    params: Dict[str, Any], gold: Dict[str, Any], extra_assumptions: Optional[List[str]] = None
+    params: Dict[str, Any],
+    gold: Dict[str, Any],
+    extra_assumptions: Optional[List[str]] = None,
+    metric: str = "beds",
 ) -> Dict[str, Any]:
-    """Shared grounding calculation used by all three formulas: bound the
-    requested ``n`` by the number of beds physically occupied in the matched
-    forecast row (not by the over-capacity gap — see module docstring)."""
+    """Shared grounding calculation used by every formula: bound the requested
+    ``n`` by the number of beds physically occupied in the matched forecast row
+    (not by the over-capacity gap — see module docstring). ``metric`` labels the
+    result with a role-meaningful name (e.g. ``rebalanced_beds``,
+    ``elective_slots``); ``delta`` always stays a bed-relief magnitude so the
+    coordination recompute is unaffected by the metric label."""
     n = _require_positive_int(params, "n")
     row = _select_forecast_row(params, gold)
 
@@ -144,7 +150,7 @@ def _bounded_bed_impact(
     if extra_assumptions:
         assumptions.extend(extra_assumptions)
 
-    return {"metric": "beds", "delta": int(delta), "assumptions": assumptions}
+    return {"metric": metric, "delta": int(delta), "assumptions": assumptions}
 
 
 # ---------------------------------------------------------------------------
@@ -171,10 +177,66 @@ def unblock_barrier_beds(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[s
     return _bounded_bed_impact(params, gold, extra_assumptions=[f"barrier_type={barrier_type}"])
 
 
+# --- Sprint 26 WS-B fan-out (BMCA / ORSA / SBA / CSA) ----------------------
+# Role-specific metric labels over the identical bed-relief grounding. The
+# `metric` communicates the mechanism; `delta` stays a bed-relief magnitude so
+# the coordination recompute is unchanged. Never an LLM estimate.
+def rebalance_census_beds(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[str, Any]:
+    """BMCA-REBALANCE-CENSUS: transfer N patients to a sister ward to rebalance
+    census. Grounded by the source ward's physically occupied beds."""
+    to_ward = _require_present(params, "to_ward")
+    return _bounded_bed_impact(
+        params,
+        gold,
+        extra_assumptions=["mechanism=rebalance_census", f"to_ward={to_ward}"],
+        metric="rebalanced_beds",
+    )
+
+
+def defer_elective_slots(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[str, Any]:
+    """ORSA-DEFER-ELECTIVE: defer N elective (surgical) admissions before a
+    given time, preventing forecast inflow. Grounded by occupied beds."""
+    before = _require_present(params, "before")
+    return _bounded_bed_impact(
+        params,
+        gold,
+        extra_assumptions=["mechanism=defer_elective", f"before={before}"],
+        metric="elective_slots",
+    )
+
+
+def flex_staff_beds(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[str, Any]:
+    """SBA-FLEX-STAFF-BEDS: flex-staff N additional beds on a given shift.
+    Grounded by occupied beds (bed-relief magnitude)."""
+    shift = _require_present(params, "shift")
+    return _bounded_bed_impact(
+        params,
+        gold,
+        extra_assumptions=["mechanism=flex_staff", f"shift={shift}"],
+        metric="staffed_beds",
+    )
+
+
+def activate_surge_beds(params: Dict[str, Any], gold: Dict[str, Any]) -> Dict[str, Any]:
+    """CSA-ACTIVATE-SURGE: activate a surge plan of a given scope to free N
+    beds. Grounded by occupied beds (bed-relief magnitude)."""
+    scope = _require_present(params, "scope")
+    return _bounded_bed_impact(
+        params,
+        gold,
+        extra_assumptions=["mechanism=activate_surge", f"scope={scope}"],
+        metric="surge_beds",
+    )
+
+
 FORMULA_REGISTRY: Dict[str, FormulaFn] = {
     "expedite_discharge_beds": expedite_discharge_beds,
     "divert_low_acuity_beds": divert_low_acuity_beds,
     "unblock_barrier_beds": unblock_barrier_beds,
+    "rebalance_census_beds": rebalance_census_beds,
+    "defer_elective_slots": defer_elective_slots,
+    "flex_staff_beds": flex_staff_beds,
+    "activate_surge_beds": activate_surge_beds,
 }
 
 

@@ -19,6 +19,14 @@ This document is scoped to the approved MVP service pattern using:
 3. Data lake storage layers (OneLake and controlled landing zones) for
 	scalable governed data persistence.
 
+> **As-deployed (Sprint 19):** the data/AI lane is live in PROD
+> **`switzerlandnorth`** — Fabric F2 capacity `fabricihzhhpfprod`, workspace
+> `ws-ihzhhpf-prod-data`, schemas-enabled lakehouse `lh_ihzhhpf_prod` with 50
+> Delta tables, plus 2 semantic models + report. Synthetic data only, no PHI
+> (metadata/episode-driven per [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md)).
+> Consolidated as-deployed view:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
+
 ## Source Baseline
 
 This data design aligns to:

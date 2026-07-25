@@ -39,6 +39,16 @@ controls.
 3. Discharge coordination support with auditable rationale and timestamps.
 4. Role-based conversational assistance across operations personas.
 
+> **As-deployed (Sprint 19):** the AI lane is live in PROD
+> **`switzerlandnorth`** — Foundry `ai-ihzhhpf-prod` with 3 models (gpt-5,
+> gpt-5-mini, o3) and 8 agents; agent-host `/agents` → 7; live inference
+> verified (`PROD-SWN-OK`). The **Fabric IQ operational ontology** (`FR-ONT-002`)
+> is **not at GA parity** in swn — availability-blocked by the Microsoft Preview
+> per-capacity gate ([#270](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/270),
+> [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md)).
+> Synthetic data only, no PHI. Consolidated view:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
+
 ## GA Service Baseline (Non-Foundry-Hosted Agents)
 
 ### Recommended Reference Design

@@ -20,9 +20,13 @@ except ImportError:
 
 from impact.compute_expected_impact import (
     FORMULA_REGISTRY,
+    activate_surge_beds,
     compute_expected_impact,
+    defer_elective_slots,
     divert_low_acuity_beds,
     expedite_discharge_beds,
+    flex_staff_beds,
+    rebalance_census_beds,
     unblock_barrier_beds,
 )
 
@@ -90,7 +94,15 @@ class TestFormulaRegistry(unittest.TestCase):
     def test_registry_has_all_three_formulas(self):
         self.assertEqual(
             set(FORMULA_REGISTRY.keys()),
-            {"expedite_discharge_beds", "divert_low_acuity_beds", "unblock_barrier_beds"},
+            {
+                "expedite_discharge_beds",
+                "divert_low_acuity_beds",
+                "unblock_barrier_beds",
+                "rebalance_census_beds",
+                "defer_elective_slots",
+                "flex_staff_beds",
+                "activate_surge_beds",
+            },
         )
 
     def test_expedite_discharge_beds_within_gap(self):
@@ -233,6 +245,75 @@ class TestFormulaRegistry(unittest.TestCase):
             expedite_discharge_beds(params, gold)
 
 
+class TestFanoutFormulas(unittest.TestCase):
+    """Sprint 26 WS-B fan-out: role-specific metric labels over the same
+    bed-relief grounding (delta = min(n, occupied_beds)). Each formula is pure
+    and deterministic, and carries a role-meaningful ``metric`` + mechanism
+    assumption while keeping ``delta`` a bed-relief magnitude so the
+    coordination recompute stays intact."""
+
+    def test_rebalance_census_beds(self):
+        gold = _gold()
+        params = {"n": 5, "to_ward": "hcp:Ward/Medicine B", "ward": "hcp:Ward/Medicine A"}
+        result = rebalance_census_beds(params, gold)
+        self.assertEqual(result["metric"], "rebalanced_beds")
+        self.assertEqual(result["delta"], 5)
+        self.assertIn("mechanism=rebalance_census", result["assumptions"])
+        self.assertIn("to_ward=hcp:Ward/Medicine B", result["assumptions"])
+
+    def test_defer_elective_slots(self):
+        gold = _gold()
+        params = {"n": 4, "before": "07:00", "ward": "hcp:Ward/Medicine A"}
+        result = defer_elective_slots(params, gold)
+        self.assertEqual(result["metric"], "elective_slots")
+        self.assertEqual(result["delta"], 4)
+        self.assertIn("mechanism=defer_elective", result["assumptions"])
+        self.assertIn("before=07:00", result["assumptions"])
+
+    def test_flex_staff_beds(self):
+        gold = _gold()
+        params = {"n": 3, "shift": "night", "ward": "hcp:Ward/Medicine A"}
+        result = flex_staff_beds(params, gold)
+        self.assertEqual(result["metric"], "staffed_beds")
+        self.assertEqual(result["delta"], 3)
+        self.assertIn("mechanism=flex_staff", result["assumptions"])
+        self.assertIn("shift=night", result["assumptions"])
+
+    def test_activate_surge_beds(self):
+        gold = _gold()
+        params = {"n": 8, "scope": "cantonal", "ward": "hcp:Ward/Medicine A"}
+        result = activate_surge_beds(params, gold)
+        self.assertEqual(result["metric"], "surge_beds")
+        self.assertEqual(result["delta"], 8)
+        self.assertIn("mechanism=activate_surge", result["assumptions"])
+        self.assertIn("scope=cantonal", result["assumptions"])
+
+    def test_fanout_formulas_bound_by_occupied_beds(self):
+        gold = _gold()
+        params = {"n": 500, "to_ward": "hcp:Ward/Medicine B", "ward": "hcp:Ward/Medicine A"}
+        result = rebalance_census_beds(params, gold)
+        # occupied beds in the fixture forecast row is 116.
+        self.assertEqual(result["delta"], 116)
+
+    def test_fanout_missing_required_param_raises(self):
+        gold = _gold()
+        # defer_elective_slots requires `before`.
+        with self.assertRaises(ValueError):
+            defer_elective_slots({"n": 4, "ward": "hcp:Ward/Medicine A"}, gold)
+
+    def test_fanout_missing_n_raises(self):
+        gold = _gold()
+        with self.assertRaises(ValueError):
+            flex_staff_beds({"shift": "day", "ward": "hcp:Ward/Medicine A"}, gold)
+
+    def test_fanout_determinism(self):
+        gold = _gold()
+        params = {"n": 8, "scope": "cantonal", "ward": "hcp:Ward/Medicine A"}
+        r1 = activate_surge_beds(copy.deepcopy(params), copy.deepcopy(gold))
+        r2 = activate_surge_beds(copy.deepcopy(params), copy.deepcopy(gold))
+        self.assertEqual(r1, r2)
+
+
 class TestResolver(unittest.TestCase):
     """Resolver tests using an injected catalog (dependency-light)."""
 
@@ -251,6 +332,26 @@ class TestResolver(unittest.TestCase):
             "lever_id": "DCA-UNBLOCK-BARRIER",
             "impact_formula_ref": "unblock_barrier_beds",
             "owner_role": "dca",
+        },
+        {
+            "lever_id": "BMCA-REBALANCE-CENSUS",
+            "impact_formula_ref": "rebalance_census_beds",
+            "owner_role": "bmca",
+        },
+        {
+            "lever_id": "ORSA-DEFER-ELECTIVE",
+            "impact_formula_ref": "defer_elective_slots",
+            "owner_role": "orsa",
+        },
+        {
+            "lever_id": "SBA-FLEX-STAFF-BEDS",
+            "impact_formula_ref": "flex_staff_beds",
+            "owner_role": "sba",
+        },
+        {
+            "lever_id": "CSA-ACTIVATE-SURGE",
+            "impact_formula_ref": "activate_surge_beds",
+            "owner_role": "csa",
         },
     ]
 
@@ -274,6 +375,16 @@ class TestResolver(unittest.TestCase):
         )
         self.assertEqual(result["owner_role"], "bmca")
         self.assertEqual(result["delta"], 3)
+
+    def test_resolver_rebalance_census(self):
+        gold = _gold()
+        params = {"n": 5, "to_ward": "hcp:Ward/Medicine B", "ward": "hcp:Ward/Medicine A"}
+        result = compute_expected_impact(
+            "BMCA-REBALANCE-CENSUS", params, gold, catalog=self.INJECTED_CATALOG
+        )
+        self.assertEqual(result["owner_role"], "bmca")
+        self.assertEqual(result["metric"], "rebalanced_beds")
+        self.assertEqual(result["delta"], 5)
 
     def test_resolver_unknown_lever_id_raises(self):
         gold = _gold()
@@ -321,6 +432,22 @@ class TestResolverRealCatalog(unittest.TestCase):
         result = compute_expected_impact("DCA-UNBLOCK-BARRIER", params, gold)
         self.assertEqual(result["owner_role"], "dca")
         self.assertEqual(result["delta"], 4)
+
+    def test_real_catalog_resolves_fanout_levers(self):
+        gold = _gold()
+        cases = [
+            ("BMCA-REBALANCE-CENSUS", {"n": 5, "to_ward": "hcp:Ward/Medicine B"}, "bmca", "rebalanced_beds"),
+            ("ORSA-DEFER-ELECTIVE", {"n": 4, "before": "07:00"}, "orsa", "elective_slots"),
+            ("SBA-FLEX-STAFF-BEDS", {"n": 3, "shift": "night"}, "sba", "staffed_beds"),
+            ("CSA-ACTIVATE-SURGE", {"n": 8, "scope": "cantonal"}, "csa", "surge_beds"),
+        ]
+        for lever_id, params, owner, metric in cases:
+            with self.subTest(lever_id=lever_id):
+                params = dict(params, ward="hcp:Ward/Medicine A")
+                result = compute_expected_impact(lever_id, params, gold)
+                self.assertEqual(result["owner_role"], owner)
+                self.assertEqual(result["metric"], metric)
+                self.assertEqual(result["delta"], params["n"])
 
 
 if __name__ == "__main__":

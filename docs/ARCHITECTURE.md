@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.12.0 |
-| **Date** | 2026-06-09 |
+| **Version** | 0.13.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.0 (Sprint 05 CAF/WAF runtime + reliability baseline closure) |
+| **Previous Version** | 0.12.0 (Sprint 05 CAF/WAF runtime + reliability baseline closure) |
 
 ## Purpose
 
@@ -26,6 +26,15 @@ the requirement baseline in docs/PRD.md.
 
 primary region = switzerland north
 secondary region = switzerland west (failover per compliance runbook)
+
+> **Target vs. as-deployed:** the region baseline above is the **target GA
+> architecture**. The current demo/proof-of-technology deployment runs PROD
+> greenfield in **`switzerlandnorth`** (single-region, no Switzerland West
+> failover yet) and SIT in `westus2` (+ `eastus2` Foundry split), synthetic
+> data only, no PHI — per [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md),
+> [ADR-0013](adr/0013-temporary-us-region-demo-scope.md), and
+> [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md). Consolidated as-deployed
+> view: [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 ## Reference Pattern
 

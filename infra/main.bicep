@@ -268,7 +268,7 @@ param manageCuraviasDnsZone bool = true
 @description('Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield).')
 param keyVaultNameOverride string = ''
 
-@description('Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity.')
+@description('Enable a private endpoint for the platform Key Vault (ADR-0039, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity.')
 param enableKeyVaultPrivateEndpoint bool = false
 
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
@@ -294,7 +294,7 @@ module platformFoundation './modules/platform-foundation/main.bicep' = {
     tags: tags
     logAnalyticsRetentionInDays: logAnalyticsRetentionInDays
     keyVaultName: keyVaultNameOverride
-    // ADR-0038 — Key Vault private endpoint. vnetResourceId is only consumed by
+    // ADR-0039 — Key Vault private endpoint. vnetResourceId is only consumed by
     // the module when enableKeyVaultPrivateEndpoint=true (which requires
     // enableNetworkModule=true — see the param description). Single-condition
     // guard mirrors the agent-host CAE wiring so Bicep can prove non-null.
@@ -468,8 +468,12 @@ module aiMlFoundation './modules/ai-ml-foundation/main.bicep' = if (enableAiMlFo
     location: location
     nameSuffix: resourceSuffix
     tags: tags
+    // Pass the actual KV + ACR names so the ML workspace resolves them under
+    // environments that use override names / disable api-runtime (PROD swn).
+    // Empty falls back to the derived SIT names inside the module.
+    keyVaultName: platformFoundation.outputs.keyVaultName
+    containerRegistryName: empty(simCapacityContainerRegistryResourceId) ? '' : last(split(simCapacityContainerRegistryResourceId, '/'))
   }
-  // 2026-07-14 — force serial ordering after platform-foundation to avoid the
   // Key Vault parallel-operation race. This module resolves the KV via
   // `existing` (matched name), so Bicep cannot infer an implicit dependency;
   // without dependsOn, ARM may re-apply both modules concurrently and hit
