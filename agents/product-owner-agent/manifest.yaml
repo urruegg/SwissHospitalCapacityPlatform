@@ -1,0 +1,43 @@
+agent: product-owner-agent
+version: 1.0.0
+runtime: copilot-coding-agent          # control-plane, per ADR-0002 (not the Sprint 13 agent-host)
+invocation: issue-triggered            # @product-owner-agent mention or a product-question issue; also the in-app Copilot rail (WS-X) at runtime
+approvalIssue: 377                      # human-authored governance issue that authorised this agent (Sprint 28)
+foundryIqDomain: 1                      # domain #1 on the shared Foundry IQ Knowledge Layer, per ADR-0043
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#5-refusal-rules
+contractRef: ../../docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md
+schemaRef: ../../data/synthetic/schema/grounded-chunk-v1.schema.json
+knowledgeClasses:                      # the four frozen class tools (contract Section 3)
+  - id: A
+    tool: retrieveCorpus
+    grounding: foundry-iq-corpus-knowledge-source
+  - id: B
+    tool: liveProof
+    grounding: azure-resource-graph-fabric-rest-foundry-agent-api
+  - id: C
+    tool: costAnswer
+    grounding: cost-management-copilot-token-bva
+  - id: D
+    tool: ontologyQuery
+    grounding: da_hospital_capacity-fabric-data-agent
+mcpTools:
+  - server: github-mcp
+    tools: [get-issue, add-issue-comment, create-branch, create-or-update-file, create-pull-request]
+    ceiling: write
+  - server: azure-mcp
+    tools: [resource-graph-query, cost-management-read]
+    ceiling: read                      # Class B live-proof + Class C cost; strictly read-only
+  - server: fabric-mcp
+    tools: [read-item, data-agent-query]
+    ceiling: read                      # Class D ontology query; strictly read-only
+hitl:
+  gates: []                            # ceiling is write; no deploy/delete, so no approved-to-apply gate
+grounding:
+  - source: docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md
+    scope: grounded-chunk-and-class-signatures
+  - source: docs/PRD.md
+    scope: fr-nfr-poa-ids
+  - source: docs/adr/0043-product-owner-agent-foundry-iq-domain.md
+    scope: foundry-iq-domain-decision
+goldenTasksRef: ./golden-tasks.md

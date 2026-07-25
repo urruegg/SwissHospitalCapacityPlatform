@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.10.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 2.11.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rüeegg |
 | **Status** | Draft |
-| **Previous Version** | 2.9.0 (added the `product-marketing-agent` registry row for Curavias messaging; issue #262) |
+| **Previous Version** | 2.10.0 (added the `product-owner-agent` registry row for the Sprint 28 Curavias Product Owner Agent; issue #377) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -199,6 +199,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `knowledge-agent` | Documentation steward — encoding / lint / version / traceability / status gate for every doc create or update (S18; approved via issue #242) | @urruegg | `@knowledge-agent` mention or a doc-steward issue; also usable as the `document-authoring` skill from Copilot CLI | `github-mcp` | `write` | [`agents/knowledge-agent/AGENT.md`](agents/knowledge-agent/AGENT.md) | [`agents/knowledge-agent/golden-tasks.md`](agents/knowledge-agent/golden-tasks.md) |
 | `ux-design-agent` | UX design steward — anchor for all user-experience questions (mockups, flows, brand tokens, accessibility) and refinement of the Curavias demo showcase; runs the Superpowers brainstorming + visual-companion flow (S20; approved via issue #258) | @urruegg | `@ux-design-agent` mention or any UX / design / mockup / accessibility issue | `github-mcp`, `playwright-mcp` (read; visual + a11y verification) | `write` | [`agents/ux-design-agent/AGENT.md`](agents/ux-design-agent/AGENT.md) | [`agents/ux-design-agent/golden-tasks.md`](agents/ux-design-agent/golden-tasks.md) |
 | `product-marketing-agent` | Product-marketing / communications steward — stringent, brand-aligned Curavias messaging across customer-, user-, and devops-facing channels; RACI-paired with `ux-design-agent` (message vs. experience) (S24; approved via issue #262) | @urruegg | `@product-marketing-agent` mention or any product-messaging / copy / positioning issue | `github-mcp`, `playwright-mcp` (read; copy-in-context review) | `write` | [`agents/product-marketing-agent/AGENT.md`](agents/product-marketing-agent/AGENT.md) | [`agents/product-marketing-agent/golden-tasks.md`](agents/product-marketing-agent/golden-tasks.md) |
+| `product-owner-agent` | Curavias Product Owner Agent — authoritative, source-grounded, **advisory-only** voice of the platform; answers product questions grounded on the four knowledge classes (A corpus / B live-proof / C cost / D ontology) over the frozen `GroundedChunk` contract; **domain #1 on the shared Foundry IQ Knowledge Layer** ([ADR-0043](docs/adr/0043-product-owner-agent-foundry-iq-domain.md)); embedded as the START + BACKSTAGE Copilot rail (S28; approved via issue #377) | @urruegg | `@product-owner-agent` mention, any product-question issue, or the in-app Copilot rail | `github-mcp` (write), `azure-mcp` (read; Class B/C), `fabric-mcp` (read; Class D) | `write` | [`agents/product-owner-agent/AGENT.md`](agents/product-owner-agent/AGENT.md) | [`agents/product-owner-agent/golden-tasks.md`](agents/product-owner-agent/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per
