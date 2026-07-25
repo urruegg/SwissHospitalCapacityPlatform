@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | In progress (session 2026-07-25) |
-| **Previous Version** | 1.1.0 (session 2026-07-24 log + backlog) |
+| **Status** | In progress (paused 2026-07-25; review + action plan 2026-07-26) |
+| **Previous Version** | 1.2.0 (session 2026-07-25 log + backlog) |
 | **Design spec** | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](../superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) |
 | **Implementation plan** | [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](../superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) |
 | **Predecessors** | Sprint 20 (5-plane shell) · Curavias app prototype-parity · Sprint 25 / #276 (mockup ↔ app parity) |
@@ -82,6 +82,7 @@ role boards.
 | D4 | **OOA reference vertical this sprint + ordered backlog for the rest** | Realistic DoD; the OOA vertical locks every pattern the backlog reuses; compounding quality over a shallow full sweep. |
 | D5 | **Not pixel-parity** — "as close as the Fluent UI stack reasonably allows" | Extend Fluent to a sensible acceptance level rather than fighting the framework; the heuristic checklist + AA gate define "done". |
 | D6 | **Internal app only** — public site `apps/curavias-web` and any Astro pattern are out of scope | The internal app must not adopt Astro-site design; strict experience-lane boundary. |
+| D7 | **Real-data linkage (in-sprint extension, 2026-07-25)** — wire the header controls to live data at the user's direction: hospital selector from the anonymized Curavias tenant master data, role model to the real 17 Entra app roles, MSAL sign-in/out + read-only Demo Guest | Verifies the mockup hypotheses against the underlying data. Consumes existing master data + MSAL only (no data-contract or infra change); extends the pure-visual scope into the identity/data lanes. |
 
 ---
 
@@ -107,6 +108,32 @@ role boards.
 ---
 
 ## 6. Session log
+
+### Sprint achievements to date (2026-07-25)
+
+Delivered across Sessions 1–3 on `sprint-27/curavias-ux-polish`:
+
+* **Foundation (M0–M3):** SIT-connected shared-context verify loop + runbook; codified
+  design-system module (tokens + recipes); app style-guide doc; in-app `/brand` gallery.
+* **OOA reference vertical:** ward-forecast table (full-width, ontology drill-down, icon-only
+  colour-coded Flag/Trend, narrowed drill-down column); external + internal Signals panel
+  (Trust-A + live/simulated provenance); capacity-flow (Signals → Streams → Recommendation);
+  brand RAG badges; patient-journey MAIN tab order.
+* **Frame / M365 alignment:** full-viewport five-plane shell; header selectors as icon
+  menu-buttons; M365-Copilot left nav (Demo/User switch, light selected background); Copilot
+  pane as a lower-right FAB + M365-style input pill.
+* **Copilot experience:** official Microsoft Copilot mark (replacing the custom sparkle) +
+  brandkit icons; agent chat replies rendered as **grounded artefacts** through the shared
+  `RecoPanel` block stack (one artefact vocabulary for proactive reco + conversational reply).
+* **Real-data linkage (D7):** hospital selector from the anonymized Curavias tenant master
+  data with working selection; role model adopting the real 17 Entra app roles; MSAL
+  sign-in/out with a read-only Demo Guest fallback.
+* **Verification:** `tsc` clean throughout; unit suite **400 passed**; **4 pre-existing
+  `start-view` redirect-race failures** remain (documented; not regressions).
+
+Open (M8 closeout, next): full `test:e2e` / `test:a11y` (axe); resolve the 4 `start-view`
+failures; ADR-00NN (Approach A); PRD `FR-UX` / `NFR-UX` status → Delivered; rebase onto
+`main`; PR to #365. Plus the new **data-access / IQ-layer** work (§8).
 
 ### 2026-07-24 — Session 1 (OOA board + frame polish)
 
@@ -155,6 +182,30 @@ ADR-00NN, PRD status flip, rebase, PR).
 StartView `start-view` testid races the `/`→`/start` redirect under jsdom — fix with
 `findByTestId`; the app boots to Start correctly in the browser.
 
+### 2026-07-25 — Session 3 (chat artefacts, official Copilot mark, header real-data linkage)
+
+Extended the polish into **real-data linkage** at the user's direction (see D7). Commits on
+`sprint-27/curavias-ux-polish`, newest first:
+
+| Commit | Summary |
+|--------|---------|
+| `be13469` | Role model adopts the real 17 Entra app roles + legacy aliases (selector reflects the group-based app-role assignment) |
+| `d6f06d0` | Real MSAL sign-in/out with a read-only Demo Guest fallback (claims bridged from the active account) |
+| `e6d874a` | Hospital selector shows the anonymized Curavias tenant names (Uniklinik CuraNova / Kantonsspital Curalp / Spital Vialta) — bug fix |
+| `c8b43b1` | Hospital selector sourced from real Entra org data + working selection (re-scopes the boards) |
+| `b7cc513` | Narrow ward-forecast drill-down column to widen the data columns |
+| `c86132f` | Official Microsoft Copilot mark for the Copilot affordance (FAB + header) + brandkit icons |
+| `302f679` | Agent chat replies render as grounded artefacts (Foundry structured reply) via the shared `RecoPanel` block stack |
+
+Verified: `tsc` clean each step; full unit suite = **400 passed**; hospital / role / sign-in /
+Copilot-mark / chat-artefact changes confirmed live in the shared tab.
+
+**Correction to the Session 2 note:** `findByTestId` alone does **not** clear the 4
+`start-view` failures (`shell.test` ×1, `router.test` ×3) — they persist after the async
+query, so M8 needs a deeper look at the `/`→`/start` redirect / loader under jsdom, not just
+an async matcher. Not a regression (the app boots to Start in the browser); this session added
+zero new failures.
+
 ## 7. Next-session backlog (general wireframe + M365 Copilot alignment)
 
 Captured 2026-07-24. **Items 1–4 delivered in Session 2 (2026-07-25); item 5 remains.**
@@ -174,6 +225,36 @@ Captured 2026-07-24. **Items 1–4 delivered in Session 2 (2026-07-25); item 5 r
    show a **light selected-background**.
 5. **Acceptance-bar closeout** — dark-mode re-verify on the final layout + `axe` a11y scan;
    then M8 (full suite, ADR-00NN, PRD status → Delivered, rebase onto `main`, PR to #365).
+
+---
+
+## 8. Data-access / IQ-layer backlog (next work in this sprint)
+
+Captured 2026-07-25 for the **2026-07-26 review + action plan**. Design doc:
+[`docs/architecture/app-iq-data-access-pattern.md`](../architecture/app-iq-data-access-pattern.md)
+(Draft for review).
+
+**Finding.** The app has two data paths: the **conversational** path is IQ-governed (Foundry
+Agent → Fabric Data Agent → semantic model over Gold), but the **structured board** path reads
+Gold directly via `golden-source-client` (or simulated in demo) and bypasses the IQ
+semantic / ontology layer. So "we always go through the IQ layer" is only partially true today.
+
+**Goal.** Establish a single **IQ data-access pattern** so every app read is
+golden-evidence-grounded via Fabric IQ / Foundry IQ, with provenance + citations always visible.
+
+**Proposed first slices (confirm order at the review):**
+
+1. ADR "App data access via the IQ layer" (precedence + evidence envelope).
+2. `src/data/iq-client.ts` — single ingress + evidence envelope; refactor
+   `golden-source-client` + `agent-manifest` to call it (keep the simulated fallback).
+3. Route board reads through the Fabric Data Agent / semantic-model surface (board KPIs carry
+   `hcp:*` citations, matching the chat path).
+4. ESLint guard: only `iq-client` may hold a `fetch` / endpoint import.
+5. `grounding degraded` UI affordance + golden tests for the envelope.
+
+**Lane / impact.** Data lane; behind the existing `provenance` contract + golden tests; no
+data-contract or infra change implied by the app-side gateway. PHI stays out (ADR-0013/0016);
+Fabric IQ PROD / PHI paths stay GA-gated (ADR-0014).
 
 ---
 
