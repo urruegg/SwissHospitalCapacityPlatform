@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "2538395112464421570"
+      "templateHash": "3618233654771337776"
     }
   },
   "parameters": {
@@ -3971,7 +3971,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "17103352713216679345"
+              "templateHash": "3075851248279361199"
             }
           },
           "parameters": {
@@ -4094,23 +4094,35 @@
             },
             "openAiDeploymentName": {
               "type": "string",
-              "defaultValue": "gpt-4o",
+              "defaultValue": "gpt-5",
               "metadata": {
                 "description": "Chat model deployment name the orchestrator calls."
               }
             },
             "openAiModelName": {
               "type": "string",
-              "defaultValue": "gpt-4o",
+              "defaultValue": "gpt-5",
               "metadata": {
                 "description": "Chat model name."
               }
             },
             "openAiModelVersion": {
               "type": "string",
-              "defaultValue": "2024-08-06",
+              "defaultValue": "2025-08-07",
               "metadata": {
-                "description": "Chat model version."
+                "description": "Chat model version. Pinned to gpt-5 2025-08-07 (GenerallyAvailable), matching the existing agent fleet. The regional `Standard` tier is retiring in switzerlandnorth — gpt-4o/gpt-4.1 there are all `Deprecating` and gpt-4o 2024-11-20 already blocks new deployments — so we run the GA GPT-5 family. Verified via `az cognitiveservices model list -l switzerlandnorth`."
+              }
+            },
+            "openAiSkuName": {
+              "type": "string",
+              "defaultValue": "GlobalStandard",
+              "allowedValues": [
+                "Standard",
+                "GlobalStandard",
+                "DataZoneStandard"
+              ],
+              "metadata": {
+                "description": "Deployment SKU. `GlobalStandard` per the recorded platform decision D7-a (sprint-19 SIT/PROD parity plan) + ADR-0037: fleet agents (gpt-5/-mini/o3) run GlobalStandard cross-geo in swn, accepted under the no-PHI posture; those models do not offer regional `Standard` or `DataZoneStandard`. Quota OpenAI.GlobalStandard.gpt-5 = 1000K TPM. A future PHI onboarding can move to `DataZoneStandard` (EU) on gpt-5.4/5.5/5.6."
               }
             },
             "openAiCapacity": {
@@ -4209,7 +4221,7 @@
               "apiVersion": "2024-10-01",
               "name": "[format('{0}/{1}', variables('openAiName'), parameters('openAiDeploymentName'))]",
               "sku": {
-                "name": "Standard",
+                "name": "[parameters('openAiSkuName')]",
                 "capacity": "[parameters('openAiCapacity')]"
               },
               "properties": {
