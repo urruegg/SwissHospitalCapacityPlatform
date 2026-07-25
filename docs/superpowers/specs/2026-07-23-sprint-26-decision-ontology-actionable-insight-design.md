@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-25 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B next) |
-| **Previous Version** | 1.0.0 (added §9 delivery status & next step) |
+| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out to BMCA/ORSA/SBA/CSA in delivery) |
+| **Previous Version** | 1.1.0 (added §9 delivery status & next step) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -227,17 +227,20 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 
 ## 9. Status & next step
 
-> Delivery status as of **2026-07-24**. This sprint is paused after WS-A for a break;
-> WS-B is the next slice and is fully planned + scoped (see below).
+> Delivery status as of **2026-07-25**. WS-A (Foresight) and the WS-B/C/D
+> **vertical slice** (OOA -> DCA, all 5 beats) are merged to `main` (#369). The
+> current slice **fans the proven pattern out** to the remaining four roles
+> (BMCA, ORSA, SBA, CSA) — one curated lever each, deterministic impact, and
+> agent-pack + golden-task upgrades (see §9.5).
 
 ### 9.1 Work-stream progress
 
 | WS | Status | Evidence / notes |
 | -- | ------ | ---------------- |
 | **WS-A — Foresight tier** | ✅ **Done, merged to `main`** | Deterministic forecast+driver+signal generator, 3 Gold tables, `hcp:Forecast/Driver` + `hcp:ExternalSignal` reuse, 2 contracts (`DC-OCCUPANCY-FORECAST-v1`, `DC-FORECAST-DRIVER-v1`), 16 unit tests. Live SIT evidence captured. |
-| **WS-B — Lever catalog + deterministic impact** | ⏭ **Next (planned, not started)** | Branch `sprint-26/ws-b-levers` bookmarked off `main`. Scope + decisions locked in §9.3. |
-| **WS-C — Decision + Coordination runtime (Cosmos)** | ⬜ Not started | `proposed_actions` + `plans`, HITL approve → recompute → plan `current` 102%→94%, handoff edges. Depends on WS-B. |
-| **WS-D — Consumption + governance** | ⬜ Not started | `DC-INSIGHT-v1` Data Agent contract, 6 Foundry agent upgrades, descriptive→prescriptive ADR, PRD FR/NFR + traceability. |
+| **WS-B — Lever catalog + deterministic impact** | ✅ **Vertical slice merged (#369); fan-out in delivery** | OOA+DCA levers, `compute_expected_impact`, `DC-INSIGHT-v1` contract, barrier model + `hcp:Barrier` landed via #369. Current slice adds the four fan-out levers (`BMCA-REBALANCE-CENSUS`, `ORSA-DEFER-ELECTIVE`, `SBA-FLEX-STAFF-BEDS`, `CSA-ACTIVATE-SURGE`) + formulas + tests. |
+| **WS-C — Decision + Coordination runtime (Cosmos)** | ✅ **Vertical slice merged (#369); fan-out in delivery** | `Store`/`plan_runtime` (102%→94% recompute + OOA→DCA handoff) landed via #369. Current slice adds `coordination/seed_fanout.py` (self-owned golden thread per fan-out role). Live Cosmos/Foundry `apply` still deferred. |
+| **WS-D — Consumption + governance** | ✅ **Vertical slice merged (#369); fan-out in delivery** | `DC-INSIGHT-v1` Data Agent contract + OOA/DCA agent upgrades + ADR-0040 + PRD `FR-DEC-*`/`NFR-DEC-*` landed via #369. Current slice upgrades the BMCA/ORSA/SBA/CSA agent packs + golden tasks. |
 
 ### 9.2 WS-A — what landed (merged PRs, issue #335)
 
@@ -264,3 +267,40 @@ One cohesive squash PR off `main` (branch `sprint-26/ws-b-levers`), Data/AI lane
 - [ ] Re-read this §9 + the design §3.3 / §4 (WS-B) + [`docs/AI.md`](../../AI.md), [`docs/DATA.md`](../../DATA.md), [`docs/COMPLIANCE.md`](../../COMPLIANCE.md).
 - [ ] On branch `sprint-26/ws-b-levers` (already off `main`): TDD — schemas + failing tests first, then lever yaml + impact tool + barrier builder.
 - [ ] Validate: `pytest`, catalog schema-validate, `check_crosswalk_conformance.py --strict`, mojibake + markdownlint. Commit hooks-off; open one squash PR, base `main`, refs #335, **no self-merge**.
+
+### 9.5 Fan-out slice — BMCA / ORSA / SBA / CSA (current)
+
+One cohesive squash PR off `main` (branch `sprint-26/ws-b-levers`), 3-lane
+(Data/AI + Governance), TDD-first. Reuses the merged #369 pattern; **no new
+Cosmos container, no live `apply`** (the `proposed_actions` / `plans` containers
+already exist as role-agnostic IaC).
+
+| Role | Lever | `metric` | `params` | `formula_ref` |
+| ---- | ----- | -------- | -------- | ------------- |
+| BMCA | `BMCA-REBALANCE-CENSUS` | `rebalanced_beds` | `n`, `to_ward` | `rebalance_census_beds` |
+| ORSA | `ORSA-DEFER-ELECTIVE` | `elective_slots` | `n`, `before` | `defer_elective_slots` |
+| SBA | `SBA-FLEX-STAFF-BEDS` | `staffed_beds` | `n`, `shift` | `flex_staff_beds` |
+| CSA | `CSA-ACTIVATE-SURGE` | `surge_beds` | `n`, `scope` | `activate_surge_beds` |
+
+1. **Levers** — replace the four `*-PLACEHOLDER` stubs with fully-specified,
+   schema-valid catalogs (one self-owned lever each; `description_i18n` de/en/fr/it).
+2. **Impact** — four new pure formulas in `compute_expected_impact.py`
+   (registry now 7), each reusing `_bounded_bed_impact` with a role-specific
+   `metric` label but a bed-relief `delta` so the coordination recompute is
+   unchanged; `mechanism` carried in `assumptions`. Unit-tested.
+3. **Coordination** — `coordination/seed_fanout.py` mirrors `seed_slice1.py`
+   with a self-owned golden thread per role (BMCA 105→97, ORSA 105→95, SBA
+   104→98, CSA 120→80). Unit-tested.
+4. **Agent packs** — BMCA/ORSA/SBA/CSA `AGENT.md` gain the Sprint 26 extension
+   (§1), in-scope bullet (§2), `fabricated-impact` + `self-approval` refusals
+   (§5), the `DC-INSIGHT-v1` 5-beat subsection (§6), and the decision-tier
+   confirmation note (§7). CSA's note complements its existing Run/HITL gating.
+5. **Golden tasks** — one `DC-INSIGHT-v1` breach fixture per role + FR-DEC
+   front-matter + SemVer bumps.
+
+**Confirmed decisions (@urruegg, 2026-07-25):** one self-owned lever per role ·
+role-specific metric names with bed-relief delta · include Cosmos (WS-C) seed +
+agent (WS-D) wiring · reuse existing containers (no new IaC) · one cohesive PR.
+
+**Still deferred (not this branch):** live Cosmos/Foundry `apply`; DCA barrier
+Gold materialization; ontology `hcp:Recommendation` / `hcp:Lever`.

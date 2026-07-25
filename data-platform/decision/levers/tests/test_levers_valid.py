@@ -122,8 +122,39 @@ class TestLeverCatalogValid(unittest.TestCase):
         all_lever_ids = {
             lever["lever_id"] for doc in self.docs.values() for lever in doc["levers"]
         }
-        for expected in ("OOA-EXPEDITE-DISCHARGE", "OOA-DIVERT-LOW-ACUITY", "DCA-UNBLOCK-BARRIER"):
+        for expected in (
+            "OOA-EXPEDITE-DISCHARGE",
+            "OOA-DIVERT-LOW-ACUITY",
+            "DCA-UNBLOCK-BARRIER",
+            "BMCA-REBALANCE-CENSUS",
+            "ORSA-DEFER-ELECTIVE",
+            "SBA-FLEX-STAFF-BEDS",
+            "CSA-ACTIVATE-SURGE",
+        ):
             self.assertIn(expected, all_lever_ids)
+
+    def test_no_placeholder_levers_remain(self) -> None:
+        all_lever_ids = {
+            lever["lever_id"] for doc in self.docs.values() for lever in doc["levers"]
+        }
+        placeholders = {lid for lid in all_lever_ids if "PLACEHOLDER" in lid}
+        self.assertEqual(placeholders, set(), msg=f"stub levers still present: {placeholders}")
+
+    def test_every_lever_has_description_i18n(self) -> None:
+        for filename, doc in self.docs.items():
+            for lever in doc["levers"]:
+                self.assertIn("description_i18n", lever, msg=f"{filename}:{lever['lever_id']}")
+
+    def test_every_impact_formula_ref_is_implemented(self) -> None:
+        from impact.compute_expected_impact import FORMULA_REGISTRY
+
+        for filename, doc in self.docs.items():
+            for lever in doc["levers"]:
+                self.assertIn(
+                    lever["impact_formula_ref"],
+                    FORMULA_REGISTRY,
+                    msg=f"{filename}:{lever['lever_id']} -> {lever['impact_formula_ref']}",
+                )
 
     def test_ooa_expedite_discharge_owner_role_is_dca(self) -> None:
         ooa_levers = {lever["lever_id"]: lever for lever in self.docs["ooa.yaml"]["levers"]}
