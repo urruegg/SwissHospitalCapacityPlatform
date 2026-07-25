@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | In progress (session 2026-07-24 closed) |
-| **Previous Version** | 1.0.0 (approved planning baseline) |
+| **Status** | In progress (session 2026-07-25) |
+| **Previous Version** | 1.1.0 (session 2026-07-24 log + backlog) |
 | **Design spec** | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](../superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) |
 | **Implementation plan** | [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](../superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) |
 | **Predecessors** | Sprint 20 (5-plane shell) · Curavias app prototype-parity · Sprint 25 / #276 (mockup ↔ app parity) |
@@ -135,9 +135,29 @@ vertical board + Signals/actionable-insight redesign done; Start-teaser polish s
 Not yet run: full unit suite, `test:e2e` / `test:a11y` (axe), ADR-00NN, PRD status flip,
 rebase, PR.
 
+### 2026-07-25 — Session 2 (frame + M365 Copilot alignment)
+
+Delivered backlog items 1–4. Commits on `sprint-27/curavias-ux-polish`, newest first:
+
+| Commit | Summary |
+|--------|---------|
+| `85bf7bf` | FluentProvider fills viewport height (removes the bottom white band) |
+| `730bead` | Copilot pane — floating lower-right FAB when collapsed + M365-style input pill |
+| `7217628` | M365-Copilot nav — Demo/User switch on top, wider rail, light selected background |
+| `77325af` | Header selectors as icon menu-buttons (leading icon + fit-to-text) |
+| `c5e89a7` | Full-viewport shell via global reset (no body-margin gap) |
+
+Verified: `tsc` clean each step; `header-plane`, `navigation-plane`, `agent-plane` unit
+tests pass; light + dark confirmed live. Item 5 remains (dark re-verify done; axe scan,
+ADR-00NN, PRD status flip, rebase, PR).
+
+**Known pre-existing failures (not regressions; fix at M8):** `shell.test` + `router.test`
+StartView `start-view` testid races the `/`→`/start` redirect under jsdom — fix with
+`findByTestId`; the app boots to Start correctly in the browser.
+
 ## 7. Next-session backlog (general wireframe + M365 Copilot alignment)
 
-Captured 2026-07-24 (requested, not yet implemented):
+Captured 2026-07-24. **Items 1–4 delivered in Session 2 (2026-07-25); item 5 remains.**
 
 1. **Wireframe / window fit** — the shell does not fill the window on the top/left/right and
    the footer band is too tall. Make the five-plane grid use the full viewport and right-size
