@@ -12,7 +12,8 @@ import {
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import { BotRegular, DismissRegular, AddRegular, SendRegular } from '@fluentui/react-icons';
+import { DismissRegular, AddRegular, SendRegular } from '@fluentui/react-icons';
+import { CopilotIcon } from '../CopilotIcon';
 import { ConversationView } from '../../copilot-drawer/ConversationView';
 import { useAgentInvoker } from '../../copilot-drawer/AgentInvoker';
 import { useCopilotRail } from '../../copilot-rail/rail-context';
@@ -121,7 +122,7 @@ export function AgentPlane() {
       <Button
         className={s.fab}
         aria-label={t('agent.open', 'Open agent')}
-        icon={<BotRegular />}
+        icon={<CopilotIcon />}
         appearance="primary"
         shape="circular"
         size="large"
@@ -142,7 +143,7 @@ export function AgentPlane() {
     <aside role="complementary" aria-label={t('agent.title', 'Agent')} className={s.panel}>
       <div className={s.header}>
         <div className={s.headTitle}>
-          <BotRegular />
+          <CopilotIcon />
           <Body1>{agent}</Body1>
           <Badge appearance="tint">{capabilities.agentCeiling}</Badge>
         </div>
