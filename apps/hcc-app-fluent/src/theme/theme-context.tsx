@@ -23,7 +23,7 @@ export function ThemeModeProvider({ children }: { children: ReactNode }) {
   const theme = mode === 'dark' ? curaviasDarkTheme : curaviasLightTheme;
   return (
     <Ctx.Provider value={value}>
-      <FluentProvider theme={theme}>{children}</FluentProvider>
+      <FluentProvider theme={theme} style={{ height: '100%' }}>{children}</FluentProvider>
     </Ctx.Provider>
   );
 }
