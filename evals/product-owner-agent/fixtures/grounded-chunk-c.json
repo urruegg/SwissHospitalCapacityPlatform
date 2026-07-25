@@ -1,0 +1,13 @@
+{
+  "classId": "C",
+  "text": "Effektive PROD-Azure-Kosten plus GitHub-Copilot-Token-Kosten liegen als Bandbreite innerhalb von +/- 30% des BVA-Baselines; eine Extrapolation ueber das Feed-Fenster hinaus wird verweigert.",
+  "citation": {
+    "sourceRef": "cost-management:prod + copilot-token-feed reconciled to docs/BVA.md (ADR-0025 bva_kpi.py)",
+    "anchor": "as-of 2026-07-24"
+  },
+  "asOf": "2026-07-24T23:59:00Z",
+  "liveness": "snapshot",
+  "status": "partial",
+  "confidence": 0.72,
+  "language": "de"
+}

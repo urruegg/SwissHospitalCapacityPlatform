@@ -1,0 +1,13 @@
+{
+  "classId": "B",
+  "text": "Azure AI Search is deployed in Switzerland North as the Foundry IQ substrate; the live Resource Graph SKU matches docs/bom.yaml, so no drift is flagged.",
+  "citation": {
+    "sourceRef": "resource-graph:srch-ihzhhpf-prod (swn) reconciled against docs/bom.yaml",
+    "anchor": "sku=standard"
+  },
+  "asOf": "2026-07-25T09:15:00Z",
+  "liveness": "live",
+  "status": "verified",
+  "confidence": 0.9,
+  "language": "en"
+}

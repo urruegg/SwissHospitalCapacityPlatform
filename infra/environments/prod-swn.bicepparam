@@ -116,6 +116,19 @@ param appFluentCustomHostname = 'app.curavias.ch'
 param appFluentEnableCustomDomainCert = true
 param manageCuraviasDnsZone = false
 
+// Sprint 24 (ADR-0030) — Curavias product landing page (Astro) hosting.
+// #275: rebased from the retired prod-eastus2 slice to switzerlandnorth PROD —
+// the live pipeline deploys THIS file into rg-ihzhhpf-prod, so the enable flag
+// must live here (it previously defaulted false -> the marketing SWA/media were
+// never provisioned). SWA control-plane is pinned to westeurope by the module
+// (SWA is not available in switzerlandnorth); media Storage uses the RG region.
+// Two-step custom-domain binding: keep curaviasWebEnableCustomDomains=false on
+// the first apply (creates stapp-ihzhhpf-prod + stmediaihzhhpfprod), add the DNS
+// records + delegation, then flip true so the SWA validates curavias.ch + www.
+param enableCuraviasWebModule = true
+param curaviasWebMediaPublisherPrincipalId = ''
+param curaviasWebEnableCustomDomains = false
+
 // --- P4 data lane — Event Hubs / Service Bus / CSA Cosmos ---
 // EVH namespace + hub + consumer groups. Region-safe, public, self-contained.
 param enableDataFoundationModule = true
@@ -157,6 +170,19 @@ param enableSkillsSimJobsModule = true
 // SIT-parity: SIT uses the public placeholder (real skills-sim image deferred to
 // issue #181); PROD mirrors SIT exactly so both bump together when #181 lands.
 param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// PROD swn variant: enabled at switzerlandnorth (ADR-0037 / NFR-POA-003) for the
+// SIT-parity demo scope. poAgentLocation is declared here (see the NOTE block on
+// shared declarations below). Runtime + refresh-job image mirrors SIT until the
+// PO Agent CI workflow publishes a real image.
+param poAgentLocation = 'switzerlandnorth'
+param enablePoAgentSearchModule = true
+param enablePoAgentKnowledgeBaseModule = true
+param enablePoAgentCorpusLandingModule = true
+param enablePoAgentRuntimeModule = true
+param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param poAgentLogAnalyticsWorkspaceId = ''
 // sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
 param enableSimCapacityModule = true
 param simCapacityLocation = 'switzerlandnorth'
