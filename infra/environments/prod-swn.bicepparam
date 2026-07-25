@@ -194,7 +194,7 @@ param enableSourceSqlModule = false
 //     (mirrors SIT) — the Eventstream destination is wired post-deploy via REST
 //     once the PROD Fabric workspace/lakehouse are published (P6).
 // Single-region PROD: pin the skills-sim CAE to switzerlandnorth (SIT uses westus2).
-param enableMasterdataLandingModule = true
-param enableSkillsSimJobsModule = true
-param enableSkillsEventstreamModule = true
-param simCapacityLocation = 'switzerlandnorth'
+// NOTE: enableMasterdataLandingModule, enableSkillsSimJobsModule,
+// enableSkillsEventstreamModule, and simCapacityLocation are already declared
+// above with these same PROD-parity values — they are NOT re-declared here
+// (a .bicepparam identifier may be assigned only once; duplicates raise BCP028).
