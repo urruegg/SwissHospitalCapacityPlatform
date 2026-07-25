@@ -107,6 +107,13 @@ param skillsEventstreamWorkspaceId string = ''
 @description('Optional Fabric Lakehouse ID for the skills-events Eventstream destination. Empty defers destination wiring (Eventstream created source-only).')
 param skillsEventstreamDestinationLakehouseId string = ''
 
+@description('Skills-events Eventstream source transport. CustomEndpoint (default, design D4 demo-scope) is fully live-deployable and mirrors es-capacity-events-sit; EventHub is the Swiss-GA target-state (requires a Fabric-managed connection). See modules/integration-orchestration/skills-eventstream/main.bicep.')
+@allowed([
+  'CustomEndpoint'
+  'EventHub'
+])
+param skillsEventstreamSourceMode string = 'CustomEndpoint'
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -688,6 +695,7 @@ module skillsEventstream './modules/integration-orchestration/skills-eventstream
   name: 'skills-eventstream-${environmentName}'
   params: {
     workspaceId: skillsEventstreamWorkspaceId
+    sourceMode: skillsEventstreamSourceMode
     eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
     eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
     eventHubConsumerGroup: 'cg-skills-eventstream'
@@ -714,8 +722,8 @@ output fabricEventstreamGatingWarning string = enableFabricEventstreamModule && 
     : (enableFabricEventstreamModule && empty(fabricEventstreamDestinationLakehouseId))
       ? 'INFO: fabricEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.'
       : 'ok'
-output skillsEventstreamGatingWarning string = enableSkillsEventstreamModule && !enableDataFoundationModule
-  ? 'WARN: enableSkillsEventstreamModule=true requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source.'
+output skillsEventstreamGatingWarning string = enableSkillsEventstreamModule && skillsEventstreamSourceMode == 'EventHub' && !enableDataFoundationModule
+  ? 'WARN: enableSkillsEventstreamModule=true with sourceMode=EventHub requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source. (CustomEndpoint source needs no Event Hub.)'
   : (enableSkillsEventstreamModule && empty(skillsEventstreamWorkspaceId))
     ? 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.'
     : (enableSkillsEventstreamModule && empty(skillsEventstreamDestinationLakehouseId))
