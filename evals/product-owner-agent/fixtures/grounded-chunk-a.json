@@ -1,0 +1,13 @@
+{
+  "classId": "A",
+  "text": "The Curavias platform runtime is the GitHub Copilot coding agent configured by repository assets; there is no bespoke Python service or Foundry-hosted platform runtime (ADR-0002).",
+  "citation": {
+    "sourceRef": "docs/adr/0002-runtime-is-github-copilot-coding-agent.md@7e34f3e",
+    "anchor": "## Decision"
+  },
+  "asOf": "2026-07-25T08:00:00Z",
+  "liveness": "live",
+  "status": "verified",
+  "confidence": 0.97,
+  "language": "en"
+}
