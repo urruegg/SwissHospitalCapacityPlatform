@@ -142,6 +142,9 @@ param enableDataFoundationModule bool = false
 @description('Enable the external-signals provider-runner (ca-signal-runner) module. Requires enableAgentHostModule + enableDataFoundationModule. Wires the runner into the CAE + Event Hub namespace so it survives future CAE redeploys.')
 param enableSignalRunnerModule bool = false
 
+@description('Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md.')
+param enableDecisionApplyJobModule bool = false
+
 @description('Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped.')
 param eventHubsSimulatorMiPrincipalId string = ''
 
@@ -603,6 +606,30 @@ module signalRunner '../data-platform/external-signals/provider-runner/main.bice
     managedEnvironmentId: agentHost!.outputs.managedEnvironmentId
     eventHubNamespace: dataFoundation!.outputs.eventHubNamespaceName
     eventHubName: dataFoundation!.outputs.eventHubName
+  }
+}
+
+// Sprint 26 WS-C follow-up (#335) — in-VNet decision-tier live-apply job.
+// Manual-trigger Container Apps Job on the agent-host CAE (VNet-integrated →
+// Cosmos PE reachable, ADR-0029) reusing the agent-host MI (already a Cosmos
+// Built-in Data Contributor). Plan-first by default; a live apply is an
+// operator-driven `az containerapp job start` override that supplies
+// `--approved-to-apply <handle>` (AGENTS.md §4). Consumes the agent-host CAE +
+// the CSA Cosmos document endpoint — implicit output references make it deploy
+// after both. Idempotent: same job name/config adopts an existing job.
+module decisionApplyJob './modules/decision-apply-job/main.bicep' = if (enableDecisionApplyJobModule && enableAgentHostModule && enableCsaCosmosModule) {
+  name: 'decision-apply-job-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    managedEnvironmentId: agentHost!.outputs.managedEnvironmentId
+    containerImage: agentHostImage
+    cosmosEndpoint: csaCosmos!.outputs.documentEndpoint
+    cosmosDatabase: csaCosmos!.outputs.databaseName
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    demoScope: location != 'switzerlandnorth'
   }
 }
 

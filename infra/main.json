@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.45.15.27210",
-      "templateHash": "7142471916764075785"
+      "version": "0.45.6.27763",
+      "templateHash": "12386616273455833285"
     }
   },
   "parameters": {
@@ -309,6 +309,13 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable the external-signals provider-runner (ca-signal-runner) module. Requires enableAgentHostModule + enableDataFoundationModule. Wires the runner into the CAE + Event Hub namespace so it survives future CAE redeploys."
+      }
+    },
+    "enableDecisionApplyJobModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md."
       }
     },
     "eventHubsSimulatorMiPrincipalId": {
@@ -639,8 +646,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "12709708007594594275"
+              "version": "0.45.6.27763",
+              "templateHash": "16810495867067195621"
             }
           },
           "parameters": {
@@ -861,8 +868,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4775159143963604237"
+              "version": "0.45.6.27763",
+              "templateHash": "11092665246856310223"
             }
           },
           "parameters": {
@@ -977,8 +984,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "7067348100293623422"
+              "version": "0.45.6.27763",
+              "templateHash": "15666986789757700592"
             }
           },
           "parameters": {
@@ -1183,8 +1190,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6398321357455288559"
+              "version": "0.45.6.27763",
+              "templateHash": "11956369232816364156"
             }
           },
           "parameters": {
@@ -1310,8 +1317,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6638527015992601355"
+              "version": "0.45.6.27763",
+              "templateHash": "1833113154266341724"
             }
           },
           "parameters": {
@@ -1514,8 +1521,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "15430035442934461439"
+                      "version": "0.45.6.27763",
+                      "templateHash": "10689296495622946629"
                     }
                   },
                   "parameters": {
@@ -1753,8 +1760,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "16846858966586516040"
+                      "version": "0.45.6.27763",
+                      "templateHash": "13645867721578398029"
                     }
                   },
                   "parameters": {
@@ -1916,8 +1923,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "13453687588716698482"
+              "version": "0.45.6.27763",
+              "templateHash": "15460063151507913680"
             }
           },
           "parameters": {
@@ -2021,8 +2028,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "12859803335828411041"
+              "version": "0.45.6.27763",
+              "templateHash": "16248653206385140613"
             }
           },
           "parameters": {
@@ -2129,8 +2136,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6220424990052136252"
+              "version": "0.45.6.27763",
+              "templateHash": "1631660769778658010"
             }
           },
           "parameters": {
@@ -2272,8 +2279,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "17304584953902525869"
+              "version": "0.45.6.27763",
+              "templateHash": "16503415288114807116"
             }
           },
           "parameters": {
@@ -2540,8 +2547,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "7230076444948795540"
+              "version": "0.45.6.27763",
+              "templateHash": "1619298565780961527"
             }
           },
           "parameters": {
@@ -2662,8 +2669,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "13624344099504165410"
+              "version": "0.45.6.27763",
+              "templateHash": "1765711980068583287"
             }
           },
           "parameters": {
@@ -2744,8 +2751,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "9490011764893617069"
+                      "version": "0.45.6.27763",
+                      "templateHash": "2157408807266904991"
                     }
                   },
                   "parameters": {
@@ -3029,8 +3036,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "16860468050710324881"
+              "version": "0.45.6.27763",
+              "templateHash": "535917255065045059"
             }
           },
           "parameters": {
@@ -3261,8 +3268,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4357772689202446892"
+              "version": "0.45.6.27763",
+              "templateHash": "15390018866793242957"
             }
           },
           "parameters": {
@@ -3600,8 +3607,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "1151250825559176912"
+              "version": "0.45.6.27763",
+              "templateHash": "13715455851406785891"
             }
           },
           "parameters": {
@@ -3719,8 +3726,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "16801748558517643812"
+              "version": "0.45.6.27763",
+              "templateHash": "16191629345100508003"
             }
           },
           "parameters": {
@@ -3826,8 +3833,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "3597564066161008070"
+              "version": "0.45.6.27763",
+              "templateHash": "6335274266135485317"
             }
           },
           "parameters": {
@@ -3948,8 +3955,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "14003066579642311487"
+                      "version": "0.45.6.27763",
+                      "templateHash": "14841147772701149684"
                     }
                   },
                   "parameters": {
@@ -4142,8 +4149,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "14583701867747923328"
+              "version": "0.45.6.27763",
+              "templateHash": "3518442302807315975"
             }
           },
           "parameters": {
@@ -4467,8 +4474,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "6087286758352572380"
+              "version": "0.45.6.27763",
+              "templateHash": "14271685339274188062"
             }
           },
           "parameters": {
@@ -4611,8 +4618,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "594335556098139955"
+                      "version": "0.45.6.27763",
+                      "templateHash": "1418152727854971719"
                     }
                   },
                   "parameters": {
@@ -4768,8 +4775,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "6646545455890169293"
+                      "version": "0.45.6.27763",
+                      "templateHash": "9808019470207933078"
                     }
                   },
                   "parameters": {
@@ -4903,8 +4910,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "9561529887383588834"
+                      "version": "0.45.6.27763",
+                      "templateHash": "15845063017917743907"
                     }
                   },
                   "parameters": {
@@ -5046,8 +5053,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.15.27210",
-                      "templateHash": "2899347056287564506"
+                      "version": "0.45.6.27763",
+                      "templateHash": "7213773335792771551"
                     }
                   },
                   "parameters": {
@@ -5349,8 +5356,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "8004220282630993017"
+              "version": "0.45.6.27763",
+              "templateHash": "5334056569644691563"
             }
           },
           "parameters": {
@@ -5866,8 +5873,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "3701687070672016687"
+              "version": "0.45.6.27763",
+              "templateHash": "2182119932369270733"
             }
           },
           "parameters": {
@@ -6008,6 +6015,263 @@
       ]
     },
     {
+      "condition": "[and(and(parameters('enableDecisionApplyJobModule'), parameters('enableAgentHostModule')), parameters('enableCsaCosmosModule'))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('decision-apply-job-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "managedEnvironmentId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName'))), '2025-04-01').outputs.managedEnvironmentId.value]"
+          },
+          "containerImage": {
+            "value": "[parameters('agentHostImage')]"
+          },
+          "cosmosEndpoint": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('csa-cosmos-{0}', parameters('environmentName'))), '2025-04-01').outputs.documentEndpoint.value]"
+          },
+          "cosmosDatabase": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('csa-cosmos-{0}', parameters('environmentName'))), '2025-04-01').outputs.databaseName.value]"
+          },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('simCapacityContainerRegistryResourceId')]"
+          },
+          "demoScope": {
+            "value": "[not(equals(parameters('location'), 'switzerlandnorth'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "4040045096906531905"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "allowedValues": [
+                "switzerlandnorth",
+                "westus2"
+              ],
+              "metadata": {
+                "description": "Azure region. Region-pinned to the ADR-0013 demo-scope variant path."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Resource tags applied to every resource this module creates."
+              }
+            },
+            "managedEnvironmentId": {
+              "type": "string",
+              "minLength": 2,
+              "metadata": {
+                "description": "Resource ID of the agent-host Container Apps managed environment (VNet-integrated per ADR-0029 Option A). The job MUST run here so it reaches the Cosmos private endpoint."
+              }
+            },
+            "containerImage": {
+              "type": "string",
+              "metadata": {
+                "description": "Container image the apply job runs. Reuse the hcc-agent-host image — it bakes in data-platform/decision/ (Sprint 26 WS-C) and the azure-identity/azure-cosmos runtime deps."
+              }
+            },
+            "cosmosEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos document endpoint the seed writes to (e.g. https://cosmos-csa-ihzhhpf-sit.documents.azure.com:443/). Passed to the container as CSA_COSMOS_ENDPOINT."
+              }
+            },
+            "cosmosDatabase": {
+              "type": "string",
+              "defaultValue": "csa",
+              "metadata": {
+                "description": "Cosmos database name that holds the plans/proposed_actions containers."
+              }
+            },
+            "foundryEndpoint": {
+              "type": "string",
+              "defaultValue": "https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com",
+              "metadata": {
+                "description": "Foundry project data-plane account endpoint (ADR-0032, eastus2). Passed as FOUNDRY_PROJECT_ENDPOINT."
+              }
+            },
+            "foundryProject": {
+              "type": "string",
+              "defaultValue": "ai-ihzhhpf-sit-eastus2-project",
+              "metadata": {
+                "description": "Foundry project name (ADR-0032). Passed as FOUNDRY_PROJECT_NAME."
+              }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server for MI-based image pull. Set together with containerRegistryResourceId. When empty, the job relies on public/anonymous pull."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer."
+              }
+            },
+            "replicaTimeoutSeconds": {
+              "type": "int",
+              "defaultValue": 1800,
+              "minValue": 60,
+              "maxValue": 3600,
+              "metadata": {
+                "description": "Replica timeout (seconds) for a single apply execution."
+              }
+            },
+            "demoScope": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, emits a demoScope tag for provenance (ADR-0013)."
+              }
+            }
+          },
+          "variables": {
+            "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+            "planCommand": "cd /app/data-platform/decision && python -m coordination.seed_live --action plan && python -m foundry.register_decision_tier --action plan"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.App/jobs",
+              "apiVersion": "2024-03-01",
+              "name": "[format('caj-decision-apply-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))]": {}
+                }
+              },
+              "properties": {
+                "environmentId": "[parameters('managedEnvironmentId')]",
+                "configuration": {
+                  "triggerType": "Manual",
+                  "replicaTimeout": "[parameters('replicaTimeoutSeconds')]",
+                  "replicaRetryLimit": 0,
+                  "manualTriggerConfig": {
+                    "parallelism": 1,
+                    "replicaCompletionCount": 1
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))), createArray())]"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "decision-apply",
+                      "image": "[parameters('containerImage')]",
+                      "resources": {
+                        "cpu": "[json('0.5')]",
+                        "memory": "1Gi"
+                      },
+                      "command": [
+                        "/bin/sh",
+                        "-c",
+                        "[variables('planCommand')]"
+                      ],
+                      "env": [
+                        {
+                          "name": "AZURE_CLIENT_ID",
+                          "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                        },
+                        {
+                          "name": "CSA_COSMOS_ENDPOINT",
+                          "value": "[parameters('cosmosEndpoint')]"
+                        },
+                        {
+                          "name": "CSA_COSMOS_DATABASE",
+                          "value": "[parameters('cosmosDatabase')]"
+                        },
+                        {
+                          "name": "FOUNDRY_PROJECT_ENDPOINT",
+                          "value": "[parameters('foundryEndpoint')]"
+                        },
+                        {
+                          "name": "FOUNDRY_PROJECT_NAME",
+                          "value": "[parameters('foundryProject')]"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "jobName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the manual-trigger decision-apply Container Apps Job."
+              },
+              "value": "[format('caj-decision-apply-{0}', parameters('nameSuffix'))]"
+            },
+            "jobResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the decision-apply job."
+              },
+              "value": "[resourceId('Microsoft.App/jobs', format('caj-decision-apply-{0}', parameters('nameSuffix')))]"
+            },
+            "identityClientId": {
+              "type": "string",
+              "metadata": {
+                "description": "Client ID of the reused agent-host MI (for runbook cross-checks)."
+              },
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+            },
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Decision-apply job module implementation marker."
+              },
+              "value": "decision-apply-job-implemented"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('csa-cosmos-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
       "condition": "[parameters('enableAppFluentModule')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -6052,8 +6316,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4290292779733550713"
+              "version": "0.45.6.27763",
+              "templateHash": "3570153104393533044"
             }
           },
           "parameters": {
@@ -6352,8 +6616,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "8626556854951557043"
+              "version": "0.45.6.27763",
+              "templateHash": "5703750538639136666"
             }
           },
           "parameters": {
@@ -6516,8 +6780,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "12725326629230136180"
+              "version": "0.45.6.27763",
+              "templateHash": "6946668985564645552"
             }
           },
           "parameters": {
@@ -6691,8 +6955,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.15.27210",
-              "templateHash": "4101742253533779156"
+              "version": "0.45.6.27763",
+              "templateHash": "3641420194333204823"
             }
           },
           "parameters": {
