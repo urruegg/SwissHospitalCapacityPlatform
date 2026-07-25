@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-25 |
 | **Author** | @urruegg |
 | **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling in delivery) |
-| **Previous Version** | 1.2.0 (added §9 delivery status & next step) |
+| **Previous Version** | 1.3.0 (added §9.8 WS-C live-apply tooling) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -366,6 +366,49 @@ tooling + tests + dry-run evidence; the two remaining live steps are operational
   `python -m coordination.seed_live --action apply --approved-to-apply <handle>`
   and `python -m foundry.register_decision_tier --action apply --role <role>
   --approved-to-apply <handle>` from the agent-host.
+
+**Still deferred (not this branch):** DCA barrier Gold materialization;
+ontology `hcp:Recommendation` / `hcp:Lever`.
+
+### 9.9 WS-C follow-up — in-VNet apply job + live Foundry factory (current)
+
+One squash PR off `main` (branch `sprint-26/ws-c-apply-runbook`), Infra +
+Data/AI + Governance lanes, TDD-first. Closes the "how does the live apply
+actually run" gap left open by §9.8 by delivering the in-VNet runner and the
+missing live Foundry seam. Confirmed scope: reuse the hcc-agent-host image/MI
+for both B and C **and** wire a live Foundry factory now (@urruegg, 2026-07-25).
+
+1. **Live Foundry factory** — `foundry/live_factory.py`:
+   `make_registration_factory(...)` speaks the Foundry Agents (Assistants
+   protocol) REST API in eastus2 — resolves the assistant by name, appends a
+   native **function** tool (`decision_tier_coordination_<role>`) idempotently,
+   sets the `decision_tier_role` metadata, POSTs the modify. Injectable
+   `token_provider` (scope `https://cognitiveservices.azure.com/.default`) +
+   `http_request`, so the whole sequence is unit-tested without cloud (mirrors
+   `fabric_data_agent_client.py`). `register_decision_tier.main --action apply`
+   now builds this factory from `FOUNDRY_PROJECT_ENDPOINT` / `FOUNDRY_PROJECT_NAME`
+   (ADR-0032 SIT defaults). 10 unit tests.
+2. **Image + CI** — `apps/hcc-agent-host/Dockerfile` bakes in
+   `data-platform/decision/`; the `.dockerignore` allowlist + `ci-build-agent-host.yml`
+   trigger paths add `data-platform/decision/**` so the apply CLIs ship in the
+   `hcc-agent-host` image alongside the `azure-identity` / `azure-cosmos`
+   runtime deps.
+3. **In-VNet job** — `infra/modules/decision-apply-job/main.bicep`: a
+   manual-trigger `Microsoft.App/jobs` on the **agent-host CAE**
+   (VNet-integrated → Cosmos PE reachable) reusing the agent-host MI (already a
+   Cosmos Built-in Data Contributor). Plan-first by default (both CLIs run
+   `--action plan`); a live apply is an operator-driven `az containerapp job
+   start` command override that supplies `--approved-to-apply <handle>`
+   (AGENTS.md §4). Wired into `infra/main.bicep` behind
+   `enableDecisionApplyJobModule` (SIT-gated). `az bicep build` clean.
+4. **Runbook** — [`docs/runbooks/decision-tier-live-apply.md`](../../runbooks/decision-tier-live-apply.md):
+   the exact prerequisites (incl. the one-time `Cognitive Services User` grant
+   for the agent-host MI on the eastus2 Foundry account), the plan-first + live
+   apply `az containerapp job start` invocations, verification, and rollback.
+
+**Verified (2026-07-25).** Cosmos containers already live (§9.8 A done via
+`cd-infra-deploy-sit` #379/#381). The live apply itself remains an operational,
+human-gated step run through the new job per the runbook.
 
 **Still deferred (not this branch):** DCA barrier Gold materialization;
 ontology `hcp:Recommendation` / `hcp:Lever`.
