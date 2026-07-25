@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.6.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.7.0 |
+| **Date** | 2026-07-25 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED (`approved-to-apply` @urruegg): infra deployed (10 Creates), medallion replayed 9/9 green, gold parity proven (28 tables, 21 contract tables), authoritative OneLake Delta evidence clean — 3 Curavias tenants, no real names, 0 H_HSL orphans)**; **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14) + e2e SIT/PROD parity test** |
-| **Previous Version** | 1.5.0 (PROD parity prep — flags + what-if) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane now landed in-repo** (DC-SKILL-EVENT-v1 contract + seeder + Bronze/Silver/Gold notebooks + 23 unit tests); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), live Event Hub→Eventstream wiring (`approved-to-apply`), + e2e SIT/PROD parity test** |
+| **Previous Version** | 1.6.0 (PROD org/skills parity APPLIED + OneLake gold evidence reader) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -98,6 +98,38 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 ---
 
 ## 6. Status log
+
+### 2026-07-25 — Skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed
+
+The WS-A4 Eventstream **infra** module (`es-ihzhhpf-skills-events`) already existed,
+but the **data lane it feeds was empty**. This slice builds it in-repo (branch
+`sprint-23/skills-events-lane`, off `main`):
+
+* **New additive contract `DC-SKILL-EVENT-v1`** —
+  `data/synthetic/schema/dc-skill-event-v1.schema.json`. Standalone; **does not
+  modify** the batch `DC-SKILL-EVIDENCE-v1` contract (backwards-compatible). Carries
+  the three narrow event kinds routed by `eventKind`: `credential-expiry`,
+  `consent-grant-or-revoke`, `newly-confirmed-assertion`.
+* **Dependency-free seeder** — `data-platform/scripts/skills-events/`
+  (`normalize.py` + `skill_events_synth.py` + fixtures). The payload a Container
+  Apps service publishes to the Eventstream (per `NFR-SKILL-001`, never a workflow).
+* **Bronze → Silver → Gold notebooks** —
+  `data-platform/notebooks/skills-events/`. Silver is the downstream **PHI/consent
+  gate** the Eventstream module defers to: deny-by-default quarantine, and the
+  consent-revocation invariant that **clears the GLN promotion** on `revoke`
+  (`FR-SKILL-003`). Gold is a **separate `skillevt_*` star spine** (fact + source/kind
+  dims) carrying the live-vs-simulated badge (`FR-SKILL-007`), mirroring the
+  `external-signals` `ext_*` spine.
+* **Contract-safe** — the `skillevt_*` tables are **not** Direct-Lake tables in the
+  semantic model, so they are outside the derived gold contract
+  (`verify_gold_schema.contract_tables`); the gold-parity gate stays green (21
+  contract tables covered). Semantic-model surfacing (a live-vs-simulated event
+  measure) is a documented follow-up.
+* **Tests** — 23 Spark-free unit tests (9 seeder schema/consent + 14 medallion gate /
+  badge). Neighbouring suites regression-clean (skills-evidence 21+43, gold-contract 5).
+* **Remaining for this DoD item** — live Event Hub → Eventstream → `Files/bronze/skills-events/`
+  wiring is `approved-to-apply`-deferred (Container Apps, not GitHub workflows).
+
 
 ### 2026-07-24 — PROD org/skills parity APPLIED (infra + medallion + gold evidence)
 

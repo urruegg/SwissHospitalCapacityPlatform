@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Approved (brainstorming) |
-| **Previous Version** | n/a (initial version) |
+| **Previous Version** | 1.0.0 (initial version) |
 | **Sprint** | [Sprint 23 - Unified Curavias organisation spine + org/skills ontology (P1b)](../../sprints/sprint-23-curavias-org-spine-and-skills-ontology.md) |
 | **Issue** | [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255) |
 | **Extends** | Idea pack [`unified-curavias-organisation-and-skills-ontology/`](../ideas/unified-curavias-organisation-and-skills-ontology/) (Steps 1-4 + 20 CSVs + generator); shared design [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](2026-07-19-curavias-shared-master-data-and-ontology-design.md) |
@@ -189,7 +189,7 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
 
 - [ ] ADLS landing zone + OneLake shortcut provisioned (Bicep, `what-if` clean); upload runbook documented
 - [ ] Container Apps simulator jobs for SuccessFactors / LMS / Skills-Manager / Work-ID emit batch extracts to the landing zone on demand
-- [ ] Eventstream lane carries the three near-real-time skills events
+- [ ] Eventstream lane carries the three near-real-time skills events — *partial: in-repo data lane landed 2026-07-25 (`DC-SKILL-EVENT-v1` contract + seeder + Bronze/Silver/Gold notebooks + 23 tests); live Event Hub → Eventstream wiring `approved-to-apply`-deferred*
 - [ ] `data/master-data/curavias-org-skills/` created (generator relocated; **path mismatch in the sprint doc fixed**)
 - [ ] Skills-evidence plugin package + `DC-SKILL-EVIDENCE-v1` + simulators + tests green
 - [ ] On-demand Data Pipeline: Bronze -> Silver (validate + quarantine) -> Gold (deny-by-default) produces the org/skills `gold.*` tables
