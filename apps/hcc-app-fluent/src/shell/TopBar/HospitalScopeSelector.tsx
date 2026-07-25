@@ -1,14 +1,12 @@
-import { Dropdown, Option } from '@fluentui/react-components';
+import { Menu, MenuTrigger, MenuButton, MenuPopover, MenuList, MenuItemRadio } from '@fluentui/react-components';
+import { BuildingRegular } from '@fluentui/react-icons';
 import { useRoleLens } from '../../context/role-context';
 import type { HospitalScope } from '../../auth/rbac-model';
 
 /**
- * Sprint 20 M3 — hospital selector scoped by the active role lens.
- *
- * When the active role's `hospitalScope` resolves to a single site the control
- * is a disabled, single-value dropdown (the role may only view its own site).
- * When the scope is `aggregated` the user may pick any site or the aggregated
- * view (design spec §7 RBAC lens).
+ * Sprint 20 M3 / Sprint 27 — hospital selector as an icon menu-button, scoped by
+ * the active role lens. A single-site role renders a disabled button (the role
+ * may only view its own site); an `aggregated` scope lists all sites.
  */
 const SITES: HospitalScope[] = ['usz', 'luks', 'zollikerberg', 'aggregated'];
 
@@ -18,17 +16,21 @@ export function HospitalScopeSelector() {
   const single = scope !== 'aggregated';
   const options: HospitalScope[] = single ? [scope] : SITES;
   return (
-    <Dropdown
-      aria-label="Hospital"
-      disabled={single}
-      value={scope}
-      selectedOptions={[scope]}
-    >
-      {options.map((s) => (
-        <Option key={s} value={s}>
-          {s}
-        </Option>
-      ))}
-    </Dropdown>
+    <Menu checkedValues={{ hospital: [scope] }}>
+      <MenuTrigger disableButtonEnhancement>
+        <MenuButton aria-label="Hospital" icon={<BuildingRegular />} appearance="subtle" disabled={single}>
+          {scope}
+        </MenuButton>
+      </MenuTrigger>
+      <MenuPopover>
+        <MenuList>
+          {options.map((s) => (
+            <MenuItemRadio key={s} name="hospital" value={s}>
+              {s}
+            </MenuItemRadio>
+          ))}
+        </MenuList>
+      </MenuPopover>
+    </Menu>
   );
 }
