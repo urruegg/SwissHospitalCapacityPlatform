@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.3.0 (A4/A11/gallery delivered) |
+| **Previous Version** | 1.4.0 (Step 3 split into 3a hybrid + 3b live) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -135,6 +135,45 @@ the finding routes back to the agent-host to add the server-side mapping.
 Run the app with `VITE_AGENT_HOST_URL` set; send T1–T4; capture each live
 `GroundedReply`; map onto A1–A12; score (below). Board data + provenance stay
 *simulated* (honest labelling; no PHI, ADR-0013 / ADR-0016).
+
+#### 3a design — the agent-host `reco` contract (grounded by live probe 2026-07-26)
+
+Endpoints (verified):
+
+| Env | Agent-host (`VITE_AGENT_HOST_URL`) | Foundry project |
+|-----|-------------------------------------|-----------------|
+| **SIT** | `https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io` (live, 7 agents) | `https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project` (ADR-0032) |
+| **PROD** | `ca-agent-host-ihzhhpf-prod` (eastus2 `rg-ihzhhpf-prod-eastus2`; `/healthz` + `/agents` 200) — FQDN from the `prod` GitHub env var `AGENT_HOST_URL` | `ai-ihzhhpf-prod` + project (`rg-ihzhhpf-prod-eastus2`) |
+
+Live SIT `POST /agents/ooa-agent/chat` returns today:
+
+```json
+{ "answer": "...92%... 2 Betten umschichten... HITL-02-Freigabe",
+  "citations": ["gold.encounter", "gold.bed_assignment", "gold.seasonality"],
+  "refused": false, "correlationId": "..." }
+```
+
+**No `reco`** — so the app renders a plain `A1 + A3 + A10` bubble, not the A1–A12
+stack. The answer already carries the ingredients (context %, lever, impact, HITL
+gate) as prose. The fix belongs at the **agent-host** boundary (server-side,
+grounded, PHI-redacted), NOT in the browser (client-side prose parsing would risk
+fabrication):
+
+1. **Foundry agent instruction** → emit a structured `GroundedReco` JSON
+   (`contextChip`, `metrics`, `levers[]`+`impact`, `primaryCta`+`requiresApproval`,
+   `projection`, `citations`, `followUps`, `refused`) via Foundry structured
+   output, grounded by the Fabric Data Agent (`hcp:*` / `gold.*` only).
+2. **`orchestrator/dispatch.py`** → parse + validate + redact the model's JSON
+   into a `reco`; on parse failure or partial output, **degrade loud** to the
+   current `{answer, citations, refused}` (plain bubble) — never fabricate.
+3. **`api/app.py` `/chat`** → add `reco` to the response (optional field).
+4. **App** → already renders `GroundedReply.reco` through `RecoPanel`; **no app
+   change** beyond confirming the degrade path.
+
+This is a `deploy`-ceiling change to `apps/hcc-agent-host` (rebuild image + deploy
+to SIT), gated by `approved-to-apply` per AGENTS.md §4. Also observed: the SIT
+**Fabric Data Agent binding is degraded** ("unavailable"), so citations fall back
+to table grounding — re-bind before scoring 3a/3b citation quality.
 
 ### 3b — Live (live board → live agent, end-to-end)
 
