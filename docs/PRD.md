@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.0.1 |
+| **Version** | 2.1.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.0.0 (retired FR-WEB-001..005 for the Sprint 28 public-website retirement; ADR-0044); this bump repoints the Curavias ADR link ADR-0040 -> ADR-0050 (#378) |
+| **Previous Version** | 2.0.1 (repointed the Curavias ADR link ADR-0040 -> ADR-0050, #378); this bump adds the Sprint 29 application context-architecture requirements FR-CTX-001..004 + NFR-CTX-001..002 and their traceability row (#399) |
 
 ## Purpose
 
@@ -263,6 +263,22 @@ as a Copilot rail and grounded on the four knowledge classes over the frozen
 | `FR-POA-008` | The PO Agent shall answer in DE and EN with source-language transparency. |
 | `FR-POA-009` | The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail. |
 
+### Q) Application Context Architecture (Sprint 29)
+
+Sprint 29 deltas per the
+[Sprint 29 design spec](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md),
+its [implementation plan](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md),
+and [ADR-0052](adr/0052-app-context-envelope-per-agent-threads.md). The three
+context tiers (user / agent / grounding) are made consistent by construction and
+config-gated so the westus2 demo (simulated) lifts to live SIT without code edits.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-CTX-001` | The app shall derive a single `ContextEnvelope` from the signed-in user's claims and active role lens and attach it to every IQ read and agent turn. |
+| `FR-CTX-002` | The app shall keep a separate conversation thread per `(userOid x agent)` so switching board-agents never leaks turns across agents, with a clean reset on sign-out. |
+| `FR-CTX-003` | The app shall open the first patient-journey board the active role can see (role-first-eligible default) instead of a hard-coded default board. |
+| `FR-CTX-004` | The app shall enforce per-user data scope (RLS by `hospitalScope`) and the OBO contract, simulated app-side this sprint and liftable to live Fabric RLS / OBO via configuration without code change. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -386,6 +402,13 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-POA-003` | All runtime + data in Switzerland North; no PHI; Preview services accepted per design D3. |
 | `NFR-POA-004` | Advisory-only, human-in-the-loop; the agent never mutates a system. |
 
+### M) Application Context Architecture (Sprint 29)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-CTX-001` | The context architecture shall remain demo-safe: synthetic data only, no PHI (ADR-0013 / ADR-0016), westus2 demo scope. |
+| `NFR-CTX-002` | Provenance and citations shall be preserved on every result; an envelope-less IQ call is refused and degradation surfaces `simulated` provenance loudly (no silent "live"). |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -423,6 +446,8 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/CURAVIAS-PRODUCT-STATUS.md`](CURAVIAS-PRODUCT-STATUS.md) + [`docs/sprints/sprint-19/sit-prod-parity-matrix.md`](sprints/sprint-19/sit-prod-parity-matrix.md) + [`docs/sprints/sprint-19/prod-evidence-switzerlandnorth.md`](sprints/sprint-19/prod-evidence-switzerlandnorth.md) *(Sprint 19: as-deployed PROD Switzerland North status + SIT↔PROD parity; per [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md), [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md), [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md))* | Deployment coverage for `FR-DATA-*`, `FR-FC-*`, `FR-DC-*`, `FR-CX-*`, `FR-VIZ-*`, `FR-EXT-*`, `FR-ORG-001`, `FR-SKILL-*`, `NFR-SEC-*`, `NFR-COMP-*`, `NFR-REL-*` (Covered); `FR-ONT-002`, `NFR-ONT-001` (N/A-per-ADR, #270); `FR-WEB-001` to `FR-WEB-005` (Retired, [ADR-0044](adr/0044-retire-public-website.md)) |
 | [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) + [`docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`](adr/0040-prescriptive-decision-ontology-and-runtime-store.md) + [`docs/superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md`](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md) *(Sprint 26 Slice 1: DC-INSIGHT-v1 descriptive -> prescriptive extension, OOA -> DCA)* | `FR-FC-007`, `FR-DEC-001` to `FR-DEC-003`, `NFR-DEC-001` |
 | [`docs/superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md`](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md) + [`docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md`](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md) + [`docs/adr/0043-product-owner-agent-foundry-iq-domain.md`](adr/0043-product-owner-agent-foundry-iq-domain.md) *(Sprint 28: Curavias Product Owner Agent full build; frozen GroundedChunk + A/B/C/D tool contracts; PO Agent as Foundry IQ domain #1; issue #377)* | `FR-POA-001` to `FR-POA-009`, `NFR-POA-001` to `NFR-POA-004` |
+
+| [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) + [`docs/superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md`](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md) + [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](adr/0052-app-context-envelope-per-agent-threads.md) *(Sprint 29: app context envelope + per-(user x agent) threads + role-first-eligible board + envelope propagation/guard + config-gated Foundry thread map + simulated OBO/RLS; issue #399)* | `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` |
 
 ## Assumptions To Validate In Implementation Planning
 
