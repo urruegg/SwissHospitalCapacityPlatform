@@ -26,8 +26,8 @@ import { useRoleLens } from '../../context/role-context';
 const useStyles = makeStyles({
   fab: {
     position: 'fixed',
-    right: '24px',
-    bottom: '24px',
+    right: '48px',
+    bottom: '48px',
     zIndex: 1000,
     boxShadow: tokens.shadow16,
   },

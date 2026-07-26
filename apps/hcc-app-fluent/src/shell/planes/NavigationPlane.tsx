@@ -1,9 +1,12 @@
-import { TabList, Tab, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { useState } from 'react';
+import { TabList, Tab, Button, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import {
   HomeRegular,
   GridRegular,
   DataTrendingRegular,
   SettingsRegular,
+  PanelLeftContractRegular,
+  PanelLeftExpandRegular,
 } from '@fluentui/react-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -71,6 +74,22 @@ const useStyles = makeStyles({
     ':hover': { backgroundColor: tokens.colorBrandBackground2Hover },
   },
   spacer: { flexGrow: 1 },
+  navCollapsed: {
+    width: '48px',
+    paddingLeft: space.xs,
+    paddingRight: space.xs,
+    alignItems: 'center',
+  },
+  collapseRow: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  collapseRowCollapsed: {
+    justifyContent: 'center',
+  },
+  tabCollapsed: {
+    justifyContent: 'center',
+  },
 });
 
 export function NavigationPlane() {
@@ -80,47 +99,76 @@ export function NavigationPlane() {
   const nav = useNavigate();
   const loc = useLocation();
   const { t } = useTranslation();
+  const [collapsed, setCollapsed] = useState(false);
   const selected = ITEMS.find((i) => loc.pathname.startsWith(i.to))?.key ?? 'start';
   const canNavigate = (key: string) => Boolean((capabilities.nav as Record<string, boolean>)[key]);
   const onSelect = (value: string) => {
     const it = ITEMS.find((i) => i.key === value);
     if (it && canNavigate(it.key)) nav(it.to);
   };
-  const tabClass = (key: string) => mergeClasses(s.tab, selected === key && s.tabSelected);
+  const tabClass = (key: string) =>
+    mergeClasses(s.tab, selected === key && s.tabSelected, collapsed && s.tabCollapsed);
+  const tabLabel = (key: string, label: string) => t(`nav.${key}`, label);
 
   return (
-    <nav aria-label="Primary" className={s.nav}>
-      <div className={s.modeSwitch} role="group" aria-label={t('mode.toggle', 'Demo / User mode')}>
-        <button
-          type="button"
-          className={mergeClasses(s.modeBtn, mode === 'demo' && s.modeBtnActive)}
-          aria-pressed={mode === 'demo'}
-          onClick={() => setMode('demo')}
-        >
-          {t('mode.demo', 'Demo')}
-        </button>
-        <button
-          type="button"
-          className={mergeClasses(s.modeBtn, mode === 'user' && s.modeBtnActive)}
-          aria-pressed={mode === 'user'}
-          onClick={() => setMode('user')}
-        >
-          {t('mode.user', 'User')}
-        </button>
+    <nav aria-label="Primary" className={mergeClasses(s.nav, collapsed && s.navCollapsed)}>
+      <div className={mergeClasses(s.collapseRow, collapsed && s.collapseRowCollapsed)}>
+        <Button
+          appearance="subtle"
+          icon={collapsed ? <PanelLeftExpandRegular /> : <PanelLeftContractRegular />}
+          aria-label={collapsed ? t('nav.expand', 'Expand navigation') : t('nav.collapse', 'Collapse navigation')}
+          aria-expanded={!collapsed}
+          onClick={() => setCollapsed((c) => !c)}
+        />
       </div>
+
+      {!collapsed && (
+        <div className={s.modeSwitch} role="group" aria-label={t('mode.toggle', 'Demo / User mode')}>
+          <button
+            type="button"
+            className={mergeClasses(s.modeBtn, mode === 'demo' && s.modeBtnActive)}
+            aria-pressed={mode === 'demo'}
+            onClick={() => setMode('demo')}
+          >
+            {t('mode.demo', 'Demo')}
+          </button>
+          <button
+            type="button"
+            className={mergeClasses(s.modeBtn, mode === 'user' && s.modeBtnActive)}
+            aria-pressed={mode === 'user'}
+            onClick={() => setMode('user')}
+          >
+            {t('mode.user', 'User')}
+          </button>
+        </div>
+      )}
 
       <TabList vertical selectedValue={selected} onTabSelect={(_, d) => onSelect(d.value as string)}>
         {TOP.map((i) => (
-          <Tab key={i.key} className={tabClass(i.key)} value={i.key} icon={i.icon} disabled={!canNavigate(i.key)}>
-            {t(`nav.${i.key}`, i.label)}
+          <Tab
+            key={i.key}
+            className={tabClass(i.key)}
+            value={i.key}
+            icon={i.icon}
+            disabled={!canNavigate(i.key)}
+            aria-label={collapsed ? tabLabel(i.key, i.label) : undefined}
+          >
+            {collapsed ? undefined : tabLabel(i.key, i.label)}
           </Tab>
         ))}
       </TabList>
       <div className={s.spacer} />
       <TabList vertical selectedValue={selected} onTabSelect={(_, d) => onSelect(d.value as string)}>
         {BOTTOM.map((i) => (
-          <Tab key={i.key} className={tabClass(i.key)} value={i.key} icon={i.icon} disabled={!canNavigate(i.key)}>
-            {t(`nav.${i.key}`, i.label)}
+          <Tab
+            key={i.key}
+            className={tabClass(i.key)}
+            value={i.key}
+            icon={i.icon}
+            disabled={!canNavigate(i.key)}
+            aria-label={collapsed ? tabLabel(i.key, i.label) : undefined}
+          >
+            {collapsed ? undefined : tabLabel(i.key, i.label)}
           </Tab>
         ))}
       </TabList>
