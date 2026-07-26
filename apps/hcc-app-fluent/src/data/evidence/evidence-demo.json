@@ -527,6 +527,17 @@
       },
       "status": "Accepted",
       "title": "Curavias Product Owner Agent as Foundry IQ Knowledge-Layer Domain #1"
+    },
+    {
+      "decisionSummary": "1. **Retire the public Curavias website in full.** Remove the app, its hosting infrastructure, its deploy workflow, and its runbooks: * `apps/curavias-web/**` * `.github/workflows/curavias-web-deploy.yml` * `infra/modules/experience-hosting/curavias-web.bicep` * `infra/main.bicep`: the `curaviasWeb` module block, the `enableCuraviasWebModule` / `curaviasWebMediaPublisherPrincipalId` / `curaviasWebEnableCustomDomains` params, and the three `curaviasWeb*` outputs + `curaviasWeb` module-status entry. * `infra/environments/prod.bicepparam`: the three `curaviasWeb*` params. * `infra/modules/dns/curavias.bicep`: the website-only, never-wired `aliasARecords` param + alias-A resource. * `docs/runbooks/curavias-web-custom-domain.md`, `docs/runbooks/curavias-web-media-library.md`. 2. **Withdraw `FR-WEB-001..005`** in [docs/PRD.md](../PRD.md), marking them Retired and linking this ADR (the IDs are kept for traceability, not reused). 3. **Retain the shared `curavias.ch` DNS zone** and its Fluent-app records — the zone serves `hcc-app-fluent` (`app.curavias.ch`), not the website. ADR-0030 remains in force for the zone. 4. **Keep the `product-marketing-agent`.** Its `FR-MKT-*` charter (stringent, brand-aligned messaging across channels) stands; only its retired website-copy deliverable is dropped.",
+      "id": "ADR-0044",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0044-retire-public-website.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0044-retire-public-website.md"
+      },
+      "status": "Accepted",
+      "title": "Retire the public Curavias website (`apps/curavias-web` / curavias.ch)"
     }
   ],
   "boms": [
@@ -3468,7 +3479,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
+      "title": "**[Retired — ADR-0044]** The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3480,7 +3491,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
+      "title": "**[Retired — ADR-0044]** The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3492,7 +3503,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
+      "title": "**[Retired — ADR-0044]** The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3504,7 +3515,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
+      "title": "**[Retired — ADR-0044]** The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3516,7 +3527,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
+      "title": "**[Retired — ADR-0044]** Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
     },
     {
       "family": "Responsible AI And Auditability",

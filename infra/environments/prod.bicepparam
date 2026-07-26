@@ -94,15 +94,3 @@ param poAgentLogAnalyticsWorkspaceId = ''
 param appFluentCustomHostname = 'app.curavias.ch'
 param appFluentEnableCustomDomainCert = false
 
-// Sprint 24 (ADR-0030) — Curavias product landing page (Astro) hosting, PROD-only.
-// Two-step custom-domain binding: keep curaviasWebEnableCustomDomains=false on the first
-// apply (creates the Static Web App + media storage), add the DNS records + GoDaddy
-// delegation, then flip to true so the SWA validates curavias.ch + www.curavias.ch.
-// PROD-health hotfix (2026-07-26): disabled. The public marketing website is
-// being retired (#268 — deliver as in-repo HTML, do not publish public site).
-// The media storage account fails deployment under the PROD PublicAccessNotPermitted
-// policy, blocking every PROD infra deploy. The retirement session removes the
-// module entirely; this toggle keeps PROD green in the interim.
-param enableCuraviasWebModule = false
-param curaviasWebMediaPublisherPrincipalId = ''
-param curaviasWebEnableCustomDomains = false

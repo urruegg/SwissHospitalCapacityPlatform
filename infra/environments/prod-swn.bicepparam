@@ -116,24 +116,6 @@ param appFluentCustomHostname = 'app.curavias.ch'
 param appFluentEnableCustomDomainCert = true
 param manageCuraviasDnsZone = false
 
-// Sprint 24 (ADR-0030) — Curavias product landing page (Astro) hosting.
-// #275: rebased from the retired prod-eastus2 slice to switzerlandnorth PROD —
-// the live pipeline deploys THIS file into rg-ihzhhpf-prod, so the enable flag
-// must live here (it previously defaulted false -> the marketing SWA/media were
-// never provisioned). SWA control-plane is pinned to westeurope by the module
-// (SWA is not available in switzerlandnorth); media Storage uses the RG region.
-// Two-step custom-domain binding: keep curaviasWebEnableCustomDomains=false on
-// the first apply (creates stapp-ihzhhpf-prod + stmediaihzhhpfprod), add the DNS
-// records + delegation, then flip true so the SWA validates curavias.ch + www.
-// PROD-health hotfix (2026-07-26): disabled. The public marketing website is
-// being retired (#268 — deliver as in-repo HTML, do not publish public site).
-// The media storage account fails deployment under the PROD PublicAccessNotPermitted
-// policy, blocking every PROD infra deploy. The retirement session removes the
-// module entirely; this toggle keeps PROD green in the interim.
-param enableCuraviasWebModule = false
-param curaviasWebMediaPublisherPrincipalId = ''
-param curaviasWebEnableCustomDomains = false
-
 // --- P4 data lane — Event Hubs / Service Bus / CSA Cosmos ---
 // EVH namespace + hub + consumer groups. Region-safe, public, self-contained.
 param enableDataFoundationModule = true

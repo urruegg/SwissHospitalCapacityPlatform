@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.5.0 |
+| **Date** | 2026-07-26 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling in delivery) |
-| **Previous Version** | 1.3.0 (added §9.8 WS-C live-apply tooling) |
+| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enablement in SIT in delivery) |
+| **Previous Version** | 1.4.0 (added §9.9 WS-C in-VNet apply job + live Foundry factory) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -412,3 +412,23 @@ human-gated step run through the new job per the runbook.
 
 **Still deferred (not this branch):** DCA barrier Gold materialization;
 ontology `hcp:Recommendation` / `hcp:Lever`.
+
+### 9.10 WS-C enablement — job turned on in SIT (current)
+
+One squash PR off `main` (branch `sprint-26/ws-c-enable-apply-job`), Infra +
+Governance lanes. Turns the §9.9 job on in SIT so the human-gated live apply can
+run. The blocker that deferred this (the Sprint 28 PO-Agent OpenAI-at-SIT quota
+failure) was resolved on `main` (#392/#394/#397/#398 — SIT + PROD deploys green).
+
+1. **Job image (Option B, low blast radius)** — the §9.9 job inherited
+   `agentHostImage`, still pinned to the pre-decision `:b796961` (2026-07-18). A
+   new `decisionApplyJobImage` param (`infra/main.bicep`, default empty →
+   inherits `agentHostImage`) lets SIT pin the **job only** to the
+   decision-CLI-enabled `:2b83a49` (built by `ci-build-agent-host` on the #388
+   merge) without redeploying the running agent-host Container App.
+2. **SIT params** — `sit.bicepparam` sets `enableDecisionApplyJobModule = true`
+   and `decisionApplyJobImage = '…/hcc-agent-host:2b83a49'`. No coordinator-owned
+   main-health pin is touched.
+3. **Human gates** — @urruegg merges the PR and approves the `cd-infra-deploy-sit`
+   environment gate (creates the job); the live apply is then run plan-first and
+   applied only with `--approved-to-apply <handle>` per the runbook (AGENTS.md §4).
