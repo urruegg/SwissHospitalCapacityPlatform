@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next';
-import { Badge, Body1, Caption1, Card, Text, makeStyles, tokens } from '@fluentui/react-components';
+import { Body1, Caption1, Card, Text, makeStyles, tokens } from '@fluentui/react-components';
 import { ArrowRightRegular } from '@fluentui/react-icons';
-import { chipBadgeColor } from '../../../../copilot-rail/reco';
+import { SignalsPanel } from './SignalsPanel';
+import { RagBadge } from './RagBadge';
 import type {
+  BoardSignal,
   CapacitySummary,
   SignalChannel,
   SpecStream,
@@ -37,6 +39,7 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusMedium,
     background: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
     font: 'inherit',
   },
   streamHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: tokens.spacingHorizontalXS },
@@ -49,11 +52,13 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorPaletteRedBorder2}`,
     borderRadius: tokens.borderRadiusMedium,
     background: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
     font: 'inherit',
   },
 });
 
 interface CapacityFlowDiagramProps {
+  signals: BoardSignal[];
   channels: SignalChannel[];
   streams: SpecStream[];
   capacity: CapacitySummary;
@@ -62,6 +67,7 @@ interface CapacityFlowDiagramProps {
 }
 
 export function CapacityFlowDiagram({
+  signals,
   channels,
   streams,
   capacity,
@@ -76,13 +82,7 @@ export function CapacityFlowDiagram({
       <Caption1 className={s.hint}>{t('ooa.flow.hint')}</Caption1>
       <div className={s.flow}>
         <div className={s.col}>
-          <Caption1 className={s.colHead}>{t('ooa.flow.channels')}</Caption1>
-          {channels.map((c) => (
-            <div key={c.id} className={s.channel}>
-              <ArrowRightRegular />
-              <Caption1>{c.label}</Caption1>
-            </div>
-          ))}
+          <SignalsPanel signals={signals} />
         </div>
         <div className={s.arrow}><ArrowRightRegular /></div>
         <div className={s.col}>
@@ -97,7 +97,7 @@ export function CapacityFlowDiagram({
             >
               <span className={s.streamHead}>
                 <Body1>{st.label}</Body1>
-                <Badge appearance="tint" color={chipBadgeColor(st.level)}>{st.levelLabel}</Badge>
+                <RagBadge tone={st.level}>{st.levelLabel}</RagBadge>
               </span>
               <Caption1 className={s.fedBy}>
                 {t('ooa.flow.fedBy', { channels: st.fedBy.map(channelLabel).join(' \u00b7 ') })}
@@ -107,7 +107,7 @@ export function CapacityFlowDiagram({
         </div>
         <div className={s.arrow}><ArrowRightRegular /></div>
         <div className={s.col}>
-          <Caption1 className={s.colHead}>{t('ooa.flow.outputs')}</Caption1>
+          <Caption1 className={s.colHead}>{t('ooa.flow.recommendation', 'Recommendation')}</Caption1>
           <Card className={s.output}>
             <Caption1>{t('ooa.flow.current')}</Caption1>
             <Text weight="semibold">

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
@@ -58,11 +58,26 @@ describe('AdmissionsEventstream', () => {
   });
 
   it('renders a stream with only a single admit event correctly', () => {
-    const singleAdmit = [{ id: 'test-01', ts: '12:00', message: 'PT-9999 admitted', kind: 'admit' as const }];
+    const singleAdmit = [{ id: 'test-01', ts: '12:00', message: 'PT-9999 admitted', kind: 'admit' as const, ward: 'Station A', patient: 'PT-9999', detail: 'Test detail' }];
     renderStream(singleAdmit);
     expect(screen.getByText('PT-9999 admitted')).toBeInTheDocument();
     expect(screen.getByText('admit')).toBeInTheDocument();
     expect(screen.queryByText('discharge')).toBeNull();
+  });
+
+  it('fires onSelectAdmission when an event row is clicked (Copilot steering)', () => {
+    const onSelectAdmission = vi.fn();
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <AdmissionsEventstream
+          admissions={BEDMANAGER_PINNED.admissions}
+          onSelectAdmission={onSelectAdmission}
+        />
+      </FluentProvider>,
+    );
+    const first = BEDMANAGER_PINNED.admissions[0];
+    screen.getByRole('button', { name: new RegExp(first.patient) }).click();
+    expect(onSelectAdmission).toHaveBeenCalledWith(first);
   });
 
   it('renders both admit and discharge badge colors distinguishably', () => {

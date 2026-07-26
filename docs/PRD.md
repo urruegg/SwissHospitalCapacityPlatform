@@ -1,12 +1,12 @@
-# PRD
+﻿# PRD
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.1.0 |
+| **Version** | 2.2.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.0.1 (repointed the Curavias ADR link ADR-0040 -> ADR-0050, #378); this bump adds the Sprint 29 application context-architecture requirements FR-CTX-001..004 + NFR-CTX-001..002 and their traceability row (#399) |
+| **Previous Version** | 2.1.0 (added Sprint 29 application context-architecture requirements FR-CTX-001..004 + NFR-CTX-001..002, #399); this bump merges the Sprint 27 Curavias app UX-polish requirements FR-UX-001..006 + NFR-UX-001..004 and their traceability row |
 
 ## Purpose
 
@@ -279,6 +279,25 @@ config-gated so the westus2 demo (simulated) lifts to live SIT without code edit
 | `FR-CTX-003` | The app shall open the first patient-journey board the active role can see (role-first-eligible default) instead of a hard-coded default board. |
 | `FR-CTX-004` | The app shall enforce per-user data scope (RLS by `hospitalScope`) and the OBO contract, simulated app-side this sprint and liftable to live Fabric RLS / OBO via configuration without code change. |
 
+### R) App Experience Polish And Design System (Sprint 27)
+
+Sprint 27 deltas formalised per the
+[Sprint 27 UX polish design](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md)
+and [implementation plan](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md).
+Experience-lane only: the internal app `apps/hcc-app-fluent` (app.curavias.ch);
+no backend / data-contract / agent-prompt / infrastructure change; no PHI; the
+public site `apps/curavias-web` and any Astro pattern are out of scope.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-UX-001` | The internal app shall provide a **codified design system** (semantic tokens + component recipes) derived from the Curavias brandkit and Fluent UI v9, used as the single source of visual truth by every polished screen. |
+| `FR-UX-002` | The solution shall publish an **app style-guide** mapping each design-system token and recipe to its Fluent v9 primitive and the current M365 app pattern (Outlook / Teams / M365 Copilot) it mirrors, including the reusable per-screen heuristic checklist. |
+| `FR-UX-003` | The internal app shall expose an **in-app brand gallery** route rendering every token and component-recipe state (light / dark) as a first-class accessibility-verified surface. |
+| `FR-UX-004` | The solution shall provide a documented **SIT-connected local visual-verify loop** in which the app runs locally against SIT, is opened in a VS Code browser tab whose context is shared with GitHub Copilot via a read-only browser-automation server, and supports an edit → hot-reload → re-snapshot → accessibility-scan cycle. |
+| `FR-UX-005` | The internal app shall deliver a **fully polished OOA reference vertical** (Start occupancy teaser, MAIN Occupancy board, OOA agent-plane context, and the shared five-plane chrome) meeting the acceptance bar, as the reference implementation for later role-board polish. |
+| `FR-UX-006` | The solution shall maintain an **ordered polish backlog** applying the same design-system recipe to the remaining role boards and surfaces in later sprints. |
+
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -409,6 +428,15 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-CTX-001` | The context architecture shall remain demo-safe: synthetic data only, no PHI (ADR-0013 / ADR-0016), westus2 demo scope. |
 | `NFR-CTX-002` | Provenance and citations shall be preserved on every result; an envelope-less IQ call is refused and degradation surfaces `simulated` provenance loudly (no silent "live"). |
 
+### N) App Experience Polish Governance (Sprint 27)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-UX-001` | Every polished screen shall pass **WCAG 2.1 AA** via automated `axe-core` scanning as a merge gate. |
+| `NFR-UX-002` | Every polished screen shall pass the **Fluent v9 + M365 heuristic checklist** (8 pt spacing grid, type ramp, elevation, motion, hover / pressed / focus states, explicit empty / loading / error states, dark-mode parity). |
+| `NFR-UX-003` | Every polished screen shall carry **before / after visual evidence** (light / dark, desktop / narrow) attached to its pull request. |
+| `NFR-UX-004` | UX polish shall remain **experience-lane only**: no backend / data-contract / agent-prompt / infrastructure change, no PHI, and no public-site (Astro) patterns introduced into the internal app. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -448,6 +476,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md`](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md) + [`docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md`](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md) + [`docs/adr/0043-product-owner-agent-foundry-iq-domain.md`](adr/0043-product-owner-agent-foundry-iq-domain.md) *(Sprint 28: Curavias Product Owner Agent full build; frozen GroundedChunk + A/B/C/D tool contracts; PO Agent as Foundry IQ domain #1; issue #377)* | `FR-POA-001` to `FR-POA-009`, `NFR-POA-001` to `NFR-POA-004` |
 
 | [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) + [`docs/superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md`](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md) + [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](adr/0052-app-context-envelope-per-agent-threads.md) *(Sprint 29: app context envelope + per-(user x agent) threads + role-first-eligible board + envelope propagation/guard + config-gated Foundry thread map + simulated OBO/RLS; issue #399)* | `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` |
+| [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
 
 ## Assumptions To Validate In Implementation Planning
 

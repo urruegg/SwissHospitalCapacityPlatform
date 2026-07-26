@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, within } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
 import { RecoPanel } from '../../src/copilot-rail/RecoPanel';
@@ -51,6 +51,27 @@ describe('RecoPanel', () => {
       </FluentProvider>,
     );
     expect(screen.queryByRole('button', { name: /back to summary/i })).not.toBeInTheDocument();
+  });
+
+  it('renders the A4 metric trio (now -> forecast -> gap)', () => {
+    const withMetrics: GroundedReco = {
+      ...reco,
+      metrics: [
+        { label: 'Now', value: '96%' },
+        { label: '72 h', value: '102%' },
+        { label: 'Gap', value: '-6 beds', tone: 'beds' },
+      ],
+    };
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <RecoPanel reco={withMetrics} showBack={false} onBack={vi.fn()} onCta={vi.fn()} />
+      </FluentProvider>,
+    );
+    const trio = screen.getByTestId('metric-trio');
+    expect(within(trio).getByText('96%')).toBeInTheDocument();
+    expect(within(trio).getByText('102%')).toBeInTheDocument();
+    expect(within(trio).getByText('-6 beds')).toBeInTheDocument();
+    expect(within(trio).getByText('Gap')).toBeInTheDocument();
   });
 
   it('renders an approval-required gate and keeps the CTA actionable', () => {

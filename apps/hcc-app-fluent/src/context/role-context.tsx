@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from 're
 import { hasAnyRole, parseClaims, type AppEnv, type Hospital, type ParsedClaims } from '../auth/claim-parser';
 import {
   deriveCapabilities,
+  highestRole,
   isHccRole,
   narrowRoles,
   type HccRole,
@@ -45,18 +46,6 @@ export function canSwitchRole(claims: ParsedClaims): boolean {
   return claims.env === 'sit' && hasAnyRole(claims, ROLE_SWITCHER_ROLES);
 }
 
-const RANK: HccRole[] = [
-  'HCC.Viewer',
-  'HCC.BedManager',
-  'HCC.DemoOperator',
-  'HCC.RegionalCrisisLead',
-  'HCC.PlatformAdmin',
-];
-
-function highestHeld(held: HccRole[]): HccRole {
-  return [...held].sort((a, b) => RANK.indexOf(a) - RANK.indexOf(b)).pop() ?? 'HCC.Viewer';
-}
-
 export function RoleProvider({
   claims,
   testRoles,
@@ -90,7 +79,7 @@ export function RoleProvider({
     testHomeSite ?? (effectiveClaims.hospital as Hospital as HospitalScope);
   const userOid = effectiveClaims.oid ?? null;
 
-  const [activeRole, setActive] = useState<HccRole>(() => highestHeld(heldSafe));
+  const [activeRole, setActive] = useState<HccRole>(() => highestRole(heldSafe));
 
   const heldKey = heldSafe.join(',');
   const lensValue = useMemo<RoleLensValue>(

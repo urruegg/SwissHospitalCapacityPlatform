@@ -4,6 +4,7 @@ import { StartView } from '../workspaces/start/StartView';
 import { MainView } from '../workspaces/main/MainView';
 import { BackstageView } from '../workspaces/backstage/BackstageView';
 import { SettingsView } from '../workspaces/settings/SettingsView';
+import { BrandGalleryView } from '../workspaces/brand/BrandGalleryView';
 
 /**
  * Sprint 20 M2 — five-plane route table.
@@ -22,6 +23,7 @@ export const routes: RouteObject[] = [
       { path: 'main/:board?', element: <MainView /> },
       { path: 'backstage/:widget?', element: <BackstageView /> },
       { path: 'settings', element: <SettingsView /> },
+      { path: 'brand', element: <BrandGalleryView /> },
       { path: '*', element: <Navigate to="/start" replace /> },
     ],
   },

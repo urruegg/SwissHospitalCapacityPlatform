@@ -20,8 +20,8 @@ describe('PlacementBarriersBoard', () => {
       </FluentProvider>,
     );
     const sorted = [...BEDMANAGER_PINNED.barriers].sort((a, b) => b.bedImpact - a.bedImpact);
-    expect(screen.getByText(sorted[0].label)).toBeInTheDocument();
-    expect(screen.getByText(sorted[1].label)).toBeInTheDocument();
+    expect(screen.getByText(sorted[0].name)).toBeInTheDocument();
+    expect(screen.getByText(sorted[1].name)).toBeInTheDocument();
   });
 
   it('renders barriers sorted by bedImpact descending — highest impact appears first', () => {
@@ -36,8 +36,8 @@ describe('PlacementBarriersBoard', () => {
     );
     const sorted = [...BEDMANAGER_PINNED.barriers].sort((a, b) => b.bedImpact - a.bedImpact);
     const allText = document.body.textContent ?? '';
-    const firstIdx = allText.indexOf(sorted[0].label);
-    const secondIdx = allText.indexOf(sorted[1].label);
+    const firstIdx = allText.indexOf(sorted[0].name);
+    const secondIdx = allText.indexOf(sorted[1].name);
     expect(firstIdx).toBeGreaterThanOrEqual(0);
     expect(firstIdx).toBeLessThan(secondIdx);
   });
@@ -53,7 +53,7 @@ describe('PlacementBarriersBoard', () => {
       </FluentProvider>,
     );
     const sorted = [...BEDMANAGER_PINNED.barriers].sort((a, b) => b.bedImpact - a.bedImpact);
-    act(() => screen.getByRole('button', { name: sorted[0].label }).click());
+    act(() => screen.getByRole('button', { name: sorted[0].name }).click());
     expect(onSelectBarrier).toHaveBeenCalledWith(sorted[0]);
   });
 

@@ -22,6 +22,14 @@ export interface RoleBoardData<P = unknown> {
   provenance: Provenance;   // set by the data layer, never by a component
   scope: ScenarioScope;
   payload: P;               // board-specific, contract-typed per role
+  /**
+   * Sprint 27 — IQ evidence envelope. `citations` carry >= 1 `hcp:*` / `gold.*`
+   * id; `degraded` is true when the golden source was configured but unavailable
+   * and the data layer fell back to the simulated fixture (fail loud, never
+   * silent). Both optional so the frozen contract stays backward-compatible.
+   */
+  citations?: string[];
+  degraded?: boolean;
 }
 
 export interface ContextInsight {

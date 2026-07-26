@@ -1,5 +1,6 @@
 import type { Mode, RoleBoardData, ScenarioScope } from '../../journey/RoleBoard';
 import type { ContextEnvelope } from '../../context/context-envelope';
+import { getPreferredSource } from '../data-source';
 import { OCCUPANCY_PINNED, type OccupancyPayload, type SiteCapacitySummary, aggregateSiteCapacity } from './occupancy-data';
 import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
 import { BED_MANAGER_PINNED, type BedManagerPayload } from './bed-manager-data';
@@ -8,10 +9,16 @@ import { STAFFING_PINNED, type StaffingPayload } from './staffing-data';
 import { CRISIS_PINNED, type CrisisPayload } from './crisis-data';
 
 /**
- * Sprint 1 (parity) — trusted-data read adapter. When the Sprint 22 golden
- * source is wired (VITE_GOLDEN_SOURCE_URL), reads live; otherwise serves the
- * layer's synthesized dataset flagged `simulated`. Demo mode pins the golden
- * thread window over the same trusted data (a real slice, not fabricated).
+ * Sprint 1 (parity) / Sprint 27 / Sprint 29 — trusted-data read adapter.
+ *
+ * The data source is chosen by the Live/Simulated toggle (`getPreferredSource`,
+ * Sprint 27): `simulated` serves the layer's synthesized fixtures; `live` reads
+ * the golden source (`VITE_GOLDEN_SOURCE_URL`) through the IQ gateway. Live calls
+ * carry a per-user `ContextEnvelope` (ADR-0052 OBO/RLS) as scoped headers, and a
+ * live call without an envelope is refused (throws). Every result carries an
+ * evidence envelope (provenance + `hcp:*` / `gold.*` citations + `degraded`);
+ * when `live` is selected but no golden source is configured we fail loud
+ * (`degraded: true`) rather than silently pretending.
  */
 let currentEnvelope: ContextEnvelope | null = null;
 
@@ -28,11 +35,11 @@ export function getContextEnvelope(): ContextEnvelope | null {
   return currentEnvelope;
 }
 
+/** Live IQ fetch with per-user OBO/RLS headers (ADR-0052). Refuses ungrounded calls. */
 async function iqFetch(path: string): Promise<Response> {
   if (currentEnvelope === null) {
     throw new Error('IQ gateway call requires a ContextEnvelope; call setContextEnvelope() first');
   }
-
   return fetch(path, {
     headers: {
       'X-User-Oid': currentEnvelope.userOid ?? '',
@@ -42,100 +49,71 @@ async function iqFetch(path: string): Promise<Response> {
   });
 }
 
-export async function loadOccupancy(
+// Representative ontology + gold citations per board. The demo fixtures are
+// grounded on these MVO entities; a live golden source returns its own.
+const CITES = {
+  occupancy: ['hcp:CapacityUnit', 'hcp:Bed', 'gold.fact_capacity_baseline', 'gold.fact_occupancy_forecast'],
+  discharge: ['hcp:Encounter', 'hcp:Bed', 'gold.fact_discharge_readiness'],
+  bedManager: ['hcp:CapacityUnit', 'hcp:Bed', 'gold.bed_assignment'],
+  orSteering: ['hcp:ORSlot', 'hcp:CapacityUnit', 'gold.fact_or_schedule'],
+  staffing: ['hcp:CareTeam', 'gold.fact_staffing_roster'],
+  crisis: ['hcp:Facility', 'hcp:CapacityUnit', 'gold.fact_capacity_baseline'],
+} as const;
+
+/**
+ * Shared structured-read path: simulated fixture when the toggle is `simulated`
+ * (or the golden source is unavailable, flagged `degraded`), or live golden
+ * evidence via the IQ gateway (OBO/RLS scoped) when `live` is selected and
+ * configured.
+ */
+async function loadBoard<P>(
+  resource: string,
+  fixture: P,
+  citations: readonly string[],
   scope: ScenarioScope,
   mode: Mode,
-): Promise<RoleBoardData<OccupancyPayload>> {
+): Promise<RoleBoardData<P>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenUrl()) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: OCCUPANCY_PINNED };
+  const cites = [...citations];
+  // Simulated preference (or the demo default) -> fixtures, clean provenance.
+  if (getPreferredSource() === 'simulated') {
+    return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: false };
   }
+  // Live requested but no golden source configured -> fail loud (degraded).
+  if (!goldenUrl()) {
+    return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: true };
+  }
+  // Live + configured -> OBO/RLS gateway (iqFetch refuses without a ContextEnvelope).
   const res = await iqFetch(
-    `${goldenUrl()}/occupancy?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+    `${goldenUrl()}/${resource}?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
   );
-  if (!res.ok) throw new Error(`occupancy load failed: ${res.status}`);
-  const payload = (await res.json()) as OccupancyPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+  if (!res.ok) throw new Error(`${resource} load failed: ${res.status}`);
+  const payload = (await res.json()) as P;
+  return { provenance: 'live', scope: pinnedScope, payload, citations: cites, degraded: false };
 }
 
-export async function loadDischarge(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<DischargePayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenUrl()) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: DISCHARGE_PINNED };
-  }
-  const res = await iqFetch(
-    `${goldenUrl()}/discharge?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`discharge load failed: ${res.status}`);
-  const payload = (await res.json()) as DischargePayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadOccupancy(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<OccupancyPayload>> {
+  return loadBoard('occupancy', OCCUPANCY_PINNED, CITES.occupancy, scope, mode);
 }
 
-export async function loadBedManager(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<BedManagerPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenUrl()) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: BED_MANAGER_PINNED };
-  }
-  const res = await iqFetch(
-    `${goldenUrl()}/bed-manager?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`bed-manager load failed: ${res.status}`);
-  const payload = (await res.json()) as BedManagerPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadDischarge(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<DischargePayload>> {
+  return loadBoard('discharge', DISCHARGE_PINNED, CITES.discharge, scope, mode);
 }
 
-export async function loadOrSteering(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<OrSteeringPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenUrl()) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: OR_STEERING_PINNED };
-  }
-  const res = await iqFetch(
-    `${goldenUrl()}/or-steering?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`or-steering load failed: ${res.status}`);
-  const payload = (await res.json()) as OrSteeringPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadBedManager(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<BedManagerPayload>> {
+  return loadBoard('bed-manager', BED_MANAGER_PINNED, CITES.bedManager, scope, mode);
 }
 
-export async function loadStaffing(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<StaffingPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenUrl()) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: STAFFING_PINNED };
-  }
-  const res = await iqFetch(
-    `${goldenUrl()}/staffing?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`staffing load failed: ${res.status}`);
-  const payload = (await res.json()) as StaffingPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadOrSteering(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<OrSteeringPayload>> {
+  return loadBoard('or-steering', OR_STEERING_PINNED, CITES.orSteering, scope, mode);
 }
 
-export async function loadCrisis(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<CrisisPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenUrl()) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: CRISIS_PINNED };
-  }
-  const res = await iqFetch(
-    `${goldenUrl()}/crisis?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`crisis load failed: ${res.status}`);
-  const payload = (await res.json()) as CrisisPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadStaffing(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<StaffingPayload>> {
+  return loadBoard('staffing', STAFFING_PINNED, CITES.staffing, scope, mode);
+}
+
+export function loadCrisis(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<CrisisPayload>> {
+  return loadBoard('crisis', CRISIS_PINNED, CITES.crisis, scope, mode);
 }
 
 /**

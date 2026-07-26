@@ -1,7 +1,8 @@
-import { Dropdown, Option } from '@fluentui/react-components';
+import { Menu, MenuTrigger, MenuButton, MenuPopover, MenuList, MenuItemRadio } from '@fluentui/react-components';
+import { GlobeRegular } from '@fluentui/react-icons';
 import { useTranslation } from 'react-i18next';
 
-/** Sprint 20 M3 — language selector (EN / DE / FR / IT per design spec §2.1). */
+/** Sprint 20 M3 / Sprint 27 — language selector as an icon menu-button (EN / DE / FR / IT). */
 const LANGS = [
   ['de', 'Deutsch'],
   ['en', 'English'],
@@ -11,20 +12,29 @@ const LANGS = [
 
 export function LanguageSelector() {
   const { i18n } = useTranslation();
+  const current = LANGS.find(([code]) => code === i18n.language)?.[1] ?? i18n.language;
   return (
-    <Dropdown
-      aria-label="Language"
-      value={i18n.language}
-      selectedOptions={[i18n.language]}
-      onOptionSelect={(_e, d) => {
-        if (d.optionValue) void i18n.changeLanguage(d.optionValue);
+    <Menu
+      checkedValues={{ lang: [i18n.language] }}
+      onCheckedValueChange={(_e, d) => {
+        const next = d.checkedItems[0];
+        if (next) void i18n.changeLanguage(next);
       }}
     >
-      {LANGS.map(([code, label]) => (
-        <Option key={code} value={code}>
-          {label}
-        </Option>
-      ))}
-    </Dropdown>
+      <MenuTrigger disableButtonEnhancement>
+        <MenuButton aria-label="Language" icon={<GlobeRegular />} appearance="subtle">
+          {current}
+        </MenuButton>
+      </MenuTrigger>
+      <MenuPopover>
+        <MenuList>
+          {LANGS.map(([code, label]) => (
+            <MenuItemRadio key={code} name="lang" value={code}>
+              {label}
+            </MenuItemRadio>
+          ))}
+        </MenuList>
+      </MenuPopover>
+    </Menu>
   );
 }

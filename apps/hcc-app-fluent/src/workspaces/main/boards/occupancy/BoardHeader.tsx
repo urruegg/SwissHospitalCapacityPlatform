@@ -35,9 +35,6 @@ export function BoardHeader({ agent, title, provenance, lens }: BoardHeaderProps
         <Badge appearance="tint" color={provenance === 'simulated' ? 'warning' : 'success'}>
           {provenance === 'simulated' ? t('badge.simulatedData') : t('badge.liveData')}
         </Badge>
-        <Badge appearance="tint" color="informative">
-          {'EN\u00b7DE\u00b7FR\u00b7IT'}
-        </Badge>
         <Badge appearance="tint" color="brand">
           {t('badge.accessLens', { lens })}
         </Badge>

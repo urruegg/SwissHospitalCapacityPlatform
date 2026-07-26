@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Body1,
-  Card,
-  CardHeader,
-  Caption1,
   Text,
   makeStyles,
+  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
+import { space, radii, elevation } from '../../../../theme/design-system';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
 import type {
   BedManagerPayload,
   PlacementRequest,
   PlacementBarrier,
+  AdmissionEvent,
 } from '../../../../data/roleboard/bed-manager-data';
 import { sortBarriers } from '../../../../data/roleboard/bed-manager-data';
 import { bedManagerBoard } from './bed-manager-board';
@@ -22,6 +21,7 @@ import { PlacementRequestsTable } from './PlacementRequestsTable';
 import { PlacementBarriersBoard } from './PlacementBarriersBoard';
 import { BedStateKpis } from './BedStateKpis';
 import { AdmissionsEventstream } from './AdmissionsEventstream';
+import { GroundingNotice } from '../GroundingNotice';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
@@ -29,15 +29,36 @@ import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
+import { useDataSource } from '../../../../context/data-source-context';
 
 const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalL,
-    padding: tokens.spacingHorizontalL,
+  root: { display: 'flex', flexDirection: 'column', gap: space.l, padding: space.l },
+  panel: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: radii.card,
+    boxShadow: elevation.card,
+    padding: space.l,
   },
-  pbiCard: { padding: tokens.spacingHorizontalM },
+  // Source (live admissions) -> insights (placement worklist) on one level.
+  sourceInsightRow: {
+    display: 'flex',
+    gap: space.l,
+    alignItems: 'stretch',
+    flexWrap: 'wrap',
+  },
+  sourcePane: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: '300px',
+    minWidth: '260px',
+    overflowY: 'auto',
+  },
+  insightPane: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: '420px',
+    minWidth: 0,
+  },
 });
 
 /** Sprint 20 (parity) — BedManager (bmca) surface: BoardHeader + placement worklist + barriers + KPIs + eventstream + Power BI embed. */
@@ -46,6 +67,7 @@ export function BedManagerBoard() {
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
+  const { source } = useDataSource();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<BedManagerPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
@@ -69,7 +91,7 @@ export function BedManagerBoard() {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, hospital]);
+  }, [mode, hospital, source]);
 
   if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 
@@ -88,26 +110,39 @@ export function BedManagerBoard() {
     route({
       id: r.recoId,
       label: t('insight.placementMove', {
-        patientId: r.patientId,
-        fromWard: r.fromWard,
-        toWard: r.toWard,
+        requestNo: r.id,
+        source: r.source,
+        target: r.target,
       }),
       context: {
         placement: r.id,
-        patientId: r.patientId,
-        fromWard: r.fromWard,
-        toWard: r.toWard,
+        source: r.source,
+        target: r.target,
+        status: r.status,
+        barrier: r.barrier,
       },
     });
   };
 
   const onSelectBarrier = (b: PlacementBarrier) => {
-    route({ id: b.recoId, label: b.label, context: { barrier: b.id, bedImpact: b.bedImpact } });
+    route({
+      id: b.recoId,
+      label: b.name,
+      context: { barrier: b.id, name: b.name, bedImpact: b.bedImpact, owner: b.owner },
+    });
   };
 
   const onAutoSequence = () => {
     const top = sortBarriers(payload.barriers)[0];
     if (top) onSelectBarrier(top);
+  };
+
+  const onSelectAdmission = (ev: AdmissionEvent) => {
+    route({
+      id: `admission-${ev.id}`,
+      label: t('insight.admissionEvent', { patient: ev.patient, ward: ev.ward }),
+      context: { admission: ev.id, ts: ev.ts, ward: ev.ward, patient: ev.patient, kind: ev.kind },
+    });
   };
 
   return (
@@ -117,6 +152,7 @@ export function BedManagerBoard() {
       aria-label={t('bedManager.title')}
     >
       <HandoffBanner banner={banner} provenance={data.provenance} />
+      <GroundingNotice degraded={data.degraded} />
       <BoardHeader
         agent={bedManagerBoard.agent}
         title={t('board.bedManager')}
@@ -124,29 +160,34 @@ export function BedManagerBoard() {
         lens="Bed Management"
       />
 
-      <PlacementRequestsTable
-        placements={payload.placements}
-        onSelectRequest={onSelectRequest}
-      />
+      {/* Source (live admissions) -> insights (placement worklist) on one level. */}
+      <div className={s.sourceInsightRow}>
+        <div className={mergeClasses(s.panel, s.sourcePane)}>
+          <AdmissionsEventstream admissions={payload.admissions} onSelectAdmission={onSelectAdmission} />
+        </div>
+        <div className={mergeClasses(s.panel, s.insightPane)}>
+          <PlacementRequestsTable
+            placements={payload.placements}
+            onSelectRequest={onSelectRequest}
+          />
+        </div>
+      </div>
 
-      <PlacementBarriersBoard
-        barriers={payload.barriers}
-        onSelectBarrier={onSelectBarrier}
-        onAutoSequence={onAutoSequence}
-      />
+      <div className={s.panel}>
+        <PlacementBarriersBoard
+          barriers={payload.barriers}
+          onSelectBarrier={onSelectBarrier}
+          onAutoSequence={onAutoSequence}
+          summary={{
+            placed: payload.placements.filter((p) => p.status === 'PLACED').length,
+            waiting: payload.placements.filter((p) => p.status !== 'PLACED').length,
+            barriers: payload.barriers.length,
+            beds: payload.placements.length,
+          }}
+        />
+      </div>
 
       <BedStateKpis payload={payload} />
-
-      <AdmissionsEventstream admissions={payload.admissions} />
-
-      {/* Power BI embed — preserved from Sprint 13 (capacity-dashboard, Direct Lake, RLS by hospital) */}
-      <Card className={s.pbiCard} data-testid="pbi-embed">
-        <CardHeader
-          header={<Body1><b>{t('bmca.pbi.title')}</b></Body1>}
-          description={<Caption1>{payload.powerBiEmbed.reportName}</Caption1>}
-        />
-        <Body1>{payload.powerBiEmbed.embedPlaceholder}</Body1>
-      </Card>
     </section>
   );
 }

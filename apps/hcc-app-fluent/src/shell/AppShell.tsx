@@ -8,7 +8,8 @@ import { FooterPlane } from './planes/FooterPlane';
 const useStyles = makeStyles({
   root: {
     display: 'grid',
-    height: '100vh',
+    height: '100%',
+    width: '100%',
     gridTemplateColumns: 'auto 1fr auto',
     gridTemplateRows: 'auto 1fr auto',
     gridTemplateAreas: `'header header header' 'nav main agent' 'footer footer footer'`,
@@ -16,7 +17,15 @@ const useStyles = makeStyles({
   },
   header: { gridArea: 'header' },
   nav: { gridArea: 'nav' },
-  main: { gridArea: 'main', overflow: 'auto', minWidth: 0 },
+  main: {
+    gridArea: 'main',
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    minWidth: 0,
+    // Keep scrolling but hide the scrollbar (design request — no right-side bar).
+    scrollbarWidth: 'none',
+    '::-webkit-scrollbar': { display: 'none' },
+  },
   agent: { gridArea: 'agent' },
   footer: { gridArea: 'footer' },
 });

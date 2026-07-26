@@ -1,9 +1,10 @@
 import { makeStyles, tokens, Image, Text } from '@fluentui/react-components';
+import { elevation } from '../../theme/design-system';
 import { ThemeToggle } from '../TopBar/ThemeToggle';
+import { DataSourceToggle } from '../TopBar/DataSourceToggle';
 import { LanguageSelector } from '../TopBar/LanguageSelector';
 import { HospitalScopeSelector } from '../TopBar/HospitalScopeSelector';
 import { RoleLensDropdown } from '../TopBar/RoleLensDropdown';
-import { ModeToggle } from '../TopBar/ModeToggle';
 import { UserMenu } from '../TopBar/UserMenu';
 
 const useStyles = makeStyles({
@@ -14,6 +15,9 @@ const useStyles = makeStyles({
     padding: `0 ${tokens.spacingHorizontalL}`,
     height: '48px',
     backgroundColor: tokens.colorBrandBackground2,
+    boxShadow: elevation.flat,
+    position: 'relative',
+    zIndex: 1,
   },
   brand: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalS },
   spacer: { flexGrow: 1 },
@@ -37,11 +41,11 @@ export function HeaderPlane() {
       </div>
       <div className={s.spacer} />
       <div className={s.controls}>
+        <DataSourceToggle />
         <ThemeToggle />
         <LanguageSelector />
         <HospitalScopeSelector />
         <RoleLensDropdown />
-        <ModeToggle />
         <UserMenu />
       </div>
     </header>

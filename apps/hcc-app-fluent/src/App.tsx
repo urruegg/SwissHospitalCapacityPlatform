@@ -5,6 +5,7 @@ import { ModeProvider } from './context/mode-context';
 import { CopilotRailProvider } from './copilot-rail/rail-context';
 import { HospitalProvider } from './context/hospital-context';
 import { RoleProvider } from './context/role-context';
+import { DataSourceProvider } from './context/data-source-context';
 import { parseClaims, type ParsedClaims, type RawClaims } from './auth/claim-parser';
 import { routes } from './shell/router';
 
@@ -31,7 +32,9 @@ export function App({ rawClaims }: { rawClaims?: RawClaims }) {
         <CopilotRailProvider>
           <RoleProvider claims={claims}>
             <HospitalProvider claims={claims}>
-              <RouterProvider router={router} />
+              <DataSourceProvider>
+                <RouterProvider router={router} />
+              </DataSourceProvider>
             </HospitalProvider>
           </RoleProvider>
         </CopilotRailProvider>
