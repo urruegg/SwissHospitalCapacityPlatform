@@ -82,6 +82,10 @@ var skillsEventstreamManifest = {
     namespaceHost: sourceMode == 'EventHub' ? eventHubNamespace : ''
     eventHubName: sourceMode == 'EventHub' ? eventHubName : ''
     consumerGroup: sourceMode == 'EventHub' ? eventHubConsumerGroup : ''
+    // Fabric-managed connection GUID (POST /v1/connections) that binds the Eventstream to the
+    // Event Hubs namespace. Created out-of-band and passed to the post-deploy script via
+    // -ConnectionId; empty at Bicep composition time. Only meaningful when sourceMode=EventHub.
+    connectionId: ''
     routingProperty: 'eventKind'
     // D4 guardrail: the lane admits ONLY these three kinds. The post-deploy script asserts the
     // manifest carries exactly this set; runtime enforcement of the kind allow-list + the

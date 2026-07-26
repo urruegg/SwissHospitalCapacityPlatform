@@ -114,6 +114,12 @@ param skillsEventstreamDestinationLakehouseId string = ''
 ])
 param skillsEventstreamSourceMode string = 'CustomEndpoint'
 
+// Sprint 23 WS-A4 (ADR-0043) — the dedicated per-domain skills-events Event Hub entity is
+// provisioned exactly when the skills lane runs in sourceMode=EventHub (the Swiss-GA / ADR-0043
+// path). In CustomEndpoint mode the Container Apps publisher POSTs to the ingestion URL and no
+// Event Hub source is needed, so the hub stays un-provisioned (backwards-compatible default).
+var skillsEventHubNeeded = enableSkillsEventstreamModule && skillsEventstreamSourceMode == 'EventHub'
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -456,6 +462,7 @@ module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFou
     simulatorMiPrincipalId: eventHubsSimulatorMiPrincipalId
     bmCopilotMiPrincipalId: eventHubsBmCopilotMiPrincipalId
     csaAgentMiPrincipalId: eventHubsCsaAgentMiPrincipalId
+    enableSkillsEventHub: skillsEventHubNeeded
   }
 }
 
@@ -818,7 +825,7 @@ module skillsEventstream './modules/integration-orchestration/skills-eventstream
     workspaceId: skillsEventstreamWorkspaceId
     sourceMode: skillsEventstreamSourceMode
     eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
-    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
+    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.skillsEventHubName : ''
     eventHubConsumerGroup: 'cg-skills-eventstream'
     location: location == 'switzerlandnorth' ? 'switzerlandnorth' : 'westus2'
     demoScope: location != 'switzerlandnorth'

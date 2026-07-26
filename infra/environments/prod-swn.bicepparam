@@ -163,6 +163,13 @@ param fabricEventstreamDestinationLakehouseId = ''
 param enableSkillsEventstreamModule = true
 param skillsEventstreamWorkspaceId = ''
 param skillsEventstreamDestinationLakehouseId = ''
+// Sprint 23 WS-A4 (ADR-0043) — PROD swn runs the skills lane in EventHub source mode.
+// Eventstream + Event Hubs are GA in Switzerland North, so this is a GA-in-region flip
+// (not a preview exception); it auto-provisions the dedicated per-domain skills-events
+// hub + cg-skills-eventstream consumer group via the data-foundation module. The live
+// wiring still requires an out-of-band Fabric-managed connection (POST /v1/connections)
+// before the post-deploy script can bind the source. Synthetic / no-PHI only (ADR-0013).
+param skillsEventstreamSourceMode = 'EventHub'
 param enableMasterdataLandingModule = true
 param masterdataLandingPipelinePrincipalId = ''
 param masterdataLandingLogAnalyticsWorkspaceId = ''

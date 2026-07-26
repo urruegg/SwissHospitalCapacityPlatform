@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Approved (brainstorming) |
-| **Previous Version** | 1.2.0 (EventHub transport RESOLVED to CustomEndpoint for the SIT demo) |
+| **Previous Version** | 1.3.0 (EventHub flip un-parked for PROD swn — ADR-0043) |
 | **Sprint** | [Sprint 23 - Unified Curavias organisation spine + org/skills ontology (P1b)](../../sprints/sprint-23-curavias-org-spine-and-skills-ontology.md) |
 | **Issue** | [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255) |
 | **Extends** | Idea pack [`unified-curavias-organisation-and-skills-ontology/`](../ideas/unified-curavias-organisation-and-skills-ontology/) (Steps 1-4 + 20 CSVs + generator); shared design [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](2026-07-19-curavias-shared-master-data-and-ontology-design.md) |
@@ -218,6 +218,14 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
   Hub** (per-functional-domain envelope, not shared with the capacity `events` rail); a **simulator**
   feeds it until the live publisher is ready; **SIT and PROD do not share input services**
   (`evh-ihzhhpf-sit-y26y` westus2 vs `evh-ihzhhpf-prod-i62t` swn).
+  **IMPLEMENTED 2026-07-25 (deploy-class, `sprint-23/eh-flip-execution`):** the
+  `data-foundation/eventhubs` module provisions the dedicated `skills-events` hub +
+  `cg-skills-eventstream` group (auto-enabled when the skills lane runs `sourceMode=EventHub`);
+  `prod-swn.bicepparam` sets `sourceMode=EventHub`; the post-deploy script gained an `AzureEventHub`
+  source branch (`-ConnectionId` Fabric-managed connection); and `publish_skill_events.py` is the
+  synthetic simulator. The `DC-SKILL-EVENT-v1` contract is unchanged (transport-only change;
+  backwards-compatible default). The live PROD apply + `POST /v1/connections` remain gated by
+  `approved-to-apply`.
 - **`validate_master_data.py`** was not found on disk during design (only `upload_to_onelake.py`
   and `verify_gold_schema.py`); WS-B confirms whether the Sprint 22 validator exists under another
   name or must be authored for the silver gate.
