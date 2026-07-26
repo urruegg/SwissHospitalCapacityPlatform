@@ -88,9 +88,9 @@ describe('BedManagerBoard surface (parity)', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText('Ward capacity overflow')).toBeInTheDocument(),
+      expect(screen.getByText('Bed turnaround (EVS)')).toBeInTheDocument(),
     );
-    expect(screen.getByText('Bed cleaning backlog')).toBeInTheDocument();
+    expect(screen.getByText('Ward mismatch (monitored)')).toBeInTheDocument();
   });
 
   it('renders the admissions eventstream with admit and discharge badges', async () => {

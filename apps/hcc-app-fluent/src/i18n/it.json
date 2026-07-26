@@ -320,11 +320,12 @@
       "barrier": "Ostacolo"
     },
     "barriers": {
-      "hint": "Ostacoli al collocamento ordinati per impatto sui letti",
-      "rank": "Rango",
-      "label": "Ostacolo",
-      "bedImpact": "Letti",
-      "detail": "Dettaglio",
+      "title": "Ostacoli al collocamento — per impatto sui letti",
+      "hint": "fai clic su un ostacolo → playbook sistemico Copilot",
+      "summary": "{{placed}} collocati · {{waiting}} in attesa su {{barriers}} ostacoli · {{beds}} letti da assorbire",
+      "agingRisk": "RISCHIO ANZIANITÀ",
+      "bedOne": "{{n}} letto",
+      "bedMany": "{{n}} letti",
       "cta": "Sequenza automatica per impatto →"
     },
     "kpis": {

@@ -320,11 +320,12 @@
       "barrier": "Barrier"
     },
     "barriers": {
-      "hint": "Placement barriers sorted by bed impact",
-      "rank": "Rank",
-      "label": "Barrier",
-      "bedImpact": "Beds",
-      "detail": "Detail",
+      "title": "Placement barriers — ranked by bed impact",
+      "hint": "click a barrier → systemic Copilot playbook",
+      "summary": "{{placed}} placed now · {{waiting}} waiting across {{barriers}} barriers · {{beds}} beds to absorb",
+      "agingRisk": "AGING RISK",
+      "bedOne": "{{n}} bed",
+      "bedMany": "{{n}} beds",
       "cta": "Auto-sequence by impact →"
     },
     "kpis": {

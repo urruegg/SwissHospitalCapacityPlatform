@@ -34,8 +34,8 @@ export const bedManagerBoard: RoleBoard<BedManagerPayload> = {
     const barrierInsights: ContextInsight[] = data.payload.barriers.map(
       (b: PlacementBarrier) => ({
         id: b.recoId,
-        label: b.label,
-        context: { barrier: b.id, bedImpact: b.bedImpact },
+        label: b.name,
+        context: { barrier: b.id, name: b.name, bedImpact: b.bedImpact, owner: b.owner },
       }),
     );
 

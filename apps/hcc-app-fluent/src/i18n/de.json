@@ -320,11 +320,12 @@
       "barrier": "Hindernis"
     },
     "barriers": {
-      "hint": "Platzierungshindernisse nach Bettauswirkung sortiert",
-      "rank": "Rang",
-      "label": "Hindernis",
-      "bedImpact": "Betten",
-      "detail": "Details",
+      "title": "Platzierungshindernisse — nach Bettenwirkung",
+      "hint": "Hindernis anklicken → systemisches Copilot-Playbook",
+      "summary": "{{placed}} platziert · {{waiting}} wartend über {{barriers}} Hindernisse · {{beds}} Betten zu decken",
+      "agingRisk": "ALTERUNGSRISIKO",
+      "bedOne": "{{n}} Bett",
+      "bedMany": "{{n}} Betten",
       "cta": "Auto-Reihenfolge nach Auswirkung →"
     },
     "kpis": {

@@ -125,7 +125,11 @@ export function BedManagerBoard() {
   };
 
   const onSelectBarrier = (b: PlacementBarrier) => {
-    route({ id: b.recoId, label: b.label, context: { barrier: b.id, bedImpact: b.bedImpact } });
+    route({
+      id: b.recoId,
+      label: b.name,
+      context: { barrier: b.id, name: b.name, bedImpact: b.bedImpact, owner: b.owner },
+    });
   };
 
   const onAutoSequence = () => {
@@ -174,6 +178,12 @@ export function BedManagerBoard() {
           barriers={payload.barriers}
           onSelectBarrier={onSelectBarrier}
           onAutoSequence={onAutoSequence}
+          summary={{
+            placed: payload.placements.filter((p) => p.status === 'PLACED').length,
+            waiting: payload.placements.filter((p) => p.status !== 'PLACED').length,
+            barriers: payload.barriers.length,
+            beds: payload.placements.length,
+          }}
         />
       </div>
 

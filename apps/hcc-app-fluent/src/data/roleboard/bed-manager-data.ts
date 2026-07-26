@@ -20,11 +20,20 @@ export interface PlacementRequest {
   recoId: string;          // Copilot placement-playbook reco key
 }
 
+export type BarrierIcon = 'turnaround' | 'monitor' | 'isolation' | 'transfer' | 'staffing';
+
 export interface PlacementBarrier {
   id: string;
-  label: string;
-  bedImpact: number;
-  detail: string;
+  name: string;               // barrier title (was `label`)
+  description: string;        // one-line context (was `detail`)
+  bedImpact: number;          // beds absorbed when resolved
+  icon: BarrierIcon;          // leading glyph
+  owner: string;              // responsible queue/team
+  wait: string;               // e.g. 'stuck 2h', 'ETA 2h', 'stuck 18h'
+  waitTone: 'watch' | 'over'; // dot colour: amber | red
+  action: string;             // right-side next-step hint
+  agingRisk?: boolean;        // 'AGING RISK' badge
+  handoffTo?: string;         // cross-agent handoff, e.g. 'sba'
   recoId: string;
 }
 
@@ -284,9 +293,9 @@ const defaultReco: GroundedReco = {
   provenance: 'simulated',
 };
 
-/** Stable sort: bedImpact descending; id ascending as tie-breaker. */
+/** Stable sort by bedImpact descending; preserves the curated order for ties. */
 export function sortBarriers(barriers: PlacementBarrier[]): PlacementBarrier[] {
-  return [...barriers].sort((a, b) => b.bedImpact - a.bedImpact || a.id.localeCompare(b.id));
+  return [...barriers].sort((a, b) => b.bedImpact - a.bedImpact);
 }
 
 export const BEDMANAGER_PINNED: BedManagerPayload = {
@@ -310,25 +319,66 @@ export const BEDMANAGER_PINNED: BedManagerPayload = {
   ],
   barriers: [
     {
-      id: 'ward-overflow',
-      label: 'Ward capacity overflow',
-      bedImpact: 3,
-      detail: '3 beds blocked by Surgery A / ICU co-management gap',
-      recoId: 'ward-overflow',
-    },
-    {
-      id: 'cleaning-backlog',
-      label: 'Bed cleaning backlog',
+      id: 'bed-turnaround',
+      name: 'Bed turnaround (EVS)',
+      description: '2 ED boarders · Medicine A · RQ-2202, RQ-2207 · beds vacated by dca',
       bedImpact: 2,
-      detail: '2 Medicine A beds awaiting terminal cleaning (12A, 14B)',
-      recoId: 'cleaning-backlog',
+      icon: 'turnaround',
+      owner: 'Housekeeping (EVS)',
+      wait: 'stuck 2h',
+      waitTone: 'watch',
+      action: 'by 15:00',
+      recoId: 'barrier-bed-turnaround',
     },
     {
-      id: 'approval-pending',
-      label: 'Transfer approval pending',
+      id: 'ward-mismatch',
+      name: 'Ward mismatch (monitored)',
+      description: '1 ED boarder needs telemetry · nearest freed bed is general · RQ-2204',
       bedImpact: 1,
-      detail: '1 transfer awaiting charge nurse sign-off (HITL gate)',
-      recoId: 'approval-pending',
+      icon: 'monitor',
+      owner: 'Bed mgmt / flow',
+      wait: 'stuck 3h',
+      waitTone: 'watch',
+      action: 'swap',
+      recoId: 'barrier-ward-mismatch',
+    },
+    {
+      id: 'isolation-ipc',
+      name: 'Isolation / IPC',
+      description: '1 ED boarder needs contact precautions · no single free · RQ-2206',
+      bedImpact: 1,
+      icon: 'isolation',
+      owner: 'IPC / bed mgmt',
+      wait: 'stuck 4h',
+      waitTone: 'watch',
+      action: 'single room',
+      recoId: 'barrier-isolation-ipc',
+    },
+    {
+      id: 'inbound-transfer',
+      name: 'Inbound transfer',
+      description: '1 regional transfer · accept-note pending · RQ-2203',
+      bedImpact: 1,
+      icon: 'transfer',
+      owner: 'Transfer desk',
+      wait: 'ETA 2h',
+      waitTone: 'watch',
+      action: 'confirm bed',
+      recoId: 'barrier-inbound-transfer',
+    },
+    {
+      id: 'staffing-cap',
+      name: 'Staffing cap',
+      description: '1 bed ready but ward at nurse ratio · needs staff · RQ-2208 · longest wait',
+      bedImpact: 1,
+      icon: 'staffing',
+      owner: 'Staffing / charge nurse',
+      wait: 'stuck 18h',
+      waitTone: 'over',
+      action: 'via sba',
+      agingRisk: true,
+      handoffTo: 'sba',
+      recoId: 'barrier-staffing-cap',
     },
   ],
   utilPct: 87,

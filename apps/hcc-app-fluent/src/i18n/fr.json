@@ -320,11 +320,12 @@
       "barrier": "Obstacle"
     },
     "barriers": {
-      "hint": "Obstacles au placement triés par impact sur les lits",
-      "rank": "Rang",
-      "label": "Obstacle",
-      "bedImpact": "Lits",
-      "detail": "Détail",
+      "title": "Obstacles au placement — classés par impact sur les lits",
+      "hint": "cliquez sur un obstacle → playbook systémique Copilot",
+      "summary": "{{placed}} placés · {{waiting}} en attente sur {{barriers}} obstacles · {{beds}} lits à absorber",
+      "agingRisk": "RISQUE D'ANCIENNETÉ",
+      "bedOne": "{{n}} lit",
+      "bedMany": "{{n}} lits",
       "cta": "Séquence automatique par impact →"
     },
     "kpis": {
