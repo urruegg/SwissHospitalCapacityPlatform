@@ -11,8 +11,12 @@ describe('agent context map', () => {
     expect(agentForRoute('/main/crisis')).toBe('csa-agent');
   });
 
-  it('falls through to knowledge/orchestrator for non-board surfaces', () => {
-    expect(agentForRoute('/backstage/evidence')).toBe('knowledge-agent');
+  it('maps the BACKSTAGE surface to the product-owner agent (Sprint 28 WS-X)', () => {
+    expect(agentForRoute('/backstage')).toBe('product-owner-agent');
+    expect(agentForRoute('/backstage/evidence')).toBe('product-owner-agent');
+  });
+
+  it('falls through to the orchestrator for other non-board surfaces', () => {
     expect(agentForRoute('/start')).toBe('orchestrator');
     expect(agentForRoute('/settings')).toBe('orchestrator');
     expect(agentForRoute('/main')).toBe('orchestrator');
