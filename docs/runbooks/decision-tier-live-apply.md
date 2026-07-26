@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-26 |
 | **Author** | GitHub Copilot |
-| **Status** | Draft — plan only; the live-apply step is `approved-to-apply`-gated |
-| **Previous Version** | 1.1.0 (Option B job-only image pin; `Cognitive Services User` RBAC + `job start --command/--args` override method — both corrected in 1.2.0 after the 2026-07-26 guided apply) |
+| **Status** | Draft — procedure; the live-apply step is `approved-to-apply`-gated. WS-B Cosmos seed + WS-C Foundry registration were completed live on 2026-07-26 (all six agents carry `decision_tier_coordination_<role>`), so **re-runs must be Foundry-only** (see Step 2). |
+| **Previous Version** | 1.2.0 (Foundry User RBAC + `--yaml` template-swap run method; corrected the wrong `seed_live` "idempotent" claim in 1.3.0 after the 2026-07-26 live apply) |
 
 > ## Hard gate — the live apply is HITL-gated (AGENTS.md §4)
 >
@@ -159,9 +159,17 @@ operator's GitHub handle.
    ```
 
 2. **Edit `job.apply.yaml`** — in `properties.template.containers[0]`, change the
-   **third `command` token** (the `sh -c` script string) to the apply chain
-   below, leaving the first two tokens (`/bin/sh`, `-c`) and everything else
-   untouched:
+   **third `command` token** (the `sh -c` script string) to the apply chain,
+   leaving the first two tokens (`/bin/sh`, `-c`) and everything else untouched.
+
+   > **⚠ `seed_live` is NOT idempotent.** `coordination.seed_live --action apply`
+   > calls `open_plan`, which raises `ValueError: plan already exists` (Cosmos
+   > `409 Conflict`) when the WS-B `plans` documents are already present, and a
+   > `&&` chain aborts there **before** the Foundry step ever runs. So the seed
+   > step belongs **only on the very first apply** (empty Cosmos). Since the seed
+   > was applied live on 2026-07-26, **every subsequent run must be Foundry-only.**
+
+   **First apply only** (empty Cosmos — seed then register `ooa`):
 
    ```text
    cd /app/data-platform/decision && \
@@ -169,12 +177,19 @@ operator's GitHub handle.
    python -m foundry.register_decision_tier --action apply --role ooa --approved-to-apply <operator-handle>
    ```
 
-   > **Test ooa first.** The chain above applies the Cosmos seed (idempotent —
-   > already applied live 2026-07-26) then registers **only `ooa`**. Verify the
+   **Re-run (Cosmos already seeded — Foundry-only, register `ooa`):**
+
+   ```text
+   cd /app/data-platform/decision && \
+   python -m foundry.register_decision_tier --action apply --role ooa --approved-to-apply <operator-handle>
+   ```
+
+   > **Test ooa first.** Either chain above registers **only `ooa`**. Verify the
    > new `ooa-agent` version preserved its model/instructions/`fabric_dataagent`
    > tool and gained `decision_tier_coordination_ooa` (Step 3) **before** fanning
-   > out. To fan out after ooa is confirmed, replace the last line with:
-   > `for r in ooa dca bmca orsa sba csa; do python -m foundry.register_decision_tier --action apply --role $r --approved-to-apply <operator-handle> || exit 1; done`
+   > out. To fan out after ooa is confirmed, replace the `register_decision_tier`
+   > line with (drop `ooa` from the list if it is already registered):
+   > `for r in dca bmca orsa sba csa; do python -m foundry.register_decision_tier --action apply --role $r --approved-to-apply <operator-handle> || exit 1; done`
 
 3. **Apply the template, run, and wait**:
 
@@ -192,11 +207,14 @@ operator's GitHub handle.
 Expected outcome:
 
 1. Execution `Succeeded`.
-2. `seed_live` wrote / re-confirmed the six-role `plans` + `proposed_actions`
-   documents (`{"applied": true, "approvedBy": "<operator-handle>"}`).
+2. On a **first apply**, `seed_live` wrote the six-role `plans` +
+   `proposed_actions` documents (`{"applied": true, "approvedBy":
+   "<operator-handle>"}`). On a **Foundry-only re-run**, `seed_live` is not in the
+   chain (the seed already exists — re-running it would fail with `plan already
+   exists`).
 3. `register_decision_tier` registered a new agent version carrying
    `decision_tier_coordination_<role>` on each agent (idempotent — re-runs report
-   `toolAlreadyPresent`).
+   `toolAlreadyPresent` and do not append a duplicate tool).
 
 ### Step 3: Verify
 
@@ -228,6 +246,14 @@ After a successful live apply, proceed with:
   live.
 
 ## Troubleshooting
+
+If the Cosmos seed fails with `plan already exists` (`CosmosResourceExistsError`,
+`409 Conflict`):
+
+1. This is expected once the WS-B seed has been applied — `seed_live` is not
+   idempotent. Remove `coordination.seed_live` from the apply chain and run the
+   **Foundry-only** re-run variant (Step 2). Do **not** delete the existing
+   Cosmos documents to force a re-seed.
 
 If the Cosmos seed fails with a network/timeout error:
 
