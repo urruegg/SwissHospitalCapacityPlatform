@@ -73,7 +73,7 @@ $script:ExpectedInactivePairs = @(
 # --- S10.11 verifier extension (Sprint 10 M4-A) ---
 # Measure count = sum of `measure` blocks across tables/*.tmdl
 # Role count    = number of role blocks under roles/*.tmdl (one per file, per TMDL convention)
-$script:ExpectedMeasures = 69   # M1 (15): Beds Total, Over-Run Minutes, OR Utilization %, Data Quality Score (Cases),
+$script:ExpectedMeasures = 72   # M1 (15): Beds Total, Over-Run Minutes, OR Utilization %, Data Quality Score (Cases),
                                 #   Idle-Slot Minutes, Active Encounters, Admissions, Discharged,
                                 #   Currently In Hospital, Currently Assigned Beds, Occupancy %,
                                 #   Effective Identity UPN, Effective Role Label,
@@ -88,6 +88,9 @@ $script:ExpectedMeasures = 69   # M1 (15): Beds Total, Over-Run Minutes, OR Util
                                 #   (Total Skill Demand/Valid Supply/Gap, Coverage %, Assertions,
                                 #   Eligible Workers, Eligibility Coverage %, Demand/Gap Nursing+Ops split,
                                 #   Live/Simulated Demand, Skills Source Mode badge)
+                                # Sprint 23 WS-C2 assertion badge (+3): live-vs-simulated split on
+                                #   fact_skill_assertion (Live Assertions, Simulated Assertions,
+                                #   Assertion Source Mode) surfacing the validated source_mode badge
 $script:ExpectedRoles    = 8    # BedOps, ORPlanner, Analyst, SemanticOwner (M3-A),
                                 # GuestAggregated, SITDemoOperator (M1-RLS, Sprint 10),
                                 # BvaExecFull, BvaBoardReadOnly (Sprint 15)
