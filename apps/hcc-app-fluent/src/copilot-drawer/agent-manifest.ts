@@ -58,27 +58,109 @@ const AGENT_LABELS: Record<string, string> = {
 };
 
 /**
- * Deterministic structured grounded answer for dev/CI — mirrors the shape a
- * Foundry Agent returns so the Copilot pane demonstrates the artefact rendering
- * end-to-end without a live agent-host. Grounded, simulated values only; no PHI.
+ * Deterministic per-agent grounded artefacts for dev/CI — each mirrors the shape
+ * a Foundry Agent returns so every role's Copilot pane demonstrates the artefact
+ * catalogue (context chip, read, levers+impact, CTA+approval gate, projection,
+ * citations) with role-appropriate content. Grounded, simulated values only; no
+ * PHI. Read agents (ooa) hand off; write/deploy agents gate the CTA (HITL).
  */
-function mockReco(agent: string): GroundedReco {
-  return {
-    agentLabel: AGENT_LABELS[agent] ?? agent,
-    contextChip: { subject: 'Station B', qualifiers: ['Auslastung'], status: '92%', tone: 'watch' },
+const AGENT_RECOS: Record<string, GroundedReco> = {
+  'ooa-agent': {
+    agentLabel: 'Occupancy Copilot',
+    contextChip: { subject: 'Medizin A', qualifiers: ['72-h-Prognose'], status: 'OVER', tone: 'over' },
+    read: 'Medizin A erreicht in 72 h 102% - 6 Grippe-Zugänge stehen 2 geplanten Austritten gegenüber.',
+    levers: [
+      { text: '6 austrittsbereite Patienten vor 17:00 entlassen', impact: { label: '-6 Betten', tone: 'beds' } },
+      { text: '3 Niedrig-Akut-Zugänge nach Medizin B umleiten', impact: { label: '+3 Puffer', tone: 'buffer' } },
+    ],
+    primaryCta: { label: 'Austrittsliste öffnen', kind: 'handoff', target: 'dca-agent' },
+    projection: '102% -> 94%',
+    citations: ['hcp:CapacityUnit', 'gold.fact_occupancy_forecast'],
+    provenance: 'simulated',
+    refused: false,
+  },
+  'bmca-agent': {
+    agentLabel: 'Bed-Management Copilot',
+    contextChip: { subject: 'Station B', qualifiers: ['Belegung'], status: '92%', tone: 'watch' },
     read:
-      'Auslastung Station B liegt bei 92% und steigt weiter. Umschichtung Richtung ' +
-      'Notaufnahme empfohlen; die Aktion erfordert HITL-02-Freigabe.',
+      'Station B liegt bei 92% und steigt weiter. Umschichtung Richtung Notaufnahme ' +
+      'empfohlen; die Aktion erfordert HITL-02-Freigabe.',
     levers: [
       { text: '2 Betten Richtung Notaufnahme umschichten', impact: { label: '+2 Betten', tone: 'beds' } },
       { text: '1 verlegbaren Patienten auf Station A vormerken', impact: { label: '-1 Bett', tone: 'beds' } },
     ],
     primaryCta: { label: 'Umschichtung anstossen', kind: 'action', requiresApproval: true },
     projection: '92% -> 85%',
-    citations: ['gold.bed_assignment', 'gold.fact_capacity_baseline'],
+    citations: ['hcp:Bed', 'gold.bed_assignment'],
     provenance: 'simulated',
     refused: false,
-  };
+  },
+  'dca-agent': {
+    agentLabel: 'Discharge Copilot',
+    contextChip: { subject: 'Austritte', qualifiers: ['heute'], status: '8 bereit', tone: 'ranked' },
+    read: '8 Patienten sind austrittsbereit; 3 warten auf eine Nachsorge-Platzierung.',
+    levers: [
+      { text: '3 Nachsorge-Platzierungen mit Spitex koordinieren', impact: { label: '+3 Betten', tone: 'beds' } },
+      { text: '2 Austritte vor 12:00 priorisieren', impact: { label: '-2 / Vormittag', tone: 'time' } },
+    ],
+    primaryCta: { label: 'Austritte bestätigen', kind: 'action', requiresApproval: true },
+    projection: '8 Kandidaten decken 50% der Lücke',
+    citations: ['hcp:Encounter', 'gold.fact_discharge_readiness'],
+    provenance: 'simulated',
+    refused: false,
+  },
+  'orsa-agent': {
+    agentLabel: 'OR-Steering Copilot',
+    contextChip: { subject: 'OP-Plan', qualifiers: ['Mittwoch'], status: 'Überbucht', tone: 'watch' },
+    read: 'Der Mittwoch-OP-Plan ist überbucht; zwei Elektiv-Eingriffe kollidieren mit langsamen Post-OP-Austritten.',
+    levers: [
+      { text: '2 Elektiv-Eingriffe auf Freitag verschieben', impact: { label: '+2 Betten Mi', tone: 'beds' } },
+      { text: '1 Saal als Notfall-Puffer reservieren', impact: { label: 'Puffer', tone: 'buffer' } },
+    ],
+    primaryCta: { label: 'Umplanungs-Vorschlag erstellen', kind: 'action', requiresApproval: true },
+    projection: 'Mittwoch-Spitze 88% -> 80%',
+    citations: ['hcp:ORSlot', 'gold.fact_or_schedule'],
+    provenance: 'simulated',
+    refused: false,
+  },
+  'sba-agent': {
+    agentLabel: 'Staffing Copilot',
+    contextChip: { subject: 'Pflege IPS', qualifiers: ['Spätdienst'], status: 'Unterbesetzt', tone: 'over' },
+    read: 'Die IPS ist im Spätdienst 1.5 FTE unter Bedarf gegenüber der prognostizierten Belegung.',
+    levers: [
+      { text: '2 Pool-Pflegende für den Spätdienst anfragen', impact: { label: '+2 FTE', tone: 'status' } },
+      { text: '1 elektive Aufnahme auf morgen verschieben', impact: { label: '-1 Bedarf', tone: 'buffer' } },
+    ],
+    primaryCta: { label: 'Dienstplan-Anpassung anstossen', kind: 'action', requiresApproval: true },
+    projection: 'Deckung 88% -> 100%',
+    citations: ['hcp:CareTeam', 'gold.fact_staffing_roster'],
+    provenance: 'simulated',
+    refused: false,
+  },
+  'csa-agent': {
+    agentLabel: 'Crisis Copilot',
+    contextChip: { subject: 'Szenario Massenanfall', qualifiers: ['Bereitschaft'], status: 'Aktiv', tone: 'signal' },
+    read: 'Szenario Massenanfall: geschätzt 20 Zusatz-Zugänge in 6 h. Zwei Hebel schaffen 14 Betten.',
+    levers: [
+      { text: 'Elektiv-Programm für 24 h aussetzen', impact: { label: '+10 Betten', tone: 'beds' } },
+      { text: 'Cross-Hospital-Verlegung nach Curalp aktivieren', impact: { label: '+4 Betten', tone: 'routing' } },
+    ],
+    primaryCta: { label: 'Krisen-Szenario ausführen', kind: 'action', requiresApproval: true },
+    projection: 'Deckt 14 der 20 Zusatzbetten',
+    citations: ['hcp:Facility', 'gold.fact_capacity_baseline'],
+    provenance: 'simulated',
+    refused: false,
+  },
+};
+
+/**
+ * Returns the role-specific grounded artefact, or a Station-B bed reco fallback
+ * (relabelled) for non-board agents such as `orchestrator` at bare `/main`.
+ */
+function mockReco(agent: string): GroundedReco {
+  const reco = AGENT_RECOS[agent];
+  if (reco) return reco;
+  return { ...AGENT_RECOS['bmca-agent'], agentLabel: AGENT_LABELS[agent] ?? agent };
 }
 
 /**
@@ -92,14 +174,7 @@ export async function invokeAgent(
 ): Promise<GroundedReply> {
   if (!isAgentHostConfigured()) {
     const reco = mockReco(agent);
-    return {
-      answer:
-        `Auslastung Station B liegt bei 92%. Empfehlung: 2 Betten Richtung ` +
-        `Notaufnahme umschichten. Aktion erfordert HITL-02-Freigabe.`,
-      citations: reco.citations,
-      refused: false,
-      reco,
-    };
+    return { answer: reco.read, citations: reco.citations, refused: reco.refused ?? false, reco };
   }
   return iqAgentChat<GroundedReply>(agent, prompt);
 }
