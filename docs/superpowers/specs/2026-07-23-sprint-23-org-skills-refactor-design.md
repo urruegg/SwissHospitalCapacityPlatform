@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Approved (brainstorming) |
-| **Previous Version** | 1.3.0 (EventHub flip un-parked for PROD swn — ADR-0043) |
+| **Previous Version** | 1.5.0 (EventHub live bind deferred - Fabric platform gap, 2026-07-26) |
 | **Sprint** | [Sprint 23 - Unified Curavias organisation spine + org/skills ontology (P1b)](../../sprints/sprint-23-curavias-org-spine-and-skills-ontology.md) |
 | **Issue** | [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255) |
 | **Extends** | Idea pack [`unified-curavias-organisation-and-skills-ontology/`](../ideas/unified-curavias-organisation-and-skills-ontology/) (Steps 1-4 + 20 CSVs + generator); shared design [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](2026-07-19-curavias-shared-master-data-and-ontology-design.md) |
@@ -150,8 +150,10 @@ batch load. Everything else is batch.
 
 - **Replace `dim_hospital`** with `dim_tenant` / `dim_org_unit` / `dim_department` (per #255 T4
   and the shared design). BVA keeps its separate `bva_dim_hospital`.
-- **Skills measures:** supply / demand / gap / eligibility (per #255 T6), plus a
-  **live-vs-simulated** measure driven by `source_mode`.
+- **Skills measures:** supply / demand / gap / eligibility (per #255 T6), plus
+  **live-vs-simulated** measures driven by `source_mode` on both `fact_skill_demand`
+  (Live/Simulated Demand) and `fact_skill_assertion` (Live/Simulated Assertions,
+  Assertion Source Mode - surfacing the badge on `gold.fact_skill_assertion` per FR-SKILL-007).
 - **Bed vs Ops demand split (requirement #4):** modelled on `bridge_role_skill_demand_template`
   and `fact_skill_demand` via a `care_setting` dimension = `bed` (Pflegepersonal / nursing) |
   `ops` (Doctors + specialised teams). Demand templates and gap measures are reported per
@@ -189,12 +191,12 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
 
 - [ ] ADLS landing zone + OneLake shortcut provisioned (Bicep, `what-if` clean); upload runbook documented
 - [ ] Container Apps simulator jobs for SuccessFactors / LMS / Skills-Manager / Work-ID emit batch extracts to the landing zone on demand
-- [x] Eventstream lane carries the three near-real-time skills events — in-repo data lane landed 2026-07-25 (`DC-SKILL-EVENT-v1` contract + seeder + Bronze/Silver/Gold notebooks + 23 tests); **live-wired in SIT 2026-07-25** (`es-ihzhhpf-skills-events` Running, `CustomEndpoint` source → `bronze_skills_events`, `approved-to-apply` #374). *Remaining: skills-events simulator + `EventHub`-source flip (un-parked for PROD swn per [ADR-0043](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md); GA-in-swn, needs the Fabric-managed connection) + live publisher (fast-follow).*
+- [x] Eventstream lane carries the three near-real-time skills events — in-repo data lane landed 2026-07-25 (`DC-SKILL-EVENT-v1` contract + seeder + Bronze/Silver/Gold notebooks + 23 tests); **live-wired in SIT 2026-07-25** (`es-ihzhhpf-skills-events` Running, `CustomEndpoint` source → `bronze_skills_events`, `approved-to-apply` #374). *Remaining: skills-events simulator + `EventHub`-source flip — infra deployed (#393) but the **live EH bind is DEFERRED (Fabric platform gap, 2026-07-26):** Eventstream EH source is SAS-only + PROD namespace is policy-locked AAD-only (`disableLocalAuth=true`); waits on Fabric workspace-identity GA. See §6 + [ADR-0043 Update 2026-07-26](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap). Live publisher is a separate fast-follow.*
 - [ ] `data/master-data/curavias-org-skills/` created (generator relocated; **path mismatch in the sprint doc fixed**)
 - [ ] Skills-evidence plugin package + `DC-SKILL-EVIDENCE-v1` + simulators + tests green
 - [ ] On-demand Data Pipeline: Bronze -> Silver (validate + quarantine) -> Gold (deny-by-default) produces the org/skills `gold.*` tables
 - [ ] `dim_hospital` replaced; facts re-keyed; consumers re-pointed (#255 T4-T5)
-- [ ] Semantic model: skills + live-vs-simulated + bed-vs-ops (`care_setting`) measures; `verify-semantic-model.yml` re-baselined + green
+- [x] Semantic model: skills + live-vs-simulated + bed-vs-ops (`care_setting`) measures; `verify-semantic-model.yml` re-baselined + green
 - [ ] Ontology + crosswalk + conformance + Fabric IQ Data Agent cover org/skills + care-setting
 - [ ] New ADR Accepted; PRD FR/NFR + section 7 updated; DSG tagging applied
 - [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed
@@ -226,6 +228,21 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
   synthetic simulator. The `DC-SKILL-EVENT-v1` contract is unchanged (transport-only change;
   backwards-compatible default). The live PROD apply + `POST /v1/connections` remain gated by
   `approved-to-apply`.
+  **UPDATE 2026-07-26 — live EH bind DEFERRED (Fabric platform gap).** The live bind was attempted
+  under `approved-to-apply` and hit a hard, mutually-exclusive constraint pair: Fabric Eventstream's
+  Event Hubs **source supports SAS-key auth only** (workspace-identity/AAD auth is not yet GA —
+  attempts returned `DMTS_UntrustedEndpointForWorkspaceIdentity`), while the PROD namespace
+  `evh-ihzhhpf-prod-i62t` runs **`disableLocalAuth=true`** (SAS disabled, AAD-only — enforced by a
+  security-baseline Azure Policy, **not** our Bicep; every SAS attempt returned `AccessUnauthorized`).
+  So the EH→Eventstream bind **cannot complete** without a security downgrade. The earlier "only
+  remaining prerequisite is the out-of-band connection" framing (above and in ADR-0043 §Decision.3)
+  is therefore superseded. Decision (@urruegg, 2026-07-26): **keep the AAD-only secretless posture
+  and defer** the live bind until Fabric GAs workspace-identity auth for EH sources; the
+  `CustomEndpoint` lane (live in SIT, #379) stays the demo transport. The dedicated hub +
+  `cg-skills-eventstream` + simulator `Data Sender` RBAC (#393) remain deployed and wait for that GA.
+  All PROD test artefacts created during the attempt (SAS rules + a workspace-identity role) were
+  rolled back — PROD is byte-for-byte unchanged. See
+  [ADR-0043 Update 2026-07-26](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap).
 - **`validate_master_data.py`** was not found on disk during design (only `upload_to_onelake.py`
   and `verify_gold_schema.py`); WS-B confirms whether the Sprint 22 validator exists under another
   name or must be authored for the silver gate.

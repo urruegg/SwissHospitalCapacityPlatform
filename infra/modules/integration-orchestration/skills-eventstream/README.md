@@ -24,7 +24,7 @@ bronze → silver → gold chain (the silver notebook is the PHI/consent gate).
 | `sourceMode` | Status | Description |
 |--------------|--------|-------------|
 | `CustomEndpoint` (**default**) | **Live-deployable today** | Mirrors the working `es-capacity-events-sit` topology. Fabric exposes an Event-Hub-compatible ingestion endpoint on the Eventstream; the Container Apps publisher (NFR-SKILL-001) POSTs `DC-SKILL-EVENT-v1` envelopes to it. No out-of-band connection required. This is the ADR-0013 demo-scope path. |
-| `EventHub` | **Un-parked for PROD swn** ([ADR-0043](../../../../docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md)) | Consumes a dedicated skills-events Event Hub → Eventstream. **GA in Switzerland North** (Eventstream + Event Hubs both GA; PROD namespace `evh-ihzhhpf-prod-i62t` exists in-region), so it does not consume the preview exception. Requires a **Fabric-managed connection** to the EH namespace (`POST /v1/connections`) that does not exist yet; the post-deploy script refuses to wire an EH source until it does. Fed by a **simulator** until the live publisher lands. The GA-only gate is reserved for a real go-live (real-PHI) cut-over. |
+| `EventHub` | **Deferred — platform gap** ([ADR-0043 Update 2026-07-26](../../../../docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap)) | Target-state: a dedicated skills-events Event Hub → Eventstream. The dedicated hub + `cg-skills-eventstream` + simulator `Data Sender` RBAC are deployed (#393). **The live bind is blocked by a Fabric platform gap discovered 2026-07-26:** the Eventstream Event Hubs source supports **only SAS-key auth** (workspace-identity/AAD auth is not yet GA), but the PROD namespace `evh-ihzhhpf-prod-i62t` runs **`disableLocalAuth=true`** (SAS disabled, AAD-only — enforced by a security-baseline Azure Policy, **not** our Bicep). The two are mutually exclusive, so the live EH→Eventstream bind cannot complete today. **Deferred until Fabric GAs workspace-identity auth for EH sources.** Meanwhile `CustomEndpoint` (live in SIT, #379) stays the demo lane. The GA-only gate still applies to a real go-live (real-PHI) cut-over. |
 
 The demo carve-out (CustomEndpoint) and the target-state (EventHub) share one Bicep source;
 flip `sourceMode` when the managed connection is provisioned. The EventHub flip is un-parked for
@@ -152,3 +152,12 @@ un-parked (GA-in-swn); the GA-only gate is reserved for a real go-live cut-over.
   `-DryRun` mode covers the REST call chain.
 - **Preview posture** — the Fabric REST APIs exercised here are subject to Fabric preview
   terms (ADR-0014).
+- **EventHub source auth is blocked (discovered 2026-07-26)** — Fabric Eventstream's Event
+  Hubs source is **SAS-key-only** (workspace-identity/AAD auth is not yet GA), while the PROD
+  namespace `evh-ihzhhpf-prod-i62t` enforces **`disableLocalAuth=true`** (AAD-only, set by a
+  security-baseline Azure Policy — not this module's Bicep). These are mutually exclusive, so the
+  `sourceMode=EventHub` **live bind is deferred until Fabric GAs workspace-identity auth for EH
+  sources**. Do **not** flip `disableLocalAuth` to force SAS — it is a security downgrade that
+  contradicts the AAD-only secretless design and is reverted by the enforcing policy. See
+  [ADR-0043 Update 2026-07-26](../../../../docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap)
+  and design spec §6.
