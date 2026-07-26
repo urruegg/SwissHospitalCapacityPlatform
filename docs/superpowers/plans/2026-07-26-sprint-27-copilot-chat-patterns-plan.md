@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.0 |
+| **Version** | 1.5.1 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.4.0 (Step 3 split into 3a hybrid + 3b live) |
+| **Previous Version** | 1.5.0 (3a agent-host reco contract + live endpoints) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -171,9 +171,19 @@ fabrication):
    change** beyond confirming the degrade path.
 
 This is a `deploy`-ceiling change to `apps/hcc-agent-host` (rebuild image + deploy
-to SIT), gated by `approved-to-apply` per AGENTS.md §4. Also observed: the SIT
-**Fabric Data Agent binding is degraded** ("unavailable"), so citations fall back
-to table grounding — re-bind before scoring 3a/3b citation quality.
+to SIT), gated by `approved-to-apply` per AGENTS.md §4.
+
+**Fabric Data Agent binding — verified HEALTHY (2026-07-26, SIT).** Live probes:
+4/4 warm `ooa-agent` calls returned ontology citations (`hcp:Bed`, `hcp:Ward`) with
+**no** degrade at ~33 s each; only the first *cold* call after idle degraded to
+table grounding (`gold.*`). Root cause = Fabric F2 capacity/skill **cold-start**,
+**not** a broken binding — nothing to re-bind. Two optional hardening levers to
+fold into this same agent-host change: (1) a **bounded retry + assistant/thread
+reuse** in `FabricDataAgentClient.ask()` so a cold-start blip rides through instead
+of degrading (today it raises on the first failure → immediate degrade); (2) a
+**keep-warm ping** so the first user query isn't a cold miss. Separately, the ~33 s
+warm latency is a pane busy-state concern (B-scope). PROD (`ca-agent-host-ihzhhpf-prod`)
+not yet probed — needs the prod FQDN / MCAP164444 sign-in.
 
 ### 3b — Live (live board → live agent, end-to-end)
 
