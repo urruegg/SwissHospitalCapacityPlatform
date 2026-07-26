@@ -116,6 +116,18 @@ jobs:
             az bicep build-params --file "$f" --stdout >/dev/null
           done
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Static SIT<->PROD parity harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pytest
+          python -m pytest infra/tests/test_sit_prod_parity.py -q
+
   what-if-sit:
     name: What-if SIT
     runs-on: ubuntu-latest
