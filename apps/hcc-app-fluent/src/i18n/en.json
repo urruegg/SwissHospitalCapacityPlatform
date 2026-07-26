@@ -400,20 +400,27 @@
       "csaEscalation": "When should we escalate to crisis planning?"
     },
     "table": {
-      "hint": "Click a row → staffing actions",
-      "role": "Role",
+      "title": "Coverage worklist — {{count}} shift gaps, Medicine A relief",
+      "hint": "click a row → Copilot staffing playbook",
+      "shift": "Shift",
+      "time": "Shift time",
       "fromUnit": "From unit",
       "toUnit": "To unit",
       "fte": "FTE",
-      "shiftGap": "Shift"
+      "window": "Window",
+      "skill": "Skill",
+      "covers": "Covers",
+      "status": "Status"
     },
     "levers": {
-      "hint": "Staffing levers sorted by beds enabled",
-      "rank": "Rank",
-      "label": "Lever",
-      "bedsEnabled": "Beds",
-      "detail": "Detail",
-      "cta": "Auto-sequence by coverage impact →"
+      "title": "Staffing levers — ranked by beds covered",
+      "hint": "click a lever → systemic Copilot playbook",
+      "summary": "{{oncology}} oncology to secure · {{general}} general covered · {{beds}} beds staffed · no agency",
+      "bedOne": "{{n}} bed",
+      "bedMany": "{{n}} beds",
+      "critical": "CRITICAL",
+      "lastResort": "LAST RESORT",
+      "cta": "View staffing plan →"
     },
     "gap": {
       "label": "Site staffing gap",

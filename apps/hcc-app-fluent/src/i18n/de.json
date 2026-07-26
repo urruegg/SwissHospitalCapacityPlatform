@@ -400,20 +400,27 @@
       "csaEscalation": "Wann sollten wir zur Krisenplanung eskalieren?"
     },
     "table": {
-      "hint": "Zeile anklicken → Personalaktionen",
-      "role": "Rolle",
+      "title": "Abdeckungs-Arbeitsliste — {{count}} Schichtlücken, Medicine A Entlastung",
+      "hint": "Zeile anklicken → Copilot Personal-Playbook",
+      "shift": "Schicht",
+      "time": "Schichtzeit",
       "fromUnit": "Von Station",
       "toUnit": "Zur Station",
       "fte": "VZÄ",
-      "shiftGap": "Schicht"
+      "window": "Fenster",
+      "skill": "Qualifikation",
+      "covers": "Deckt ab",
+      "status": "Status"
     },
     "levers": {
-      "hint": "Personalhebel nach abgedeckten Betten sortiert",
-      "rank": "Rang",
-      "label": "Hebel",
-      "bedsEnabled": "Betten",
-      "detail": "Details",
-      "cta": "Auto-Reihenfolge nach Abdeckungswirkung →"
+      "title": "Personalhebel — nach abgedeckten Betten sortiert",
+      "hint": "Hebel anklicken → systemisches Copilot-Playbook",
+      "summary": "{{oncology}} Onkologie zu sichern · {{general}} allgemein abgedeckt · {{beds}} Betten besetzt · keine Agentur",
+      "bedOne": "{{n}} Bett",
+      "bedMany": "{{n}} Betten",
+      "critical": "KRITISCH",
+      "lastResort": "LETZTE OPTION",
+      "cta": "Personalplan ansehen →"
     },
     "gap": {
       "label": "Standort-Personalengpass",

@@ -55,10 +55,10 @@ describe('StaffingBoard surface', () => {
       </Harness>,
     );
 
+    // The coverage worklist renders every shift; role/unit values repeat across
+    // rows, so assert each shift by its unique shift number.
     for (const move of STAFFING_PINNED.moves) {
-      await waitFor(() => expect(screen.getByText(move.role)).toBeInTheDocument());
-      expect(screen.getByText(move.fromUnit)).toBeInTheDocument();
-      expect(screen.getByText(move.toUnit)).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText(move.shiftNo)).toBeInTheDocument());
     }
     expect(screen.getByText(/simulated data/i)).toBeInTheDocument();
     expect(screen.getByText(/Carried from orsa-agent/i)).toBeInTheDocument();

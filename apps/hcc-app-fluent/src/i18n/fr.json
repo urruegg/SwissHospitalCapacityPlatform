@@ -400,20 +400,27 @@
       "csaEscalation": "Quand faut-il escalader vers la planification de crise ?"
     },
     "table": {
-      "hint": "Cliquez sur une ligne → actions RH",
-      "role": "Rôle",
+      "title": "Liste de couverture — {{count}} lacunes d'équipe, renfort Medicine A",
+      "hint": "cliquez sur une ligne → playbook RH Copilot",
+      "shift": "Poste",
+      "time": "Horaire",
       "fromUnit": "Unité source",
       "toUnit": "Unité cible",
       "fte": "ETP",
-      "shiftGap": "Plage horaire"
+      "window": "Fenêtre",
+      "skill": "Compétence",
+      "covers": "Couvre",
+      "status": "Statut"
     },
     "levers": {
-      "hint": "Leviers RH triés par lits couverts",
-      "rank": "Rang",
-      "label": "Levier",
-      "bedsEnabled": "Lits",
-      "detail": "Détail",
-      "cta": "Séquence automatique par impact couverture →"
+      "title": "Leviers RH — classés par lits couverts",
+      "hint": "cliquez sur un levier → playbook Copilot systémique",
+      "summary": "{{oncology}} oncologie à sécuriser · {{general}} général couvert · {{beds}} lits dotés · sans intérim",
+      "bedOne": "{{n}} lit",
+      "bedMany": "{{n}} lits",
+      "critical": "CRITIQUE",
+      "lastResort": "DERNIER RECOURS",
+      "cta": "Voir le plan RH →"
     },
     "gap": {
       "label": "Manque de personnel du site",

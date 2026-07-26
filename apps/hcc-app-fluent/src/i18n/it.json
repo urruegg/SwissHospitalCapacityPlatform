@@ -400,20 +400,27 @@
       "csaEscalation": "Quando dobbiamo passare alla pianificazione di crisi?"
     },
     "table": {
-      "hint": "Fai clic su una riga → azioni del personale",
-      "role": "Ruolo",
+      "title": "Elenco di copertura — {{count}} carenze di turno, supporto Medicine A",
+      "hint": "fai clic su una riga → playbook del personale Copilot",
+      "shift": "Turno",
+      "time": "Orario turno",
       "fromUnit": "Reparto di origine",
       "toUnit": "Reparto di destinazione",
       "fte": "ETP",
-      "shiftGap": "Turno"
+      "window": "Finestra",
+      "skill": "Competenza",
+      "covers": "Copre",
+      "status": "Stato"
     },
     "levers": {
-      "hint": "Leve del personale ordinate per letti coperti",
-      "rank": "Rango",
-      "label": "Leva",
-      "bedsEnabled": "Letti",
-      "detail": "Dettaglio",
-      "cta": "Sequenza automatica per impatto copertura →"
+      "title": "Leve del personale — ordinate per letti coperti",
+      "hint": "fai clic su una leva → playbook Copilot sistemico",
+      "summary": "{{oncology}} oncologia da assicurare · {{general}} generale coperto · {{beds}} letti coperti · nessuna agenzia",
+      "bedOne": "{{n}} letto",
+      "bedMany": "{{n}} letti",
+      "critical": "CRITICO",
+      "lastResort": "ULTIMA RISORSA",
+      "cta": "Vedi il piano del personale →"
     },
     "gap": {
       "label": "Carenza di personale del sito",
