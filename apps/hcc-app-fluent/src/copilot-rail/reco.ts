@@ -59,6 +59,13 @@ export interface GroundedReco {
   citations: string[];
   provenance: Provenance;
   refused?: boolean;
+  /**
+   * Sprint 27 (A12) — suggested "what next" prompts surfaced as chips after this
+   * reply. Grounded, contextual to the artefact (not generic). Optional so the
+   * artefact contract stays backward-compatible; clicking one sends it as the
+   * next ask.
+   */
+  followUps?: string[];
 }
 
 const CHIP_COLORS: Record<ChipTone, BadgeColor> = {

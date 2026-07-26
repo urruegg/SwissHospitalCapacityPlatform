@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (catalogue + loop plan) |
+| **Previous Version** | 1.1.0 (added A13/A14/A15 entries) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -48,7 +48,7 @@ so the catalogue is a formalisation, not an invention.
 | A9 | **Signal / evidence list** | What feeds the answer: leading icon + RAG + provenance flask. | (future) inspect signal | signals payload | icon + `RagBadge` + provenance icon |
 | A10 | **Citation footer** | Grounding evidence — `hcp:*` / `gold.*` source pills (no-fabrication rule). | (future) open source | `citations[]` | source pills (`Caption1`, `data-testid="citations"`) |
 | A11 | **Refusal / guardrail** | Why the agent will not act (HITL gate blocked / policy). | none (blocked) | `refused` | `Badge color="danger"` + reason |
-| A12 | **Follow-up prompts** (chips) | Suggested next asks. | click → send prompt | board `askAbout` | `InteractionTag` |
+| A12 | **Follow-up prompts** (chips) | Suggested next asks. Starter chips (board-level) before a conversation; per-reply "what next" chips under the latest agent answer. | click → send prompt | `GroundedReco.followUps` (per-reply) + board `askAbout` (starter) | `InteractionTag` |
 | A13 | **Evidence popover** (on impact badge) | Hover/focus an impact badge → why-summary + context/impact detail + citations. Responsible UI: understand before acting. | hover/focus → popover | `RecoLever.evidence` | `Popover` + `Badge` |
 | A14 | **People popover** (staffing) | Who is affected/involved — roster names + role + shift. Specialisation of A13. | hover/focus → popover | `RecoLever.evidence.people` | `Popover` + `Badge[]` |
 | A15 | **External-action trigger** (Work IQ) | Action *outside* the platform with clear context (Teams call, email draft, downstream EPIC/KIS/SAP invoke-draft). Design-only for now. | click → Work IQ action (HITL-gated, draft first) | `RecoCta` + Work IQ | `Button` + Work IQ |
@@ -161,6 +161,20 @@ and **draft-first** (nothing is sent/executed until the human reviews the draft)
 UX contract: `action context -> Work IQ trigger -> HITL approve -> draft -> send`.
 The CTA shows the destination + a "draft only" affordance; execution is gated.
 Implementation is deferred to a dedicated sprint — this entry fixes the UX pattern.
+
+### Follow-up prompts (A12) — delivered
+
+Every grounded reply can carry `GroundedReco.followUps` — contextual "what next"
+prompts rendered as `InteractionTag` chips **under the latest agent answer only**
+(history stays uncluttered; the chips always reflect the current answer). Clicking
+a chip sends it as the next ask, so the conversation advances without retyping.
+The board-level `askAbout` chips now act as **starter** suggestions shown only
+before a conversation begins (`turns.length === 0`); once the exchange starts,
+per-reply follow-ups take over. Populated per role agent (ooa/bmca/dca/orsa/sba/csa)
+with grounded, PHI-free prompts. Delivered in `ConversationView` (fed by
+`AgentPlane` + the Copilot `Drawer` via `onFollowUp`); the chips are keyboard
+reachable. Covered by `tests/unit/follow-ups.test.tsx` (render + last-turn-only +
+click-to-send + per-agent coverage).
 
 ## 7. Definition of done
 

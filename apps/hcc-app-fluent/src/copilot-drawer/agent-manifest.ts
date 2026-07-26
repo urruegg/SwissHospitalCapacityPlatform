@@ -82,6 +82,7 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     citations: ['hcp:CapacityUnit', 'gold.fact_occupancy_forecast'],
     provenance: 'simulated',
     refused: false,
+    followUps: ['Was passiert ohne Massnahme?', 'Station B vergleichen', 'Austrittsliste öffnen'],
   },
   'bmca-agent': {
     agentLabel: 'Bed-Management Copilot',
@@ -98,6 +99,7 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     citations: ['hcp:Bed', 'gold.bed_assignment'],
     provenance: 'simulated',
     refused: false,
+    followUps: ['Warum steigt Station B?', 'Alternative Stationen zeigen', 'Freigabe anfordern'],
   },
   'dca-agent': {
     agentLabel: 'Discharge Copilot',
@@ -112,6 +114,7 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     citations: ['hcp:Encounter', 'gold.fact_discharge_readiness'],
     provenance: 'simulated',
     refused: false,
+    followUps: ['Spitex-Slots prüfen', 'Austritte nach Uhrzeit', 'Nachsorge-Status'],
   },
   'orsa-agent': {
     agentLabel: 'OR-Steering Copilot',
@@ -126,6 +129,7 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     citations: ['hcp:ORSlot', 'gold.fact_or_schedule'],
     provenance: 'simulated',
     refused: false,
+    followUps: ['Freitag-Kapazität prüfen', 'Notfall-Puffer anzeigen', 'Post-OP-Austritte'],
   },
   'sba-agent': {
     agentLabel: 'Staffing Copilot',
@@ -145,6 +149,7 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     citations: ['hcp:CareTeam', 'gold.fact_staffing_roster'],
     provenance: 'simulated',
     refused: false,
+    followUps: ['Pool-Verfügbarkeit prüfen', 'Wer ist betroffen?', 'Deckung für morgen'],
   },
   'csa-agent': {
     agentLabel: 'Crisis Copilot',
@@ -159,6 +164,7 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     citations: ['hcp:Facility', 'gold.fact_capacity_baseline'],
     provenance: 'simulated',
     refused: false,
+    followUps: ['Curalp-Kapazität prüfen', 'Szenario anpassen', 'Freigabe-Status'],
   },
 };
 

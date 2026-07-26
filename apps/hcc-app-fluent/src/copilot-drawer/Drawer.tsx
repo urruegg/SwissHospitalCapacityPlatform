@@ -54,7 +54,7 @@ export function CopilotDrawer({ agent, open, onOpenChange }: CopilotDrawerProps)
         </DrawerHeaderTitle>
       </DrawerHeader>
       <DrawerBody>
-        <ConversationView turns={turns} />
+        <ConversationView turns={turns} onFollowUp={(q) => void send(q)} />
         <div className={styles.inputRow}>
           <Input
             value={draft}

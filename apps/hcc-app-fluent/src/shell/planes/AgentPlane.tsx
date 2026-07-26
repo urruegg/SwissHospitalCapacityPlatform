@@ -163,7 +163,7 @@ export function AgentPlane() {
             onCta={onCta}
           />
         )}
-        {board && board.askAbout.length > 0 && (
+        {board && board.askAbout.length > 0 && turns.length === 0 && (
           <TagGroup className={s.chips} aria-label={t('agent.askAbout', 'Ask about')}>
             {board.askAbout.map((q) => (
               <InteractionTag key={q} value={q}>
@@ -173,7 +173,7 @@ export function AgentPlane() {
           </TagGroup>
         )}
         {turns.length > 0 && <Divider />}
-        <ConversationView turns={turns} />
+        <ConversationView turns={turns} onFollowUp={(q) => void send(q)} />
       </div>
       <div className={s.inputBar}>
         <Button

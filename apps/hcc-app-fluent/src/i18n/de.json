@@ -194,7 +194,8 @@
     "title": "Copilot",
     "placeholder": "Frage an den Agenten stellen…",
     "send": "Senden",
-    "noPhiNotice": "Antworten enthalten keine Patientendaten (PHI)."
+    "noPhiNotice": "Antworten enthalten keine Patientendaten (PHI).",
+    "followUps": "Vorschläge"
   },
   "nav": {
     "start": "Start",
