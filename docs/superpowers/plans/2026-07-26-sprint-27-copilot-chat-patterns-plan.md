@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.1 |
+| **Version** | 1.5.2 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.5.0 (3a agent-host reco contract + live endpoints) |
+| **Previous Version** | 1.5.1 (Fabric DA finding corrected: healthy, cold-start) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -143,7 +143,7 @@ Endpoints (verified):
 | Env | Agent-host (`VITE_AGENT_HOST_URL`) | Foundry project |
 |-----|-------------------------------------|-----------------|
 | **SIT** | `https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io` (live, 7 agents) | `https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project` (ADR-0032) |
-| **PROD** | `ca-agent-host-ihzhhpf-prod` (eastus2 `rg-ihzhhpf-prod-eastus2`; `/healthz` + `/agents` 200) — FQDN from the `prod` GitHub env var `AGENT_HOST_URL` | `ai-ihzhhpf-prod` + project (`rg-ihzhhpf-prod-eastus2`) |
+| **PROD** | `ca-agent-host-ihzhhpf-prod` (eastus2 `rg-ihzhhpf-prod-eastus2`; `/healthz` + `/agents` 200) — FQDN from the `prod` GitHub env var `AGENT_HOST_URL` (not yet probed) | `https://ai-ihzhhpf-prod.services.ai.azure.com/api/projects/ai-ihzhhpf-prod-project` + AOAI `https://ai-ihzhhpf-prod.openai.azure.com/openai/v1` (portal-confirmed 2026-07-26; API-key auth disabled → Entra/OBO) |
 
 Live SIT `POST /agents/ooa-agent/chat` returns today:
 
