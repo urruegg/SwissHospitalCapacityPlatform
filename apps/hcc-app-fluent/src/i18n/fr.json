@@ -188,6 +188,7 @@
       "admissionEvent": "Piloter depuis l'événement {{ward}} ({{patient}})",
     "placementBarrier": "Obstacle : {{label}}",
     "orDefer": "Reporter le cas {{specialty}}",
+    "orCaseEvent": "Piloter le cas bloc {{caseNo}}",
     "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Simuler {{scenario}}"
   },
@@ -355,23 +356,37 @@
       "orroomPressure": "Où est la plus grande pression au bloc opératoire ?",
       "sbaHandoff": "Comment transmettre l'écart résiduel au service du personnel ?"
     },
+    "live": {
+      "title": "Cas bloc entrants",
+      "hint": "Cas bloc entrants en direct (simulé)",
+      "copilotHint": "Cliquez pour le pilotage Copilot + détails",
+      "kind": {
+        "added": "listé",
+        "urgent": "urgent",
+        "update": "mise à jour"
+      }
+    },
     "table": {
-      "hint": "Cliquez sur une ligne → actions de pilotage du bloc",
+      "title": "Programme opératoire électif — {{count}} cas, unité post-op signalée",
+      "hint": "cliquez sur une ligne → playbook de reprogrammation Copilot",
+      "case": "Cas",
       "specialty": "Spécialité",
       "slot": "Créneau bloc",
+      "postOp": "Post-op",
       "bedsImpact": "Impact lits",
       "bedsProtected": "Lits protégés",
-      "deferable": "Reportable",
-      "yes": "Oui",
-      "no": "Non"
+      "action": "Action",
+      "window": "Fenêtre"
     },
     "levers": {
-      "hint": "Leviers de reprogrammation triés par lits protégés",
-      "rank": "Rang",
-      "label": "Levier",
-      "bedsProtected": "Lits",
-      "detail": "Détail",
-      "cta": "Séquence automatique par impact →"
+      "title": "Leviers de reprogrammation — classés par lits protégés",
+      "hint": "cliquez sur un levier → playbook de reprogrammation Copilot",
+      "summary": "{{beds}} lits électifs protégés · {{proceed}} cas urgents à réaliser · afflux Medicine A limité",
+      "bedOne": "{{n}} lit",
+      "bedMany": "{{n}} lits",
+      "proceed": "à réaliser",
+      "mustProceed": "DOIT AVOIR LIEU",
+      "cta": "Voir le plan de reprogrammation →"
     },
     "gap": {
       "label": "Écart bloc projeté",

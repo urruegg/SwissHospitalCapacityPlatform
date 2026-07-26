@@ -188,6 +188,7 @@
       "admissionEvent": "Steuerung: {{patient}} in {{ward}}",
     "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
+    "orCaseEvent": "OP-Fall {{caseNo}} steuern",
     "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
     "stressTest": "{{scenario}} durchspielen"
   },
@@ -355,23 +356,37 @@
       "orroomPressure": "Wo ist der grösste OP-Druck?",
       "sbaHandoff": "Wie übergeben wir den Restbedarf ans Personalmanagement?"
     },
+    "live": {
+      "title": "Eingehende OP-Fälle",
+      "hint": "Live eingehende OP-Fälle (simuliert)",
+      "copilotHint": "Für Copilot-Steuerung + Details klicken",
+      "kind": {
+        "added": "gelistet",
+        "urgent": "dringend",
+        "update": "Update"
+      }
+    },
     "table": {
-      "hint": "Zeile anklicken → OP-Steuerungsaktionen",
+      "title": "Elektiver OP-Plan — {{count}} Fälle, Post-op-Station markiert",
+      "hint": "Zeile anklicken → Copilot Reslot-Playbook",
+      "case": "Fall",
       "specialty": "Fachbereich",
       "slot": "OP-Slot",
+      "postOp": "Post-op",
       "bedsImpact": "Bettenbedarf",
       "bedsProtected": "Betten geschützt",
-      "deferable": "Verschiebbar",
-      "yes": "Ja",
-      "no": "Nein"
+      "action": "Aktion",
+      "window": "Fenster"
     },
     "levers": {
-      "hint": "Reslot-Hebel nach geschützten Betten sortiert",
-      "rank": "Rang",
-      "label": "Hebel",
-      "bedsProtected": "Betten",
-      "detail": "Details",
-      "cta": "Auto-Reihenfolge nach Auswirkung →"
+      "title": "Reslot-Hebel — nach geschützten Betten sortiert",
+      "hint": "Hebel anklicken → Copilot Reslot-Playbook",
+      "summary": "{{beds}} elektive Betten geschützt · {{proceed}} zeitkritisch fortfahren · Zulauf Medicine A gedrosselt",
+      "bedOne": "{{n}} Bett",
+      "bedMany": "{{n}} Betten",
+      "proceed": "fortfahren",
+      "mustProceed": "MUSS ERFOLGEN",
+      "cta": "Reslot-Plan ansehen →"
     },
     "gap": {
       "label": "Prognostizierte OP-Lücke",

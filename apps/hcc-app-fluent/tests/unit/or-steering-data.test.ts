@@ -35,9 +35,9 @@ describe('OR_STEERING_PINNED model', () => {
     }
   });
 
-  it('stable tie-break: defer-gen-hernia ranks before defer-ortho-knee (both bedsProtected=1, g < o)', () => {
-    expect(OR_STEERING_PINNED.levers[0].id).toBe('defer-gen-hernia');
-    expect(OR_STEERING_PINNED.levers[1].id).toBe('defer-ortho-knee');
+  it('is pre-sorted with a stable id tie-break within equal bedsProtected (mockup rank 1..5)', () => {
+    const ids = OR_STEERING_PINNED.levers.map((l) => l.id);
+    expect(ids).toEqual(['defer-ortho', 'reslot-thu', 'defer-general', 'redirect-urology', 'proceed-oncology']);
   });
 
   it('has a defaultReco with non-empty levers, a handoff CTA to sba-agent, gold citations, simulated provenance', () => {

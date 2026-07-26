@@ -188,6 +188,7 @@
       "admissionEvent": "Steer from {{ward}} event ({{patient}})",
     "placementBarrier": "Barrier: {{label}}",
     "orDefer": "Defer {{specialty}} case",
+    "orCaseEvent": "Steer OR case {{caseNo}}",
     "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Stress-test {{scenario}}"
   },
@@ -355,23 +356,37 @@
       "orroomPressure": "Where is the biggest OR pressure?",
       "sbaHandoff": "How do we hand off the residual gap to staffing?"
     },
+    "live": {
+      "title": "Incoming OR cases",
+      "hint": "Live incoming OR cases (simulated)",
+      "copilotHint": "Click for Copilot steering + details",
+      "kind": {
+        "added": "listed",
+        "urgent": "urgent",
+        "update": "update"
+      }
+    },
     "table": {
-      "hint": "Click a row → OR steering actions",
+      "title": "Elective OR schedule — {{count}} cases, post-op ward flagged",
+      "hint": "click a row → Copilot reslot playbook",
+      "case": "Case",
       "specialty": "Specialty",
       "slot": "OR slot",
+      "postOp": "Post-op",
       "bedsImpact": "Beds impact",
       "bedsProtected": "Beds protected",
-      "deferable": "Deferable",
-      "yes": "Yes",
-      "no": "No"
+      "action": "Action",
+      "window": "Window"
     },
     "levers": {
-      "hint": "Reslot levers sorted by beds protected",
-      "rank": "Rank",
-      "label": "Lever",
-      "bedsProtected": "Beds",
-      "detail": "Detail",
-      "cta": "Auto-sequence by impact →"
+      "title": "Reslot levers — ranked by beds protected",
+      "hint": "click a lever → Copilot reslot playbook",
+      "summary": "{{beds}} elective beds protected · {{proceed}} time-critical proceed · Medicine A inflow throttled",
+      "bedOne": "{{n}} bed",
+      "bedMany": "{{n}} beds",
+      "proceed": "proceed",
+      "mustProceed": "MUST PROCEED",
+      "cta": "View reslot plan →"
     },
     "gap": {
       "label": "Projected OR gap",
