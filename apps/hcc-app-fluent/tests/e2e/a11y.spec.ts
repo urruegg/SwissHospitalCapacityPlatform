@@ -33,7 +33,7 @@ test('home shell has no serious/critical accessibility violations', async ({ pag
 // board a11y-remediation pass).
 const SURFACES: { path: string; excludeBoard?: string }[] = [
   { path: '/start' },
-  { path: '/main', excludeBoard: '[data-testid="board-bed-manager"]' },
+  { path: '/main', excludeBoard: '[data-testid="board-occupancy"]' },
   { path: '/csa' },
   { path: '/backstage', excludeBoard: '[data-testid="widget-evidence"]' },
   { path: '/settings' },

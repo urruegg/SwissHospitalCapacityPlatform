@@ -2,6 +2,7 @@ import { TabList, Tab } from '@fluentui/react-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useRoleLens } from '../../context/role-context';
+import { firstEligibleBoard } from '../../shell/planes/first-eligible-board';
 
 /** Sprint 1 (parity) — MAIN board sub-navigation for the six role surfaces. */
 const BOARDS = [
@@ -17,7 +18,9 @@ export function MainSubNav() {
   const { capabilities } = useRoleLens();
   const nav = useNavigate();
   const { t } = useTranslation();
-  const { board = 'bed-manager' } = useParams();
+  // Sprint 29 M2 — the selected tab on bare `/main` mirrors the role-first
+  // eligible default board (not a hard-coded bed-manager).
+  const { board = firstEligibleBoard(capabilities) } = useParams();
   const canSee = (gate: 'main' | 'csa') => Boolean((capabilities.nav as Record<string, boolean>)[gate]);
 
   return (

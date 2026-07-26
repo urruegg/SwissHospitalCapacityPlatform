@@ -33,10 +33,10 @@ function renderMain(path: string) {
 }
 
 describe('MainView', () => {
-  it('defaults to the bed-manager board when no board segment is present', async () => {
+  it('defaults to the role-first-eligible board (occupancy) when no board segment is present', async () => {
     renderMain('/main');
-    expect(screen.getByTestId('board-bed-manager-slot')).toBeInTheDocument();
-    expect(await screen.findByTestId('board-bed-manager')).toBeInTheDocument();
+    expect(screen.getByTestId('board-occupancy-slot')).toBeInTheDocument();
+    expect(await screen.findByTestId('board-occupancy')).toBeInTheDocument();
   });
 
   it('mounts the occupancy board for the occupancy segment', async () => {
