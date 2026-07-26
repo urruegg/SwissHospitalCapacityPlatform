@@ -2281,6 +2281,54 @@
   "generatedAt": "2026-07-10",
   "requirements": [
     {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall derive a single `ContextEnvelope` from the signed-in user's claims and active role lens and attach it to every IQ read and agent turn."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall keep a separate conversation thread per `(userOid x agent)` so switching board-agents never leaks turns across agents, with a clean reset on sign-out."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall open the first patient-journey board the active role can see (role-first-eligible default) instead of a hard-coded default board."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall enforce per-user data scope (RLS by `hospitalScope`) and the OBO contract, simulated app-side this sprint and liftable to live Fabric RLS / OBO via configuration without code change."
+    },
+    {
       "family": "Bed Management Copilot And User Experience",
       "id": "FR-CX-001",
       "kind": "FR",
@@ -3731,6 +3779,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Onboarding data contracts shall enforce minimum-sensitive-data controls and purpose tags (Sprint 6)."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "NFR-CTX-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The context architecture shall remain demo-safe: synthetic data only, no PHI (ADR-0013 / ADR-0016), westus2 demo scope."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "NFR-CTX-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Provenance and citations shall be preserved on every result; an envelope-less IQ call is refused and degradation surfaces `simulated` provenance loudly (no silent \"live\")."
     },
     {
       "family": "Responsible AI And Auditability",
