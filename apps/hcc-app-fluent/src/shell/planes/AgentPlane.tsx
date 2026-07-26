@@ -88,10 +88,10 @@ export function AgentPlane() {
   const s = useStyles();
   const { t } = useTranslation();
   const loc = useLocation();
-  const { capabilities } = useRoleLens();
+  const { capabilities, userOid } = useRoleLens();
   const agent = agentForRoute(loc.pathname);
   const board = boardForRoute(loc.pathname);
-  const { turns, busy, send } = useConversation(agent);
+  const { turns, busy, send } = useConversation(agent, userOid);
   const { open, setOpen, activeReco, defaultReco, backToDefault, resetReco } = useCopilotRail();
   const [draft, setDraft] = useState('');
 
