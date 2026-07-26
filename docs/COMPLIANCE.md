@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.11.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 0.11.1 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.10.0 (Sprint 23 skills-events lane consent enforcement) |
+| **Previous Version** | 0.11.0 (Sprint 23 skills-events lane consent enforcement); this bump repoints the Curavias ADR link ADR-0040 -> ADR-0050 (#378) |
 
 ## Purpose
 
@@ -179,7 +179,7 @@ This ADR applies only to the demo scope defined by [ADR-0013](adr/0013-temporary
 
 Sprint 23 introduces workforce skills evidence (synthetic, no-PHI) via the
 plugin architecture recorded in
-[ADR-0040](adr/0040-curavias-landing-zone-and-skills-evidence-plugins.md). Although
+[ADR-0050](adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md). Although
 the demo data is synthetic (`classification: personal-synthetic`), the records are
 **personal in shape** (they describe individual workers), so the Swiss DSG
 (revised Federal Act on Data Protection) control model is applied as if they were

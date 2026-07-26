@@ -1,4 +1,4 @@
-# ADR-0040: Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport
+# ADR-0050: Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport
 
 | Field | Value |
 | ----- | ----- |
@@ -8,7 +8,7 @@
 | **Decision-makers** | @urruegg |
 | **Related issue** | #255 |
 
-> **Renumbered from ADR-0039 → ADR-0040 on 2026-07-24** (number-collision resolution; see [ADR-0041](0041-adr-number-collision-resolution.md)).
+> **Renumbered from ADR-0039 → ADR-0040 on 2026-07-24, then to ADR-0050 on 2026-07-26 (#378)** (number-collision resolution; see [ADR-0041](0041-adr-number-collision-resolution.md)).
 
 ## Context
 
