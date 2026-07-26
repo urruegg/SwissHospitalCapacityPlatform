@@ -2,20 +2,29 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-07-26 |
 | **Author** | GitHub Copilot |
 | **Status** | Draft — plan only; the live-apply step is `approved-to-apply`-gated |
-| **Previous Version** | 1.0.0 (initial runbook; Option A shared-image assumption) |
+| **Previous Version** | 1.1.0 (Option B job-only image pin; `Cognitive Services User` RBAC + `job start --command/--args` override method — both corrected in 1.2.0 after the 2026-07-26 guided apply) |
 
 > ## Hard gate — the live apply is HITL-gated (AGENTS.md §4)
 >
 > The `caj-decision-apply-ihzhhpf-sit` Container Apps Job ships **plan-first**:
 > its default command runs both decision CLIs in `--action plan` (dry-run) mode
 > and mutates nothing. A live apply happens **only** when an operator with repo
-> write access explicitly overrides the job command at start time and passes
+> write access swaps the job template command to the `--action apply` chain
+> (via `az containerapp job update --yaml`, see Step 2) and passes
 > `--approved-to-apply <their-github-handle>`. No approver handle is baked into
 > the image, the Bicep, or this runbook. The agent (a bot) cannot self-approve.
+>
+> **Mechanical note (verified 2026-07-26):** `az containerapp job start
+> --command/--args` overrides are **silently ignored** in this environment — the
+> job always runs its baked-in template command. The only reliable way to run
+> the apply chain is to temporarily edit the job template's `sh -c` script token
+> with `az containerapp job update --yaml`, `start`, then **revert** the template
+> with the original YAML (Step 2). Always revert after the run so the job returns
+> to its plan-first default (no drift).
 
 ## Purpose
 
@@ -53,17 +62,25 @@ Mandatory prerequisites:
    `enableAgentHostModule` and `enableCsaCosmosModule`) in
    `infra/environments/sit.bicepparam`; merging it lets the approval-gated
    `cd-infra-deploy-sit` run create the job.
-2. The job runs the **decision-CLI-enabled** image. **This PR pins it** via
-   `decisionApplyJobImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:2b83a49'`
-   in `sit.bicepparam` — the image built by `ci-build-agent-host.yml` on the
-   #388 merge (it watches `data-platform/decision/**`), which contains
-   `data-platform/decision/`. This pins **only the job** (Option B); the running
-   agent-host Container App stays on `agentHostImage` (`:b796961`), untouched.
+2. The job runs the **decision-CLI-enabled** image. `decisionApplyJobImage` in
+   `sit.bicepparam` pins **only the job** (Option B) to an `hcc-agent-host` image
+   that contains `data-platform/decision/` (built by `ci-build-agent-host.yml`,
+   which watches `data-platform/decision/**`). The running agent-host Container
+   App stays on `agentHostImage` (`:b796961`), untouched.
+
+   > **Corrected 2026-07-26:** the first live apply ran image `:2b83a49`, whose
+   > `foundry/live_factory.py` targeted the wrong Foundry API (OpenAI *Assistants*
+   > `/assistants` + `cognitiveservices.azure.com` scope) and 401'd. The fix
+   > (Agent Service `/agents` + `ai.azure.com` scope) rebuilds a new image on
+   > merge; **bump `decisionApplyJobImage` to that new merge-SHA tag and redeploy
+   > SIT before re-running** the Foundry apply.
 3. **One-time RBAC**: the reused agent-host MI (`id-ca-agent-host-ihzhhpf-sit`)
-   needs `Cognitive Services User` on the eastus2 Foundry account for the
-   Foundry registration (workstream C). It already holds `Cosmos DB Built-in
-   Data Contributor` (granted in `infra/modules/cosmos/csa.bicep`) for the
-   Cosmos seed (workstream B):
+   needs the **`Foundry User`** role (role definition id
+   `53ca6127-db72-4b80-b1b0-d745d6d5456d`; `Foundry Project Manager`
+   `eadc314b-1a2d-4efa-be10-5d325db5065e` also works) on the eastus2 Foundry
+   account for the Foundry Agent Service registration (workstream C). It already
+   holds `Cosmos DB Built-in Data Contributor` (granted in
+   `infra/modules/cosmos/csa.bicep`) for the Cosmos seed (workstream B):
 
    ```bash
    mi_principal=$(az identity show -g rg-ihzhhpf-sit -n id-ca-agent-host-ihzhhpf-sit --query principalId -o tsv)
@@ -71,10 +88,15 @@ Mandatory prerequisites:
    az role assignment create \
      --assignee-object-id "$mi_principal" \
      --assignee-principal-type ServicePrincipal \
-     --role "Cognitive Services User" \
+     --role "Foundry User" \
      --scope "$foundry_id"
    ```
 
+   > **Corrected 2026-07-26:** `Cognitive Services User` (the 1.1.0 prereq) is the
+   > wrong audience for the Agent Service data plane and returns **401** on
+   > `POST /agents/{name}`. The Agents plane requires a bearer token for
+   > `https://ai.azure.com/.default`, which `Foundry User` / `Foundry Project
+   > Manager` grant — not `Cognitive Services User` or `Azure AI Developer`.
 4. An operator with **repo write access** who supplies their GitHub handle as
    the `approved-to-apply` approver (verified out of band via `github-mcp`).
 
@@ -124,21 +146,57 @@ az containerapp job execution list -n caj-decision-apply-ihzhhpf-sit -g rg-ihzhh
 
 ### Step 2: Live apply (HITL-gated)
 
-Override the job command so both CLIs run `--action apply` with the operator's
-handle. Replace `<operator-handle>` with the approving operator's GitHub handle:
+`az containerapp job start --command/--args` overrides are ignored here (Hard
+gate note), so swap the job template command with `az containerapp job update
+--yaml`, run it, then revert. Replace `<operator-handle>` with the approving
+operator's GitHub handle.
 
-```bash
-az containerapp job start -n caj-decision-apply-ihzhhpf-sit -g rg-ihzhhpf-sit \
-  --command "/bin/sh" \
-  --args "-c","cd /app/data-platform/decision && python -m coordination.seed_live --action apply --approved-to-apply <operator-handle> && for r in ooa dca bmca orsa sba csa; do python -m foundry.register_decision_tier --action apply --role \$r --approved-to-apply <operator-handle>; done"
-```
+1. **Capture the current template** (to revert to afterwards):
+
+   ```bash
+   az containerapp job show -n caj-decision-apply-ihzhhpf-sit -g rg-ihzhhpf-sit -o yaml > job.plan.yaml
+   cp job.plan.yaml job.apply.yaml
+   ```
+
+2. **Edit `job.apply.yaml`** — in `properties.template.containers[0]`, change the
+   **third `command` token** (the `sh -c` script string) to the apply chain
+   below, leaving the first two tokens (`/bin/sh`, `-c`) and everything else
+   untouched:
+
+   ```text
+   cd /app/data-platform/decision && \
+   python -m coordination.seed_live --action apply --approved-to-apply <operator-handle> && \
+   python -m foundry.register_decision_tier --action apply --role ooa --approved-to-apply <operator-handle>
+   ```
+
+   > **Test ooa first.** The chain above applies the Cosmos seed (idempotent —
+   > already applied live 2026-07-26) then registers **only `ooa`**. Verify the
+   > new `ooa-agent` version preserved its model/instructions/`fabric_dataagent`
+   > tool and gained `decision_tier_coordination_ooa` (Step 3) **before** fanning
+   > out. To fan out after ooa is confirmed, replace the last line with:
+   > `for r in ooa dca bmca orsa sba csa; do python -m foundry.register_decision_tier --action apply --role $r --approved-to-apply <operator-handle> || exit 1; done`
+
+3. **Apply the template, run, and wait**:
+
+   ```bash
+   az containerapp job update -n caj-decision-apply-ihzhhpf-sit -g rg-ihzhhpf-sit --yaml job.apply.yaml
+   az containerapp job start  -n caj-decision-apply-ihzhhpf-sit -g rg-ihzhhpf-sit
+   ```
+
+4. **Revert the template to plan-first** (mandatory — no drift):
+
+   ```bash
+   az containerapp job update -n caj-decision-apply-ihzhhpf-sit -g rg-ihzhhpf-sit --yaml job.plan.yaml
+   ```
 
 Expected outcome:
 
 1. Execution `Succeeded`.
-2. `seed_live` wrote the six-role `plans` + `proposed_actions` documents.
-3. `register_decision_tier` registered `decision_tier_coordination_<role>` on
-   each of the six agents (idempotent — re-runs report `toolAlreadyPresent`).
+2. `seed_live` wrote / re-confirmed the six-role `plans` + `proposed_actions`
+   documents (`{"applied": true, "approvedBy": "<operator-handle>"}`).
+3. `register_decision_tier` registered a new agent version carrying
+   `decision_tier_coordination_<role>` on each agent (idempotent — re-runs report
+   `toolAlreadyPresent`).
 
 ### Step 3: Verify
 
@@ -149,14 +207,15 @@ az cosmosdb sql container show -a cosmos-csa-ihzhhpf-sit -g rg-ihzhhpf-sit -d cs
 az cosmosdb sql container show -a cosmos-csa-ihzhhpf-sit -g rg-ihzhhpf-sit -d csa -n proposed_actions -o table
 ```
 
-Foundry (assistants list should show the six agents; each decision-tier agent
-carries the `decision_tier_role` metadata):
+Foundry (the Agent Service `/agents` list shows the eight platform agents; each
+decision-tier agent's latest version carries the `decision_tier_role` metadata
+and a `decision_tier_coordination_<role>` function tool):
 
 ```bash
-token=$(az account get-access-token --resource https://cognitiveservices.azure.com --query accessToken -o tsv)
+token=$(az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv)
 curl -s -H "Authorization: Bearer $token" \
-  "https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project/assistants?api-version=2025-05-15-preview" \
-  | python -c "import sys,json; [print(a['name'], a.get('metadata',{}).get('decision_tier_role')) for a in json.load(sys.stdin).get('data',[])]"
+  "https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project/agents?api-version=2025-05-15-preview" \
+  | python -c "import sys,json; [print(a['name'], (a.get('versions',{}).get('latest',{}).get('metadata',{}) or {}).get('decision_tier_role')) for a in json.load(sys.stdin).get('value',[])]"
 ```
 
 ## Handoff to Next Process
@@ -179,9 +238,13 @@ If the Cosmos seed fails with a network/timeout error:
 
 If the Foundry registration fails with 401/403:
 
-1. Confirm the one-time `Cognitive Services User` grant (Prerequisite 3) landed
-   and has propagated.
-2. Confirm `AZURE_CLIENT_ID` matches `id-ca-agent-host-ihzhhpf-sit`.
+1. Confirm the one-time `Foundry User` grant (Prerequisite 3) landed and has
+   propagated. A 401 with an otherwise-valid token almost always means the MI
+   holds `Cognitive Services User` (wrong audience) instead of `Foundry User` /
+   `Foundry Project Manager`.
+2. Confirm the token audience is `https://ai.azure.com/.default` (the Agent
+   Service data plane), not `cognitiveservices.azure.com`.
+3. Confirm `AZURE_CLIENT_ID` matches `id-ca-agent-host-ihzhhpf-sit`.
 
 If a CLI refuses with an approver error:
 
