@@ -90,5 +90,101 @@ class TestSkillEventPublisher(unittest.TestCase):
         self.assertEqual(self.factory.calls, 0)
 
 
+class _FakeConnStrClient:
+    """Stub for EventHubProducerClient exposing the from_connection_string seam."""
+
+    last_conn_str = None
+    last_kwargs = None
+
+    def __init__(self, sink):
+        self._sink = sink
+
+    @classmethod
+    def from_connection_string(cls, conn_str, **kwargs):
+        cls.last_conn_str = conn_str
+        cls.last_kwargs = kwargs
+        return cls(cls._sink)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def send_batch(self, batch):
+        self._sink.extend(batch)
+
+
+class TestSkillEventPublisherCustomEndpoint(unittest.TestCase):
+    """CustomEndpoint (Event-Hub-compatible SAS) publish path used by the live SIT lane."""
+
+    CONN = (
+        "Endpoint=sb://es-ihzhhpf-skills-events.servicebus.windows.net/;"
+        "SharedAccessKeyName=key_skills;SharedAccessKey=abc123==;EntityPath=es-ihzhhpf-skills-events"
+    )
+
+    def _patch_client(self):
+        sink = []
+        _FakeConnStrClient._sink = sink
+        _FakeConnStrClient.last_conn_str = None
+        _FakeConnStrClient.last_kwargs = None
+        self._orig_client = pub.EventHubProducerClient
+        pub.EventHubProducerClient = _FakeConnStrClient
+        self.addCleanup(lambda: setattr(pub, "EventHubProducerClient", self._orig_client))
+        return sink
+
+    def test_connection_string_mode_uses_from_connection_string(self):
+        sink = self._patch_client()
+        publisher = pub.SkillEventPublisher(
+            fully_qualified_namespace="",
+            eventhub_name="",
+            connection_string=self.CONN,
+        )
+        records = pub.build_records()
+        sent = publisher.publish_records(records)
+        self.assertEqual(sent, len(records))
+        self.assertEqual(len(sink), len(records))
+        self.assertEqual(_FakeConnStrClient.last_conn_str, self.CONN)
+        # EntityPath is embedded in the conn string -> no eventhub_name kwarg forwarded.
+        self.assertNotIn("eventhub_name", _FakeConnStrClient.last_kwargs)
+
+    def test_connection_string_mode_forwards_eventhub_name_when_set(self):
+        self._patch_client()
+        publisher = pub.SkillEventPublisher(
+            fully_qualified_namespace="",
+            eventhub_name="skills-events",
+            connection_string=self.CONN,
+        )
+        publisher.publish_records(pub.build_records())
+        self.assertEqual(_FakeConnStrClient.last_kwargs.get("eventhub_name"), "skills-events")
+
+    def test_factory_takes_precedence_over_connection_string(self):
+        factory = _FakeFactory()
+        publisher = pub.SkillEventPublisher(
+            fully_qualified_namespace="",
+            eventhub_name="",
+            connection_string=self.CONN,
+            producer_client_factory=factory,
+        )
+        publisher.publish_records(pub.build_records())
+        self.assertGreater(factory.calls, 0)
+
+    def test_main_accepts_connection_string_without_namespace(self):
+        rc = pub.main(["--dry-run", "--connection-string", self.CONN])
+        self.assertEqual(rc, 0)
+
+    def test_main_requires_namespace_or_connection_string_for_live(self):
+        rc = pub.main([])
+        self.assertEqual(rc, 2)
+
+    def test_main_connection_string_falls_back_to_env(self):
+        import os
+
+        os.environ["SKILLS_EVENTS_CONNECTION_STRING"] = self.CONN
+        self.addCleanup(lambda: os.environ.pop("SKILLS_EVENTS_CONNECTION_STRING", None))
+        rc = pub.main(["--dry-run"])
+        self.assertEqual(rc, 0)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.6.0 |
+| **Version** | 1.7.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Approved (brainstorming) |
-| **Previous Version** | 1.5.0 (EventHub live bind deferred - Fabric platform gap, 2026-07-26) |
+| **Previous Version** | 1.6.0 (live-vs-simulated assertion measures on fact_skill_assertion) |
 | **Sprint** | [Sprint 23 - Unified Curavias organisation spine + org/skills ontology (P1b)](../../sprints/sprint-23-curavias-org-spine-and-skills-ontology.md) |
 | **Issue** | [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255) |
 | **Extends** | Idea pack [`unified-curavias-organisation-and-skills-ontology/`](../ideas/unified-curavias-organisation-and-skills-ontology/) (Steps 1-4 + 20 CSVs + generator); shared design [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](2026-07-19-curavias-shared-master-data-and-ontology-design.md) |
@@ -191,7 +191,7 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
 
 - [ ] ADLS landing zone + OneLake shortcut provisioned (Bicep, `what-if` clean); upload runbook documented
 - [ ] Container Apps simulator jobs for SuccessFactors / LMS / Skills-Manager / Work-ID emit batch extracts to the landing zone on demand
-- [x] Eventstream lane carries the three near-real-time skills events — in-repo data lane landed 2026-07-25 (`DC-SKILL-EVENT-v1` contract + seeder + Bronze/Silver/Gold notebooks + 23 tests); **live-wired in SIT 2026-07-25** (`es-ihzhhpf-skills-events` Running, `CustomEndpoint` source → `bronze_skills_events`, `approved-to-apply` #374). *Remaining: skills-events simulator + `EventHub`-source flip — infra deployed (#393) but the **live EH bind is DEFERRED (Fabric platform gap, 2026-07-26):** Eventstream EH source is SAS-only + PROD namespace is policy-locked AAD-only (`disableLocalAuth=true`); waits on Fabric workspace-identity GA. See §6 + [ADR-0043 Update 2026-07-26](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap). Live publisher is a separate fast-follow.*
+- [x] Eventstream lane carries the three near-real-time skills events — in-repo data lane landed 2026-07-25 (`DC-SKILL-EVENT-v1` contract + seeder + Bronze/Silver/Gold notebooks + 23 tests); **live-wired in SIT 2026-07-25** (`es-ihzhhpf-skills-events` Running, `CustomEndpoint` source → `bronze_skills_events`, `approved-to-apply` #374). *Remaining: skills-events simulator + `EventHub`-source flip — infra deployed (#393) but the **live EH bind is DEFERRED (Fabric platform gap, 2026-07-26):** Eventstream EH source is SAS-only + PROD namespace is policy-locked AAD-only (`disableLocalAuth=true`); waits on Fabric workspace-identity GA. See §6 + [ADR-0043 Update 2026-07-26](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap). The synthetic **CustomEndpoint** simulator publish path landed 2026-07-26 (`publish_skill_events.py --connection-string` / `SKILLS_EVENTS_CONNECTION_STRING`, offline-tested); its manual-trigger Container Apps Job is the remaining fast-follow (A2). A real live publisher (HRIS/LMS connector) is separate.*
 - [ ] `data/master-data/curavias-org-skills/` created (generator relocated; **path mismatch in the sprint doc fixed**)
 - [ ] Skills-evidence plugin package + `DC-SKILL-EVIDENCE-v1` + simulators + tests green
 - [ ] On-demand Data Pipeline: Bronze -> Silver (validate + quarantine) -> Gold (deny-by-default) produces the org/skills `gold.*` tables
