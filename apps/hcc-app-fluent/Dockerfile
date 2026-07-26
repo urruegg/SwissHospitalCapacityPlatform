@@ -16,5 +16,7 @@ ENV VITE_AGENT_HOST_URL=$VITE_AGENT_HOST_URL
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+# SPA history-API fallback so client-side deep-links don't 404 (#299).
+COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 8080
