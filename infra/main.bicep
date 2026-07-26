@@ -129,15 +129,10 @@ param enableIntegrationModule bool = false
 @description('Enable experience hosting foundation module deployment.')
 param enableExperienceHostingModule bool = false
 
-// Sprint 24 — Curavias product landing page (Astro static site) hosting, PROD-only.
-@description('Enable the Sprint 24 Curavias web hosting module (Static Web App + media storage). PROD-only per ADR-0030.')
-param enableCuraviasWebModule bool = false
-
-@description('Object ID of the identity that publishes media to the Curavias media storage account. Empty string skips the role assignment.')
-param curaviasWebMediaPublisherPrincipalId string = ''
-
-@description('When true, bind curavias.ch + www.curavias.ch to the Curavias Static Web App. Two-step: deploy false first, add DNS records + delegation, then flip true. See ADR-0030.')
-param curaviasWebEnableCustomDomains bool = false
+// Sprint 24 Curavias public landing page hosting was retired in Sprint 28 — see
+// docs/adr/0044-retire-public-website.md. The Static Web App module, its params,
+// and the curavias-web-deploy workflow were removed. The shared curavias.ch DNS
+// zone stays: it still serves the hcc-app-fluent Container App (app.curavias.ch).
 
 @description('Enable API runtime foundation module deployment.')
 param enableApiRuntimeModule bool = false
@@ -150,6 +145,9 @@ param enableSignalRunnerModule bool = false
 
 @description('Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md.')
 param enableDecisionApplyJobModule bool = false
+
+@description('Container image for the decision-tier apply Job only. Empty = inherit agentHostImage. Set this (not agentHostImage) to give the Job the decision-CLI-enabled image without redeploying the running agent-host Container App.')
+param decisionApplyJobImage string = ''
 
 @description('Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped.')
 param eventHubsSimulatorMiPrincipalId string = ''
@@ -418,29 +416,6 @@ module experienceHosting './modules/experience-hosting/main.bicep' = if (enableE
     location: location
     nameSuffix: resourceSuffix
     tags: tags
-  }
-}
-
-// Sprint 24 — Curavias product landing page hosting (Static Web App + media storage).
-// PROD-only per ADR-0030; the enable flag is only set true in prod.bicepparam.
-module curaviasWeb './modules/experience-hosting/curavias-web.bicep' = if (enableCuraviasWebModule) {
-  name: 'curavias-web-${environmentName}'
-  params: {
-    location: location
-    nameSuffix: resourceSuffix
-    tags: tags
-    mediaPublisherPrincipalId: curaviasWebMediaPublisherPrincipalId
-    enableCustomDomains: curaviasWebEnableCustomDomains
-    customDomains: [
-      {
-        name: 'curavias.ch'
-        validation: 'dns-txt-token'
-      }
-      {
-        name: 'www.curavias.ch'
-        validation: 'cname-delegation'
-      }
-    ]
   }
 }
 
@@ -725,7 +700,7 @@ module decisionApplyJob './modules/decision-apply-job/main.bicep' = if (enableDe
     nameSuffix: resourceSuffix
     tags: tags
     managedEnvironmentId: agentHost!.outputs.managedEnvironmentId
-    containerImage: agentHostImage
+    containerImage: empty(decisionApplyJobImage) ? agentHostImage : decisionApplyJobImage
     cosmosEndpoint: csaCosmos!.outputs.documentEndpoint
     cosmosDatabase: csaCosmos!.outputs.databaseName
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
@@ -789,16 +764,6 @@ module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule &&
 
 @description('Azure DNS name servers for curavias.ch. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md.')
 output curaviasNameServers array = (enableAppFluentModule && !empty(appFluentCustomHostname) && manageCuraviasDnsZone) ? curaviasDns!.outputs.nameServers : []
-
-// Sprint 24 — Curavias web hosting outputs (consumed by curavias-web-deploy.yml + DNS wiring).
-@description('Curavias Static Web App name (empty when the module is disabled).')
-output curaviasWebStaticWebAppName string = enableCuraviasWebModule ? curaviasWeb!.outputs.staticWebAppName : ''
-
-@description('Curavias Static Web App default hostname — CNAME target for www.curavias.ch (empty when disabled).')
-output curaviasWebDefaultHostname string = enableCuraviasWebModule ? curaviasWeb!.outputs.staticWebAppDefaultHostname : ''
-
-@description('Curavias media storage account name (empty when disabled).')
-output curaviasWebMediaStorageAccountName string = enableCuraviasWebModule ? curaviasWeb!.outputs.mediaStorageAccountName : ''
 
 // Sprint 09 v2.0.0 T2.2 — Fabric Eventstream scaffold. See modules/data-platform/fabric-eventstream/README.md.
 // Region is constrained to switzerlandnorth | westus2 to keep Bicep type-safe; falls back to westus2 for the
@@ -866,7 +831,6 @@ output moduleStatuses object = {
   aiPlatform: enableAiPlatformModule ? aiPlatform!.outputs.moduleStatus : 'ai-platform-disabled'
   integration: enableIntegrationModule ? integration!.outputs.moduleStatus : 'integration-disabled'
   experienceHosting: enableExperienceHostingModule ? experienceHosting!.outputs.moduleStatus : 'experience-hosting-disabled'
-  curaviasWeb: enableCuraviasWebModule ? curaviasWeb!.outputs.moduleStatus : 'curavias-web-disabled'
   apiRuntime: enableApiRuntimeModule ? apiRuntime!.outputs.moduleStatus : 'api-runtime-disabled'
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
   masterdataLanding: enableMasterdataLandingModule ? masterdataLanding!.outputs.moduleStatus : 'masterdata-landing-disabled'

@@ -25,9 +25,6 @@ param cnameRecords array = []
 @description('TXT records for Container Apps custom-domain validation. Each item: { name: "asuid.appsit", values: ["<verificationId>"], ttl: 3600 }. Empty array creates no TXT records.')
 param txtRecords array = []
 
-@description('A alias records that target an Azure resource (e.g. a Static Web App apex domain). Each item: { name: "@", targetResourceId: "<swa resourceId>", ttl: 3600 }. Azure DNS alias A records enable apex (curavias.ch) to point at a Static Web App, which cannot use a CNAME. Empty array creates no A records.')
-param aliasARecords array = []
-
 resource zone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: zoneName
   location: 'global'
@@ -58,19 +55,6 @@ resource txts 'Microsoft.Network/dnsZones/TXT@2018-05-01' = [for r in txtRecords
         value: r.values
       }
     ]
-  }
-}]
-
-// Azure DNS alias A records — used for the apex domain (curavias.ch) to target a
-// Static Web App, which cannot be represented as a CNAME at the zone apex.
-resource aliasAs 'Microsoft.Network/dnsZones/A@2018-05-01' = [for r in aliasARecords: {
-  parent: zone
-  name: r.name
-  properties: {
-    TTL: r.ttl
-    targetResource: {
-      id: r.targetResourceId
-    }
   }
 }]
 

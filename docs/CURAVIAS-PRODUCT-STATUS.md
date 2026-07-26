@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (retired the J) Public Curavias web row per ADR-0044) |
 
 > **Purpose:** Executive, evidence-backed view of the Curavias platform **as
 > actually deployed** at the end of Sprint 19, plus a requirements-coverage
@@ -85,7 +85,7 @@ from GA parity by a cited ADR.
 | H) Semantic ontology | `FR-ONT-008` (Fabric→Foundry grounding) | **Covered** (demo scope, SIT `ooa`) | [ADR-0034](adr/0034-fabric-iq-demo-scope-artefacts.md) + [evidence](architecture/fabric-iq-ready-evidence.md) |
 | I) Visualization & dashboards | `FR-VIZ-001…002` | **Covered** | Semantic models + report published in PROD |
 | J) Product-marketing agent | `FR-MKT-001…003` | **Covered** | `product-marketing-agent` registered |
-| J) Public Curavias web | `FR-WEB-001…005` | **Open — deferred to Sprint 20/24 UX track** | Static Web App not provisioned; issue [#275](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/275) rescoped off the deleted `prod-eastus2.bicepparam` |
+| J) Public Curavias web | `FR-WEB-001…005` | **Retired ([ADR-0044](adr/0044-retire-public-website.md))** | Website retired before go-live; app, SWA module, workflow, and runbooks removed. Shared `curavias.ch` zone retained for `app.curavias.ch` |
 | K) Trusted external signals | `FR-EXT-001…020` | **Covered** (SIT-proven; PROD `ca-signal-runner` deployed + UAMI-hardened) | [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md) |
 | L) Org spine & skills evidence | `FR-ORG-001`, `FR-SKILL-001…008` | **Covered** | Sprint 23 org/skills PROD parity apply |
 

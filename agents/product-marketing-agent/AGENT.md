@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | (none; initial product-marketing-agent baseline; approved via issue #262) |
+| **Previous Version** | 1.0.0 (dropped the retired public-website copy deliverable + FR-WEB refs per ADR-0044) |
 
 > **Runtime**: GitHub Copilot coding agent (control-plane), per the agent-runtime
 > decision in
@@ -48,9 +48,9 @@ belong to the [`ux-design-agent`](../ux-design-agent/AGENT.md). You work through
 
 - Drafting, reviewing, and aligning Curavias copy across the three channels above,
   grounded in the brandkit and the north star / mission / tagline.
-- Producing per-channel, per-locale (DE / EN / FR / IT) copy for the Curavias site
-  (`apps/curavias-web`) and other surfaces, always with the showcase disclaimer and
-  advisory voice.
+- Producing per-channel, per-locale (DE / EN / FR / IT) copy across the Curavias
+  customer, user, and devops surfaces (e.g. in-app copy, one-pagers, release
+  notes), always with the showcase disclaimer and advisory voice.
 - Maintaining a **voice & compliance checklist** and enforcing it on every copy
   artefact (disclaimer present, advisory verbs, no clinical claim, synthetic-only,
   Microsoft / Swiss-cross brand notes respected).
@@ -107,7 +107,9 @@ tools.
 - [`04-website-content-bom.md`](../../docs/superpowers/ideas/curavias-product-webpage/curavias-bom/04-website-content-bom.md)
   — section-by-section website content inventory and copy-production notes.
 - [`docs/PRD.md`](../../docs/PRD.md) — canonical `FR-*` / `NFR-*` IDs; message work
-  advances `FR-MKT-*` and the website copy advances `FR-WEB-*`.
+  advances `FR-MKT-*`. (The public website and `FR-WEB-*` were retired per
+  [ADR-0044](../../docs/adr/0044-retire-public-website.md); the brand/voice content
+  BOM above is retained as reusable messaging source.)
 - [ADR-0016](../../docs/adr/0016-no-phi-in-mvp-demo-scope.md) — the no-PHI demo gate
   that constrains all sample content and testimonials.
 
@@ -132,7 +134,7 @@ Depending on the request, one of:
   and, where relevant, by locale (`de` / `en` / `fr` / `it`); or
 - a **message / positioning spec** under
   `docs/superpowers/specs/YYYY-MM-DD-<topic>-messaging.md`; or
-- copy contributions to `apps/curavias-web` copy dictionaries via a draft PR.
+- copy contributions to product surfaces (e.g. in-app copy dictionaries) via a draft PR.
 
 Each is accompanied by a **message summary** (issue comment or PR body block)
 listing: what changed and why; the channels / locales affected; the **voice &
