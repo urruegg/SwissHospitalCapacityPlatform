@@ -175,6 +175,16 @@ param enableSkillsSimJobsModule bool = false
 @description('Container image the skills-sim jobs run. Placeholder until the skills-sim CI workflow pushes a real image to ACR (parity with sim-capacity).')
 param skillsSimJobsImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
+// Sprint 23 WS-A4 (#255) — Container Apps Job for the skills-EVENTS simulator.
+@description('Enable the Sprint 23 skills-events sim job (one manual-trigger Container Apps Job that publishes synthetic DC-SKILL-EVENT-v1 records to the live SIT Eventstream CustomEndpoint). The SAS connection string is read from Key Vault via a secret reference.')
+param enableSkillsEventSimJobModule bool = false
+
+@description('Container image the skills-events sim job runs. Placeholder until the skills-events-sim CI workflow pushes a real image to ACR (parity with skills-sim).')
+param skillsEventSimJobImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Name of the Key Vault secret holding the CustomEndpoint SAS connection string for the skills-events sim job. Populated out-of-band (never in Bicep/git).')
+param skillsEventConnectionStringSecretName string = 'skills-events-connection-string'
+
 // Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
 @description('Region for the Sprint 28 PO Agent modules (Search, runtime, Cosmos, Key Vault). Pinned to the ADR-0013 demo-scope variant path; PROD = switzerlandnorth per ADR-0037 / NFR-POA-003.')
 @allowed([
@@ -472,6 +482,31 @@ module skillsSimJobs './modules/experience-hosting/skills-sim-jobs/main.bicep' =
     containerRegistryResourceId: simCapacityContainerRegistryResourceId
     landingStorageAccountName: masterdataLandingStorageName
     landingContainerName: 'landing'
+    demoScope: simCapacityDemoScope
+  }
+}
+
+// Sprint 23 WS-A4 (#255) — Container Apps Job for the skills-EVENTS simulator.
+// Manual-trigger only; never started by a GitHub workflow. Publishes synthetic
+// DC-SKILL-EVENT-v1 records to the live SIT Eventstream CustomEndpoint, reading
+// the SAS connection string from Key Vault via a secret reference (keyless).
+// Reuses the skills-sim managed environment when that module is enabled to avoid
+// a duplicate CAE; otherwise the module creates its own.
+module skillsEventSimJob './modules/experience-hosting/skills-event-sim-job/main.bicep' = if (enableSkillsEventSimJobModule) {
+  name: 'skills-event-sim-job-${environmentName}'
+  params: {
+    location: simCapacityLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    containerAppEnvironmentId: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.managedEnvironmentId : ''
+    containerAppEnvironmentName: 'cae-skev-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: skillsEventSimJobImage
+    // Reuse the sim-capacity ACR params — same registry serves all Container Apps.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    keyVaultName: platformFoundation.outputs.keyVaultName
+    connectionStringSecretName: skillsEventConnectionStringSecretName
     demoScope: simCapacityDemoScope
   }
 }
@@ -835,6 +870,7 @@ output moduleStatuses object = {
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
   masterdataLanding: enableMasterdataLandingModule ? masterdataLanding!.outputs.moduleStatus : 'masterdata-landing-disabled'
   skillsSimJobs: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.moduleStatus : 'skills-sim-jobs-disabled'
+  skillsEventSimJob: enableSkillsEventSimJobModule ? skillsEventSimJob!.outputs.moduleStatus : 'skills-event-sim-job-disabled'
   poAgentSearch: enablePoAgentSearchModule ? poAgentSearch!.outputs.moduleStatus : 'po-agent-search-disabled'
   poAgentKnowledgeBase: enablePoAgentKnowledgeBaseModule ? poAgentKnowledgeBase!.outputs.moduleStatus : 'po-agent-knowledge-base-disabled'
   poAgentCorpusLanding: enablePoAgentCorpusLandingModule ? poAgentCorpusLanding!.outputs.moduleStatus : 'po-agent-corpus-landing-disabled'

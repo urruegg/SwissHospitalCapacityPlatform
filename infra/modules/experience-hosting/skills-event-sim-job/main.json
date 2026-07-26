@@ -1,0 +1,285 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "11911720204184169634"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "allowedValues": [
+        "switzerlandnorth",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Azure region. Region-pinned to the ADR-0013 demo-scope variant path."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Resource tags applied to every resource this module creates."
+      }
+    },
+    "containerAppEnvironmentId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional resource ID of an existing Container Apps managed environment. When empty, a consumption-only environment is created inside this module. Reuse the skills-sim environment where available to avoid a duplicate CAE."
+      }
+    },
+    "containerAppEnvironmentName": {
+      "type": "string",
+      "defaultValue": "[format('cae-skev-{0}', parameters('nameSuffix'))]",
+      "minLength": 2,
+      "maxLength": 60,
+      "metadata": {
+        "description": "Name for the managed environment when one is created by this module. Ignored when containerAppEnvironmentId is provided."
+      }
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Log Analytics workspace resource ID for the managed environment. Ignored when containerAppEnvironmentId is provided."
+      }
+    },
+    "containerImage": {
+      "type": "string",
+      "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+      "metadata": {
+        "description": "Container image the publisher job runs. Defaults to a placeholder; the real skills-events-sim image is published by a follow-up CI workflow (parity with the skills-sim pattern)."
+      }
+    },
+    "containerRegistryLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR login server the job pulls containerImage from. Set together with containerRegistryResourceId to wire MI-based pull (no admin creds, no secrets)."
+      }
+    },
+    "containerRegistryResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer."
+      }
+    },
+    "keyVaultName": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name of the platform Key Vault that holds the CustomEndpoint SAS connection-string secret. The job MI is granted Key Vault Secrets User on this vault."
+      }
+    },
+    "connectionStringSecretName": {
+      "type": "string",
+      "defaultValue": "skills-events-connection-string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the Key Vault secret that holds the CustomEndpoint SAS connection string. The value is populated out-of-band (never in Bicep/git)."
+      }
+    },
+    "replicaTimeoutSeconds": {
+      "type": "int",
+      "defaultValue": 600,
+      "minValue": 60,
+      "maxValue": 3600,
+      "metadata": {
+        "description": "Replica timeout (seconds) per job execution."
+      }
+    },
+    "demoScope": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "When true, the deployment is scoped to the demo path (synthetic data only, ADR-0013). Emits a demoScope tag for provenance."
+      }
+    }
+  },
+  "variables": {
+    "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
+    "keyVaultSecretsUserRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
+    "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+    "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+    "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[format('id-skev-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]"
+    },
+    {
+      "condition": "[empty(parameters('containerAppEnvironmentId'))]",
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('containerAppEnvironmentName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "properties": {
+        "appLogsConfiguration": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('destination', 'log-analytics', 'logAnalyticsConfiguration', createObject('customerId', reference(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').customerId, 'sharedKey', listKeys(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').primarySharedKey)), createObject('destination', 'azure-monitor'))]",
+        "zoneRedundant": false
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+      "name": "[guid(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))), variables('keyVaultSecretsUserRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('keyVaultSecretsUserRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 23 WS-A4 (#255) — skills-events sim job MI reads the CustomEndpoint SAS secret (keyless)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.App/jobs",
+      "apiVersion": "2024-03-01",
+      "name": "[format('caj-skev-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))))]": {}
+        }
+      },
+      "properties": {
+        "environmentId": "[variables('effectiveEnvironmentId')]",
+        "configuration": {
+          "triggerType": "Manual",
+          "replicaTimeout": "[parameters('replicaTimeoutSeconds')]",
+          "replicaRetryLimit": 1,
+          "manualTriggerConfig": {
+            "parallelism": 1,
+            "replicaCompletionCount": 1
+          },
+          "secrets": [
+            {
+              "name": "[parameters('connectionStringSecretName')]",
+              "keyVaultUrl": "[format('{0}secrets/{1}', reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), '2023-07-01').vaultUri, parameters('connectionStringSecretName'))]",
+              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix')))]"
+            }
+          ],
+          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))))), createArray())]"
+        },
+        "template": {
+          "containers": [
+            {
+              "name": "skills-event-sim",
+              "image": "[parameters('containerImage')]",
+              "resources": {
+                "cpu": "[json('0.25')]",
+                "memory": "0.5Gi"
+              },
+              "env": [
+                {
+                  "name": "AZURE_CLIENT_ID",
+                  "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                },
+                {
+                  "name": "SKILLS_EVENTS_CONNECTION_STRING",
+                  "secretRef": "[parameters('connectionStringSecretName')]"
+                },
+                {
+                  "name": "DEMO_SCOPE",
+                  "value": "[if(parameters('demoScope'), 'true', 'false')]"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix')))]",
+        "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]"
+      ]
+    },
+    {
+      "condition": "[variables('useAcrMiPull')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+      "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 23 WS-A4 (#255) — skills-events sim job MI pulls containerImage from ACR."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "principalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal ID of the skills-events sim job User-Assigned Managed Identity."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+    },
+    "clientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Client ID of the skills-events sim job User-Assigned Managed Identity. Passed to the container as AZURE_CLIENT_ID."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+    },
+    "identityResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the skills-events sim job User-Assigned Managed Identity."
+      },
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-skev-{0}', parameters('nameSuffix')))]"
+    },
+    "jobName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the manual-trigger Container Apps Job."
+      },
+      "value": "[format('caj-skev-{0}', parameters('nameSuffix'))]"
+    },
+    "connectionStringSecretName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Key Vault secret the job reads the CustomEndpoint SAS connection string from."
+      },
+      "value": "[parameters('connectionStringSecretName')]"
+    },
+    "managedEnvironmentId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the managed environment used by this job (created by this module or supplied via containerAppEnvironmentId)."
+      },
+      "value": "[variables('effectiveEnvironmentId')]"
+    },
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "Skills-events sim job module implementation marker."
+      },
+      "value": "skills-event-sim-job-implemented"
+    }
+  }
+}
