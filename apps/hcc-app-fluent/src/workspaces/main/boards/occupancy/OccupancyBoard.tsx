@@ -16,6 +16,7 @@ import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
+import { useDataSource } from '../../../../context/data-source-context';
 
 const useStyles = makeStyles({
   root: { display: 'flex', flexDirection: 'column', gap: space.l, padding: space.l },
@@ -33,6 +34,7 @@ export function OccupancyBoard() {
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
+  const { source } = useDataSource();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<OccupancyPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
@@ -55,7 +57,7 @@ export function OccupancyBoard() {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, hospital]);
+  }, [mode, hospital, source]);
 
   if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 

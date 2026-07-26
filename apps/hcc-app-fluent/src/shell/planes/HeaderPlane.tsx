@@ -1,6 +1,7 @@
 import { makeStyles, tokens, Image, Text } from '@fluentui/react-components';
 import { elevation } from '../../theme/design-system';
 import { ThemeToggle } from '../TopBar/ThemeToggle';
+import { DataSourceToggle } from '../TopBar/DataSourceToggle';
 import { LanguageSelector } from '../TopBar/LanguageSelector';
 import { HospitalScopeSelector } from '../TopBar/HospitalScopeSelector';
 import { RoleLensDropdown } from '../TopBar/RoleLensDropdown';
@@ -40,6 +41,7 @@ export function HeaderPlane() {
       </div>
       <div className={s.spacer} />
       <div className={s.controls}>
+        <DataSourceToggle />
         <ThemeToggle />
         <LanguageSelector />
         <HospitalScopeSelector />

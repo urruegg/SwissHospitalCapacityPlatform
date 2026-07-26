@@ -1,5 +1,6 @@
 import type { Mode, RoleBoardData, ScenarioScope } from '../../journey/RoleBoard';
 import { isGoldenSourceConfigured, iqStructuredRead } from '../iq-client';
+import { getPreferredSource } from '../data-source';
 import { OCCUPANCY_PINNED, type OccupancyPayload, type SiteCapacitySummary, aggregateSiteCapacity } from './occupancy-data';
 import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
 import { BED_MANAGER_PINNED, type BedManagerPayload } from './bed-manager-data';
@@ -41,8 +42,13 @@ async function loadBoard<P>(
 ): Promise<RoleBoardData<P>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
   const cites = [...citations];
-  if (!isGoldenSourceConfigured()) {
+  // Simulated preference (or the demo default) -> fixtures, clean provenance.
+  if (getPreferredSource() === 'simulated') {
     return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: false };
+  }
+  // Live requested but no golden source configured -> fail loud (degraded).
+  if (!isGoldenSourceConfigured()) {
+    return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: true };
   }
   try {
     const { payload, citations: live } = await iqStructuredRead<P>(
