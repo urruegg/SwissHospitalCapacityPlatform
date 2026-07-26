@@ -2,13 +2,15 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-07-23 |
 | **Author** | Urs Rueegg |
 | **Decision-makers** | @urruegg |
 | **Related issue** | #255 |
 
 > **Renumbered from ADR-0039 → ADR-0040 on 2026-07-24, then to ADR-0050 on 2026-07-26 (#378)** (number-collision resolution; see [ADR-0041](0041-adr-number-collision-resolution.md)).
+>
+> **Accepted 2026-07-24 (@urruegg); Status field reconciled 2026-07-26.** Acceptance was recorded in the [Sprint 23 status log](../sprints/sprint-23-curavias-org-spine-and-skills-ontology.md) on 2026-07-24 ("moved Proposed → Accepted, approved by @urruegg"), but the `Status` field here was left at `Proposed` during the 0039 → 0040 → 0050 renumber churn; this edit reconciles it. Decisions D1-D6 are implemented and live-validated across the merged Sprint 23 slices: the ADLS landing zone + skills-sim Container Apps Jobs (D1/D2/D5), the `DC-SKILL-EVIDENCE-v1` skills-evidence plugin package with the live-vs-simulated badge (D3), the hybrid transport (D4) — batch landing plus the SIT-live `CustomEndpoint` Eventstream lane (#374/#379) with its CustomEndpoint SAS publisher (#415) and manual-trigger Container Apps Job (#419) — and the extend-don't-replace org/skills gold + ontology surface (D6). Residual live PROD applies (gold Fabric run; EventHub-source bind) stay `approved-to-apply`-gated / GA-deferred per [ADR-0043](0043-preview-tier-permitted-in-prod-swn-for-demo.md); they do not block acceptance of the architecture.
 
 ## Context
 
