@@ -23,6 +23,23 @@ export interface RecoContextChip {
 export interface RecoLever {
   text: string;
   impact?: { label: string; tone?: ImpactTone };
+  /**
+   * Sprint 27 — responsible-UI evidence shown on hover/focus of the impact badge,
+   * so the user understands the context + who is affected before acting/approving.
+   */
+  evidence?: LeverEvidence;
+}
+
+/** Evidence behind a lever's impact — surfaced in a hover/focus popover. */
+export interface LeverEvidence {
+  /** One-line "why" (e.g. "6 austrittsbereite Patienten identifiziert"). */
+  summary: string;
+  /** Supporting context + impact bullets. */
+  detail?: string[];
+  /** Affected people / roles (e.g. staffing) — names from the roster master data. */
+  people?: string[];
+  /** Grounding ids (hcp:* / gold.*). */
+  citations?: string[];
 }
 
 export interface RecoCta {

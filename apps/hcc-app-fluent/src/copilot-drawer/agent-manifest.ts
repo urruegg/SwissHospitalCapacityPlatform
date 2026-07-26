@@ -70,7 +70,11 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     contextChip: { subject: 'Medizin A', qualifiers: ['72-h-Prognose'], status: 'OVER', tone: 'over' },
     read: 'Medizin A erreicht in 72 h 102% - 6 Grippe-Zugänge stehen 2 geplanten Austritten gegenüber.',
     levers: [
-      { text: '6 austrittsbereite Patienten vor 17:00 entlassen', impact: { label: '-6 Betten', tone: 'beds' } },
+      { text: '6 austrittsbereite Patienten vor 17:00 entlassen', impact: { label: '-6 Betten', tone: 'beds' }, evidence: {
+        summary: '6 Patienten sind als austrittsbereit markiert (Arztvisite abgeschlossen).',
+        detail: ['4 warten auf Transport, 2 auf Rezept', 'Fenster bis 17:00 realistisch', 'Wirkung: Medizin A 102% -> 94%'],
+        citations: ['hcp:Encounter', 'gold.fact_discharge_readiness'],
+      } },
       { text: '3 Niedrig-Akut-Zugänge nach Medizin B umleiten', impact: { label: '+3 Puffer', tone: 'buffer' } },
     ],
     primaryCta: { label: 'Austrittsliste öffnen', kind: 'handoff', target: 'dca-agent' },
@@ -128,7 +132,12 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     contextChip: { subject: 'Pflege IPS', qualifiers: ['Spätdienst'], status: 'Unterbesetzt', tone: 'over' },
     read: 'Die IPS ist im Spätdienst 1.5 FTE unter Bedarf gegenüber der prognostizierten Belegung.',
     levers: [
-      { text: '2 Pool-Pflegende für den Spätdienst anfragen', impact: { label: '+2 FTE', tone: 'status' } },
+      { text: '2 Pool-Pflegende für den Spätdienst anfragen', impact: { label: '+2 FTE', tone: 'status' }, evidence: {
+        summary: 'IPS Spätdienst: 1.5 FTE unter Bedarf (Pflege).',
+        detail: ['Rolle: Pflegefachperson (dipl. HF)', 'Schicht: 15:00-23:00'],
+        people: ['A. Weber (dipl. HF)', 'T. Meier (dipl. HF)', 'L. Kunz (Pool)'],
+        citations: ['hcp:CareTeam', 'gold.fact_staffing_roster'],
+      } },
       { text: '1 elektive Aufnahme auf morgen verschieben', impact: { label: '-1 Bedarf', tone: 'buffer' } },
     ],
     primaryCta: { label: 'Dienstplan-Anpassung anstossen', kind: 'action', requiresApproval: true },

@@ -156,7 +156,11 @@ const recoById: Record<string, GroundedReco> = {
     contextChip: { subject: 'Medicine A', qualifiers: ['forecast'], status: 'OVER', tone: 'over' },
     read: 'Medicine A tips to 102% within 72h - 6 flu admissions inbound against only 2 planned discharges.',
     levers: [
-      { text: 'Expedite 6 discharge-ready patients before 17:00', impact: { label: '-6 beds', tone: 'beds' } },
+      { text: 'Expedite 6 discharge-ready patients before 17:00', impact: { label: '-6 beds', tone: 'beds' }, evidence: {
+        summary: '6 patients flagged discharge-ready (ward round complete).',
+        detail: ['4 awaiting transport, 2 awaiting scripts', '17:00 window realistic', 'Effect: Medicine A 102% -> 94%'],
+        citations: ['hcp:Encounter', 'gold.fact_discharge_readiness'],
+      } },
       { text: 'Divert 3 low-acuity admits to Medicine B (8% spare)', impact: { label: '+3 buffer', tone: 'buffer' } },
       { text: 'Flag 2 length-of-stay outliers >9 days for review', impact: { label: '-2 / 48h', tone: 'time' } },
     ],

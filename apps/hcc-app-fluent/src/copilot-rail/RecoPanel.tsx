@@ -6,6 +6,9 @@ import {
   Button,
   Caption1,
   CounterBadge,
+  Popover,
+  PopoverSurface,
+  PopoverTrigger,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
@@ -17,7 +20,7 @@ import {
   ShieldTaskRegular,
   ProhibitedRegular,
 } from '@fluentui/react-icons';
-import { chipBadgeColor, impactBadgeColor, type GroundedReco, type RecoCta } from './reco';
+import { chipBadgeColor, impactBadgeColor, type GroundedReco, type RecoCta, type RecoLever } from './reco';
 
 const useStyles = makeStyles({
   root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS },
@@ -32,6 +35,21 @@ const useStyles = makeStyles({
   gateRow: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS, flexWrap: 'wrap' },
   gateHint: { color: tokens.colorNeutralForeground3 },
   refusedRead: { color: tokens.colorPaletteRedForeground1 },
+  evidenceTrigger: {
+    padding: 0,
+    border: 'none',
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    font: 'inherit',
+    display: 'inline-flex',
+    borderRadius: tokens.borderRadiusSmall,
+    ':focus-visible': { boxShadow: `0 0 0 2px ${tokens.colorStrokeFocus2}` },
+  },
+  evidenceCard: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXS, maxWidth: '280px' },
+  evidenceHead: { fontWeight: tokens.fontWeightSemibold },
+  evidenceList: { margin: 0, paddingLeft: tokens.spacingHorizontalL, display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS },
+  evidencePeople: { display: 'flex', flexWrap: 'wrap', gap: tokens.spacingHorizontalXS, marginTop: tokens.spacingVerticalXXS },
+  evidenceMuted: { color: tokens.colorNeutralForeground3 },
 });
 
 function CtaIcon({ kind, requiresApproval }: { kind: RecoCta['kind']; requiresApproval?: boolean }) {
@@ -39,6 +57,55 @@ function CtaIcon({ kind, requiresApproval }: { kind: RecoCta['kind']; requiresAp
   if (kind === 'handoff') return <ArrowRightRegular />;
   if (kind === 'action') return <PlayRegular />;
   return <OpenRegular />;
+}
+
+/**
+ * Sprint 27 — impact badge with an optional evidence popover (hover/focus).
+ * Responsible UI: the user sees the context, impact detail and affected people
+ * behind the number before acting / approving.
+ */
+function ImpactBadge({ lever }: { lever: RecoLever }) {
+  const s = useStyles();
+  if (!lever.impact) return null;
+  const badge = (
+    <Badge appearance="tint" color={impactBadgeColor(lever.impact.tone)}>{lever.impact.label}</Badge>
+  );
+  const ev = lever.evidence;
+  if (!ev) return badge;
+  return (
+    <Popover openOnHover withArrow mouseLeaveDelay={200} positioning="above">
+      <PopoverTrigger disableButtonEnhancement>
+        <button type="button" className={s.evidenceTrigger} aria-label={`Evidenz: ${lever.impact.label}`}>
+          {badge}
+        </button>
+      </PopoverTrigger>
+      <PopoverSurface>
+        <div className={s.evidenceCard}>
+          <Body2 className={s.evidenceHead}>{ev.summary}</Body2>
+          {ev.detail && ev.detail.length > 0 && (
+            <ul className={s.evidenceList}>
+              {ev.detail.map((d) => (
+                <li key={d}><Caption1>{d}</Caption1></li>
+              ))}
+            </ul>
+          )}
+          {ev.people && ev.people.length > 0 && (
+            <div>
+              <Caption1 className={s.evidenceMuted}>Betroffen</Caption1>
+              <div className={s.evidencePeople}>
+                {ev.people.map((p) => (
+                  <Badge key={p} appearance="outline" color="informative">{p}</Badge>
+                ))}
+              </div>
+            </div>
+          )}
+          {ev.citations && ev.citations.length > 0 && (
+            <Caption1 className={s.evidenceMuted}>{ev.citations.join(' \u00b7 ')}</Caption1>
+          )}
+        </div>
+      </PopoverSurface>
+    </Popover>
+  );
 }
 
 interface RecoPanelProps {
@@ -76,9 +143,7 @@ export function RecoPanel({ reco, showBack, onBack, onCta }: RecoPanelProps) {
             <li key={lv.text} className={s.lever}>
               <CounterBadge count={i + 1} appearance="filled" color="brand" />
               <Body2 className={s.leverText}>{lv.text}</Body2>
-              {lv.impact && (
-                <Badge appearance="tint" color={impactBadgeColor(lv.impact.tone)}>{lv.impact.label}</Badge>
-              )}
+              {lv.impact && <ImpactBadge lever={lv} />}
             </li>
           ))}
         </ul>
