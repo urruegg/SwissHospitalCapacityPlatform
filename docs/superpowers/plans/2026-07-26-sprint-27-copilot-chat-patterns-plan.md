@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.3.0 |
+| **Version** | 1.4.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.2.0 (A12 follow-up chips delivered) |
+| **Previous Version** | 1.3.0 (A4/A11/gallery delivered) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -103,8 +103,49 @@ each block with sample data, so we can eyeball + axe-scan them in isolation.
 
 ## 3. Step 3 — Validate against real live Foundry-agent responses
 
-Prerequisite: `VITE_AGENT_HOST_URL` wired to the eastus2 Foundry agent host
-(ADR-0032). Then, for a set of real asks:
+The Foundry IQ context architecture ([issue #399](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/399))
+is **not yet in place**, so full end-to-end grounding (per-user RLS,
+per-(user×agent) threads) is unavailable. We therefore split live validation into
+**two stages** that map directly onto the two IQ-layer config gates
+([`iq-client.ts`](../../../apps/hcc-app-fluent/src/data/iq-client.ts)):
+
+| Stage | `VITE_AGENT_HOST_URL` (agent) | `VITE_GOLDEN_SOURCE_URL` (board data) | Proves |
+|-------|-------------------------------|----------------------------------------|--------|
+| **3a — Hybrid** | **set** (live Foundry agent) | unset (boards stay on simulated fixtures) | The **live agent** prepares a response and the app renders it into the correct A1–A12 artefacts. |
+| **3b — Live** | set | **set** (live golden data) | **End-to-end**: a live board triggers the live agent over live data. |
+
+### 3a — Hybrid (live agent, simulated boards)
+
+The mockup boards keep serving the simulated golden fixtures (data-source toggle
+= *Simulated*), but the Copilot chat is pointed at the live Foundry agent host
+(ADR-0032, eastus2). Because the app already routes every agent call through the
+IQ gateway, setting `VITE_AGENT_HOST_URL` alone flips `invokeAgent` from the
+deterministic mock to `iqAgentChat` — **no code change**.
+
+**What this proves:** the live Foundry agent returns a response that maps onto the
+artefact catalogue. The contract to verify is that the agent host emits a
+`GroundedReply` JSON (`answer` + `citations` + a structured `reco` carrying the
+A1–A12 fields — `contextChip`, `metrics`, `levers`+`impact`, `primaryCta`+gate,
+`projection`, `citations`, `refused`, `followUps`), **not free text**. Shaping the
+agent output into `GroundedReco` is the **agent-host's** responsibility
+([`apps/hcc-agent-host`](../../../apps/hcc-agent-host)). If the live agent returns
+prose, the app degrades to a plain `A1 + A3 + A10` bubble (fail loud, honest), and
+the finding routes back to the agent-host to add the server-side mapping.
+
+Run the app with `VITE_AGENT_HOST_URL` set; send T1–T4; capture each live
+`GroundedReply`; map onto A1–A12; score (below). Board data + provenance stay
+*simulated* (honest labelling; no PHI, ADR-0013 / ADR-0016).
+
+### 3b — Live (live board → live agent, end-to-end)
+
+Additionally set `VITE_GOLDEN_SOURCE_URL` so boards pull live golden data via the
+Fabric Data Agent / Gold REST and the header toggle can select *Live*. Now a real
+board context triggers the live agent over live data — the true end-to-end check.
+This stage **depends on the Foundry IQ context architecture (issue #399)** for
+per-user RLS + per-(user×agent) threads; until that lands, 3b runs with a shared
+demo identity and no RLS (demo scope, ADR-0013 / ADR-0016, synthetic data only).
+
+### Scoring (both stages)
 
 1. Send a real ask (e.g. "Welche Stationen kippen in 72h?", "Wie ist die Auslastung auf Station B?").
 2. Capture the live `GroundedReply` (answer + citations + `reco`).
@@ -122,9 +163,11 @@ artefact stack) so regressions are caught.
 ```mermaid
 flowchart LR
   S1[Step 1 define catalogue] --> S2[Step 2 polish each artefact]
-  S2 --> S3[Step 3 validate vs live Foundry]
-  S3 -->|convinced| DONE[fine-tuned]
-  S3 -->|new/needs work| S2
+  S2 --> S3a[Step 3a hybrid: live agent, simulated boards]
+  S3a -->|artefacts correct| S3b[Step 3b live: live board + live agent]
+  S3a -->|new/needs work| S2
+  S3b -->|convinced| DONE[fine-tuned]
+  S3b -->|new/needs work| S2
 ```
 
 ## 5. Test protocol (prepared asks)
@@ -207,6 +250,7 @@ no-lever refusal render.
 - [ ] Catalogue A1–A12 rendered by a single shared `AgentMessage`/`RecoPanel` renderer (Step 1).
 - [x] `/brand` "Chat response artefacts" section renders every block; axe-clean (Step 2).
 - [ ] Each artefact passes its Step 2 checklist with UX sign-off.
-- [ ] Step 3 run against live Foundry responses for T1–T4; each maps to the catalogue; new shapes fed back to Step 2.
+- [ ] Step 3a (hybrid: live agent, simulated boards) run for T1–T4; each maps to the catalogue; agent-host emits `GroundedReco` JSON; new shapes fed back to Step 2.
+- [ ] Step 3b (live board → live agent, end-to-end) run for T1–T4 once Foundry IQ context (issue #399) lands; each maps to the catalogue.
 - [ ] Golden fixtures for T1–T4 (ask → expected artefact stack).
 - [ ] No PHI; provenance + citations always visible; governance gates enforced.
