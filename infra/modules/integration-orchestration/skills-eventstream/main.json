@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "3641420194333204823"
+      "templateHash": "11984451482387454371"
     }
   },
   "parameters": {
@@ -112,6 +112,7 @@
         "namespaceHost": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubNamespace'), '')]",
         "eventHubName": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubName'), '')]",
         "consumerGroup": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubConsumerGroup'), '')]",
+        "connectionId": "",
         "routingProperty": "eventKind",
         "allowedEventKinds": "[variables('allowedEventKinds')]",
         "authMode": "[if(equals(parameters('sourceMode'), 'EventHub'), 'fabric-managed-connection', 'custom-endpoint-ingestion')]"

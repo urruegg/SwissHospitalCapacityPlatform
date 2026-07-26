@@ -114,6 +114,12 @@ param skillsEventstreamDestinationLakehouseId string = ''
 ])
 param skillsEventstreamSourceMode string = 'CustomEndpoint'
 
+// Sprint 23 WS-A4 (ADR-0043) — the dedicated per-domain skills-events Event Hub entity is
+// provisioned exactly when the skills lane runs in sourceMode=EventHub (the Swiss-GA / ADR-0043
+// path). In CustomEndpoint mode the Container Apps publisher POSTs to the ingestion URL and no
+// Event Hub source is needed, so the hub stays un-provisioned (backwards-compatible default).
+var skillsEventHubNeeded = enableSkillsEventstreamModule && skillsEventstreamSourceMode == 'EventHub'
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -178,6 +184,9 @@ param skillsSimJobsImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
   'westus2'
 ])
 param poAgentLocation string = 'westus2'
+
+@description('Region for the PO Agent runtime Azure OpenAI account. Separable from poAgentLocation per ADR-0032: SIT infra runs in westus2 but Azure OpenAI has no quota there, so SIT pins this to eastus2 (the ADR-0013 demo cross-region). Defaults to poAgentLocation to preserve single-region behaviour for PROD (switzerlandnorth per NFR-POA-003).')
+param poAgentOpenAiLocation string = poAgentLocation
 
 @description('Enable the Sprint 28 AI Search module (srch-ihzhhpf-<env>) — GA substrate for the Foundry IQ Knowledge Layer.')
 param enablePoAgentSearchModule bool = false
@@ -453,6 +462,7 @@ module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFou
     simulatorMiPrincipalId: eventHubsSimulatorMiPrincipalId
     bmCopilotMiPrincipalId: eventHubsBmCopilotMiPrincipalId
     csaAgentMiPrincipalId: eventHubsCsaAgentMiPrincipalId
+    enableSkillsEventHub: skillsEventHubNeeded
   }
 }
 
@@ -536,7 +546,7 @@ module poAgentRuntime './modules/experience-hosting/po-agent-runtime/main.bicep'
     searchServiceId: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchServiceId : ''
     searchRestApiVersion: enablePoAgentSearchModule ? poAgentSearch!.outputs.pinnedSearchRestApiVersion : '2024-05-01-preview'
     corpusStorageAccountName: poCorpusStorageName
-    openAiLocation: poAgentLocation
+    openAiLocation: poAgentOpenAiLocation
     logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
     demoScope: simCapacityDemoScope
   }
@@ -815,7 +825,7 @@ module skillsEventstream './modules/integration-orchestration/skills-eventstream
     workspaceId: skillsEventstreamWorkspaceId
     sourceMode: skillsEventstreamSourceMode
     eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
-    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
+    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.skillsEventHubName : ''
     eventHubConsumerGroup: 'cg-skills-eventstream'
     location: location == 'switzerlandnorth' ? 'switzerlandnorth' : 'westus2'
     demoScope: location != 'switzerlandnorth'

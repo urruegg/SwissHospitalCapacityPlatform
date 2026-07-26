@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "3618233654771337776"
+      "templateHash": "3355917053014838634"
     }
   },
   "parameters": {
@@ -385,6 +385,13 @@
         "description": "Region for the Sprint 28 PO Agent modules (Search, runtime, Cosmos, Key Vault). Pinned to the ADR-0013 demo-scope variant path; PROD = switzerlandnorth per ADR-0037 / NFR-POA-003."
       }
     },
+    "poAgentOpenAiLocation": {
+      "type": "string",
+      "defaultValue": "[parameters('poAgentLocation')]",
+      "metadata": {
+        "description": "Region for the PO Agent runtime Azure OpenAI account. Separable from poAgentLocation per ADR-0032: SIT infra runs in westus2 but Azure OpenAI has no quota there, so SIT pins this to eastus2 (the ADR-0013 demo cross-region). Defaults to poAgentLocation to preserve single-region behaviour for PROD (switzerlandnorth per NFR-POA-003)."
+      }
+    },
     "enablePoAgentSearchModule": {
       "type": "bool",
       "defaultValue": false,
@@ -647,6 +654,7 @@
     }
   },
   "variables": {
+    "skillsEventHubNeeded": "[and(parameters('enableSkillsEventstreamModule'), equals(parameters('skillsEventstreamSourceMode'), 'EventHub'))]",
     "envSuffix": "[if(equals(parameters('environmentName'), 'dev'), '', format('-{0}', parameters('environmentName')))]",
     "resourceSuffix": "[format('{0}{1}', parameters('solutionShortName'), variables('envSuffix'))]",
     "masterdataLandingStorageName": "[toLower(format('stmasterdata{0}', replace(variables('resourceSuffix'), '-', '')))]",
@@ -2715,6 +2723,9 @@
           },
           "csaAgentMiPrincipalId": {
             "value": "[parameters('eventHubsCsaAgentMiPrincipalId')]"
+          },
+          "enableSkillsEventHub": {
+            "value": "[variables('skillsEventHubNeeded')]"
           }
         },
         "template": {
@@ -2724,7 +2735,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "1765711980068583287"
+              "templateHash": "18435649743209637415"
             }
           },
           "parameters": {
@@ -2767,6 +2778,13 @@
               "metadata": {
                 "description": "Object ID of the CSA managed identity for Event Hubs Data Receiver (Sprint 09 T4.5 wiring)."
               }
+            },
+            "enableSkillsEventHub": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — provision a dedicated per-domain skills-events Event Hub entity + cg-skills-eventstream consumer group. Enabled by the parent when the skills lane runs in sourceMode=EventHub."
+              }
             }
           },
           "resources": [
@@ -2797,6 +2815,9 @@
                   },
                   "csaAgentMiPrincipalId": {
                     "value": "[parameters('csaAgentMiPrincipalId')]"
+                  },
+                  "enableSkillsEventHub": {
+                    "value": "[parameters('enableSkillsEventHub')]"
                   }
                 },
                 "template": {
@@ -2806,7 +2827,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "2157408807266904991"
+                      "templateHash": "9973123325224022374"
                     }
                   },
                   "parameters": {
@@ -2855,6 +2876,20 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-csa-agent. Wired from Foundry module (Sprint 09 T4.5)."
+                      }
+                    },
+                    "enableSkillsEventHub": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — when true, provisions a dedicated per-domain skills-events Event Hub entity + cg-skills-eventstream consumer group inside this namespace, isolating the DC-SKILL-EVENT-v1 envelope from the capacity events rail. Additive; default false preserves the pre-Sprint-23 single-hub topology. Enabled automatically by the parent when the skills-events Eventstream runs in sourceMode=EventHub."
+                      }
+                    },
+                    "skillsEventHubName": {
+                      "type": "string",
+                      "defaultValue": "skills-events",
+                      "metadata": {
+                        "description": "Name of the dedicated skills-events Event Hub entity. Only created when enableSkillsEventHub=true. Kept distinct from the capacity events hub so envelopes are separated by functional domain."
                       }
                     }
                   },
@@ -2972,6 +3007,47 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
                       ]
+                    },
+                    {
+                      "condition": "[parameters('enableSkillsEventHub')]",
+                      "type": "Microsoft.EventHub/namespaces/eventhubs",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]",
+                      "properties": {
+                        "partitionCount": 4,
+                        "messageRetentionInDays": 1
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')))]"
+                      ]
+                    },
+                    {
+                      "condition": "[parameters('enableSkillsEventHub')]",
+                      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'), 'cg-skills-eventstream')]",
+                      "properties": {
+                        "userMetadata": "Sprint 23 WS-A4 (ADR-0043) — consumed by es-ihzhhpf-skills-events (Fabric Eventstream). Drives bronze/skills-events/ Delta append."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(parameters('enableSkillsEventHub'), not(empty(parameters('simulatorMiPrincipalId'))))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName')), parameters('simulatorMiPrincipalId'), variables('eventHubsDataSenderRoleId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]",
+                        "principalId": "[parameters('simulatorMiPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — simulator MI publishes DC-SKILL-EVENT-v1 to the dedicated skills-events hub."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]"
+                      ]
                     }
                   ],
                   "outputs": {
@@ -3006,6 +3082,20 @@
                         "bmCopilotAgent": "cg-bm-copilot-agent",
                         "csaAgent": "cg-csa-agent"
                       }
+                    },
+                    "skillsEventHubName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events Event Hub entity name, or empty when not enabled."
+                      },
+                      "value": "[if(parameters('enableSkillsEventHub'), parameters('skillsEventHubName'), '')]"
+                    },
+                    "skillsEventHubConsumerGroup": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events consumer group name, or empty when not enabled."
+                      },
+                      "value": "[if(parameters('enableSkillsEventHub'), 'cg-skills-eventstream', '')]"
                     },
                     "moduleStatus": {
                       "type": "string",
@@ -3054,6 +3144,20 @@
                 "description": "Sprint 09 v2.0.0 consumer group names."
               },
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.consumerGroupNames.value]"
+            },
+            "skillsEventHubName": {
+              "type": "string",
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events Event Hub entity name, or empty when not enabled."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.skillsEventHubName.value]"
+            },
+            "skillsEventHubConsumerGroup": {
+              "type": "string",
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events consumer group name, or empty when not enabled."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.skillsEventHubConsumerGroup.value]"
             }
           }
         }
@@ -3955,7 +4059,7 @@
             "value": "[variables('poCorpusStorageName')]"
           },
           "openAiLocation": {
-            "value": "[parameters('poAgentLocation')]"
+            "value": "[parameters('poAgentOpenAiLocation')]"
           },
           "logAnalyticsWorkspaceId": {
             "value": "[parameters('poAgentLogAnalyticsWorkspaceId')]"
@@ -8263,7 +8367,7 @@
             "value": "[parameters('skillsEventstreamSourceMode')]"
           },
           "eventHubNamespace": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value), createObject('value', ''))]",
-          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value), createObject('value', ''))]",
+          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.skillsEventHubName.value), createObject('value', ''))]",
           "eventHubConsumerGroup": {
             "value": "cg-skills-eventstream"
           },
@@ -8282,7 +8386,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "3641420194333204823"
+              "templateHash": "11984451482387454371"
             }
           },
           "parameters": {
@@ -8389,6 +8493,7 @@
                 "namespaceHost": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubNamespace'), '')]",
                 "eventHubName": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubName'), '')]",
                 "consumerGroup": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubConsumerGroup'), '')]",
+                "connectionId": "",
                 "routingProperty": "eventKind",
                 "allowedEventKinds": "[variables('allowedEventKinds')]",
                 "authMode": "[if(equals(parameters('sourceMode'), 'EventHub'), 'fabric-managed-connection', 'custom-endpoint-ingestion')]"
