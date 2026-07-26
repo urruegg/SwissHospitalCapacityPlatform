@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.2 |
+| **Version** | 1.6.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.5.1 (Fabric DA finding corrected: healthy, cold-start) |
+| **Previous Version** | 1.5.2 (PROD Foundry endpoints confirmed) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -143,7 +143,7 @@ Endpoints (verified):
 | Env | Agent-host (`VITE_AGENT_HOST_URL`) | Foundry project |
 |-----|-------------------------------------|-----------------|
 | **SIT** | `https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io` (live, 7 agents) | `https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com/api/projects/ai-ihzhhpf-sit-eastus2-project` (ADR-0032) |
-| **PROD** | `ca-agent-host-ihzhhpf-prod` (eastus2 `rg-ihzhhpf-prod-eastus2`; `/healthz` + `/agents` 200) — FQDN from the `prod` GitHub env var `AGENT_HOST_URL` (not yet probed) | `https://ai-ihzhhpf-prod.services.ai.azure.com/api/projects/ai-ihzhhpf-prod-project` + AOAI `https://ai-ihzhhpf-prod.openai.azure.com/openai/v1` (portal-confirmed 2026-07-26; API-key auth disabled → Entra/OBO) |
+| **PROD** | `https://ca-agent-host-ihzhhpf-prod.whiteriver-d854b3bc.switzerlandnorth.azurecontainerapps.io` (live, 7 agents; **synthetic grounding** — no live Fabric DA) | `https://ai-ihzhhpf-prod.services.ai.azure.com/api/projects/ai-ihzhhpf-prod-project` + AOAI `https://ai-ihzhhpf-prod.openai.azure.com/openai/v1` (portal-confirmed 2026-07-26; API-key auth disabled → Entra/OBO) |
 
 Live SIT `POST /agents/ooa-agent/chat` returns today:
 
@@ -182,8 +182,26 @@ fold into this same agent-host change: (1) a **bounded retry + assistant/thread
 reuse** in `FabricDataAgentClient.ask()` so a cold-start blip rides through instead
 of degrading (today it raises on the first failure → immediate degrade); (2) a
 **keep-warm ping** so the first user query isn't a cold miss. Separately, the ~33 s
-warm latency is a pane busy-state concern (B-scope). PROD (`ca-agent-host-ihzhhpf-prod`)
-not yet probed — needs the prod FQDN / MCAP164444 sign-in.
+warm latency is a pane busy-state concern (B-scope).
+
+**PROD — verified NO live Fabric Data Agent binding (2026-07-26).**
+`ca-agent-host-ihzhhpf-prod` (switzerlandnorth) live probes: 5/5 instant (~0.1 s)
+**synthetic-adapter** responses — citations `dim_ward_capacityunit`,
+`hcp:CapacityUnit`, `hcp:Bed`; answer *"Keine Auslastungsdaten in der Grundierung
+gefunden. Bitte Fabric-Gold-Tabellen prüfen."* The `FABRIC_DATA_AGENT_*` env vars
+are **unset** on the PROD Container App, so the adapter answers synthetically —
+consistent with the Fabric IQ demo layer being SIT/westus2-only (ADR-0034). Wiring
+PROD grounding is a provisioning task (Fabric workspace + Data Agent in a
+PROD-reachable region, set the 3 env vars, grant the PROD MI `Fabric Viewer`) — a
+separate `deploy`-ceiling backlog item, not part of Sprint 27.
+
+**Architectural note (material to 3a):** the agent-host (`ca-agent-host-*`, the
+`VITE_AGENT_HOST_URL` target) runs the deterministic **MockChatModel** in *both*
+SIT and PROD; only the *grounding* is live (SIT Fabric Data Agent). The live gpt-5
+reasoning path is the **Foundry-hosted** `ooa-agent` — a different execution path
+(fabric-iq-ready-evidence.md). So 3a's `reco` contract must decide whether the
+agent-host (a) keeps MockChatModel and shapes a `reco` from Fabric grounding, or
+(b) calls the Foundry-hosted agent for real LLM reasoning + structured output.
 
 ### 3b — Live (live board → live agent, end-to-end)
 
