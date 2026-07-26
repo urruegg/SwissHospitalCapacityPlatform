@@ -1,0 +1,15 @@
+/* Sprint 27 — global reset so the five-plane shell fills the full viewport:
+   removes the browser default body margin (the gap on top/left/right) and the
+   overflow band at the bottom. The shell manages its own scrolling in the MAIN
+   pane, so the document itself does not scroll. */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+}

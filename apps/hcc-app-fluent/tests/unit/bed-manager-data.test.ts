@@ -12,22 +12,25 @@ describe('BEDMANAGER_PINNED model', () => {
     expect(BED_MANAGER_PINNED).toBe(BEDMANAGER_PINNED);
   });
 
-  it('has placement requests with PHI-safe patientId (PT-xxxx), priority, and recoId', () => {
+  it('has placement requests with RQ id, source, target, status, and recoId', () => {
     expect(BEDMANAGER_PINNED.placements.length).toBeGreaterThanOrEqual(3);
     for (const p of BEDMANAGER_PINNED.placements) {
-      expect(p.patientId).toMatch(/^PT-\d+$/);
-      expect(['HIGH', 'MED', 'LOW']).toContain(p.priority);
-      expect(p.waitMin).toBeGreaterThan(0);
+      expect(p.id).toMatch(/^RQ-\d+$/);
+      expect(['PLACED', 'WAITING', 'BLOCKED']).toContain(p.status);
+      expect(p.source).toBeTruthy();
+      expect(p.target).toBeTruthy();
       expect(p.recoId).toBeTruthy();
-      expect(p.fromWard).toBeTruthy();
-      expect(p.toWard).toBeTruthy();
+      // PLACED rows have no barrier; WAITING/BLOCKED carry a reason.
+      if (p.status === 'PLACED') expect(p.barrier).toBeNull();
+      else expect(p.barrier).toBeTruthy();
     }
   });
 
-  it('has at least one HIGH and one LOW priority placement', () => {
-    const priorities = BEDMANAGER_PINNED.placements.map((p) => p.priority);
-    expect(priorities).toContain('HIGH');
-    expect(priorities).toContain('LOW');
+  it('covers PLACED, WAITING and BLOCKED statuses', () => {
+    const statuses = BEDMANAGER_PINNED.placements.map((p) => p.status);
+    expect(statuses).toContain('PLACED');
+    expect(statuses).toContain('WAITING');
+    expect(statuses).toContain('BLOCKED');
   });
 
   it('has barriers sorted by bedImpact descending (stable tie-break)', () => {
@@ -56,11 +59,6 @@ describe('BEDMANAGER_PINNED model', () => {
     }
   });
 
-  it('has a Power BI embed with reportName and embedPlaceholder', () => {
-    expect(BEDMANAGER_PINNED.powerBiEmbed.reportName).toBe('capacity-dashboard');
-    expect(BEDMANAGER_PINNED.powerBiEmbed.embedPlaceholder).toBeTruthy();
-  });
-
   it('HITL move reco has requiresApproval: true on its primaryCta', () => {
     const hitlReco = BEDMANAGER_PINNED.recoById['move-pt-4003-hitl'];
     expect(hitlReco).toBeDefined();
@@ -83,9 +81,9 @@ describe('BEDMANAGER_PINNED model', () => {
     expect(defaultReco.provenance).toBe('simulated');
   });
 
-  it('recoById has entries for all placements with non-empty levers or refused flag', () => {
+  it('every placement resolves to a grounded reco (own or the default playbook)', () => {
     for (const p of BEDMANAGER_PINNED.placements) {
-      const reco = BEDMANAGER_PINNED.recoById[p.recoId];
+      const reco = BEDMANAGER_PINNED.recoById[p.recoId] ?? BEDMANAGER_PINNED.defaultReco;
       expect(reco).toBeDefined();
       const hasLeversOrRefused = reco.levers.length > 0 || reco.refused === true;
       expect(hasLeversOrRefused).toBe(true);

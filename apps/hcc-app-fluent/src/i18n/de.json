@@ -184,7 +184,8 @@
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
     "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
-    "placementMove": "{{patientId}} von {{fromWard}} nach {{toWard}} verlegen",
+    "placementMove": "Platzierung {{requestNo}}: {{source}} → {{target}}",
+      "admissionEvent": "Steuerung: {{patient}} in {{ward}}",
     "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
@@ -194,7 +195,8 @@
     "title": "Copilot",
     "placeholder": "Frage an den Agenten stellen…",
     "send": "Senden",
-    "noPhiNotice": "Antworten enthalten keine Patientendaten (PHI)."
+    "noPhiNotice": "Antworten enthalten keine Patientendaten (PHI).",
+    "followUps": "Vorschläge"
   },
   "nav": {
     "start": "Start",
@@ -309,19 +311,21 @@
   },
   "bmca": {
     "table": {
-      "hint": "Zeile anklicken → Platzierungsaktionen",
-      "patient": "Patient",
-      "priority": "Priorität",
-      "from": "Von",
-      "to": "Nach",
-      "wait": "Wartezeit (min)"
+      "title": "Eingehende Platzierungsliste — {{count}} Anfragen, anonymisiert",
+      "hint": "Zeile anklicken → Copilot-Platzierungs-Playbook",
+      "request": "Anfrage",
+      "source": "Quelle",
+      "target": "Ziel",
+      "status": "Status",
+      "barrier": "Hindernis"
     },
     "barriers": {
-      "hint": "Platzierungshindernisse nach Bettauswirkung sortiert",
-      "rank": "Rang",
-      "label": "Hindernis",
-      "bedImpact": "Betten",
-      "detail": "Details",
+      "title": "Platzierungshindernisse — nach Bettenwirkung",
+      "hint": "Hindernis anklicken → systemisches Copilot-Playbook",
+      "summary": "{{placed}} platziert · {{waiting}} wartend über {{barriers}} Hindernisse · {{beds}} Betten zu decken",
+      "agingRisk": "ALTERUNGSRISIKO",
+      "bedOne": "{{n}} Bett",
+      "bedMany": "{{n}} Betten",
       "cta": "Auto-Reihenfolge nach Auswirkung →"
     },
     "kpis": {
@@ -332,10 +336,8 @@
     },
     "stream": {
       "title": "Zugänge / Einzug-Eventstream",
-      "hint": "Live-Zugänge und -Austritte (simuliert)"
-    },
-    "pbi": {
-      "title": "Kapazitäts-Dashboard"
+      "hint": "Live-Zugänge und -Austritte (simuliert)",
+      "copilotHint": "Klicken für Copilot-Steuerung + Details"
     },
     "gap": {
       "label": "Standortkapazitätslücke",

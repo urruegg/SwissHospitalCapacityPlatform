@@ -1,22 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, makeStyles, tokens } from '@fluentui/react-components';
+import { space, radii, elevation } from '../../../../theme/design-system';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { OccupancyPayload } from '../../../../data/roleboard/occupancy-data';
+import { OCCUPANCY_SIGNALS, type OccupancyPayload } from '../../../../data/roleboard/occupancy-data';
 import { occupancyBoard } from './occupancy-board';
 import { BoardHeader } from './BoardHeader';
 import { WardForecastTable } from './WardForecastTable';
 import { CapacityFlowDiagram } from './CapacityFlowDiagram';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
+import { GroundingNotice } from '../GroundingNotice';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
+import { useDataSource } from '../../../../context/data-source-context';
 
 const useStyles = makeStyles({
-  root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalL },
+  root: { display: 'flex', flexDirection: 'column', gap: space.l, padding: space.l },
+  panel: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: radii.card,
+    boxShadow: elevation.card,
+    padding: space.l,
+  },
 });
 
 /** Sprint 20 (parity) — Occupancy (ooa) surface: BoardHeader + WardForecastTable + CapacityFlowDiagram. */
@@ -25,6 +34,7 @@ export function OccupancyBoard() {
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
+  const { source } = useDataSource();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<OccupancyPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
@@ -47,7 +57,7 @@ export function OccupancyBoard() {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, hospital]);
+  }, [mode, hospital, source]);
 
   if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 
@@ -62,18 +72,24 @@ export function OccupancyBoard() {
   return (
     <section className={s.root} data-testid="board-occupancy" aria-label={t('board.occupancy')}>
       <HandoffBanner banner={banner} provenance={data.provenance} />
+      <GroundingNotice degraded={data.degraded} />
       <BoardHeader agent={occupancyBoard.agent} title={t('board.occupancy')} provenance={data.provenance} lens="Bed Ops" />
-      <WardForecastTable
-        wards={payload.wards}
-        onSelectWard={(w) => route({ id: w.recoId, label: w.label, context: { channel: w.id, occupancyPct: w.forecastPct } })}
-      />
-      <CapacityFlowDiagram
-        channels={payload.channels}
-        streams={payload.streams}
-        capacity={payload.capacity}
-        onSelectStream={(st) => route({ id: st.recoId, label: st.label, context: { stream: st.id, level: st.levelLabel } })}
-        onSelectGap={() => route({ id: 'site-gap', label: t('ooa.gap.label'), context: { gapBeds: payload.capacity.gapBeds } })}
-      />
+      <div className={s.panel}>
+        <WardForecastTable
+          wards={payload.wards}
+          onSelectWard={(w) => route({ id: w.recoId, label: w.label, context: { channel: w.id, occupancyPct: w.forecastPct } })}
+        />
+      </div>
+      <div className={s.panel}>
+        <CapacityFlowDiagram
+          signals={OCCUPANCY_SIGNALS}
+          channels={payload.channels}
+          streams={payload.streams}
+          capacity={payload.capacity}
+          onSelectStream={(st) => route({ id: st.recoId, label: st.label, context: { stream: st.id, level: st.levelLabel } })}
+          onSelectGap={() => route({ id: 'site-gap', label: t('ooa.gap.label'), context: { gapBeds: payload.capacity.gapBeds } })}
+        />
+      </div>
     </section>
   );
 }

@@ -3,19 +3,20 @@ import { render, screen, act } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import i18n from '../../src/i18n';
 import { CapacityFlowDiagram } from '../../src/workspaces/main/boards/occupancy/CapacityFlowDiagram';
-import { OCCUPANCY_PINNED } from '../../src/data/roleboard/occupancy-data';
+import { OCCUPANCY_PINNED, OCCUPANCY_SIGNALS } from '../../src/data/roleboard/occupancy-data';
 
 beforeAll(async () => {
   await i18n.changeLanguage('en');
 });
 
 describe('CapacityFlowDiagram', () => {
-  it('renders channels, streams, outputs, and routes stream + gap clicks', () => {
+  it('renders streams (with fed-by channels), outputs, and routes stream + gap clicks', () => {
     const onSelectStream = vi.fn();
     const onSelectGap = vi.fn();
     render(
       <FluentProvider theme={webLightTheme}>
         <CapacityFlowDiagram
+          signals={OCCUPANCY_SIGNALS}
           channels={OCCUPANCY_PINNED.channels}
           streams={OCCUPANCY_PINNED.streams}
           capacity={OCCUPANCY_PINNED.capacity}
@@ -24,7 +25,8 @@ describe('CapacityFlowDiagram', () => {
         />
       </FluentProvider>,
     );
-    expect(screen.getByText('ED arrivals')).toBeInTheDocument();
+    // Signals now live in the dedicated SignalsPanel; the flow shows the fed-by channels on each stream.
+    expect(screen.getByText(/Fed by ED arrivals/)).toBeInTheDocument();
     expect(screen.getByText('Emergency & Acute Medicine')).toBeInTheDocument();
     expect(screen.getByText(/105\s*\/\s*130/)).toBeInTheDocument();
 

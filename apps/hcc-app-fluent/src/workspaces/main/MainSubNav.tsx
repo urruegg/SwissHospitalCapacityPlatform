@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useRoleLens } from '../../context/role-context';
 import { firstEligibleBoard } from '../../shell/planes/first-eligible-board';
 
-/** Sprint 1 (parity) — MAIN board sub-navigation for the six role surfaces. */
+/** Sprint 1 (parity) — MAIN board sub-navigation, ordered along the patient journey. */
 const BOARDS = [
   { key: 'occupancy', label: 'Occupancy', gate: 'main' as const },
-  { key: 'discharge', label: 'Discharge', gate: 'main' as const },
   { key: 'bed-manager', label: 'Bed management', gate: 'main' as const },
   { key: 'or-steering', label: 'OR steering', gate: 'main' as const },
   { key: 'staffing', label: 'Staffing', gate: 'main' as const },
+  { key: 'discharge', label: 'Discharge', gate: 'main' as const },
   { key: 'crisis', label: 'Crisis', gate: 'csa' as const },
 ];
 

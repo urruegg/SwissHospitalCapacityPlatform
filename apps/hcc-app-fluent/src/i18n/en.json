@@ -184,7 +184,8 @@
     "dischargeExpedite": "Expedite {{ward}} discharge",
     "dischargeExpediteDetail": "Expedite {{ward}} discharge — {{blocker}}",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
-    "placementMove": "Move {{patientId}} from {{fromWard}} to {{toWard}}",
+    "placementMove": "Place {{requestNo}}: {{source}} → {{target}}",
+      "admissionEvent": "Steer from {{ward}} event ({{patient}})",
     "placementBarrier": "Barrier: {{label}}",
     "orDefer": "Defer {{specialty}} case",
     "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",
@@ -194,7 +195,8 @@
     "title": "Copilot",
     "placeholder": "Ask the agent…",
     "send": "Send",
-    "noPhiNotice": "Replies contain no patient data (PHI)."
+    "noPhiNotice": "Replies contain no patient data (PHI).",
+    "followUps": "Suggested follow-ups"
   },
   "nav": {
     "start": "Start",
@@ -309,19 +311,21 @@
   },
   "bmca": {
     "table": {
-      "hint": "Click a row → placement actions",
-      "patient": "Patient",
-      "priority": "Priority",
-      "from": "From",
-      "to": "To",
-      "wait": "Wait (min)"
+      "title": "Inbound placement worklist — {{count}} requests, anonymised",
+      "hint": "click a row → Copilot placement playbook",
+      "request": "Request",
+      "source": "Source",
+      "target": "Target",
+      "status": "Status",
+      "barrier": "Barrier"
     },
     "barriers": {
-      "hint": "Placement barriers sorted by bed impact",
-      "rank": "Rank",
-      "label": "Barrier",
-      "bedImpact": "Beds",
-      "detail": "Detail",
+      "title": "Placement barriers — ranked by bed impact",
+      "hint": "click a barrier → systemic Copilot playbook",
+      "summary": "{{placed}} placed now · {{waiting}} waiting across {{barriers}} barriers · {{beds}} beds to absorb",
+      "agingRisk": "AGING RISK",
+      "bedOne": "{{n}} bed",
+      "bedMany": "{{n}} beds",
       "cta": "Auto-sequence by impact →"
     },
     "kpis": {
@@ -332,10 +336,8 @@
     },
     "stream": {
       "title": "Admissions / discharge eventstream",
-      "hint": "Live admissions and discharges (simulated)"
-    },
-    "pbi": {
-      "title": "Capacity dashboard"
+      "hint": "Live admissions and discharges (simulated)",
+      "copilotHint": "Click for Copilot steering + details"
     },
     "gap": {
       "label": "Site capacity gap",

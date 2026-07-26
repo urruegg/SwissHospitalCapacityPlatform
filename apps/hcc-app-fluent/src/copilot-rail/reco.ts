@@ -23,6 +23,23 @@ export interface RecoContextChip {
 export interface RecoLever {
   text: string;
   impact?: { label: string; tone?: ImpactTone };
+  /**
+   * Sprint 27 — responsible-UI evidence shown on hover/focus of the impact badge,
+   * so the user understands the context + who is affected before acting/approving.
+   */
+  evidence?: LeverEvidence;
+}
+
+/** Evidence behind a lever's impact — surfaced in a hover/focus popover. */
+export interface LeverEvidence {
+  /** One-line "why" (e.g. "6 austrittsbereite Patienten identifiziert"). */
+  summary: string;
+  /** Supporting context + impact bullets. */
+  detail?: string[];
+  /** Affected people / roles (e.g. staffing) — names from the roster master data. */
+  people?: string[];
+  /** Grounding ids (hcp:* / gold.*). */
+  citations?: string[];
 }
 
 export interface RecoCta {
@@ -32,16 +49,35 @@ export interface RecoCta {
   requiresApproval?: boolean;
 }
 
+/**
+ * Sprint 27 (A4) — a single cell of the metric trio (now -> forecast -> gap).
+ * `tone` colours the delta cell (RAG); absent = a plain stat value.
+ */
+export interface RecoMetric {
+  label: string;
+  value: string;
+  tone?: ImpactTone;
+}
+
 export interface GroundedReco {
   agentLabel: string;
   contextChip: RecoContextChip;
   read: string;
+  /** A4 — the numbers behind the read (now -> forecast -> gap). Optional. */
+  metrics?: RecoMetric[];
   levers: RecoLever[];
   primaryCta?: RecoCta;
   projection?: string;
   citations: string[];
   provenance: Provenance;
   refused?: boolean;
+  /**
+   * Sprint 27 (A12) — suggested "what next" prompts surfaced as chips after this
+   * reply. Grounded, contextual to the artefact (not generic). Optional so the
+   * artefact contract stays backward-compatible; clicking one sends it as the
+   * next ask.
+   */
+  followUps?: string[];
 }
 
 const CHIP_COLORS: Record<ChipTone, BadgeColor> = {

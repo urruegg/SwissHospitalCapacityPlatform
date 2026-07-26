@@ -1,11 +1,14 @@
 import { useState, useCallback } from 'react';
 import { invokeAgent, type GroundedReply } from './agent-manifest';
+import type { GroundedReco } from '../copilot-rail/reco';
 
 export interface ConversationTurn {
   role: 'user' | 'agent';
   text: string;
   citations?: string[];
   refused?: boolean;
+  /** Structured grounded artefact when the agent returned one (Foundry Agent). */
+  reco?: GroundedReco;
 }
 
 /**
@@ -32,6 +35,7 @@ export function useAgentInvoker(agent: string) {
             text: reply.answer,
             citations: reply.citations,
             refused: reply.refused,
+            reco: reply.reco,
           },
         ]);
       } finally {

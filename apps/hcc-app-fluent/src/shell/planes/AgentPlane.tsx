@@ -6,14 +6,14 @@ import {
   Body1,
   Button,
   Divider,
-  Input,
   InteractionTag,
   InteractionTagPrimary,
   TagGroup,
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import { BotRegular, DismissRegular } from '@fluentui/react-icons';
+import { DismissRegular, AddRegular, SendRegular } from '@fluentui/react-icons';
+import { CopilotIcon } from '../CopilotIcon';
 import { ConversationView } from '../../copilot-drawer/ConversationView';
 import { useConversation } from '../../copilot-drawer/useConversation';
 import { useCopilotRail } from '../../copilot-rail/rail-context';
@@ -24,14 +24,12 @@ import { boardForRoute } from './board-registry';
 import { useRoleLens } from '../../context/role-context';
 
 const useStyles = makeStyles({
-  rail: {
-    width: '48px',
-    display: 'flex',
-    justifyContent: 'center',
-    paddingTop: tokens.spacingVerticalM,
-    height: '100%',
-    borderLeft: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground1,
+  fab: {
+    position: 'fixed',
+    right: '48px',
+    bottom: '48px',
+    zIndex: 1000,
+    boxShadow: tokens.shadow16,
   },
   panel: {
     width: '360px',
@@ -68,13 +66,32 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     gap: tokens.spacingHorizontalXS,
   },
-  inputRow: {
+  inputBar: {
     display: 'flex',
-    gap: tokens.spacingHorizontalS,
-    padding: tokens.spacingHorizontalM,
-    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    marginTop: tokens.spacingVerticalM,
+    marginLeft: tokens.spacingHorizontalM,
+    marginRight: tokens.spacingHorizontalM,
+    marginBottom: tokens.spacingVerticalM,
+    paddingTop: tokens.spacingVerticalXS,
+    paddingBottom: tokens.spacingVerticalXS,
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalXS,
+    borderRadius: tokens.borderRadiusXLarge,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    ':focus-within': { boxShadow: `0 0 0 2px ${tokens.colorBrandStroke1}` },
   },
-  input: { flex: 1 },
+  textInput: {
+    flexGrow: 1,
+    minWidth: 0,
+    border: 'none',
+    backgroundColor: 'transparent',
+    font: 'inherit',
+    fontSize: tokens.fontSizeBase300,
+    color: tokens.colorNeutralForeground1,
+  },
 });
 
 /**
@@ -102,14 +119,15 @@ export function AgentPlane() {
 
   if (!open) {
     return (
-      <div className={s.rail}>
-        <Button
-          aria-label={t('agent.open', 'Open agent')}
-          icon={<BotRegular />}
-          appearance="subtle"
-          onClick={() => setOpen(true)}
-        />
-      </div>
+      <Button
+        className={s.fab}
+        aria-label={t('agent.open', 'Open agent')}
+        icon={<CopilotIcon />}
+        appearance="primary"
+        shape="circular"
+        size="large"
+        onClick={() => setOpen(true)}
+      />
     );
   }
 
@@ -125,7 +143,7 @@ export function AgentPlane() {
     <aside role="complementary" aria-label={t('agent.title', 'Agent')} className={s.panel}>
       <div className={s.header}>
         <div className={s.headTitle}>
-          <BotRegular />
+          <CopilotIcon />
           <Body1>{agent}</Body1>
           <Badge appearance="tint">{capabilities.agentCeiling}</Badge>
         </div>
@@ -145,7 +163,7 @@ export function AgentPlane() {
             onCta={onCta}
           />
         )}
-        {board && board.askAbout.length > 0 && (
+        {board && board.askAbout.length > 0 && turns.length === 0 && (
           <TagGroup className={s.chips} aria-label={t('agent.askAbout', 'Ask about')}>
             {board.askAbout.map((q) => (
               <InteractionTag key={q} value={q}>
@@ -155,22 +173,35 @@ export function AgentPlane() {
           </TagGroup>
         )}
         {turns.length > 0 && <Divider />}
-        <ConversationView turns={turns} />
+        <ConversationView turns={turns} onFollowUp={(q) => void send(q)} />
       </div>
-      <div className={s.inputRow}>
-        <Input
-          className={s.input}
+      <div className={s.inputBar}>
+        <Button
+          appearance="subtle"
+          size="small"
+          shape="circular"
+          icon={<AddRegular />}
+          aria-label={t('copilot.add', 'Add')}
+        />
+        <input
+          className={s.textInput}
           value={draft}
           placeholder={t('copilot.placeholder')}
           aria-label={t('copilot.placeholder')}
-          onChange={(_e, data) => setDraft(data.value)}
+          onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') submit();
           }}
         />
-        <Button appearance="primary" disabled={busy} onClick={submit}>
-          {t('copilot.send')}
-        </Button>
+        <Button
+          appearance="subtle"
+          size="small"
+          shape="circular"
+          icon={<SendRegular />}
+          aria-label={t('copilot.send')}
+          disabled={busy || draft.trim().length === 0}
+          onClick={submit}
+        />
       </div>
     </aside>
   );

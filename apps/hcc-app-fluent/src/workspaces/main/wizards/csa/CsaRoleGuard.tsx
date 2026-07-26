@@ -17,6 +17,7 @@ import { useRoleLens } from '../../../../context/role-context';
 export const CSA_WIZARD_ROLES: readonly string[] = [
   'HCC.DemoOperator',
   'HCC.PlatformAdmin',
+  'HCC.CrisisManager',
   'HCC.RegionalCrisisLead',
 ];
 

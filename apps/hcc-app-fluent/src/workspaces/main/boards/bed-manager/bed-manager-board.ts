@@ -17,15 +17,16 @@ export const bedManagerBoard: RoleBoard<BedManagerPayload> = {
       (r: PlacementRequest) => ({
         id: r.recoId,
         label: i18n.t('insight.placementMove', {
-          patientId: r.patientId,
-          fromWard: r.fromWard,
-          toWard: r.toWard,
+          requestNo: r.id,
+          source: r.source,
+          target: r.target,
         }),
         context: {
           placement: r.id,
-          patientId: r.patientId,
-          fromWard: r.fromWard,
-          toWard: r.toWard,
+          source: r.source,
+          target: r.target,
+          status: r.status,
+          barrier: r.barrier,
         },
       }),
     );
@@ -33,8 +34,8 @@ export const bedManagerBoard: RoleBoard<BedManagerPayload> = {
     const barrierInsights: ContextInsight[] = data.payload.barriers.map(
       (b: PlacementBarrier) => ({
         id: b.recoId,
-        label: b.label,
-        context: { barrier: b.id, bedImpact: b.bedImpact },
+        label: b.name,
+        context: { barrier: b.id, name: b.name, bedImpact: b.bedImpact, owner: b.owner },
       }),
     );
 

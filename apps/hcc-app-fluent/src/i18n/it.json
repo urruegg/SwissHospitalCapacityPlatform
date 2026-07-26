@@ -184,7 +184,8 @@
     "dischargeExpedite": "Accelera la dimissione {{ward}}",
     "dischargeExpediteDetail": "Accelera la dimissione {{ward}} — {{blocker}}",
     "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
-    "placementMove": "Sposta {{patientId}} da {{fromWard}} a {{toWard}}",
+    "placementMove": "Collocazione {{requestNo}}: {{source}} → {{target}}",
+      "admissionEvent": "Guida dall'evento {{ward}} ({{patient}})",
     "placementBarrier": "Ostacolo: {{label}}",
     "orDefer": "Rinvia il caso {{specialty}}",
     "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",
@@ -194,7 +195,8 @@
     "title": "Copilot",
     "placeholder": "Fai una domanda all'agente…",
     "send": "Invia",
-    "noPhiNotice": "Le risposte non contengono dati dei pazienti (PHI)."
+    "noPhiNotice": "Le risposte non contengono dati dei pazienti (PHI).",
+    "followUps": "Suggerimenti successivi"
   },
   "nav": {
     "start": "Inizio",
@@ -309,19 +311,21 @@
   },
   "bmca": {
     "table": {
-      "hint": "Fai clic su una riga → azioni di collocazione",
-      "patient": "Paziente",
-      "priority": "Priorità",
-      "from": "Da",
-      "to": "A",
-      "wait": "Attesa (min)"
+      "title": "Elenco collocazioni in entrata — {{count}} richieste, anonimizzate",
+      "hint": "fai clic su una riga → playbook di collocazione Copilot",
+      "request": "Richiesta",
+      "source": "Origine",
+      "target": "Destinazione",
+      "status": "Stato",
+      "barrier": "Ostacolo"
     },
     "barriers": {
-      "hint": "Ostacoli al collocamento ordinati per impatto sui letti",
-      "rank": "Rango",
-      "label": "Ostacolo",
-      "bedImpact": "Letti",
-      "detail": "Dettaglio",
+      "title": "Ostacoli al collocamento — per impatto sui letti",
+      "hint": "fai clic su un ostacolo → playbook sistemico Copilot",
+      "summary": "{{placed}} collocati · {{waiting}} in attesa su {{barriers}} ostacoli · {{beds}} letti da assorbire",
+      "agingRisk": "RISCHIO ANZIANITÀ",
+      "bedOne": "{{n}} letto",
+      "bedMany": "{{n}} letti",
       "cta": "Sequenza automatica per impatto →"
     },
     "kpis": {
@@ -332,10 +336,8 @@
     },
     "stream": {
       "title": "Eventstream ammissioni / dimissioni",
-      "hint": "Ammissioni e dimissioni in tempo reale (simulato)"
-    },
-    "pbi": {
-      "title": "Dashboard capacità"
+      "hint": "Ammissioni e dimissioni in tempo reale (simulato)",
+      "copilotHint": "Clicca per la guida Copilot + dettagli"
     },
     "gap": {
       "label": "Divario di capacità del sito",

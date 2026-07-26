@@ -84,6 +84,12 @@ const recoById: Record<string, GroundedReco> = {
       {
         text: 'Confirm HCA reallocation: Surgery B → Medicine B (14:00-22:00)',
         impact: { label: '0.5 FTE', tone: 'status' },
+        evidence: {
+          summary: '0.5 FTE HCA cover moved Surgery B → Medicine B (14:00-22:00).',
+          detail: ['Role: Health-care assistant (HCA)', 'Surgery B absorbs reduced cover at scheduled census'],
+          people: ['M. Frei (HCA)', 'S. Huber (HCA, 0.5)'],
+          citations: ['hcp:CareTeam', 'gold.staff_schedule'],
+        },
       },
       {
         text: 'Notify Surgery B charge nurse and Medicine B coordinator',

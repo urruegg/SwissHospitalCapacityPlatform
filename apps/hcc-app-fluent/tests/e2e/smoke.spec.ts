@@ -23,15 +23,14 @@ test('demo.guest lands on the Curavias shell and reaches the Backstage roles wid
   await expect(page.getByRole('table')).toBeVisible();
 });
 
-test('BedManager board renders the parity surface (worklist + Power BI embed)', async ({ page }) => {
+test('BedManager board renders the parity surface (worklist)', async ({ page }) => {
   // Sprint 20 (parity) — the legacy whiteboard `data-card-type` cards were
   // replaced by the bmca board surface (BoardHeader + placement worklist +
-  // barriers + KPIs + eventstream + Power BI embed). Assert the parity surface.
+  // barriers + KPIs + eventstream). Assert the parity surface.
   // Sprint 29 M2 — the role-first-eligible default is now occupancy, so open the
   // bed-manager parity surface via its explicit route rather than the Main tab.
   await page.goto('/main/bed-manager');
   await expect(page.getByTestId('board-bed-manager')).toBeVisible();
-  await expect(page.getByTestId('pbi-embed')).toBeVisible();
   // Placement worklist renders as a real table (not the removed whiteboard Canvas).
   await expect(page.getByRole('table').first()).toBeVisible();
 });

@@ -1,9 +1,27 @@
 import { useTranslation } from 'react-i18next';
-import { Badge, Caption1, makeStyles, tokens } from '@fluentui/react-components';
-import type { PlacementRequest, PlacementPriority } from '../../../../data/roleboard/bed-manager-data';
+import {
+  Body2,
+  Caption1,
+  Text,
+  Tooltip,
+  makeStyles,
+  mergeClasses,
+  tokens,
+} from '@fluentui/react-components';
+import type { PlacementRequest, PlacementStatus } from '../../../../data/roleboard/bed-manager-data';
+import { RagBadge } from '../occupancy/RagBadge';
+import type { ChipTone } from '../../../../copilot-rail/reco';
 
 const useStyles = makeStyles({
-  wrap: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXS },
+  wrap: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalS,
+  },
+  title: { fontWeight: tokens.fontWeightSemibold },
   hint: { color: tokens.colorNeutralForeground3 },
   table: { width: '100%', borderCollapse: 'collapse' },
   th: {
@@ -14,13 +32,19 @@ const useStyles = makeStyles({
     fontWeight: tokens.fontWeightSemibold,
   },
   td: { padding: tokens.spacingVerticalXS, borderBottom: `1px solid ${tokens.colorNeutralStroke2}` },
+  req: { fontWeight: tokens.fontWeightSemibold },
+  reqTrigger: { borderBottom: `1px dotted ${tokens.colorNeutralStroke1}`, cursor: 'help' },
+  reqCard: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS, maxWidth: '260px' },
+  reqHead: { fontWeight: tokens.fontWeightSemibold },
+  muted: { color: tokens.colorNeutralForeground3 },
 });
 
-function priorityBadgeColor(p: PlacementPriority) {
-  if (p === 'HIGH') return 'danger' as const;
-  if (p === 'MED') return 'warning' as const;
-  return 'informative' as const;
-}
+/** STATUS → brand RAG tone: PLACED green (ok), WAITING amber (watch), BLOCKED red (over). */
+const STATUS_TONE: Record<PlacementStatus, ChipTone> = {
+  PLACED: 'ok',
+  WAITING: 'watch',
+  BLOCKED: 'over',
+};
 
 interface PlacementRequestsTableProps {
   placements: PlacementRequest[];
@@ -32,23 +56,26 @@ export function PlacementRequestsTable({ placements, onSelectRequest }: Placemen
   const { t } = useTranslation();
   return (
     <div className={s.wrap}>
-      <Caption1 className={s.hint}>{t('bmca.table.hint')}</Caption1>
+      <div className={s.header}>
+        <Text className={s.title}>{t('bmca.table.title', { count: placements.length })}</Text>
+        <Caption1 className={s.hint}>{t('bmca.table.hint')}</Caption1>
+      </div>
       <table className={s.table}>
         <thead>
           <tr>
-            <th className={s.th}>{t('bmca.table.patient')}</th>
-            <th className={s.th}>{t('bmca.table.priority')}</th>
-            <th className={s.th}>{t('bmca.table.from')}</th>
-            <th className={s.th}>{t('bmca.table.to')}</th>
-            <th className={s.th}>{t('bmca.table.wait')}</th>
+            <th className={s.th}>{t('bmca.table.request')}</th>
+            <th className={s.th}>{t('bmca.table.source')}</th>
+            <th className={s.th}>{t('bmca.table.target')}</th>
+            <th className={s.th}>{t('bmca.table.status')}</th>
+            <th className={s.th}>{t('bmca.table.barrier')}</th>
           </tr>
         </thead>
         <tbody>
           {placements.map((r) => {
             const rowLabel = t('insight.placementMove', {
-              patientId: r.patientId,
-              fromWard: r.fromWard,
-              toWard: r.toWard,
+              requestNo: r.id,
+              source: r.source,
+              target: r.target,
             });
             return (
               <tr
@@ -63,15 +90,27 @@ export function PlacementRequestsTable({ placements, onSelectRequest }: Placemen
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <td className={s.td}>{r.patientId}</td>
-                <td className={s.td}>
-                  <Badge appearance="tint" color={priorityBadgeColor(r.priority)}>
-                    {r.priority}
-                  </Badge>
+                <td className={mergeClasses(s.td, s.req)}>
+                  <Tooltip
+                    withArrow
+                    positioning="after"
+                    relationship="description"
+                    content={
+                      <div className={s.reqCard}>
+                        <Body2 className={s.reqHead}>{r.source} → {r.target}</Body2>
+                        <Caption1 className={s.muted}>{r.status}{r.barrier ? ` · ${r.barrier}` : ''}</Caption1>
+                      </div>
+                    }
+                  >
+                    <span className={s.reqTrigger}>{r.id}</span>
+                  </Tooltip>
                 </td>
-                <td className={s.td}>{r.fromWard}</td>
-                <td className={s.td}>{r.toWard}</td>
-                <td className={s.td}>{r.waitMin} min</td>
+                <td className={s.td}>{r.source}</td>
+                <td className={s.td}>{r.target}</td>
+                <td className={s.td}>
+                  <RagBadge tone={STATUS_TONE[r.status]}>{r.status}</RagBadge>
+                </td>
+                <td className={s.td}>{r.barrier ?? '—'}</td>
               </tr>
             );
           })}
