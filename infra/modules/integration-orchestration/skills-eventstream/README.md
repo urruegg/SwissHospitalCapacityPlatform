@@ -92,6 +92,23 @@ az deployment group show `
   -ConnectionId <fabric-managed-connection-guid>
 ```
 
+### CustomEndpoint publish (simulator — the live SIT lane, #379)
+
+```powershell
+# The SIT Eventstream CustomEndpoint exposes an Event-Hub-compatible ingestion
+# endpoint reached with a SAS connection string. Retrieve it once via Fabric REST
+# (GET .../eventstreams/{id}/topology or the portal "Get connection" action),
+# store it in Key Vault, and inject it as SKILLS_EVENTS_CONNECTION_STRING -- never
+# commit it. The Container Apps job (WS-A4 A2) reads it from Key Vault as a secret.
+cd data-platform/scripts/skills-events
+$env:PYTHONPATH="."
+python publish_skill_events.py --dry-run   # offline validation, sends nothing
+$env:SKILLS_EVENTS_CONNECTION_STRING = "<from Key Vault>"
+python publish_skill_events.py             # publishes via the CustomEndpoint SAS
+# or explicitly:
+python publish_skill_events.py --connection-string "Endpoint=sb://...;SharedAccessKey=...;EntityPath=..."
+```
+
 ### EventHub-source publish (simulator, until the live connector lands)
 
 ```powershell
