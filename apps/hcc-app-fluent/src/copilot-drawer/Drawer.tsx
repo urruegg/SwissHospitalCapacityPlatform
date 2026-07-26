@@ -12,7 +12,7 @@ import {
 } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { ConversationView } from './ConversationView';
-import { useAgentInvoker } from './AgentInvoker';
+import { useConversation } from './useConversation';
 
 const useStyles = makeStyles({
   inputRow: {
@@ -33,7 +33,7 @@ interface CopilotDrawerProps {
 export function CopilotDrawer({ agent, open, onOpenChange }: CopilotDrawerProps) {
   const styles = useStyles();
   const { t } = useTranslation();
-  const { turns, busy, send } = useAgentInvoker(agent);
+  const { turns, busy, send } = useConversation(agent);
   const [draft, setDraft] = useState('');
 
   const submit = () => {

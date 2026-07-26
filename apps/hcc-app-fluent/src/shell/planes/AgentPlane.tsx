@@ -15,7 +15,7 @@ import {
 } from '@fluentui/react-components';
 import { BotRegular, DismissRegular } from '@fluentui/react-icons';
 import { ConversationView } from '../../copilot-drawer/ConversationView';
-import { useAgentInvoker } from '../../copilot-drawer/AgentInvoker';
+import { useConversation } from '../../copilot-drawer/useConversation';
 import { useCopilotRail } from '../../copilot-rail/rail-context';
 import { RecoPanel } from '../../copilot-rail/RecoPanel';
 import type { RecoCta } from '../../copilot-rail/reco';
@@ -91,7 +91,7 @@ export function AgentPlane() {
   const { capabilities } = useRoleLens();
   const agent = agentForRoute(loc.pathname);
   const board = boardForRoute(loc.pathname);
-  const { turns, busy, send } = useAgentInvoker(agent);
+  const { turns, busy, send } = useConversation(agent);
   const { open, setOpen, activeReco, defaultReco, backToDefault, resetReco } = useCopilotRail();
   const [draft, setDraft] = useState('');
 
