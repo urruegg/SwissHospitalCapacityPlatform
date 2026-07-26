@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | n/a (new document) |
+| **Previous Version** | 1.0.0 (catalogue + loop plan) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -49,6 +49,9 @@ so the catalogue is a formalisation, not an invention.
 | A10 | **Citation footer** | Grounding evidence — `hcp:*` / `gold.*` source pills (no-fabrication rule). | (future) open source | `citations[]` | source pills (`Caption1`, `data-testid="citations"`) |
 | A11 | **Refusal / guardrail** | Why the agent will not act (HITL gate blocked / policy). | none (blocked) | `refused` | `Badge color="danger"` + reason |
 | A12 | **Follow-up prompts** (chips) | Suggested next asks. | click → send prompt | board `askAbout` | `InteractionTag` |
+| A13 | **Evidence popover** (on impact badge) | Hover/focus an impact badge → why-summary + context/impact detail + citations. Responsible UI: understand before acting. | hover/focus → popover | `RecoLever.evidence` | `Popover` + `Badge` |
+| A14 | **People popover** (staffing) | Who is affected/involved — roster names + role + shift. Specialisation of A13. | hover/focus → popover | `RecoLever.evidence.people` | `Popover` + `Badge[]` |
+| A15 | **External-action trigger** (Work IQ) | Action *outside* the platform with clear context (Teams call, email draft, downstream EPIC/KIS/SAP invoke-draft). Design-only for now. | click → Work IQ action (HITL-gated, draft first) | `RecoCta` + Work IQ | `Button` + Work IQ |
 
 ### Message composition grammar (fixed order for scan consistency)
 
@@ -133,7 +136,33 @@ flowchart LR
 | T3 | "Verlege 2 Betten in die Notaufnahme" (side-effecting) | A1 · A3 · A7(approval) or A11 | CTA gated by `approved-to-apply`, or refusal propagated verbatim |
 | T4 | An ask the agent must refuse | A1 · A11 · A10 | refusal verbatim; no chat-model fallback |
 
-## 6. Definition of done
+## 6. Step-2 additions (2026-07-26)
+
+### Evidence popover (A13 / A14) — delivered
+
+Hovering or focusing a lever's impact badge (e.g. `-6 Betten`, `+2 FTE`, `0.5 FTE`)
+opens a popover with the grounding behind the number: a why-summary, context /
+impact detail, **affected people** (the staffing roster, A14), and `hcp:*` /
+`gold.*` citations. Responsible UI — the user decides and approves on a clear
+understanding of context and who is involved. Delivered in `RecoPanel` via
+`RecoLever.evidence`; the trigger is keyboard-reachable (focus opens it too).
+Populated on occupancy (evidence) and staffing (people) levers, chat + board.
+
+### External-action triggers via Work IQ (A15) — design only
+
+When a lever / CTA implies an action **outside** the platform with a clear action
+context, the CTA routes to a **Work IQ** trigger, HITL-gated (`approved-to-apply`)
+and **draft-first** (nothing is sent/executed until the human reviews the draft):
+
+- **Teams call** — initiate a call to the responsible person / role (e.g. ICU charge nurse).
+- **Email draft** — draft an email to the affected team (recipients from the A14 roster people).
+- **Downstream service** — invoke an action *draft* in EPIC / KIS / SAP via a custom Work IQ service.
+
+UX contract: `action context -> Work IQ trigger -> HITL approve -> draft -> send`.
+The CTA shows the destination + a "draft only" affordance; execution is gated.
+Implementation is deferred to a dedicated sprint — this entry fixes the UX pattern.
+
+## 7. Definition of done
 
 - [ ] Catalogue A1–A12 rendered by a single shared `AgentMessage`/`RecoPanel` renderer (Step 1).
 - [ ] `/brand` "Chat response artefacts" section renders every block; axe-clean (Step 2).
