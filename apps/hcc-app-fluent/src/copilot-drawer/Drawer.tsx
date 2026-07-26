@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ConversationView } from './ConversationView';
 import { useConversation } from './useConversation';
+import { useRoleLens } from '../context/role-context';
 
 const useStyles = makeStyles({
   inputRow: {
@@ -33,7 +34,8 @@ interface CopilotDrawerProps {
 export function CopilotDrawer({ agent, open, onOpenChange }: CopilotDrawerProps) {
   const styles = useStyles();
   const { t } = useTranslation();
-  const { turns, busy, send } = useConversation(agent);
+  const { userOid } = useRoleLens();
+  const { turns, busy, send } = useConversation(agent, userOid);
   const [draft, setDraft] = useState('');
 
   const submit = () => {
