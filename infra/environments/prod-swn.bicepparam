@@ -125,7 +125,12 @@ param manageCuraviasDnsZone = false
 // Two-step custom-domain binding: keep curaviasWebEnableCustomDomains=false on
 // the first apply (creates stapp-ihzhhpf-prod + stmediaihzhhpfprod), add the DNS
 // records + delegation, then flip true so the SWA validates curavias.ch + www.
-param enableCuraviasWebModule = true
+// PROD-health hotfix (2026-07-26): disabled. The public marketing website is
+// being retired (#268 — deliver as in-repo HTML, do not publish public site).
+// The media storage account fails deployment under the PROD PublicAccessNotPermitted
+// policy, blocking every PROD infra deploy. The retirement session removes the
+// module entirely; this toggle keeps PROD green in the interim.
+param enableCuraviasWebModule = false
 param curaviasWebMediaPublisherPrincipalId = ''
 param curaviasWebEnableCustomDomains = false
 

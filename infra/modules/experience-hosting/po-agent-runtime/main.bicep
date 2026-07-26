@@ -76,13 +76,21 @@ param corpusPrefix string = 'curavias-product-corpus'
 param openAiLocation string = location
 
 @description('Chat model deployment name the orchestrator calls.')
-param openAiDeploymentName string = 'gpt-4o'
+param openAiDeploymentName string = 'gpt-5'
 
 @description('Chat model name.')
-param openAiModelName string = 'gpt-4o'
+param openAiModelName string = 'gpt-5'
 
-@description('Chat model version.')
-param openAiModelVersion string = '2024-08-06'
+@description('Chat model version. Pinned to gpt-5 2025-08-07 (GenerallyAvailable), matching the existing agent fleet. The regional `Standard` tier is retiring in switzerlandnorth — gpt-4o/gpt-4.1 there are all `Deprecating` and gpt-4o 2024-11-20 already blocks new deployments — so we run the GA GPT-5 family. Verified via `az cognitiveservices model list -l switzerlandnorth`.')
+param openAiModelVersion string = '2025-08-07'
+
+@description('Deployment SKU. `GlobalStandard` per the recorded platform decision D7-a (sprint-19 SIT/PROD parity plan) + ADR-0037: fleet agents (gpt-5/-mini/o3) run GlobalStandard cross-geo in swn, accepted under the no-PHI posture; those models do not offer regional `Standard` or `DataZoneStandard`. Quota OpenAI.GlobalStandard.gpt-5 = 1000K TPM. A future PHI onboarding can move to `DataZoneStandard` (EU) on gpt-5.4/5.5/5.6.')
+@allowed([
+  'Standard'
+  'GlobalStandard'
+  'DataZoneStandard'
+])
+param openAiSkuName string = 'GlobalStandard'
 
 @description('Provisioned throughput (TPM in thousands) for the chat deployment.')
 @minValue(1)
@@ -169,7 +177,7 @@ resource chatDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-1
   parent: openai
   name: openAiDeploymentName
   sku: {
-    name: 'Standard'
+    name: openAiSkuName
     capacity: openAiCapacity
   }
   properties: {
