@@ -63,7 +63,7 @@ describe('BedManagerBoard surface (parity)', () => {
     expect(screen.getAllByText(/simulated/i)[0]).toBeInTheDocument();
   });
 
-  it('renders placement requests with patient IDs and priority badges', async () => {
+  it('renders placement requests with RQ ids and status badges', async () => {
     render(
       <Harness>
         <BedManagerBoard />
@@ -72,12 +72,12 @@ describe('BedManagerBoard surface (parity)', () => {
 
     for (const p of BEDMANAGER_PINNED.placements) {
       await waitFor(() =>
-        expect(screen.getByText(p.patientId)).toBeInTheDocument(),
+        expect(screen.getByText(p.id)).toBeInTheDocument(),
       );
     }
-    expect(screen.getAllByText('HIGH')[0]).toBeInTheDocument();
-    expect(screen.getByText('MED')).toBeInTheDocument();
-    expect(screen.getByText('LOW')).toBeInTheDocument();
+    expect(screen.getAllByText('PLACED')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('WAITING')[0]).toBeInTheDocument();
+    expect(screen.getByText('BLOCKED')).toBeInTheDocument();
   });
 
   it('renders placement barriers sorted by bedImpact', async () => {
@@ -104,21 +104,6 @@ describe('BedManagerBoard surface (parity)', () => {
     expect(screen.getAllByText('discharge')[0]).toBeInTheDocument();
   });
 
-  it('renders the Power BI embed card (capacity-dashboard)', async () => {
-    render(
-      <Harness>
-        <BedManagerBoard />
-      </Harness>,
-    );
-
-    await waitFor(() =>
-      expect(screen.getByText('capacity-dashboard')).toBeInTheDocument(),
-    );
-    expect(
-      screen.getByText(/Power BI Embed.*Direct Lake.*RLS/i),
-    ).toBeInTheDocument();
-  });
-
   it('has NO duplicate "Bettenmanagement" Title2 heading and no whiteboard Canvas', async () => {
     const { container } = render(
       <Harness>
@@ -143,21 +128,22 @@ describe('BedManagerBoard surface (parity)', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: /Move PT-4001 from Surgery A to ICU/i }),
+        screen.getByRole('button', { name: 'Place RQ-2201: ED boarder → Medicine A' }),
       ).toBeInTheDocument(),
     );
     act(() =>
-      screen.getByRole('button', { name: /Move PT-4001 from Surgery A to ICU/i }).click(),
+      screen.getByRole('button', { name: 'Place RQ-2201: ED boarder → Medicine A' }).click(),
     );
 
     await waitFor(() =>
       expect(screen.getByTestId('rail-open').textContent).toBe('true'),
     );
     expect(invokeInsight).toHaveBeenCalledWith('bmca-agent', {
-      placement: 'place-pt-4001',
-      patientId: 'PT-4001',
-      fromWard: 'Surgery A',
-      toWard: 'ICU',
+      placement: 'RQ-2201',
+      source: 'ED boarder',
+      target: 'Medicine A',
+      status: 'PLACED',
+      barrier: null,
     });
   });
 });

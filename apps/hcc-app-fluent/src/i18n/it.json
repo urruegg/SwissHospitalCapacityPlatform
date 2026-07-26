@@ -184,7 +184,7 @@
     "dischargeExpedite": "Accelera la dimissione {{ward}}",
     "dischargeExpediteDetail": "Accelera la dimissione {{ward}} — {{blocker}}",
     "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
-    "placementMove": "Sposta {{patientId}} da {{fromWard}} a {{toWard}}",
+    "placementMove": "Collocazione {{requestNo}}: {{source}} → {{target}}",
     "placementBarrier": "Ostacolo: {{label}}",
     "orDefer": "Rinvia il caso {{specialty}}",
     "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",
@@ -310,12 +310,13 @@
   },
   "bmca": {
     "table": {
-      "hint": "Fai clic su una riga → azioni di collocazione",
-      "patient": "Paziente",
-      "priority": "Priorità",
-      "from": "Da",
-      "to": "A",
-      "wait": "Attesa (min)"
+      "title": "Elenco collocazioni in entrata — {{count}} richieste, anonimizzate",
+      "hint": "fai clic su una riga → playbook di collocazione Copilot",
+      "request": "Richiesta",
+      "source": "Origine",
+      "target": "Destinazione",
+      "status": "Stato",
+      "barrier": "Ostacolo"
     },
     "barriers": {
       "hint": "Ostacoli al collocamento ordinati per impatto sui letti",
@@ -334,9 +335,6 @@
     "stream": {
       "title": "Eventstream ammissioni / dimissioni",
       "hint": "Ammissioni e dimissioni in tempo reale (simulato)"
-    },
-    "pbi": {
-      "title": "Dashboard capacità"
     },
     "gap": {
       "label": "Divario di capacità del sito",

@@ -184,7 +184,7 @@
     "dischargeExpedite": "Expedite {{ward}} discharge",
     "dischargeExpediteDetail": "Expedite {{ward}} discharge — {{blocker}}",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
-    "placementMove": "Move {{patientId}} from {{fromWard}} to {{toWard}}",
+    "placementMove": "Place {{requestNo}}: {{source}} → {{target}}",
     "placementBarrier": "Barrier: {{label}}",
     "orDefer": "Defer {{specialty}} case",
     "staffShift": "Shift {{role}} {{fromUnit}} -> {{toUnit}}",
@@ -310,12 +310,13 @@
   },
   "bmca": {
     "table": {
-      "hint": "Click a row → placement actions",
-      "patient": "Patient",
-      "priority": "Priority",
-      "from": "From",
-      "to": "To",
-      "wait": "Wait (min)"
+      "title": "Inbound placement worklist — {{count}} requests, anonymised",
+      "hint": "click a row → Copilot placement playbook",
+      "request": "Request",
+      "source": "Source",
+      "target": "Target",
+      "status": "Status",
+      "barrier": "Barrier"
     },
     "barriers": {
       "hint": "Placement barriers sorted by bed impact",
@@ -334,9 +335,6 @@
     "stream": {
       "title": "Admissions / discharge eventstream",
       "hint": "Live admissions and discharges (simulated)"
-    },
-    "pbi": {
-      "title": "Capacity dashboard"
     },
     "gap": {
       "label": "Site capacity gap",

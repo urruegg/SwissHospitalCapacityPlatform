@@ -11,7 +11,7 @@ beforeAll(async () => {
 });
 
 describe('PlacementRequestsTable', () => {
-  it('renders all placement requests with patient IDs and wards', () => {
+  it('renders all placement requests with RQ ids, source and target', () => {
     render(
       <FluentProvider theme={webLightTheme}>
         <PlacementRequestsTable
@@ -21,13 +21,13 @@ describe('PlacementRequestsTable', () => {
       </FluentProvider>,
     );
     for (const p of BEDMANAGER_PINNED.placements) {
-      expect(screen.getByText(p.patientId)).toBeInTheDocument();
+      expect(screen.getByText(p.id)).toBeInTheDocument();
     }
-    expect(screen.getAllByText('Surgery A')[0]).toBeInTheDocument();
-    expect(screen.getByText('ICU')).toBeInTheDocument();
+    expect(screen.getAllByText('ED boarder')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Medicine A')[0]).toBeInTheDocument();
   });
 
-  it('renders HIGH priority badge in danger color', () => {
+  it('renders PLACED, WAITING and BLOCKED status badges', () => {
     render(
       <FluentProvider theme={webLightTheme}>
         <PlacementRequestsTable
@@ -36,20 +36,9 @@ describe('PlacementRequestsTable', () => {
         />
       </FluentProvider>,
     );
-    expect(screen.getAllByText('HIGH')[0]).toBeInTheDocument();
-  });
-
-  it('renders MED and LOW priority badges', () => {
-    render(
-      <FluentProvider theme={webLightTheme}>
-        <PlacementRequestsTable
-          placements={BEDMANAGER_PINNED.placements}
-          onSelectRequest={vi.fn()}
-        />
-      </FluentProvider>,
-    );
-    expect(screen.getByText('MED')).toBeInTheDocument();
-    expect(screen.getByText('LOW')).toBeInTheDocument();
+    expect(screen.getAllByText('PLACED')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('WAITING')[0]).toBeInTheDocument();
+    expect(screen.getByText('BLOCKED')).toBeInTheDocument();
   });
 
   it('fires onSelectRequest with the correct request when a row is clicked', () => {
@@ -66,10 +55,7 @@ describe('PlacementRequestsTable', () => {
     act(() =>
       screen
         .getByRole('button', {
-          name: new RegExp(
-            `Move ${firstReq.patientId} from ${firstReq.fromWard} to ${firstReq.toWard}`,
-            'i',
-          ),
+          name: `Place ${firstReq.id}: ${firstReq.source} → ${firstReq.target}`,
         })
         .click(),
     );
@@ -88,10 +74,7 @@ describe('PlacementRequestsTable', () => {
     );
     const firstReq = BEDMANAGER_PINNED.placements[0];
     const row = screen.getByRole('button', {
-      name: new RegExp(
-        `Move ${firstReq.patientId} from ${firstReq.fromWard} to ${firstReq.toWard}`,
-        'i',
-      ),
+      name: `Place ${firstReq.id}: ${firstReq.source} → ${firstReq.target}`,
     });
     const notPrevented = fireEvent.keyDown(row, { key: ' ' });
     expect(notPrevented).toBe(false);
@@ -100,13 +83,12 @@ describe('PlacementRequestsTable', () => {
 
   it('renders a BLOCKED placement request (refused reco) without crashing', () => {
     const blockedReq: PlacementRequest = {
-      id: 'test-blocked',
-      patientId: 'PT-9999',
-      fromWard: 'Test Ward',
-      toWard: 'ICU',
-      priority: 'HIGH',
-      waitMin: 90,
-      recoId: 'move-pt-4004-refused',
+      id: 'RQ-9999',
+      source: 'ED boarder',
+      target: 'ICU',
+      status: 'BLOCKED',
+      barrier: 'Ward at staff ratio',
+      recoId: 'rq-9999',
     };
     render(
       <FluentProvider theme={webLightTheme}>
@@ -116,6 +98,7 @@ describe('PlacementRequestsTable', () => {
         />
       </FluentProvider>,
     );
-    expect(screen.getByText('PT-9999')).toBeInTheDocument();
+    expect(screen.getByText('RQ-9999')).toBeInTheDocument();
+    expect(screen.getByText('BLOCKED')).toBeInTheDocument();
   });
 });

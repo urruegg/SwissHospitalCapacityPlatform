@@ -184,7 +184,7 @@
     "dischargeExpedite": "Entlassung {{ward}} beschleunigen",
     "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
-    "placementMove": "{{patientId}} von {{fromWard}} nach {{toWard}} verlegen",
+    "placementMove": "Platzierung {{requestNo}}: {{source}} → {{target}}",
     "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
@@ -310,12 +310,13 @@
   },
   "bmca": {
     "table": {
-      "hint": "Zeile anklicken → Platzierungsaktionen",
-      "patient": "Patient",
-      "priority": "Priorität",
-      "from": "Von",
-      "to": "Nach",
-      "wait": "Wartezeit (min)"
+      "title": "Eingehende Platzierungsliste — {{count}} Anfragen, anonymisiert",
+      "hint": "Zeile anklicken → Copilot-Platzierungs-Playbook",
+      "request": "Anfrage",
+      "source": "Quelle",
+      "target": "Ziel",
+      "status": "Status",
+      "barrier": "Hindernis"
     },
     "barriers": {
       "hint": "Platzierungshindernisse nach Bettauswirkung sortiert",
@@ -334,9 +335,6 @@
     "stream": {
       "title": "Zugänge / Einzug-Eventstream",
       "hint": "Live-Zugänge und -Austritte (simuliert)"
-    },
-    "pbi": {
-      "title": "Kapazitäts-Dashboard"
     },
     "gap": {
       "label": "Standortkapazitätslücke",

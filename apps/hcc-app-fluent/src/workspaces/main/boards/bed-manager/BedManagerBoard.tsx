@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Body1,
-  Card,
-  CardHeader,
-  Caption1,
   Text,
   makeStyles,
+  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
 import { space, radii, elevation } from '../../../../theme/design-system';
@@ -41,7 +38,26 @@ const useStyles = makeStyles({
     boxShadow: elevation.card,
     padding: space.l,
   },
-  pbiCard: { padding: tokens.spacingHorizontalM },
+  // Source (live admissions) -> insights (placement worklist) on one level.
+  sourceInsightRow: {
+    display: 'flex',
+    gap: space.l,
+    alignItems: 'stretch',
+    flexWrap: 'wrap',
+  },
+  sourcePane: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: '300px',
+    minWidth: '260px',
+    overflowY: 'auto',
+  },
+  insightPane: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: '420px',
+    minWidth: 0,
+  },
 });
 
 /** Sprint 20 (parity) — BedManager (bmca) surface: BoardHeader + placement worklist + barriers + KPIs + eventstream + Power BI embed. */
@@ -93,15 +109,16 @@ export function BedManagerBoard() {
     route({
       id: r.recoId,
       label: t('insight.placementMove', {
-        patientId: r.patientId,
-        fromWard: r.fromWard,
-        toWard: r.toWard,
+        requestNo: r.id,
+        source: r.source,
+        target: r.target,
       }),
       context: {
         placement: r.id,
-        patientId: r.patientId,
-        fromWard: r.fromWard,
-        toWard: r.toWard,
+        source: r.source,
+        target: r.target,
+        status: r.status,
+        barrier: r.barrier,
       },
     });
   };
@@ -130,11 +147,17 @@ export function BedManagerBoard() {
         lens="Bed Management"
       />
 
-      <div className={s.panel}>
-        <PlacementRequestsTable
-          placements={payload.placements}
-          onSelectRequest={onSelectRequest}
-        />
+      {/* Source (live admissions) -> insights (placement worklist) on one level. */}
+      <div className={s.sourceInsightRow}>
+        <div className={mergeClasses(s.panel, s.sourcePane)}>
+          <AdmissionsEventstream admissions={payload.admissions} />
+        </div>
+        <div className={mergeClasses(s.panel, s.insightPane)}>
+          <PlacementRequestsTable
+            placements={payload.placements}
+            onSelectRequest={onSelectRequest}
+          />
+        </div>
       </div>
 
       <div className={s.panel}>
@@ -146,19 +169,6 @@ export function BedManagerBoard() {
       </div>
 
       <BedStateKpis payload={payload} />
-
-      <div className={s.panel}>
-        <AdmissionsEventstream admissions={payload.admissions} />
-      </div>
-
-      {/* Power BI embed — preserved from Sprint 13 (capacity-dashboard, Direct Lake, RLS by hospital) */}
-      <Card className={s.pbiCard} data-testid="pbi-embed">
-        <CardHeader
-          header={<Body1><b>{t('bmca.pbi.title')}</b></Body1>}
-          description={<Caption1>{payload.powerBiEmbed.reportName}</Caption1>}
-        />
-        <Body1>{payload.powerBiEmbed.embedPlaceholder}</Body1>
-      </Card>
     </section>
   );
 }

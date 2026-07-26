@@ -17,15 +17,16 @@ export const bedManagerBoard: RoleBoard<BedManagerPayload> = {
       (r: PlacementRequest) => ({
         id: r.recoId,
         label: i18n.t('insight.placementMove', {
-          patientId: r.patientId,
-          fromWard: r.fromWard,
-          toWard: r.toWard,
+          requestNo: r.id,
+          source: r.source,
+          target: r.target,
         }),
         context: {
           placement: r.id,
-          patientId: r.patientId,
-          fromWard: r.fromWard,
-          toWard: r.toWard,
+          source: r.source,
+          target: r.target,
+          status: r.status,
+          barrier: r.barrier,
         },
       }),
     );

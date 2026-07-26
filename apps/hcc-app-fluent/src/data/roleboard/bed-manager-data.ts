@@ -8,17 +8,16 @@
  */
 import type { GroundedReco } from '../../copilot-rail/reco';
 
-export type PlacementPriority = 'HIGH' | 'MED' | 'LOW';
+export type PlacementStatus = 'PLACED' | 'WAITING' | 'BLOCKED';
 export type SlaRisk = 'HIGH' | 'MED' | 'LOW' | 'OK';
 
 export interface PlacementRequest {
-  id: string;
-  patientId: string;       // PHI-safe synthetic: PT-xxxx
-  fromWard: string;
-  toWard: string;
-  priority: PlacementPriority;
-  waitMin: number;          // minutes in queue
-  recoId: string;
+  id: string;              // request no + React key, e.g. 'RQ-2201'
+  source: string;          // demand type (e.g. 'ED boarder', 'Direct admit')
+  target: string;          // destination service/ward (e.g. 'Medicine A')
+  status: PlacementStatus; // PLACED | WAITING | BLOCKED
+  barrier: string | null;  // blocking reason; null when PLACED
+  recoId: string;          // Copilot placement-playbook reco key
 }
 
 export interface PlacementBarrier {
@@ -48,7 +47,6 @@ export interface BedManagerPayload {
   targetFree: number;             // minimum free-bed target
   slaRisk: SlaRisk;               // SLA risk level
   admissions: { id: string; ts: string; message: string; kind: 'admit' | 'discharge' }[];
-  powerBiEmbed: { reportName: string; embedPlaceholder: string };
   recoById: Record<string, GroundedReco>;
   defaultReco: GroundedReco;
 }
@@ -291,42 +289,14 @@ export const BEDMANAGER_PINNED: BedManagerPayload = {
     { id: 'ortho-to-med-b', fromWard: 'Orthopedics', toWard: 'Medicine B', beds: 1 },
   ],
   placements: [
-    {
-      id: 'place-pt-4001',
-      patientId: 'PT-4001',
-      fromWard: 'Surgery A',
-      toWard: 'ICU',
-      priority: 'HIGH',
-      waitMin: 45,
-      recoId: 'move-pt-4001',
-    },
-    {
-      id: 'place-pt-4002',
-      patientId: 'PT-4002',
-      fromWard: 'Medicine A',
-      toWard: 'Cardiology',
-      priority: 'MED',
-      waitMin: 30,
-      recoId: 'move-pt-4002',
-    },
-    {
-      id: 'place-pt-4003',
-      patientId: 'PT-4003',
-      fromWard: 'Medicine B',
-      toWard: 'Medicine A',
-      priority: 'HIGH',
-      waitMin: 60,
-      recoId: 'move-pt-4003-hitl',
-    },
-    {
-      id: 'place-pt-4004',
-      patientId: 'PT-4004',
-      fromWard: 'Orthopedics',
-      toWard: 'Medicine B',
-      priority: 'LOW',
-      waitMin: 15,
-      recoId: 'move-pt-4004-refused',
-    },
+    { id: 'RQ-2201', source: 'ED boarder', target: 'Medicine A', status: 'PLACED', barrier: null, recoId: 'rq-2201' },
+    { id: 'RQ-2205', source: 'Direct admit', target: 'Cardiology', status: 'PLACED', barrier: null, recoId: 'rq-2205' },
+    { id: 'RQ-2202', source: 'ED boarder', target: 'Medicine A', status: 'WAITING', barrier: 'Bed turnaround', recoId: 'rq-2202' },
+    { id: 'RQ-2207', source: 'ED boarder', target: 'Medicine A', status: 'WAITING', barrier: 'Bed turnaround', recoId: 'rq-2207' },
+    { id: 'RQ-2204', source: 'ED boarder', target: 'Medicine A', status: 'WAITING', barrier: 'Needs monitored', recoId: 'rq-2204' },
+    { id: 'RQ-2206', source: 'ED boarder', target: 'Medicine A', status: 'WAITING', barrier: 'Single-room / IPC', recoId: 'rq-2206' },
+    { id: 'RQ-2203', source: 'Transfer-in', target: 'Medicine A', status: 'WAITING', barrier: 'Accept-note pending', recoId: 'rq-2203' },
+    { id: 'RQ-2208', source: 'Elective post-op', target: 'Medicine A', status: 'BLOCKED', barrier: 'Ward at staff ratio', recoId: 'rq-2208' },
   ],
   barriers: [
     {
@@ -361,10 +331,6 @@ export const BEDMANAGER_PINNED: BedManagerPayload = {
     { id: 'adm-03', ts: '11:14', message: 'Zugang Station B — PT-4006', kind: 'admit' },
     { id: 'adm-04', ts: '11:21', message: 'Austritt Station A — PT-1009', kind: 'discharge' },
   ],
-  powerBiEmbed: {
-    reportName: 'capacity-dashboard',
-    embedPlaceholder: 'Power BI Embed (Direct Lake, RLS by hospital) — mock',
-  },
   recoById,
   defaultReco,
 };
