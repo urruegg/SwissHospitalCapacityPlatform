@@ -1,4 +1,4 @@
-# ADR-0021 — Whiteboard base for the operational whiteboard (React Flow vs tldraw vs custom)
+# ADR-0051 — Whiteboard base for the operational whiteboard (React Flow vs tldraw vs custom)
 
 | Field | Value |
 | ----- | ----- |
@@ -7,6 +7,9 @@
 | **Deciders** | @urruegg |
 | **Superseded by** | — |
 
+> **Renumbered from ADR-0021 to ADR-0051 on 2026-07-26** (number-collision
+> resolution, #378; see [ADR-0041](0041-adr-number-collision-resolution.md)).
+>
 > Sprint 13 T3 kickoff mini-ADR. Records the whiteboard-base choice for the
 > BedManager reference operational whiteboard (design spec
 > [`2026-07-09-sprint-13-app-design.md`](../superpowers/specs/2026-07-09-sprint-13-app-design.md) §5.2)
