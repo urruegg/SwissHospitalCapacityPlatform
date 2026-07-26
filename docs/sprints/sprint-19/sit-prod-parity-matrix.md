@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (evidence-based matrix; 2-of-3 flagged gaps reclassified PROD-exceeds-SIT) |
+| **Previous Version** | 1.2.0 (evidence-based matrix; 2-of-3 flagged gaps reclassified PROD-exceeds-SIT) |
 
 ## 1. Summary
 
@@ -26,6 +26,23 @@ non-parity item is the Fabric IQ ontology, excluded from GA parity per ADR
 
 **Verdict tally:** ✅ **Parity** 10 · ⚠️ **Deliberate asymmetry** 5 · 🟥 **Gap** 0 ·
 **N-A** 1.
+
+> **Static parity harness (2026-07-26, #255):** module-selection parity between
+> `infra/environments/sit.bicepparam` and `infra/environments/prod-swn.bicepparam`
+> is now machine-checked offline by
+> [`infra/tests/test_sit_prod_parity.py`](../../../infra/tests/test_sit_prod_parity.py)
+> (wired into the `bicep-build` job of `ci-infra-validate.yml`). It asserts
+> effective `enable*Module` parity — resolving undeclared flags to the
+> `infra/main.bicep` default — against an ADR-sourced deliberate-asymmetry
+> allow-list, so any new SIT↔PROD module drift fails CI until it is fixed or
+> documented. The four current allow-listed asymmetries are: lean-PROD
+> `enableExperienceHostingModule` + `enableApiRuntimeModule` off (ADR-0037,
+> Level 5); PROD-only `enableSignalRunnerModule` on (ADR-0039 hardening,
+> Level 3); and SIT-only `enableDecisionApplyJobModule` on (Sprint 26 WS-C
+> #335). The deliberate `skillsEventstreamSourceMode` transport split
+> (SIT `CustomEndpoint` / PROD `EventHub`, ADR-0043) is asserted separately.
+> This complements the live `deployed-parity-check` job (resource-types,
+> `workflow_dispatch`).
 
 ## 2. Facts (F1–F4)
 
