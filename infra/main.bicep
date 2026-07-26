@@ -146,6 +146,9 @@ param enableSignalRunnerModule bool = false
 @description('Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md.')
 param enableDecisionApplyJobModule bool = false
 
+@description('Container image for the decision-tier apply Job only. Empty = inherit agentHostImage. Set this (not agentHostImage) to give the Job the decision-CLI-enabled image without redeploying the running agent-host Container App.')
+param decisionApplyJobImage string = ''
+
 @description('Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped.')
 param eventHubsSimulatorMiPrincipalId string = ''
 
@@ -697,7 +700,7 @@ module decisionApplyJob './modules/decision-apply-job/main.bicep' = if (enableDe
     nameSuffix: resourceSuffix
     tags: tags
     managedEnvironmentId: agentHost!.outputs.managedEnvironmentId
-    containerImage: agentHostImage
+    containerImage: empty(decisionApplyJobImage) ? agentHostImage : decisionApplyJobImage
     cosmosEndpoint: csaCosmos!.outputs.documentEndpoint
     cosmosDatabase: csaCosmos!.outputs.databaseName
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
