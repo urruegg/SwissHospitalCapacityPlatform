@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.9.0 |
+| **Version** | 1.10.0 |
 | **Date** | 2026-07-25 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed** (DC-SKILL-EVENT-v1 + seeder + Bronze/Silver/Gold + 23 unit tests) **and LIVE-WIRED in SIT** (Eventstream `es-ihzhhpf-skills-events` Running, CustomEndpoint source → `bronze_skills_events`, `approved-to-apply` #374); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), Container Apps publisher image, + e2e SIT/PROD parity test** |
-| **Previous Version** | 1.8.0 (skills-events lane live-wired in SIT) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed** (DC-SKILL-EVENT-v1 + seeder + Bronze/Silver/Gold + 28 unit tests) **and LIVE-WIRED in SIT** (Eventstream `es-ihzhhpf-skills-events` Running, CustomEndpoint source → `bronze_skills_events`, `approved-to-apply` #374); **EventHub flip un-parked + IMPLEMENTED for PROD swn** (ADR-0043; dedicated per-domain hub + simulator + post-deploy EH branch — live apply gated by `approved-to-apply`); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), Container Apps publisher image, + e2e SIT/PROD parity test** |
+| **Previous Version** | 1.9.0 (EventHub flip un-parked for PROD swn — ADR-0043) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -98,6 +98,38 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 ---
 
 ## 6. Status log
+
+### 2026-07-25 — Skills-events EventHub flip IMPLEMENTED for PROD swn (ADR-0043, deploy-class)
+
+Execution slice for the un-parked flip (branch `sprint-23/eh-flip-execution`,
+off `main`; stacked on the ADR-0043 governance PR). **Deploy-class — the live
+PROD apply is gated by `approved-to-apply`.** Landed artefacts:
+
+* **Dedicated per-domain skills Event Hub.** The `data-foundation/eventhubs`
+  module now provisions a `skills-events` hub entity + `cg-skills-eventstream`
+  consumer group (+ simulator `Data Sender` RBAC) inside the environment
+  namespace whenever the skills lane runs in `sourceMode=EventHub`. `main.bicep`
+  derives `enableSkillsEventHub` from the skills source mode and points the
+  Eventstream at the dedicated hub (isolated from the capacity `events` rail).
+* **`sourceMode=EventHub` for PROD swn** set in `prod-swn.bicepparam`
+  (GA-in-region; auto-enables the dedicated hub). `az bicep build` + all three
+  env `build-params` compile clean; `main.json` regenerated.
+* **Post-deploy EventHub branch.** `configure-skills-eventstream.ps1` now wires
+  an `AzureEventHub` source (via a `-ConnectionId` Fabric-managed connection),
+  keeping the D4 three-kind guardrail + DefaultStream→Lakehouse topology; refuses
+  a live EH wire without the connection id (StrictMode-safe). `-DryRun` verified.
+* **Simulator.** `data-platform/scripts/skills-events/publish_skill_events.py`
+  publishes synthetic `DC-SKILL-EVENT-v1` records (one AMQP message per record,
+  routed by `eventKind`) to the dedicated hub via MI — mirrors the proven
+  `eventhub_emitter.py` DI pattern; 5 new offline unit tests (28 skills-events
+  tests + 5 gold-contract tests all green).
+* **Data contract unchanged.** `DC-SKILL-EVENT-v1` is byte-identical; only the
+  transport changed. `sourceMode` default stays `CustomEndpoint`, so SIT + all
+  existing callers are unaffected (**backwards-compatible**).
+* **Remaining live steps (post-`approved-to-apply`):** `what-if` against PROD
+  swn, create the Fabric-managed connection (`POST /v1/connections`), apply,
+  run the post-deploy EH branch, publish via the simulator, verify
+  `bronze_skills_events` + the silver PHI gate.
 
 ### 2026-07-25 — EventHub-source flip un-parked for PROD Switzerland North (ADR-0043)
 

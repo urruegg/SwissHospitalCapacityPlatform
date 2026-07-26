@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.10.0 |
+| **Version** | 0.11.0 |
 | **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.9.0 (Sprint 23 skills-events lane consent enforcement) |
+| **Previous Version** | 0.10.0 (Sprint 23 skills-events lane consent enforcement) |
 
 ## Purpose
 
@@ -216,6 +216,10 @@ downstream PHI-gate the Eventstream module defers to, and it enforces the same
 | Live-vs-simulated badge preserved on events | `FR-SKILL-007` | `sourceMode` (live \| simulated) + `trustTier` travel from the contract through Bronze/Silver and surface on `gold.skillevt_fact_event`; never invented downstream |
 | Synthetic-only event data | `NFR-SKILL-002` | The event seeder is deterministic and git-owned; envelopes are synthetic, no-PHI (ADR-0013 / ADR-0016) |
 | Live ingestion secrets never in repo | `CH-C05`, `NFR-SKILL-001` | The SIT lane is live-wired with a `CustomEndpoint` source (`es-ihzhhpf-skills-events`, demo-scope ADR-0013). Its Event-Hub-compatible ingestion connection string (SharedAccessKey) is retrieved at publish-time via `GET …/eventstreams/{id}/sources/{sourceId}/connection` and stored in Key Vault — **never committed**. The Container Apps publisher reads it from Key Vault at runtime |
+| PROD-swn EventHub source uses a secretless Fabric-managed connection | `CH-C05`, `NFR-SKILL-001`, [`ADR-0043`](adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md) | The PROD Switzerland North lane runs in `sourceMode=EventHub` (GA-in-region). The Eventstream binds to the dedicated skills-events hub through a **Fabric-managed connection** (`POST /v1/connections`, Entra/MI auth) — **no SharedAccessKey or connection string** is generated, stored, or committed. The simulator publishes via **Managed Identity `Azure Event Hubs Data Sender`** scoped to the dedicated hub |
+| Per-domain envelope isolation on the event rail | `NFR-SKILL-002`, `CH-C03` | The `DC-SKILL-EVENT-v1` envelope lands on a **dedicated `skills-events` Event Hub entity + `cg-skills-eventstream` consumer group**, separate from the capacity `events` rail, so skills events are isolated by functional domain end-to-end |
+| SIT and PROD do not share input services | `NFR-SKILL-002`, `CH-C05` | SIT (`evh-ihzhhpf-sit-*`, westus2/eastus2) and PROD (`evh-ihzhhpf-prod-i62t`, switzerlandnorth) use **separate Event Hubs namespaces, resource groups, and regions**; no input service is shared across environments |
+| Synthetic-only event publishing in PROD swn | `NFR-SKILL-002`, [`ADR-0043`](adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md) | Until the live HRIS/LMS connector lands, `publish_skill_events.py` emits deterministic synthetic `sourceMode=simulated` records only; the GA-only gate is reserved for a real go-live (real-PHI) cut-over |
 
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 

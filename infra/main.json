@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.45.6.27763",
-      "templateHash": "9372228585454297705"
+      "version": "0.45.15.27210",
+      "templateHash": "12955076758747797832"
     }
   },
   "parameters": {
@@ -654,6 +654,7 @@
     }
   },
   "variables": {
+    "skillsEventHubNeeded": "[and(parameters('enableSkillsEventstreamModule'), equals(parameters('skillsEventstreamSourceMode'), 'EventHub'))]",
     "envSuffix": "[if(equals(parameters('environmentName'), 'dev'), '', format('-{0}', parameters('environmentName')))]",
     "resourceSuffix": "[format('{0}{1}', parameters('solutionShortName'), variables('envSuffix'))]",
     "masterdataLandingStorageName": "[toLower(format('stmasterdata{0}', replace(variables('resourceSuffix'), '-', '')))]",
@@ -707,8 +708,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16810495867067195621"
+              "version": "0.45.15.27210",
+              "templateHash": "12709708007594594275"
             }
           },
           "parameters": {
@@ -929,8 +930,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "11092665246856310223"
+              "version": "0.45.15.27210",
+              "templateHash": "4775159143963604237"
             }
           },
           "parameters": {
@@ -1045,8 +1046,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15666986789757700592"
+              "version": "0.45.15.27210",
+              "templateHash": "7067348100293623422"
             }
           },
           "parameters": {
@@ -1251,8 +1252,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "11956369232816364156"
+              "version": "0.45.15.27210",
+              "templateHash": "6398321357455288559"
             }
           },
           "parameters": {
@@ -1378,8 +1379,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1833113154266341724"
+              "version": "0.45.15.27210",
+              "templateHash": "6638527015992601355"
             }
           },
           "parameters": {
@@ -1582,8 +1583,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "10689296495622946629"
+                      "version": "0.45.15.27210",
+                      "templateHash": "15430035442934461439"
                     }
                   },
                   "parameters": {
@@ -1821,8 +1822,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "13645867721578398029"
+                      "version": "0.45.15.27210",
+                      "templateHash": "16846858966586516040"
                     }
                   },
                   "parameters": {
@@ -1984,8 +1985,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15460063151507913680"
+              "version": "0.45.15.27210",
+              "templateHash": "13453687588716698482"
             }
           },
           "parameters": {
@@ -2089,8 +2090,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16248653206385140613"
+              "version": "0.45.15.27210",
+              "templateHash": "12859803335828411041"
             }
           },
           "parameters": {
@@ -2197,8 +2198,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1631660769778658010"
+              "version": "0.45.15.27210",
+              "templateHash": "6220424990052136252"
             }
           },
           "parameters": {
@@ -2340,8 +2341,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16503415288114807116"
+              "version": "0.45.15.27210",
+              "templateHash": "17304584953902525869"
             }
           },
           "parameters": {
@@ -2608,8 +2609,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1619298565780961527"
+              "version": "0.45.15.27210",
+              "templateHash": "7230076444948795540"
             }
           },
           "parameters": {
@@ -2722,6 +2723,9 @@
           },
           "csaAgentMiPrincipalId": {
             "value": "[parameters('eventHubsCsaAgentMiPrincipalId')]"
+          },
+          "enableSkillsEventHub": {
+            "value": "[variables('skillsEventHubNeeded')]"
           }
         },
         "template": {
@@ -2730,8 +2734,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "1765711980068583287"
+              "version": "0.45.15.27210",
+              "templateHash": "2314685904475748335"
             }
           },
           "parameters": {
@@ -2774,6 +2778,13 @@
               "metadata": {
                 "description": "Object ID of the CSA managed identity for Event Hubs Data Receiver (Sprint 09 T4.5 wiring)."
               }
+            },
+            "enableSkillsEventHub": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — provision a dedicated per-domain skills-events Event Hub entity + cg-skills-eventstream consumer group. Enabled by the parent when the skills lane runs in sourceMode=EventHub."
+              }
             }
           },
           "resources": [
@@ -2804,6 +2815,9 @@
                   },
                   "csaAgentMiPrincipalId": {
                     "value": "[parameters('csaAgentMiPrincipalId')]"
+                  },
+                  "enableSkillsEventHub": {
+                    "value": "[parameters('enableSkillsEventHub')]"
                   }
                 },
                 "template": {
@@ -2812,8 +2826,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "2157408807266904991"
+                      "version": "0.45.15.27210",
+                      "templateHash": "5235035615820925072"
                     }
                   },
                   "parameters": {
@@ -2862,6 +2876,20 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-csa-agent. Wired from Foundry module (Sprint 09 T4.5)."
+                      }
+                    },
+                    "enableSkillsEventHub": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — when true, provisions a dedicated per-domain skills-events Event Hub entity + cg-skills-eventstream consumer group inside this namespace, isolating the DC-SKILL-EVENT-v1 envelope from the capacity events rail. Additive; default false preserves the pre-Sprint-23 single-hub topology. Enabled automatically by the parent when the skills-events Eventstream runs in sourceMode=EventHub."
+                      }
+                    },
+                    "skillsEventHubName": {
+                      "type": "string",
+                      "defaultValue": "skills-events",
+                      "metadata": {
+                        "description": "Name of the dedicated skills-events Event Hub entity. Only created when enableSkillsEventHub=true. Kept distinct from the capacity events hub so envelopes are separated by functional domain."
                       }
                     }
                   },
@@ -2979,6 +3007,47 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
                       ]
+                    },
+                    {
+                      "condition": "[parameters('enableSkillsEventHub')]",
+                      "type": "Microsoft.EventHub/namespaces/eventhubs",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]",
+                      "properties": {
+                        "partitionCount": 4,
+                        "messageRetentionInDays": 1
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')))]"
+                      ]
+                    },
+                    {
+                      "condition": "[parameters('enableSkillsEventHub')]",
+                      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'), 'cg-skills-eventstream')]",
+                      "properties": {
+                        "userMetadata": "Sprint 23 WS-A4 (ADR-0043) — consumed by es-ihzhhpf-skills-events (Fabric Eventstream). Drives bronze/skills-events/ Delta append."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(parameters('enableSkillsEventHub'), not(empty(parameters('simulatorMiPrincipalId'))))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName')), parameters('simulatorMiPrincipalId'), variables('eventHubsDataSenderRoleId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]",
+                        "principalId": "[parameters('simulatorMiPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — simulator MI publishes DC-SKILL-EVENT-v1 to the dedicated skills-events hub."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]"
+                      ]
                     }
                   ],
                   "outputs": {
@@ -3013,6 +3082,20 @@
                         "bmCopilotAgent": "cg-bm-copilot-agent",
                         "csaAgent": "cg-csa-agent"
                       }
+                    },
+                    "skillsEventHubName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events Event Hub entity name, or empty when not enabled."
+                      },
+                      "value": "[if(parameters('enableSkillsEventHub'), parameters('skillsEventHubName'), '')]"
+                    },
+                    "skillsEventHubConsumerGroup": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events consumer group name, or empty when not enabled."
+                      },
+                      "value": "[if(parameters('enableSkillsEventHub'), 'cg-skills-eventstream', '')]"
                     },
                     "moduleStatus": {
                       "type": "string",
@@ -3061,6 +3144,20 @@
                 "description": "Sprint 09 v2.0.0 consumer group names."
               },
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.consumerGroupNames.value]"
+            },
+            "skillsEventHubName": {
+              "type": "string",
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events Event Hub entity name, or empty when not enabled."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.skillsEventHubName.value]"
+            },
+            "skillsEventHubConsumerGroup": {
+              "type": "string",
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events consumer group name, or empty when not enabled."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.skillsEventHubConsumerGroup.value]"
             }
           }
         }
@@ -3097,8 +3194,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "535917255065045059"
+              "version": "0.45.15.27210",
+              "templateHash": "16860468050710324881"
             }
           },
           "parameters": {
@@ -3329,8 +3426,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "15390018866793242957"
+              "version": "0.45.15.27210",
+              "templateHash": "4357772689202446892"
             }
           },
           "parameters": {
@@ -3667,8 +3764,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "4534820058123538298"
+              "version": "0.45.15.27210",
+              "templateHash": "2055498867610279489"
             }
           },
           "parameters": {
@@ -3859,8 +3956,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "7635980439731798164"
+              "version": "0.45.15.27210",
+              "templateHash": "6413190464495071700"
             }
           },
           "parameters": {
@@ -3977,8 +4074,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "17103352713216679345"
+              "version": "0.45.15.27210",
+              "templateHash": "7962993774917988330"
             }
           },
           "parameters": {
@@ -4691,8 +4788,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3182797218638393169"
+              "version": "0.45.15.27210",
+              "templateHash": "6500472753463376709"
             }
           },
           "parameters": {
@@ -4928,8 +5025,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "13715455851406785891"
+              "version": "0.45.15.27210",
+              "templateHash": "1151250825559176912"
             }
           },
           "parameters": {
@@ -5047,8 +5144,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "16191629345100508003"
+              "version": "0.45.15.27210",
+              "templateHash": "16801748558517643812"
             }
           },
           "parameters": {
@@ -5154,8 +5251,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "6335274266135485317"
+              "version": "0.45.15.27210",
+              "templateHash": "3597564066161008070"
             }
           },
           "parameters": {
@@ -5276,8 +5373,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "14841147772701149684"
+                      "version": "0.45.15.27210",
+                      "templateHash": "14003066579642311487"
                     }
                   },
                   "parameters": {
@@ -5470,8 +5567,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3518442302807315975"
+              "version": "0.45.15.27210",
+              "templateHash": "14583701867747923328"
             }
           },
           "parameters": {
@@ -5795,8 +5892,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "14271685339274188062"
+              "version": "0.45.15.27210",
+              "templateHash": "6087286758352572380"
             }
           },
           "parameters": {
@@ -5939,8 +6036,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "1418152727854971719"
+                      "version": "0.45.15.27210",
+                      "templateHash": "594335556098139955"
                     }
                   },
                   "parameters": {
@@ -6096,8 +6193,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "9808019470207933078"
+                      "version": "0.45.15.27210",
+                      "templateHash": "6646545455890169293"
                     }
                   },
                   "parameters": {
@@ -6231,8 +6328,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "15845063017917743907"
+                      "version": "0.45.15.27210",
+                      "templateHash": "9561529887383588834"
                     }
                   },
                   "parameters": {
@@ -6374,8 +6471,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.45.6.27763",
-                      "templateHash": "7213773335792771551"
+                      "version": "0.45.15.27210",
+                      "templateHash": "2899347056287564506"
                     }
                   },
                   "parameters": {
@@ -6677,8 +6774,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "5334056569644691563"
+              "version": "0.45.15.27210",
+              "templateHash": "8004220282630993017"
             }
           },
           "parameters": {
@@ -7194,8 +7291,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "2182119932369270733"
+              "version": "0.45.15.27210",
+              "templateHash": "3701687070672016687"
             }
           },
           "parameters": {
@@ -7383,8 +7480,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "4040045096906531905"
+              "version": "0.45.15.27210",
+              "templateHash": "16691788476696718491"
             }
           },
           "parameters": {
@@ -7637,8 +7734,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3570153104393533044"
+              "version": "0.45.15.27210",
+              "templateHash": "4290292779733550713"
             }
           },
           "parameters": {
@@ -7937,8 +8034,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "5703750538639136666"
+              "version": "0.45.15.27210",
+              "templateHash": "8626556854951557043"
             }
           },
           "parameters": {
@@ -8101,8 +8198,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "6946668985564645552"
+              "version": "0.45.15.27210",
+              "templateHash": "12725326629230136180"
             }
           },
           "parameters": {
@@ -8258,7 +8355,7 @@
             "value": "[parameters('skillsEventstreamSourceMode')]"
           },
           "eventHubNamespace": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value), createObject('value', ''))]",
-          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value), createObject('value', ''))]",
+          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.skillsEventHubName.value), createObject('value', ''))]",
           "eventHubConsumerGroup": {
             "value": "cg-skills-eventstream"
           },
@@ -8276,8 +8373,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.45.6.27763",
-              "templateHash": "3641420194333204823"
+              "version": "0.45.15.27210",
+              "templateHash": "10412001301929666501"
             }
           },
           "parameters": {
@@ -8384,6 +8481,7 @@
                 "namespaceHost": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubNamespace'), '')]",
                 "eventHubName": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubName'), '')]",
                 "consumerGroup": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubConsumerGroup'), '')]",
+                "connectionId": "",
                 "routingProperty": "eventKind",
                 "allowedEventKinds": "[variables('allowedEventKinds')]",
                 "authMode": "[if(equals(parameters('sourceMode'), 'EventHub'), 'fabric-managed-connection', 'custom-endpoint-ingestion')]"
