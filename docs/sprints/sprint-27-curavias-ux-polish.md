@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.3.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | In progress (paused 2026-07-25; review + action plan 2026-07-26) |
-| **Previous Version** | 1.2.0 (session 2026-07-25 log + backlog) |
+| **Status** | In progress (IQ-layer data-access delivered 2026-07-26; M8 closeout open) |
+| **Previous Version** | 1.3.0 (session 3 log + IQ-layer backlog) |
 | **Design spec** | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](../superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) |
 | **Implementation plan** | [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](../superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) |
 | **Predecessors** | Sprint 20 (5-plane shell) · Curavias app prototype-parity · Sprint 25 / #276 (mockup ↔ app parity) |
@@ -255,6 +255,14 @@ golden-evidence-grounded via Fabric IQ / Foundry IQ, with provenance + citations
 **Lane / impact.** Data lane; behind the existing `provenance` contract + golden tests; no
 data-contract or infra change implied by the app-side gateway. PHI stays out (ADR-0013/0016);
 Fabric IQ PROD / PHI paths stay GA-gated (ADR-0014).
+
+**Delivered 2026-07-26.** `src/data/iq-client.ts` gateway (single ingress + evidence
+envelope + precedence + fail-loud + config-from-env); `golden-source-client` +
+`agent-manifest` routed through it; `RoleBoardData` gains optional `citations` / `degraded`;
+`GroundingNotice` on the OOA board; vitest single-ingress guard + envelope test;
+[ADR-0044](../adr/0044-app-data-access-via-iq-layer.md); pattern doc → Accepted. Board `live`
+reads still use the golden-source REST shape — full Fabric Data Agent NL queries + real-data
+UX validation follow once `VITE_GOLDEN_SOURCE_URL` is wired in SIT.
 
 ---
 

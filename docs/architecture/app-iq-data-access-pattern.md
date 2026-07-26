@@ -2,18 +2,20 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | Draft for review (2026-07-26) |
-| **Previous Version** | n/a (new document) |
+| **Status** | Accepted — implemented in Sprint 27 (ADR-0044) |
+| **Previous Version** | 1.0.0 (draft for review) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) — data-access backlog item |
 | **Applies to** | `apps/hcc-app-fluent` (internal app) data access |
 | **Related** | [Fabric to Foundry grounding contract](fabric-foundry-grounding-contract.md), [ADR-0033](../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0034](../adr/0034-fabric-iq-demo-scope-artefacts.md), [ADR-0035](../adr/0035-fabric-iq-layer-region-westus2.md), [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md); ADR-0043 (Foundry IQ domain, on `main`) |
 
-> Captured from the 2026-07-25 architecture discussion. **Draft for review** — the
-> 2026-07-26 review confirms the precedence, the evidence-envelope shape, and the
-> slice order, then an ADR records the decision.
+> Captured from the 2026-07-25 architecture discussion and **implemented in
+> Sprint 27** (2026-07-26) via the IQ-layer gateway `src/data/iq-client.ts`; the
+> decision is recorded in [ADR-0044](../adr/0044-app-data-access-via-iq-layer.md).
+> `provenance` folds the doc's `golden` into the frozen contract's `live`
+> (`live` == golden evidence from the IQ layer) to avoid breaking `RoleBoard`.
 
 ## 1. Question
 
@@ -88,6 +90,15 @@ Five contracts for the app:
    surface (so board KPIs carry `hcp:*` citations, matching the chat path).
 4. ESLint guard: only `iq-client` may hold a `fetch` / endpoint import.
 5. `grounding degraded` UI affordance + golden tests for the envelope.
+
+**Delivered 2026-07-26** (all five slices): `src/data/iq-client.ts` gateway;
+`golden-source-client` + `agent-manifest` routed through it; `RoleBoardData` gains
+optional `citations` / `degraded`; `GroundingNotice` on the OOA board; vitest
+single-ingress guard (`tests/unit/iq-ingress-guard.test.ts`) + envelope test
+(`tests/unit/iq-envelope.test.ts`); [ADR-0044](../adr/0044-app-data-access-via-iq-layer.md).
+The board `live` path still uses the golden-source REST shape — full Fabric Data
+Agent natural-language structured queries remain a follow-up once the endpoint is
+live in SIT (`VITE_GOLDEN_SOURCE_URL`).
 
 ## 6. Constraints
 
