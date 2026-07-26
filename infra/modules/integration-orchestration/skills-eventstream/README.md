@@ -109,6 +109,22 @@ python publish_skill_events.py             # publishes via the CustomEndpoint SA
 python publish_skill_events.py --connection-string "Endpoint=sb://...;SharedAccessKey=...;EntityPath=..."
 ```
 
+The **manual-trigger Container Apps Job** `caj-skev-<suffix>` runs this publisher
+in Azure (module
+[`experience-hosting/skills-event-sim-job`](../../experience-hosting/skills-event-sim-job/main.bicep),
+enabled by `enableSkillsEventSimJobModule=true`). It injects the SAS string as a
+Key Vault *secret reference* (`secrets[].keyVaultUrl` + `env.secretRef`), resolved
+at runtime by the job's User-Assigned Managed Identity (`Key Vault Secrets User`).
+Per NFR-SKILL-001 it is **Manual-trigger only** — an operator starts it, never a
+GitHub workflow:
+
+```powershell
+# 1. Populate the secret once (operator; value from Fabric, never committed):
+az keyvault secret set --vault-name <kv> --name skills-events-connection-string --value "<SAS>"
+# 2. Run the simulator on demand:
+az containerapp job start -g <rg> --name caj-skev-<suffix>
+```
+
 ### EventHub-source publish (simulator, until the live connector lands)
 
 ```powershell
