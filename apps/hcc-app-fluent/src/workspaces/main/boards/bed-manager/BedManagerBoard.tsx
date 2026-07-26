@@ -9,6 +9,7 @@ import {
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
+import { space, radii, elevation } from '../../../../theme/design-system';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
 import type {
   BedManagerPayload,
@@ -22,6 +23,7 @@ import { PlacementRequestsTable } from './PlacementRequestsTable';
 import { PlacementBarriersBoard } from './PlacementBarriersBoard';
 import { BedStateKpis } from './BedStateKpis';
 import { AdmissionsEventstream } from './AdmissionsEventstream';
+import { GroundingNotice } from '../GroundingNotice';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
@@ -29,13 +31,15 @@ import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
+import { useDataSource } from '../../../../context/data-source-context';
 
 const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalL,
-    padding: tokens.spacingHorizontalL,
+  root: { display: 'flex', flexDirection: 'column', gap: space.l, padding: space.l },
+  panel: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: radii.card,
+    boxShadow: elevation.card,
+    padding: space.l,
   },
   pbiCard: { padding: tokens.spacingHorizontalM },
 });
@@ -46,6 +50,7 @@ export function BedManagerBoard() {
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
+  const { source } = useDataSource();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<BedManagerPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
@@ -69,7 +74,7 @@ export function BedManagerBoard() {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, hospital]);
+  }, [mode, hospital, source]);
 
   if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 
@@ -117,6 +122,7 @@ export function BedManagerBoard() {
       aria-label={t('bedManager.title')}
     >
       <HandoffBanner banner={banner} provenance={data.provenance} />
+      <GroundingNotice degraded={data.degraded} />
       <BoardHeader
         agent={bedManagerBoard.agent}
         title={t('board.bedManager')}
@@ -124,20 +130,26 @@ export function BedManagerBoard() {
         lens="Bed Management"
       />
 
-      <PlacementRequestsTable
-        placements={payload.placements}
-        onSelectRequest={onSelectRequest}
-      />
+      <div className={s.panel}>
+        <PlacementRequestsTable
+          placements={payload.placements}
+          onSelectRequest={onSelectRequest}
+        />
+      </div>
 
-      <PlacementBarriersBoard
-        barriers={payload.barriers}
-        onSelectBarrier={onSelectBarrier}
-        onAutoSequence={onAutoSequence}
-      />
+      <div className={s.panel}>
+        <PlacementBarriersBoard
+          barriers={payload.barriers}
+          onSelectBarrier={onSelectBarrier}
+          onAutoSequence={onAutoSequence}
+        />
+      </div>
 
       <BedStateKpis payload={payload} />
 
-      <AdmissionsEventstream admissions={payload.admissions} />
+      <div className={s.panel}>
+        <AdmissionsEventstream admissions={payload.admissions} />
+      </div>
 
       {/* Power BI embed — preserved from Sprint 13 (capacity-dashboard, Direct Lake, RLS by hospital) */}
       <Card className={s.pbiCard} data-testid="pbi-embed">
