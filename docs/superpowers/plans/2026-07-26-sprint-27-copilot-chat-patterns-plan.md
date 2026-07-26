@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
+| **Version** | 1.3.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.1.0 (added A13/A14/A15 entries) |
+| **Previous Version** | 1.2.0 (A12 follow-up chips delivered) |
 | **Sprint** | 27 (Curavias App UX Polish, tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` Copilot pane (`copilot-drawer/**`, `copilot-rail/**`) |
 | **Related** | [IQ data-access pattern](../../architecture/app-iq-data-access-pattern.md), [Fabric to Foundry grounding contract](../../architecture/fabric-foundry-grounding-contract.md), [ADR-0033](../../adr/0033-fabric-data-agent-as-foundry-grounding-tool.md), [ADR-0044](../../adr/0044-app-data-access-via-iq-layer.md); chat-artefact rendering commit `302f679` |
@@ -176,10 +176,36 @@ with grounded, PHI-free prompts. Delivered in `ConversationView` (fed by
 reachable. Covered by `tests/unit/follow-ups.test.tsx` (render + last-turn-only +
 click-to-send + per-agent coverage).
 
+### Metric trio (A4) + guardrail refusal (A11) — delivered
+
+**A4** — `GroundedReco.metrics` renders a **now → forecast → gap** stat row in
+`RecoPanel` (arrow-separated cells; the gap cell is RAG-toned via
+`impactBadgeColor`). Populated per role agent with grounded values (e.g. occupancy
+`96% → 102% → -6 Betten`, staffing `6.5 → 5.0 → -1.5 FTE`). Sits between the read
+(A3) and the lever list (A5) per the composition grammar.
+
+**A11** — the dev/CI mock (`invokeAgent`) now returns a **verbatim guardrail
+refusal** for a destructive / no-approval ask (HITL-02 gate) or a PHI request
+(PHI-Gate): a `blocked` context chip, red refusal read, refused badge, **no
+levers, no CTA**, and a policy citation. Happy-path recos are unaffected (the
+triggers are narrow). Covered by `tests/unit/agent-recos.test.ts` (metric trio +
+destructive refusal + PHI refusal + never-refuse-normal) and
+`tests/unit/reco-panel.test.tsx` (metric-trio render).
+
+### `/brand` chat-artefacts gallery (A1–A14) — delivered
+
+The dev-only `/brand` design-system route gained a **Chat response artefacts**
+section: a *Recommendation* card (a `ConversationView` turn rendering A1–A10 +
+A12 + A13/A14 in one stack) and a *Guardrail refusal* card (A11). English sample
+data, isolated so we can eyeball + axe-scan each block. The axe suite
+(`tests/e2e/a11y.spec.ts`) now scans `/brand` at WCAG 2.1 AA (0 serious/critical);
+`tests/unit/brand-gallery.test.tsx` asserts the metric trio, follow-ups, and the
+no-lever refusal render.
+
 ## 7. Definition of done
 
 - [ ] Catalogue A1–A12 rendered by a single shared `AgentMessage`/`RecoPanel` renderer (Step 1).
-- [ ] `/brand` "Chat response artefacts" section renders every block; axe-clean (Step 2).
+- [x] `/brand` "Chat response artefacts" section renders every block; axe-clean (Step 2).
 - [ ] Each artefact passes its Step 2 checklist with UX sign-off.
 - [ ] Step 3 run against live Foundry responses for T1–T4; each maps to the catalogue; new shapes fed back to Step 2.
 - [ ] Golden fixtures for T1–T4 (ask → expected artefact stack).
