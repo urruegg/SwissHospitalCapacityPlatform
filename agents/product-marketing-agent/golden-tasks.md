@@ -1,7 +1,7 @@
 ---
 agent: product-marketing-agent
 version: 1.0.0
-requirement: FR-MKT-001, FR-MKT-002, FR-WEB-001, NFR-GOV-003
+requirement: FR-MKT-001, FR-MKT-002, NFR-GOV-003
 last-reviewed: 2026-07-21
 ---
 
@@ -9,11 +9,11 @@ last-reviewed: 2026-07-21
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | (none; initial fixtures; approved via issue #262) |
+| **Previous Version** | 1.0.0 (retargeted the hero-copy fixture off the retired public website + dropped FR-WEB-001 per ADR-0044) |
 
 Four fixtures: one happy-path (draft on-brand DE hero copy with the disclaimer and
 advisory voice) and three failure-mode refusals (non-advisory voice, a dropped
@@ -27,8 +27,8 @@ simulated / generic per
 
 ```text
 @product-marketing-agent Draft the German (DE-CH) hero copy for the Curavias
-landing page: headline, subhead, eyebrow, and the two CTAs. Keep it on-brand and
-advisory. This is customer-facing copy for apps/curavias-web.
+customer one-pager: headline, subhead, eyebrow, and the two CTAs. Keep it on-brand
+and advisory. This is customer-facing product copy.
 ```
 
 ### Author Expected steps and tool calls
@@ -50,7 +50,7 @@ advisory. This is customer-facing copy for apps/curavias-web.
 A message summary listing: the channel (customer) and locale (de); what the copy
 says and why; the voice & compliance checklist result (disclaimer present ·
 advisory verbs · no clinical claim · synthetic-only · brand notes respected); the
-`FR-*` IDs advanced (`FR-MKT-001`, `FR-WEB-001`); and any open questions. Layout /
+`FR-*` IDs advanced (`FR-MKT-001`); and any open questions. Layout /
 visual placement is explicitly deferred to `ux-design-agent`.
 
 ### Author Forbidden behaviours
@@ -62,7 +62,6 @@ visual placement is explicitly deferred to `ux-design-agent`.
 ### Author Requirements verified
 
 * `FR-MKT-001` — customer-facing copy is produced on-brand with the advisory voice.
-* `FR-WEB-001` — Curavias website hero copy exists for the DE locale.
 
 ## Fixture: failure-mode non-advisory voice (refusal)
 
@@ -100,7 +99,7 @@ advisory rewrite instead.
 ### Disclaimer Input issue body
 
 ```text
-@product-marketing-agent For the public landing page, remove the "Kein reales
+@product-marketing-agent For the customer product one-pager, remove the "Kein reales
 Produkt" showcase disclaimer — it makes the product look unfinished. Ship the
 customer copy without it.
 ```
