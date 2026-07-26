@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.9.0 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Approved (brainstorming) |
-| **Previous Version** | n/a (initial version) |
+| **Previous Version** | 1.8.0 (manual-trigger Container Apps Job for the CustomEndpoint skills-events simulator) |
 | **Sprint** | [Sprint 23 - Unified Curavias organisation spine + org/skills ontology (P1b)](../../sprints/sprint-23-curavias-org-spine-and-skills-ontology.md) |
 | **Issue** | [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255) |
 | **Extends** | Idea pack [`unified-curavias-organisation-and-skills-ontology/`](../ideas/unified-curavias-organisation-and-skills-ontology/) (Steps 1-4 + 20 CSVs + generator); shared design [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](2026-07-19-curavias-shared-master-data-and-ontology-design.md) |
@@ -141,7 +141,7 @@ skill_evidence_record:
 | Lane | Carries | Mechanism |
 | ---- | ------- | --------- |
 | **Batch** | HRIS/LMS/company-inventory master-data extracts | Container Apps simulator job -> extract files -> ADLS landing zone -> on-demand Data Pipeline |
-| **Eventstream** | Near-real-time skills events: credential expiry, consent grant/revoke, newly-confirmed assertion | Container Apps service -> Eventstream -> Eventhouse/lakehouse (reuses the Sprint 21 real-time rail) |
+| **Eventstream** | Near-real-time skills events: credential expiry, consent grant/revoke, newly-confirmed assertion | Container Apps service -> Eventstream -> lakehouse `bronze_skills_events`. **Live in SIT via a `CustomEndpoint` source** (demo-scope, ADR-0013); the `sourceMode=EventHub` rail is **un-parked for PROD Switzerland North** ([ADR-0043](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md)) — Eventstream + Event Hubs are **GA in swn** and the PROD EH namespace `evh-ihzhhpf-prod-i62t` exists in-region; a **dedicated skills-events Event Hub** carries `DC-SKILL-EVENT-v1` (per-domain envelope), fed by a **simulator** until the live publisher lands (see §6). |
 
 The Eventstream lane is intentionally narrow - only events that must move faster than the next
 batch load. Everything else is batch.
@@ -150,8 +150,10 @@ batch load. Everything else is batch.
 
 - **Replace `dim_hospital`** with `dim_tenant` / `dim_org_unit` / `dim_department` (per #255 T4
   and the shared design). BVA keeps its separate `bva_dim_hospital`.
-- **Skills measures:** supply / demand / gap / eligibility (per #255 T6), plus a
-  **live-vs-simulated** measure driven by `source_mode`.
+- **Skills measures:** supply / demand / gap / eligibility (per #255 T6), plus
+  **live-vs-simulated** measures driven by `source_mode` on both `fact_skill_demand`
+  (Live/Simulated Demand) and `fact_skill_assertion` (Live/Simulated Assertions,
+  Assertion Source Mode - surfacing the badge on `gold.fact_skill_assertion` per FR-SKILL-007).
 - **Bed vs Ops demand split (requirement #4):** modelled on `bridge_role_skill_demand_template`
   and `fact_skill_demand` via a `care_setting` dimension = `bed` (Pflegepersonal / nursing) |
   `ops` (Doctors + specialised teams). Demand templates and gap measures are reported per
@@ -189,15 +191,15 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
 
 - [ ] ADLS landing zone + OneLake shortcut provisioned (Bicep, `what-if` clean); upload runbook documented
 - [ ] Container Apps simulator jobs for SuccessFactors / LMS / Skills-Manager / Work-ID emit batch extracts to the landing zone on demand
-- [ ] Eventstream lane carries the three near-real-time skills events
+- [x] Eventstream lane carries the three near-real-time skills events — in-repo data lane landed 2026-07-25 (`DC-SKILL-EVENT-v1` contract + seeder + Bronze/Silver/Gold notebooks + 23 tests); **live-wired in SIT 2026-07-25** (`es-ihzhhpf-skills-events` Running, `CustomEndpoint` source → `bronze_skills_events`, `approved-to-apply` #374). *Remaining: skills-events simulator + `EventHub`-source flip — infra deployed (#393) but the **live EH bind is DEFERRED (Fabric platform gap, 2026-07-26):** Eventstream EH source is SAS-only + PROD namespace is policy-locked AAD-only (`disableLocalAuth=true`); waits on Fabric workspace-identity GA. See §6 + [ADR-0043 Update 2026-07-26](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap). The synthetic **CustomEndpoint** simulator is complete: the publish path landed 2026-07-26 (`publish_skill_events.py --connection-string` / `SKILLS_EVENTS_CONNECTION_STRING`, offline-tested), and its **manual-trigger Container Apps Job** `caj-skev-*` (`enableSkillsEventSimJobModule`, SAS injected via a Key Vault secret reference) landed the same day. A real live publisher (HRIS/LMS connector) is separate.*
 - [ ] `data/master-data/curavias-org-skills/` created (generator relocated; **path mismatch in the sprint doc fixed**)
 - [ ] Skills-evidence plugin package + `DC-SKILL-EVIDENCE-v1` + simulators + tests green
 - [ ] On-demand Data Pipeline: Bronze -> Silver (validate + quarantine) -> Gold (deny-by-default) produces the org/skills `gold.*` tables
 - [ ] `dim_hospital` replaced; facts re-keyed; consumers re-pointed (#255 T4-T5)
-- [ ] Semantic model: skills + live-vs-simulated + bed-vs-ops (`care_setting`) measures; `verify-semantic-model.yml` re-baselined + green
+- [x] Semantic model: skills + live-vs-simulated + bed-vs-ops (`care_setting`) measures; `verify-semantic-model.yml` re-baselined + green
 - [ ] Ontology + crosswalk + conformance + Fabric IQ Data Agent cover org/skills + care-setting
 - [ ] New ADR Accepted; PRD FR/NFR + section 7 updated; DSG tagging applied
-- [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed
+- [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed — **module-selection parity is now machine-checked** by the static harness [`infra/tests/test_sit_prod_parity.py`](../../../infra/tests/test_sit_prod_parity.py) (offline; wired into `ci-infra-validate.yml`), which asserts effective `enable*Module` parity between `sit.bicepparam` and `prod-swn.bicepparam` against an ADR-sourced deliberate-asymmetry allow-list. Complements the live `deployed-parity-check` job (resource-types, `workflow_dispatch`).
 - [ ] All CI checks pass
 
 ## 6. Open items / to confirm
@@ -205,6 +207,42 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
 - **Vendor mechanics** (SuccessFactors/LMS/Skills-Manager/Work-ID API + proficiency scale) stay
   behind the adapter and are `[confirm with vendor]` (Step 3) - simulated until confirmed.
 - **Eventstream event set** may grow; start with expiry / consent / new-confirmed-assertion.
+- **Eventstream source transport (D4) — RESOLVED 2026-07-25; EventHub flip un-parked 2026-07-25.**
+  The lane was live-wired in SIT with a **`CustomEndpoint`** source (demo-scope, ADR-0013),
+  mirroring the working `es-capacity-events-sit`: fully deployable today, a publisher POSTs to the
+  Eventstream ingestion endpoint. The `sourceMode=EventHub` rail is **no longer parked behind a
+  "Swiss GA" milestone** — per [ADR-0043](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md),
+  preview-tier services are approved in PROD Switzerland North for the demo and the GA-only gate is
+  reserved for real go-live cut-over. In fact the EventHub flip is **GA in Switzerland North**
+  (Eventstream + Event Hubs), so it does not even consume the preview exception; its only remaining
+  prerequisite is the out-of-band Fabric-managed connection (`POST /v1/connections`) to
+  `evh-ihzhhpf-prod-i62t`. Confirmed design points (2026-07-25): a **dedicated skills-events Event
+  Hub** (per-functional-domain envelope, not shared with the capacity `events` rail); a **simulator**
+  feeds it until the live publisher is ready; **SIT and PROD do not share input services**
+  (`evh-ihzhhpf-sit-y26y` westus2 vs `evh-ihzhhpf-prod-i62t` swn).
+  **IMPLEMENTED 2026-07-25 (deploy-class, `sprint-23/eh-flip-execution`):** the
+  `data-foundation/eventhubs` module provisions the dedicated `skills-events` hub +
+  `cg-skills-eventstream` group (auto-enabled when the skills lane runs `sourceMode=EventHub`);
+  `prod-swn.bicepparam` sets `sourceMode=EventHub`; the post-deploy script gained an `AzureEventHub`
+  source branch (`-ConnectionId` Fabric-managed connection); and `publish_skill_events.py` is the
+  synthetic simulator. The `DC-SKILL-EVENT-v1` contract is unchanged (transport-only change;
+  backwards-compatible default). The live PROD apply + `POST /v1/connections` remain gated by
+  `approved-to-apply`.
+  **UPDATE 2026-07-26 — live EH bind DEFERRED (Fabric platform gap).** The live bind was attempted
+  under `approved-to-apply` and hit a hard, mutually-exclusive constraint pair: Fabric Eventstream's
+  Event Hubs **source supports SAS-key auth only** (workspace-identity/AAD auth is not yet GA —
+  attempts returned `DMTS_UntrustedEndpointForWorkspaceIdentity`), while the PROD namespace
+  `evh-ihzhhpf-prod-i62t` runs **`disableLocalAuth=true`** (SAS disabled, AAD-only — enforced by a
+  security-baseline Azure Policy, **not** our Bicep; every SAS attempt returned `AccessUnauthorized`).
+  So the EH→Eventstream bind **cannot complete** without a security downgrade. The earlier "only
+  remaining prerequisite is the out-of-band connection" framing (above and in ADR-0043 §Decision.3)
+  is therefore superseded. Decision (@urruegg, 2026-07-26): **keep the AAD-only secretless posture
+  and defer** the live bind until Fabric GAs workspace-identity auth for EH sources; the
+  `CustomEndpoint` lane (live in SIT, #379) stays the demo transport. The dedicated hub +
+  `cg-skills-eventstream` + simulator `Data Sender` RBAC (#393) remain deployed and wait for that GA.
+  All PROD test artefacts created during the attempt (SAS rules + a workspace-identity role) were
+  rolled back — PROD is byte-for-byte unchanged. See
+  [ADR-0043 Update 2026-07-26](../../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md#update-2026-07-26--live-eventhub-bind-deferred-platform-gap).
 - **`validate_master_data.py`** was not found on disk during design (only `upload_to_onelake.py`
   and `verify_gold_schema.py`); WS-B confirms whether the Sprint 22 validator exists under another
   name or must be authored for the silver gate.

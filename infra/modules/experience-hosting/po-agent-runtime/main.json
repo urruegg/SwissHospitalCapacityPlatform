@@ -1,0 +1,694 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.6.27763",
+      "templateHash": "3075851248279361199"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "allowedValues": [
+        "switzerlandnorth",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Azure region for the runtime, job, Cosmos and Key Vault. PROD = switzerlandnorth (ADR-0037, NFR-POA-003); SIT = westus2 (ADR-0013)."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Resource tags applied to every resource this module creates."
+      }
+    },
+    "containerAppEnvironmentId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional resource ID of an existing Container Apps managed environment. When empty, a consumption-only environment is created inside this module."
+      }
+    },
+    "containerAppEnvironmentName": {
+      "type": "string",
+      "defaultValue": "[format('cae-po-{0}', parameters('nameSuffix'))]",
+      "minLength": 2,
+      "maxLength": 60,
+      "metadata": {
+        "description": "Name for the managed environment when one is created by this module. Ignored when containerAppEnvironmentId is provided."
+      }
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Log Analytics workspace resource ID for the managed environment. Ignored when containerAppEnvironmentId is provided."
+      }
+    },
+    "containerImage": {
+      "type": "string",
+      "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+      "metadata": {
+        "description": "Container image the runtime app + refresh job run. Defaults to a placeholder; the real PO Agent image is published by a follow-up CI workflow."
+      }
+    },
+    "containerRegistryLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR login server the runtime/job pull containerImage from. Set together with containerRegistryResourceId to wire MI-based pull (no admin creds, no secrets)."
+      }
+    },
+    "containerRegistryResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer."
+      }
+    },
+    "searchEndpoint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Query endpoint of the Azure AI Search service (ai-search module output). Threaded to the runtime as SEARCH_ENDPOINT."
+      }
+    },
+    "searchServiceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Azure AI Search service. When set, the runtime MI is granted Search Index Data Reader scoped to it. Empty string skips the grant."
+      }
+    },
+    "searchRestApiVersion": {
+      "type": "string",
+      "defaultValue": "2024-05-01-preview",
+      "metadata": {
+        "description": "Pinned data-plane Search REST api-version (ai-search module output). Threaded to the runtime as SEARCH_API_VERSION."
+      }
+    },
+    "corpusStorageAccountName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name of the corpus landing storage account (corpus-landing module output). Threaded to the refresh job as CORPUS_STORAGE_ACCOUNT."
+      }
+    },
+    "corpusContainerName": {
+      "type": "string",
+      "defaultValue": "landing",
+      "metadata": {
+        "description": "Landing container name inside the corpus storage account."
+      }
+    },
+    "corpusPrefix": {
+      "type": "string",
+      "defaultValue": "curavias-product-corpus",
+      "metadata": {
+        "description": "Root prefix inside the corpus container for product documents."
+      }
+    },
+    "openAiLocation": {
+      "type": "string",
+      "defaultValue": "[parameters('location')]",
+      "metadata": {
+        "description": "Region for the Azure OpenAI account. Separated from `location` because MCAP OpenAI quota is region-constrained (ADR-0032); PROD pins switzerlandnorth per NFR-POA-003 once GA quota exists."
+      }
+    },
+    "openAiDeploymentName": {
+      "type": "string",
+      "defaultValue": "gpt-5",
+      "metadata": {
+        "description": "Chat model deployment name the orchestrator calls."
+      }
+    },
+    "openAiModelName": {
+      "type": "string",
+      "defaultValue": "gpt-5",
+      "metadata": {
+        "description": "Chat model name."
+      }
+    },
+    "openAiModelVersion": {
+      "type": "string",
+      "defaultValue": "2025-08-07",
+      "metadata": {
+        "description": "Chat model version. Pinned to gpt-5 2025-08-07 (GenerallyAvailable), matching the existing agent fleet. The regional `Standard` tier is retiring in switzerlandnorth — gpt-4o/gpt-4.1 there are all `Deprecating` and gpt-4o 2024-11-20 already blocks new deployments — so we run the GA GPT-5 family. Verified via `az cognitiveservices model list -l switzerlandnorth`."
+      }
+    },
+    "openAiSkuName": {
+      "type": "string",
+      "defaultValue": "GlobalStandard",
+      "allowedValues": [
+        "Standard",
+        "GlobalStandard",
+        "DataZoneStandard"
+      ],
+      "metadata": {
+        "description": "Deployment SKU. `GlobalStandard` per the recorded platform decision D7-a (sprint-19 SIT/PROD parity plan) + ADR-0037: fleet agents (gpt-5/-mini/o3) run GlobalStandard cross-geo in swn, accepted under the no-PHI posture; those models do not offer regional `Standard` or `DataZoneStandard`. Quota OpenAI.GlobalStandard.gpt-5 = 1000K TPM. A future PHI onboarding can move to `DataZoneStandard` (EU) on gpt-5.4/5.5/5.6."
+      }
+    },
+    "openAiCapacity": {
+      "type": "int",
+      "defaultValue": 10,
+      "minValue": 1,
+      "maxValue": 300,
+      "metadata": {
+        "description": "Provisioned throughput (TPM in thousands) for the chat deployment."
+      }
+    },
+    "corpusRefreshCron": {
+      "type": "string",
+      "defaultValue": "30 2 * * *",
+      "metadata": {
+        "description": "Cron expression for the daily corpus refresh job (UTC). Default 02:30 daily."
+      }
+    },
+    "replicaTimeoutSeconds": {
+      "type": "int",
+      "defaultValue": 1800,
+      "minValue": 60,
+      "maxValue": 3600,
+      "metadata": {
+        "description": "Replica timeout (seconds) for the refresh job execution."
+      }
+    },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace for diagnostic settings on Cosmos / Key Vault. Empty string skips diagnostics (SIT). Populated in PROD per copilot-instructions §3."
+      }
+    },
+    "demoScope": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "When true, the deployment is scoped to the demo path (synthetic data only, ADR-0013). Emits a demoScope tag for provenance."
+      }
+    }
+  },
+  "variables": {
+    "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
+    "openAiName": "[toLower(format('oai-po{0}', replace(parameters('nameSuffix'), '-', '')))]",
+    "cosmosName": "[toLower(format('cosmos-po-{0}', parameters('nameSuffix')))]",
+    "keyVaultName": "[toLower(format('kvpo{0}', replace(parameters('nameSuffix'), '-', '')))]",
+    "runtimeAppName": "[format('ca-po-{0}', parameters('nameSuffix'))]",
+    "refreshJobName": "[format('caj-po-refresh-{0}', parameters('nameSuffix'))]",
+    "searchIndexDataReaderRoleId": "1407120a-92aa-4202-b7e9-c0e197c71c8f",
+    "cognitiveServicesOpenAiUserRoleId": "5e0bd9bd-7b93-4f28-af87-19fc36ad61bd",
+    "keyVaultSecretsUserRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
+    "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+    "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002",
+    "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]",
+    "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[format('id-po-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]"
+    },
+    {
+      "condition": "[empty(parameters('containerAppEnvironmentId'))]",
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('containerAppEnvironmentName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "properties": {
+        "appLogsConfiguration": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('destination', 'log-analytics', 'logAnalyticsConfiguration', createObject('customerId', reference(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').customerId, 'sharedKey', listKeys(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').primarySharedKey)), createObject('destination', 'azure-monitor'))]",
+        "zoneRedundant": false
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2024-10-01",
+      "name": "[variables('openAiName')]",
+      "location": "[parameters('openAiLocation')]",
+      "tags": "[variables('effectiveTags')]",
+      "kind": "OpenAI",
+      "sku": {
+        "name": "S0"
+      },
+      "properties": {
+        "customSubDomainName": "[variables('openAiName')]",
+        "publicNetworkAccess": "Enabled",
+        "disableLocalAuth": true
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2024-10-01",
+      "name": "[format('{0}/{1}', variables('openAiName'), parameters('openAiDeploymentName'))]",
+      "sku": {
+        "name": "[parameters('openAiSkuName')]",
+        "capacity": "[parameters('openAiCapacity')]"
+      },
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "[parameters('openAiModelName')]",
+          "version": "[parameters('openAiModelVersion')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]",
+      "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('cognitiveServicesOpenAiUserRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesOpenAiUserRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 28 WS-INF (#377) — PO Agent runtime MI calls the chat deployment (keyless)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "apiVersion": "2024-05-15",
+      "name": "[variables('cosmosName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "kind": "GlobalDocumentDB",
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "disableLocalAuth": true,
+        "enableAutomaticFailover": false,
+        "consistencyPolicy": {
+          "defaultConsistencyLevel": "Session"
+        },
+        "locations": [
+          {
+            "locationName": "[parameters('location')]",
+            "failoverPriority": 0,
+            "isZoneRedundant": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/{1}', variables('cosmosName'), 'po-agent-audit')]",
+      "properties": {
+        "resource": {
+          "id": "po-agent-audit"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/{1}/{2}', variables('cosmosName'), 'po-agent-audit', 'answers')]",
+      "properties": {
+        "resource": {
+          "id": "answers",
+          "partitionKey": {
+            "paths": [
+              "/classId"
+            ],
+            "kind": "Hash"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('cosmosName'), 'po-agent-audit')]"
+      ]
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+      "apiVersion": "2024-05-15",
+      "name": "[format('{0}/{1}', variables('cosmosName'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('cosmosDataContributorRoleId')))]",
+      "properties": {
+        "roleDefinitionId": "[format('{0}/sqlRoleDefinitions/{1}', resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), variables('cosmosDataContributorRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2023-07-01",
+      "name": "[variables('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "enableRbacAuthorization": true,
+        "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 7,
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+      "name": "[guid(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('keyVaultSecretsUserRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('keyVaultSecretsUserRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 28 WS-INF (#377) — PO Agent runtime MI reads config secrets (keyless auth)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('searchServiceId')))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.Search/searchServices', last(split(parameters('searchServiceId'), '/')))]",
+      "name": "[guid(parameters('searchServiceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('searchIndexDataReaderRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('searchIndexDataReaderRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 28 WS-INF (#377) — PO Agent runtime MI queries the corpus index (Class A retrieval, keyless)."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.App/containerApps",
+      "apiVersion": "2024-03-01",
+      "name": "[variables('runtimeAppName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))]": {}
+        }
+      },
+      "properties": {
+        "environmentId": "[variables('effectiveEnvironmentId')]",
+        "configuration": {
+          "activeRevisionsMode": "Single",
+          "ingress": {
+            "external": true,
+            "targetPort": 8080,
+            "transport": "auto",
+            "allowInsecure": false
+          },
+          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))), createArray())]"
+        },
+        "template": {
+          "containers": [
+            {
+              "name": "po-agent",
+              "image": "[parameters('containerImage')]",
+              "resources": {
+                "cpu": "[json('0.5')]",
+                "memory": "1Gi"
+              },
+              "env": [
+                {
+                  "name": "AZURE_CLIENT_ID",
+                  "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                },
+                {
+                  "name": "SEARCH_ENDPOINT",
+                  "value": "[parameters('searchEndpoint')]"
+                },
+                {
+                  "name": "SEARCH_API_VERSION",
+                  "value": "[parameters('searchRestApiVersion')]"
+                },
+                {
+                  "name": "AZURE_OPENAI_ENDPOINT",
+                  "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName')), '2024-10-01').endpoint]"
+                },
+                {
+                  "name": "AZURE_OPENAI_DEPLOYMENT",
+                  "value": "[parameters('openAiDeploymentName')]"
+                },
+                {
+                  "name": "COSMOS_ENDPOINT",
+                  "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), '2024-05-15').documentEndpoint]"
+                },
+                {
+                  "name": "KEY_VAULT_URI",
+                  "value": "[reference(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '2023-07-01').vaultUri]"
+                },
+                {
+                  "name": "DEMO_SCOPE",
+                  "value": "[if(parameters('demoScope'), 'true', 'false')]"
+                }
+              ]
+            }
+          ],
+          "scale": {
+            "minReplicas": 0,
+            "maxReplicas": 2
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]",
+        "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.App/jobs",
+      "apiVersion": "2024-03-01",
+      "name": "[variables('refreshJobName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('effectiveTags')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))]": {}
+        }
+      },
+      "properties": {
+        "environmentId": "[variables('effectiveEnvironmentId')]",
+        "configuration": {
+          "triggerType": "Schedule",
+          "replicaTimeout": "[parameters('replicaTimeoutSeconds')]",
+          "replicaRetryLimit": 1,
+          "scheduleTriggerConfig": {
+            "cronExpression": "[parameters('corpusRefreshCron')]",
+            "parallelism": 1,
+            "replicaCompletionCount": 1
+          },
+          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))), createArray())]"
+        },
+        "template": {
+          "containers": [
+            {
+              "name": "po-corpus-refresh",
+              "image": "[parameters('containerImage')]",
+              "resources": {
+                "cpu": "[json('0.25')]",
+                "memory": "0.5Gi"
+              },
+              "env": [
+                {
+                  "name": "AZURE_CLIENT_ID",
+                  "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                },
+                {
+                  "name": "CORPUS_STORAGE_ACCOUNT",
+                  "value": "[parameters('corpusStorageAccountName')]"
+                },
+                {
+                  "name": "CORPUS_CONTAINER",
+                  "value": "[parameters('corpusContainerName')]"
+                },
+                {
+                  "name": "CORPUS_PREFIX",
+                  "value": "[parameters('corpusPrefix')]"
+                },
+                {
+                  "name": "DEMO_SCOPE",
+                  "value": "[if(parameters('demoScope'), 'true', 'false')]"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+        "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]"
+      ]
+    },
+    {
+      "condition": "[variables('useAcrMiPull')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+      "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 28 WS-INF (#377) — PO Agent runtime + refresh job pull containerImage from ACR."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]",
+      "name": "[format('diag-{0}', variables('cosmosName'))]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+        "logs": [
+          {
+            "category": "DataPlaneRequests",
+            "enabled": true
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Requests",
+            "enabled": true
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+      "name": "[format('diag-{0}', variables('keyVaultName'))]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+        "logs": [
+          {
+            "category": "AuditEvent",
+            "enabled": true
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "moduleStatus": {
+      "type": "string",
+      "metadata": {
+        "description": "PO Agent runtime module implementation marker."
+      },
+      "value": "experience-hosting-po-agent-runtime-implemented"
+    },
+    "principalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal ID of the PO Agent User-Assigned Managed Identity. Consumed by the corpus-landing module for the Storage Blob Data Contributor grant."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+    },
+    "clientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Client ID of the PO Agent User-Assigned Managed Identity. Passed to containers as AZURE_CLIENT_ID."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+    },
+    "identityResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the PO Agent User-Assigned Managed Identity."
+      },
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+    },
+    "runtimeAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the runtime Container App."
+      },
+      "value": "[variables('runtimeAppName')]"
+    },
+    "refreshJobName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the scheduled corpus-refresh Container Apps Job."
+      },
+      "value": "[variables('refreshJobName')]"
+    },
+    "openAiEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure OpenAI account endpoint."
+      },
+      "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName')), '2024-10-01').endpoint]"
+    },
+    "cosmosEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos DB document endpoint."
+      },
+      "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), '2024-05-15').documentEndpoint]"
+    },
+    "keyVaultUri": {
+      "type": "string",
+      "metadata": {
+        "description": "Key Vault URI."
+      },
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '2023-07-01').vaultUri]"
+    },
+    "managedEnvironmentId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the managed environment used by the runtime app + refresh job."
+      },
+      "value": "[variables('effectiveEnvironmentId')]"
+    }
+  }
+}

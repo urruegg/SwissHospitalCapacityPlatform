@@ -1,0 +1,34 @@
+# SBA (Staffing-Balance Copilot Agent) lever catalog.
+# Sprint 26 WS-B fan-out: fully specified per design spec Sec 3.3.
+# Referenced by data/synthetic/schema/dc-insight-v1.schema.json recommendation[].lever_id.
+role: sba
+levers:
+  - lever_id: SBA-FLEX-STAFF-BEDS
+    role: sba
+    title_i18n:
+      de: "Betten durch Flex-Personal öffnen"
+      en: "Flex-staff additional beds"
+      fr: "Ouvrir des lits avec du personnel flexible"
+      it: "Aprire letti con personale flessibile"
+    description_i18n:
+      de: "Empfiehlt, N zusätzliche Betten in einer Schicht durch Flex-Personal zu besetzen, um nutzbare Kapazität freizugeben."
+      en: "Recommends flex-staffing N additional beds on a given shift to free usable bed capacity."
+      fr: "Recommande de doter en personnel flexible N lits supplémentaires sur une équipe pour libérer de la capacité utilisable."
+      it: "Consiglia di dotare di personale flessibile N letti aggiuntivi in un turno per liberare capacità utilizzabile."
+    preconditions:
+      - "ward.occupancy_pct > threshold"
+      - "staffing_pool.available >= n"
+    params_schema:
+      type: object
+      required: ["n", "shift"]
+      properties:
+        n:
+          type: integer
+          minimum: 1
+          description: "Number of additional beds to flex-staff."
+        shift:
+          type: string
+          description: "Shift on which the flexed beds are staffed, e.g. day, night."
+    impact_formula_ref: flex_staff_beds
+    owner_role: sba
+    hitl: true

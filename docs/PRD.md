@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.13.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 2.2.0 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.12.0 (added NFR-EXT-EVID-001 + signals-fabric-evidence traceability row) |
+| **Previous Version** | 2.1.0 (added Sprint 29 application context-architecture requirements FR-CTX-001..004 + NFR-CTX-001..002, #399); this bump merges the Sprint 27 Curavias app UX-polish requirements FR-UX-001..006 + NFR-UX-001..004 and their traceability row |
 
 ## Purpose
 
@@ -73,6 +73,7 @@ Swiss cantonal hospital provider deployment at a time.
 | `FR-FC-004` | Forecast outputs shall be published to operations-facing dashboards. |
 | `FR-FC-005` | Forecast outputs shall be available as grounding context for the bed management copilot. |
 | `FR-FC-006` | Forecast generation runs shall persist execution timestamps and model run identifiers for auditability. |
+| `FR-FC-007` | The Fabric Data Agent shall emit the `DC-INSIGHT-v1` `signal`, `understanding`, and `provenance` beats as the governed grounding contract that prescriptive copilots consume (drivers, source-trust, and confidence for a forecast breach). |
 
 ### D) Discharge Coordination Intelligence
 
@@ -150,18 +151,20 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 
 ### J) Product Marketing And Public Web (Sprint 24)
 
-Sprint 24 deltas formalised per [Sprint 24 plan](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) (epic #261). The product-marketing agent and public Curavias site are **showcase-scoped** (advisory-only, synthetic data, not a medical device) and carry a mandatory disclaimer.
+Sprint 24 deltas formalised per [Sprint 24 plan](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) (epic #261). The product-marketing agent is **showcase-scoped** (advisory-only, synthetic data, not a medical device) and carries a mandatory disclaimer.
+
+> **Retired (Sprint 28, [ADR-0044](adr/0044-retire-public-website.md)):** the public Curavias website (`apps/curavias-web`, `curavias.ch` / `www.curavias.ch`) was retired before go-live. `FR-WEB-001..005` below are **withdrawn** — kept for traceability, not reused. The `product-marketing-agent` (`FR-MKT-*`) is retained; only its website-copy deliverable is dropped. The shared `curavias.ch` DNS zone stays (it serves the `hcc-app-fluent` app, `app.curavias.ch`, per ADR-0030).
 
 | ID | Requirement |
 | -- | ----------- |
 | `FR-MKT-001` | The solution shall provide a **product-marketing copilot agent** grounded in the Curavias brandkit, vision, and mission to keep product communication stringent and aligned across customer-facing, user-facing, and devops-team-facing channels. |
 | `FR-MKT-002` | The product-marketing agent shall preserve the **advisory-only voice** (the platform *previews/recommends*, never *decides/diagnoses*) and enforce the showcase disclaimer across all generated messaging. |
 | `FR-MKT-003` | The product-marketing agent shall operate in an explicit RACI with the `ux-design-agent` for all customer-facing experience surfaces. |
-| `FR-WEB-001` | The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content. |
-| `FR-WEB-002` | The public site shall display the **showcase disclaimer** ("Kein reales Produkt…", synthetic data, advisory-only, not a medical device) on every page. |
-| `FR-WEB-003` | The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS. |
-| `FR-WEB-004` | The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap. |
-| `FR-WEB-005` | Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268). |
+| `FR-WEB-001` | **[Retired — ADR-0044]** The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content. |
+| `FR-WEB-002` | **[Retired — ADR-0044]** The public site shall display the **showcase disclaimer** ("Kein reales Produkt…", synthetic data, advisory-only, not a medical device) on every page. |
+| `FR-WEB-003` | **[Retired — ADR-0044]** The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS. |
+| `FR-WEB-004` | **[Retired — ADR-0044]** The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap. |
+| `FR-WEB-005` | **[Retired — ADR-0044]** Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268). |
 
 ### K) Trusted External Signals (Sprint 21)
 
@@ -201,7 +204,7 @@ preparation.
 Sprint 23 deltas (P1b) formalised per the
 [Sprint 23 org-skills refactor design](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md),
 [Sprint 23 implementation plan](superpowers/plans/2026-07-23-sprint-23-org-skills-refactor-plan.md),
-and [ADR-0039](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md).
+and [ADR-0050](adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md).
 Scope is synthetic, no-PHI master data loaded on demand; the skills-evidence
 plugin reuses the Sprint 21 provider-plugin pattern. Extends the Step 1-4
 org/skills ontology, does not replace it.
@@ -219,7 +222,64 @@ org/skills ontology, does not replace it.
 | `FR-SKILL-008` | Express the **bed-vs-ops skill-demand split** on the semantic and ontology surface: bed side = Pflegepersonal / nursing, ops side = doctors and specialised teams. |
 | `FR-SKILL-ONT-001` | Extend the existing staff/person ontology view with the org spine, skill classes, and bed-vs-ops demand axis; keep `fact_skill_assertion` as the atomic unit and the proficiency (1-5) / assurance (L0-L4) axes and GLN golden thread unchanged (extend, don't replace). |
 
-### M) App Experience Polish And Design System (Sprint 27)
+### M) Prescriptive Decision & Coordination Intelligence (Sprint 26)
+
+Sprint 26 deltas (Slice 1, OOA -> DCA) formalised per the
+[Sprint 26 decision-ontology design spec](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md),
+the
+[Sprint 26 Slice 1 implementation plan](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md),
+and [ADR-0040](adr/0040-prescriptive-decision-ontology-and-runtime-store.md).
+Extends the descriptive `DC-INSIGHT-v1` grounding contract (`FR-FC-007`) with
+RECOMMENDATION, ACTION, and COORDINATION beats assembled at runtime by the
+agent-host. Advisory-only and human-in-the-loop throughout; the deterministic
+impact function replaces LLM-estimated expected impact; the runtime decision
+store (Cosmos `proposed_actions` + `plans`) is agent-host-mediated so OOA/DCA
+keep their `write` side-effect ceiling.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-DEC-001` | Prescriptive copilots shall assemble a RECOMMENDATION beat that ranks response levers from a governed lever catalog, where each lever's `expected_impact` is computed by a deterministic, forecast-grounded impact function (never an LLM estimate). |
+| `FR-DEC-002` | Prescriptive copilots shall assemble an ACTION beat that is advisory and human-in-the-loop: an action may be PROPOSED autonomously but is only APPLIED after a human posts the `approved-to-apply` confirmation; the agent shall refuse to self-approve or accept a bot approver. |
+| `FR-DEC-003` | Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%). |
+
+### P) Curavias Product Owner Agent (Sprint 28)
+
+Sprint 28 deltas per the
+[Sprint 28 design spec Section 11](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md)
+and [ADR-0043](adr/0043-product-owner-agent-foundry-iq-domain.md). The Product
+Owner Agent is the advisory-only, source-grounded voice of the platform, embedded
+as a Copilot rail and grounded on the four knowledge classes over the frozen
+[`GroundedChunk` contract](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-POA-001` | The PO Agent shall answer product questions grounded only on the four knowledge classes (A corpus, B live-proof, C cost, D ontology), with mandatory citations. |
+| `FR-POA-002` | The PO Agent shall be embedded as a Copilot rail on the Curavias App START and BACKSTAGE surfaces using the MAIN-board pattern. |
+| `FR-POA-003` | The knowledge layer shall be a shared Foundry IQ Knowledge Layer registering the PO Agent as domain #1 and supporting additional domains. |
+| `FR-POA-004` | The corpus shall refresh daily GitHub -> ADLS -> OneLake -> knowledge source, PHI-excluded, interviews first-order. |
+| `FR-POA-005` | Class B live-proof shall answer the five reference questions read-only with reconcile-and-flag. |
+| `FR-POA-006` | Class C shall reconcile effective PROD Azure cost + GitHub Copilot token cost to the BVA/TCO baseline. |
+| `FR-POA-007` | Class D shall answer data questions via the ontology with concept + gold-binding citations. |
+| `FR-POA-008` | The PO Agent shall answer in DE and EN with source-language transparency. |
+| `FR-POA-009` | The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail. |
+
+### Q) Application Context Architecture (Sprint 29)
+
+Sprint 29 deltas per the
+[Sprint 29 design spec](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md),
+its [implementation plan](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md),
+and [ADR-0052](adr/0052-app-context-envelope-per-agent-threads.md). The three
+context tiers (user / agent / grounding) are made consistent by construction and
+config-gated so the westus2 demo (simulated) lifts to live SIT without code edits.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-CTX-001` | The app shall derive a single `ContextEnvelope` from the signed-in user's claims and active role lens and attach it to every IQ read and agent turn. |
+| `FR-CTX-002` | The app shall keep a separate conversation thread per `(userOid x agent)` so switching board-agents never leaks turns across agents, with a clean reset on sign-out. |
+| `FR-CTX-003` | The app shall open the first patient-journey board the active role can see (role-first-eligible default) instead of a hard-coded default board. |
+| `FR-CTX-004` | The app shall enforce per-user data scope (RLS by `hospitalScope`) and the OBO contract, simulated app-side this sprint and liftable to live Fabric RLS / OBO via configuration without code change. |
+
+### R) App Experience Polish And Design System (Sprint 27)
 
 Sprint 27 deltas formalised per the
 [Sprint 27 UX polish design](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md)
@@ -236,6 +296,7 @@ public site `apps/curavias-web` and any Astro pattern are out of scope.
 | `FR-UX-004` | The solution shall provide a documented **SIT-connected local visual-verify loop** in which the app runs locally against SIT, is opened in a VS Code browser tab whose context is shared with GitHub Copilot via a read-only browser-automation server, and supports an edit → hot-reload → re-snapshot → accessibility-scan cycle. |
 | `FR-UX-005` | The internal app shall deliver a **fully polished OOA reference vertical** (Start occupancy teaser, MAIN Occupancy board, OOA agent-plane context, and the shared five-plane chrome) meeting the acceptance bar, as the reference implementation for later role-board polish. |
 | `FR-UX-006` | The solution shall maintain an **ordered polish backlog** applying the same design-system recipe to the remaining role boards and surfaces in later sprints. |
+
 
 ## Non-Functional Requirements
 
@@ -304,6 +365,7 @@ public site `apps/curavias-web` and any Astro pattern are out of scope.
 | `NFR-AI-003` | Forecast and discharge model outputs shall be traceable to model version and execution time. |
 | `NFR-AI-004` | User-facing AI responses and coordination triggers shall be auditable to source context. |
 | `NFR-AI-005` | AI-serving behavior shall support provider-local governance and change control. |
+| `NFR-DEC-001` | Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver. |
 
 ### G) Maintainability And Delivery
 
@@ -350,7 +412,23 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-SKILL-001` | Skills-evidence ingestion and simulation run as **Azure Container Apps** services publishing to Event Hub/Eventstream, never as GitHub Actions workflows (Actions is CI-only). |
 | `NFR-SKILL-002` | All Curavias org/skills data is **synthetic, no-PHI**; the master-data generator is deterministic and git-owned for reproducibility, while the generated extracts are uploaded to the landing zone and not committed to git. |
 
-### L) App Experience Polish Governance (Sprint 27)
+### L) Curavias Product Owner Agent (Sprint 28)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-POA-001` | Citation coverage >= 95%; zero hallucination on CFO/CISO/CLO classes. |
+| `NFR-POA-002` | 100% audit coverage (question -> sources -> answer -> caller). |
+| `NFR-POA-003` | All runtime + data in Switzerland North; no PHI; Preview services accepted per design D3. |
+| `NFR-POA-004` | Advisory-only, human-in-the-loop; the agent never mutates a system. |
+
+### M) Application Context Architecture (Sprint 29)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-CTX-001` | The context architecture shall remain demo-safe: synthetic data only, no PHI (ADR-0013 / ADR-0016), westus2 demo scope. |
+| `NFR-CTX-002` | Provenance and citations shall be preserved on every result; an envelope-less IQ call is refused and degradation surfaces `simulated` provenance loudly (no silent "live"). |
+
+### N) App Experience Polish Governance (Sprint 27)
 
 | ID | Requirement |
 | -- | ----------- |
@@ -386,13 +464,18 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 
 | [`docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md`](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md) *(Fabric-to-Foundry grounding seam, Slice 0)* | `FR-ONT-008` (extends `FR-ONT-004`, `NFR-AI-002/004`) |
 | [`docs/adr/0034-fabric-iq-demo-scope-artefacts.md`](adr/0034-fabric-iq-demo-scope-artefacts.md) + [`docs/architecture/fabric-iq-ready-evidence.md`](architecture/fabric-iq-ready-evidence.md) *(live demo-scope realisation)* | `FR-ONT-008` (Foundry `ooa` surface proven live, issue #251) |
-| [`docs/superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md`](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) *(Sprint 24: product-marketing agent + public Curavias site, epic #261, issues #262–#268)* | `FR-MKT-001` to `FR-MKT-003`, `FR-WEB-001` to `FR-WEB-005` |
+| [`docs/superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md`](superpowers/plans/2026-07-21-sprint-24-curavias-product-marketing-and-webpage.md) *(Sprint 24: product-marketing agent + public Curavias site, epic #261, issues #262–#268)* | `FR-MKT-001` to `FR-MKT-003`; `FR-WEB-001` to `FR-WEB-005` **Retired ([ADR-0044](adr/0044-retire-public-website.md), Sprint 28)** |
 
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21: trusted external signals contract, triggers, ontology, and governance)* | `FR-EXT-001` to `FR-EXT-006`, `FR-EXT-ONT-001` to `FR-EXT-ONT-002`, `FR-EXT-GOV-001`, `NFR-EXT-ONT-001`, `NFR-EXT-GOV-001` to `NFR-EXT-GOV-002` |
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 forecast overlay and SIT IQ-layer proof extension)* | `FR-EXT-010` to `FR-EXT-014` |
 | [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
-| [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
+| [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
 | [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
+| [`docs/CURAVIAS-PRODUCT-STATUS.md`](CURAVIAS-PRODUCT-STATUS.md) + [`docs/sprints/sprint-19/sit-prod-parity-matrix.md`](sprints/sprint-19/sit-prod-parity-matrix.md) + [`docs/sprints/sprint-19/prod-evidence-switzerlandnorth.md`](sprints/sprint-19/prod-evidence-switzerlandnorth.md) *(Sprint 19: as-deployed PROD Switzerland North status + SIT↔PROD parity; per [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md), [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md), [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md))* | Deployment coverage for `FR-DATA-*`, `FR-FC-*`, `FR-DC-*`, `FR-CX-*`, `FR-VIZ-*`, `FR-EXT-*`, `FR-ORG-001`, `FR-SKILL-*`, `NFR-SEC-*`, `NFR-COMP-*`, `NFR-REL-*` (Covered); `FR-ONT-002`, `NFR-ONT-001` (N/A-per-ADR, #270); `FR-WEB-001` to `FR-WEB-005` (Retired, [ADR-0044](adr/0044-retire-public-website.md)) |
+| [`docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md`](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md) + [`docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md`](adr/0040-prescriptive-decision-ontology-and-runtime-store.md) + [`docs/superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md`](superpowers/plans/2026-07-24-sprint-26-slice1-ooa-dca-plan.md) *(Sprint 26 Slice 1: DC-INSIGHT-v1 descriptive -> prescriptive extension, OOA -> DCA)* | `FR-FC-007`, `FR-DEC-001` to `FR-DEC-003`, `NFR-DEC-001` |
+| [`docs/superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md`](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md) + [`docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md`](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md) + [`docs/adr/0043-product-owner-agent-foundry-iq-domain.md`](adr/0043-product-owner-agent-foundry-iq-domain.md) *(Sprint 28: Curavias Product Owner Agent full build; frozen GroundedChunk + A/B/C/D tool contracts; PO Agent as Foundry IQ domain #1; issue #377)* | `FR-POA-001` to `FR-POA-009`, `NFR-POA-001` to `NFR-POA-004` |
+
+| [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) + [`docs/superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md`](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md) + [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](adr/0052-app-context-envelope-per-agent-threads.md) *(Sprint 29: app context envelope + per-(user x agent) threads + role-first-eligible board + envelope propagation/guard + config-gated Foundry thread map + simulated OBO/RLS; issue #399)* | `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` |
 | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
 
 ## Assumptions To Validate In Implementation Planning

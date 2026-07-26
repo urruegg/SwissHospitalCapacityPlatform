@@ -1,0 +1,14 @@
+{
+  "classId": "D",
+  "text": "The Medicine A ward forecast occupancy for the 72-hour horizon is grounded on the hcp:OccupancyForecast concept bound to the gold DC-OCCUPANCY-FORECAST-v1 table via the da_hospital_capacity data agent.",
+  "citation": {
+    "sourceRef": "fabric-data-agent:da_hospital_capacity (b2e53c23-182a-452d-9321-e63f6009e80b)",
+    "conceptRef": "hcp:OccupancyForecast",
+    "goldBinding": "gold.dc_occupancy_forecast_v1"
+  },
+  "asOf": "2026-07-25T07:30:00Z",
+  "liveness": "live",
+  "status": "verified",
+  "confidence": 0.88,
+  "language": "en"
+}

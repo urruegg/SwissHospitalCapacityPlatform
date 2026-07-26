@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.9.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 0.11.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.8.0 (added SIT gold ext_* materialisation + external-signals Direct-Lake publish evidence) |
+| **Previous Version** | 0.10.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
 
 ## Purpose
 
@@ -18,6 +18,14 @@ This document is scoped to the approved MVP service pattern using:
 2. Microsoft Fabric for curation, serving, and analytics.
 3. Data lake storage layers (OneLake and controlled landing zones) for
 	scalable governed data persistence.
+
+> **As-deployed (Sprint 19):** the data/AI lane is live in PROD
+> **`switzerlandnorth`** — Fabric F2 capacity `fabricihzhhpfprod`, workspace
+> `ws-ihzhhpf-prod-data`, schemas-enabled lakehouse `lh_ihzhhpf_prod` with 50
+> Delta tables, plus 2 semantic models + report. Synthetic data only, no PHI
+> (metadata/episode-driven per [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md)).
+> Consolidated as-deployed view:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 ## Source Baseline
 
@@ -279,6 +287,43 @@ bindings are recorded in
 [`docs/ontology/crosswalk.md`](ontology/crosswalk.md) (v0.4.0) and the STRICT
 two-layer conformance gate. The semantic-model measures + verify-gate rebaseline
 for these tables are a stacked WS-A2 follow-on (design §7 open item).
+
+### Sprint 26 WS-B/C — Decision store and DC-INSIGHT-v1
+
+Slice 1 (issue #335,
+[design spec](superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md),
+[ADR-0040](adr/0040-prescriptive-decision-ontology-and-runtime-store.md))
+extends the Foresight tier's descriptive grounding into a prescriptive
+5-beat `DC-INSIGHT-v1` insight contract
+([`data/synthetic/schema/dc-insight-v1.schema.json`](../data/synthetic/schema/dc-insight-v1.schema.json)) —
+SIGNAL / UNDERSTANDING / RECOMMENDATION / ACTION / COORDINATION plus
+PROVENANCE — consumed by the OOA -> DCA copilot pair.
+
+Two new Cosmos containers hold the runtime decision store in the existing CSA
+account (`cosmos-csa-ihzhhpf-sit`), defined in `infra/modules/cosmos/csa.bicep`:
+
+| Container | Partition key | Purpose |
+| --------- | -------------- | ------- |
+| `proposed_actions` | `/plan_id` | Persists lever-derived proposed actions (PROPOSED -> APPLIED on human `approved-to-apply`) with their deterministic `expected_impact`. |
+| `plans` | `/episode_key` | Persists the cross-role Plan / golden thread (e.g. the Medicine A 102% -> 94% capacity episode) including `forecast_deltas` and the OOA -> DCA handoff. |
+
+Per [ADR-0029](adr/0029-agent-host-cosmos-reachability.md), both containers are
+**agent-host-mediated** — OOA and DCA never call `cosmos-mcp` directly, so their
+side-effect ceiling stays `write` and no new MCP grant is required.
+
+The runtime persists through an abstract `PlanStore`
+([`data-platform/decision/coordination/store.py`](../data-platform/decision/coordination/store.py)):
+`InMemoryStore` for tests and dry runs, and `CosmosStore`
+([`coordination/cosmos_store.py`](../data-platform/decision/coordination/cosmos_store.py))
+for live use — RBAC-only (`DefaultAzureCredential`, no account keys), mapping
+`plans`/`proposed_actions` verbatim onto the two containers. A **HITL-gated live
+seed** ([`coordination/seed_live.py`](../data-platform/decision/coordination/seed_live.py))
+replays all six roles into an injected store: `--action plan` prints the exact
+documents (dry run, no cloud), `--action apply` requires a non-bot
+`--approved-to-apply` handle and a reachable account. Because the SIT account is
+`publicNetworkAccess = Disabled` + private-endpoint only, a real apply runs from
+inside the VNet (the agent-host), never from CI — the container definitions
+themselves deploy through the `what-if`-gated `cd-infra-deploy-sit` workflow.
 
 ### Deprecations
 

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.1 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.5.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
+| **Previous Version** | 1.5.1 (editorial: repaired UTF-8 mojibake; no semantic change) |
 
 ## Purpose
 
@@ -18,10 +18,19 @@ Define the infrastructure baseline for Sprint 3 SIT and PROD provisioning and pr
 - Foundation module: infra/modules/platform-foundation/main.bicep
 - Environment parameters:
   - infra/environments/sit.bicepparam
-  - infra/environments/prod.bicepparam
+  - infra/environments/prod-swn.bicepparam (deployed PROD — Switzerland North greenfield, [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md))
+  - infra/environments/prod.bicepparam (westus2 demo baseline, referenced by `policy/policy-pack.json`)
 - CI validation workflow: .github/workflows/ci-infra-validate.yml
 - SIT deployment workflow: .github/workflows/cd-infra-deploy-sit.yml
 - PROD deployment workflow: .github/workflows/cd-infra-deploy-prod.yml
+
+> **As-deployed note (Sprint 19):** PROD is deployed greenfield in
+> **`switzerlandnorth`** (resource group `rg-ihzhhpf-prod`); the automated
+> `cd-infra-deploy-prod` pipeline targets `prod-swn.bicepparam` /
+> `switzerlandnorth`. SIT stays in `westus2` (+ `eastus2` Foundry split).
+> The retired `prod-eastus2.bicepparam` was deleted (#311). Consolidated
+> as-deployed view + parity evidence:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 ## Implemented Module Domains
 

@@ -1,5 +1,5 @@
 import type { Mode, RoleBoardData, ScenarioScope } from '../../journey/RoleBoard';
-import { isGoldenSourceConfigured, iqStructuredRead } from '../iq-client';
+import type { ContextEnvelope } from '../../context/context-envelope';
 import { getPreferredSource } from '../data-source';
 import { OCCUPANCY_PINNED, type OccupancyPayload, type SiteCapacitySummary, aggregateSiteCapacity } from './occupancy-data';
 import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
@@ -9,14 +9,45 @@ import { STAFFING_PINNED, type StaffingPayload } from './staffing-data';
 import { CRISIS_PINNED, type CrisisPayload } from './crisis-data';
 
 /**
- * Sprint 1 (parity) / Sprint 27 — trusted-data read adapter, routed through the
- * IQ-layer gateway (`../iq-client`). When the golden source is configured
- * (`VITE_GOLDEN_SOURCE_URL` -> Fabric Data Agent / semantic model over Gold) it
- * reads live golden evidence; otherwise it serves the layer's simulated fixture
- * flagged `simulated`. If the source is configured but the read fails, it falls
- * back to the fixture flagged `degraded` (fail loud, never silent). Every result
- * carries an evidence envelope (provenance + `hcp:*` / `gold.*` citations + degraded).
+ * Sprint 1 (parity) / Sprint 27 / Sprint 29 — trusted-data read adapter.
+ *
+ * The data source is chosen by the Live/Simulated toggle (`getPreferredSource`,
+ * Sprint 27): `simulated` serves the layer's synthesized fixtures; `live` reads
+ * the golden source (`VITE_GOLDEN_SOURCE_URL`) through the IQ gateway. Live calls
+ * carry a per-user `ContextEnvelope` (ADR-0052 OBO/RLS) as scoped headers, and a
+ * live call without an envelope is refused (throws). Every result carries an
+ * evidence envelope (provenance + `hcp:*` / `gold.*` citations + `degraded`);
+ * when `live` is selected but no golden source is configured we fail loud
+ * (`degraded: true`) rather than silently pretending.
  */
+let currentEnvelope: ContextEnvelope | null = null;
+
+function goldenUrl(): string {
+  return import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
+}
+
+/** The app sets this once the user context/active board is established; the IQ gateway attaches it as scoped headers on every live call. */
+export function setContextEnvelope(env: ContextEnvelope | null): void {
+  currentEnvelope = env;
+}
+
+export function getContextEnvelope(): ContextEnvelope | null {
+  return currentEnvelope;
+}
+
+/** Live IQ fetch with per-user OBO/RLS headers (ADR-0052). Refuses ungrounded calls. */
+async function iqFetch(path: string): Promise<Response> {
+  if (currentEnvelope === null) {
+    throw new Error('IQ gateway call requires a ContextEnvelope; call setContextEnvelope() first');
+  }
+  return fetch(path, {
+    headers: {
+      'X-User-Oid': currentEnvelope.userOid ?? '',
+      'X-Hospital-Scope': currentEnvelope.hospitalScope,
+      'X-Active-Role': currentEnvelope.activeRole,
+    },
+  });
+}
 
 // Representative ontology + gold citations per board. The demo fixtures are
 // grounded on these MVO entities; a live golden source returns its own.
@@ -30,8 +61,10 @@ const CITES = {
 } as const;
 
 /**
- * Shared structured-read path: simulated fixture when unconfigured, live golden
- * evidence when configured, or a loud `degraded` fallback on read failure.
+ * Shared structured-read path: simulated fixture when the toggle is `simulated`
+ * (or the golden source is unavailable, flagged `degraded`), or live golden
+ * evidence via the IQ gateway (OBO/RLS scoped) when `live` is selected and
+ * configured.
  */
 async function loadBoard<P>(
   resource: string,
@@ -47,17 +80,16 @@ async function loadBoard<P>(
     return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: false };
   }
   // Live requested but no golden source configured -> fail loud (degraded).
-  if (!isGoldenSourceConfigured()) {
+  if (!goldenUrl()) {
     return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: true };
   }
-  try {
-    const { payload, citations: live } = await iqStructuredRead<P>(
-      `/${resource}?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-    );
-    return { provenance: 'live', scope: pinnedScope, payload, citations: live.length ? live : cites, degraded: false };
-  } catch {
-    return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: true };
-  }
+  // Live + configured -> OBO/RLS gateway (iqFetch refuses without a ContextEnvelope).
+  const res = await iqFetch(
+    `${goldenUrl()}/${resource}?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  );
+  if (!res.ok) throw new Error(`${resource} load failed: ${res.status}`);
+  const payload = (await res.json()) as P;
+  return { provenance: 'live', scope: pinnedScope, payload, citations: cites, degraded: false };
 }
 
 export function loadOccupancy(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<OccupancyPayload>> {

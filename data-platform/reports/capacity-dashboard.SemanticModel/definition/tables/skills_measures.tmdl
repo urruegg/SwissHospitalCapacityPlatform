@@ -2,7 +2,9 @@
 /// the skills gold tables produced by
 /// data-platform/notebooks/skills-evidence/build_gold_skills.py. care_setting
 /// split (bed=nursing / ops) per T14; live-vs-simulated reads the validated
-/// source_mode flag (never invented) per D5.
+/// source_mode flag (never invented) per D5 - on fact_skill_demand (Live/
+/// Simulated Demand) and on fact_skill_assertion (Live/Simulated Assertions,
+/// Assertion Source Mode) surfacing the badge on gold.fact_skill_assertion.
 table skills_measures
 	lineageTag: 5f588190-eead-4fb7-add4-316f00bd35f4
 
@@ -69,6 +71,17 @@ table skills_measures
 
 	measure 'Skills Source Mode' = IF(DISTINCTCOUNT(fact_skill_demand[source_mode]) = 1, SELECTEDVALUE(fact_skill_demand[source_mode]), "mixed")
 		lineageTag: 4e2dfead-9e46-4a2a-ba1a-f48f373022ac
+
+	measure 'Live Assertions' = CALCULATE([Skill Assertions], fact_skill_assertion[source_mode] = "live")
+		formatString: 0
+		lineageTag: 06929ab6-0d43-472c-9cc4-5e50bbb93b19
+
+	measure 'Simulated Assertions' = CALCULATE([Skill Assertions], fact_skill_assertion[source_mode] = "simulated")
+		formatString: 0
+		lineageTag: 1c7fec6f-8540-4223-af35-26abb41d8b0f
+
+	measure 'Assertion Source Mode' = IF(DISTINCTCOUNT(fact_skill_assertion[source_mode]) = 1, SELECTEDVALUE(fact_skill_assertion[source_mode]), "mixed")
+		lineageTag: 615d7953-672d-4bda-bff5-b4bfbf1b2027
 
 	partition skills_measures = calculated
 		mode: import

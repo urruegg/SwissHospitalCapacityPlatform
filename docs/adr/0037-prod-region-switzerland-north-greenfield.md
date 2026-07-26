@@ -9,6 +9,18 @@
 | **Supersedes (scoped)** | [ADR-0032](0032-foundry-control-plane-eastus2.md) (Foundry control plane in eastus2) and [ADR-0035](0035-fabric-iq-layer-region-westus2.md) (PROD Fabric IQ in westus2) — **for the PROD environment only**; both remain the record of the SIT-era topology and its rationale. |
 | **Consulted** | SIT-vs-Switzerland-North evidence session (2026-07-21, live `az` against sub `66a9953a-df37-4c51-856c-9971b9bf3e03`); [ADR-0013](0013-temporary-us-region-demo-scope.md) sunset path; [ADR-0006](0006-preview-features-non-production-rule.md) preview rule |
 
+> **Amendment (2026-07-26, #401 - CODEOWNERS-reviewed):** The regional-`Standard`
+> residency-fallback claims in this ADR are **factually corrected** below. Verified live
+> (2026-07-25/26, `az cognitiveservices model list` / `usage list -l switzerlandnorth`):
+> the regional `Standard` tier is **deprecating** (`gpt-4o`, `gpt-4.1`, `gpt-4.1-mini` all
+> `Deprecating`; `gpt-4o 2024-11-20` blocks new deployments, `ServiceModelDeprecating`), so
+> it is **no longer a viable in-region residency path**. The realistic Swiss/EU residency
+> option is **`DataZoneStandard` (EU data zone)** on `gpt-5.4`/`5.5`/`5.6`. The live PROD
+> fleet standard is **`gpt-5` / `2025-08-07` / `GlobalStandard`** (decision **D7-a**,
+> [Sprint 19 parity plan](../superpowers/plans/2026-07-24-sprint-19-sit-prod-parity-extension.md)),
+> enacted by **PR #394**. The core decision (PROD pivot to Switzerland North) is unchanged;
+> **Status** remains Accepted.
+
 ## Context
 
 [ADR-0013](0013-temporary-us-region-demo-scope.md) established a **temporary** US-region
@@ -40,10 +52,15 @@ ADR-0032 evaluation ("48 GA models, Agent Service listed but requires validation
 
 The three agent models are deployable in `switzerlandnorth` but the `az` SKU column
 shows them as **`GlobalStandard`** (`gpt-5`, `gpt-5-mini`, `o3`) — inference routes to a
-global pool, **not in-region**. Only **`Standard`/regional** SKUs keep data inside
-Switzerland, and those are limited to **`gpt-4.1` / `gpt-4.1-mini` / `gpt-4o (2024-11-20)`**
-plus embeddings. This tradeoff is **not binding under current scope** (synthetic data,
-no PHI per ADR-0013/0016) but becomes decisive at real Swiss-PHI PROD.
+global pool, **not in-region**. The **regional `Standard` tier is deprecating** in
+`switzerlandnorth` (verified 2026-07-25/26 via `az cognitiveservices model list`): `gpt-4o`,
+`gpt-4.1`, and `gpt-4.1-mini` are all `Deprecating`, and `gpt-4o (2024-11-20)` already
+**blocks new deployments** (`ServiceModelDeprecating`), so regional `Standard` is **no
+longer a viable in-region residency path**. The realistic Swiss/EU residency option is
+**`DataZoneStandard` (EU data zone)** on `gpt-5.4` / `5.5` / `5.6` (the `gpt-5` /
+`gpt-5-mini` / `o3` family is `GlobalStandard`-only). This tradeoff is **not binding under
+current scope** (synthetic data, no PHI per ADR-0013/0016) but becomes decisive at real
+Swiss-PHI PROD.
 
 ## Decision
 
@@ -68,9 +85,13 @@ migration.
    Fabric IQ Ontology + Data Agent as **Preview** behind an [ADR-0006](0006-preview-features-non-production-rule.md)
    exception (they carry no production SLA and remain per-capacity gated, issue #270).
 4. **Model posture.** For the current synthetic/no-PHI scope, keep the agents on
-   `gpt-5`/`gpt-5-mini`/`o3` via `GlobalStandard`. Record that a strict Swiss-residency
-   PROD would downgrade agents to `gpt-4.1`/`gpt-4o` (regional `Standard`) or accept the
-   EU Data Zone boundary — decided at PHI-onboarding time, not now.
+   `gpt-5`/`gpt-5-mini`/`o3` via `GlobalStandard`. Note that a strict Swiss-residency
+   PROD can **no longer** downgrade to regional `Standard` (`gpt-4.1`/`gpt-4o`): that tier
+   is deprecating in `switzerlandnorth` (see the residency nuance above). The realistic
+   residency path is **`DataZoneStandard` (EU data zone)**, decided at PHI-onboarding time,
+   not now. The live fleet standard is **`gpt-5` / `2025-08-07` / `GlobalStandard`** per
+   decision **D7-a** ([Sprint 19 parity plan](../superpowers/plans/2026-07-24-sprint-19-sit-prod-parity-extension.md)),
+   enacted by **PR #394**.
 
 This **relaxes** the two-region US topology of ADR-0032/ADR-0035 for PROD and executes
 the ADR-0013 sunset intent one step early, on the strength of the 2026-07-21 evidence.
@@ -104,8 +125,10 @@ SIT is **untouched** (remains split westus2/eastus2 until a separate later decis
 * Fabric IQ Ontology/Data Agent remain **Preview** and may hit the #270 per-capacity
   gate on the new `switzerlandnorth` capacity (untested there) — IQ binding may lag the
   GA-core rebuild.
-* Agent models are cross-geo (`GlobalStandard`) unless downgraded — acceptable now, an
-  open item for PHI PROD.
+* Agent models are cross-geo (`GlobalStandard`); the former regional-`Standard` downgrade
+  path is deprecating in `switzerlandnorth`, so residency at PHI PROD means
+  **`DataZoneStandard` (EU data zone)**. Acceptable now (synthetic/no-PHI), an open item
+  for PHI PROD.
 * No network-secured "Class A" private-agent topology in Switzerland North.
 
 ## Alternatives considered
@@ -119,8 +142,9 @@ SIT is **untouched** (remains split westus2/eastus2 until a separate later decis
 
 ## Revisit criteria
 
-* Revisit the **model posture** at PHI onboarding: if strict Swiss residency is required,
-  move agents to regional `Standard` models or the EU Data Zone.
+* Revisit the **model posture** at PHI onboarding: regional `Standard` is deprecating in
+  `switzerlandnorth` and is **not** a viable residency path, so strict Swiss/EU residency
+  means moving agents to **`DataZoneStandard` (EU data zone)** on `gpt-5.4`/`5.5`/`5.6`.
 * Revisit the **IQ posture** when Fabric IQ Ontology + Data Agent reach GA in
   Switzerland North (retire the ADR-0006 exception).
 * If the `switzerlandnorth` Fabric capacity hits the #270 `FeatureNotAvailable` gate for
@@ -132,6 +156,7 @@ SIT is **untouched** (remains split westus2/eastus2 until a separate later decis
 * [ADR-0032 — Foundry control plane in eastus2](0032-foundry-control-plane-eastus2.md)
 * [ADR-0035 — PROD Fabric IQ layer in westus2](0035-fabric-iq-layer-region-westus2.md)
 * [ADR-0006 — Preview features non-production rule](0006-preview-features-non-production-rule.md)
+* [ADR-0042 — PROD Switzerland North GA-target + standing Preview exception](0042-prod-switzerland-north-ga-target-standing-preview-exception.md)
 * [ADR-0016 — No PHI in MVP demo scope](0016-no-phi-in-mvp-demo-scope.md)
 * `docs/region-availability.yaml` (refreshed 2026-07-21 with the `az`-verified facts above)
 * Sprint 19 design + plan (retargeted to Switzerland North greenfield)

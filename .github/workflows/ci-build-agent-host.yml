@@ -16,6 +16,7 @@ on:
     paths:
       - 'apps/hcc-agent-host/**'
       - 'agents/**'
+      - 'data-platform/decision/**'
       - '.github/workflows/ci-build-agent-host.yml'
   workflow_dispatch:
 

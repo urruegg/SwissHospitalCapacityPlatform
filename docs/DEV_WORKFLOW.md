@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rueegg |
 | **Status** | Accepted |
-| **Previous Version** | n/a (initial version) |
+| **Previous Version** | 1.0.0 (initial version) |
 
 > The simplest, best-practice way to run two to three parallel sprints on one
 > desktop with GitHub issues and pull requests as the control plane. Formalised
@@ -81,17 +81,34 @@ lie — a branch identical to `main` can still look many commits ahead. Trust th
 
 ### Label taxonomy
 
-Prefixed labels keep issue and pull-request context legible at a glance. The
-bare, sprint-specific labels created in earlier sprints are legacy; new work uses
-these prefixes.
+Prefixed labels keep issue and pull-request context legible at a glance, aligned
+to how we **work**, **review**, and **approve**. The bare, sprint-specific labels
+created in earlier sprints are legacy; new work uses these prefixes. The taxonomy
+is codified in [`.github/labels.yml`](../.github/labels.yml) (single source of
+truth) and applied idempotently by `python scripts/labels/sync_labels.py --apply`
+or the manual **label-sync** workflow (`workflow_dispatch`).
 
 | Prefix | Labels | Meaning |
 | ------ | ------ | ------- |
 | `sprint-NN` | `sprint-30`, `sprint-31`, ... | Which sprint the work belongs to |
-| `type:` | `type:spec`, `type:plan`, `type:feat`, `type:fix`, `type:docs`, `type:infra` | What kind of change |
+| `type:` | `type:spec`, `type:plan`, `type:feat`, `type:fix`, `type:docs`, `type:infra`, `type:ci`, `type:test`, `type:refactor`, `type:perf`, `type:chore` | What kind of change (Conventional Commits) |
 | `lane:` | `lane:governance`, `lane:control`, `lane:infra`, `lane:data`, `lane:ai`, `lane:experience` | Which architecture lane |
-| `status:` | `status:wip`, `status:review`, `status:blocked` | Current state |
+| `status:` | `status:wip`, `status:review`, `status:approved`, `status:blocked` | Lifecycle state |
 | `deploy:` | `deploy:sit`, `deploy:prod` | Deployment intent |
+
+The `status:` labels track the **work -> review -> approve** lifecycle of every
+issue and pull request:
+
+| Stage | Label | Set when |
+| ----- | ----- | -------- |
+| **Work** | `status:wip` | An issue is being implemented / a PR is a draft |
+| **Review** | `status:review` | CI is green and the PR is handed off for human review |
+| **Approve** | `status:approved` | A human has reviewed and approved it to proceed / merge (this is the tracking label for the `approved-to-apply` gate on `deploy:*` PRs) |
+| _(off-track)_ | `status:blocked` | Work cannot proceed; document why |
+
+Exactly one `status:` label should be present at a time; move it forward as the
+item progresses. `status:approved` is set by the human reviewer, never by an
+agent or bot.
 
 ## 5. Auto-approve: CLI is not the same as VS Code
 

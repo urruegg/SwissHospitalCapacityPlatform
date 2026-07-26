@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.8.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 0.11.1 |
+| **Date** | 2026-07-26 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.7.1 (added Sprint 23 skills-evidence DSG tagging + Work-ID consent lineage) |
+| **Previous Version** | 0.11.0 (Sprint 23 skills-events lane consent enforcement); this bump repoints the Curavias ADR link ADR-0040 -> ADR-0050 (#378) |
 
 ## Purpose
 
@@ -20,6 +20,13 @@ and operational evidence.
 > `switzerlandnorth`. See [ADR-0013](adr/0013-temporary-us-region-demo-scope.md)
 > and the exception `EX-2026-07-02-westus2-demo` in [policy/exceptions.json](../policy/exceptions.json).
 > This carve-out does NOT weaken ADR-0003 / ADR-0004 for any PHI or production scope.
+>
+> **PROD region (Sprint 19):** PROD was rebuilt greenfield in
+> **`switzerlandnorth`** (`rg-ihzhhpf-prod`), synthetic data only, no PHI, per
+> [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md) +
+> [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md). SIT stays US-region
+> (`westus2`/`eastus2`) per the carve-out above. Consolidated as-deployed +
+> compliance-posture view: [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 Scope of this version:
 - Swiss federal privacy and health-data obligations relevant to the platform.
@@ -172,7 +179,7 @@ This ADR applies only to the demo scope defined by [ADR-0013](adr/0013-temporary
 
 Sprint 23 introduces workforce skills evidence (synthetic, no-PHI) via the
 plugin architecture recorded in
-[ADR-0039](adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md). Although
+[ADR-0050](adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md). Although
 the demo data is synthetic (`classification: personal-synthetic`), the records are
 **personal in shape** (they describe individual workers), so the Swiss DSG
 (revised Federal Act on Data Protection) control model is applied as if they were
@@ -192,6 +199,27 @@ The enforcement point for landed data is the **pipeline silver gate**
 against landed Bronze, quarantining bad rows in Silver rather than at PR time.
 Assurance derivation (`self` -> L0, `employer_confirmed` -> L1) and the live-vs-simulated
 badge are preserved end-to-end and never invented downstream (`FR-SKILL-007`).
+
+#### Near-real-time skills-events lane consent enforcement (`FR-SKILL-005`)
+
+The narrow WS-A4 Eventstream lane (`DC-SKILL-EVENT-v1`) carries the three
+near-real-time events (credential expiry, consent grant/revoke, newly-confirmed
+assertion). Its silver gate
+(`data-platform/notebooks/skills-events/build_silver_skill_events.py`) is the
+downstream PHI-gate the Eventstream module defers to, and it enforces the same
+`CH-C01` / `CH-C05` consent posture as the batch lane at event granularity:
+
+| Skills-event control | Requirement | Enforcement |
+| ----- | ----- | ----- |
+| Consent revocation removes the GLN promotion | `FR-SKILL-003`, `CH-C01` | On a `revoke` event the silver gate **defensively clears** `workerGln` + `consentScope` even if the upstream payload still carried them, so a revoked worker can never be promoted on the next load |
+| Grant carries the promotion, revoke never asserts one | `FR-SKILL-003` | A `grant` event must carry both `workerGln` and `consentScope` or it is quarantined (deny-by-default); non-consent events carrying a `consentAction` are quarantined |
+| Live-vs-simulated badge preserved on events | `FR-SKILL-007` | `sourceMode` (live \| simulated) + `trustTier` travel from the contract through Bronze/Silver and surface on `gold.skillevt_fact_event`; never invented downstream |
+| Synthetic-only event data | `NFR-SKILL-002` | The event seeder is deterministic and git-owned; envelopes are synthetic, no-PHI (ADR-0013 / ADR-0016) |
+| Live ingestion secrets never in repo | `CH-C05`, `NFR-SKILL-001` | The SIT lane is live-wired with a `CustomEndpoint` source (`es-ihzhhpf-skills-events`, demo-scope ADR-0013). Its Event-Hub-compatible ingestion connection string (SharedAccessKey) is retrieved at publish-time via `GET …/eventstreams/{id}/sources/{sourceId}/connection` and stored in Key Vault — **never committed**. The Container Apps publisher reads it from Key Vault at runtime |
+| PROD-swn EventHub source uses a secretless Fabric-managed connection | `CH-C05`, `NFR-SKILL-001`, [`ADR-0043`](adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md) | The PROD Switzerland North lane runs in `sourceMode=EventHub` (GA-in-region). The Eventstream binds to the dedicated skills-events hub through a **Fabric-managed connection** (`POST /v1/connections`, Entra/MI auth) — **no SharedAccessKey or connection string** is generated, stored, or committed. The simulator publishes via **Managed Identity `Azure Event Hubs Data Sender`** scoped to the dedicated hub |
+| Per-domain envelope isolation on the event rail | `NFR-SKILL-002`, `CH-C03` | The `DC-SKILL-EVENT-v1` envelope lands on a **dedicated `skills-events` Event Hub entity + `cg-skills-eventstream` consumer group**, separate from the capacity `events` rail, so skills events are isolated by functional domain end-to-end |
+| SIT and PROD do not share input services | `NFR-SKILL-002`, `CH-C05` | SIT (`evh-ihzhhpf-sit-*`, westus2/eastus2) and PROD (`evh-ihzhhpf-prod-i62t`, switzerlandnorth) use **separate Event Hubs namespaces, resource groups, and regions**; no input service is shared across environments |
+| Synthetic-only event publishing in PROD swn | `NFR-SKILL-002`, [`ADR-0043`](adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md) | Until the live HRIS/LMS connector lands, `publish_skill_events.py` emits deterministic synthetic `sourceMode=simulated` records only; the GA-only gate is reserved for a real go-live (real-PHI) cut-over |
 
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 

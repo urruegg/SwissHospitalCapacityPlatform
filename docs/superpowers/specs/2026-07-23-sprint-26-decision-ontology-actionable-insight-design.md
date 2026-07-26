@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.6.0 |
+| **Date** | 2026-07-26 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B next) |
-| **Previous Version** | 1.0.0 (added §9 delivery status & next step) |
+| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration in fix per §9.11) |
+| **Previous Version** | 1.5.0 (added §9.10 WS-C enablement — job turned on in SIT) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -227,17 +227,20 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 
 ## 9. Status & next step
 
-> Delivery status as of **2026-07-24**. This sprint is paused after WS-A for a break;
-> WS-B is the next slice and is fully planned + scoped (see below).
+> Delivery status as of **2026-07-25**. WS-A (Foresight) and the WS-B/C/D
+> **vertical slice** (OOA -> DCA, all 5 beats) are merged to `main` (#369); the
+> fan-out to BMCA/ORSA/SBA/CSA is merged (#376). The current slice adds the
+> **WS-C live-apply tooling** — a Cosmos-backed `PlanStore`, a HITL-gated live
+> seed, and a Foundry decision-tier registration tool (see §9.8).
 
 ### 9.1 Work-stream progress
 
 | WS | Status | Evidence / notes |
 | -- | ------ | ---------------- |
 | **WS-A — Foresight tier** | ✅ **Done, merged to `main`** | Deterministic forecast+driver+signal generator, 3 Gold tables, `hcp:Forecast/Driver` + `hcp:ExternalSignal` reuse, 2 contracts (`DC-OCCUPANCY-FORECAST-v1`, `DC-FORECAST-DRIVER-v1`), 16 unit tests. Live SIT evidence captured. |
-| **WS-B — Lever catalog + deterministic impact** | ⏭ **Next (planned, not started)** | Branch `sprint-26/ws-b-levers` bookmarked off `main`. Scope + decisions locked in §9.3. |
-| **WS-C — Decision + Coordination runtime (Cosmos)** | ⬜ Not started | `proposed_actions` + `plans`, HITL approve → recompute → plan `current` 102%→94%, handoff edges. Depends on WS-B. |
-| **WS-D — Consumption + governance** | ⬜ Not started | `DC-INSIGHT-v1` Data Agent contract, 6 Foundry agent upgrades, descriptive→prescriptive ADR, PRD FR/NFR + traceability. |
+| **WS-B — Lever catalog + deterministic impact** | ✅ **Vertical slice merged (#369); fan-out in delivery** | OOA+DCA levers, `compute_expected_impact`, `DC-INSIGHT-v1` contract, barrier model + `hcp:Barrier` landed via #369. Current slice adds the four fan-out levers (`BMCA-REBALANCE-CENSUS`, `ORSA-DEFER-ELECTIVE`, `SBA-FLEX-STAFF-BEDS`, `CSA-ACTIVATE-SURGE`) + formulas + tests. |
+| **WS-C — Decision + Coordination runtime (Cosmos)** | ✅ **Vertical slice (#369) + fan-out (#376) merged; live-apply tooling in delivery** | `Store`/`plan_runtime` (102%→94% recompute + OOA→DCA handoff) landed via #369; `seed_fanout.py` via #376. Current slice adds the Cosmos-backed `CosmosStore(PlanStore)`, the HITL-gated `coordination/seed_live.py`, and the Foundry `foundry/register_decision_tier.py` tool (§9.8). Live infra deploy + in-VNet apply still pending the `sit` environment approval + an in-VNet run. |
+| **WS-D — Consumption + governance** | ✅ **Vertical slice merged (#369); fan-out in delivery** | `DC-INSIGHT-v1` Data Agent contract + OOA/DCA agent upgrades + ADR-0040 + PRD `FR-DEC-*`/`NFR-DEC-*` landed via #369. Current slice upgrades the BMCA/ORSA/SBA/CSA agent packs + golden tasks. |
 
 ### 9.2 WS-A — what landed (merged PRs, issue #335)
 
@@ -259,8 +262,217 @@ One cohesive squash PR off `main` (branch `sprint-26/ws-b-levers`), Data/AI lane
 
 **Confirmed decisions (@urruegg, 2026-07-24):** barrier builder+schema now / defer Gold materialization · add only `hcp:Barrier` now · one cohesive PR.
 
-### 9.4 Resume checklist
+### 9.4 Resume checklist (next run — fan-out)
 
 - [ ] Re-read this §9 + the design §3.3 / §4 (WS-B) + [`docs/AI.md`](../../AI.md), [`docs/DATA.md`](../../DATA.md), [`docs/COMPLIANCE.md`](../../COMPLIANCE.md).
 - [ ] On branch `sprint-26/ws-b-levers` (already off `main`): TDD — schemas + failing tests first, then lever yaml + impact tool + barrier builder.
 - [ ] Validate: `pytest`, catalog schema-validate, `check_crosswalk_conformance.py --strict`, mojibake + markdownlint. Commit hooks-off; open one squash PR, base `main`, refs #335, **no self-merge**.
+
+### 9.5 Fan-out slice — BMCA / ORSA / SBA / CSA (current)
+
+One cohesive squash PR off `main` (branch `sprint-26/ws-b-levers`), 3-lane
+(Data/AI + Governance), TDD-first. Reuses the merged #369 pattern; **no new
+Cosmos container, no live `apply`** (the `proposed_actions` / `plans` containers
+already exist as role-agnostic IaC).
+
+| Role | Lever | `metric` | `params` | `formula_ref` |
+| ---- | ----- | -------- | -------- | ------------- |
+| BMCA | `BMCA-REBALANCE-CENSUS` | `rebalanced_beds` | `n`, `to_ward` | `rebalance_census_beds` |
+| ORSA | `ORSA-DEFER-ELECTIVE` | `elective_slots` | `n`, `before` | `defer_elective_slots` |
+| SBA | `SBA-FLEX-STAFF-BEDS` | `staffed_beds` | `n`, `shift` | `flex_staff_beds` |
+| CSA | `CSA-ACTIVATE-SURGE` | `surge_beds` | `n`, `scope` | `activate_surge_beds` |
+
+1. **Levers** — replace the four `*-PLACEHOLDER` stubs with fully-specified,
+   schema-valid catalogs (one self-owned lever each; `description_i18n` de/en/fr/it).
+2. **Impact** — four new pure formulas in `compute_expected_impact.py`
+   (registry now 7), each reusing `_bounded_bed_impact` with a role-specific
+   `metric` label but a bed-relief `delta` so the coordination recompute is
+   unchanged; `mechanism` carried in `assumptions`. Unit-tested.
+3. **Coordination** — `coordination/seed_fanout.py` mirrors `seed_slice1.py`
+   with a self-owned golden thread per role (BMCA 105→97, ORSA 105→95, SBA
+   104→98, CSA 120→80). Unit-tested.
+4. **Agent packs** — BMCA/ORSA/SBA/CSA `AGENT.md` gain the Sprint 26 extension
+   (§1), in-scope bullet (§2), `fabricated-impact` + `self-approval` refusals
+   (§5), the `DC-INSIGHT-v1` 5-beat subsection (§6), and the decision-tier
+   confirmation note (§7). CSA's note complements its existing Run/HITL gating.
+5. **Golden tasks** — one `DC-INSIGHT-v1` breach fixture per role + FR-DEC
+   front-matter + SemVer bumps.
+
+**Confirmed decisions (@urruegg, 2026-07-25):** one self-owned lever per role ·
+role-specific metric names with bed-relief delta · include Cosmos (WS-C) seed +
+agent (WS-D) wiring · reuse existing containers (no new IaC) · one cohesive PR.
+
+**Still deferred (not this branch):** live Cosmos/Foundry `apply`; DCA barrier
+Gold materialization; ontology `hcp:Recommendation` / `hcp:Lever`.
+
+### 9.6 Slice 1 — what landed (merged PR #369, follow-up #370; issue #335)
+
+Vertical Slice 1 moved OOA + DCA from **descriptive → prescriptive** end-to-end on one
+golden thread (Medicine A, 102% → 94% at 72h, OOA→DCA handoff):
+
+- **Decision lane** — `DC-INSIGHT-v1` JSON-schema contract + conformance test; lever catalog (OOA + DCA fully specified, other 4 stubbed); pure `compute_expected_impact` (`delta = min(n, max(0, round(forecastOccupiedBeds)))`, **never an LLM estimate**); runtime-derived DCA barrier model.
+- **Coordination lane** — pure runtime `open_plan → propose_action → HITL approve → deterministic recompute (102→94) → OOA→DCA handoff`; HITL refuses bot/self/non-proposed approvers. Cosmos `proposed_actions` (pk `/plan_id`) + `plans` (pk `/episode_key`) added to `infra/modules/cosmos/csa.bicep` (+ recompiled `infra/main.json`) — **definitions only, no live deploy.**
+- **Consumption lane** — `da_hospital_capacity` emits signal/understanding/provenance beats (RLS + PHI-refuse preserved); OOA + DCA agents assemble the 5-beat tuple, agent-host mediates the Cosmos write so OOA/DCA keep `write` ceiling with **no `cosmos-mcp` grant**; golden tasks added (happy 5-beat / HITL self+bot refusal / OOA→DCA handoff).
+- **Governance + CI** — `docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md` (Accepted); new `.github/workflows/decision-lane.yml` gate (75 decision-lane tests + contract conformance); PRD `FR-FC-007`, `FR-DEC-001/002/003`, `NFR-DEC-001` + §7 traceability.
+- **Test evidence at merge** — 75 decision-lane tests OK · `az bicep build` exit 0 (`infra/main.json` byte-identical) · mojibake clean · markdownlint 0 new violations.
+- **Follow-up #370** (open, CI green) — MD040 fenced-code language + regenerated app evidence fixture to green `main` after #369.
+- **Explicitly deferred (fan-out, not regressions):** BMCA / ORSA / SBA / CSA lever specs + agent upgrades; live Cosmos/Foundry `apply`; DCA barrier Gold materialization.
+
+### 9.7 Superseded plan — original WS-B-first sequencing
+
+> Retained for history. The original §9.3 planned WS-B as a standalone next slice on
+> branch `sprint-26/ws-b-levers`. That was superseded by the **vertical-slice** decision
+> (@urruegg): deliver OOA→DCA across WS-B+C+D in one cohesive PR (#369) to prove all 5
+> beats end-to-end before fanning out. Locked decisions from that plan still hold — barrier
+> builder+schema now / defer Gold materialization · add only `hcp:Barrier` now · one
+> cohesive PR.
+
+### 9.8 WS-C live-apply tooling — Cosmos store + Foundry registration (current)
+
+One cohesive squash PR off `main` (branch `sprint-26/ws-c-live-apply`),
+Data/AI lane, TDD-first. Turns the "definitions-only" decision store into
+**gated, executable apply tooling** without mutating cloud from CI. Confirmed
+scope A+B+C (@urruegg, 2026-07-25).
+
+1. **CosmosStore** — `coordination/cosmos_store.py`: a `CosmosStore(PlanStore)`
+   over the `plans` (`/episode_key`) + `proposed_actions` (`/plan_id`)
+   containers, RBAC-only (`DefaultAzureCredential`, no keys), lazy SDK import,
+   injectable container clients. Swap-compatible with `InMemoryStore` (contract
+   parity test). 12 unit tests.
+2. **Gated live seed** — `coordination/seed_live.py`: replays all six roles
+   (Slice-1 OOA→DCA + four fan-out threads) through the pure `plan_runtime`
+   into an injected store. `--action plan` prints the exact documents (dry run,
+   no cloud); `--action apply` requires a non-bot `--approved-to-apply` handle
+   AND a reachable Cosmos account, refusing a silent no-op. 13 unit tests.
+3. **Foundry registration** — `foundry/register_decision_tier.py`: mirrors
+   `register_fabric_data_agent_tool.py`; deterministic per-agent plan for the
+   six decision-tier agents (each pointed at its own role lever catalog + the
+   Cosmos containers + the deterministic impact tool), apply HITL-gated behind a
+   live registration factory. 15 unit tests.
+
+**Network reality (constrains "live").** The SIT Cosmos account is
+`publicNetworkAccess = Disabled` + private-endpoint only
+([ADR-0029](../../adr/0029-agent-host-cosmos-reachability.md)) and the Foundry
+project is eastus2 ([ADR-0032](../../adr/0032-foundry-control-plane-eastus2.md)),
+so neither is reachable from a laptop or a hosted CI runner. The real apply runs
+from inside the VNet (the agent-host). This branch therefore delivers the gated
+tooling + tests + dry-run evidence; the two remaining live steps are operational:
+
+- **(A) infra deploy** — the `proposed_actions` / `plans` container definitions
+  merged in #369 are still `waiting` on the `sit` GitHub environment reviewer
+  gate; @urruegg approving the pending `cd-infra-deploy-sit` run materializes
+  them (blast radius = the whole `infra/main.bicep` on latest `main`).
+- **(B/C) in-VNet apply** — once containers exist, run
+  `python -m coordination.seed_live --action apply --approved-to-apply <handle>`
+  and `python -m foundry.register_decision_tier --action apply --role <role>
+  --approved-to-apply <handle>` from the agent-host.
+
+**Still deferred (not this branch):** DCA barrier Gold materialization;
+ontology `hcp:Recommendation` / `hcp:Lever`.
+
+### 9.9 WS-C follow-up — in-VNet apply job + live Foundry factory (current)
+
+One squash PR off `main` (branch `sprint-26/ws-c-apply-runbook`), Infra +
+Data/AI + Governance lanes, TDD-first. Closes the "how does the live apply
+actually run" gap left open by §9.8 by delivering the in-VNet runner and the
+missing live Foundry seam. Confirmed scope: reuse the hcc-agent-host image/MI
+for both B and C **and** wire a live Foundry factory now (@urruegg, 2026-07-25).
+
+1. **Live Foundry factory** — `foundry/live_factory.py`:
+   `make_registration_factory(...)` speaks the Foundry Agents (Assistants
+   protocol) REST API in eastus2 — resolves the assistant by name, appends a
+   native **function** tool (`decision_tier_coordination_<role>`) idempotently,
+   sets the `decision_tier_role` metadata, POSTs the modify. Injectable
+   `token_provider` (scope `https://cognitiveservices.azure.com/.default`) +
+   `http_request`, so the whole sequence is unit-tested without cloud (mirrors
+   `fabric_data_agent_client.py`). `register_decision_tier.main --action apply`
+   now builds this factory from `FOUNDRY_PROJECT_ENDPOINT` / `FOUNDRY_PROJECT_NAME`
+   (ADR-0032 SIT defaults). 10 unit tests.
+2. **Image + CI** — `apps/hcc-agent-host/Dockerfile` bakes in
+   `data-platform/decision/`; the `.dockerignore` allowlist + `ci-build-agent-host.yml`
+   trigger paths add `data-platform/decision/**` so the apply CLIs ship in the
+   `hcc-agent-host` image alongside the `azure-identity` / `azure-cosmos`
+   runtime deps.
+3. **In-VNet job** — `infra/modules/decision-apply-job/main.bicep`: a
+   manual-trigger `Microsoft.App/jobs` on the **agent-host CAE**
+   (VNet-integrated → Cosmos PE reachable) reusing the agent-host MI (already a
+   Cosmos Built-in Data Contributor). Plan-first by default (both CLIs run
+   `--action plan`); a live apply is an operator-driven `az containerapp job
+   start` command override that supplies `--approved-to-apply <handle>`
+   (AGENTS.md §4). Wired into `infra/main.bicep` behind
+   `enableDecisionApplyJobModule` (SIT-gated). `az bicep build` clean.
+4. **Runbook** — [`docs/runbooks/decision-tier-live-apply.md`](../../runbooks/decision-tier-live-apply.md):
+   the exact prerequisites (incl. the one-time `Cognitive Services User` grant
+   for the agent-host MI on the eastus2 Foundry account), the plan-first + live
+   apply `az containerapp job start` invocations, verification, and rollback.
+
+**Verified (2026-07-25).** Cosmos containers already live (§9.8 A done via
+`cd-infra-deploy-sit` #379/#381). The live apply itself remains an operational,
+human-gated step run through the new job per the runbook.
+
+**Still deferred (not this branch):** DCA barrier Gold materialization;
+ontology `hcp:Recommendation` / `hcp:Lever`.
+
+### 9.10 WS-C enablement — job turned on in SIT (current)
+
+One squash PR off `main` (branch `sprint-26/ws-c-enable-apply-job`), Infra +
+Governance lanes. Turns the §9.9 job on in SIT so the human-gated live apply can
+run. The blocker that deferred this (the Sprint 28 PO-Agent OpenAI-at-SIT quota
+failure) was resolved on `main` (#392/#394/#397/#398 — SIT + PROD deploys green).
+
+1. **Job image (Option B, low blast radius)** — the §9.9 job inherited
+   `agentHostImage`, still pinned to the pre-decision `:b796961` (2026-07-18). A
+   new `decisionApplyJobImage` param (`infra/main.bicep`, default empty →
+   inherits `agentHostImage`) lets SIT pin the **job only** to the
+   decision-CLI-enabled `:2b83a49` (built by `ci-build-agent-host` on the #388
+   merge) without redeploying the running agent-host Container App.
+2. **SIT params** — `sit.bicepparam` sets `enableDecisionApplyJobModule = true`
+   and `decisionApplyJobImage = '…/hcc-agent-host:2b83a49'`. No coordinator-owned
+   main-health pin is touched.
+3. **Human gates** — @urruegg merges the PR and approves the `cd-infra-deploy-sit`
+   environment gate (creates the job); the live apply is then run plan-first and
+   applied only with `--approved-to-apply <handle>` per the runbook (AGENTS.md §4).
+
+### 9.11 WS-C live apply — guided run outcome + Foundry Agents-API fix (current)
+
+The 2026-07-26 guided live apply (job `caj-decision-apply-ihzhhpf-sit`, image
+`:2b83a49`, `--approved-to-apply urruegg`) produced a **split result** that this
+fix branch (`sprint-26/ws-c-foundry-agents-api`, Platform-control + AI lanes)
+resolves.
+
+1. **WS-B Cosmos seed — ✅ LIVE APPLIED.** `coordination.seed_live --action
+   apply` wrote the six-role `plans` + `proposed_actions` documents to
+   `cosmos-csa-ihzhhpf-sit` / `csa` (job stdout `{"applied": true, "approvedBy":
+   "urruegg", "planCount": 5}`). Re-runs are idempotent.
+2. **WS-C Foundry registration — ❌ blocked by a code bug, now fixed.**
+   `foundry/live_factory.py` targeted the wrong Foundry surface and returned
+   **401**, aborting the run before any agent was mutated. Root cause, proven
+   empirically against the live project:
+   - **Wrong API object.** The eight platform agents are **Foundry Agent
+     Service** *agents* (`/agents`, count 8), not OpenAI *Assistants*
+     (`/assistants`, count 0). Agents are immutable-versioned; an update is a
+     `POST /agents/{name}` carrying the **complete** definition, which the
+     service turns into a new version and auto-promotes to `latest`.
+   - **Wrong scope.** The data plane requires a bearer token for
+     `https://ai.azure.com/.default` (200), not `cognitiveservices.azure.com`
+     (401) — so the RBAC role is `Foundry User` /`Foundry Project Manager`, not
+     `Cognitive Services User`.
+   - **Wrong tool shape.** The Agent Service uses the **flat** Responses-API
+     function-tool shape (`{type,name,description,parameters}`), not the nested
+     Assistants `{type:"function", function:{…}}`.
+3. **The fix (this branch).** `live_factory.py` + `test_live_factory.py` rewritten
+   against the Agents API: `FOUNDRY_SCOPE = https://ai.azure.com/.default`; flat
+   function tool; factory flow = `GET /agents/{name}` → deep-copy
+   `versions.latest.definition` → append the `decision_tier_coordination_<role>`
+   function tool idempotently → merge version `metadata` (`decision_tier_role`,
+   `decision_tier_lever_catalog`, string values only) → `POST /agents/{name}`.
+   The complete existing definition (model, instructions, reasoning, existing
+   tools such as `ooa-agent`'s `fabric_dataagent`) is echoed verbatim so no agent
+   capability is lost. 13 factory tests + the full 147-test decision suite pass.
+4. **Operational follow-up (human-gated, after merge).** Rebuild the
+   `hcc-agent-host` image (CI watches `data-platform/decision/**`), bump
+   `decisionApplyJobImage` in `sit.bicepparam` to the new merge-SHA tag, redeploy
+   SIT, grant the job MI `Foundry User` on `ai-ihzhhpf-sit-eastus2`, then re-run
+   the Foundry apply via the `az containerapp job update --yaml` template-swap
+   method (ooa first, then fan out) per the runbook. `az containerapp job start
+   --command/--args` overrides are ignored in this environment.

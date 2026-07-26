@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Proposed |
-| **Date** | 2026-07-22 |
+| **Status** | Accepted |
+| **Date** | 2026-07-24 |
 | **Author** | Urs Rüegg |
 | **Decision-makers** | @urruegg |
 | **Extends** | [ADR-0037](0037-prod-region-switzerland-north-greenfield.md) (PROD switzerlandnorth greenfield — this ADR expands its network scope) |
@@ -56,7 +56,7 @@ The separate `cae-app-fluent-ihzhhpf-prod` (hosting `ca-app-fluent` and the
 
 ## Decision
 
-**Proposed: bring PROD switzerlandnorth to SIT network parity, plus add a Key Vault
+**Accepted: bring PROD switzerlandnorth to SIT network parity, plus add a Key Vault
 private endpoint.**
 
 1. **Enable the network module for PROD** (`enableNetworkModule=true`) with a
@@ -137,6 +137,16 @@ private endpoint.**
    both apps clean.
 5. Run the ADR-0029 10-check verification (private DNS resolves in-CA, PE connection
    Approved, DNS auto-registration, MI role bind present).
+
+## Applied & verified (2026-07-24)
+
+The network parity described here was applied to `rg-ihzhhpf-prod` and verified
+live on 2026-07-24. Verification confirmed VNet `vnet-platform-ihzhhpf-prod`
+(`10.70.0.0/16`); the platform Cosmos, CSA Cosmos, and Key Vault private
+endpoints all in `Approved` state; `cae-ihzhhpf-prod` VNet-integrated on
+`snet-cae` with `provisioningState Succeeded`; and `kv-ihzhhpf-prod-swn1` with
+`publicNetworkAccess=Disabled`. See the sprint evidence record:
+[`2026-07-24-network-parity-verification.md`](../sprints/sprint-19/evidence/2026-07-24-network-parity-verification.md).
 
 ## Cross-references
 

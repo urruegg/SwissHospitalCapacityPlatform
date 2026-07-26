@@ -107,6 +107,19 @@ param skillsEventstreamWorkspaceId string = ''
 @description('Optional Fabric Lakehouse ID for the skills-events Eventstream destination. Empty defers destination wiring (Eventstream created source-only).')
 param skillsEventstreamDestinationLakehouseId string = ''
 
+@description('Skills-events Eventstream source transport. CustomEndpoint (default, design D4 demo-scope) is fully live-deployable and mirrors es-capacity-events-sit; EventHub is the Swiss-GA target-state (requires a Fabric-managed connection). See modules/integration-orchestration/skills-eventstream/main.bicep.')
+@allowed([
+  'CustomEndpoint'
+  'EventHub'
+])
+param skillsEventstreamSourceMode string = 'CustomEndpoint'
+
+// Sprint 23 WS-A4 (ADR-0043) — the dedicated per-domain skills-events Event Hub entity is
+// provisioned exactly when the skills lane runs in sourceMode=EventHub (the Swiss-GA / ADR-0043
+// path). In CustomEndpoint mode the Container Apps publisher POSTs to the ingestion URL and no
+// Event Hub source is needed, so the hub stays un-provisioned (backwards-compatible default).
+var skillsEventHubNeeded = enableSkillsEventstreamModule && skillsEventstreamSourceMode == 'EventHub'
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -116,15 +129,10 @@ param enableIntegrationModule bool = false
 @description('Enable experience hosting foundation module deployment.')
 param enableExperienceHostingModule bool = false
 
-// Sprint 24 — Curavias product landing page (Astro static site) hosting, PROD-only.
-@description('Enable the Sprint 24 Curavias web hosting module (Static Web App + media storage). PROD-only per ADR-0030.')
-param enableCuraviasWebModule bool = false
-
-@description('Object ID of the identity that publishes media to the Curavias media storage account. Empty string skips the role assignment.')
-param curaviasWebMediaPublisherPrincipalId string = ''
-
-@description('When true, bind curavias.ch + www.curavias.ch to the Curavias Static Web App. Two-step: deploy false first, add DNS records + delegation, then flip true. See ADR-0030.')
-param curaviasWebEnableCustomDomains bool = false
+// Sprint 24 Curavias public landing page hosting was retired in Sprint 28 — see
+// docs/adr/0044-retire-public-website.md. The Static Web App module, its params,
+// and the curavias-web-deploy workflow were removed. The shared curavias.ch DNS
+// zone stays: it still serves the hcc-app-fluent Container App (app.curavias.ch).
 
 @description('Enable API runtime foundation module deployment.')
 param enableApiRuntimeModule bool = false
@@ -134,6 +142,12 @@ param enableDataFoundationModule bool = false
 
 @description('Enable the external-signals provider-runner (ca-signal-runner) module. Requires enableAgentHostModule + enableDataFoundationModule. Wires the runner into the CAE + Event Hub namespace so it survives future CAE redeploys.')
 param enableSignalRunnerModule bool = false
+
+@description('Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md.')
+param enableDecisionApplyJobModule bool = false
+
+@description('Container image for the decision-tier apply Job only. Empty = inherit agentHostImage. Set this (not agentHostImage) to give the Job the decision-CLI-enabled image without redeploying the running agent-host Container App.')
+param decisionApplyJobImage string = ''
 
 @description('Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped.')
 param eventHubsSimulatorMiPrincipalId string = ''
@@ -160,6 +174,45 @@ param enableSkillsSimJobsModule bool = false
 
 @description('Container image the skills-sim jobs run. Placeholder until the skills-sim CI workflow pushes a real image to ACR (parity with sim-capacity).')
 param skillsSimJobsImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 23 WS-A4 (#255) — Container Apps Job for the skills-EVENTS simulator.
+@description('Enable the Sprint 23 skills-events sim job (one manual-trigger Container Apps Job that publishes synthetic DC-SKILL-EVENT-v1 records to the live SIT Eventstream CustomEndpoint). The SAS connection string is read from Key Vault via a secret reference.')
+param enableSkillsEventSimJobModule bool = false
+
+@description('Container image the skills-events sim job runs. Placeholder until the skills-events-sim CI workflow pushes a real image to ACR (parity with skills-sim).')
+param skillsEventSimJobImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Name of the Key Vault secret holding the CustomEndpoint SAS connection string for the skills-events sim job. Populated out-of-band (never in Bicep/git).')
+param skillsEventConnectionStringSecretName string = 'skills-events-connection-string'
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+@description('Region for the Sprint 28 PO Agent modules (Search, runtime, Cosmos, Key Vault). Pinned to the ADR-0013 demo-scope variant path; PROD = switzerlandnorth per ADR-0037 / NFR-POA-003.')
+@allowed([
+  'switzerlandnorth'
+  'westus2'
+])
+param poAgentLocation string = 'westus2'
+
+@description('Region for the PO Agent runtime Azure OpenAI account. Separable from poAgentLocation per ADR-0032: SIT infra runs in westus2 but Azure OpenAI has no quota there, so SIT pins this to eastus2 (the ADR-0013 demo cross-region). Defaults to poAgentLocation to preserve single-region behaviour for PROD (switzerlandnorth per NFR-POA-003).')
+param poAgentOpenAiLocation string = poAgentLocation
+
+@description('Enable the Sprint 28 AI Search module (srch-ihzhhpf-<env>) — GA substrate for the Foundry IQ Knowledge Layer.')
+param enablePoAgentSearchModule bool = false
+
+@description('Enable the Sprint 28 Foundry IQ knowledge-base marker module (naming + pinned-version contract; provisioned via knowledge-base-rest.md runbook).')
+param enablePoAgentKnowledgeBaseModule bool = false
+
+@description('Enable the Sprint 28 corpus landing module (ADLS Gen2 stcorpus<suffix> for synthetic product documents).')
+param enablePoAgentCorpusLandingModule bool = false
+
+@description('Enable the Sprint 28 PO Agent runtime module (Container App + scheduled corpus-refresh job + Cosmos audit + Azure OpenAI + Key Vault). Requires enablePoAgentCorpusLandingModule for the Storage RBAC grant and enablePoAgentSearchModule for the Search reader grant.')
+param enablePoAgentRuntimeModule bool = false
+
+@description('Container image the PO Agent runtime app + corpus-refresh job run. Placeholder until the PO Agent CI workflow pushes a real image to ACR.')
+param poAgentContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Resource ID of the Log Analytics workspace for PO Agent Search/Cosmos/Key Vault diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD.')
+param poAgentLogAnalyticsWorkspaceId string = ''
 
 @description('Enable AI/ML foundation module deployment.')
 param enableAiMlFoundationModule bool = false
@@ -261,7 +314,7 @@ param manageCuraviasDnsZone bool = true
 @description('Optional Key Vault name override, forwarded to platform-foundation. Empty (default) keeps the auto-generated deterministic name. Set only to avoid a soft-delete + purge-protection name collision on a same-RG region rebuild (Sprint 19 Switzerland North greenfield).')
 param keyVaultNameOverride string = ''
 
-@description('Enable a private endpoint for the platform Key Vault (ADR-0038, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity.')
+@description('Enable a private endpoint for the platform Key Vault (ADR-0039, extends ADR-0029 Option A). Requires enableNetworkModule=true (needs the VNet + snet-data). Flips the vault to publicNetworkAccess=Disabled and provisions the privatelink.vaultcore.azure.net zone + PE. Non-destructive on its own; PROD swn sets this true alongside enableNetworkModule for SIT network parity.')
 param enableKeyVaultPrivateEndpoint bool = false
 
 var envSuffix = environmentName == 'dev' ? '' : '-${environmentName}'
@@ -287,7 +340,7 @@ module platformFoundation './modules/platform-foundation/main.bicep' = {
     tags: tags
     logAnalyticsRetentionInDays: logAnalyticsRetentionInDays
     keyVaultName: keyVaultNameOverride
-    // ADR-0038 — Key Vault private endpoint. vnetResourceId is only consumed by
+    // ADR-0039 — Key Vault private endpoint. vnetResourceId is only consumed by
     // the module when enableKeyVaultPrivateEndpoint=true (which requires
     // enableNetworkModule=true — see the param description). Single-condition
     // guard mirrors the agent-host CAE wiring so Bicep can prove non-null.
@@ -376,29 +429,6 @@ module experienceHosting './modules/experience-hosting/main.bicep' = if (enableE
   }
 }
 
-// Sprint 24 — Curavias product landing page hosting (Static Web App + media storage).
-// PROD-only per ADR-0030; the enable flag is only set true in prod.bicepparam.
-module curaviasWeb './modules/experience-hosting/curavias-web.bicep' = if (enableCuraviasWebModule) {
-  name: 'curavias-web-${environmentName}'
-  params: {
-    location: location
-    nameSuffix: resourceSuffix
-    tags: tags
-    mediaPublisherPrincipalId: curaviasWebMediaPublisherPrincipalId
-    enableCustomDomains: curaviasWebEnableCustomDomains
-    customDomains: [
-      {
-        name: 'curavias.ch'
-        validation: 'dns-txt-token'
-      }
-      {
-        name: 'www.curavias.ch'
-        validation: 'cname-delegation'
-      }
-    ]
-  }
-}
-
 module apiRuntime './modules/api-runtime/main.bicep' = if (enableApiRuntimeModule) {
   name: 'api-runtime-${environmentName}'
   params: {
@@ -417,6 +447,7 @@ module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFou
     simulatorMiPrincipalId: eventHubsSimulatorMiPrincipalId
     bmCopilotMiPrincipalId: eventHubsBmCopilotMiPrincipalId
     csaAgentMiPrincipalId: eventHubsCsaAgentMiPrincipalId
+    enableSkillsEventHub: skillsEventHubNeeded
   }
 }
 
@@ -455,14 +486,108 @@ module skillsSimJobs './modules/experience-hosting/skills-sim-jobs/main.bicep' =
   }
 }
 
+// Sprint 23 WS-A4 (#255) — Container Apps Job for the skills-EVENTS simulator.
+// Manual-trigger only; never started by a GitHub workflow. Publishes synthetic
+// DC-SKILL-EVENT-v1 records to the live SIT Eventstream CustomEndpoint, reading
+// the SAS connection string from Key Vault via a secret reference (keyless).
+// Reuses the skills-sim managed environment when that module is enabled to avoid
+// a duplicate CAE; otherwise the module creates its own.
+module skillsEventSimJob './modules/experience-hosting/skills-event-sim-job/main.bicep' = if (enableSkillsEventSimJobModule) {
+  name: 'skills-event-sim-job-${environmentName}'
+  params: {
+    location: simCapacityLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    containerAppEnvironmentId: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.managedEnvironmentId : ''
+    containerAppEnvironmentName: 'cae-skev-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: skillsEventSimJobImage
+    // Reuse the sim-capacity ACR params — same registry serves all Container Apps.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    keyVaultName: platformFoundation.outputs.keyVaultName
+    connectionStringSecretName: skillsEventConnectionStringSecretName
+    demoScope: simCapacityDemoScope
+  }
+}
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// Deterministic corpus storage name (mirrored from the corpus-landing module) so
+// the runtime refresh job can target it without a circular module reference.
+var poCorpusStorageName = toLower('stcorpus${replace(resourceSuffix, '-', '')}')
+
+// AI Search — GA substrate for the shared Foundry IQ Knowledge Layer.
+module poAgentSearch './modules/knowledge-layer/ai-search/main.bicep' = if (enablePoAgentSearchModule) {
+  name: 'po-agent-search-${environmentName}'
+  params: {
+    location: poAgentLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
+  }
+}
+
+// Foundry IQ knowledge-base marker (naming + pinned-version contract only;
+// provisioned via the knowledge-base-rest.md runbook — not Bicep-provisionable).
+module poAgentKnowledgeBase './modules/knowledge-layer/foundry-iq-knowledge-base/main.bicep' = if (enablePoAgentKnowledgeBaseModule) {
+  name: 'po-agent-knowledge-base-${environmentName}'
+  params: {
+    nameSuffix: resourceSuffix
+    searchRestApiVersion: enablePoAgentSearchModule ? poAgentSearch!.outputs.pinnedSearchRestApiVersion : '2024-05-01-preview'
+  }
+}
+
+// PO Agent runtime — Container App + scheduled corpus-refresh job + Cosmos audit
+// + Azure OpenAI + Key Vault. Depends on the Search module for the reader grant;
+// corpus storage name is deterministic (no module dependency).
+module poAgentRuntime './modules/experience-hosting/po-agent-runtime/main.bicep' = if (enablePoAgentRuntimeModule) {
+  name: 'po-agent-runtime-${environmentName}'
+  params: {
+    location: poAgentLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    containerAppEnvironmentName: 'cae-po-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: poAgentContainerImage
+    // Reuse the sim-capacity ACR params — same registry serves all Container Apps.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    searchEndpoint: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchEndpoint : ''
+    searchServiceId: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchServiceId : ''
+    searchRestApiVersion: enablePoAgentSearchModule ? poAgentSearch!.outputs.pinnedSearchRestApiVersion : '2024-05-01-preview'
+    corpusStorageAccountName: poCorpusStorageName
+    openAiLocation: poAgentOpenAiLocation
+    logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
+    demoScope: simCapacityDemoScope
+  }
+}
+
+// Corpus landing — ADLS Gen2 for synthetic product documents. Grants the runtime
+// MI (writer) and the Search MI (reader) via RBAC; no keys.
+module poAgentCorpusLanding './modules/knowledge-layer/corpus-landing/main.bicep' = if (enablePoAgentCorpusLandingModule) {
+  name: 'po-agent-corpus-landing-${environmentName}'
+  params: {
+    location: poAgentLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    refreshJobPrincipalId: enablePoAgentRuntimeModule ? poAgentRuntime!.outputs.principalId : ''
+    searchPrincipalId: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchPrincipalId : ''
+    logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
+  }
+}
+
 module aiMlFoundation './modules/ai-ml-foundation/main.bicep' = if (enableAiMlFoundationModule) {
   name: 'ai-ml-foundation-${environmentName}'
   params: {
     location: location
     nameSuffix: resourceSuffix
     tags: tags
+    // Pass the actual KV + ACR names so the ML workspace resolves them under
+    // environments that use override names / disable api-runtime (PROD swn).
+    // Empty falls back to the derived SIT names inside the module.
+    keyVaultName: platformFoundation.outputs.keyVaultName
+    containerRegistryName: empty(simCapacityContainerRegistryResourceId) ? '' : last(split(simCapacityContainerRegistryResourceId, '/'))
   }
-  // 2026-07-14 — force serial ordering after platform-foundation to avoid the
   // Key Vault parallel-operation race. This module resolves the KV via
   // `existing` (matched name), so Bicep cannot infer an implicit dependency;
   // without dependsOn, ARM may re-apply both modules concurrently and hit
@@ -595,6 +720,30 @@ module signalRunner '../data-platform/external-signals/provider-runner/main.bice
   }
 }
 
+// Sprint 26 WS-C follow-up (#335) — in-VNet decision-tier live-apply job.
+// Manual-trigger Container Apps Job on the agent-host CAE (VNet-integrated →
+// Cosmos PE reachable, ADR-0029) reusing the agent-host MI (already a Cosmos
+// Built-in Data Contributor). Plan-first by default; a live apply is an
+// operator-driven `az containerapp job start` override that supplies
+// `--approved-to-apply <handle>` (AGENTS.md §4). Consumes the agent-host CAE +
+// the CSA Cosmos document endpoint — implicit output references make it deploy
+// after both. Idempotent: same job name/config adopts an existing job.
+module decisionApplyJob './modules/decision-apply-job/main.bicep' = if (enableDecisionApplyJobModule && enableAgentHostModule && enableCsaCosmosModule) {
+  name: 'decision-apply-job-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    managedEnvironmentId: agentHost!.outputs.managedEnvironmentId
+    containerImage: empty(decisionApplyJobImage) ? agentHostImage : decisionApplyJobImage
+    cosmosEndpoint: csaCosmos!.outputs.documentEndpoint
+    cosmosDatabase: csaCosmos!.outputs.databaseName
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    demoScope: location != 'switzerlandnorth'
+  }
+}
+
 // Same reasoning as agent-host for the Log Analytics wiring.
 module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluentModule) {
   name: 'app-fluent-${environmentName}'
@@ -651,16 +800,6 @@ module curaviasDns './modules/dns/curavias.bicep' = if (enableAppFluentModule &&
 @description('Azure DNS name servers for curavias.ch. Set these as NS records at the GoDaddy registrar to delegate the zone. See docs/runbooks/curavias-dns-godaddy-delegation.md.')
 output curaviasNameServers array = (enableAppFluentModule && !empty(appFluentCustomHostname) && manageCuraviasDnsZone) ? curaviasDns!.outputs.nameServers : []
 
-// Sprint 24 — Curavias web hosting outputs (consumed by curavias-web-deploy.yml + DNS wiring).
-@description('Curavias Static Web App name (empty when the module is disabled).')
-output curaviasWebStaticWebAppName string = enableCuraviasWebModule ? curaviasWeb!.outputs.staticWebAppName : ''
-
-@description('Curavias Static Web App default hostname — CNAME target for www.curavias.ch (empty when disabled).')
-output curaviasWebDefaultHostname string = enableCuraviasWebModule ? curaviasWeb!.outputs.staticWebAppDefaultHostname : ''
-
-@description('Curavias media storage account name (empty when disabled).')
-output curaviasWebMediaStorageAccountName string = enableCuraviasWebModule ? curaviasWeb!.outputs.mediaStorageAccountName : ''
-
 // Sprint 09 v2.0.0 T2.2 — Fabric Eventstream scaffold. See modules/data-platform/fabric-eventstream/README.md.
 // Region is constrained to switzerlandnorth | westus2 to keep Bicep type-safe; falls back to westus2 for the
 // ADR-0013 demo-scope carve-out when the RG location is something else.
@@ -684,8 +823,9 @@ module skillsEventstream './modules/integration-orchestration/skills-eventstream
   name: 'skills-eventstream-${environmentName}'
   params: {
     workspaceId: skillsEventstreamWorkspaceId
+    sourceMode: skillsEventstreamSourceMode
     eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
-    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
+    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.skillsEventHubName : ''
     eventHubConsumerGroup: 'cg-skills-eventstream'
     location: location == 'switzerlandnorth' ? 'switzerlandnorth' : 'westus2'
     demoScope: location != 'switzerlandnorth'
@@ -710,8 +850,8 @@ output fabricEventstreamGatingWarning string = enableFabricEventstreamModule && 
     : (enableFabricEventstreamModule && empty(fabricEventstreamDestinationLakehouseId))
       ? 'INFO: fabricEventstreamDestinationLakehouseId empty — Eventstream will be created source-only. Wire lakehouseId post-deploy.'
       : 'ok'
-output skillsEventstreamGatingWarning string = enableSkillsEventstreamModule && !enableDataFoundationModule
-  ? 'WARN: enableSkillsEventstreamModule=true requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source.'
+output skillsEventstreamGatingWarning string = enableSkillsEventstreamModule && skillsEventstreamSourceMode == 'EventHub' && !enableDataFoundationModule
+  ? 'WARN: enableSkillsEventstreamModule=true with sourceMode=EventHub requires enableDataFoundationModule=true; skills Eventstream has no Event Hub source. (CustomEndpoint source needs no Event Hub.)'
   : (enableSkillsEventstreamModule && empty(skillsEventstreamWorkspaceId))
     ? 'WARN: enableSkillsEventstreamModule=true but skillsEventstreamWorkspaceId is empty; provide the workspace GUID from configure-fabric.ps1 output before post-deploy.'
     : (enableSkillsEventstreamModule && empty(skillsEventstreamDestinationLakehouseId))
@@ -726,11 +866,15 @@ output moduleStatuses object = {
   aiPlatform: enableAiPlatformModule ? aiPlatform!.outputs.moduleStatus : 'ai-platform-disabled'
   integration: enableIntegrationModule ? integration!.outputs.moduleStatus : 'integration-disabled'
   experienceHosting: enableExperienceHostingModule ? experienceHosting!.outputs.moduleStatus : 'experience-hosting-disabled'
-  curaviasWeb: enableCuraviasWebModule ? curaviasWeb!.outputs.moduleStatus : 'curavias-web-disabled'
   apiRuntime: enableApiRuntimeModule ? apiRuntime!.outputs.moduleStatus : 'api-runtime-disabled'
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
   masterdataLanding: enableMasterdataLandingModule ? masterdataLanding!.outputs.moduleStatus : 'masterdata-landing-disabled'
   skillsSimJobs: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.moduleStatus : 'skills-sim-jobs-disabled'
+  skillsEventSimJob: enableSkillsEventSimJobModule ? skillsEventSimJob!.outputs.moduleStatus : 'skills-event-sim-job-disabled'
+  poAgentSearch: enablePoAgentSearchModule ? poAgentSearch!.outputs.moduleStatus : 'po-agent-search-disabled'
+  poAgentKnowledgeBase: enablePoAgentKnowledgeBaseModule ? poAgentKnowledgeBase!.outputs.moduleStatus : 'po-agent-knowledge-base-disabled'
+  poAgentCorpusLanding: enablePoAgentCorpusLandingModule ? poAgentCorpusLanding!.outputs.moduleStatus : 'po-agent-corpus-landing-disabled'
+  poAgentRuntime: enablePoAgentRuntimeModule ? poAgentRuntime!.outputs.moduleStatus : 'po-agent-runtime-disabled'
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'

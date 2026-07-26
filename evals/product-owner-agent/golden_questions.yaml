@@ -1,0 +1,218 @@
+# Per-persona golden-question harness for the Curavias Product Owner Agent.
+#
+# Sprint 28 (issue #377), WS-RT Task RT.2. All questions and grounded
+# chunks are SYNTHETIC - no PHI, no secrets, no real financials. Each entry
+# is deterministic: the harness (run_evals.run_suite) feeds the listed
+# chunks to the orchestrator as read-only tool output, then asserts the
+# grounded-answer contract (>= 95% citation coverage, zero CFO/CISO/CLO
+# hallucination, correct partner refusal).
+#
+# Fields:
+#   id        stable identifier
+#   persona   board persona (CEO/COO/CIO/CFO/CTO/CISO/CDO/CLO/Developer/
+#             Architect/PM/Partner)
+#   language  de | en (UI + answer language)
+#   tier      internal | partner (caller entitlement)
+#   question  the natural-language question
+#   expect    answer | refusal
+#   chunks    the synthetic grounded chunks the class tools return
+version: 1.0.0
+
+questions:
+  - id: ceo-en-01
+    persona: CEO
+    language: en
+    tier: internal
+    question: What is the strategic value case for the Curavias MVP?
+    expect: answer
+    chunks:
+      - classId: A
+        text: The MVP targets patient-flow and capacity optimisation across acute, rehab and Spitex providers.
+        sourceRef: docs/PRD.md#vision
+        confidence: 0.9
+        status: verified
+        language: en
+
+  - id: coo-de-01
+    persona: COO
+    language: de
+    tier: internal
+    question: Welche operativen Kennzahlen verbessert die Loesung?
+    expect: answer
+    chunks:
+      - classId: A
+        text: Die Loesung reduziert manuelle Koordinationsschritte im Belegungs- und Austrittsprozess.
+        sourceRef: docs/PRD.md#operations
+        confidence: 0.88
+        status: verified
+        language: de
+
+  - id: cio-en-01
+    persona: CIO
+    language: en
+    tier: internal
+    question: How does the platform architecture stay within governance?
+    expect: answer
+    chunks:
+      - classId: A
+        text: The platform runs on the GitHub Copilot coding agent with MCP servers per ADR-0002.
+        sourceRef: docs/adr/0002-runtime-is-github-copilot-coding-agent.md
+        confidence: 0.9
+        status: verified
+        language: en
+
+  - id: cfo-en-01
+    persona: CFO
+    language: en
+    tier: internal
+    question: What is the annual run cost against the BVA baseline?
+    expect: answer
+    chunks:
+      - classId: C
+        text: The effective run cost is presented as a range within the BVA plus/minus 30 percent band with an as-of stamp.
+        sourceRef: docs/BVA.md#recurring-annual-costs
+        confidence: 0.85
+        status: verified
+        language: en
+
+  - id: cfo-de-01
+    persona: CFO
+    language: de
+    tier: internal
+    question: Wie hoch sind die jaehrlichen Betriebskosten im Vergleich zur BVA?
+    expect: answer
+    chunks:
+      - classId: C
+        text: Die Betriebskosten werden als Bandbreite innerhalb des BVA-Bandes mit Stichtag ausgewiesen.
+        sourceRef: docs/BVA.md#recurring-annual-costs
+        confidence: 0.84
+        status: verified
+        language: de
+
+  - id: cto-en-01
+    persona: CTO
+    language: en
+    tier: internal
+    question: Which region and Fabric capacity SKU is deployed?
+    expect: answer
+    chunks:
+      - classId: B
+        text: The Fabric capacity SKU is reconciled live against the recorded baseline in the bill of materials.
+        sourceRef: Azure Resource Graph @ 2026-07-25
+        confidence: 0.82
+        status: verified
+        language: en
+
+  - id: ciso-en-01
+    persona: CISO
+    language: en
+    tier: internal
+    question: What is the identity and secrets posture of the platform?
+    expect: answer
+    chunks:
+      - classId: A
+        text: The platform uses Workload Identity Federation with no long-lived secrets per the security baseline.
+        sourceRef: docs/SECURITY.md#identity
+        confidence: 0.9
+        status: verified
+        language: en
+
+  - id: cdo-en-01
+    persona: CDO
+    language: en
+    tier: internal
+    question: How are occupancy forecasts grounded in the data ontology?
+    expect: answer
+    chunks:
+      - classId: D
+        text: Occupancy forecasts are grounded on the OccupancyForecast concept bound to its gold table.
+        sourceRef: fabric-data-agent:da_hospital_capacity
+        conceptRef: hcp:OccupancyForecast
+        goldBinding: gold.dc_occupancy_forecast_v1
+        confidence: 0.88
+        status: verified
+        language: en
+
+  - id: clo-en-01
+    persona: CLO
+    language: en
+    tier: internal
+    question: How does the platform meet Swiss DSG data-residency obligations?
+    expect: answer
+    chunks:
+      - classId: A
+        text: Data residency and DSG control mappings are recorded in the compliance baseline.
+        sourceRef: docs/COMPLIANCE.md#residency
+        confidence: 0.9
+        status: verified
+        language: en
+
+  - id: dev-en-01
+    persona: Developer
+    language: en
+    tier: internal
+    question: How do I run the corpus refresh pipeline?
+    expect: answer
+    chunks:
+      - classId: A
+        text: The corpus refresh runs GitHub to ADLS to OneLake, PHI-excluded, interviews first-order.
+        sourceRef: docs/PRD.md#FR-POA-004
+        confidence: 0.87
+        status: verified
+        language: en
+
+  - id: arch-de-01
+    persona: Architect
+    language: de
+    tier: internal
+    question: Wie ist die Wissensschicht aufgebaut?
+    expect: answer
+    chunks:
+      - classId: A
+        text: Die Wissensschicht ist eine geteilte Foundry IQ Knowledge Layer mit dem PO Agent als Domaene eins.
+        sourceRef: docs/PRD.md#FR-POA-003
+        confidence: 0.88
+        status: verified
+        language: de
+
+  - id: pm-en-01
+    persona: PM
+    language: en
+    tier: internal
+    question: Which requirements does the PO Agent implement?
+    expect: answer
+    chunks:
+      - classId: A
+        text: The PO Agent implements the FR-POA family grounded on the four knowledge classes.
+        sourceRef: docs/PRD.md#FR-POA-001
+        confidence: 0.9
+        status: verified
+        language: en
+
+  - id: partner-en-cost-01
+    persona: Partner
+    language: en
+    tier: partner
+    question: What is the internal three-year TCO and cost breakdown?
+    expect: refusal
+    chunks:
+      - classId: C
+        text: Internal annual run cost detail against the BVA budget baseline.
+        sourceRef: docs/BVA.md#recurring-annual-costs
+        confidence: 0.85
+        status: verified
+        language: en
+
+  - id: partner-en-01
+    persona: Partner
+    language: en
+    tier: partner
+    question: What capabilities does the Curavias platform offer partners?
+    expect: answer
+    chunks:
+      - classId: A
+        text: The platform offers an entitlement-scoped partner surface over patient-flow capabilities.
+        sourceRef: docs/PRD.md#FR-POA-009
+        confidence: 0.86
+        status: verified
+        language: en

@@ -32,6 +32,7 @@ interface RoleContextValue {
 }
 
 interface RoleLensValue {
+  userOid: string | null;
   heldRoles: HccRole[];
   activeRole: HccRole;
   capabilities: RoleCapabilities & { hospitalScope: HospitalScope };
@@ -76,12 +77,14 @@ export function RoleProvider({
   const heldSafe: HccRole[] = held.length > 0 ? held : ['HCC.Viewer'];
   const homeSite: HospitalScope =
     testHomeSite ?? (effectiveClaims.hospital as Hospital as HospitalScope);
+  const userOid = effectiveClaims.oid ?? null;
 
   const [activeRole, setActive] = useState<HccRole>(() => highestRole(heldSafe));
 
   const heldKey = heldSafe.join(',');
   const lensValue = useMemo<RoleLensValue>(
     () => ({
+      userOid,
       heldRoles: heldSafe,
       activeRole,
       capabilities: deriveCapabilities(activeRole, homeSite),
@@ -89,7 +92,7 @@ export function RoleProvider({
     }),
     // heldSafe/homeSite derive from stable claim/test inputs; activeRole drives updates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeRole, homeSite, heldKey],
+    [activeRole, homeSite, heldKey, userOid],
   );
 
   return (

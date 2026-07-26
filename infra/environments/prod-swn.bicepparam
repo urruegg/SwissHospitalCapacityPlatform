@@ -50,7 +50,7 @@ param keyVaultNameOverride = 'kv-ihzhhpf-prod-swn1'
 
 // --- Foundation ---
 param enableIdentityModule = true
-// Network module ON (ADR-0038, extends ADR-0029 Option A + ADR-0037). Brings
+// Network module ON (ADR-0039, extends ADR-0029 Option A + ADR-0037). Brings
 // PROD to SIT network parity: creates vnet-platform-ihzhhpf-prod, VNet-integrates
 // the agent-host CAE (cae-ihzhhpf-prod), and wires the Cosmos private endpoint.
 // NOTE: VNet integration is immutable after CAE creation — because the swn
@@ -64,7 +64,7 @@ param enableIdentityModule = true
 param enableNetworkModule = true
 param enableObservabilityModule = true
 
-// Key Vault private endpoint (ADR-0038). Gives the AAD-only, policy-locked
+// Key Vault private endpoint (ADR-0039). Gives the AAD-only, policy-locked
 // (publicNetworkAccess=Disabled) PROD vault a reachable data plane inside the
 // VNet via privatelink.vaultcore.azure.net. Non-destructive on its own.
 // Operator interactive access still needs an in-VNet jumpbox/Bastion.
@@ -119,32 +119,102 @@ param manageCuraviasDnsZone = false
 // --- P4 data lane — Event Hubs / Service Bus / CSA Cosmos ---
 // EVH namespace + hub + consumer groups. Region-safe, public, self-contained.
 param enableDataFoundationModule = true
-param enableDataPlatformModule = false
+// Sprint 19 SIT<->PROD data/AI/integration-lane parity (D8, ADR-0042) — rebuild phases P5 (Foundry agents) + P6 (Fabric); experience/API lane already live, reconciled separately.
+param enableDataPlatformModule = true
 // Sprint 19 follow-up — external-signals provider-runner (ca-signal-runner).
 // Codified so it survives future CAE delete/recreate; adopts the live runner
 // idempotently. Requires enableAgentHostModule + enableDataFoundationModule
 // (both true above). Grants the runner MI EH Data Sender at the evh namespace.
 param enableSignalRunnerModule = true
 // CSA Cosmos DB wired into the orchestrator. With enableNetworkModule=true
-// (ADR-0038) it now gets a private endpoint (privatelink.documents.azure.com in
+// (ADR-0039) it now gets a private endpoint (privatelink.documents.azure.com in
 // snet-data) — matching SIT and satisfying the MCAPSGov Modify-effect policy
 // that force-disables public Cosmos subscription-wide. Creates
 // cosmos-csa-ihzhhpf-prod + 4 vector containers.
 param enableCsaCosmosModule = true
-// P5 Foundry runtime agents — registered via the Sprint 18 v2 /agents API pattern
-// against the PROD project, not Bicep. Stays off here.
-param enableFoundryHostedAgents = false
-// P6 Fabric F2 capacity + PROD workspace — co-located in switzerlandnorth
-// (quota 0/512). Enabled in the P6 phase flip per the runbook.
-param enableFabricFoundationModule = false
-param enableFabricEventstreamModule = false
-// sim-capacity needs an EH source and is region-locked to switzerlandnorth|westus2; defer.
-param enableSimCapacityModule = false
-// Legacy App Service / ML topology — excluded from PROD by design (design §7 v1.1.0).
+// P5 Foundry runtime agents — enabled for the D8 data/AI/integration parity plan.
+param enableFoundryHostedAgents = true
+param foundryHostedAgentsLocation = 'switzerlandnorth'
+param foundryHostedAgentsEventHubNamespace = 'evh-ihzhhpf-prod-i62t'
+param foundryHostedAgentsEventHubName = 'events'
+param foundryHostedAgentsBmCopilotConsumerGroup = 'cg-bm-copilot-agent'
+param foundryHostedAgentsCsaConsumerGroup = 'cg-csa-agent'
+// P6 Fabric F2 capacity + PROD workspace — co-located in switzerlandnorth.
+param enableFabricFoundationModule = true
+param fabricCapacityAdmins = [
+    'admin@mngenvmcap164444.onmicrosoft.com'
+]
+param enableFabricEventstreamModule = true
+param fabricEventstreamWorkspaceId = ''
+param fabricEventstreamDestinationLakehouseId = ''
+param enableSkillsEventstreamModule = true
+param skillsEventstreamWorkspaceId = ''
+param skillsEventstreamDestinationLakehouseId = ''
+// Sprint 23 WS-A4 (ADR-0043) — PROD swn runs the skills lane in EventHub source mode.
+// Eventstream + Event Hubs are GA in Switzerland North, so this is a GA-in-region flip
+// (not a preview exception); it auto-provisions the dedicated per-domain skills-events
+// hub + cg-skills-eventstream consumer group via the data-foundation module. The live
+// wiring still requires an out-of-band Fabric-managed connection (POST /v1/connections)
+// before the post-deploy script can bind the source. Synthetic / no-PHI only (ADR-0013).
+param skillsEventstreamSourceMode = 'EventHub'
+param enableMasterdataLandingModule = true
+param masterdataLandingPipelinePrincipalId = ''
+param masterdataLandingLogAnalyticsWorkspaceId = ''
+param enableSkillsSimJobsModule = true
+// SIT-parity: SIT uses the public placeholder (real skills-sim image deferred to
+// issue #181); PROD mirrors SIT exactly so both bump together when #181 lands.
+param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// PROD swn variant: enabled at switzerlandnorth (ADR-0037 / NFR-POA-003) for the
+// SIT-parity demo scope. poAgentLocation is declared here (see the NOTE block on
+// shared declarations below). Runtime + refresh-job image mirrors SIT until the
+// PO Agent CI workflow publishes a real image.
+param poAgentLocation = 'switzerlandnorth'
+param enablePoAgentSearchModule = true
+param enablePoAgentKnowledgeBaseModule = true
+param enablePoAgentCorpusLandingModule = true
+param enablePoAgentRuntimeModule = true
+param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param poAgentLogAnalyticsWorkspaceId = ''
+// sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
+param enableSimCapacityModule = true
+param simCapacityLocation = 'switzerlandnorth'
+param simCapacityContainerImage = 'crihzhhpfprod.azurecr.io/sim-capacity:sprint10-t1'
+param simCapacityEventHubNamespace = ''
+param simCapacityEventHubName = 'events'
+param simCapacityDemoScope = true
+// Grant the sim-capacity MI (id-ca-sim-capacity-ihzhhpf-prod, principalId below)
+// Azure Event Hubs Data Sender on evh-ihzhhpf-prod-i62t/events so the live
+// simulator can publish. SIT leaves this empty (latent gap — sim-capacity MI has
+// no EH role in SIT either); PROD codifies it (drift-free, PROD-exceeds-SIT).
+// Backport to SIT tracked separately. dataFoundation consumes this (main.bicep).
+param eventHubsSimulatorMiPrincipalId = '7fa4687e-5c76-4154-a493-ad53f7647d45'
+// Legacy App Service / API topology already live; leave off in this data/AI/integration slice.
 param enableExperienceHostingModule = false
 param enableApiRuntimeModule = false
-param enableAiMlFoundationModule = false
+param enableAiMlFoundationModule = true
 // P4 Service Bus namespace (integration module). Region-safe, self-contained.
 param enableIntegrationModule = true
-param enableIntegrationOrchestrationModule = false
+param enableIntegrationOrchestrationModule = true
 param enableSourceSqlModule = false
+
+// --- Sprint 23 (#255) — Curavias org/skills refactor: SIT→PROD parity ---
+// Brings PROD to SIT parity for the org/skills medallion landing surface
+// (ADR-0039). Mirrors sit.bicepparam module selection:
+//   * masterdata-landing (WS-A1): ADLS Gen2 `stmasterdataihzhhpfprod` + `landing`
+//     container + OneLake-shortcut runbook. Region-safe, self-contained.
+//   * skills-sim-jobs (WS-A3): manual-trigger Container Apps Jobs writing synthetic
+//     extracts to the landing zone via a UAMI; creates its OWN CAE
+//     (cae-skills-sim-ihzhhpf-prod), so it does NOT depend on the lean-PROD
+//     experience-hosting exclusion. Placeholder public image (same as SIT) — no
+//     PROD ACR image dependency.
+//   * skills-eventstream (WS-A4): scaffold-only Bicep; requires the EH source
+//     (enableDataFoundationModule=true above). Fabric destination IDs stay empty
+//     (mirrors SIT) — the Eventstream destination is wired post-deploy via REST
+//     once the PROD Fabric workspace/lakehouse are published (P6).
+// Single-region PROD: pin the skills-sim CAE to switzerlandnorth (SIT uses westus2).
+// NOTE: enableMasterdataLandingModule, enableSkillsSimJobsModule,
+// enableSkillsEventstreamModule, and simCapacityLocation are already declared
+// above with these same PROD-parity values — they are NOT re-declared here
+// (a .bicepparam identifier may be assigned only once; duplicates raise BCP028).

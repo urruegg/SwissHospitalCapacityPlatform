@@ -1,0 +1,34 @@
+# CSA (Crisis / Scenario Copilot Agent) lever catalog.
+# Sprint 26 WS-B fan-out: fully specified per design spec Sec 3.3.
+# Referenced by data/synthetic/schema/dc-insight-v1.schema.json recommendation[].lever_id.
+role: csa
+levers:
+  - lever_id: CSA-ACTIVATE-SURGE
+    role: csa
+    title_i18n:
+      de: "Überlastungsplan aktivieren"
+      en: "Activate surge plan"
+      fr: "Activer le plan de montée en charge"
+      it: "Attivare il piano di sovraccarico"
+    description_i18n:
+      de: "Empfiehlt, einen Überlastungsplan des angegebenen Umfangs zu aktivieren, um N Betten freizugeben."
+      en: "Recommends activating a surge plan of the given scope to free N beds."
+      fr: "Recommande d'activer un plan de montée en charge de la portée indiquée pour libérer N lits."
+      it: "Consiglia di attivare un piano di sovraccarico dell'ambito indicato per liberare N posti letto."
+    preconditions:
+      - "ward.occupancy_pct > threshold"
+      - "surge_plan.available == true"
+    params_schema:
+      type: object
+      required: ["n", "scope"]
+      properties:
+        n:
+          type: integer
+          minimum: 1
+          description: "Number of surge beds to free."
+        scope:
+          type: string
+          description: "Scope of the surge plan, e.g. ward, hospital, cantonal."
+    impact_formula_ref: activate_surge_beds
+    owner_role: csa
+    hitl: true

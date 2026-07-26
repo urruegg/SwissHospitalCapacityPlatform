@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.6.1 |
-| **Date** | 2026-07-17 |
+| **Version** | 1.7.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.6.0 (editorial: repaired UTF-8 mojibake; no semantic change) |
+| **Previous Version** | 1.6.1 (editorial: repaired UTF-8 mojibake; no semantic change) |
 
 ## Purpose
 
@@ -21,6 +21,12 @@ and incident response.
 > Old tenant `MngEnvMCAP228255.onmicrosoft.com` is frozen — teardown deferred.
 > See [ADR-0012](adr/0012-tenant-migration-to-mcap164444.md) and
 > [sprint-00 report](sprints/sprint-00-new-tenantprovisioning.md).
+>
+> **PROD region (Sprint 19):** PROD now runs greenfield in **`switzerlandnorth`**
+> (`rg-ihzhhpf-prod`); the DR-rebuild runbook is
+> [`sprint-19-prod-switzerland-north-dr-rebuild-runbook.md`](runbooks/sprint-19-prod-switzerland-north-dr-rebuild-runbook.md).
+> SIT stays `westus2`/`eastus2`. As-deployed operational view:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 This baseline supports the MVP scope and is aligned to the platform constraints
 already defined in PRD, architecture, security, compliance, data, and ALM plans.

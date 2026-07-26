@@ -1,6 +1,6 @@
 # CSA Cosmos DB (`cosmos-csa-ihzhhpf-sit`)
 
-> **Version** 1.0.0 · **Date** 2026-07-09 · **Author** Urs Rüegg · **Status** Draft for review · **Previous Version** n/a (new — Sprint 16 T1)
+> **Version** 1.1.0 · **Date** 2026-07-24 · **Author** Urs Rüegg · **Status** Draft for review · **Previous Version** 1.0.0 (added `proposed_actions` + `plans` containers for the Sprint 26 WS-C decision/coordination tier)
 
 Sprint 16 T1 provisions an **Azure Cosmos DB for NoSQL** account that backs the
 CSA what-if scenario catalogue and per-run agent memory. Grounds
@@ -18,6 +18,8 @@ CSA what-if scenario catalogue and per-run agent memory. Grounds
 | `agent-memory` | `/threadId` | `diskANN` on `/contentEmbedding` (sharded by `/threadId`) | Per-run agent memory, one document per turn |
 | `response-levers` | `/leverId` | `quantizedFlat` on `/descriptionEmbedding` | Doctrine-aligned mitigation library (< 100 items) |
 | `simulation-runs` | `/runId` | (none) | Run metadata + result references |
+| `proposed_actions` | `/plan_id` | (none) | Sprint 26 WS-C — HITL-gated proposed levers: `{ id, plan_id, role, lever_id, params, expected_impact, status: proposed\|approved\|rejected\|applied, hitl_approver, approved_at }` |
+| `plans` | `/episode_key` | (none) | Sprint 26 WS-C — CapacityEpisode golden-thread: `{ id, episode_key, baseline, current, target, actions[], forecast_deltas[], handoffs[] }` |
 
 **Vector index rationale** — DiskANN for `scenarios` and `agent-memory`
 (high-throughput, low-latency, cost-efficient at scale, dynamic updates);
@@ -28,8 +30,10 @@ CSA what-if scenario catalogue and per-run agent memory. Grounds
 - **Consistency**: `Session` (read-your-writes for agent memory).
 - **Auth**: data-plane **RBAC only** — `disableLocalAuth = true`, no account
   keys. The Sprint 13 agent-host managed identity receives **Cosmos DB Built-in
-  Data Contributor** scoped to the account (least privilege). Supply its
-  `principalId` via `agentHostMiPrincipalId` at apply time.
+  Data Contributor** scoped to the account (least privilege) — this scope
+  already covers the `proposed_actions` and `plans` containers added in
+  Sprint 26 WS-C; no per-container role assignment exists in this module.
+  Supply its `principalId` via `agentHostMiPrincipalId` at apply time.
 - **TLS**: minimum 1.2.
 - **Capability**: `EnableNoSQLVectorSearch`.
 - **RU budget**: database-shared autoscale, max `1000` RU/s (demo default —

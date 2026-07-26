@@ -8,6 +8,8 @@ import { OrSteeringBoard } from './boards/or-steering/OrSteeringBoard';
 import { StaffingBoard } from './boards/staffing/StaffingBoard';
 import { CsaView } from './wizards/csa/CsaView';
 import { MainSubNav } from './MainSubNav';
+import { useRoleLens } from '../../context/role-context';
+import { firstEligibleBoard } from '../../shell/planes/first-eligible-board';
 
 /**
  * Sprint 1 (parity) — MAIN surface: sub-nav + the selected role board.
@@ -51,8 +53,13 @@ const BOARDS: Record<string, () => JSX.Element> = {
 
 export function MainView() {
   const s = useStyles();
-  const { board = 'bed-manager' } = useParams();
-  const Board = BOARDS[board] ?? BOARDS['bed-manager'];
+  const { capabilities } = useRoleLens();
+  const { board } = useParams();
+  // Sprint 29 M2 — default to the first patient-journey board the role can see,
+  // not a hard-coded bed-manager.
+  const fallback = firstEligibleBoard(capabilities);
+  const activeBoard = board ?? fallback;
+  const Board = BOARDS[activeBoard] ?? BOARDS[fallback];
   return (
     <div className={s.root}>
       <MainSubNav />

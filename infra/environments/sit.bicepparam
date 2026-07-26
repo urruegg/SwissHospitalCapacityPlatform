@@ -106,6 +106,10 @@ param fabricEventstreamDestinationLakehouseId = ''
 param enableSkillsEventstreamModule = true
 param skillsEventstreamWorkspaceId = ''
 param skillsEventstreamDestinationLakehouseId = ''
+// Design D4 demo-scope (ADR-0013): CustomEndpoint source mirrors the working
+// es-capacity-events-sit lane and is fully live-deployable via the post-deploy REST
+// script. EventHub is the Swiss-GA target-state (needs a Fabric-managed connection).
+param skillsEventstreamSourceMode = 'CustomEndpoint'
 
 // Sprint 09 v2.0.0 T2.1 — Event Hubs consumer group RBAC.
 // Simulator MI (T3.7) and agent MIs (T4.5) don't exist yet; leaving empty means the three
@@ -131,6 +135,30 @@ param masterdataLandingLogAnalyticsWorkspaceId = ''
 // a GitHub workflow — on-demand `az containerapp job start` only.
 param enableSkillsSimJobsModule = true
 param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// Enabled in SIT for the demo scope (synthetic, no-PHI corpus per D2). Region
+// pinned to westus2 (ADR-0013); diagnostics stay off in SIT (populated in PROD).
+// Runtime + refresh-job image is a placeholder until the PO Agent CI workflow
+// publishes a real one. The corpus refresh runs as a scheduled Container Apps
+// Job — NEVER a GitHub workflow.
+param poAgentLocation = 'westus2'
+// SIT infra is westus2 but Azure OpenAI has no quota there — pin the PO Agent
+// OpenAI account to eastus2 (ADR-0013 demo cross-region / ADR-0032). Fixes the
+// SpecialFeatureOrQuotaIdRequired SIT what-if failure introduced by #384.
+param poAgentOpenAiLocation = 'eastus2'
+param enablePoAgentSearchModule = true
+param enablePoAgentKnowledgeBaseModule = true
+param enablePoAgentCorpusLandingModule = true
+// RE-ENABLED (2026-07-26): the historical block was the runtime module defaulting
+// to gpt-4o/Standard (ServiceModelDeprecating on every SIT what-if, #384). That is
+// fixed — the module now defaults to gpt-5 / 2025-08-07 / GlobalStandard
+// (po-agent-runtime openAiModelName/openAiSkuName), the same wiring that deploys
+// cleanly in PROD (live oai-poihzhhpfprod runs gpt-5 GlobalStandard). eastus2 quota
+// OpenAI.GlobalStandard.gpt-5 is 110/1000 used, so the cap-10 SIT deployment fits.
+param enablePoAgentRuntimeModule = true
+param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param poAgentLogAnalyticsWorkspaceId = ''
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
 // 2026-07-10 sprint-review checklist). Image is a placeholder — matches
 // sim-capacity pattern — until agent-host-build.yml is extended to push
@@ -146,6 +174,19 @@ param enableCsaCosmosModule = true
 // pushed the tag. Deploy is approval-gated per AGENTS.md §4 (approved-to-apply
 // by @urruegg 2026-07-18).
 param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b796961'
+
+// Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
+// Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
+// (AGENTS.md §4); a live apply swaps the job template command via
+// `az containerapp job update --yaml` (job start --command/--args overrides are
+// ignored here) with --approved-to-apply per docs/runbooks/decision-tier-live-apply.md.
+// The Job is pinned to the decision-CLI-enabled image :a071fbe (built by
+// ci-build-agent-host on the #417 merge — the Foundry Agent Service /agents API
+// fix; superseded :2b83a49, which 401'd on the wrong Assistants API) WITHOUT
+// bumping agentHostImage, so the running agent-host Container App stays on
+// b796961 (Option B, low blast radius).
+param enableDecisionApplyJobModule = true
+param decisionApplyJobImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:a071fbe'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.10.0 |
+| **Date** | 2026-07-25 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion landed clean (org/skills + capacity + eventstream gold, no real names, no H_HSL orphan)**; **ADR-0039 Accepted (approved to proceed)**; PROD deploy pending |
-| **Previous Version** | 1.3.0 (live SIT medallion proof + H_HSL fix) |
+| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed** (DC-SKILL-EVENT-v1 + seeder + Bronze/Silver/Gold + 28 unit tests) **and LIVE-WIRED in SIT** (Eventstream `es-ihzhhpf-skills-events` Running, CustomEndpoint source → `bronze_skills_events`, `approved-to-apply` #374); **EventHub flip un-parked + IMPLEMENTED for PROD swn** (ADR-0043; dedicated per-domain hub + simulator + post-deploy EH branch — live apply gated by `approved-to-apply`); **remaining: PROD semantic-model/report publish (blocked locally — `fabric-cicd` needs Python <3.14), Container Apps publisher image, + e2e SIT/PROD parity test** |
+| **Previous Version** | 1.9.0 (EventHub flip un-parked for PROD swn — ADR-0043) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
@@ -98,6 +98,159 @@ Reconcile the operational capacity model with the real (synthetic) Curavias orga
 ---
 
 ## 6. Status log
+
+### 2026-07-25 — Skills-events EventHub flip IMPLEMENTED for PROD swn (ADR-0043, deploy-class)
+
+Execution slice for the un-parked flip (branch `sprint-23/eh-flip-execution`,
+off `main`; stacked on the ADR-0043 governance PR). **Deploy-class — the live
+PROD apply is gated by `approved-to-apply`.** Landed artefacts:
+
+* **Dedicated per-domain skills Event Hub.** The `data-foundation/eventhubs`
+  module now provisions a `skills-events` hub entity + `cg-skills-eventstream`
+  consumer group (+ simulator `Data Sender` RBAC) inside the environment
+  namespace whenever the skills lane runs in `sourceMode=EventHub`. `main.bicep`
+  derives `enableSkillsEventHub` from the skills source mode and points the
+  Eventstream at the dedicated hub (isolated from the capacity `events` rail).
+* **`sourceMode=EventHub` for PROD swn** set in `prod-swn.bicepparam`
+  (GA-in-region; auto-enables the dedicated hub). `az bicep build` + all three
+  env `build-params` compile clean; `main.json` regenerated.
+* **Post-deploy EventHub branch.** `configure-skills-eventstream.ps1` now wires
+  an `AzureEventHub` source (via a `-ConnectionId` Fabric-managed connection),
+  keeping the D4 three-kind guardrail + DefaultStream→Lakehouse topology; refuses
+  a live EH wire without the connection id (StrictMode-safe). `-DryRun` verified.
+* **Simulator.** `data-platform/scripts/skills-events/publish_skill_events.py`
+  publishes synthetic `DC-SKILL-EVENT-v1` records (one AMQP message per record,
+  routed by `eventKind`) to the dedicated hub via MI — mirrors the proven
+  `eventhub_emitter.py` DI pattern; 5 new offline unit tests (28 skills-events
+  tests + 5 gold-contract tests all green).
+* **Data contract unchanged.** `DC-SKILL-EVENT-v1` is byte-identical; only the
+  transport changed. `sourceMode` default stays `CustomEndpoint`, so SIT + all
+  existing callers are unaffected (**backwards-compatible**).
+* **Remaining live steps (post-`approved-to-apply`):** `what-if` against PROD
+  swn, create the Fabric-managed connection (`POST /v1/connections`), apply,
+  run the post-deploy EH branch, publish via the simulator, verify
+  `bronze_skills_events` + the silver PHI gate.
+
+### 2026-07-25 — EventHub-source flip un-parked for PROD Switzerland North (ADR-0043)
+
+**Product-owner decision** by @urruegg: preview-tier services are approved in
+**PROD Switzerland North** to demonstrate the art of the possible under
+synthetic/no-PHI scope; the **GA-only gate is reserved for a real go-live
+(real-PHI) cut-over**. This un-parks the skills-events `sourceMode=EventHub`
+flip — recorded in
+[ADR-0043](../adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md)
+(refines ADR-0006 + ADR-0042). Read-only verification confirmed the flip is in
+fact **GA in Switzerland North**: Eventstream is GA in swn
+(region-availability.yaml), Azure Event Hubs is GA there, PROD Fabric
+`fabricihzhhpfprod` runs in swn, and the PROD EH namespace
+`evh-ihzhhpf-prod-i62t` exists in-region — so the flip does not even consume the
+preview exception. Confirmed design points: a **dedicated skills-events Event
+Hub** (per-functional-domain envelope, not shared with the capacity `events`
+rail); a **simulator** feeds it until the live publisher is ready; **SIT and
+PROD do not share input services** (`evh-ihzhhpf-sit-y26y` westus2 vs
+`evh-ihzhhpf-prod-i62t` swn). Remaining prerequisite for the live flip: the
+out-of-band Fabric-managed connection (`POST /v1/connections`). Execution
+(dedicated EH + managed connection + `sourceMode=EventHub` + simulator) is a
+separate deploy-class slice gated by `approved-to-apply`.
+
+### 2026-07-25 — Skills-events Eventstream lane LIVE-WIRED in SIT (WS-A4 / FR-SKILL-005)
+
+**Approved-to-apply** by @urruegg (PR #374 approved + merged first). This slice
+(branch `sprint-23/skills-events-live-wire`, off `main`) authors the **missing
+post-deploy script** and live-wires the lane the #374 data lane feeds:
+
+* **Transport decision — `CustomEndpoint` (demo-scope, ADR-0013).** The working
+  `es-capacity-events-sit` lane uses a CustomEndpoint source, and it is fully
+  live-deployable today (no out-of-band Fabric-managed connection). The Container
+  Apps publisher (`NFR-SKILL-001`) POSTs `DC-SKILL-EVENT-v1` envelopes to the
+  Eventstream ingestion endpoint. **EventHub source stays the Swiss-GA
+  target-state** (needs `POST /v1/connections`). *(Superseded 2026-07-25: the
+  EventHub flip is un-parked for PROD swn per ADR-0043 — see the top status-log
+  entry.)* The Bicep module gained a
+  backwards-compatible `sourceMode` param (`CustomEndpoint` default | `EventHub`).
+* **New post-deploy script** —
+  `infra/modules/integration-orchestration/skills-eventstream/post-deploy/configure-skills-eventstream.ps1`
+  (the module previously referenced a non-existent path). Asserts the exactly-three
+  D4 event-kind guardrail, `-DryRun` prints the topology, idempotent (skips on
+  existing display name), async-safe (Fabric returns 202; id resolved by
+  display-name lookup with retry). Mirrors the authoritative live schema
+  (streams + `compatibilityLevel: 1.1` + 3 parts).
+* **Live apply (SIT workspace `f3af9733-…`)** — created Eventstream
+  **`es-ihzhhpf-skills-events`** (id `2f5826c5-f7c4-4b87-8bcf-ee727e1e4704`):
+  CustomEndpoint source → DefaultStream → Lakehouse destination
+  `bronze_skills_events` in `lh_ihzhhpf_sit` (`30594c20-…`). All three nodes
+  verified **`status: Running`**. Re-run confirmed idempotent (clean skip).
+* **No secrets committed** — the CustomEndpoint ingestion connection string
+  (SharedAccessKey) is retrieved at publish-time via
+  `GET …/eventstreams/{id}/sources/{sourceId}/connection` and stored in Key Vault;
+  never in the repo.
+* **PHI gate unchanged** — the Eventstream lands raw synthetic envelopes; the
+  PHI/consent gate + kind allow-list stay in the silver notebook (deny-by-default).
+* **Remaining** — wire the Container Apps publisher image to the ingestion endpoint;
+  surface a live-vs-simulated event measure on the semantic model (documented
+  follow-up); EventHub-source flip at Swiss GA. *(Update 2026-07-25: EventHub
+  flip un-parked for PROD swn per ADR-0043 — GA-in-swn, needs the managed
+  connection; see top status-log entry.)*
+
+### 2026-07-25 — Skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed
+
+The WS-A4 Eventstream **infra** module (`es-ihzhhpf-skills-events`) already existed,
+but the **data lane it feeds was empty**. This slice builds it in-repo (branch
+`sprint-23/skills-events-lane`, off `main`):
+
+* **New additive contract `DC-SKILL-EVENT-v1`** —
+  `data/synthetic/schema/dc-skill-event-v1.schema.json`. Standalone; **does not
+  modify** the batch `DC-SKILL-EVIDENCE-v1` contract (backwards-compatible). Carries
+  the three narrow event kinds routed by `eventKind`: `credential-expiry`,
+  `consent-grant-or-revoke`, `newly-confirmed-assertion`.
+* **Dependency-free seeder** — `data-platform/scripts/skills-events/`
+  (`normalize.py` + `skill_events_synth.py` + fixtures). The payload a Container
+  Apps service publishes to the Eventstream (per `NFR-SKILL-001`, never a workflow).
+* **Bronze → Silver → Gold notebooks** —
+  `data-platform/notebooks/skills-events/`. Silver is the downstream **PHI/consent
+  gate** the Eventstream module defers to: deny-by-default quarantine, and the
+  consent-revocation invariant that **clears the GLN promotion** on `revoke`
+  (`FR-SKILL-003`). Gold is a **separate `skillevt_*` star spine** (fact + source/kind
+  dims) carrying the live-vs-simulated badge (`FR-SKILL-007`), mirroring the
+  `external-signals` `ext_*` spine.
+* **Contract-safe** — the `skillevt_*` tables are **not** Direct-Lake tables in the
+  semantic model, so they are outside the derived gold contract
+  (`verify_gold_schema.contract_tables`); the gold-parity gate stays green (21
+  contract tables covered). Semantic-model surfacing (a live-vs-simulated event
+  measure) is a documented follow-up.
+* **Tests** — 23 Spark-free unit tests (9 seeder schema/consent + 14 medallion gate /
+  badge). Neighbouring suites regression-clean (skills-evidence 21+43, gold-contract 5).
+* **Remaining for this DoD item** — live Eventstream wiring: **DONE 2026-07-25**
+  (see the LIVE-WIRED entry above; CustomEndpoint source, `es-ihzhhpf-skills-events`
+  Running in SIT). Container Apps publisher image + EventHub-source flip still open.
+
+
+### 2026-07-24 — PROD org/skills parity APPLIED (infra + medallion + gold evidence)
+
+**Approved-to-apply** by @urruegg for the full PROD replay sequence. PR #368
+(param flags + what-if) merged to `main` first (human-merged, `status:approved`).
+
+* **PROD infra applied** — `az deployment group create -g rg-ihzhhpf-prod -f infra/main.bicep -p prod-swn.bicepparam` **Succeeded**. Verified live: `stmasterdataihzhhpfprod` (+ `landing` container), `cae-skills-sim-ihzhhpf-prod`, `id-skills-sim-ihzhhpf-prod` UAMI, jobs `caj-sk-{sf,wid,skm,lms}-ihzhhpf-prod` — all `Succeeded`. Matches the 10 additive Creates from the what-if; 0 deletes.
+* **PROD medallion replayed** — uploaded the 5 current source sets to PROD OneLake `Files/` (capacity master-data, curavias org/skills, skills-evidence modules, eventstream seed, or-samples), then `run_medallion.py --environment PROD --apply` → **9/9 notebooks green, "Medallion rebuild complete"**. `05_gold_org_skills` was net-new to PROD (`[create]`). The 07-23 greenfield rebuild predated the H_HSL-prune fix, so re-uploading the current seed/master-data was required.
+* **PROD gold parity proven** — `list_gold_tables.py --environment PROD` = **28 gold tables** (all org/skills + `dim_care_setting`); `verify_gold_schema.py` = **OK, 21 contract tables covered**.
+* **Authoritative OneLake Delta evidence (SQL endpoint lags, not used)** — new reusable reader [`data-platform/scripts/fabric/read_gold_evidence.py`](../../data-platform/scripts/fabric/read_gold_evidence.py):
+  * `dim_hospital` = **3 Curavias tenants only** — `H_USZ`→Uniklinik CuraNova, `H_LUKS`→Kantonsspital Curalp, `H_SZB`→Spital Vialta. Cities/cantons also fictionalised (Curalp-Stadt/CA, Vialtaberg/HN, Stadt Helvetia-Nord/HN) — **no real hospital names**.
+  * **0 H_HSL orphans** across hospital-keyed gold: `dim_specialty` 81, `dim_hospital_service` 22, `fact_capacity_baseline` 17; re-keyed facts (`bed_assignment`, `or_case`, `or_schedule`, `encounter`) carry no `hospital_id` (keyed to tenant/org). Mirrors the SIT §7 result below.
+* **Remaining (carried to next session):**
+  1. **PROD semantic-model + report publish** — `deploy_fabric_cicd.py --environment PROD --mode publish`. **Validate OK** (PROD workspace/lakehouse/params resolve). **Blocked locally**: `fabric-cicd` requires Python `>=3.9,<3.14`; this host's default is 3.14. Python 3.11 is present (`C:\Python311`) — finish the isolated `--user` install with a clean `PYTHONPATH`/`PYTHONHOME`, or run the publish from CI/another host. Then confirm the PROD SQL analytics endpoint has caught up (async).
+  2. **E2E SIT + PROD parity test** — sign-in → app → agent → data → response on both; capture a parity evidence doc; then tick the §5 DoD "SIT + PROD deployed identically" and the design-spec §5 DoD, and bump this doc.
+
+### 2026-07-24 — PROD org/skills parity prep (T11/T13 flags + `what-if` clean)
+
+* **Goal:** close the last open DoD item — "SIT + PROD deployed identically" — for the Sprint 23 org/skills landing surface. **PROD platform/infra is owned by Sprint 19** (switzerlandnorth greenfield rebuild, ADR-0037, 2026-07-23); that rebuild predates this sprint's org/skills spine, so PROD still runs the pre-org/skills gold. This delta is Sprint 23's to close.
+* **Change (non-destructive prep):** enabled the three Sprint 23 module flags in [`infra/environments/prod-swn.bicepparam`](../../infra/environments/prod-swn.bicepparam) to mirror `sit.bicepparam` — `enableMasterdataLandingModule`, `enableSkillsSimJobsModule`, `enableSkillsEventstreamModule` = `true`, plus `simCapacityLocation = 'switzerlandnorth'` (single-region PROD; SIT uses westus2). Fabric destination IDs stay empty (scaffold, mirrors SIT); the sim-jobs image is the same public placeholder as SIT (no PROD ACR dependency).
+* **Evidence:** `az bicep build` clean (pre-existing warnings only); `az deployment group what-if -g rg-ihzhhpf-prod -f infra/main.bicep -p prod-swn.bicepparam` **Succeeded** — **0 deletes**, 10 additive Creates that map exactly to the enabled modules:
+  * `stmasterdataihzhhpfprod` + `blobServices/default` + `containers/landing` (T11 landing zone)
+  * `cae-skills-sim-ihzhhpf-prod` + jobs `caj-sk-{lms,sf,skm,wid}-ihzhhpf-prod` + `id-skills-sim-ihzhhpf-prod` UAMI + role assignment (T13 sim-jobs)
+  * skills-eventstream is scaffold-only (REST post-deploy; no ARM resource — consistent with the empty Fabric IDs)
+  * The other 31 `Modify` entries are pre-existing PROD drift (agent-host, cosmos, network, KV PE) unrelated to this change; the 2 `Unsupported` are what-if lambda-expression limitations on computed role-assignment names.
+* **SIT baseline confirmed deployed** (`rg-ihzhhpf-sit`): `stmasterdataihzhhpfsit`, `cae-skills-sim-ihzhhpf-sit`, `id-skills-sim-ihzhhpf-sit` present.
+* **Gate:** PROD apply is **`approved-to-apply`-gated** (AGENTS.md §4). Next steps after apply: replay the org/skills medallion to PROD (prune H_HSL, verify 0 real names via OneLake Delta), publish rebaselined semantic model + report, then e2e-test SIT + PROD.
 
 ### 2026-07-24 — ADR-0039 accepted (approved to proceed)
 

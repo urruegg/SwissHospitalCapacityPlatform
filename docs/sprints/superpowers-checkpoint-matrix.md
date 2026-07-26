@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.7.0 |
-| **Date** | 2026-07-10 |
+| **Version** | 1.7.1 |
+| **Date** | 2026-07-26 |
 | **Author** | GitHub Copilot |
 | **Status** | Ready |
-| **Previous Version** | 1.6.0 (Sprint 14.1 mini-sprint retro: Evidence tab T4–T6 + ADR-0026 readiness ownership) |
+| **Previous Version** | 1.7.0 (this bump repoints the whiteboard ADR link ADR-0021 -> ADR-0051, #378); prior 1.6.0 (Sprint 14.1 mini-sprint retro: Evidence tab T4–T6 + ADR-0026 readiness ownership) |
 
 ## Purpose
 
@@ -112,7 +112,7 @@ sprint executed under this matrix.
 - **Fluent baseline** (T1–T4, T6): two-workspace shell, MSAL auth with
   `roles`/`hospital`/`env` claim parsing + SIT-gated role switcher, BedManager
   whiteboard with 6 card types over a custom canvas
-  ([ADR-0021](../adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md)),
+  ([ADR-0051](../adr/0051-whiteboard-base-react-flow-vs-tldraw-vs-custom.md)),
   Backstage Roles tab (read-only Entra Graph), Copilot Drawer wired to BMCA.
   20 vitest unit tests + Playwright smoke/a11y/contract green; `app-build.yml`,
   `app-e2e.yml`, `app-a11y.yml` added.

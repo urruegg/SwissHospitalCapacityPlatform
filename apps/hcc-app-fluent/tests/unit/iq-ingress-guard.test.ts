@@ -15,12 +15,15 @@ const modules = import.meta.glob('../../src/**/*.{ts,tsx}', {
   import: 'default',
 }) as Record<string, string>;
 
+/** The IQ layer: the raw gateway + the evidence-envelope structured-read adapter (OBO/RLS, ADR-0052). */
+const IQ_LAYER = ['src/data/iq-client.ts', 'src/data/roleboard/golden-source-client.ts'];
+
 describe('IQ single-ingress guard', () => {
-  it('only src/data/iq-client.ts calls fetch()', () => {
+  it('only the IQ layer (iq-client + golden-source-client) calls fetch()', () => {
     const offenders = Object.entries(modules)
       .filter(([, source]) => /\bfetch\s*\(/.test(source))
       .map(([path]) => path)
-      .filter((path) => !path.endsWith('src/data/iq-client.ts'));
+      .filter((path) => !IQ_LAYER.some((allowed) => path.endsWith(allowed)));
     expect(offenders).toEqual([]);
   });
 });

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 0.8.0 |
+| **Date** | 2026-07-25 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.5.0 (pre §Agent Registry) |
+| **Previous Version** | 0.7.0 (added Sprint 26 Prescriptive Decision Vocabulary — DC-INSIGHT-v1, deterministic impact, advisory/HITL) |
 
 ## Purpose
 
@@ -38,6 +38,16 @@ controls.
 2. Forecast-aware operational recommendations with traceable grounding.
 3. Discharge coordination support with auditable rationale and timestamps.
 4. Role-based conversational assistance across operations personas.
+
+> **As-deployed (Sprint 19):** the AI lane is live in PROD
+> **`switzerlandnorth`** — Foundry `ai-ihzhhpf-prod` with 3 models (gpt-5,
+> gpt-5-mini, o3) and 8 agents; agent-host `/agents` → 7; live inference
+> verified (`PROD-SWN-OK`). The **Fabric IQ operational ontology** (`FR-ONT-002`)
+> is **not at GA parity** in swn — availability-blocked by the Microsoft Preview
+> per-capacity gate ([#270](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/270),
+> [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md)).
+> Synthetic data only, no PHI. Consolidated view:
+> [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
 
 ## GA Service Baseline (Non-Foundry-Hosted Agents)
 
@@ -155,6 +165,38 @@ Related architecture decisions:
 4. Keep role-aware prompt templates and explicit refusal behavior for
   out-of-scope or unsafe requests.
 5. Separate prompt bundles by environment (DEV, SIT, PROD) with promotion gates.
+
+## Prescriptive Decision Vocabulary (DC-INSIGHT-v1)
+
+Sprint 26 Slice 1 (issue #335,
+[ADR-0040](adr/0040-prescriptive-decision-ontology-and-runtime-store.md)) moves
+the OOA -> DCA copilot pair from descriptive-only to prescriptive: every
+grounded answer is assembled as the `DC-INSIGHT-v1` 5-beat vocabulary — SIGNAL,
+UNDERSTANDING, RECOMMENDATION, ACTION, COORDINATION — plus PROVENANCE, rather
+than a free-form sentence.
+
+1. The RECOMMENDATION beat's `expected_impact` (delta beds / delta %) is always
+   computed by a deterministic, unit-tested `compute_expected_impact` function
+   over governed forecast/driver data — **never an LLM estimate** — so the
+   number behind a ranked lever is auditable and reproducible.
+2. The ACTION beat is advisory and human-in-the-loop: an action may be
+   `PROPOSED` autonomously by a copilot, but is only `APPLIED` after a human
+   posts the `approved-to-apply` confirmation on the governing PR/issue/comment
+   thread ([AGENTS.md §4](../AGENTS.md#4-confirmation-rule-for-deploy--delete)).
+   The agent refuses to self-approve and refuses a bot-identity approver.
+3. The read-only Fabric Data Agent stays a grounding tool, emitting only the
+   descriptive `signal`/`understanding`/`provenance` beats; the agent-host
+   assembles `recommendation`/`action`/`coordination` at runtime, keeping the
+   copilots' `write` side-effect ceiling unchanged.
+4. WS-C ships **gated apply tooling** for the six decision-tier agents:
+   `foundry/register_decision_tier.py` (mirroring
+   `register_fabric_data_agent_tool.py`) emits a deterministic per-agent
+   registration plan — each agent pointed at its own role lever catalog, the
+   Cosmos `plans`/`proposed_actions` containers, and the deterministic impact
+   tool — and only mutates the eastus2 Foundry project
+   ([ADR-0032](adr/0032-foundry-control-plane-eastus2.md)) when handed a non-bot
+   `--approved-to-apply` handle and a live registration factory. A real apply
+   runs in-VNet, never from CI.
 
 ## Evaluation
 

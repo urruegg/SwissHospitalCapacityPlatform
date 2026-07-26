@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "16344374991231825254"
+      "templateHash": "11984451482387454371"
     }
   },
   "parameters": {
@@ -34,7 +34,18 @@
       "type": "string",
       "defaultValue": "cg-skills-eventstream",
       "metadata": {
-        "description": "Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups."
+        "description": "Consumer group the Eventstream subscribes to for skills events. Dedicated group keeps this lane isolated from the capacity/fabric consumer groups. Only used when sourceMode=EventHub."
+      }
+    },
+    "sourceMode": {
+      "type": "string",
+      "defaultValue": "CustomEndpoint",
+      "allowedValues": [
+        "CustomEndpoint",
+        "EventHub"
+      ],
+      "metadata": {
+        "description": "Eventstream source transport. CustomEndpoint (design D4 demo-scope, ADR-0013) mirrors the working es-capacity-events-sit lane: the Container Apps publisher POSTs DC-SKILL-EVENT-v1 envelopes to the Eventstream ingestion URL — fully live-deployable today, no out-of-band Fabric-managed connection required. EventHub is the Swiss-GA target-state and requires a Fabric-managed connection to the Event Hubs namespace (POST /v1/connections) before the post-deploy script can wire it."
       }
     },
     "location": {
@@ -97,13 +108,14 @@
         "description": "[parameters('eventstreamDescription')]"
       },
       "source": {
-        "kind": "EventHub",
-        "namespaceHost": "[parameters('eventHubNamespace')]",
-        "eventHubName": "[parameters('eventHubName')]",
-        "consumerGroup": "[parameters('eventHubConsumerGroup')]",
+        "kind": "[parameters('sourceMode')]",
+        "namespaceHost": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubNamespace'), '')]",
+        "eventHubName": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubName'), '')]",
+        "consumerGroup": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubConsumerGroup'), '')]",
+        "connectionId": "",
         "routingProperty": "eventKind",
         "allowedEventKinds": "[variables('allowedEventKinds')]",
-        "authMode": "fabric-managed-connection"
+        "authMode": "[if(equals(parameters('sourceMode'), 'EventHub'), 'fabric-managed-connection', 'custom-endpoint-ingestion')]"
       },
       "destination": {
         "kind": "Lakehouse",

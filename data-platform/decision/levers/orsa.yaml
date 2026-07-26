@@ -1,0 +1,35 @@
+# ORSA (OR-Steering Copilot Agent) lever catalog.
+# Sprint 26 WS-B fan-out: fully specified per design spec Sec 3.3.
+# Referenced by data/synthetic/schema/dc-insight-v1.schema.json recommendation[].lever_id.
+role: orsa
+levers:
+  - lever_id: ORSA-DEFER-ELECTIVE
+    role: orsa
+    title_i18n:
+      de: "Elektive Eingriffe verschieben"
+      en: "Defer elective admissions"
+      fr: "Reporter les admissions électives"
+      it: "Rinviare i ricoveri elettivi"
+    description_i18n:
+      de: "Empfiehlt, N elektive (chirurgische) Aufnahmen vor einer Uhrzeit zu verschieben, um prognostizierten Zufluss zu vermeiden und Kapazität zu schützen."
+      en: "Recommends deferring N elective (surgical) admissions before a given time to avoid forecast inflow and protect capacity."
+      fr: "Recommande de reporter N admissions électives (chirurgicales) avant une heure donnée pour éviter l'afflux prévu et protéger la capacité."
+      it: "Consiglia di rinviare N ricoveri elettivi (chirurgici) entro un orario per evitare l'afflusso previsto e proteggere la capacità."
+    preconditions:
+      - "ward.occupancy_pct > threshold"
+      - "elective_schedule.count >= n"
+    params_schema:
+      type: object
+      required: ["n", "before"]
+      properties:
+        n:
+          type: integer
+          minimum: 1
+          description: "Number of elective admissions to defer."
+        before:
+          type: string
+          format: time
+          description: "Time of day (HH:MM) by which the deferral decision must be made."
+    impact_formula_ref: defer_elective_slots
+    owner_role: orsa
+    hitl: true

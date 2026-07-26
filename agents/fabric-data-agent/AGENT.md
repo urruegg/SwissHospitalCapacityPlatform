@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-23 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-24 |
 | **Author** | @urruegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (Sprint 09 v2.0.0 T4.3 — new) |
+| **Previous Version** | 1.1.0 (Sprint 23 org-spine + skills grounding extension) |
 
 > **Runtime agent.** This is a **user-facing operational agent** distinct from
 > the coding-agent registry in [`AGENTS.md`](../../AGENTS.md). Per
@@ -31,7 +31,7 @@
   Region pinned per §8.
 - **Owner**: @urruegg
 - **Realises**: `FR-CX-001`, `FR-CX-002`, `FR-CX-006`, `FR-ONT-004`,
-  `FR-ONT-006`
+  `FR-ONT-006`, `FR-FC-007`
 - **HITL framing**: Not applicable — this agent is a **read-only query
   surface**, not an advisory copilot. It never proposes an operational
   action.
@@ -176,6 +176,47 @@ Every non-refusal response must contain, in order:
 4. **Response timestamp** (`FR-CX-006`) in ISO-8601 UTC.
 
 No advisory framing footer — this agent is query-only, not an advisor.
+
+### Forecast / breach / occupancy-signal queries — `DC-INSIGHT-v1` descriptive beats (Sprint 26, `FR-FC-007`)
+
+For queries over the predictive surface added by WS-A
+(`gold.fact_occupancy_forecast`, `gold.fact_forecast_driver`, and the
+ontology concepts `hcp:Forecast`, `hcp:Driver`, `hcp:Signal` — see
+[Sprint 26 design spec §3.2](../../docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md#32-foresight-tier--gold-medallion--ontology-ws-a)),
+for example "what's the 72h occupancy outlook for ward W and why?" or any
+occupancy-breach question, the response MUST **additionally** include the
+three descriptive beats of the `DC-INSIGHT-v1` contract
+([`data/synthetic/schema/dc-insight-v1.schema.json`](../../data/synthetic/schema/dc-insight-v1.schema.json))
+after item 4 above:
+
+5. **`signal`** — the forecast KPI, its threshold, and breach state:
+   `{ metric, value, unit, threshold, breach, scope, horizon_h }`, e.g.
+   `occupancy_pct` = 102 vs `threshold` 100, `breach: true`, `scope:
+   "hcp:Ward/Medicine A"`, `horizon_h: 72`.
+6. **`understanding`** — an object `{ drivers: [...] }` whose `drivers`
+   array decomposes the signal into contributing factors sourced from
+   `gold.fact_forecast_driver`: each entry `{ factor, delta, note? }`
+   (e.g. `forecast_admissions` +6, `planned_discharges` -2) is a signed
+   contribution to the signal.
+7. **`provenance`** — grounding for the two beats above: `concepts`
+   (one or more `hcp:*` references, e.g. `hcp:Forecast`, `hcp:Driver`),
+   `confidence` (0..1), and `source_trust` (`A`\|`B`\|`C`).
+
+This agent does **not** emit the `recommendation`, `action`, or
+`coordination` beats of `DC-INSIGHT-v1` — those are advisory /
+HITL-gated and are assembled at runtime by the agent-host from the
+lever catalog and the Cosmos `proposed_actions`/`plans` containers,
+per [Sprint 26 design spec §3.1](../../docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md#31-the-actionable-insight-contract-dc-insight-v1)
+and [§3.5](../../docs/superpowers/specs/2026-07-23-sprint-26-decision-ontology-actionable-insight-design.md#35-consumption--data-agent-contract--6-foundry-agents-ws-d).
+A query that asks this agent for a recommendation, ranking, or "should
+we…" answer is still refused per §4 (`REFUSE:
+advisory-out-of-scope`) — the new beats are strictly descriptive and do
+not change that refusal boundary.
+
+These three beats are **additive** and scoped to forecast/breach/
+occupancy-signal queries only; the four-item contract above (grounded
+answer, citations, crosswalk anchor, timestamp) is unchanged for all
+other structural/entity queries.
 
 ---
 

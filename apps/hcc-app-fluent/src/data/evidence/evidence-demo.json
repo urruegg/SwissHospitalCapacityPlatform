@@ -151,7 +151,7 @@
         "sourcePath": "docs/adr/0013-temporary-us-region-demo-scope.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0013-temporary-us-region-demo-scope.md"
       },
-      "status": "Proposed",
+      "status": "Accepted",
       "title": "Temporary US-region demo scope on new tenant"
     },
     {
@@ -184,7 +184,7 @@
         "sourcePath": "docs/adr/0016-no-phi-in-mvp-demo-scope.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0016-no-phi-in-mvp-demo-scope.md"
       },
-      "status": "Proposed",
+      "status": "Accepted",
       "title": "No PHI in MVP demo scope"
     },
     {
@@ -241,17 +241,6 @@
       },
       "status": "Accepted",
       "title": "Showcase Evidence readiness scoring rules (T-SHOW / T-PROD)"
-    },
-    {
-      "decisionSummary": "Use a **custom lightweight canvas** for Sprint 13:",
-      "id": "ADR-0021",
-      "provenance": {
-        "asOf": "2026-07-10",
-        "sourcePath": "docs/adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0021-whiteboard-base-react-flow-vs-tldraw-vs-custom.md"
-      },
-      "status": "Accepted",
-      "title": "Whiteboard base for the operational whiteboard (React Flow vs tldraw vs custom)"
     },
     {
       "decisionSummary": "Use **Python + FastAPI** for the agent-host.",
@@ -441,7 +430,7 @@
       "title": "Trunk-based parallel-sprint development workflow"
     },
     {
-      "decisionSummary": "Adopt the following architecture for the Curavias org/skills master-data domain. These are the locked decisions D1-D6 from the Sprint 23 design.",
+      "decisionSummary": "",
       "id": "ADR-0039",
       "provenance": {
         "asOf": "2026-07-10",
@@ -449,18 +438,117 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md"
       },
       "status": "Accepted",
-      "title": "Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport"
+      "title": "Curavias Landing Zone And Skills Evidence Plugins"
     },
     {
-      "decisionSummary": "**Proposed: bring PROD switzerlandnorth to SIT network parity, plus add a Key Vault private endpoint.**",
+      "decisionSummary": "**Accepted: bring PROD switzerlandnorth to SIT network parity, plus add a Key Vault private endpoint.**",
       "id": "ADR-0039",
       "provenance": {
         "asOf": "2026-07-10",
         "sourcePath": "docs/adr/0039-prod-network-parity-vnet-private-endpoints.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0039-prod-network-parity-vnet-private-endpoints.md"
       },
-      "status": "Proposed",
+      "status": "Accepted",
       "title": "PROD Network Parity — VNet + Cosmos & Key Vault Private Endpoints (Switzerland North)"
+    },
+    {
+      "decisionSummary": "Adopt the following architecture for the descriptive -> prescriptive ontology extension and its runtime decision store.",
+      "id": "ADR-0040",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md"
+      },
+      "status": "Accepted",
+      "title": "Prescriptive Decision Ontology + Runtime Decision Store"
+    },
+    {
+      "decisionSummary": "Resolve only the ADR-0039 collision in this change:",
+      "id": "ADR-0041",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0041-adr-number-collision-resolution.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0041-adr-number-collision-resolution.md"
+      },
+      "status": "Accepted",
+      "title": "ADR Number Collision Resolution"
+    },
+    {
+      "decisionSummary": "1. **GA is the target maturity** for PROD Switzerland North. 2. A **standing, governance-approved Preview exception** permits named Preview features in PROD Switzerland North strictly for demonstrating the Curavias stack under synthetic/no-PHI scope. 3. The covered Preview features are: * `fabric-iq-ontology` * `fabric-data-agent` 4. Both covered features are region-listed Preview in Switzerland North per [docs/region-availability.yaml](../region-availability.yaml) and [ADR-0037](0037-prod-region-switzerland-north-greenfield.md)'s evidence matrix. The ontology is additionally subject to the per-capacity `FeatureNotAvailable` gate tracked in [issue #270](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/270). 5. All other BOM items deploy at their GA maturity.",
+      "id": "ADR-0042",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md"
+      },
+      "status": "Accepted",
+      "title": "PROD Switzerland North GA Target + Standing Preview Exception for Curavias Demo"
+    },
+    {
+      "decisionSummary": "1. **Preview-tier Azure/Fabric services are permitted in PROD Switzerland North** strictly to demonstrate the Curavias stack under **synthetic / no-PHI** scope. This generalises ADR-0042 from two named features to a standing demo-scope posture, and satisfies ADR-0006's written-exception requirement for that scope. 2. The **GA-only gate applies solely to a real go-live (real-PHI) cut-over.** Proving value and the art of the possible in **Preview in Switzerland is sufficient** for the demo; work must not be re-parked behind a GA milestone unless it targets a real go-live cut-over. 3. **The skills-events `sourceMode=EventHub` flip is un-parked.** It is in fact **GA in Switzerland North** (Eventstream + Event Hubs), so it does not even consume this Preview exception; the \"parked until Swiss GA\" gate on it is lifted. Its only remaining prerequisite is the out-of-band Fabric-managed connection (`POST /v1/connections`). 4. **Environment isolation is preserved.** SIT (westus2 / eastus2, per enabled capacity) and PROD (Switzerland North) **do not share input services** — separate Event Hubs namespaces, resource groups, and regions (`evh-ihzhhpf-sit-y26y` vs `evh-ihzhhpf-prod-i62t`). New input services follow the per-environment, per-functional-domain pattern (a **dedicated skills-events Event Hub**, not shared with the capacity `events` rail).",
+      "id": "ADR-0043",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md"
+      },
+      "status": "Accepted",
+      "title": "Preview-tier services permitted in PROD Switzerland North for the Curavias demo (GA-only gate reserved for real go-live cut-over)"
+    },
+    {
+      "decisionSummary": "**The Curavias Product Owner Agent is registered as domain #1 on a shared Foundry IQ Knowledge Layer.**",
+      "id": "ADR-0043",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0043-product-owner-agent-foundry-iq-domain.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0043-product-owner-agent-foundry-iq-domain.md"
+      },
+      "status": "Accepted",
+      "title": "Curavias Product Owner Agent as Foundry IQ Knowledge-Layer Domain #1"
+    },
+    {
+      "decisionSummary": "1. **Retire the public Curavias website in full.** Remove the app, its hosting infrastructure, its deploy workflow, and its runbooks: * `apps/curavias-web/**` * `.github/workflows/curavias-web-deploy.yml` * `infra/modules/experience-hosting/curavias-web.bicep` * `infra/main.bicep`: the `curaviasWeb` module block, the `enableCuraviasWebModule` / `curaviasWebMediaPublisherPrincipalId` / `curaviasWebEnableCustomDomains` params, and the three `curaviasWeb*` outputs + `curaviasWeb` module-status entry. * `infra/environments/prod.bicepparam`: the three `curaviasWeb*` params. * `infra/modules/dns/curavias.bicep`: the website-only, never-wired `aliasARecords` param + alias-A resource. * `docs/runbooks/curavias-web-custom-domain.md`, `docs/runbooks/curavias-web-media-library.md`. 2. **Withdraw `FR-WEB-001..005`** in [docs/PRD.md](../PRD.md), marking them Retired and linking this ADR (the IDs are kept for traceability, not reused). 3. **Retain the shared `curavias.ch` DNS zone** and its Fluent-app records — the zone serves `hcc-app-fluent` (`app.curavias.ch`), not the website. ADR-0030 remains in force for the zone. 4. **Keep the `product-marketing-agent`.** Its `FR-MKT-*` charter (stringent, brand-aligned messaging across channels) stands; only its retired website-copy deliverable is dropped.",
+      "id": "ADR-0044",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0044-retire-public-website.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0044-retire-public-website.md"
+      },
+      "status": "Accepted",
+      "title": "Retire the public Curavias website (`apps/curavias-web` / curavias.ch)"
+    },
+    {
+      "decisionSummary": "Adopt the following architecture for the Curavias org/skills master-data domain. These are the locked decisions D1-D6 from the Sprint 23 design.",
+      "id": "ADR-0050",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md"
+      },
+      "status": "Proposed",
+      "title": "Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport"
+    },
+    {
+      "decisionSummary": "Use a **custom lightweight canvas** for Sprint 13:",
+      "id": "ADR-0051",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0051-whiteboard-base-react-flow-vs-tldraw-vs-custom.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0051-whiteboard-base-react-flow-vs-tldraw-vs-custom.md"
+      },
+      "status": "Accepted",
+      "title": "Whiteboard base for the operational whiteboard (React Flow vs tldraw vs custom)"
+    },
+    {
+      "decisionSummary": "Adopt **Approach A: app-side context architecture, endpoint-ready**, instead of Approach B full live provisioning for this sprint.",
+      "id": "ADR-0052",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0052-app-context-envelope-per-agent-threads.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0052-app-context-envelope-per-agent-threads.md"
+      },
+      "status": "Accepted",
+      "title": "App context envelope + per-agent threads + simulated per-user RLS"
     }
   ],
   "boms": [
@@ -2193,6 +2281,54 @@
   "generatedAt": "2026-07-10",
   "requirements": [
     {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall derive a single `ContextEnvelope` from the signed-in user's claims and active role lens and attach it to every IQ read and agent turn."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall keep a separate conversation thread per `(userOid x agent)` so switching board-agents never leaks turns across agents, with a clean reset on sign-out."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall open the first patient-journey board the active role can see (role-first-eligible default) instead of a hard-coded default board."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "FR-CTX-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall enforce per-user data scope (RLS by `hospitalScope`) and the OBO contract, simulated app-side this sprint and liftable to live Fabric RLS / OBO via configuration without code change."
+    },
+    {
       "family": "Bed Management Copilot And User Experience",
       "id": "FR-CX-001",
       "kind": "FR",
@@ -2431,6 +2567,42 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "The solution shall make discharge-readiness outputs available to dashboards and copilot interactions."
+    },
+    {
+      "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+      "id": "FR-DEC-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive copilots shall assemble a RECOMMENDATION beat that ranks response levers from a governed lever catalog, where each lever's `expected_impact` is computed by a deterministic, forecast-grounded impact function (never an LLM estimate)."
+    },
+    {
+      "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+      "id": "FR-DEC-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive copilots shall assemble an ACTION beat that is advisory and human-in-the-loop: an action may be PROPOSED autonomously but is only APPLIED after a human posts the `approved-to-apply` confirmation; the agent shall refuse to self-approve or accept a bot approver."
+    },
+    {
+      "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+      "id": "FR-DEC-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%)."
     },
     {
       "family": "Trusted External Signals (Sprint 21)",
@@ -2743,6 +2915,18 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Forecast generation runs shall persist execution timestamps and model run identifiers for auditability."
+    },
+    {
+      "family": "Forecasting And Capacity Intelligence",
+      "id": "FR-FC-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The Fabric Data Agent shall emit the `DC-INSIGHT-v1` `signal`, `understanding`, and `provenance` beats as the governed grounding contract that prescriptive copilots consume (drivers, source-trust, and confidence for a forecast breach)."
     },
     {
       "family": "Governance, Delivery, And Operations",
@@ -3105,6 +3289,114 @@
       "title": "Fold `dim_hospital` into a **Curavias organisation spine** (`dim_tenant` / `dim_org_unit` / `dim_department`) and re-key the dependent facts (`fact_capacity_baseline`, `encounter`, `bed_assignment`, `or_case`, `or_schedule`) onto it."
     },
     {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall answer product questions grounded only on the four knowledge classes (A corpus, B live-proof, C cost, D ontology), with mandatory citations."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall be embedded as a Copilot rail on the Curavias App START and BACKSTAGE surfaces using the MAIN-board pattern."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The knowledge layer shall be a shared Foundry IQ Knowledge Layer registering the PO Agent as domain #1 and supporting additional domains."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The corpus shall refresh daily GitHub -> ADLS -> OneLake -> knowledge source, PHI-excluded, interviews first-order."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class B live-proof shall answer the five reference questions read-only with reconcile-and-flag."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class C shall reconcile effective PROD Azure cost + GitHub Copilot token cost to the BVA/TCO baseline."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Class D shall answer data questions via the ontology with concept + gold-binding citations."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-008",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall answer in DE and EN with source-language transparency."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "FR-POA-009",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail."
+    },
+    {
       "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
       "id": "FR-SKILL-001",
       "kind": "FR",
@@ -3246,7 +3538,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
+      "title": "**[Retired — ADR-0044]** The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3258,7 +3550,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
+      "title": "**[Retired — ADR-0044]** The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3270,7 +3562,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
+      "title": "**[Retired — ADR-0044]** The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3282,7 +3574,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
+      "title": "**[Retired — ADR-0044]** The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3294,7 +3586,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
+      "title": "**[Retired — ADR-0044]** Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
     },
     {
       "family": "Responsible AI And Auditability",
@@ -3487,6 +3779,42 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Onboarding data contracts shall enforce minimum-sensitive-data controls and purpose tags (Sprint 6)."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "NFR-CTX-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The context architecture shall remain demo-safe: synthetic data only, no PHI (ADR-0013 / ADR-0016), westus2 demo scope."
+    },
+    {
+      "family": "Application Context Architecture (Sprint 29)",
+      "id": "NFR-CTX-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Provenance and citations shall be preserved on every result; an envelope-less IQ call is refused and degradation surfaces `simulated` provenance loudly (no silent \"live\")."
+    },
+    {
+      "family": "Responsible AI And Auditability",
+      "id": "NFR-DEC-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver."
     },
     {
       "family": "Data Quality And Integrity",
@@ -3823,6 +4151,54 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "End-user operational surfaces shall support interactive decision cycles without batch-only dependence."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Citation coverage >= 95%; zero hallucination on CFO/CISO/CLO classes."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "100% audit coverage (question -> sources -> answer -> caller)."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "All runtime + data in Switzerland North; no PHI; Preview services accepted per design D3."
+    },
+    {
+      "family": "Curavias Product Owner Agent (Sprint 28)",
+      "id": "NFR-POA-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Advisory-only, human-in-the-loop; the agent never mutates a system."
     },
     {
       "family": "Reliability And Operational Continuity",
