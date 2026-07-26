@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.5.0 |
+| **Version** | 1.6.0 |
 | **Date** | 2026-07-26 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enablement in SIT in delivery) |
-| **Previous Version** | 1.4.0 (added §9.9 WS-C in-VNet apply job + live Foundry factory) |
+| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration in fix per §9.11) |
+| **Previous Version** | 1.5.0 (added §9.10 WS-C enablement — job turned on in SIT) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -432,3 +432,47 @@ failure) was resolved on `main` (#392/#394/#397/#398 — SIT + PROD deploys gree
 3. **Human gates** — @urruegg merges the PR and approves the `cd-infra-deploy-sit`
    environment gate (creates the job); the live apply is then run plan-first and
    applied only with `--approved-to-apply <handle>` per the runbook (AGENTS.md §4).
+
+### 9.11 WS-C live apply — guided run outcome + Foundry Agents-API fix (current)
+
+The 2026-07-26 guided live apply (job `caj-decision-apply-ihzhhpf-sit`, image
+`:2b83a49`, `--approved-to-apply urruegg`) produced a **split result** that this
+fix branch (`sprint-26/ws-c-foundry-agents-api`, Platform-control + AI lanes)
+resolves.
+
+1. **WS-B Cosmos seed — ✅ LIVE APPLIED.** `coordination.seed_live --action
+   apply` wrote the six-role `plans` + `proposed_actions` documents to
+   `cosmos-csa-ihzhhpf-sit` / `csa` (job stdout `{"applied": true, "approvedBy":
+   "urruegg", "planCount": 5}`). Re-runs are idempotent.
+2. **WS-C Foundry registration — ❌ blocked by a code bug, now fixed.**
+   `foundry/live_factory.py` targeted the wrong Foundry surface and returned
+   **401**, aborting the run before any agent was mutated. Root cause, proven
+   empirically against the live project:
+   - **Wrong API object.** The eight platform agents are **Foundry Agent
+     Service** *agents* (`/agents`, count 8), not OpenAI *Assistants*
+     (`/assistants`, count 0). Agents are immutable-versioned; an update is a
+     `POST /agents/{name}` carrying the **complete** definition, which the
+     service turns into a new version and auto-promotes to `latest`.
+   - **Wrong scope.** The data plane requires a bearer token for
+     `https://ai.azure.com/.default` (200), not `cognitiveservices.azure.com`
+     (401) — so the RBAC role is `Foundry User` /`Foundry Project Manager`, not
+     `Cognitive Services User`.
+   - **Wrong tool shape.** The Agent Service uses the **flat** Responses-API
+     function-tool shape (`{type,name,description,parameters}`), not the nested
+     Assistants `{type:"function", function:{…}}`.
+3. **The fix (this branch).** `live_factory.py` + `test_live_factory.py` rewritten
+   against the Agents API: `FOUNDRY_SCOPE = https://ai.azure.com/.default`; flat
+   function tool; factory flow = `GET /agents/{name}` → deep-copy
+   `versions.latest.definition` → append the `decision_tier_coordination_<role>`
+   function tool idempotently → merge version `metadata` (`decision_tier_role`,
+   `decision_tier_lever_catalog`, string values only) → `POST /agents/{name}`.
+   The complete existing definition (model, instructions, reasoning, existing
+   tools such as `ooa-agent`'s `fabric_dataagent`) is echoed verbatim so no agent
+   capability is lost. 13 factory tests + the full 147-test decision suite pass.
+4. **Operational follow-up (human-gated, after merge).** Rebuild the
+   `hcc-agent-host` image (CI watches `data-platform/decision/**`), bump
+   `decisionApplyJobImage` in `sit.bicepparam` to the new merge-SHA tag, redeploy
+   SIT, grant the job MI `Foundry User` on `ai-ihzhhpf-sit-eastus2`, then re-run
+   the Foundry apply via the `az containerapp job update --yaml` template-swap
+   method (ooa first, then fan out) per the runbook. `az containerapp job start
+   --command/--args` overrides are ignored in this environment.
