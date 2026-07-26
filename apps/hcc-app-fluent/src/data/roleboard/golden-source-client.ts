@@ -1,4 +1,5 @@
 import type { Mode, RoleBoardData, ScenarioScope } from '../../journey/RoleBoard';
+import { isGoldenSourceConfigured, iqStructuredRead } from '../iq-client';
 import { OCCUPANCY_PINNED, type OccupancyPayload, type SiteCapacitySummary, aggregateSiteCapacity } from './occupancy-data';
 import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
 import { BED_MANAGER_PINNED, type BedManagerPayload } from './bed-manager-data';
@@ -7,107 +8,74 @@ import { STAFFING_PINNED, type StaffingPayload } from './staffing-data';
 import { CRISIS_PINNED, type CrisisPayload } from './crisis-data';
 
 /**
- * Sprint 1 (parity) — trusted-data read adapter. When the Sprint 22 golden
- * source is wired (VITE_GOLDEN_SOURCE_URL), reads live; otherwise serves the
- * layer's synthesized dataset flagged `simulated`. Demo mode pins the golden
- * thread window over the same trusted data (a real slice, not fabricated).
+ * Sprint 1 (parity) / Sprint 27 — trusted-data read adapter, routed through the
+ * IQ-layer gateway (`../iq-client`). When the golden source is configured
+ * (`VITE_GOLDEN_SOURCE_URL` -> Fabric Data Agent / semantic model over Gold) it
+ * reads live golden evidence; otherwise it serves the layer's simulated fixture
+ * flagged `simulated`. If the source is configured but the read fails, it falls
+ * back to the fixture flagged `degraded` (fail loud, never silent). Every result
+ * carries an evidence envelope (provenance + `hcp:*` / `gold.*` citations + degraded).
  */
-const goldenSourceUrl: string = import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
 
-export async function loadOccupancy(
+// Representative ontology + gold citations per board. The demo fixtures are
+// grounded on these MVO entities; a live golden source returns its own.
+const CITES = {
+  occupancy: ['hcp:CapacityUnit', 'hcp:Bed', 'gold.fact_capacity_baseline', 'gold.fact_occupancy_forecast'],
+  discharge: ['hcp:Encounter', 'hcp:Bed', 'gold.fact_discharge_readiness'],
+  bedManager: ['hcp:CapacityUnit', 'hcp:Bed', 'gold.bed_assignment'],
+  orSteering: ['hcp:ORSlot', 'hcp:CapacityUnit', 'gold.fact_or_schedule'],
+  staffing: ['hcp:CareTeam', 'gold.fact_staffing_roster'],
+  crisis: ['hcp:Facility', 'hcp:CapacityUnit', 'gold.fact_capacity_baseline'],
+} as const;
+
+/**
+ * Shared structured-read path: simulated fixture when unconfigured, live golden
+ * evidence when configured, or a loud `degraded` fallback on read failure.
+ */
+async function loadBoard<P>(
+  resource: string,
+  fixture: P,
+  citations: readonly string[],
   scope: ScenarioScope,
   mode: Mode,
-): Promise<RoleBoardData<OccupancyPayload>> {
+): Promise<RoleBoardData<P>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: OCCUPANCY_PINNED };
+  const cites = [...citations];
+  if (!isGoldenSourceConfigured()) {
+    return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: false };
   }
-  const res = await fetch(
-    `${goldenSourceUrl}/occupancy?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`occupancy load failed: ${res.status}`);
-  const payload = (await res.json()) as OccupancyPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+  try {
+    const { payload, citations: live } = await iqStructuredRead<P>(
+      `/${resource}?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+    );
+    return { provenance: 'live', scope: pinnedScope, payload, citations: live.length ? live : cites, degraded: false };
+  } catch {
+    return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: true };
+  }
 }
 
-export async function loadDischarge(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<DischargePayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: DISCHARGE_PINNED };
-  }
-  const res = await fetch(
-    `${goldenSourceUrl}/discharge?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`discharge load failed: ${res.status}`);
-  const payload = (await res.json()) as DischargePayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadOccupancy(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<OccupancyPayload>> {
+  return loadBoard('occupancy', OCCUPANCY_PINNED, CITES.occupancy, scope, mode);
 }
 
-export async function loadBedManager(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<BedManagerPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: BED_MANAGER_PINNED };
-  }
-  const res = await fetch(
-    `${goldenSourceUrl}/bed-manager?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`bed-manager load failed: ${res.status}`);
-  const payload = (await res.json()) as BedManagerPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadDischarge(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<DischargePayload>> {
+  return loadBoard('discharge', DISCHARGE_PINNED, CITES.discharge, scope, mode);
 }
 
-export async function loadOrSteering(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<OrSteeringPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: OR_STEERING_PINNED };
-  }
-  const res = await fetch(
-    `${goldenSourceUrl}/or-steering?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`or-steering load failed: ${res.status}`);
-  const payload = (await res.json()) as OrSteeringPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadBedManager(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<BedManagerPayload>> {
+  return loadBoard('bed-manager', BED_MANAGER_PINNED, CITES.bedManager, scope, mode);
 }
 
-export async function loadStaffing(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<StaffingPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: STAFFING_PINNED };
-  }
-  const res = await fetch(
-    `${goldenSourceUrl}/staffing?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`staffing load failed: ${res.status}`);
-  const payload = (await res.json()) as StaffingPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadOrSteering(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<OrSteeringPayload>> {
+  return loadBoard('or-steering', OR_STEERING_PINNED, CITES.orSteering, scope, mode);
 }
 
-export async function loadCrisis(
-  scope: ScenarioScope,
-  mode: Mode,
-): Promise<RoleBoardData<CrisisPayload>> {
-  const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
-    return { provenance: 'simulated', scope: pinnedScope, payload: CRISIS_PINNED };
-  }
-  const res = await fetch(
-    `${goldenSourceUrl}/crisis?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`crisis load failed: ${res.status}`);
-  const payload = (await res.json()) as CrisisPayload;
-  return { provenance: 'live', scope: pinnedScope, payload };
+export function loadStaffing(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<StaffingPayload>> {
+  return loadBoard('staffing', STAFFING_PINNED, CITES.staffing, scope, mode);
+}
+
+export function loadCrisis(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<CrisisPayload>> {
+  return loadBoard('crisis', CRISIS_PINNED, CITES.crisis, scope, mode);
 }
 
 /**

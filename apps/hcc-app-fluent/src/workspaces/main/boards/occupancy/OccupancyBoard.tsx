@@ -9,6 +9,7 @@ import { BoardHeader } from './BoardHeader';
 import { WardForecastTable } from './WardForecastTable';
 import { CapacityFlowDiagram } from './CapacityFlowDiagram';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
+import { GroundingNotice } from '../GroundingNotice';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
@@ -69,6 +70,7 @@ export function OccupancyBoard() {
   return (
     <section className={s.root} data-testid="board-occupancy" aria-label={t('board.occupancy')}>
       <HandoffBanner banner={banner} provenance={data.provenance} />
+      <GroundingNotice degraded={data.degraded} />
       <BoardHeader agent={occupancyBoard.agent} title={t('board.occupancy')} provenance={data.provenance} lens="Bed Ops" />
       <div className={s.panel}>
         <WardForecastTable

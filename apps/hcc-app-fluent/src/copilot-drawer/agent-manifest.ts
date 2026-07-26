@@ -4,7 +4,12 @@
  * The Copilot Drawer is agent-agnostic; per-agent config comes from the
  * agent-host (`apps/hcc-agent-host`). The base URL is injected via Vite env so
  * the westus2 region (ADR-0013) is a config value, not code (design spec §9 risk).
- */import type { GroundedReco } from '../copilot-rail/reco';
+ * Routed through the IQ-layer gateway (`../data/iq-client`); this module holds no
+ * endpoint or `fetch` of its own.
+ */
+import type { GroundedReco } from '../copilot-rail/reco';
+import { isAgentHostConfigured, iqAgentChat, iqAgentList } from '../data/iq-client';
+
 export interface AgentManifestEntry {
   name: string;
   displayName: string;
@@ -27,11 +32,9 @@ export interface GroundedReply {
   reco?: GroundedReco;
 }
 
-const agentHostBaseUrl: string = import.meta.env.VITE_AGENT_HOST_URL ?? '';
-
 /** Fetch the deployed agent list from the agent-host, or a static fallback. */
 export async function fetchAgents(): Promise<AgentManifestEntry[]> {
-  if (!agentHostBaseUrl) {
+  if (!isAgentHostConfigured()) {
     return [
       { name: 'ooa-agent', displayName: 'OOA', ceiling: 'read' },
       { name: 'dca-agent', displayName: 'DCA', ceiling: 'write' },
@@ -41,9 +44,7 @@ export async function fetchAgents(): Promise<AgentManifestEntry[]> {
       { name: 'csa-agent', displayName: 'CSA', ceiling: 'deploy' },
     ];
   }
-  const res = await fetch(`${agentHostBaseUrl}/agents`);
-  if (!res.ok) throw new Error(`agent list failed: ${res.status}`);
-  return (await res.json()) as AgentManifestEntry[];
+  return iqAgentList<AgentManifestEntry[]>();
 }
 
 /** Display label per role agent, used as the artefact's attribution line. */
@@ -89,7 +90,7 @@ export async function invokeAgent(
   agent: string,
   prompt: string,
 ): Promise<GroundedReply> {
-  if (!agentHostBaseUrl) {
+  if (!isAgentHostConfigured()) {
     const reco = mockReco(agent);
     return {
       answer:
@@ -100,13 +101,7 @@ export async function invokeAgent(
       reco,
     };
   }
-  const res = await fetch(`${agentHostBaseUrl}/agents/${agent}/chat`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ prompt }),
-  });
-  if (!res.ok) throw new Error(`agent chat failed: ${res.status}`);
-  return (await res.json()) as GroundedReply;
+  return iqAgentChat<GroundedReply>(agent, prompt);
 }
 
 /**
