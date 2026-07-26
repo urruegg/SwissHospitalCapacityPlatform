@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from typing import Any, Callable, Dict, List, Optional
 
@@ -128,6 +129,25 @@ def apply(
     return applied
 
 
+def _live_factory_from_env() -> Callable[[Dict[str, Any]], Dict[str, Any]]:
+    """Build the live Foundry registration factory from the process environment.
+
+    Wired for the in-VNet apply job (Sprint 26 follow-up). ``FOUNDRY_PROJECT_ENDPOINT``
+    and ``FOUNDRY_PROJECT_NAME`` override the ADR-0032 SIT defaults; the azure
+    SDK is imported lazily by the factory only when it actually calls Foundry.
+    """
+    from foundry.live_factory import make_registration_factory
+
+    kwargs: Dict[str, str] = {}
+    endpoint = os.environ.get("FOUNDRY_PROJECT_ENDPOINT", "").strip()
+    project = os.environ.get("FOUNDRY_PROJECT_NAME", "").strip()
+    if endpoint:
+        kwargs["endpoint"] = endpoint
+    if project:
+        kwargs["project"] = project
+    return make_registration_factory(**kwargs)
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -152,10 +172,18 @@ def main(argv: Optional[List[str]] = None) -> int:
         raise SystemExit("apply requires --approved-to-apply <github-handle> (AGENTS.md §4)")
     if args.role is None:
         raise SystemExit("apply requires --role <role> (register one agent at a time)")
-    # Live apply needs the Foundry factory wired in by the in-VNet caller; the
-    # CLI path intentionally has no default factory, so this raises unless the
-    # caller imports apply() with a live factory.
-    print(json.dumps(apply(build_plan(args.role, args.region), args.approver), indent=2, sort_keys=True))
+    # Live apply builds the Foundry factory from the environment (ADR-0032 SIT
+    # defaults). The factory imports the azure SDK lazily and only reaches
+    # Foundry when actually called, so this path stays a no-op offline until the
+    # in-VNet job runs it.
+    factory = _live_factory_from_env()
+    print(
+        json.dumps(
+            apply(build_plan(args.role, args.region), args.approver, registration_factory=factory),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

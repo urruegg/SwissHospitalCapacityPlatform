@@ -25,6 +25,12 @@ param bmCopilotMiPrincipalId string = ''
 @description('Object ID of the CSA (Capacity Simulation Agent) managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-csa-agent. Wired from Foundry module (Sprint 09 T4.5).')
 param csaAgentMiPrincipalId string = ''
 
+@description('Sprint 23 WS-A4 (ADR-0043) — when true, provisions a dedicated per-domain skills-events Event Hub entity + cg-skills-eventstream consumer group inside this namespace, isolating the DC-SKILL-EVENT-v1 envelope from the capacity events rail. Additive; default false preserves the pre-Sprint-23 single-hub topology. Enabled automatically by the parent when the skills-events Eventstream runs in sourceMode=EventHub.')
+param enableSkillsEventHub bool = false
+
+@description('Name of the dedicated skills-events Event Hub entity. Only created when enableSkillsEventHub=true. Kept distinct from the capacity events hub so envelopes are separated by functional domain.')
+param skillsEventHubName string = 'skills-events'
+
 // Event Hub namespaces need globally unique DNS names (<ns>.servicebus.windows.net).
 var globalUniquenessSuffix = take(uniqueString(subscription().subscriptionId, resourceGroup().id), 4)
 
@@ -120,6 +126,41 @@ resource csaAgentReceiverRoleAssignment 'Microsoft.Authorization/roleAssignments
   }
 }
 
+// Sprint 23 WS-A4 (ADR-0043) — dedicated per-domain skills-events Event Hub entity.
+// Kept separate from the capacity `events` hub so the DC-SKILL-EVENT-v1 envelope is
+// isolated by functional domain. Consumed by es-ihzhhpf-skills-events (Fabric Eventstream)
+// via cg-skills-eventstream when the skills lane runs in sourceMode=EventHub (Swiss GA / ADR-0043).
+resource skillsEventHub 'Microsoft.EventHub/namespaces/eventhubs@2022-10-01-preview' = if (enableSkillsEventHub) {
+  parent: eventHubNamespace
+  name: skillsEventHubName
+  properties: {
+    partitionCount: 4
+    messageRetentionInDays: 1
+  }
+}
+
+resource cgSkillsEventstream 'Microsoft.EventHub/namespaces/eventhubs/consumergroups@2022-10-01-preview' = if (enableSkillsEventHub) {
+  parent: skillsEventHub
+  name: 'cg-skills-eventstream'
+  properties: {
+    userMetadata: 'Sprint 23 WS-A4 (ADR-0043) — consumed by es-ihzhhpf-skills-events (Fabric Eventstream). Drives bronze/skills-events/ Delta append.'
+  }
+}
+
+// RBAC — Simulator MI: Data Sender on the dedicated skills-events hub too (synthetic
+// DC-SKILL-EVENT-v1 publisher; ADR-0013 / ADR-0043 synthetic-no-PHI scope). Reuses the
+// same simulator identity as the capacity rail; the hub entity is what provides isolation.
+resource simulatorSkillsSenderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableSkillsEventHub && !empty(simulatorMiPrincipalId)) {
+  scope: skillsEventHub
+  name: guid(skillsEventHub.id, simulatorMiPrincipalId, eventHubsDataSenderRoleId)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', eventHubsDataSenderRoleId)
+    principalId: simulatorMiPrincipalId
+    principalType: 'ServicePrincipal'
+    description: 'Sprint 23 WS-A4 (ADR-0043) — simulator MI publishes DC-SKILL-EVENT-v1 to the dedicated skills-events hub.'
+  }
+}
+
 @description('Event Hub namespace name.')
 output eventHubNamespaceName string = eventHubNamespace.name
 
@@ -135,6 +176,12 @@ output consumerGroupNames object = {
   bmCopilotAgent: cgBmCopilotAgent.name
   csaAgent: cgCsaAgent.name
 }
+
+@description('Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events Event Hub entity name, or empty when not enabled.')
+output skillsEventHubName string = enableSkillsEventHub ? skillsEventHubName : ''
+
+@description('Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events consumer group name, or empty when not enabled.')
+output skillsEventHubConsumerGroup string = enableSkillsEventHub ? 'cg-skills-eventstream' : ''
 
 @description('Event Hubs submodule implementation marker.')
 output moduleStatus string = 'eventhubs-implemented'

@@ -114,6 +114,12 @@ param skillsEventstreamDestinationLakehouseId string = ''
 ])
 param skillsEventstreamSourceMode string = 'CustomEndpoint'
 
+// Sprint 23 WS-A4 (ADR-0043) — the dedicated per-domain skills-events Event Hub entity is
+// provisioned exactly when the skills lane runs in sourceMode=EventHub (the Swiss-GA / ADR-0043
+// path). In CustomEndpoint mode the Container Apps publisher POSTs to the ingestion URL and no
+// Event Hub source is needed, so the hub stays un-provisioned (backwards-compatible default).
+var skillsEventHubNeeded = enableSkillsEventstreamModule && skillsEventstreamSourceMode == 'EventHub'
+
 @description('Enable AI platform module deployment scaffold.')
 param enableAiPlatformModule bool = false
 
@@ -136,6 +142,9 @@ param enableDataFoundationModule bool = false
 
 @description('Enable the external-signals provider-runner (ca-signal-runner) module. Requires enableAgentHostModule + enableDataFoundationModule. Wires the runner into the CAE + Event Hub namespace so it survives future CAE redeploys.')
 param enableSignalRunnerModule bool = false
+
+@description('Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md.')
+param enableDecisionApplyJobModule bool = false
 
 @description('Object ID of the simulator managed identity that publishes to Event Hubs (Sprint 09 v2.0.0 T2.1/T3.7). Empty = role assignment skipped.')
 param eventHubsSimulatorMiPrincipalId string = ''
@@ -162,6 +171,35 @@ param enableSkillsSimJobsModule bool = false
 
 @description('Container image the skills-sim jobs run. Placeholder until the skills-sim CI workflow pushes a real image to ACR (parity with sim-capacity).')
 param skillsSimJobsImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+@description('Region for the Sprint 28 PO Agent modules (Search, runtime, Cosmos, Key Vault). Pinned to the ADR-0013 demo-scope variant path; PROD = switzerlandnorth per ADR-0037 / NFR-POA-003.')
+@allowed([
+  'switzerlandnorth'
+  'westus2'
+])
+param poAgentLocation string = 'westus2'
+
+@description('Region for the PO Agent runtime Azure OpenAI account. Separable from poAgentLocation per ADR-0032: SIT infra runs in westus2 but Azure OpenAI has no quota there, so SIT pins this to eastus2 (the ADR-0013 demo cross-region). Defaults to poAgentLocation to preserve single-region behaviour for PROD (switzerlandnorth per NFR-POA-003).')
+param poAgentOpenAiLocation string = poAgentLocation
+
+@description('Enable the Sprint 28 AI Search module (srch-ihzhhpf-<env>) — GA substrate for the Foundry IQ Knowledge Layer.')
+param enablePoAgentSearchModule bool = false
+
+@description('Enable the Sprint 28 Foundry IQ knowledge-base marker module (naming + pinned-version contract; provisioned via knowledge-base-rest.md runbook).')
+param enablePoAgentKnowledgeBaseModule bool = false
+
+@description('Enable the Sprint 28 corpus landing module (ADLS Gen2 stcorpus<suffix> for synthetic product documents).')
+param enablePoAgentCorpusLandingModule bool = false
+
+@description('Enable the Sprint 28 PO Agent runtime module (Container App + scheduled corpus-refresh job + Cosmos audit + Azure OpenAI + Key Vault). Requires enablePoAgentCorpusLandingModule for the Storage RBAC grant and enablePoAgentSearchModule for the Search reader grant.')
+param enablePoAgentRuntimeModule bool = false
+
+@description('Container image the PO Agent runtime app + corpus-refresh job run. Placeholder until the PO Agent CI workflow pushes a real image to ACR.')
+param poAgentContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Resource ID of the Log Analytics workspace for PO Agent Search/Cosmos/Key Vault diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD.')
+param poAgentLogAnalyticsWorkspaceId string = ''
 
 @description('Enable AI/ML foundation module deployment.')
 param enableAiMlFoundationModule bool = false
@@ -396,6 +434,7 @@ module dataFoundation './modules/data-foundation/main.bicep' = if (enableDataFou
     simulatorMiPrincipalId: eventHubsSimulatorMiPrincipalId
     bmCopilotMiPrincipalId: eventHubsBmCopilotMiPrincipalId
     csaAgentMiPrincipalId: eventHubsCsaAgentMiPrincipalId
+    enableSkillsEventHub: skillsEventHubNeeded
   }
 }
 
@@ -431,6 +470,71 @@ module skillsSimJobs './modules/experience-hosting/skills-sim-jobs/main.bicep' =
     landingStorageAccountName: masterdataLandingStorageName
     landingContainerName: 'landing'
     demoScope: simCapacityDemoScope
+  }
+}
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// Deterministic corpus storage name (mirrored from the corpus-landing module) so
+// the runtime refresh job can target it without a circular module reference.
+var poCorpusStorageName = toLower('stcorpus${replace(resourceSuffix, '-', '')}')
+
+// AI Search — GA substrate for the shared Foundry IQ Knowledge Layer.
+module poAgentSearch './modules/knowledge-layer/ai-search/main.bicep' = if (enablePoAgentSearchModule) {
+  name: 'po-agent-search-${environmentName}'
+  params: {
+    location: poAgentLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
+  }
+}
+
+// Foundry IQ knowledge-base marker (naming + pinned-version contract only;
+// provisioned via the knowledge-base-rest.md runbook — not Bicep-provisionable).
+module poAgentKnowledgeBase './modules/knowledge-layer/foundry-iq-knowledge-base/main.bicep' = if (enablePoAgentKnowledgeBaseModule) {
+  name: 'po-agent-knowledge-base-${environmentName}'
+  params: {
+    nameSuffix: resourceSuffix
+    searchRestApiVersion: enablePoAgentSearchModule ? poAgentSearch!.outputs.pinnedSearchRestApiVersion : '2024-05-01-preview'
+  }
+}
+
+// PO Agent runtime — Container App + scheduled corpus-refresh job + Cosmos audit
+// + Azure OpenAI + Key Vault. Depends on the Search module for the reader grant;
+// corpus storage name is deterministic (no module dependency).
+module poAgentRuntime './modules/experience-hosting/po-agent-runtime/main.bicep' = if (enablePoAgentRuntimeModule) {
+  name: 'po-agent-runtime-${environmentName}'
+  params: {
+    location: poAgentLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    containerAppEnvironmentName: 'cae-po-${resourceSuffix}'
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    containerImage: poAgentContainerImage
+    // Reuse the sim-capacity ACR params — same registry serves all Container Apps.
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    searchEndpoint: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchEndpoint : ''
+    searchServiceId: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchServiceId : ''
+    searchRestApiVersion: enablePoAgentSearchModule ? poAgentSearch!.outputs.pinnedSearchRestApiVersion : '2024-05-01-preview'
+    corpusStorageAccountName: poCorpusStorageName
+    openAiLocation: poAgentOpenAiLocation
+    logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
+    demoScope: simCapacityDemoScope
+  }
+}
+
+// Corpus landing — ADLS Gen2 for synthetic product documents. Grants the runtime
+// MI (writer) and the Search MI (reader) via RBAC; no keys.
+module poAgentCorpusLanding './modules/knowledge-layer/corpus-landing/main.bicep' = if (enablePoAgentCorpusLandingModule) {
+  name: 'po-agent-corpus-landing-${environmentName}'
+  params: {
+    location: poAgentLocation
+    nameSuffix: resourceSuffix
+    tags: tags
+    refreshJobPrincipalId: enablePoAgentRuntimeModule ? poAgentRuntime!.outputs.principalId : ''
+    searchPrincipalId: enablePoAgentSearchModule ? poAgentSearch!.outputs.searchPrincipalId : ''
+    logAnalyticsWorkspaceId: poAgentLogAnalyticsWorkspaceId
   }
 }
 
@@ -578,6 +682,30 @@ module signalRunner '../data-platform/external-signals/provider-runner/main.bice
   }
 }
 
+// Sprint 26 WS-C follow-up (#335) — in-VNet decision-tier live-apply job.
+// Manual-trigger Container Apps Job on the agent-host CAE (VNet-integrated →
+// Cosmos PE reachable, ADR-0029) reusing the agent-host MI (already a Cosmos
+// Built-in Data Contributor). Plan-first by default; a live apply is an
+// operator-driven `az containerapp job start` override that supplies
+// `--approved-to-apply <handle>` (AGENTS.md §4). Consumes the agent-host CAE +
+// the CSA Cosmos document endpoint — implicit output references make it deploy
+// after both. Idempotent: same job name/config adopts an existing job.
+module decisionApplyJob './modules/decision-apply-job/main.bicep' = if (enableDecisionApplyJobModule && enableAgentHostModule && enableCsaCosmosModule) {
+  name: 'decision-apply-job-${environmentName}'
+  params: {
+    location: location
+    nameSuffix: resourceSuffix
+    tags: tags
+    managedEnvironmentId: agentHost!.outputs.managedEnvironmentId
+    containerImage: agentHostImage
+    cosmosEndpoint: csaCosmos!.outputs.documentEndpoint
+    cosmosDatabase: csaCosmos!.outputs.databaseName
+    containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
+    containerRegistryResourceId: simCapacityContainerRegistryResourceId
+    demoScope: location != 'switzerlandnorth'
+  }
+}
+
 // Same reasoning as agent-host for the Log Analytics wiring.
 module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluentModule) {
   name: 'app-fluent-${environmentName}'
@@ -659,7 +787,7 @@ module skillsEventstream './modules/integration-orchestration/skills-eventstream
     workspaceId: skillsEventstreamWorkspaceId
     sourceMode: skillsEventstreamSourceMode
     eventHubNamespace: enableDataFoundationModule ? dataFoundation!.outputs.eventHubNamespaceEndpoint : ''
-    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.eventHubName : ''
+    eventHubName: enableDataFoundationModule ? dataFoundation!.outputs.skillsEventHubName : ''
     eventHubConsumerGroup: 'cg-skills-eventstream'
     location: location == 'switzerlandnorth' ? 'switzerlandnorth' : 'westus2'
     demoScope: location != 'switzerlandnorth'
@@ -704,6 +832,10 @@ output moduleStatuses object = {
   dataFoundation: enableDataFoundationModule ? dataFoundation!.outputs.moduleStatus : 'data-foundation-disabled'
   masterdataLanding: enableMasterdataLandingModule ? masterdataLanding!.outputs.moduleStatus : 'masterdata-landing-disabled'
   skillsSimJobs: enableSkillsSimJobsModule ? skillsSimJobs!.outputs.moduleStatus : 'skills-sim-jobs-disabled'
+  poAgentSearch: enablePoAgentSearchModule ? poAgentSearch!.outputs.moduleStatus : 'po-agent-search-disabled'
+  poAgentKnowledgeBase: enablePoAgentKnowledgeBaseModule ? poAgentKnowledgeBase!.outputs.moduleStatus : 'po-agent-knowledge-base-disabled'
+  poAgentCorpusLanding: enablePoAgentCorpusLandingModule ? poAgentCorpusLanding!.outputs.moduleStatus : 'po-agent-corpus-landing-disabled'
+  poAgentRuntime: enablePoAgentRuntimeModule ? poAgentRuntime!.outputs.moduleStatus : 'po-agent-runtime-disabled'
   aiMlFoundation: enableAiMlFoundationModule ? aiMlFoundation!.outputs.moduleStatus : 'ai-ml-foundation-disabled'
   integrationOrchestration: enableIntegrationOrchestrationModule ? integrationOrchestration!.outputs.moduleStatus : 'integration-orchestration-disabled'
   fabricEventstream: enableFabricEventstreamModule ? fabricEventstream!.outputs.moduleStatus : 'fabric-eventstream-disabled'

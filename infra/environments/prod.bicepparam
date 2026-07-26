@@ -75,8 +75,22 @@ param masterdataLandingLogAnalyticsWorkspaceId = ''
 param enableSkillsSimJobsModule = false
 param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// Opt-out in PROD until the demo scope is retired and PROD onboarding is approved.
+// When PROD comes online: flip enables to true, pin poAgentLocation to
+// switzerlandnorth (NFR-POA-003), and wire poAgentLogAnalyticsWorkspaceId to the
+// PROD Log Analytics workspace so Search/Cosmos/Key Vault diagnostics are captured.
+param poAgentLocation = 'switzerlandnorth'
+param enablePoAgentSearchModule = false
+param enablePoAgentKnowledgeBaseModule = false
+param enablePoAgentCorpusLandingModule = false
+param enablePoAgentRuntimeModule = false
+param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param poAgentLogAnalyticsWorkspaceId = ''
+
 // Sprint 13.1 T-DNS (ADR-0030) - dormant in PROD until PROD RG is provisioned + PROD deploy is approved.
 // When PROD comes online, this env must be refactored to use an existing reference on the
 // SIT-owned curavias.ch zone (or the zone moved to a shared RG) - see docs/adr/0030-*.md follow-ups.
 param appFluentCustomHostname = 'app.curavias.ch'
 param appFluentEnableCustomDomainCert = false
+

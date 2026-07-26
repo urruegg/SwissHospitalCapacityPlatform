@@ -21,6 +21,11 @@ COPY --from=build /wheels /wheels
 COPY apps/hcc-agent-host/pyproject.toml ./
 COPY apps/hcc-agent-host/src ./src
 COPY agents ./agents
+# Sprint 26 WS-C — decision-lane apply CLIs (coordination.seed_live,
+# foundry.register_decision_tier) for the in-VNet apply job. NOT imported by the
+# serving api; run on-demand from /app/data-platform/decision via the
+# caj-decision-apply Container Apps Job (`az containerapp job start`).
+COPY data-platform/decision ./data-platform/decision
 RUN pip install --no-cache-dir /wheels/* \
     && useradd --create-home --uid 10001 appuser
 ENV AGENTS_ROOT=/app/agents

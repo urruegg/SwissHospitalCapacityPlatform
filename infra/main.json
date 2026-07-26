@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "16497292998698094414"
+      "templateHash": "688522005058417843"
     }
   },
   "parameters": {
@@ -290,6 +290,13 @@
         "description": "Enable the external-signals provider-runner (ca-signal-runner) module. Requires enableAgentHostModule + enableDataFoundationModule. Wires the runner into the CAE + Event Hub namespace so it survives future CAE redeploys."
       }
     },
+    "enableDecisionApplyJobModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md."
+      }
+    },
     "eventHubsSimulatorMiPrincipalId": {
       "type": "string",
       "defaultValue": "",
@@ -344,6 +351,66 @@
       "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
       "metadata": {
         "description": "Container image the skills-sim jobs run. Placeholder until the skills-sim CI workflow pushes a real image to ACR (parity with sim-capacity)."
+      }
+    },
+    "poAgentLocation": {
+      "type": "string",
+      "defaultValue": "westus2",
+      "allowedValues": [
+        "switzerlandnorth",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Region for the Sprint 28 PO Agent modules (Search, runtime, Cosmos, Key Vault). Pinned to the ADR-0013 demo-scope variant path; PROD = switzerlandnorth per ADR-0037 / NFR-POA-003."
+      }
+    },
+    "poAgentOpenAiLocation": {
+      "type": "string",
+      "defaultValue": "[parameters('poAgentLocation')]",
+      "metadata": {
+        "description": "Region for the PO Agent runtime Azure OpenAI account. Separable from poAgentLocation per ADR-0032: SIT infra runs in westus2 but Azure OpenAI has no quota there, so SIT pins this to eastus2 (the ADR-0013 demo cross-region). Defaults to poAgentLocation to preserve single-region behaviour for PROD (switzerlandnorth per NFR-POA-003)."
+      }
+    },
+    "enablePoAgentSearchModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 28 AI Search module (srch-ihzhhpf-<env>) — GA substrate for the Foundry IQ Knowledge Layer."
+      }
+    },
+    "enablePoAgentKnowledgeBaseModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 28 Foundry IQ knowledge-base marker module (naming + pinned-version contract; provisioned via knowledge-base-rest.md runbook)."
+      }
+    },
+    "enablePoAgentCorpusLandingModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 28 corpus landing module (ADLS Gen2 stcorpus<suffix> for synthetic product documents)."
+      }
+    },
+    "enablePoAgentRuntimeModule": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Sprint 28 PO Agent runtime module (Container App + scheduled corpus-refresh job + Cosmos audit + Azure OpenAI + Key Vault). Requires enablePoAgentCorpusLandingModule for the Storage RBAC grant and enablePoAgentSearchModule for the Search reader grant."
+      }
+    },
+    "poAgentContainerImage": {
+      "type": "string",
+      "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+      "metadata": {
+        "description": "Container image the PO Agent runtime app + corpus-refresh job run. Placeholder until the PO Agent CI workflow pushes a real image to ACR."
+      }
+    },
+    "poAgentLogAnalyticsWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource ID of the Log Analytics workspace for PO Agent Search/Cosmos/Key Vault diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD."
       }
     },
     "enableAiMlFoundationModule": {
@@ -566,6 +633,7 @@
     }
   },
   "variables": {
+    "skillsEventHubNeeded": "[and(parameters('enableSkillsEventstreamModule'), equals(parameters('skillsEventstreamSourceMode'), 'EventHub'))]",
     "envSuffix": "[if(equals(parameters('environmentName'), 'dev'), '', format('-{0}', parameters('environmentName')))]",
     "resourceSuffix": "[format('{0}{1}', parameters('solutionShortName'), variables('envSuffix'))]",
     "masterdataLandingStorageName": "[toLower(format('stmasterdata{0}', replace(variables('resourceSuffix'), '-', '')))]",
@@ -575,6 +643,7 @@
       "costCenter": "[parameters('costCenter')]",
       "workload": "[parameters('workload')]"
     },
+    "poCorpusStorageName": "[toLower(format('stcorpus{0}', replace(variables('resourceSuffix'), '-', '')))]",
     "simCapacityHasEhSource": "[or(not(empty(parameters('simCapacityEventHubNamespace'))), parameters('enableDataFoundationModule'))]",
     "appFluentSubdomainLabel": "[if(and(parameters('enableAppFluentModule'), not(empty(parameters('appFluentCustomHostname')))), substring(parameters('appFluentCustomHostname'), 0, indexOf(parameters('appFluentCustomHostname'), '.')), '')]"
   },
@@ -2347,6 +2416,9 @@
           },
           "csaAgentMiPrincipalId": {
             "value": "[parameters('eventHubsCsaAgentMiPrincipalId')]"
+          },
+          "enableSkillsEventHub": {
+            "value": "[variables('skillsEventHubNeeded')]"
           }
         },
         "template": {
@@ -2356,7 +2428,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "1765711980068583287"
+              "templateHash": "18435649743209637415"
             }
           },
           "parameters": {
@@ -2399,6 +2471,13 @@
               "metadata": {
                 "description": "Object ID of the CSA managed identity for Event Hubs Data Receiver (Sprint 09 T4.5 wiring)."
               }
+            },
+            "enableSkillsEventHub": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — provision a dedicated per-domain skills-events Event Hub entity + cg-skills-eventstream consumer group. Enabled by the parent when the skills lane runs in sourceMode=EventHub."
+              }
             }
           },
           "resources": [
@@ -2429,6 +2508,9 @@
                   },
                   "csaAgentMiPrincipalId": {
                     "value": "[parameters('csaAgentMiPrincipalId')]"
+                  },
+                  "enableSkillsEventHub": {
+                    "value": "[parameters('enableSkillsEventHub')]"
                   }
                 },
                 "template": {
@@ -2438,7 +2520,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "2157408807266904991"
+                      "templateHash": "9973123325224022374"
                     }
                   },
                   "parameters": {
@@ -2487,6 +2569,20 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Object ID of the CSA (Capacity Simulation Agent) managed identity. When set, receives Azure Event Hubs Data Receiver scoped to cg-csa-agent. Wired from Foundry module (Sprint 09 T4.5)."
+                      }
+                    },
+                    "enableSkillsEventHub": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — when true, provisions a dedicated per-domain skills-events Event Hub entity + cg-skills-eventstream consumer group inside this namespace, isolating the DC-SKILL-EVENT-v1 envelope from the capacity events rail. Additive; default false preserves the pre-Sprint-23 single-hub topology. Enabled automatically by the parent when the skills-events Eventstream runs in sourceMode=EventHub."
+                      }
+                    },
+                    "skillsEventHubName": {
+                      "type": "string",
+                      "defaultValue": "skills-events",
+                      "metadata": {
+                        "description": "Name of the dedicated skills-events Event Hub entity. Only created when enableSkillsEventHub=true. Kept distinct from the capacity events hub so envelopes are separated by functional domain."
                       }
                     }
                   },
@@ -2604,6 +2700,47 @@
                       "dependsOn": [
                         "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('eventHubName'))]"
                       ]
+                    },
+                    {
+                      "condition": "[parameters('enableSkillsEventHub')]",
+                      "type": "Microsoft.EventHub/namespaces/eventhubs",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]",
+                      "properties": {
+                        "partitionCount": 4,
+                        "messageRetentionInDays": 1
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')))]"
+                      ]
+                    },
+                    {
+                      "condition": "[parameters('enableSkillsEventHub')]",
+                      "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+                      "apiVersion": "2022-10-01-preview",
+                      "name": "[format('{0}/{1}/{2}', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'), 'cg-skills-eventstream')]",
+                      "properties": {
+                        "userMetadata": "Sprint 23 WS-A4 (ADR-0043) — consumed by es-ihzhhpf-skills-events (Fabric Eventstream). Drives bronze/skills-events/ Delta append."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]"
+                      ]
+                    },
+                    {
+                      "condition": "[and(parameters('enableSkillsEventHub'), not(empty(parameters('simulatorMiPrincipalId'))))]",
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "scope": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]",
+                      "name": "[guid(resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName')), parameters('simulatorMiPrincipalId'), variables('eventHubsDataSenderRoleId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('eventHubsDataSenderRoleId'))]",
+                        "principalId": "[parameters('simulatorMiPrincipalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — simulator MI publishes DC-SKILL-EVENT-v1 to the dedicated skills-events hub."
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evh-{0}-{1}', parameters('nameSuffix'), variables('globalUniquenessSuffix')), parameters('skillsEventHubName'))]"
+                      ]
                     }
                   ],
                   "outputs": {
@@ -2638,6 +2775,20 @@
                         "bmCopilotAgent": "cg-bm-copilot-agent",
                         "csaAgent": "cg-csa-agent"
                       }
+                    },
+                    "skillsEventHubName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events Event Hub entity name, or empty when not enabled."
+                      },
+                      "value": "[if(parameters('enableSkillsEventHub'), parameters('skillsEventHubName'), '')]"
+                    },
+                    "skillsEventHubConsumerGroup": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events consumer group name, or empty when not enabled."
+                      },
+                      "value": "[if(parameters('enableSkillsEventHub'), 'cg-skills-eventstream', '')]"
                     },
                     "moduleStatus": {
                       "type": "string",
@@ -2686,6 +2837,20 @@
                 "description": "Sprint 09 v2.0.0 consumer group names."
               },
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.consumerGroupNames.value]"
+            },
+            "skillsEventHubName": {
+              "type": "string",
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events Event Hub entity name, or empty when not enabled."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.skillsEventHubName.value]"
+            },
+            "skillsEventHubConsumerGroup": {
+              "type": "string",
+              "metadata": {
+                "description": "Sprint 23 WS-A4 (ADR-0043) — dedicated skills-events consumer group name, or empty when not enabled."
+              },
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-eventhubs-{0}', parameters('nameSuffix'))), '2025-04-01').outputs.skillsEventHubConsumerGroup.value]"
             }
           }
         }
@@ -3260,6 +3425,1278 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enablePoAgentSearchModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('po-agent-search-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('poAgentLocation')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "logAnalyticsWorkspaceId": {
+            "value": "[parameters('poAgentLogAnalyticsWorkspaceId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "4534820058123538298"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the Azure AI Search service. PROD = switzerlandnorth (ADR-0037); SIT = westus2 (ADR-0013)."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "sku": {
+              "type": "string",
+              "defaultValue": "standard",
+              "allowedValues": [
+                "basic",
+                "standard",
+                "standard2",
+                "standard3"
+              ],
+              "metadata": {
+                "description": "Search SKU. `standard` supports hybrid vector + keyword + semantic ranker (design D2)."
+              }
+            },
+            "replicaCount": {
+              "type": "int",
+              "defaultValue": 1,
+              "minValue": 1,
+              "maxValue": 12,
+              "metadata": {
+                "description": "Replica count (query throughput / SLA). 1 for SIT demo scope; raise in PROD as needed."
+              }
+            },
+            "partitionCount": {
+              "type": "int",
+              "defaultValue": 1,
+              "allowedValues": [
+                1,
+                2,
+                3,
+                4,
+                6,
+                12
+              ],
+              "metadata": {
+                "description": "Partition count (index size / write throughput)."
+              }
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the Log Analytics workspace for diagnostic settings. Empty string skips diagnostics (SIT). Populated in PROD per copilot-instructions §3."
+              }
+            }
+          },
+          "variables": {
+            "searchServiceName": "[toLower(format('srch-{0}', parameters('nameSuffix')))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Search/searchServices",
+              "apiVersion": "2024-06-01-preview",
+              "name": "[variables('searchServiceName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "[parameters('sku')]"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "replicaCount": "[parameters('replicaCount')]",
+                "partitionCount": "[parameters('partitionCount')]",
+                "hostingMode": "default",
+                "publicNetworkAccess": "enabled",
+                "disableLocalAuth": true,
+                "semanticSearch": "standard",
+                "networkRuleSet": {
+                  "ipRules": []
+                }
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]",
+              "name": "[format('diag-{0}', variables('searchServiceName'))]",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "OperationLogs",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure AI Search module implementation marker."
+              },
+              "value": "knowledge-layer-ai-search-implemented"
+            },
+            "searchServiceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure AI Search service name."
+              },
+              "value": "[variables('searchServiceName')]"
+            },
+            "searchServiceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure AI Search service resource ID."
+              },
+              "value": "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
+            },
+            "searchEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure AI Search query endpoint."
+              },
+              "value": "[format('https://{0}.search.windows.net', variables('searchServiceName'))]"
+            },
+            "searchPrincipalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the Search system-assigned managed identity (grant it read on OneLake / corpus storage)."
+              },
+              "value": "[reference(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2024-06-01-preview', 'full').identity.principalId]"
+            },
+            "pinnedSearchRestApiVersion": {
+              "type": "string",
+              "metadata": {
+                "description": "Pinned data-plane agentic-retrieval REST api-version (see the knowledge-base runbook). Single reviewed value the runtime consumes."
+              },
+              "value": "2024-05-01-preview"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enablePoAgentKnowledgeBaseModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('po-agent-knowledge-base-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "searchRestApiVersion": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.pinnedSearchRestApiVersion.value), createObject('value', '2024-05-01-preview'))]"
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "7635980439731798164"
+            }
+          },
+          "parameters": {
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod. Used to derive the knowledge-source / knowledge-base names in the runbook."
+              }
+            },
+            "searchRestApiVersion": {
+              "type": "string",
+              "defaultValue": "2024-05-01-preview",
+              "metadata": {
+                "description": "Pinned data-plane Search REST api-version for agentic retrieval. Threaded from the ai-search module output so a single reviewed version is used everywhere."
+              }
+            }
+          },
+          "variables": {
+            "knowledgeSourceName": "[toLower(format('ks-curavias-corpus-{0}', parameters('nameSuffix')))]",
+            "knowledgeBaseName": "[toLower(format('kb-curavias-po-{0}', parameters('nameSuffix')))]"
+          },
+          "resources": [],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Foundry IQ knowledge-base module marker (no resources; provisioned via knowledge-base-rest.md)."
+              },
+              "value": "knowledge-layer-foundry-iq-knowledge-base-marker"
+            },
+            "knowledgeSourceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Knowledge source name (Class A corpus) the runbook creates against AI Search."
+              },
+              "value": "[variables('knowledgeSourceName')]"
+            },
+            "knowledgeBaseName": {
+              "type": "string",
+              "metadata": {
+                "description": "Knowledge base name the PO Agent domain #1 binds to."
+              },
+              "value": "[variables('knowledgeBaseName')]"
+            },
+            "searchRestApiVersion": {
+              "type": "string",
+              "metadata": {
+                "description": "Pinned data-plane Search REST api-version echoed for the runtime."
+              },
+              "value": "[parameters('searchRestApiVersion')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enablePoAgentRuntimeModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('po-agent-runtime-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('poAgentLocation')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "containerAppEnvironmentName": {
+            "value": "[format('cae-po-{0}', variables('resourceSuffix'))]"
+          },
+          "logAnalyticsWorkspaceResourceId": {
+            "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
+          },
+          "containerImage": {
+            "value": "[parameters('poAgentContainerImage')]"
+          },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('simCapacityContainerRegistryResourceId')]"
+          },
+          "searchEndpoint": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.searchEndpoint.value), createObject('value', ''))]",
+          "searchServiceId": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.searchServiceId.value), createObject('value', ''))]",
+          "searchRestApiVersion": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.pinnedSearchRestApiVersion.value), createObject('value', '2024-05-01-preview'))]",
+          "corpusStorageAccountName": {
+            "value": "[variables('poCorpusStorageName')]"
+          },
+          "openAiLocation": {
+            "value": "[parameters('poAgentOpenAiLocation')]"
+          },
+          "logAnalyticsWorkspaceId": {
+            "value": "[parameters('poAgentLogAnalyticsWorkspaceId')]"
+          },
+          "demoScope": {
+            "value": "[parameters('simCapacityDemoScope')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "3075851248279361199"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "allowedValues": [
+                "switzerlandnorth",
+                "westus2"
+              ],
+              "metadata": {
+                "description": "Azure region for the runtime, job, Cosmos and Key Vault. PROD = switzerlandnorth (ADR-0037, NFR-POA-003); SIT = westus2 (ADR-0013)."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Resource tags applied to every resource this module creates."
+              }
+            },
+            "containerAppEnvironmentId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional resource ID of an existing Container Apps managed environment. When empty, a consumption-only environment is created inside this module."
+              }
+            },
+            "containerAppEnvironmentName": {
+              "type": "string",
+              "defaultValue": "[format('cae-po-{0}', parameters('nameSuffix'))]",
+              "minLength": 2,
+              "maxLength": 60,
+              "metadata": {
+                "description": "Name for the managed environment when one is created by this module. Ignored when containerAppEnvironmentId is provided."
+              }
+            },
+            "logAnalyticsWorkspaceResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Log Analytics workspace resource ID for the managed environment. Ignored when containerAppEnvironmentId is provided."
+              }
+            },
+            "containerImage": {
+              "type": "string",
+              "defaultValue": "mcr.microsoft.com/dotnet/samples:aspnetapp",
+              "metadata": {
+                "description": "Container image the runtime app + refresh job run. Defaults to a placeholder; the real PO Agent image is published by a follow-up CI workflow."
+              }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server the runtime/job pull containerImage from. Set together with containerRegistryResourceId to wire MI-based pull (no admin creds, no secrets)."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer."
+              }
+            },
+            "searchEndpoint": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Query endpoint of the Azure AI Search service (ai-search module output). Threaded to the runtime as SEARCH_ENDPOINT."
+              }
+            },
+            "searchServiceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the Azure AI Search service. When set, the runtime MI is granted Search Index Data Reader scoped to it. Empty string skips the grant."
+              }
+            },
+            "searchRestApiVersion": {
+              "type": "string",
+              "defaultValue": "2024-05-01-preview",
+              "metadata": {
+                "description": "Pinned data-plane Search REST api-version (ai-search module output). Threaded to the runtime as SEARCH_API_VERSION."
+              }
+            },
+            "corpusStorageAccountName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Name of the corpus landing storage account (corpus-landing module output). Threaded to the refresh job as CORPUS_STORAGE_ACCOUNT."
+              }
+            },
+            "corpusContainerName": {
+              "type": "string",
+              "defaultValue": "landing",
+              "metadata": {
+                "description": "Landing container name inside the corpus storage account."
+              }
+            },
+            "corpusPrefix": {
+              "type": "string",
+              "defaultValue": "curavias-product-corpus",
+              "metadata": {
+                "description": "Root prefix inside the corpus container for product documents."
+              }
+            },
+            "openAiLocation": {
+              "type": "string",
+              "defaultValue": "[parameters('location')]",
+              "metadata": {
+                "description": "Region for the Azure OpenAI account. Separated from `location` because MCAP OpenAI quota is region-constrained (ADR-0032); PROD pins switzerlandnorth per NFR-POA-003 once GA quota exists."
+              }
+            },
+            "openAiDeploymentName": {
+              "type": "string",
+              "defaultValue": "gpt-5",
+              "metadata": {
+                "description": "Chat model deployment name the orchestrator calls."
+              }
+            },
+            "openAiModelName": {
+              "type": "string",
+              "defaultValue": "gpt-5",
+              "metadata": {
+                "description": "Chat model name."
+              }
+            },
+            "openAiModelVersion": {
+              "type": "string",
+              "defaultValue": "2025-08-07",
+              "metadata": {
+                "description": "Chat model version. Pinned to gpt-5 2025-08-07 (GenerallyAvailable), matching the existing agent fleet. The regional `Standard` tier is retiring in switzerlandnorth — gpt-4o/gpt-4.1 there are all `Deprecating` and gpt-4o 2024-11-20 already blocks new deployments — so we run the GA GPT-5 family. Verified via `az cognitiveservices model list -l switzerlandnorth`."
+              }
+            },
+            "openAiSkuName": {
+              "type": "string",
+              "defaultValue": "GlobalStandard",
+              "allowedValues": [
+                "Standard",
+                "GlobalStandard",
+                "DataZoneStandard"
+              ],
+              "metadata": {
+                "description": "Deployment SKU. `GlobalStandard` per the recorded platform decision D7-a (sprint-19 SIT/PROD parity plan) + ADR-0037: fleet agents (gpt-5/-mini/o3) run GlobalStandard cross-geo in swn, accepted under the no-PHI posture; those models do not offer regional `Standard` or `DataZoneStandard`. Quota OpenAI.GlobalStandard.gpt-5 = 1000K TPM. A future PHI onboarding can move to `DataZoneStandard` (EU) on gpt-5.4/5.5/5.6."
+              }
+            },
+            "openAiCapacity": {
+              "type": "int",
+              "defaultValue": 10,
+              "minValue": 1,
+              "maxValue": 300,
+              "metadata": {
+                "description": "Provisioned throughput (TPM in thousands) for the chat deployment."
+              }
+            },
+            "corpusRefreshCron": {
+              "type": "string",
+              "defaultValue": "30 2 * * *",
+              "metadata": {
+                "description": "Cron expression for the daily corpus refresh job (UTC). Default 02:30 daily."
+              }
+            },
+            "replicaTimeoutSeconds": {
+              "type": "int",
+              "defaultValue": 1800,
+              "minValue": 60,
+              "maxValue": 3600,
+              "metadata": {
+                "description": "Replica timeout (seconds) for the refresh job execution."
+              }
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the Log Analytics workspace for diagnostic settings on Cosmos / Key Vault. Empty string skips diagnostics (SIT). Populated in PROD per copilot-instructions §3."
+              }
+            },
+            "demoScope": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, the deployment is scoped to the demo path (synthetic data only, ADR-0013). Emits a demoScope tag for provenance."
+              }
+            }
+          },
+          "variables": {
+            "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
+            "openAiName": "[toLower(format('oai-po{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "cosmosName": "[toLower(format('cosmos-po-{0}', parameters('nameSuffix')))]",
+            "keyVaultName": "[toLower(format('kvpo{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "runtimeAppName": "[format('ca-po-{0}', parameters('nameSuffix'))]",
+            "refreshJobName": "[format('caj-po-refresh-{0}', parameters('nameSuffix'))]",
+            "searchIndexDataReaderRoleId": "1407120a-92aa-4202-b7e9-c0e197c71c8f",
+            "cognitiveServicesOpenAiUserRoleId": "5e0bd9bd-7b93-4f28-af87-19fc36ad61bd",
+            "keyVaultSecretsUserRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
+            "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+            "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002",
+            "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('id-po-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]"
+            },
+            {
+              "condition": "[empty(parameters('containerAppEnvironmentId'))]",
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2024-03-01",
+              "name": "[parameters('containerAppEnvironmentName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "properties": {
+                "appLogsConfiguration": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('destination', 'log-analytics', 'logAnalyticsConfiguration', createObject('customerId', reference(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').customerId, 'sharedKey', listKeys(parameters('logAnalyticsWorkspaceResourceId'), '2023-09-01').primarySharedKey)), createObject('destination', 'azure-monitor'))]",
+                "zoneRedundant": false
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2024-10-01",
+              "name": "[variables('openAiName')]",
+              "location": "[parameters('openAiLocation')]",
+              "tags": "[variables('effectiveTags')]",
+              "kind": "OpenAI",
+              "sku": {
+                "name": "S0"
+              },
+              "properties": {
+                "customSubDomainName": "[variables('openAiName')]",
+                "publicNetworkAccess": "Enabled",
+                "disableLocalAuth": true
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2024-10-01",
+              "name": "[format('{0}/{1}', variables('openAiName'), parameters('openAiDeploymentName'))]",
+              "sku": {
+                "name": "[parameters('openAiSkuName')]",
+                "capacity": "[parameters('openAiCapacity')]"
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "[parameters('openAiModelName')]",
+                  "version": "[parameters('openAiModelVersion')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]",
+              "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('cognitiveServicesOpenAiUserRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesOpenAiUserRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 28 WS-INF (#377) — PO Agent runtime MI calls the chat deployment (keyless)."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2024-05-15",
+              "name": "[variables('cosmosName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "kind": "GlobalDocumentDB",
+              "properties": {
+                "databaseAccountOfferType": "Standard",
+                "disableLocalAuth": true,
+                "enableAutomaticFailover": false,
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": [
+                  {
+                    "locationName": "[parameters('location')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2024-05-15",
+              "name": "[format('{0}/{1}', variables('cosmosName'), 'po-agent-audit')]",
+              "properties": {
+                "resource": {
+                  "id": "po-agent-audit"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-05-15",
+              "name": "[format('{0}/{1}/{2}', variables('cosmosName'), 'po-agent-audit', 'answers')]",
+              "properties": {
+                "resource": {
+                  "id": "answers",
+                  "partitionKey": {
+                    "paths": [
+                      "/classId"
+                    ],
+                    "kind": "Hash"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('cosmosName'), 'po-agent-audit')]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-05-15",
+              "name": "[format('{0}/{1}', variables('cosmosName'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('cosmosDataContributorRoleId')))]",
+              "properties": {
+                "roleDefinitionId": "[format('{0}/sqlRoleDefinitions/{1}', resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), variables('cosmosDataContributorRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2023-07-01",
+              "name": "[variables('keyVaultName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "properties": {
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "enableRbacAuthorization": true,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 7,
+                "publicNetworkAccess": "Enabled"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+              "name": "[guid(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('keyVaultSecretsUserRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('keyVaultSecretsUserRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 28 WS-INF (#377) — PO Agent runtime MI reads config secrets (keyless auth)."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('searchServiceId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Search/searchServices', last(split(parameters('searchServiceId'), '/')))]",
+              "name": "[guid(parameters('searchServiceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('searchIndexDataReaderRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('searchIndexDataReaderRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 28 WS-INF (#377) — PO Agent runtime MI queries the corpus index (Class A retrieval, keyless)."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.App/containerApps",
+              "apiVersion": "2024-03-01",
+              "name": "[variables('runtimeAppName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))]": {}
+                }
+              },
+              "properties": {
+                "environmentId": "[variables('effectiveEnvironmentId')]",
+                "configuration": {
+                  "activeRevisionsMode": "Single",
+                  "ingress": {
+                    "external": true,
+                    "targetPort": 8080,
+                    "transport": "auto",
+                    "allowInsecure": false
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))), createArray())]"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "po-agent",
+                      "image": "[parameters('containerImage')]",
+                      "resources": {
+                        "cpu": "[json('0.5')]",
+                        "memory": "1Gi"
+                      },
+                      "env": [
+                        {
+                          "name": "AZURE_CLIENT_ID",
+                          "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                        },
+                        {
+                          "name": "SEARCH_ENDPOINT",
+                          "value": "[parameters('searchEndpoint')]"
+                        },
+                        {
+                          "name": "SEARCH_API_VERSION",
+                          "value": "[parameters('searchRestApiVersion')]"
+                        },
+                        {
+                          "name": "AZURE_OPENAI_ENDPOINT",
+                          "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName')), '2024-10-01').endpoint]"
+                        },
+                        {
+                          "name": "AZURE_OPENAI_DEPLOYMENT",
+                          "value": "[parameters('openAiDeploymentName')]"
+                        },
+                        {
+                          "name": "COSMOS_ENDPOINT",
+                          "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), '2024-05-15').documentEndpoint]"
+                        },
+                        {
+                          "name": "KEY_VAULT_URI",
+                          "value": "[reference(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '2023-07-01').vaultUri]"
+                        },
+                        {
+                          "name": "DEMO_SCOPE",
+                          "value": "[if(parameters('demoScope'), 'true', 'false')]"
+                        }
+                      ]
+                    }
+                  ],
+                  "scale": {
+                    "minReplicas": 0,
+                    "maxReplicas": 2
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.App/jobs",
+              "apiVersion": "2024-03-01",
+              "name": "[variables('refreshJobName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))]": {}
+                }
+              },
+              "properties": {
+                "environmentId": "[variables('effectiveEnvironmentId')]",
+                "configuration": {
+                  "triggerType": "Schedule",
+                  "replicaTimeout": "[parameters('replicaTimeoutSeconds')]",
+                  "replicaRetryLimit": 1,
+                  "scheduleTriggerConfig": {
+                    "cronExpression": "[parameters('corpusRefreshCron')]",
+                    "parallelism": 1,
+                    "replicaCompletionCount": 1
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))))), createArray())]"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "po-corpus-refresh",
+                      "image": "[parameters('containerImage')]",
+                      "resources": {
+                        "cpu": "[json('0.25')]",
+                        "memory": "0.5Gi"
+                      },
+                      "env": [
+                        {
+                          "name": "AZURE_CLIENT_ID",
+                          "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                        },
+                        {
+                          "name": "CORPUS_STORAGE_ACCOUNT",
+                          "value": "[parameters('corpusStorageAccountName')]"
+                        },
+                        {
+                          "name": "CORPUS_CONTAINER",
+                          "value": "[parameters('corpusContainerName')]"
+                        },
+                        {
+                          "name": "CORPUS_PREFIX",
+                          "value": "[parameters('corpusPrefix')]"
+                        },
+                        {
+                          "name": "DEMO_SCOPE",
+                          "value": "[if(parameters('demoScope'), 'true', 'false')]"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]",
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName'))]"
+              ]
+            },
+            {
+              "condition": "[variables('useAcrMiPull')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 28 WS-INF (#377) — PO Agent runtime + refresh job pull containerImage from ACR."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]",
+              "name": "[format('diag-{0}', variables('cosmosName'))]",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "DataPlaneRequests",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "Requests",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+              "name": "[format('diag-{0}', variables('keyVaultName'))]",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "AuditEvent",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "PO Agent runtime module implementation marker."
+              },
+              "value": "experience-hosting-po-agent-runtime-implemented"
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Principal ID of the PO Agent User-Assigned Managed Identity. Consumed by the corpus-landing module for the Storage Blob Data Contributor grant."
+              },
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+            },
+            "clientId": {
+              "type": "string",
+              "metadata": {
+                "description": "Client ID of the PO Agent User-Assigned Managed Identity. Passed to containers as AZURE_CLIENT_ID."
+              },
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+            },
+            "identityResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the PO Agent User-Assigned Managed Identity."
+              },
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+            },
+            "runtimeAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the runtime Container App."
+              },
+              "value": "[variables('runtimeAppName')]"
+            },
+            "refreshJobName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the scheduled corpus-refresh Container Apps Job."
+              },
+              "value": "[variables('refreshJobName')]"
+            },
+            "openAiEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure OpenAI account endpoint."
+              },
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', variables('openAiName')), '2024-10-01').endpoint]"
+            },
+            "cosmosEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos DB document endpoint."
+              },
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosName')), '2024-05-15').documentEndpoint]"
+            },
+            "keyVaultUri": {
+              "type": "string",
+              "metadata": {
+                "description": "Key Vault URI."
+              },
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '2023-07-01').vaultUri]"
+            },
+            "managedEnvironmentId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the managed environment used by the runtime app + refresh job."
+              },
+              "value": "[variables('effectiveEnvironmentId')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enablePoAgentCorpusLandingModule')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('po-agent-corpus-landing-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('poAgentLocation')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "refreshJobPrincipalId": "[if(parameters('enablePoAgentRuntimeModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.principalId.value), createObject('value', ''))]",
+          "searchPrincipalId": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.searchPrincipalId.value), createObject('value', ''))]",
+          "logAnalyticsWorkspaceId": {
+            "value": "[parameters('poAgentLogAnalyticsWorkspaceId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "3182797218638393169"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the storage account."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "refreshJobPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the corpus-refresh job managed identity that writes documents to the landing container. When set, receives Storage Blob Data Contributor scoped to the account. Empty string skips the role assignment."
+              }
+            },
+            "searchPrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the Azure AI Search system-assigned managed identity. When set, receives Storage Blob Data Reader so the knowledge source can index the corpus without keys. Empty string skips the role assignment."
+              }
+            },
+            "refreshJobPrincipalType": {
+              "type": "string",
+              "defaultValue": "ServicePrincipal",
+              "allowedValues": [
+                "ServicePrincipal",
+                "User",
+                "Group"
+              ],
+              "metadata": {
+                "description": "Principal type for the corpus-refresh job role assignment."
+              }
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the Log Analytics workspace for blob diagnostic settings. Empty string skips diagnostics (SIT). Populated in PROD per copilot-instructions §3."
+              }
+            }
+          },
+          "variables": {
+            "storageAccountName": "[toLower(format('stcorpus{0}', replace(parameters('nameSuffix'), '-', '')))]",
+            "storageBlobDataContributorRoleId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+            "storageBlobDataReaderRoleId": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[variables('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "isHnsEnabled": true,
+                "accessTier": "Hot",
+                "allowBlobPublicAccess": false,
+                "supportsHttpsTrafficOnly": true,
+                "minimumTlsVersion": "TLS1_2",
+                "publicNetworkAccess": "Enabled",
+                "allowSharedKeyAccess": false,
+                "networkAcls": {
+                  "defaultAction": "Allow",
+                  "bypass": "AzureServices"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'landing')]",
+              "properties": {
+                "publicAccess": "None"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('refreshJobPrincipalId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('refreshJobPrincipalId'), variables('storageBlobDataContributorRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataContributorRoleId'))]",
+                "principalId": "[parameters('refreshJobPrincipalId')]",
+                "principalType": "[parameters('refreshJobPrincipalType')]",
+                "description": "Sprint 28 WS-INF (#377) — corpus-refresh job MI writes synthetic product docs to landing/curavias-product-corpus/."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('searchPrincipalId')))]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), parameters('searchPrincipalId'), variables('storageBlobDataReaderRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataReaderRoleId'))]",
+                "principalId": "[parameters('searchPrincipalId')]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 28 WS-INF (#377) — Azure AI Search MI reads the corpus for the Foundry IQ knowledge source (no keys)."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('logAnalyticsWorkspaceId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]",
+              "name": "[format('diag-blob-{0}', variables('storageAccountName'))]",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "StorageWrite",
+                    "enabled": true
+                  },
+                  {
+                    "category": "StorageDelete",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "Transaction",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Corpus landing module implementation marker."
+              },
+              "value": "knowledge-layer-corpus-landing-implemented"
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "ADLS Gen2 corpus storage account name."
+              },
+              "value": "[variables('storageAccountName')]"
+            },
+            "landingContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Landing filesystem (container) name."
+              },
+              "value": "landing"
+            },
+            "dfsEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "DFS (ADLS Gen2) endpoint for the corpus storage account."
+              },
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').primaryEndpoints.dfs]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('po-agent-runtime-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName')))]"
       ]
     },
     {
@@ -5701,6 +7138,263 @@
       ]
     },
     {
+      "condition": "[and(and(parameters('enableDecisionApplyJobModule'), parameters('enableAgentHostModule')), parameters('enableCsaCosmosModule'))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('decision-apply-job-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('resourceSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "managedEnvironmentId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName'))), '2025-04-01').outputs.managedEnvironmentId.value]"
+          },
+          "containerImage": {
+            "value": "[parameters('agentHostImage')]"
+          },
+          "cosmosEndpoint": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('csa-cosmos-{0}', parameters('environmentName'))), '2025-04-01').outputs.documentEndpoint.value]"
+          },
+          "cosmosDatabase": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('csa-cosmos-{0}', parameters('environmentName'))), '2025-04-01').outputs.databaseName.value]"
+          },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('simCapacityContainerRegistryResourceId')]"
+          },
+          "demoScope": {
+            "value": "[not(equals(parameters('location'), 'switzerlandnorth'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "4040045096906531905"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "allowedValues": [
+                "switzerlandnorth",
+                "westus2"
+              ],
+              "metadata": {
+                "description": "Azure region. Region-pinned to the ADR-0013 demo-scope variant path."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "minLength": 3,
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Resource tags applied to every resource this module creates."
+              }
+            },
+            "managedEnvironmentId": {
+              "type": "string",
+              "minLength": 2,
+              "metadata": {
+                "description": "Resource ID of the agent-host Container Apps managed environment (VNet-integrated per ADR-0029 Option A). The job MUST run here so it reaches the Cosmos private endpoint."
+              }
+            },
+            "containerImage": {
+              "type": "string",
+              "metadata": {
+                "description": "Container image the apply job runs. Reuse the hcc-agent-host image — it bakes in data-platform/decision/ (Sprint 26 WS-C) and the azure-identity/azure-cosmos runtime deps."
+              }
+            },
+            "cosmosEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos document endpoint the seed writes to (e.g. https://cosmos-csa-ihzhhpf-sit.documents.azure.com:443/). Passed to the container as CSA_COSMOS_ENDPOINT."
+              }
+            },
+            "cosmosDatabase": {
+              "type": "string",
+              "defaultValue": "csa",
+              "metadata": {
+                "description": "Cosmos database name that holds the plans/proposed_actions containers."
+              }
+            },
+            "foundryEndpoint": {
+              "type": "string",
+              "defaultValue": "https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com",
+              "metadata": {
+                "description": "Foundry project data-plane account endpoint (ADR-0032, eastus2). Passed as FOUNDRY_PROJECT_ENDPOINT."
+              }
+            },
+            "foundryProject": {
+              "type": "string",
+              "defaultValue": "ai-ihzhhpf-sit-eastus2-project",
+              "metadata": {
+                "description": "Foundry project name (ADR-0032). Passed as FOUNDRY_PROJECT_NAME."
+              }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server for MI-based image pull. Set together with containerRegistryResourceId. When empty, the job relies on public/anonymous pull."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer."
+              }
+            },
+            "replicaTimeoutSeconds": {
+              "type": "int",
+              "defaultValue": 1800,
+              "minValue": 60,
+              "maxValue": 3600,
+              "metadata": {
+                "description": "Replica timeout (seconds) for a single apply execution."
+              }
+            },
+            "demoScope": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "When true, emits a demoScope tag for provenance (ADR-0013)."
+              }
+            }
+          },
+          "variables": {
+            "effectiveTags": "[union(parameters('tags'), createObject('demoScope', if(parameters('demoScope'), 'true', 'false')))]",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+            "planCommand": "cd /app/data-platform/decision && python -m coordination.seed_live --action plan && python -m foundry.register_decision_tier --action plan"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.App/jobs",
+              "apiVersion": "2024-03-01",
+              "name": "[format('caj-decision-apply-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('effectiveTags')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))]": {}
+                }
+              },
+              "properties": {
+                "environmentId": "[parameters('managedEnvironmentId')]",
+                "configuration": {
+                  "triggerType": "Manual",
+                  "replicaTimeout": "[parameters('replicaTimeoutSeconds')]",
+                  "replicaRetryLimit": 0,
+                  "manualTriggerConfig": {
+                    "parallelism": 1,
+                    "replicaCompletionCount": 1
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))), createArray())]"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "decision-apply",
+                      "image": "[parameters('containerImage')]",
+                      "resources": {
+                        "cpu": "[json('0.5')]",
+                        "memory": "1Gi"
+                      },
+                      "command": [
+                        "/bin/sh",
+                        "-c",
+                        "[variables('planCommand')]"
+                      ],
+                      "env": [
+                        {
+                          "name": "AZURE_CLIENT_ID",
+                          "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+                        },
+                        {
+                          "name": "CSA_COSMOS_ENDPOINT",
+                          "value": "[parameters('cosmosEndpoint')]"
+                        },
+                        {
+                          "name": "CSA_COSMOS_DATABASE",
+                          "value": "[parameters('cosmosDatabase')]"
+                        },
+                        {
+                          "name": "FOUNDRY_PROJECT_ENDPOINT",
+                          "value": "[parameters('foundryEndpoint')]"
+                        },
+                        {
+                          "name": "FOUNDRY_PROJECT_NAME",
+                          "value": "[parameters('foundryProject')]"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "jobName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the manual-trigger decision-apply Container Apps Job."
+              },
+              "value": "[format('caj-decision-apply-{0}', parameters('nameSuffix'))]"
+            },
+            "jobResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the decision-apply job."
+              },
+              "value": "[resourceId('Microsoft.App/jobs', format('caj-decision-apply-{0}', parameters('nameSuffix')))]"
+            },
+            "identityClientId": {
+              "type": "string",
+              "metadata": {
+                "description": "Client ID of the reused agent-host MI (for runbook cross-checks)."
+              },
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+            },
+            "moduleStatus": {
+              "type": "string",
+              "metadata": {
+                "description": "Decision-apply job module implementation marker."
+              },
+              "value": "decision-apply-job-implemented"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('csa-cosmos-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
       "condition": "[parameters('enableAppFluentModule')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -6341,7 +8035,7 @@
             "value": "[parameters('skillsEventstreamSourceMode')]"
           },
           "eventHubNamespace": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubNamespaceEndpoint.value), createObject('value', ''))]",
-          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.eventHubName.value), createObject('value', ''))]",
+          "eventHubName": "[if(parameters('enableDataFoundationModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.skillsEventHubName.value), createObject('value', ''))]",
           "eventHubConsumerGroup": {
             "value": "cg-skills-eventstream"
           },
@@ -6360,7 +8054,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "3641420194333204823"
+              "templateHash": "11984451482387454371"
             }
           },
           "parameters": {
@@ -6467,6 +8161,7 @@
                 "namespaceHost": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubNamespace'), '')]",
                 "eventHubName": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubName'), '')]",
                 "consumerGroup": "[if(equals(parameters('sourceMode'), 'EventHub'), parameters('eventHubConsumerGroup'), '')]",
+                "connectionId": "",
                 "routingProperty": "eventKind",
                 "allowedEventKinds": "[variables('allowedEventKinds')]",
                 "authMode": "[if(equals(parameters('sourceMode'), 'EventHub'), 'fabric-managed-connection', 'custom-endpoint-ingestion')]"
@@ -6571,6 +8266,10 @@
         "dataFoundation": "[if(parameters('enableDataFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('data-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'data-foundation-disabled')]",
         "masterdataLanding": "[if(parameters('enableMasterdataLandingModule'), reference(resourceId('Microsoft.Resources/deployments', format('masterdata-landing-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'masterdata-landing-disabled')]",
         "skillsSimJobs": "[if(parameters('enableSkillsSimJobsModule'), reference(resourceId('Microsoft.Resources/deployments', format('skills-sim-jobs-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'skills-sim-jobs-disabled')]",
+        "poAgentSearch": "[if(parameters('enablePoAgentSearchModule'), reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'po-agent-search-disabled')]",
+        "poAgentKnowledgeBase": "[if(parameters('enablePoAgentKnowledgeBaseModule'), reference(resourceId('Microsoft.Resources/deployments', format('po-agent-knowledge-base-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'po-agent-knowledge-base-disabled')]",
+        "poAgentCorpusLanding": "[if(parameters('enablePoAgentCorpusLandingModule'), reference(resourceId('Microsoft.Resources/deployments', format('po-agent-corpus-landing-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'po-agent-corpus-landing-disabled')]",
+        "poAgentRuntime": "[if(parameters('enablePoAgentRuntimeModule'), reference(resourceId('Microsoft.Resources/deployments', format('po-agent-runtime-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'po-agent-runtime-disabled')]",
         "aiMlFoundation": "[if(parameters('enableAiMlFoundationModule'), reference(resourceId('Microsoft.Resources/deployments', format('ai-ml-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'ai-ml-foundation-disabled')]",
         "integrationOrchestration": "[if(parameters('enableIntegrationOrchestrationModule'), reference(resourceId('Microsoft.Resources/deployments', format('integration-orchestration-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'integration-orchestration-disabled')]",
         "fabricEventstream": "[if(parameters('enableFabricEventstreamModule'), reference(resourceId('Microsoft.Resources/deployments', format('fabric-eventstream-{0}', parameters('environmentName'))), '2025-04-01').outputs.moduleStatus.value, 'fabric-eventstream-disabled')]",

@@ -507,6 +507,17 @@
       "title": "PROD Switzerland North GA Target + Standing Preview Exception for Curavias Demo"
     },
     {
+      "decisionSummary": "1. **Preview-tier Azure/Fabric services are permitted in PROD Switzerland North** strictly to demonstrate the Curavias stack under **synthetic / no-PHI** scope. This generalises ADR-0042 from two named features to a standing demo-scope posture, and satisfies ADR-0006's written-exception requirement for that scope. 2. The **GA-only gate applies solely to a real go-live (real-PHI) cut-over.** Proving value and the art of the possible in **Preview in Switzerland is sufficient** for the demo; work must not be re-parked behind a GA milestone unless it targets a real go-live cut-over. 3. **The skills-events `sourceMode=EventHub` flip is un-parked.** It is in fact **GA in Switzerland North** (Eventstream + Event Hubs), so it does not even consume this Preview exception; the \"parked until Swiss GA\" gate on it is lifted. Its only remaining prerequisite is the out-of-band Fabric-managed connection (`POST /v1/connections`). 4. **Environment isolation is preserved.** SIT (westus2 / eastus2, per enabled capacity) and PROD (Switzerland North) **do not share input services** — separate Event Hubs namespaces, resource groups, and regions (`evh-ihzhhpf-sit-y26y` vs `evh-ihzhhpf-prod-i62t`). New input services follow the per-environment, per-functional-domain pattern (a **dedicated skills-events Event Hub**, not shared with the capacity `events` rail).",
+      "id": "ADR-0043",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md"
+      },
+      "status": "Accepted",
+      "title": "Preview-tier services permitted in PROD Switzerland North for the Curavias demo (GA-only gate reserved for real go-live cut-over)"
+    },
+    {
       "decisionSummary": "**The Curavias Product Owner Agent is registered as domain #1 on a shared Foundry IQ Knowledge Layer.**",
       "id": "ADR-0043",
       "provenance": {
@@ -516,17 +527,6 @@
       },
       "status": "Accepted",
       "title": "Curavias Product Owner Agent as Foundry IQ Knowledge-Layer Domain #1"
-    },
-    {
-      "decisionSummary": "1. **Retire the public Curavias website in full.** Remove the app, its hosting infrastructure, its deploy workflow, and its runbooks: * `apps/curavias-web/**` * `.github/workflows/curavias-web-deploy.yml` * `infra/modules/experience-hosting/curavias-web.bicep` * `infra/main.bicep`: the `curaviasWeb` module block, the `enableCuraviasWebModule` / `curaviasWebMediaPublisherPrincipalId` / `curaviasWebEnableCustomDomains` params, and the three `curaviasWeb*` outputs + `curaviasWeb` module-status entry. * `infra/environments/prod.bicepparam`: the three `curaviasWeb*` params. * `infra/modules/dns/curavias.bicep`: the website-only, never-wired `aliasARecords` param + alias-A resource. * `docs/runbooks/curavias-web-custom-domain.md`, `docs/runbooks/curavias-web-media-library.md`. 2. **Withdraw `FR-WEB-001..005`** in [docs/PRD.md](../PRD.md), marking them Retired and linking this ADR (the IDs are kept for traceability, not reused). 3. **Retain the shared `curavias.ch` DNS zone** and its Fluent-app records — the zone serves `hcc-app-fluent` (`app.curavias.ch`), not the website. ADR-0030 remains in force for the zone. 4. **Keep the `product-marketing-agent`.** Its `FR-MKT-*` charter (stringent, brand-aligned messaging across channels) stands; only its retired website-copy deliverable is dropped.",
-      "id": "ADR-0044",
-      "provenance": {
-        "asOf": "2026-07-10",
-        "sourcePath": "docs/adr/0044-retire-public-website.md",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0044-retire-public-website.md"
-      },
-      "status": "Accepted",
-      "title": "Retire the public Curavias website (`apps/curavias-web` / curavias.ch)"
     }
   ],
   "boms": [
@@ -3468,7 +3468,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "**[Retired — ADR-0044]** The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
+      "title": "The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3480,7 +3480,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "**[Retired — ADR-0044]** The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
+      "title": "The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3492,7 +3492,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "**[Retired — ADR-0044]** The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
+      "title": "The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3504,7 +3504,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "**[Retired — ADR-0044]** The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
+      "title": "The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
     },
     {
       "family": "Product Marketing And Public Web (Sprint 24)",
@@ -3516,7 +3516,7 @@
         "sourcePath": "docs/PRD.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
-      "title": "**[Retired — ADR-0044]** Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
+      "title": "Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
     },
     {
       "family": "Responsible AI And Auditability",

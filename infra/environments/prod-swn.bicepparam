@@ -150,6 +150,13 @@ param fabricEventstreamDestinationLakehouseId = ''
 param enableSkillsEventstreamModule = true
 param skillsEventstreamWorkspaceId = ''
 param skillsEventstreamDestinationLakehouseId = ''
+// Sprint 23 WS-A4 (ADR-0043) — PROD swn runs the skills lane in EventHub source mode.
+// Eventstream + Event Hubs are GA in Switzerland North, so this is a GA-in-region flip
+// (not a preview exception); it auto-provisions the dedicated per-domain skills-events
+// hub + cg-skills-eventstream consumer group via the data-foundation module. The live
+// wiring still requires an out-of-band Fabric-managed connection (POST /v1/connections)
+// before the post-deploy script can bind the source. Synthetic / no-PHI only (ADR-0013).
+param skillsEventstreamSourceMode = 'EventHub'
 param enableMasterdataLandingModule = true
 param masterdataLandingPipelinePrincipalId = ''
 param masterdataLandingLogAnalyticsWorkspaceId = ''
@@ -157,6 +164,19 @@ param enableSkillsSimJobsModule = true
 // SIT-parity: SIT uses the public placeholder (real skills-sim image deferred to
 // issue #181); PROD mirrors SIT exactly so both bump together when #181 lands.
 param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+// Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
+// PROD swn variant: enabled at switzerlandnorth (ADR-0037 / NFR-POA-003) for the
+// SIT-parity demo scope. poAgentLocation is declared here (see the NOTE block on
+// shared declarations below). Runtime + refresh-job image mirrors SIT until the
+// PO Agent CI workflow publishes a real image.
+param poAgentLocation = 'switzerlandnorth'
+param enablePoAgentSearchModule = true
+param enablePoAgentKnowledgeBaseModule = true
+param enablePoAgentCorpusLandingModule = true
+param enablePoAgentRuntimeModule = true
+param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param poAgentLogAnalyticsWorkspaceId = ''
 // sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
 param enableSimCapacityModule = true
 param simCapacityLocation = 'switzerlandnorth'
