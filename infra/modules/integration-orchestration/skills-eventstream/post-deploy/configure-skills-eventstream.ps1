@@ -49,6 +49,12 @@ Optional override for the destination Delta table name. Falls back to the manife
 .PARAMETER Force
 Replace an existing Eventstream of the same display name (delete + re-create).
 
+.PARAMETER ConnectionId
+Fabric-managed connection GUID for the Event Hubs namespace (created out-of-band via
+`POST /v1/connections`). Required for a live EventHub-source wire (manifest `source.kind=EventHub`);
+ignored for a CustomEndpoint source. Falls back to nothing — the script refuses an EventHub live
+POST without it.
+
 .PARAMETER DryRun
 Prints the request body but does not POST anything. Also validates the three-kind guardrail.
 #>
@@ -58,6 +64,7 @@ param(
     [string]$WorkspaceId,
     [string]$DestinationLakehouseId,
     [string]$DestinationTableName,
+    [string]$ConnectionId,
     [switch]$Force,
     [switch]$DryRun
 )
@@ -86,8 +93,10 @@ $tableName = if ($DestinationTableName) { $DestinationTableName } else { $manife
 $displayName = $manifest.eventstream.displayName
 $sourceKind = $manifest.source.kind
 
-if ($sourceKind -ne 'CustomEndpoint') {
-    Write-Warning "manifest source.kind='$sourceKind'. This script wires a CustomEndpoint source (design D4 demo-scope). For sourceMode=EventHub, a Fabric-managed connection to the Event Hubs namespace is required first (POST /v1/connections) - that path is the Swiss-GA target-state and is not wired here."
+if ($sourceKind -eq 'EventHub') {
+    Write-Host "manifest source.kind='EventHub' (Swiss-GA / ADR-0043 path). Wiring an Azure Event Hubs source on the dedicated per-domain skills-events hub via a Fabric-managed connection. namespaceHost=$($manifest.source.namespaceHost), eventHub=$($manifest.source.eventHubName), consumerGroup=$($manifest.source.consumerGroup)."
+} elseif ($sourceKind -ne 'CustomEndpoint') {
+    throw "Unsupported manifest source.kind='$sourceKind'. Expected 'CustomEndpoint' or 'EventHub'."
 }
 
 if ($manifest.guardrails.demoScope) {
@@ -95,15 +104,40 @@ if ($manifest.guardrails.demoScope) {
 }
 
 # --- Build the Eventstream item definition (authoritative live schema: streams + compat 1.1). ---
+# The source node follows the manifest source.kind: CustomEndpoint (D4 demo-scope, publisher POSTs
+# to the ingestion URL) or AzureEventHub (Swiss-GA / ADR-0043, bound to the dedicated skills-events
+# hub through a Fabric-managed connection). The rest of the topology (DefaultStream -> Lakehouse) is
+# identical, so the downstream bronze/silver contract does not change with the transport.
+$resolvedConnectionId = if ($ConnectionId) {
+    $ConnectionId
+} elseif ($manifest.source.PSObject.Properties.Name -contains 'connectionId') {
+    $manifest.source.connectionId
+} else {
+    $null
+}
+if ($sourceKind -eq 'EventHub') {
+    if ((-not $DryRun) -and [string]::IsNullOrWhiteSpace($resolvedConnectionId)) {
+        throw "manifest source.kind='EventHub' but no Fabric-managed connection id was provided (pass -ConnectionId or set manifest source.connectionId). Create it out-of-band via POST /v1/connections against namespace '$($manifest.source.namespaceHost)' first."
+    }
+    $sourceNode = [ordered]@{
+        name       = 'skills-events-source'
+        type       = 'AzureEventHub'
+        properties = [ordered]@{
+            dataConnectionId   = $resolvedConnectionId
+            consumerGroupName  = $manifest.source.consumerGroup
+            inputSerialization = @{ type = 'Json'; properties = @{ encoding = 'UTF8' } }
+        }
+    }
+} else {
+    $sourceNode = [ordered]@{
+        name       = 'skills-events-source'
+        type       = 'CustomEndpoint'
+        properties = @{}
+    }
+}
 $streamName = "$displayName-stream"
 $topology = [ordered]@{
-    sources      = @(
-        [ordered]@{
-            name       = 'skills-events-source'
-            type       = 'CustomEndpoint'
-            properties = @{}
-        }
-    )
+    sources      = @($sourceNode)
     destinations = @()
     streams      = @(
         [ordered]@{
@@ -164,7 +198,7 @@ $body = @{
 }
 
 if ($DryRun) {
-    Write-Host "[DryRun] Guardrail OK (three allowed kinds). Would POST Eventstream '$displayName' to workspace '$wsId'."
+    Write-Host "[DryRun] Guardrail OK (three allowed kinds). Source kind = '$sourceKind'. Would POST Eventstream '$displayName' to workspace '$wsId'."
     Write-Host '--- eventstream.json ---'
     Write-Host $eventstreamJson
     return
@@ -199,7 +233,7 @@ if ($existing) {
     Invoke-FabricRest -Method DELETE -Path "/workspaces/$wsId/eventstreams/$($existing.id)" | Out-Null
 }
 
-Write-Host "Creating Eventstream '$displayName' in workspace $wsId (CustomEndpoint source)..."
+Write-Host "Creating Eventstream '$displayName' in workspace $wsId ($sourceKind source)..."
 $response = Invoke-FabricRest -Method POST -Path "/workspaces/$wsId/eventstreams" -Body $body
 
 # Fabric item creation with a definition is a long-running operation: the POST commonly

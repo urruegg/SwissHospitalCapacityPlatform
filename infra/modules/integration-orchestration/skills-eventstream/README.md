@@ -83,6 +83,24 @@ az deployment group show `
 ./post-deploy/configure-skills-eventstream.ps1 `
   -ManifestPath ./skills-eventstream-manifest.json `
   -WorkspaceId f3af9733-... -DestinationLakehouseId 30594c20-...
+
+# 4. Live create (EventHub source, PROD swn / ADR-0043). Requires the dedicated skills-events
+#    hub (auto-provisioned by the eventhubs module) + a Fabric-managed connection GUID.
+./post-deploy/configure-skills-eventstream.ps1 `
+  -ManifestPath ./skills-eventstream-manifest.json `
+  -WorkspaceId <prod-swn-ws> -DestinationLakehouseId <prod-swn-lh> `
+  -ConnectionId <fabric-managed-connection-guid>
+```
+
+### EventHub-source publish (simulator, until the live connector lands)
+
+```powershell
+# Publish synthetic DC-SKILL-EVENT-v1 records to the dedicated per-domain hub (MI Data Sender).
+cd data-platform/scripts/skills-events
+$env:PYTHONPATH="."
+python publish_skill_events.py --dry-run   # offline validation, sends nothing
+python publish_skill_events.py `
+  --namespace evh-ihzhhpf-prod-i62t.servicebus.windows.net --eventhub skills-events
 ```
 
 The script is **idempotent** (skips when the display name already exists) and **async-safe**
@@ -103,8 +121,18 @@ The script is **idempotent** (skips when the display name already exists) and **
 
 1. **Fabric workspace + destination lakehouse** — provisioned by `data-platform/fabric` +
    `configure-fabric.ps1`.
-2. **(EventHub sourceMode only)** a Fabric-managed connection to the Event Hubs namespace —
-   created out-of-band via `POST /v1/connections`.
+2. **(EventHub sourceMode only) dedicated skills-events Event Hub entity** — the
+   `data-foundation/eventhubs` module auto-provisions a per-domain `skills-events` hub +
+   `cg-skills-eventstream` consumer group inside the environment's namespace whenever the skills
+   lane runs in `sourceMode=EventHub` (parent derives `enableSkillsEventHub`). The envelope is thus
+   isolated by functional domain from the capacity `events` rail.
+3. **(EventHub sourceMode only) Fabric-managed connection** to the Event Hubs namespace — created
+   out-of-band via `POST /v1/connections`; its GUID is passed to the post-deploy script via
+   `-ConnectionId`. The script refuses a live EventHub wire without it.
+4. **(EventHub sourceMode only) a publisher** — until the live HRIS/LMS connector lands, the
+   [`publish_skill_events.py`](../../../../data-platform/scripts/skills-events/publish_skill_events.py)
+   **simulator** emits synthetic `DC-SKILL-EVENT-v1` records (one AMQP message per record, routed by
+   the `eventKind` property) to the dedicated hub via Managed Identity (`Data Sender`).
 
 ## Swiss-region variant path
 
