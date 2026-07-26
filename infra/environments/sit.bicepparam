@@ -150,7 +150,13 @@ param poAgentOpenAiLocation = 'eastus2'
 param enablePoAgentSearchModule = true
 param enablePoAgentKnowledgeBaseModule = true
 param enablePoAgentCorpusLandingModule = true
-param enablePoAgentRuntimeModule = true
+// TEMPORARILY DISABLED (main-health hotfix, #384): the runtime module hard-codes
+// gpt-4o on the Standard SKU, which is superseded and blocked for NEW deployments
+// in this subscription (live Foundry account ai-ihzhhpf-sit-eastus2 runs
+// gpt-5/gpt-5-mini/o3 on GlobalStandard). Its SIT what-if failed on every push to
+// main (ServiceModelDeprecating). Re-enable once WS-INF (#377) fixes the model/SKU
+// wiring or re-points to the existing eastus2 Foundry account (ADR-0032).
+param enablePoAgentRuntimeModule = false
 param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 param poAgentLogAnalyticsWorkspaceId = ''
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
