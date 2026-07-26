@@ -18,44 +18,6 @@
     "signOut": "Abmelden",
     "signIn": "Anmelden"
   },
-  "poRail": {
-    "title": "Product Owner Agent",
-    "agentLabel": "Product Owner Agent",
-    "language": "Sprache",
-    "askAbout": "Fragen zu",
-    "partnerTier": "Partner-Tier",
-    "internalTier": "Interner Tier",
-    "placeholder": "Product Owner Agent fragen",
-    "confidence": "Konfidenz {{value}}",
-    "citations": "Quellen",
-    "snapshot": "Snapshot",
-    "emptyGuard": "Stelle eine Produktfrage oder nutze einen Vorschlag; die Rail ist bereit.",
-    "status": {
-      "verified": "verifiziert",
-      "partial": "teilweise",
-      "requires-validation": "Validierung erforderlich"
-    },
-    "ask": {
-      "sprint28": "Was hat sich für Sprint 28 geändert und welche Nachweise stützen es?",
-      "evidence": "Welche Quellen stützen die aktuelle Produktantwort?",
-      "partner": "Was darf ein Partner auf dieser Oberfläche sicher sehen?",
-      "language": "Beantworte diese Produktfrage auf DE und EN.",
-      "costSecurity": "Fasse interne Kosten-/Sicherheitslage für berechtigte Rollen zusammen."
-    },
-    "default": {
-      "subject": "PO Agent",
-      "status": "BEREIT",
-      "read": "Quellengestützte Produktführung ist auf START und BACKSTAGE bereit.",
-      "partnerRead": "Quellengestützte Produktführung ist für partner-sichere Curavias-Fragen bereit.",
-      "leverCitations": "Jede Antwort bleibt an Klasse-A/B/C/D-Grounded-Chunks und sourceRef-Quellen gebunden.",
-      "leverLanguage": "Wechsle DE/EN in der Rail, um dieselbe Produktfrage in beiden Sprachen zu stellen.",
-      "leverInternal": "Interne Kosten-/Sicherheitsdetails bleiben nur berechtigten Curavias-Rollen verfügbar.",
-      "impactGrounded": "grounded",
-      "impactLanguage": "DE/EN",
-      "impactEntitlement": "Berechtigung",
-      "cta": "Fragen, was sich in Sprint 28 geändert hat"
-    }
-  },
   "mode": {
     "toggle": "Modus",
     "demo": "Demo",

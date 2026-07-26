@@ -18,44 +18,6 @@
     "signOut": "Sign out",
     "signIn": "Sign in"
   },
-  "poRail": {
-    "title": "Product Owner Agent",
-    "agentLabel": "Product Owner Agent",
-    "language": "Language",
-    "askAbout": "Ask about",
-    "partnerTier": "Partner tier",
-    "internalTier": "Internal tier",
-    "placeholder": "Ask the Product Owner Agent",
-    "confidence": "Confidence {{value}}",
-    "citations": "Citations",
-    "snapshot": "snapshot",
-    "emptyGuard": "Ask a product question or start from a suggested prompt; the rail is ready.",
-    "status": {
-      "verified": "verified",
-      "partial": "partial",
-      "requires-validation": "requires validation"
-    },
-    "ask": {
-      "sprint28": "What changed for Sprint 28 and which evidence supports it?",
-      "evidence": "Which sources support the current product answer?",
-      "partner": "What can a partner safely see in this surface?",
-      "language": "Answer this product question in DE and EN.",
-      "costSecurity": "Summarise internal cost/security posture for entitled roles."
-    },
-    "default": {
-      "subject": "PO Agent",
-      "status": "READY",
-      "read": "Source-grounded product guidance is ready across START and BACKSTAGE.",
-      "partnerRead": "Source-grounded product guidance is ready for partner-safe Curavias questions.",
-      "leverCitations": "Every answer stays tied to class A/B/C/D grounded chunks and sourceRef citations.",
-      "leverLanguage": "Switch DE/EN in the rail to ask the same product question in either language.",
-      "leverInternal": "Internal cost/security detail remains available only to entitled Curavias roles.",
-      "impactGrounded": "grounded",
-      "impactLanguage": "DE/EN",
-      "impactEntitlement": "entitlement",
-      "cta": "Ask what changed for Sprint 28"
-    }
-  },
   "mode": {
     "toggle": "Mode",
     "demo": "Demo",
