@@ -35,6 +35,16 @@ export interface BedReallocation {
   beds: number;
 }
 
+export interface AdmissionEvent {
+  id: string;
+  ts: string;
+  message: string;
+  kind: 'admit' | 'discharge';
+  ward: string;      // e.g. 'Station A'
+  patient: string;   // PHI-safe synthetic: PT-xxxx
+  detail: string;    // grounded hover-popover detail
+}
+
 export interface BedManagerPayload {
   bedsShort: number;         // carried from dca (7)
   bedsReallocated: number;   // absorbed via reallocations (4)
@@ -46,7 +56,7 @@ export interface BedManagerPayload {
   freeBeds: number;               // absolute free bed count
   targetFree: number;             // minimum free-bed target
   slaRisk: SlaRisk;               // SLA risk level
-  admissions: { id: string; ts: string; message: string; kind: 'admit' | 'discharge' }[];
+  admissions: AdmissionEvent[];
   recoById: Record<string, GroundedReco>;
   defaultReco: GroundedReco;
 }
@@ -326,10 +336,10 @@ export const BEDMANAGER_PINNED: BedManagerPayload = {
   targetFree: 12,
   slaRisk: 'HIGH',
   admissions: [
-    { id: 'adm-01', ts: '11:02', message: 'Zugang Station A — PT-4005', kind: 'admit' },
-    { id: 'adm-02', ts: '11:06', message: 'Austritt Station C — PT-3008', kind: 'discharge' },
-    { id: 'adm-03', ts: '11:14', message: 'Zugang Station B — PT-4006', kind: 'admit' },
-    { id: 'adm-04', ts: '11:21', message: 'Austritt Station A — PT-1009', kind: 'discharge' },
+    { id: 'adm-01', ts: '11:02', message: 'Zugang Station A — PT-4005', kind: 'admit', ward: 'Station A', patient: 'PT-4005', detail: 'Notfall-Zugang · Innere Medizin · Akuität 2 · Ziel Bett A-12' },
+    { id: 'adm-02', ts: '11:06', message: 'Austritt Station C — PT-3008', kind: 'discharge', ward: 'Station C', patient: 'PT-3008', detail: 'Austritt nach Hause · Spitex organisiert · Bett C-07 frei' },
+    { id: 'adm-03', ts: '11:14', message: 'Zugang Station B — PT-4006', kind: 'admit', ward: 'Station B', patient: 'PT-4006', detail: 'Elektiv-Zugang · postoperativ · Telemetrie · Ziel Bett B-03' },
+    { id: 'adm-04', ts: '11:21', message: 'Austritt Station A — PT-1009', kind: 'discharge', ward: 'Station A', patient: 'PT-1009', detail: 'Verlegung Reha · Transport 14:00 · Bett A-05 frei' },
   ],
   recoById,
   defaultReco,

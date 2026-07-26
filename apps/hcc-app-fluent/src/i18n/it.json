@@ -185,6 +185,7 @@
     "dischargeExpediteDetail": "Accelera la dimissione {{ward}} — {{blocker}}",
     "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
     "placementMove": "Collocazione {{requestNo}}: {{source}} → {{target}}",
+      "admissionEvent": "Guida dall'evento {{ward}} ({{patient}})",
     "placementBarrier": "Ostacolo: {{label}}",
     "orDefer": "Rinvia il caso {{specialty}}",
     "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",
@@ -334,7 +335,8 @@
     },
     "stream": {
       "title": "Eventstream ammissioni / dimissioni",
-      "hint": "Ammissioni e dimissioni in tempo reale (simulato)"
+      "hint": "Ammissioni e dimissioni in tempo reale (simulato)",
+      "copilotHint": "Clicca per la guida Copilot + dettagli"
     },
     "gap": {
       "label": "Divario di capacità del sito",

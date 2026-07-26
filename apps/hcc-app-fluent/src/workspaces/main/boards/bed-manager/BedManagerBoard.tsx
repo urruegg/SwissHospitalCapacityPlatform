@@ -12,6 +12,7 @@ import type {
   BedManagerPayload,
   PlacementRequest,
   PlacementBarrier,
+  AdmissionEvent,
 } from '../../../../data/roleboard/bed-manager-data';
 import { sortBarriers } from '../../../../data/roleboard/bed-manager-data';
 import { bedManagerBoard } from './bed-manager-board';
@@ -132,6 +133,14 @@ export function BedManagerBoard() {
     if (top) onSelectBarrier(top);
   };
 
+  const onSelectAdmission = (ev: AdmissionEvent) => {
+    route({
+      id: `admission-${ev.id}`,
+      label: t('insight.admissionEvent', { patient: ev.patient, ward: ev.ward }),
+      context: { admission: ev.id, ts: ev.ts, ward: ev.ward, patient: ev.patient, kind: ev.kind },
+    });
+  };
+
   return (
     <section
       className={s.root}
@@ -150,7 +159,7 @@ export function BedManagerBoard() {
       {/* Source (live admissions) -> insights (placement worklist) on one level. */}
       <div className={s.sourceInsightRow}>
         <div className={mergeClasses(s.panel, s.sourcePane)}>
-          <AdmissionsEventstream admissions={payload.admissions} />
+          <AdmissionsEventstream admissions={payload.admissions} onSelectAdmission={onSelectAdmission} />
         </div>
         <div className={mergeClasses(s.panel, s.insightPane)}>
           <PlacementRequestsTable

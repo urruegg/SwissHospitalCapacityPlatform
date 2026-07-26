@@ -185,6 +185,7 @@
     "dischargeExpediteDetail": "Accélérer la sortie {{ward}} — {{blocker}}",
     "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}",
     "placementMove": "Placement {{requestNo}} : {{source}} → {{target}}",
+      "admissionEvent": "Piloter depuis l'événement {{ward}} ({{patient}})",
     "placementBarrier": "Obstacle : {{label}}",
     "orDefer": "Reporter le cas {{specialty}}",
     "staffShift": "Déplacer {{role}} {{fromUnit}} -> {{toUnit}}",
@@ -334,7 +335,8 @@
     },
     "stream": {
       "title": "Eventstream admissions / sorties",
-      "hint": "Admissions et sorties en direct (simulé)"
+      "hint": "Admissions et sorties en direct (simulé)",
+      "copilotHint": "Cliquez pour le pilotage Copilot + détails"
     },
     "gap": {
       "label": "Écart de capacité du site",

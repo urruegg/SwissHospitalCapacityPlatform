@@ -1,5 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { Caption1, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import {
+  Body2,
+  Caption1,
+  Text,
+  Tooltip,
+  makeStyles,
+  mergeClasses,
+  tokens,
+} from '@fluentui/react-components';
 import type { PlacementRequest, PlacementStatus } from '../../../../data/roleboard/bed-manager-data';
 import { RagBadge } from '../occupancy/RagBadge';
 import type { ChipTone } from '../../../../copilot-rail/reco';
@@ -25,6 +33,10 @@ const useStyles = makeStyles({
   },
   td: { padding: tokens.spacingVerticalXS, borderBottom: `1px solid ${tokens.colorNeutralStroke2}` },
   req: { fontWeight: tokens.fontWeightSemibold },
+  reqTrigger: { borderBottom: `1px dotted ${tokens.colorNeutralStroke1}`, cursor: 'help' },
+  reqCard: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS, maxWidth: '260px' },
+  reqHead: { fontWeight: tokens.fontWeightSemibold },
+  muted: { color: tokens.colorNeutralForeground3 },
 });
 
 /** STATUS → brand RAG tone: PLACED green (ok), WAITING amber (watch), BLOCKED red (over). */
@@ -78,7 +90,21 @@ export function PlacementRequestsTable({ placements, onSelectRequest }: Placemen
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <td className={mergeClasses(s.td, s.req)}>{r.id}</td>
+                <td className={mergeClasses(s.td, s.req)}>
+                  <Tooltip
+                    withArrow
+                    positioning="after"
+                    relationship="description"
+                    content={
+                      <div className={s.reqCard}>
+                        <Body2 className={s.reqHead}>{r.source} → {r.target}</Body2>
+                        <Caption1 className={s.muted}>{r.status}{r.barrier ? ` · ${r.barrier}` : ''}</Caption1>
+                      </div>
+                    }
+                  >
+                    <span className={s.reqTrigger}>{r.id}</span>
+                  </Tooltip>
+                </td>
                 <td className={s.td}>{r.source}</td>
                 <td className={s.td}>{r.target}</td>
                 <td className={s.td}>

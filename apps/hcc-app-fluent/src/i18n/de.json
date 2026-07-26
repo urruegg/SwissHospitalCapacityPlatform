@@ -185,6 +185,7 @@
     "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
     "placementMove": "Platzierung {{requestNo}}: {{source}} → {{target}}",
+      "admissionEvent": "Steuerung: {{patient}} in {{ward}}",
     "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "staffShift": "{{role}} {{fromUnit}} -> {{toUnit}} verschieben",
@@ -334,7 +335,8 @@
     },
     "stream": {
       "title": "Zugänge / Einzug-Eventstream",
-      "hint": "Live-Zugänge und -Austritte (simuliert)"
+      "hint": "Live-Zugänge und -Austritte (simuliert)",
+      "copilotHint": "Klicken für Copilot-Steuerung + Details"
     },
     "gap": {
       "label": "Standortkapazitätslücke",
