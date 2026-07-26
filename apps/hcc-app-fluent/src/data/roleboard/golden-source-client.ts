@@ -1,4 +1,5 @@
 import type { Mode, RoleBoardData, ScenarioScope } from '../../journey/RoleBoard';
+import type { ContextEnvelope } from '../../context/context-envelope';
 import { OCCUPANCY_PINNED, type OccupancyPayload, type SiteCapacitySummary, aggregateSiteCapacity } from './occupancy-data';
 import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
 import { BED_MANAGER_PINNED, type BedManagerPayload } from './bed-manager-data';
@@ -12,18 +13,45 @@ import { CRISIS_PINNED, type CrisisPayload } from './crisis-data';
  * layer's synthesized dataset flagged `simulated`. Demo mode pins the golden
  * thread window over the same trusted data (a real slice, not fabricated).
  */
-const goldenSourceUrl: string = import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
+let currentEnvelope: ContextEnvelope | null = null;
+
+function goldenUrl(): string {
+  return import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
+}
+
+/** The app sets this once the user context/active board is established; the IQ gateway attaches it as scoped headers on every live call. */
+export function setContextEnvelope(env: ContextEnvelope | null): void {
+  currentEnvelope = env;
+}
+
+export function getContextEnvelope(): ContextEnvelope | null {
+  return currentEnvelope;
+}
+
+async function iqFetch(path: string): Promise<Response> {
+  if (currentEnvelope === null) {
+    throw new Error('IQ gateway call requires a ContextEnvelope; call setContextEnvelope() first');
+  }
+
+  return fetch(path, {
+    headers: {
+      'X-User-Oid': currentEnvelope.userOid ?? '',
+      'X-Hospital-Scope': currentEnvelope.hospitalScope,
+      'X-Active-Role': currentEnvelope.activeRole,
+    },
+  });
+}
 
 export async function loadOccupancy(
   scope: ScenarioScope,
   mode: Mode,
 ): Promise<RoleBoardData<OccupancyPayload>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
+  if (!goldenUrl()) {
     return { provenance: 'simulated', scope: pinnedScope, payload: OCCUPANCY_PINNED };
   }
-  const res = await fetch(
-    `${goldenSourceUrl}/occupancy?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  const res = await iqFetch(
+    `${goldenUrl()}/occupancy?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
   );
   if (!res.ok) throw new Error(`occupancy load failed: ${res.status}`);
   const payload = (await res.json()) as OccupancyPayload;
@@ -35,11 +63,11 @@ export async function loadDischarge(
   mode: Mode,
 ): Promise<RoleBoardData<DischargePayload>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
+  if (!goldenUrl()) {
     return { provenance: 'simulated', scope: pinnedScope, payload: DISCHARGE_PINNED };
   }
-  const res = await fetch(
-    `${goldenSourceUrl}/discharge?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  const res = await iqFetch(
+    `${goldenUrl()}/discharge?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
   );
   if (!res.ok) throw new Error(`discharge load failed: ${res.status}`);
   const payload = (await res.json()) as DischargePayload;
@@ -51,11 +79,11 @@ export async function loadBedManager(
   mode: Mode,
 ): Promise<RoleBoardData<BedManagerPayload>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
+  if (!goldenUrl()) {
     return { provenance: 'simulated', scope: pinnedScope, payload: BED_MANAGER_PINNED };
   }
-  const res = await fetch(
-    `${goldenSourceUrl}/bed-manager?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  const res = await iqFetch(
+    `${goldenUrl()}/bed-manager?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
   );
   if (!res.ok) throw new Error(`bed-manager load failed: ${res.status}`);
   const payload = (await res.json()) as BedManagerPayload;
@@ -67,11 +95,11 @@ export async function loadOrSteering(
   mode: Mode,
 ): Promise<RoleBoardData<OrSteeringPayload>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
+  if (!goldenUrl()) {
     return { provenance: 'simulated', scope: pinnedScope, payload: OR_STEERING_PINNED };
   }
-  const res = await fetch(
-    `${goldenSourceUrl}/or-steering?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  const res = await iqFetch(
+    `${goldenUrl()}/or-steering?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
   );
   if (!res.ok) throw new Error(`or-steering load failed: ${res.status}`);
   const payload = (await res.json()) as OrSteeringPayload;
@@ -83,11 +111,11 @@ export async function loadStaffing(
   mode: Mode,
 ): Promise<RoleBoardData<StaffingPayload>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
+  if (!goldenUrl()) {
     return { provenance: 'simulated', scope: pinnedScope, payload: STAFFING_PINNED };
   }
-  const res = await fetch(
-    `${goldenSourceUrl}/staffing?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  const res = await iqFetch(
+    `${goldenUrl()}/staffing?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
   );
   if (!res.ok) throw new Error(`staffing load failed: ${res.status}`);
   const payload = (await res.json()) as StaffingPayload;
@@ -99,11 +127,11 @@ export async function loadCrisis(
   mode: Mode,
 ): Promise<RoleBoardData<CrisisPayload>> {
   const pinnedScope: ScenarioScope = { ...scope, pinned: mode === 'demo' };
-  if (!goldenSourceUrl) {
+  if (!goldenUrl()) {
     return { provenance: 'simulated', scope: pinnedScope, payload: CRISIS_PINNED };
   }
-  const res = await fetch(
-    `${goldenSourceUrl}/crisis?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+  const res = await iqFetch(
+    `${goldenUrl()}/crisis?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
   );
   if (!res.ok) throw new Error(`crisis load failed: ${res.status}`);
   const payload = (await res.json()) as CrisisPayload;
