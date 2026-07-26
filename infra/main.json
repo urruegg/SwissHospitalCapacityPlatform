@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "3355917053014838634"
+      "templateHash": "9901087768231792575"
     }
   },
   "parameters": {
@@ -316,6 +316,13 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable the Sprint 26 WS-C decision-tier live-apply Container Apps Job (caj-decision-apply). Requires enableAgentHostModule + enableCsaCosmosModule. Manual-trigger only, plan-first by default (AGENTS.md §4); a live apply is an operator-driven `az containerapp job start` override per docs/runbooks/decision-tier-live-apply.md."
+      }
+    },
+    "decisionApplyJobImage": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Container image for the decision-tier apply Job only. Empty = inherit agentHostImage. Set this (not agentHostImage) to give the Job the decision-CLI-enabled image without redeploying the running agent-host Container App."
       }
     },
     "eventHubsSimulatorMiPrincipalId": {
@@ -7467,9 +7474,7 @@
           "managedEnvironmentId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('agent-host-{0}', parameters('environmentName'))), '2025-04-01').outputs.managedEnvironmentId.value]"
           },
-          "containerImage": {
-            "value": "[parameters('agentHostImage')]"
-          },
+          "containerImage": "[if(empty(parameters('decisionApplyJobImage')), createObject('value', parameters('agentHostImage')), createObject('value', parameters('decisionApplyJobImage')))]",
           "cosmosEndpoint": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('csa-cosmos-{0}', parameters('environmentName'))), '2025-04-01').outputs.documentEndpoint.value]"
           },
