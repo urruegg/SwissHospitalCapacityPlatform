@@ -150,7 +150,13 @@ param poAgentOpenAiLocation = 'eastus2'
 param enablePoAgentSearchModule = true
 param enablePoAgentKnowledgeBaseModule = true
 param enablePoAgentCorpusLandingModule = true
-param enablePoAgentRuntimeModule = true
+// TEMPORARILY DISABLED (main-health hotfix, #384): the runtime module hard-codes
+// gpt-4o on the Standard SKU, which is superseded and blocked for NEW deployments
+// in this subscription (live Foundry account ai-ihzhhpf-sit-eastus2 runs
+// gpt-5/gpt-5-mini/o3 on GlobalStandard). Its SIT what-if failed on every push to
+// main (ServiceModelDeprecating). Re-enable once WS-INF (#377) fixes the model/SKU
+// wiring or re-points to the existing eastus2 Foundry account (ADR-0032).
+param enablePoAgentRuntimeModule = false
 param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 param poAgentLogAnalyticsWorkspaceId = ''
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
@@ -168,6 +174,16 @@ param enableCsaCosmosModule = true
 // pushed the tag. Deploy is approval-gated per AGENTS.md §4 (approved-to-apply
 // by @urruegg 2026-07-18).
 param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b796961'
+
+// Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
+// Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
+// (AGENTS.md §4); a live apply is an operator `az containerapp job start`
+// override with --approved-to-apply per docs/runbooks/decision-tier-live-apply.md.
+// The Job is pinned to the decision-CLI-enabled image :2b83a49 (built by
+// ci-build-agent-host on the #388 merge) WITHOUT bumping agentHostImage, so the
+// running agent-host Container App stays on b796961 (Option B, low blast radius).
+param enableDecisionApplyJobModule = true
+param decisionApplyJobImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:2b83a49'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`

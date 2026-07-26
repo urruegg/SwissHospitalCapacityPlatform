@@ -94,10 +94,3 @@ param poAgentLogAnalyticsWorkspaceId = ''
 param appFluentCustomHostname = 'app.curavias.ch'
 param appFluentEnableCustomDomainCert = false
 
-// Sprint 24 (ADR-0030) — Curavias product landing page (Astro) hosting, PROD-only.
-// Two-step custom-domain binding: keep curaviasWebEnableCustomDomains=false on the first
-// apply (creates the Static Web App + media storage), add the DNS records + GoDaddy
-// delegation, then flip to true so the SWA validates curavias.ch + www.curavias.ch.
-param enableCuraviasWebModule = true
-param curaviasWebMediaPublisherPrincipalId = ''
-param curaviasWebEnableCustomDomains = false

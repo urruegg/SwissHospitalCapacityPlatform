@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-26 |
 | **Author** | GitHub Copilot |
 | **Status** | Draft — plan only; the live-apply step is `approved-to-apply`-gated |
-| **Previous Version** | n/a (new runbook) |
+| **Previous Version** | 1.0.0 (initial runbook; Option A shared-image assumption) |
 
 > ## Hard gate — the live apply is HITL-gated (AGENTS.md §4)
 >
@@ -48,14 +48,17 @@ Cosmos endpoint and the Foundry data plane are reachable.
 
 Mandatory prerequisites:
 
-1. The `caj-decision-apply-ihzhhpf-sit` job is deployed — set
-   `enableDecisionApplyJobModule = true` (plus `enableAgentHostModule` and
-   `enableCsaCosmosModule`) in `infra/environments/sit.bicepparam` and let the
-   approval-gated `cd-infra-deploy-sit` run apply it.
-2. The `hcc-agent-host` image referenced by `agentHostImage` was rebuilt after
-   PR #382 + this PR merged, so it contains `data-platform/decision/`. Trigger
-   `ci-build-agent-host.yml` (it now watches `data-platform/decision/**`), then
-   bump `agentHostImage` in `sit.bicepparam` to the new `:sha` tag.
+1. The `caj-decision-apply-ihzhhpf-sit` job is deployed. **This PR sets**
+   `enableDecisionApplyJobModule = true` (alongside the already-set
+   `enableAgentHostModule` and `enableCsaCosmosModule`) in
+   `infra/environments/sit.bicepparam`; merging it lets the approval-gated
+   `cd-infra-deploy-sit` run create the job.
+2. The job runs the **decision-CLI-enabled** image. **This PR pins it** via
+   `decisionApplyJobImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:2b83a49'`
+   in `sit.bicepparam` — the image built by `ci-build-agent-host.yml` on the
+   #388 merge (it watches `data-platform/decision/**`), which contains
+   `data-platform/decision/`. This pins **only the job** (Option B); the running
+   agent-host Container App stays on `agentHostImage` (`:b796961`), untouched.
 3. **One-time RBAC**: the reused agent-host MI (`id-ca-agent-host-ihzhhpf-sit`)
    needs `Cognitive Services User` on the eastus2 Foundry account for the
    Foundry registration (workstream C). It already holds `Cosmos DB Built-in
