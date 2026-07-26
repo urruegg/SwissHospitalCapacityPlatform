@@ -13,9 +13,11 @@
 // **agent-host** managed environment (already VNet-integrated → Cosmos PE
 // reachable) and reuses the **agent-host User-Assigned MI**, which already holds
 // `Cosmos DB Built-in Data Contributor` (granted in modules/cosmos/csa.bicep).
-// The one extra grant — `Cognitive Services User` on the eastus2 Foundry account
-// for that MI — is a documented runbook prerequisite (cross-region resource,
-// not deployed by this template).
+// The one extra grant — `Foundry User` on the eastus2 Foundry account for that
+// MI — is a documented runbook prerequisite (cross-region resource, not deployed
+// by this template). NB: the Agent Service data plane needs `Foundry User` (the
+// `ai.azure.com` audience); `Cognitive Services User` is the wrong audience and
+// returns 401 (Sprint 26 WS-C, corrected 2026-07-26).
 //
 // HARD GATE (AGENTS.md §4): the default container command runs BOTH CLIs in
 // `--action plan` (dry-run) mode, so an accidental `az containerapp job start`
@@ -80,7 +82,7 @@ var useAcrMiPull = !empty(containerRegistryLoginServer) && !empty(containerRegis
 // Reuse the agent-host User-Assigned MI (created in modules/agent-host —
 // `id-ca-agent-host-<suffix>`). It already holds Cosmos DB Built-in Data
 // Contributor and AcrPull, so no new identity or Cosmos role assignment is
-// needed here. The Foundry `Cognitive Services User` grant is a runbook prereq.
+// needed here. The Foundry `Foundry User` grant is a runbook prereq.
 resource agentHostIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: 'id-ca-agent-host-${nameSuffix}'
 }

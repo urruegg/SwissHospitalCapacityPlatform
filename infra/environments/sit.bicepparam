@@ -177,13 +177,16 @@ param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b796961'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
-// (AGENTS.md §4); a live apply is an operator `az containerapp job start`
-// override with --approved-to-apply per docs/runbooks/decision-tier-live-apply.md.
-// The Job is pinned to the decision-CLI-enabled image :2b83a49 (built by
-// ci-build-agent-host on the #388 merge) WITHOUT bumping agentHostImage, so the
-// running agent-host Container App stays on b796961 (Option B, low blast radius).
+// (AGENTS.md §4); a live apply swaps the job template command via
+// `az containerapp job update --yaml` (job start --command/--args overrides are
+// ignored here) with --approved-to-apply per docs/runbooks/decision-tier-live-apply.md.
+// The Job is pinned to the decision-CLI-enabled image :a071fbe (built by
+// ci-build-agent-host on the #417 merge — the Foundry Agent Service /agents API
+// fix; superseded :2b83a49, which 401'd on the wrong Assistants API) WITHOUT
+// bumping agentHostImage, so the running agent-host Container App stays on
+// b796961 (Option B, low blast radius).
 param enableDecisionApplyJobModule = true
-param decisionApplyJobImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:2b83a49'
+param decisionApplyJobImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:a071fbe'
 
 // ADR-0028: skip Azure Managed Redis in SIT demo scope.
 // Root cause: the Managed Redis `Balanced_B0` SKU is not offered in `westus2`
