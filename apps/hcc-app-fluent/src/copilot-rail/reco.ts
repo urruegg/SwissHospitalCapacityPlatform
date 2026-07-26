@@ -49,10 +49,22 @@ export interface RecoCta {
   requiresApproval?: boolean;
 }
 
+/**
+ * Sprint 27 (A4) — a single cell of the metric trio (now -> forecast -> gap).
+ * `tone` colours the delta cell (RAG); absent = a plain stat value.
+ */
+export interface RecoMetric {
+  label: string;
+  value: string;
+  tone?: ImpactTone;
+}
+
 export interface GroundedReco {
   agentLabel: string;
   contextChip: RecoContextChip;
   read: string;
+  /** A4 — the numbers behind the read (now -> forecast -> gap). Optional. */
+  metrics?: RecoMetric[];
   levers: RecoLever[];
   primaryCta?: RecoCta;
   projection?: string;

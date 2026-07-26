@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Fragment } from 'react';
 import {
   Badge,
   Body1,
@@ -26,6 +27,11 @@ const useStyles = makeStyles({
   root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS },
   chipRow: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS, flexWrap: 'wrap' },
   agentLine: { color: tokens.colorBrandForeground1 },
+  metrics: { display: 'flex', alignItems: 'flex-end', gap: tokens.spacingHorizontalS, flexWrap: 'wrap' },
+  metricCell: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS },
+  metricValue: { fontWeight: tokens.fontWeightSemibold },
+  metricLabel: { color: tokens.colorNeutralForeground3 },
+  metricArrow: { color: tokens.colorNeutralForeground4, alignSelf: 'center', fontSize: tokens.fontSizeBase200 },
   levers: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXS, margin: 0, padding: 0, listStyle: 'none' },
   lever: { display: 'flex', alignItems: 'flex-start', gap: tokens.spacingHorizontalXS },
   leverText: { flex: 1 },
@@ -137,6 +143,23 @@ export function RecoPanel({ reco, showBack, onBack, onCta }: RecoPanelProps) {
       </div>
       <Caption1 className={s.agentLine}>{t('reco.agentLine', { agent: reco.agentLabel })}</Caption1>
       <Body1 className={reco.refused ? s.refusedRead : undefined}>{reco.read}</Body1>
+      {reco.metrics && reco.metrics.length > 0 && (
+        <div className={s.metrics} data-testid="metric-trio">
+          {reco.metrics.map((m, i) => (
+            <Fragment key={m.label}>
+              {i > 0 && <ArrowRightRegular className={s.metricArrow} aria-hidden />}
+              <div className={s.metricCell}>
+                {m.tone ? (
+                  <Badge appearance="tint" color={impactBadgeColor(m.tone)}>{m.value}</Badge>
+                ) : (
+                  <Body1 className={s.metricValue}>{m.value}</Body1>
+                )}
+                <Caption1 className={s.metricLabel}>{m.label}</Caption1>
+              </div>
+            </Fragment>
+          ))}
+        </div>
+      )}
       {reco.levers.length > 0 && (
         <ul className={s.levers}>
           {reco.levers.map((lv, i) => (

@@ -69,6 +69,11 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     agentLabel: 'Occupancy Copilot',
     contextChip: { subject: 'Medizin A', qualifiers: ['72-h-Prognose'], status: 'OVER', tone: 'over' },
     read: 'Medizin A erreicht in 72 h 102% - 6 Grippe-Zugänge stehen 2 geplanten Austritten gegenüber.',
+    metrics: [
+      { label: 'Jetzt', value: '96%' },
+      { label: '72 h', value: '102%' },
+      { label: 'Lücke', value: '-6 Betten', tone: 'beds' },
+    ],
     levers: [
       { text: '6 austrittsbereite Patienten vor 17:00 entlassen', impact: { label: '-6 Betten', tone: 'beds' }, evidence: {
         summary: '6 Patienten sind als austrittsbereit markiert (Arztvisite abgeschlossen).',
@@ -90,6 +95,11 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     read:
       'Station B liegt bei 92% und steigt weiter. Umschichtung Richtung Notaufnahme ' +
       'empfohlen; die Aktion erfordert HITL-02-Freigabe.',
+    metrics: [
+      { label: 'Jetzt', value: '92%' },
+      { label: 'Trend', value: '96%' },
+      { label: 'Ziel', value: '85%', tone: 'beds' },
+    ],
     levers: [
       { text: '2 Betten Richtung Notaufnahme umschichten', impact: { label: '+2 Betten', tone: 'beds' } },
       { text: '1 verlegbaren Patienten auf Station A vormerken', impact: { label: '-1 Bett', tone: 'beds' } },
@@ -105,6 +115,11 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     agentLabel: 'Discharge Copilot',
     contextChip: { subject: 'Austritte', qualifiers: ['heute'], status: '8 bereit', tone: 'ranked' },
     read: '8 Patienten sind austrittsbereit; 3 warten auf eine Nachsorge-Platzierung.',
+    metrics: [
+      { label: 'Bereit', value: '8' },
+      { label: 'Blockiert', value: '3' },
+      { label: 'Frei bis 12:00', value: '+2', tone: 'time' },
+    ],
     levers: [
       { text: '3 Nachsorge-Platzierungen mit Spitex koordinieren', impact: { label: '+3 Betten', tone: 'beds' } },
       { text: '2 Austritte vor 12:00 priorisieren', impact: { label: '-2 / Vormittag', tone: 'time' } },
@@ -120,6 +135,11 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     agentLabel: 'OR-Steering Copilot',
     contextChip: { subject: 'OP-Plan', qualifiers: ['Mittwoch'], status: 'Überbucht', tone: 'watch' },
     read: 'Der Mittwoch-OP-Plan ist überbucht; zwei Elektiv-Eingriffe kollidieren mit langsamen Post-OP-Austritten.',
+    metrics: [
+      { label: 'Mi-Spitze', value: '88%' },
+      { label: 'Nach Umplanung', value: '80%' },
+      { label: 'Betten Mi', value: '+2', tone: 'beds' },
+    ],
     levers: [
       { text: '2 Elektiv-Eingriffe auf Freitag verschieben', impact: { label: '+2 Betten Mi', tone: 'beds' } },
       { text: '1 Saal als Notfall-Puffer reservieren', impact: { label: 'Puffer', tone: 'buffer' } },
@@ -135,6 +155,11 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     agentLabel: 'Staffing Copilot',
     contextChip: { subject: 'Pflege IPS', qualifiers: ['Spätdienst'], status: 'Unterbesetzt', tone: 'over' },
     read: 'Die IPS ist im Spätdienst 1.5 FTE unter Bedarf gegenüber der prognostizierten Belegung.',
+    metrics: [
+      { label: 'Bedarf', value: '6.5 FTE' },
+      { label: 'Besetzt', value: '5.0 FTE' },
+      { label: 'Lücke', value: '-1.5 FTE', tone: 'status' },
+    ],
     levers: [
       { text: '2 Pool-Pflegende für den Spätdienst anfragen', impact: { label: '+2 FTE', tone: 'status' }, evidence: {
         summary: 'IPS Spätdienst: 1.5 FTE unter Bedarf (Pflege).',
@@ -155,6 +180,11 @@ const AGENT_RECOS: Record<string, GroundedReco> = {
     agentLabel: 'Crisis Copilot',
     contextChip: { subject: 'Szenario Massenanfall', qualifiers: ['Bereitschaft'], status: 'Aktiv', tone: 'signal' },
     read: 'Szenario Massenanfall: geschätzt 20 Zusatz-Zugänge in 6 h. Zwei Hebel schaffen 14 Betten.',
+    metrics: [
+      { label: 'Zusatzbedarf', value: '20 Betten' },
+      { label: 'Mobilisierbar', value: '14 Betten' },
+      { label: 'Restrisiko', value: '-6 Betten', tone: 'routing' },
+    ],
     levers: [
       { text: 'Elektiv-Programm für 24 h aussetzen', impact: { label: '+10 Betten', tone: 'beds' } },
       { text: 'Cross-Hospital-Verlegung nach Curalp aktivieren', impact: { label: '+4 Betten', tone: 'routing' } },
@@ -179,16 +209,45 @@ function mockReco(agent: string): GroundedReco {
 }
 
 /**
+ * A11 — asks the agent must refuse. Destructive/side-effecting verbs without an
+ * approval, or any request for patient-identifying data (PHI). Kept narrow so the
+ * happy-path grounded recos are unaffected.
+ */
+const REFUSAL_TRIGGER = /(l\u00f6sch|entfern|delete|drop|force|\u00fcberschreib|ohne freigabe|ohne genehmigung)/i;
+const PHI_TRIGGER = /(patientenname|namen der patient|ahv|geburtsdatum|krankengeschichte|diagnose von)/i;
+
+/** Build a verbatim guardrail refusal artefact (A11) — no fabrication, cite the gate. */
+function refusalReco(agent: string, prompt: string): GroundedReco {
+  const phi = PHI_TRIGGER.test(prompt);
+  const read = phi
+    ? 'Anfrage abgelehnt: Es werden keine personenbezogenen Patientendaten (PHI) verarbeitet oder ausgegeben.'
+    : 'Anfrage abgelehnt: Diese Aktion hat einen Seiteneffekt und erfordert eine HITL-Freigabe (approved-to-apply), bevor sie ausgef\u00fchrt werden kann.';
+  return {
+    agentLabel: AGENT_LABELS[agent] ?? agent,
+    contextChip: { subject: 'Guardrail', status: 'Verweigert', tone: 'blocked' },
+    read,
+    levers: [],
+    citations: phi ? ['policy:PHI-Gate', 'docs/SECURITY.md'] : ['policy:HITL-02', 'AGENTS.md#4-confirmation-rule'],
+    provenance: 'simulated',
+    refused: true,
+  };
+}
+
+/**
  * Send a prompt to one agent via the agent-host. When no host URL is configured
  * (dev/CI), returns a deterministic grounded mock so the drawer demonstrates the
- * wiring end-to-end without a live backend.
+ * wiring end-to-end without a live backend. A destructive/PHI ask returns a
+ * verbatim guardrail refusal (A11) instead of a recommendation.
  */
 export async function invokeAgent(
   agent: string,
   prompt: string,
 ): Promise<GroundedReply> {
   if (!isAgentHostConfigured()) {
-    const reco = mockReco(agent);
+    const reco =
+      REFUSAL_TRIGGER.test(prompt) || PHI_TRIGGER.test(prompt)
+        ? refusalReco(agent, prompt)
+        : mockReco(agent);
     return { answer: reco.read, citations: reco.citations, refused: reco.refused ?? false, reco };
   }
   return iqAgentChat<GroundedReply>(agent, prompt);
