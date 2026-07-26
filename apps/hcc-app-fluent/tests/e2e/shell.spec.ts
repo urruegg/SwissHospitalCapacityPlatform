@@ -25,5 +25,7 @@ test('five-plane shell renders and Start is the default surface', async ({ page 
 test('navigating to Main renders a board', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('tab', { name: 'Main' }).click();
-  await expect(page.getByTestId('board-bed-manager')).toBeVisible();
+  // Sprint 29 M2 — default lands on the first patient-journey board the role
+  // can see (occupancy for the default Viewer), not a hard-coded bed-manager.
+  await expect(page.getByTestId('board-occupancy')).toBeVisible();
 });
