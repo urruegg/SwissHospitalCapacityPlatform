@@ -170,6 +170,7 @@ def create_app() -> FastAPI:
             "citations": list(reply.citations),
             "refused": reply.refused,
             "correlationId": reply.correlation_id,
+            "interactionId": reply.interaction_id,
         }
 
     @app.post("/agents/{name}/tools/{tool}")
