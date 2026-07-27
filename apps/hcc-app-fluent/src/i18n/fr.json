@@ -159,20 +159,23 @@
       "rehab": "Y a-t-il des places de réhabilitation disponibles ?"
     },
     "table": {
-      "hint": "Cliquez sur une ligne → actions de sortie",
+      "title": "Liste de sorties — {{count}} candidats, anonymisée",
+      "hint": "cliquez sur une ligne → playbook de déblocage Copilot",
       "patient": "Patient",
       "ward": "Unité",
       "readiness": "Préparation",
-      "blocker": "Obstacle",
-      "estFree": "Libre dans (h)"
+      "barrier": "Obstacle",
+      "estFree": "Libre dans",
+      "noBarrier": "—"
     },
     "barriers": {
-      "hint": "Obstacles à la capacité triés par impact sur les lits",
-      "rank": "Rang",
-      "label": "Obstacle",
-      "bedImpact": "Lits",
-      "detail": "Détail",
-      "cta": "Séquence automatique par ancienneté et impact →"
+      "title": "Obstacles à la capacité — classés par impact sur les lits",
+      "hint": "cliquez sur un obstacle → playbook Copilot systémique",
+      "summary": "{{ready}} prêts · {{blocked}} bloqués sur {{barriers}} obstacles · {{beds}} lits récupérables",
+      "bedOne": "{{n}} lit",
+      "bedMany": "{{n}} lits",
+      "agingRisk": "RISQUE D'ANCIENNETÉ",
+      "cta": "Voir le plan coordonné →"
     },
     "gap": {
       "label": "Écart de sorties projeté",

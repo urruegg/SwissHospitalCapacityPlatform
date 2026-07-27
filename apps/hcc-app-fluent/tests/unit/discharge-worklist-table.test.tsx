@@ -19,8 +19,8 @@ describe('DischargeWorklistTable', () => {
     );
     // ward text visible
     expect(screen.getAllByText('Medicine A')[0]).toBeInTheDocument();
-    // blocker text visible
-    expect(screen.getByText('Awaiting Spitex slot')).toBeInTheDocument();
+    // barrier text visible
+    expect(screen.getByText('TTO meds pending')).toBeInTheDocument();
     // READY badge visible
     expect(screen.getAllByText('READY')[0]).toBeInTheDocument();
   });
@@ -43,6 +43,7 @@ describe('DischargeWorklistTable', () => {
         readiness: 'BLOCKED',
         blocker: 'Insurance hold',
         estFreeHours: 48,
+        estFreeLabel: '48h',
         bedsFreeable: 1,
         recoId: 'test-blocked',
       },
@@ -62,11 +63,7 @@ describe('DischargeWorklistTable', () => {
         <DischargeWorklistTable candidates={DISCHARGE_PINNED.candidates} onSelectCandidate={onSelectCandidate} />
       </FluentProvider>,
     );
-    act(() =>
-      screen
-        .getByRole('button', { name: /Expedite Medicine A discharge.*Awaiting Spitex slot/i })
-        .click(),
-    );
+    act(() => screen.getByRole('button', { name: /PT-4471/ }).click());
     expect(onSelectCandidate).toHaveBeenCalledWith(DISCHARGE_PINNED.candidates[0]);
   });
 
@@ -77,7 +74,7 @@ describe('DischargeWorklistTable', () => {
         <DischargeWorklistTable candidates={DISCHARGE_PINNED.candidates} onSelectCandidate={onSelectCandidate} />
       </FluentProvider>,
     );
-    const row = screen.getByRole('button', { name: /Expedite Medicine A discharge.*Awaiting Spitex slot/i });
+    const row = screen.getByRole('button', { name: /PT-4471/ });
     const notPrevented = fireEvent.keyDown(row, { key: ' ' });
     expect(notPrevented).toBe(false);
     expect(onSelectCandidate).toHaveBeenCalledWith(DISCHARGE_PINNED.candidates[0]);

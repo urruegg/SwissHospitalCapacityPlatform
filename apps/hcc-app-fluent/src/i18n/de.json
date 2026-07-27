@@ -159,20 +159,23 @@
       "rehab": "Gibt es freie Reha-Plätze?"
     },
     "table": {
-      "hint": "Zeile anklicken → Entlassaktionen",
+      "title": "Entlass-Arbeitsliste — {{count}} Kandidaten, anonymisiert",
+      "hint": "Zeile anklicken → Copilot Unblock-Playbook",
       "patient": "Patient",
       "ward": "Station",
       "readiness": "Bereitschaft",
-      "blocker": "Hindernis",
-      "estFree": "Frei in (h)"
+      "barrier": "Hindernis",
+      "estFree": "Frei in",
+      "noBarrier": "—"
     },
     "barriers": {
-      "hint": "Kapazitätshindernisse nach Bettauswirkung sortiert",
-      "rank": "Rang",
-      "label": "Hindernis",
-      "bedImpact": "Betten",
-      "detail": "Details",
-      "cta": "Auto-Reihenfolge nach Alter & Auswirkung →"
+      "title": "Kapazitätshindernisse — nach Bettauswirkung sortiert",
+      "hint": "Hindernis anklicken → systemisches Copilot-Playbook",
+      "summary": "{{ready}} jetzt bereit · {{blocked}} blockiert über {{barriers}} Hindernisse · {{beds}} Betten rückgewinnbar",
+      "bedOne": "{{n}} Bett",
+      "bedMany": "{{n}} Betten",
+      "agingRisk": "ALTERUNGSRISIKO",
+      "cta": "Koordinierten Plan ansehen →"
     },
     "gap": {
       "label": "Prognostizierte Entlassungslücke",
