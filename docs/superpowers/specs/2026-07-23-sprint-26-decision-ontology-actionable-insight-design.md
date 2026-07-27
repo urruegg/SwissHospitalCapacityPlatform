@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.6.0 |
-| **Date** | 2026-07-26 |
+| **Version** | 1.7.0 |
+| **Date** | 2026-07-27 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration in fix per §9.11) |
-| **Previous Version** | 1.5.0 (added §9.10 WS-C enablement — job turned on in SIT) |
+| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration in fix per §9.11; WS-B barrier Gold materialised per §9.12) |
+| **Previous Version** | 1.6.0 (added §9.11 WS-C live-apply outcome + Foundry Agents-API fix) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -207,8 +207,11 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 
 ## 7. Open items
 
-- Whether the barrier model (`fact_discharge_barrier`) is precomputed in Gold or derived at
-  runtime — decide in WS-B against the DCA lever formulas.
+- ~~Whether the barrier model (`fact_discharge_barrier`) is precomputed in Gold or derived at
+  runtime~~ **Resolved (WS-B follow-up, #335):** *both* — the pure `derive_barriers`
+  builder serves the runtime path, and `build_gold_barrier` materialises the **same** ranked
+  barriers to `gold.fact_discharge_barrier` (contract `DC-DISCHARGE-BARRIER-v1`; grounds
+  `hcp:Barrier`), reusing `derive_barriers` verbatim so the two paths never diverge.
 - Exact new semantic-model measure/relationship/role counts for the verify-gate rebaseline
   (WS-A confirms and updates `export_semantic_model_tmdl.ps1` + `verify-semantic-model.yml` in the same PR).
 - Confirm the CSA Cosmos account can host `proposed_actions` + `plans` containers under the
@@ -238,7 +241,7 @@ Each slice is one short-lived branch -> one squash PR -> human review. No self-m
 | WS | Status | Evidence / notes |
 | -- | ------ | ---------------- |
 | **WS-A — Foresight tier** | ✅ **Done, merged to `main`** | Deterministic forecast+driver+signal generator, 3 Gold tables, `hcp:Forecast/Driver` + `hcp:ExternalSignal` reuse, 2 contracts (`DC-OCCUPANCY-FORECAST-v1`, `DC-FORECAST-DRIVER-v1`), 16 unit tests. Live SIT evidence captured. |
-| **WS-B — Lever catalog + deterministic impact** | ✅ **Vertical slice merged (#369); fan-out in delivery** | OOA+DCA levers, `compute_expected_impact`, `DC-INSIGHT-v1` contract, barrier model + `hcp:Barrier` landed via #369. Current slice adds the four fan-out levers (`BMCA-REBALANCE-CENSUS`, `ORSA-DEFER-ELECTIVE`, `SBA-FLEX-STAFF-BEDS`, `CSA-ACTIVATE-SURGE`) + formulas + tests. |
+| **WS-B — Lever catalog + deterministic impact** | ✅ **Vertical slice merged (#369); fan-out merged; barrier Gold materialised (#335, §9.12)** | OOA+DCA levers, `compute_expected_impact`, `DC-INSIGHT-v1` contract, and the pure `derive_barriers` builder landed via #369; the four fan-out levers merged. **WS-B follow-up (#335):** the `DC-DISCHARGE-BARRIER-v1` contract, the `hcp:Barrier` ontology term, and the `gold.fact_discharge_barrier` materialization (`build_gold_barrier`, reusing `derive_barriers` verbatim) landed — closing the deferred Gold-materialization item (§9.12). |
 | **WS-C — Decision + Coordination runtime (Cosmos)** | ✅ **Vertical slice (#369) + fan-out (#376) merged; live-apply tooling in delivery** | `Store`/`plan_runtime` (102%→94% recompute + OOA→DCA handoff) landed via #369; `seed_fanout.py` via #376. Current slice adds the Cosmos-backed `CosmosStore(PlanStore)`, the HITL-gated `coordination/seed_live.py`, and the Foundry `foundry/register_decision_tier.py` tool (§9.8). Live infra deploy + in-VNet apply still pending the `sit` environment approval + an in-VNet run. |
 | **WS-D — Consumption + governance** | ✅ **Vertical slice merged (#369); fan-out in delivery** | `DC-INSIGHT-v1` Data Agent contract + OOA/DCA agent upgrades + ADR-0040 + PRD `FR-DEC-*`/`NFR-DEC-*` landed via #369. Current slice upgrades the BMCA/ORSA/SBA/CSA agent packs + golden tasks. |
 
@@ -256,7 +259,7 @@ One cohesive squash PR off `main` (branch `sprint-26/ws-b-levers`), Data/AI lane
 
 1. **Lever catalog** — `data-platform/decision/levers/<role>.yaml` (6 roles; **OOA + DCA fully specified**), JSON-schema-validated (model on `data-platform/scripts/csa/schema/response-levers.schema.json`); `title_i18n` de/en/fr/it.
 2. **Deterministic impact tool** — pure, unit-tested `compute_expected_impact(lever_id, params, ctx)` — formula registry, **never an LLM estimate** (D4).
-3. **DCA barrier model** — deterministic pure builder + `dc-discharge-barrier-v1.schema.json`; **Gold materialization deferred** to a follow-up (confirmed).
+3. **DCA barrier model** — deterministic pure builder + `dc-discharge-barrier-v1.schema.json`; **Gold materialization deferred** to a follow-up (confirmed). *(Follow-up landed #335 — see §9.12: the schema, `hcp:Barrier`, and `gold.fact_discharge_barrier` materialization were completed in a WS-B follow-up; the pure builder alone shipped with #369.)*
 4. **Ontology** — add **only `hcp:Barrier`** (+ crosswalk MVO row, STRICT conformance); defer `hcp:Recommendation`/`hcp:Lever` to WS-C runtime (confirmed).
 5. **Docs** — `data-platform/decision/README.md`; PRD `FR-DEC-*` / `NFR-DEC-*` + §7 traceability; SemVer bumps.
 
@@ -476,3 +479,45 @@ resolves.
    the Foundry apply via the `az containerapp job update --yaml` template-swap
    method (ooa first, then fan out) per the runbook. `az containerapp job start
    --command/--args` overrides are ignored in this environment.
+
+### 9.12 WS-B follow-up — DCA barrier Gold materialization (current)
+
+One squash PR off `main` (branch `sprint-26/ws-b-barrier-gold`), **Data +
+Governance** lanes, TDD-first. Closes the barrier **Gold materialization** item
+deferred at §9.3 item 3 (and historically listed under "Still deferred" in §9.8 /
+§9.9) and resolves the §7 open item on precompute-vs-runtime. Of the three
+originally-deferred trio, only the ontology `hcp:Recommendation` / `hcp:Lever`
+terms now remain deferred (WS-C runtime concern).
+
+Discovered on pickup: the `dc-discharge-barrier-v1.schema.json` contract and the
+`hcp:Barrier` ontology term — described in §9.3 items 3-4 as part of Slice 1 —
+were **never actually landed on disk** (only the pure `derive_barriers` builder
+shipped with #369). This follow-up lands all three together so the Gold fact is
+contract- and ontology-conformant like every WS-A Gold fact.
+
+1. **Contract** — `data/synthetic/schema/dc-discharge-barrier-v1.schema.json`
+   (`DC-DISCHARGE-BARRIER-v1`, draft-07, `additionalProperties:false`,
+   envelope + records, `_pseudonymisation_flag: true`), 1:1 with the Gold row.
+2. **Gold builder** — `data-platform/decision/barriers/build_gold_barrier.py`:
+   `build_discharge_barriers(candidates, produced_at)` projects the pure
+   `derive_barriers` ranked barriers onto flat `gold.fact_discharge_barrier`
+   rows (deterministic `barrierId`, 1-based `rank`, run metadata, camelCase
+   contract keys); `discharge_barrier_envelope` for validation; the
+   `_empty_schema` and `run()` Fabric entrypoints are `# pragma: no cover`.
+   **`derive_barriers` is
+   reused verbatim** — the collapse/rank logic is never duplicated. Orchestrated
+   by `data-platform/notebooks/decision/run_decision_medallion.ipynb`.
+3. **Ontology** — `hcp:Barrier` ICE (`subClassOf hcp:InformationContent`) +
+   `hcp:barrierForWard` added to `reference-layer.ttl` (v0.5.0) with a crosswalk
+   MVO row referencing `DC-DISCHARGE-BARRIER-v1` (`crosswalk.md` v0.6.0); STRICT
+   two-layer conformance gate green (0 WARN / 0 FAIL).
+4. **Tests** — 14 new offline tests (row shape / determinism / no-PHI / nullable
+   / ranking / schema-conformance) in `barriers/tests/test_gold_barrier.py`;
+   full decision-lane suite **161 tests OK**.
+5. **Docs** — new `notebooks/decision/README.md`; `data-platform/decision/README.md`
+   barrier row; `docs/DATA.md` (v0.12.0) Gold registry + WS-B subsection; §7 open
+   item resolved; SemVer bumps on every edited doc.
+
+**Guardrails held:** synthetic + deterministic only, no PHI (opaque
+`candidate_key` + ontology ward IDs → aggregate Gold rows), **no LLM-guessed
+numbers** (D2/D4). No infra / MCP / runtime change; Fabric lakehouse only.
