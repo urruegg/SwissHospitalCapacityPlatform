@@ -42,10 +42,10 @@ export function CsaWizard() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   return (
     <CsaRoleGuard>
-      <section aria-label="Crisis Scenario Analysis wizard" data-testid="CsaWizard">
+      <section aria-label="Scenario Analysis wizard" data-testid="CsaWizard">
         <div className={styles.header}>
           <div>
-            <Title2>Crisis Scenario Analysis</Title2>
+            <Title2>Scenario Analysis</Title2>
             <Subtitle2 as="p" className={styles.subtitle}>
               Prepare → Run → Evaluate → Recommend, guided by <code>csa-agent</code>.
             </Subtitle2>
