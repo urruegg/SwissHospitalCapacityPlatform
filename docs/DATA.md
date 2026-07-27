@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.11.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 0.12.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.10.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
+| **Previous Version** | 0.11.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
 
 ## Purpose
 
@@ -287,6 +287,28 @@ bindings are recorded in
 [`docs/ontology/crosswalk.md`](ontology/crosswalk.md) (v0.4.0) and the STRICT
 two-layer conformance gate. The semantic-model measures + verify-gate rebaseline
 for these tables are a stacked WS-A2 follow-on (design §7 open item).
+
+### Sprint 26 WS-B — Decision-tier barrier gold table
+
+The Decision tier (issue #335, design spec §3.3 item 3) materialises the DCA
+**barrier model** — the deterministic collapse of a flat discharge-blocked
+candidate feed into a ranked list of **systemic barriers** (the "N candidates
+collapse into M barriers" pattern, beat 3). The collapse/rank logic is the pure
+[`derive_barriers`](../data-platform/decision/barriers/derive_barriers.py)
+builder, reused verbatim by
+[`build_gold_barrier`](../data-platform/decision/barriers/build_gold_barrier.py)
+(Spark-free + unit-tested; Fabric I/O via
+[`data-platform/notebooks/decision/`](../data-platform/notebooks/decision/README.md)).
+No PHI — candidates carry only an opaque `candidate_key` + ontology ward IDs, so
+the gold rows carry only aggregate counts + ward IDs — and no LLM-guessed numbers.
+
+| Gold table | Grain | Contract | Notes |
+| ---------- | ----- | -------- | ----- |
+| `gold.fact_discharge_barrier` | one row per systemic discharge barrier | [`DC-DISCHARGE-BARRIER-v1`](../data/synthetic/schema/dc-discharge-barrier-v1.schema.json) | `barrierType` / `ownerRole` / `rank` / `candidateCount` / `bedImpact` / `agedH` / `clearsAt` + spanning `wards`; ranked by bed impact then age. Grounds `hcp:Barrier` (`barrierForWard` → `hcp:Ward`); binding recorded in [`crosswalk.md`](ontology/crosswalk.md) (v0.6.0) under the STRICT gate. |
+
+The contract follows the same `dc-*.schema.json` envelope (Draft-07,
+`_pseudonymisation_flag: true` per ADR-0016 gate 1); builder output is validated
+against it by the decision lane's offline schema-conformance test.
 
 ### Sprint 26 WS-B/C — Decision store and DC-INSIGHT-v1
 
