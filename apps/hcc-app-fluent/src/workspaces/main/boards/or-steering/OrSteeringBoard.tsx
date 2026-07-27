@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Button, Text, makeStyles, tokens } from '@fluentui/react-components';
+import { Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { space, radii, elevation } from '../../../../theme/design-system';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { OrCase, OrSteeringPayload, ReslotLever } from '../../../../data/roleboard/or-steering-data';
-import { sortReslotLevers } from '../../../../data/roleboard/or-steering-data';
+import type { OrCase, OrCaseEvent, OrSteeringPayload, ReslotLever } from '../../../../data/roleboard/or-steering-data';
 import { orSteeringBoard } from './or-steering-board';
 import { BoardHeader } from '../occupancy/BoardHeader';
+import { OrCaseEventstream } from './OrCaseEventstream';
 import { OrCaseScheduleTable } from './OrCaseScheduleTable';
 import { OrReslotLeversBoard } from './OrReslotLeversBoard';
+import { GroundingNotice } from '../GroundingNotice';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
@@ -15,26 +17,45 @@ import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
+import { useDataSource } from '../../../../context/data-source-context';
 
 const useStyles = makeStyles({
-  root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalL },
-  gapStrip: {
+  root: { display: 'flex', flexDirection: 'column', gap: space.l, padding: space.l },
+  panel: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: radii.card,
+    boxShadow: elevation.card,
+    padding: space.l,
+  },
+  // Source (live incoming OR cases) -> insights (elective OR schedule) on one level.
+  sourceInsightRow: {
     display: 'flex',
-    gap: tokens.spacingHorizontalM,
-    alignItems: 'center',
+    gap: space.l,
+    alignItems: 'stretch',
     flexWrap: 'wrap',
-    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-    background: tokens.colorNeutralBackground2,
-    borderRadius: tokens.borderRadiusMedium,
+  },
+  sourcePane: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: '300px',
+    minWidth: '260px',
+    overflowY: 'auto',
+  },
+  insightPane: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: '420px',
+    minWidth: 0,
   },
 });
 
-/** Sprint 20 (parity) — OR steering (orsa) surface: HandoffBanner → BoardHeader → OrCaseScheduleTable → OrReslotLeversBoard. */
+/** Sprint 20 (parity) / Sprint 27 — OR steering (orsa) surface: live incoming OR cases + elective OR schedule (upper lane) → reslot levers (lower lane). */
 export function OrSteeringBoard() {
   const s = useStyles();
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
+  const { source } = useDataSource();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<OrSteeringPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
@@ -57,8 +78,7 @@ export function OrSteeringBoard() {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // rail.showDefault calls a stable useState setter; intentionally excluded so the effect runs only when mode/hospital changes
-  }, [mode, hospital]);
+  }, [mode, hospital, source]);
 
   if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 
@@ -86,37 +106,48 @@ export function OrSteeringBoard() {
     });
   };
 
-  const onSelectGap = () => {
-    route({ id: 'or-gap', label: t('orsa.gap.label'), context: { residualBeds: payload.residualBeds } });
+  const onSelectEvent = (ev: OrCaseEvent) => {
+    route({
+      id: `orcase-${ev.id}`,
+      label: t('insight.orCaseEvent', { caseNo: ev.caseNo }),
+      context: { orCase: ev.caseNo, ts: ev.ts, kind: ev.kind },
+    });
   };
 
-  const onAutoSequence = () => {
-    // levers are pre-sorted by design; sortReslotLevers is the canonical comparator
-    const top = sortReslotLevers(payload.levers)[0];
-    if (top) onSelectLever(top);
+  // The "View reslot plan" CTA opens the site-gap reslot playbook (with the sba handoff).
+  const onViewPlan = () => {
+    route({ id: 'or-gap', label: t('orsa.gap.label'), context: { residualBeds: payload.residualBeds } });
   };
 
   return (
     <section className={s.root} data-testid="board-or-steering" aria-label={t('board.orSteering')}>
       <HandoffBanner banner={banner} provenance={data.provenance} />
+      <GroundingNotice degraded={data.degraded} />
       <BoardHeader
         agent={orSteeringBoard.agent}
         title={t('board.orSteering')}
         provenance={data.provenance}
         lens="OR Steering"
       />
-      {/* Gap summary strip — mirrors OOA/DCA gap cards; click opens the or-gap reco */}
-      <div className={s.gapStrip}>
-        <Text>{t('board.bedsShort')}: <strong>{payload.bedsShort}</strong></Text>
-        <Text>{t('board.casesDeferred')}: <strong>{payload.casesDeferred}</strong></Text>
-        <Text>{t('board.bedsFreed')}: <strong>{payload.bedsFreed}</strong></Text>
-        <Badge appearance="tint" color="warning">{payload.residualBeds} {t('board.beds')}</Badge>
-        <Button appearance="outline" size="small" onClick={onSelectGap}>
-          {t('orsa.gap.cta')}
-        </Button>
+
+      {/* Source (live incoming OR cases) -> insights (elective OR schedule) on one level. */}
+      <div className={s.sourceInsightRow}>
+        <div className={mergeClasses(s.panel, s.sourcePane)}>
+          <OrCaseEventstream events={payload.liveCases} onSelectEvent={onSelectEvent} />
+        </div>
+        <div className={mergeClasses(s.panel, s.insightPane)}>
+          <OrCaseScheduleTable cases={payload.cases} onSelectCase={onSelectCase} />
+        </div>
       </div>
-      <OrCaseScheduleTable cases={payload.cases} onSelectCase={onSelectCase} />
-      <OrReslotLeversBoard levers={payload.levers} onSelectLever={onSelectLever} onAutoSequence={onAutoSequence} />
+
+      <div className={s.panel}>
+        <OrReslotLeversBoard
+          levers={payload.levers}
+          onSelectLever={onSelectLever}
+          onViewPlan={onViewPlan}
+          summary={payload.leverSummary}
+        />
+      </div>
     </section>
   );
 }

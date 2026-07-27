@@ -47,28 +47,28 @@ describe('StaffingLeversBoard', () => {
     expect(onSelectLever).toHaveBeenCalledWith(sorted[0]);
   });
 
-  it('renders the auto-sequence CTA button', () => {
+  it('renders the view staffing plan CTA button', () => {
     render(
       <FluentProvider theme={webLightTheme}>
         <StaffingLeversBoard levers={STAFFING_PINNED.levers} onSelectLever={vi.fn()} />
       </FluentProvider>,
     );
-    expect(screen.getByRole('button', { name: /auto-sequence/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /view staffing plan/i })).toBeInTheDocument();
   });
 
-  it('fires onAutoSequence when the auto-sequence CTA button is clicked', () => {
-    const onAutoSequence = vi.fn();
+  it('fires onViewPlan when the view staffing plan CTA button is clicked', () => {
+    const onViewPlan = vi.fn();
     render(
       <FluentProvider theme={webLightTheme}>
         <StaffingLeversBoard
           levers={STAFFING_PINNED.levers}
           onSelectLever={vi.fn()}
-          onAutoSequence={onAutoSequence}
+          onViewPlan={onViewPlan}
         />
       </FluentProvider>,
     );
-    act(() => screen.getByRole('button', { name: /auto-sequence/i }).click());
-    expect(onAutoSequence).toHaveBeenCalledOnce();
+    act(() => screen.getByRole('button', { name: /view staffing plan/i }).click());
+    expect(onViewPlan).toHaveBeenCalledOnce();
   });
 
   it('rank badges are numbered starting from 1', () => {

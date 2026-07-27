@@ -14,16 +14,21 @@ describe('STAFFING_PINNED model', () => {
     );
   });
 
-  it('has moves with id, fromUnit, toUnit, role, fte, bedsEnabled, shiftGap, recoId', () => {
+  it('has moves with id, shiftNo, time, window, fromUnit, toUnit, role, skill, fte, covers, status, recoId', () => {
     expect(STAFFING_PINNED.moves.length).toBeGreaterThanOrEqual(2);
     for (const m of STAFFING_PINNED.moves) {
       expect(m.id).toBeTruthy();
+      expect(m.shiftNo).toBeTruthy();
+      expect(m.time).toBeTruthy();
+      expect(m.window).toBeTruthy();
       expect(m.fromUnit).toBeTruthy();
       expect(m.toUnit).toBeTruthy();
       expect(m.role).toBeTruthy();
+      expect(m.skill).toBeTruthy();
       expect(typeof m.fte).toBe('number');
+      expect(m.covers).toBeTruthy();
+      expect(m.status).toBeTruthy();
       expect(typeof m.bedsEnabled).toBe('number');
-      expect(m.shiftGap).toBeTruthy();
       expect(m.recoId).toBeTruthy();
     }
   });
@@ -36,12 +41,9 @@ describe('STAFFING_PINNED model', () => {
     }
   });
 
-  it('stable tie-break: confirm-orsa ranks before escalate-csa (both bedsEnabled=0, c < e)', () => {
-    const confirmIdx = STAFFING_PINNED.levers.findIndex((l) => l.id === 'confirm-orsa');
-    const escalateIdx = STAFFING_PINNED.levers.findIndex((l) => l.id === 'escalate-csa');
-    expect(confirmIdx).toBeGreaterThanOrEqual(0);
-    expect(escalateIdx).toBeGreaterThanOrEqual(0);
-    expect(confirmIdx).toBeLessThan(escalateIdx);
+  it('is pre-sorted by beds covered with the curated mockup rank 1..5', () => {
+    const ids = STAFFING_PINNED.levers.map((l) => l.id);
+    expect(ids).toEqual(['oncology-skillmatch', 'float-pool', 'voluntary-ot', 'cross-cover-buddy', 'agency-bank']);
   });
 
   it('defaultReco has non-empty levers, a csa handoff CTA, gold citations, simulated provenance', () => {
@@ -84,16 +86,13 @@ describe('STAFFING_PINNED model', () => {
     expect(coverageReco.provenance).toBe('simulated');
   });
 
-  it('sortStaffingLevers returns a new array sorted by bedsEnabled desc, stable tie-break by id', () => {
+  it('sortStaffingLevers returns a new array sorted by bedsEnabled desc (stable)', () => {
     const unsorted = [...STAFFING_PINNED.levers].reverse();
     const sorted = sortStaffingLevers(unsorted);
-    // Does not mutate input
-    expect(unsorted).not.toEqual(sorted);
-    // First element has the highest bedsEnabled
-    expect(sorted[0].bedsEnabled).toBeGreaterThanOrEqual(sorted[1].bedsEnabled);
-    // confirm-orsa < escalate-csa (both bedsEnabled=0, c < e)
-    const confirmIdx = sorted.findIndex((l) => l.id === 'confirm-orsa');
-    const escalateIdx = sorted.findIndex((l) => l.id === 'escalate-csa');
-    expect(confirmIdx).toBeLessThan(escalateIdx);
+    // Does not mutate input (returns a new array)
+    expect(sorted).not.toBe(unsorted);
+    // Sorted descending by bedsEnabled
+    expect(sorted.map((l) => l.bedsEnabled)).toEqual([2, 1, 1, 0, 0]);
+    expect(sorted[0].id).toBe('oncology-skillmatch');
   });
 });

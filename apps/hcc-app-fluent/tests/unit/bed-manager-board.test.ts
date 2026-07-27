@@ -19,10 +19,10 @@ describe('bedManagerBoard (RoleBoard contract)', () => {
   it('derives clickable insights from placements and barriers', async () => {
     const data = await bedManagerBoard.load(GOLDEN_THREAD_SCOPE, 'demo');
     const insights = bedManagerBoard.insights(data);
-    // Placement insights
-    expect(insights.some((i) => i.context['placement'] === 'place-pt-4001')).toBe(true);
-    // Barrier insights
-    expect(insights.some((i) => i.context['barrier'] === 'ward-overflow')).toBe(true);
+    // Placement insights (placement id from the inbound worklist, e.g. RQ-2201)
+    expect(insights.some((i) => i.context['placement'] === 'RQ-2201')).toBe(true);
+    // Barrier insights (barrier id from the ranked barriers, e.g. bed-turnaround)
+    expect(insights.some((i) => i.context['barrier'] === 'bed-turnaround')).toBe(true);
     // Gap insight
     expect(insights.some((i) => i.id === 'placement-gap')).toBe(true);
   });

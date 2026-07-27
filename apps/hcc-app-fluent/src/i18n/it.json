@@ -188,6 +188,7 @@
       "admissionEvent": "Guida dall'evento {{ward}} ({{patient}})",
     "placementBarrier": "Ostacolo: {{label}}",
     "orDefer": "Rinvia il caso {{specialty}}",
+    "orCaseEvent": "Pilota il caso SO {{caseNo}}",
     "staffShift": "Sposta {{role}} {{fromUnit}} -> {{toUnit}}",
     "stressTest": "Testa {{scenario}}"
   },
@@ -355,23 +356,37 @@
       "orroomPressure": "Dove c'è la maggiore pressione in sala operatoria?",
       "sbaHandoff": "Come trasferiamo il divario residuo al personale?"
     },
+    "live": {
+      "title": "Casi SO in arrivo",
+      "hint": "Casi sala operatoria in arrivo in tempo reale (simulato)",
+      "copilotHint": "Fai clic per il coordinamento Copilot + dettagli",
+      "kind": {
+        "added": "in elenco",
+        "urgent": "urgente",
+        "update": "aggiornamento"
+      }
+    },
     "table": {
-      "hint": "Fai clic su una riga → azioni di coordinamento sala operatoria",
+      "title": "Programma operatorio elettivo — {{count}} casi, reparto post-op segnalato",
+      "hint": "fai clic su una riga → playbook di riprogrammazione Copilot",
+      "case": "Caso",
       "specialty": "Specialità",
       "slot": "Slot sala operatoria",
+      "postOp": "Post-op",
       "bedsImpact": "Impatto letti",
       "bedsProtected": "Letti protetti",
-      "deferable": "Rinviabile",
-      "yes": "Sì",
-      "no": "No"
+      "action": "Azione",
+      "window": "Finestra"
     },
     "levers": {
-      "hint": "Leve di riprogrammazione ordinate per letti protetti",
-      "rank": "Rango",
-      "label": "Leva",
-      "bedsProtected": "Letti",
-      "detail": "Dettaglio",
-      "cta": "Sequenza automatica per impatto →"
+      "title": "Leve di riprogrammazione — ordinate per letti protetti",
+      "hint": "fai clic su una leva → playbook di riprogrammazione Copilot",
+      "summary": "{{beds}} letti elettivi protetti · {{proceed}} casi urgenti da eseguire · afflusso Medicine A limitato",
+      "bedOne": "{{n}} letto",
+      "bedMany": "{{n}} letti",
+      "proceed": "da eseguire",
+      "mustProceed": "DEVE PROCEDERE",
+      "cta": "Vedi il piano di riprogrammazione →"
     },
     "gap": {
       "label": "Divario sala operatoria previsto",
@@ -385,20 +400,27 @@
       "csaEscalation": "Quando dobbiamo passare alla pianificazione di crisi?"
     },
     "table": {
-      "hint": "Fai clic su una riga → azioni del personale",
-      "role": "Ruolo",
+      "title": "Elenco di copertura — {{count}} carenze di turno, supporto Medicine A",
+      "hint": "fai clic su una riga → playbook del personale Copilot",
+      "shift": "Turno",
+      "time": "Orario turno",
       "fromUnit": "Reparto di origine",
       "toUnit": "Reparto di destinazione",
       "fte": "ETP",
-      "shiftGap": "Turno"
+      "window": "Finestra",
+      "skill": "Competenza",
+      "covers": "Copre",
+      "status": "Stato"
     },
     "levers": {
-      "hint": "Leve del personale ordinate per letti coperti",
-      "rank": "Rango",
-      "label": "Leva",
-      "bedsEnabled": "Letti",
-      "detail": "Dettaglio",
-      "cta": "Sequenza automatica per impatto copertura →"
+      "title": "Leve del personale — ordinate per letti coperti",
+      "hint": "fai clic su una leva → playbook Copilot sistemico",
+      "summary": "{{oncology}} oncologia da assicurare · {{general}} generale coperto · {{beds}} letti coperti · nessuna agenzia",
+      "bedOne": "{{n}} letto",
+      "bedMany": "{{n}} letti",
+      "critical": "CRITICO",
+      "lastResort": "ULTIMA RISORSA",
+      "cta": "Vedi il piano del personale →"
     },
     "gap": {
       "label": "Carenza di personale del sito",

@@ -55,9 +55,11 @@ describe('OrSteeringBoard surface', () => {
       </Harness>,
     );
 
+    // The schedule renders every elective case; specialties repeat across rows,
+    // so assert the two golden-thread deferable cases by their unique case number.
+    // (A case number may also appear in the live-stream tooltip, so allow >= 1.)
     for (const orCase of OR_STEERING_PINNED.cases.filter((c) => c.deferable)) {
-      await waitFor(() => expect(screen.getByText(orCase.specialty)).toBeInTheDocument());
-      expect(screen.getByText(orCase.slot)).toBeInTheDocument();
+      await waitFor(() => expect(screen.getAllByText(orCase.caseNo).length).toBeGreaterThanOrEqual(1));
     }
     expect(screen.getByText(/simulated data/i)).toBeInTheDocument();
     expect(screen.getByText(/Carried from bmca-agent/i)).toBeInTheDocument();
@@ -72,9 +74,9 @@ describe('OrSteeringBoard surface', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /Defer Orthopedics case/ })).toBeInTheDocument(),
+      expect(screen.getByRole('button', { name: /OR-3301.*Defer Orthopedics case/i })).toBeInTheDocument(),
     );
-    act(() => screen.getByRole('button', { name: /Defer Orthopedics case/ }).click());
+    act(() => screen.getByRole('button', { name: /OR-3301.*Defer Orthopedics case/i }).click());
 
     await waitFor(() => expect(screen.getByTestId('rail-open').textContent).toBe('true'));
     expect(invokeInsight).toHaveBeenCalledWith('orsa-agent', {
