@@ -26,6 +26,9 @@ def build_gap_register(
             "signal": signal,
             "demandedByDq": g is not None,
             # rank: DQ impact (0..1) + 0.5 base for referenced-but-unwired
-            "rank": round((g["impactScore"] if g else 0.0) + (0.5 if signal in referenced else 0.0), 4),
+            "rank": round((g.get("impactScore", 0.0) if g else 0.0) + (0.5 if signal in referenced else 0.0), 4),
         })
-    return sorted(rows, key=lambda r: (-r["rank"], r["signal"]))
+    # DQ-demanded gaps always outrank non-demanded ones (a newSourceNeeded gap is
+    # the intake trigger, even when its recommended source is brand-new and thus
+    # not yet referenced); within each band, higher rank then signal name.
+    return sorted(rows, key=lambda r: (not r["demandedByDq"], -r["rank"], r["signal"]))
