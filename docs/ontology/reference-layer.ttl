@@ -30,8 +30,8 @@
     dcterms:description "Reference layer of the two-layer ontology per ADR-0014. Skeleton only — full axiomatic content is Phase 3."@en ;
     dcterms:creator     "Urs Rüegg"@en ;
     dcterms:issued      "2026-07-02"^^xsd:date ;
-    owl:versionInfo     "0.5.0" ;
-    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy); Sprint 26 WS-B (#335) adds the Decision tier hcp:Barrier + barrierForWard. See docs/ontology/README.md for scope discipline and versioning."@en ;
+    owl:versionInfo     "0.6.0" ;
+    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy); Sprint 26 WS-B (#335) adds the Decision tier hcp:Barrier + barrierForWard; Sprint 26 WS-C (#335) adds the prescriptive terms hcp:Recommendation + hcp:Lever + recommendsLever (and re-parents hcp:DischargeRecommendation under hcp:Recommendation). See docs/ontology/README.md for scope discipline and versioning."@en ;
 
     # Imports declared but not loaded axiomatically in this skeleton.
     # A follow-up PR (or an ontology-authoring tool) resolves these to full IRIs.
@@ -154,9 +154,9 @@ hcp:DischargeReadinessScore a owl:Class ;
     rdfs:comment    "A score [0..1] produced by the discharge-scoring pipeline with feature attribution. Grounds FR-DC-001, FR-DC-006."@en .
 
 hcp:DischargeRecommendation a owl:Class ;
-    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:subClassOf hcp:Recommendation ;
     rdfs:label      "Discharge Recommendation"@en ;
-    rdfs:comment    "Ranked candidate action derived from a DischargeReadinessScore, including blockers and recommendedAction. Advisory/HITL per NFR-AI-001. Grounds FR-DC-002, FR-DC-003, FR-DC-005."@en .
+    rdfs:comment    "Ranked candidate action derived from a DischargeReadinessScore, including blockers and recommendedAction. A discharge-specific hcp:Recommendation (transitively an InformationContent). Advisory/HITL per NFR-AI-001. Grounds FR-DC-002, FR-DC-003, FR-DC-005."@en .
 
 hcp:ForecastOutput a owl:Class ;
     rdfs:subClassOf hcp:InformationContent ;
@@ -310,6 +310,26 @@ hcp:barrierForWard a owl:ObjectProperty ;
     rdfs:comment "Links a Barrier to each Ward it spans (a barrier may span several wards once its candidates are collapsed by barrier_type)."@en ;
     rdfs:domain  hcp:Barrier ;
     rdfs:range   hcp:Ward .
+
+# ---------------------------------------------------------------------------
+# Decision tier — prescriptive terms (Sprint 26 WS-C, #335)
+# ---------------------------------------------------------------------------
+
+hcp:Recommendation a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Recommendation"@en ;
+    rdfs:comment    "A prescriptive, ranked, owner-attributed action proposal addressing a signal or forecast breach — the 'recommendation' beat of the DC-INSIGHT-v1 actionable-insight tuple. Each recommendation dispatches a Lever by lever_id, carrying params, a deterministic expected_impact (never an LLM estimate; see design D2/D4), owner_role and a deadline. Advisory/HITL only per NFR-AI-001. Generalises hcp:DischargeRecommendation. Bound to the recommendation[] beat of DC-INSIGHT-v1; assembled at runtime by the agent-host from the git-owned lever catalog."@en .
+
+hcp:Lever a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Lever"@en ;
+    rdfs:comment    "A typed, reusable recommendation template in the git-owned, versioned lever catalog (data-platform/decision/levers/<role>.yaml, validated by lever.schema.json). Carries lever_id, recommending role, i18n titles, preconditions, a params_schema, an impact_formula_ref (the stable dispatch key compute_expected_impact implements), an owner_role (may differ from role to encode a cross-role handoff) and hitl=true. A directive information entity; no operational time-series binding — config artefact, not dataset data."@en .
+
+hcp:recommendsLever a owl:ObjectProperty ;
+    rdfs:label   "recommends lever"@en ;
+    rdfs:comment "Links a Recommendation to the Lever it dispatches by lever_id from the DC-INSIGHT-v1 recommendation beat."@en ;
+    rdfs:domain  hcp:Recommendation ;
+    rdfs:range   hcp:Lever .
 
 # ===========================================================================
 # Curavias organisation spine + skills ontology extension (Sprint 23, #255)

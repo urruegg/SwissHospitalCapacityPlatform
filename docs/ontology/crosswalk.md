@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.0 |
+| **Version** | 0.7.0 |
 | **Date** | 2026-07-27 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft — Sprint 09 skeleton (RB-11); Sprint 23 org-spine + skills rows (#255); Sprint 26 WS-A Foresight tier + WS-B `hcp:Barrier` (#335) |
-| **Previous Version** | 0.5.0 (Sprint 26 WS-A Foresight tier rows) |
+| **Status** | Draft — Sprint 09 skeleton (RB-11); Sprint 23 org-spine + skills rows (#255); Sprint 26 WS-A Foresight tier + WS-B `hcp:Barrier` + WS-C `hcp:Recommendation`/`hcp:Lever` (#335) |
+| **Previous Version** | 0.6.0 (Sprint 26 WS-B `hcp:Barrier` row) |
 | **Governance** | Every PR that touches [reference-layer.ttl](reference-layer.ttl) OR the operational-layer semantic model MUST update this file in the same PR. Reviewed by semantic / ontology owner per [FR-GOV-ONT-002](../PRD.md#h-semantic-ontology). |
 | **Enforcement** | Manual review today; CI conformance check delivered by follow-up PR (RB-08) per [FR-GOV-ONT-003](../PRD.md#h-semantic-ontology). |
 
@@ -43,6 +43,8 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:Forecast` | `Forecast` | **[`DC-OCCUPANCY-FORECAST-v1`](../../data/synthetic/schema/dc-occupancy-forecast-v1.schema.json)** *(Sprint 26 WS-A)* | Batch Gold Delta (`gold.fact_occupancy_forecast`) — deterministic synthetic, hourly horizons 0..72h | 72h occupancy forecast per ward; distinct from `hcp:ForecastOutput` (specialty demand). Deterministic generator with a real-model seam (design D2). |
 | `hcp:Driver` | `Driver` | **[`DC-FORECAST-DRIVER-v1`](../../data/synthetic/schema/dc-forecast-driver-v1.schema.json)** *(Sprint 26 WS-A)* | Batch Gold Delta (`gold.fact_forecast_driver`) | Forecast decomposition ('why'); deltas reconcile to the net forecast change. Grounds beat 2 of the actionable-insight pattern. |
 | `hcp:Barrier` | `Barrier` | **[`DC-DISCHARGE-BARRIER-v1`](../../data/synthetic/schema/dc-discharge-barrier-v1.schema.json)** *(Sprint 26 WS-B)* | Batch Gold Delta (`gold.fact_discharge_barrier`) — deterministic collapse of discharge-blocked candidates, ranked | Systemic discharge barrier (DCA 'N candidates → M barriers'); aggregate over opaque candidate keys + ward IDs (no PHI). Grounds beat 3 of the actionable-insight pattern. |
+| `hcp:Recommendation` | `Recommendation` | **[`DC-INSIGHT-v1`](../../data/synthetic/schema/dc-insight-v1.schema.json)** *(Sprint 26 WS-C)* | Runtime tuple — the agent-host assembles the recommendation beat; no batch Gold binding | Ranked, owner-attributed lever recommendations carrying a **deterministic** `expected_impact` (never an LLM estimate; design D2/D4). Advisory/HITL only. Superclass of `hcp:DischargeRecommendation`. Grounds beat 4 (the actionable recommendation) of the actionable-insight pattern. |
+| `hcp:Lever` | `Lever` *(git-owned catalog; no operational binding)* | *(no data contract — git-owned lever catalog `data-platform/decision/levers/<role>.yaml`, validated by [`lever.schema.json`](../../data-platform/decision/levers/lever.schema.json))* | N/A (config artefact, versioned in git) | Typed recommendation template dispatched by `lever_id` from the insight recommendation beat; carries preconditions, `params_schema`, `impact_formula_ref`, `owner_role` and `hitl=true`. |
 | `hcp:Tenant` | `Tenant` *(folded 1:1 into Hospital)* | `DC-SUPPLY-ORGANIZATION-v1` | N/A (static reference; `gold.dim_hospital` re-branded to tenant, PR #332) | Sprint 23 T6/D6: CuraNova / Curalp / Vialta; `tenant_id = hospital_id`. Drops H_HSL (no tenant). |
 | `hcp:OrgUnit` | `OrgUnit` | `DC-SUPPLY-ORGANIZATION-v1` | N/A (static reference; `gold.dim_org_unit`) | Sprint 23 T6; site / org-unit level under a Tenant. |
 | `hcp:Department` | `Department` | `DC-SUPPLY-ORGANIZATION-v1` | N/A (static reference; `gold.dim_department`) | Sprint 23 T6; the demand / gap grain for skills. |

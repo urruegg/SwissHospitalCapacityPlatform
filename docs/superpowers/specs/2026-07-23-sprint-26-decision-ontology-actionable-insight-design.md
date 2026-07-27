@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.7.0 |
+| **Version** | 1.8.0 |
 | **Date** | 2026-07-27 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration in fix per §9.11; WS-B barrier Gold materialised per §9.12) |
-| **Previous Version** | 1.6.0 (added §9.11 WS-C live-apply outcome + Foundry Agents-API fix) |
+| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration in fix per §9.11; WS-B barrier Gold materialised per §9.12; prescriptive terms `hcp:Recommendation`/`hcp:Lever` landed per §9.13 — all three originally-deferred items closed) |
+| **Previous Version** | 1.7.0 (added §9.12 WS-B barrier Gold materialization) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -487,7 +487,7 @@ Governance** lanes, TDD-first. Closes the barrier **Gold materialization** item
 deferred at §9.3 item 3 (and historically listed under "Still deferred" in §9.8 /
 §9.9) and resolves the §7 open item on precompute-vs-runtime. Of the three
 originally-deferred trio, only the ontology `hcp:Recommendation` / `hcp:Lever`
-terms now remain deferred (WS-C runtime concern).
+terms then remained deferred (WS-C runtime concern) — **now landed in §9.13.**
 
 Discovered on pickup: the `dc-discharge-barrier-v1.schema.json` contract and the
 `hcp:Barrier` ontology term — described in §9.3 items 3-4 as part of Slice 1 —
@@ -521,3 +521,42 @@ contract- and ontology-conformant like every WS-A Gold fact.
 **Guardrails held:** synthetic + deterministic only, no PHI (opaque
 `candidate_key` + ontology ward IDs → aggregate Gold rows), **no LLM-guessed
 numbers** (D2/D4). No infra / MCP / runtime change; Fabric lakehouse only.
+
+### 9.13 WS-C follow-up — prescriptive ontology terms `hcp:Recommendation` / `hcp:Lever` (current)
+
+One squash PR off `main` (branch `sprint-26/ws-c-recommendation-lever-ontology`),
+**Governance (ontology) + Docs** lanes, TDD-first. Lands the **last** of the
+three originally-deferred Sprint 26 items — the two prescriptive-tier ontology
+terms. The runtime artefacts they name already shipped (the `DC-INSIGHT-v1`
+recommendation beat via #369; the git-owned lever catalog
+`data-platform/decision/levers/<role>.yaml` + `lever.schema.json`); this
+follow-up gives them their reference-layer classes so beat 4 (the actionable
+recommendation) is ontology-conformant like beats 1-3.
+
+1. **Ontology** — `reference-layer.ttl` (v0.6.0): `hcp:Recommendation` and
+   `hcp:Lever` ICE classes (`subClassOf hcp:InformationContent`) + the
+   `hcp:recommendsLever` object property (Recommendation → Lever). The existing
+   `hcp:DischargeRecommendation` is **re-parented** under `hcp:Recommendation`
+   (a discharge-specific recommendation; still transitively an
+   `InformationContent`, so no reasoner impact — additive refinement, no ID
+   renamed or removed).
+2. **Crosswalk** — `crosswalk.md` (v0.7.0): a `hcp:Recommendation` MVO row bound
+   to `DC-INSIGHT-v1` (the recommendation beat; no batch Gold binding — runtime
+   tuple) and a `hcp:Lever` row bound to the git-owned lever catalog
+   (`lever.schema.json`, **no `DC-*` data contract** — a versioned config
+   artefact, not dataset data).
+3. **Tests** — 4 new offline assertions in
+   `scripts/ontology/tests/test_contract_existence.py` (both classes + the
+   relation declared; both have crosswalk rows; `hcp:Recommendation` → `DC-INSIGHT-v1`;
+   `hcp:DischargeRecommendation` re-parented; STRICT gate exits 0). STRICT
+   two-layer conformance green (0 WARN / 0 FAIL; 38 reference classes,
+   35 crosswalk classes, 14 contracts).
+4. **Docs** — this §9.13; §9.12 "only … remain deferred" line corrected; SemVer
+   bumps on `reference-layer.ttl`, `crosswalk.md`, and this spec.
+
+**Guardrails held:** ontology-only + docs; **no LLM-guessed numbers** (the
+`expected_impact` on a recommendation is deterministic per D2/D4). No new
+`DC-*` contract, no schema file, no infra / MCP / runtime change. With this
+slice **all three originally-deferred Sprint 26 items are closed**; the live
+Cosmos/Foundry `apply` remains an operational, human-gated step (§9.11 step 4),
+not a modelling gap.
