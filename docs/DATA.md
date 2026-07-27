@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.12.0 |
+| **Version** | 0.13.0 |
 | **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.0 (added Sprint 26 WS-B/C decision store — `proposed_actions`/`plans` Cosmos containers + `DC-INSIGHT-v1` insight contract) |
+| **Previous Version** | 0.12.0 (added DC-AGENT-INTERACTION-v1 capture contract) |
 
 ## Purpose
 
@@ -110,6 +110,7 @@ Each contract must define:
 | Patient onboarding contract | DC-ONB-PATIENT-v1 | Minimum-data, pseudonymous patient onboarding metadata (Sprint 6) |
 | Specialty-capacity onboarding contract | DC-ONB-CAPACITY-v1 | Specialty-tagged hospital capacity onboarding metadata (Sprint 6) |
 | External signal contract | DC-EXT-SIGNAL-v1 | CAP-Suisse-aligned trusted external hazard signals for advisory CSA trigger evaluation |
+| Agent-interaction contract | DC-AGENT-INTERACTION-v1 | Closed-loop-learning capture: one PHI-free record per agent turn + user events (Sprint 30) |
 
 ### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
 

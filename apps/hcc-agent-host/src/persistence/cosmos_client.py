@@ -18,14 +18,16 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-CONTAINERS = ("conversations", "audit", "approval-events")
+CONTAINERS = ("conversations", "audit", "approval-events", "agent_interactions")
 
 # Partition key per container (ADR-0007 §Implementation Notes: correlationId
-# indexing; conversations partition by conversationId).
+# indexing; conversations partition by conversationId; Sprint 30 agent_interactions
+# partition by conversationKey = <userOid>:<agent>).
 PARTITION_KEYS = {
     "conversations": "conversationId",
     "audit": "correlationId",
     "approval-events": "correlationId",
+    "agent_interactions": "conversationKey",
 }
 
 
@@ -57,3 +59,11 @@ class CosmosPersistence:
         return [
             r for r in self.read_all(container) if r.get("correlationId") == correlation_id
         ]
+
+    def append_user_event(self, interaction_id: str, event: dict[str, Any]) -> dict[str, Any]:
+        """Append a user-interaction event to a stored agent_interactions record."""
+        for record in self._store["agent_interactions"]:
+            if record.get("interactionId") == interaction_id:
+                record.setdefault("userEvents", []).append(dict(event))
+                return record
+        raise KeyError(f"no agent_interactions record with interactionId '{interaction_id}'")
