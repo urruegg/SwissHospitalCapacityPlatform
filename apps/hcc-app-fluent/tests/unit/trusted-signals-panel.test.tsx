@@ -13,10 +13,8 @@ function renderPanel(props: Partial<React.ComponentProps<typeof TrustedSignalsPa
   return render(
     <FluentProvider theme={webLightTheme}>
       <TrustedSignalsPanel
-        signals={CRISIS_PINNED.signals}
-        internalSignals={CRISIS_PINNED.internalSignals}
+        boardSignals={CRISIS_PINNED.boardSignals}
         scenarios={CRISIS_PINNED.scenarios}
-        onSelectSignal={vi.fn()}
         onSelectScenario={vi.fn()}
         {...props}
       />
@@ -25,16 +23,14 @@ function renderPanel(props: Partial<React.ComponentProps<typeof TrustedSignalsPa
 }
 
 describe('TrustedSignalsPanel', () => {
-  it('renders external Trust-A signal sources', () => {
+  it('renders external + internal signals via the shared OOA SignalsPanel', () => {
     renderPanel();
-    expect(screen.getAllByText('MeteoSwiss')[0]).toBeInTheDocument();
-    expect(screen.getAllByText('BAG/FOPH')[0]).toBeInTheDocument();
-  });
-
-  it('renders internal signals', () => {
-    renderPanel();
-    expect(screen.getByText('Oncology RN roster')).toBeInTheDocument();
-    expect(screen.getByText('ED arrivals')).toBeInTheDocument();
+    // label · detail render together in one Body1, so match by substring
+    expect(screen.getAllByText(/MeteoSwiss/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Oncology RN roster/).length).toBeGreaterThanOrEqual(1);
+    // status badges from the OOA pattern
+    expect(screen.getByText('THIN')).toBeInTheDocument();
+    expect(screen.getAllByText('WATCH').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders each scenario name and its probability', () => {
@@ -51,13 +47,5 @@ describe('TrustedSignalsPanel', () => {
     act(() => screen.getByRole('button', { name: 'Summer heatwave demand surge' }).click());
     expect(onSelectScenario).toHaveBeenCalledTimes(1);
     expect((onSelectScenario.mock.calls[0][0] as { id: string }).id).toBe('heatwave-surge');
-  });
-
-  it('fires onSelectSignal when an external signal is clicked', () => {
-    const onSelectSignal = vi.fn();
-    renderPanel({ onSelectSignal });
-    act(() => screen.getByRole('button', { name: /MeteoSwiss/ }).click());
-    expect(onSelectSignal).toHaveBeenCalledTimes(1);
-    expect((onSelectSignal.mock.calls[0][0] as { id: string }).id).toBe('meteoswiss-heat');
   });
 });

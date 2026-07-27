@@ -6,6 +6,7 @@
  *   Likely → 68%, Possible → 31%, Unlikely → 6%
  */
 import type { GroundedReco } from '../../copilot-rail/reco';
+import type { BoardSignal } from './occupancy-data';
 
 export type Certainty = 'Likely' | 'Possible' | 'Unlikely';
 
@@ -50,15 +51,6 @@ export interface ScenarioRun {
   params: Record<string, unknown>;
   status: 'draft' | 'running' | 'complete';
   result?: Record<string, unknown>;
-}
-
-/** Internal operational signal (Sprint 27 — upper-lane left column, below the Trust-A externals). */
-export interface InternalSignal {
-  id: string;
-  label: string;         // e.g. 'Oncology RN roster'
-  detail: string;        // e.g. '1 free'
-  badge: string;         // e.g. 'THIN', 'WATCH'
-  badgeTone: 'over' | 'watch' | 'ok';
 }
 
 /** Scenario-queue result badge (Sprint 27 — middle lane). */
@@ -111,7 +103,7 @@ export interface AbsorbedSummary {
 export interface CrisisPayload {
   residualBeds: number;   // carried in from sba (0 = balanced steady state)
   signals: ExternalSignal[];
-  internalSignals: InternalSignal[];
+  boardSignals: BoardSignal[];
   scenarios: Scenario[];
   scenarioQueue: QueuedScenario[];
   resilienceLevers: ResilienceLever[];
@@ -390,12 +382,18 @@ export const CRISIS_PINNED: CrisisPayload = {
       triggerSignal: 'sed-seismic',
     },
   ],
-  // Internal operational signals (upper-lane left column, below the Trust-A externals).
-  internalSignals: [
-    { id: 'oncology-rn', label: 'Oncology RN roster', detail: '1 free', badge: 'THIN', badgeTone: 'over' },
-    { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', badge: 'WATCH', badgeTone: 'watch' },
-    { id: 'transfer-in', label: 'Transfer-in queue', detail: '3 pending', badge: 'WATCH', badgeTone: 'watch' },
-    { id: 'evs-turnaround', label: 'EVS turnaround', detail: '+2h', badge: 'WATCH', badgeTone: 'watch' },
+  // Trusted signals for the upper-lane left column — external Trust-A feeds +
+  // internal operational feeds, in the shared BoardSignal shape (mirrors OOA's
+  // SignalsPanel: [icon] label · detail — [RAG badge] [provenance icon]).
+  boardSignals: [
+    { id: 'meteoswiss-heat', label: 'MeteoSwiss', detail: 'heat L3/5', iconKey: 'weather', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTUAL', statusTone: 'watch' },
+    { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', iconKey: 'pulse', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTUAL', statusTone: 'watch' },
+    { id: 'alertswiss-heat-test', label: 'Alertswiss/BABS', detail: 'quiet', iconKey: 'alert', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: '1 Test quar.', statusTone: 'signal' },
+    { id: 'sed-seismic', label: 'SED-ETH', detail: 'seismic nominal', iconKey: 'seismic', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'OK', statusTone: 'ok' },
+    { id: 'onco-rn-roster', label: 'Oncology RN roster', detail: '1 free', iconKey: 'people', scope: 'internal', provenance: 'simulated', statusLabel: 'THIN', statusTone: 'over' },
+    { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', iconKey: 'heartpulse', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+    { id: 'transfer-in-queue', label: 'Transfer-in queue', detail: '3 pending', iconKey: 'swap', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+    { id: 'evs-turnaround', label: 'EVS turnaround', detail: '+2h', iconKey: 'clock', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
   ],
   // Scenario queue (middle lane) — 6 shocks pressure-tested. recoIds resolve to
   // existing crisis recos (approval-gated); unknown ids fall back to defaultReco.

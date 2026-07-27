@@ -3,13 +3,15 @@ import { Text, makeStyles, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { CrisisPayload, ExternalSignal, Scenario, QueuedScenario, ResilienceLever } from '../../../../data/roleboard/crisis-data';
+import type { CrisisPayload, Scenario, QueuedScenario, ResilienceLever } from '../../../../data/roleboard/crisis-data';
 import { space, radii, elevation } from '../../../../theme/design-system';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
+import { useDataSource } from '../../../../context/data-source-context';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { BoardHeader } from '../../boards/occupancy/BoardHeader';
+import { GroundingNotice } from '../../boards/GroundingNotice';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
@@ -68,6 +70,7 @@ function CrisisRoleBoardBlock() {
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
+  const { source } = useDataSource();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<CrisisPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
@@ -91,7 +94,7 @@ function CrisisRoleBoardBlock() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     // rail.showDefault calls a stable useState setter; intentionally excluded so the effect runs only when mode/hospital changes
-  }, [mode, hospital]);
+  }, [mode, hospital, source]);
 
   if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 
@@ -101,14 +104,6 @@ function CrisisRoleBoardBlock() {
   const route = (insight: ContextInsight) => {
     const reco = crisisBoard.recoFor(insight, data);
     void routeInsight(insight, reco, { agent: crisisBoard.agent, openWithReco: rail.openWithReco });
-  };
-
-  const onSelectSignal = (signal: ExternalSignal) => {
-    route({
-      id: signal.id,
-      label: `${signal.source}: ${signal.feed}`,
-      context: { signal: signal.id, source: signal.source, filtered: signal.filtered ?? false },
-    });
   };
 
   const onSelectScenario = (scenario: Scenario) => {
@@ -135,6 +130,7 @@ function CrisisRoleBoardBlock() {
   return (
     <div className={styles.panel} data-testid="board-crisis-panel">
       <HandoffBanner banner={banner} provenance={data.provenance} />
+      <GroundingNotice degraded={data.degraded} />
       <BoardHeader
         agent={crisisBoard.agent}
         title={t('board.crisis')}
@@ -143,10 +139,8 @@ function CrisisRoleBoardBlock() {
       />
       <div className={styles.card}>
         <TrustedSignalsPanel
-          signals={payload.signals}
-          internalSignals={payload.internalSignals}
+          boardSignals={payload.boardSignals}
           scenarios={payload.scenarios}
-          onSelectSignal={onSelectSignal}
           onSelectScenario={onSelectScenario}
         />
       </div>
