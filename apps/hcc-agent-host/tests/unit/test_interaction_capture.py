@@ -40,3 +40,41 @@ def test_append_user_event_unknown_id_raises():
     p = CosmosPersistence()
     with pytest.raises(KeyError):
         p.append_user_event("AIX-missing", {"type": "thumbs", "value": "up"})
+
+
+from manifests.loader import AgentManifest
+from orchestrator.dispatch import Orchestrator
+
+
+class _StubModel:
+    def complete(self, system_prompt, user_prompt, grounding):
+        return "Auslastung Station B: 92%."
+
+
+def _manifest() -> AgentManifest:
+    return AgentManifest(
+        agent="ooa-agent",
+        version="1.0.0",
+        runtime="agent-host",
+        model_deployment_ref="gpt-5",
+        system_prompt_ref="AGENT.md",
+        grounding_tables=("gold.occupancy",),
+        grounding_agent=None,
+        hitl_gates=(),
+    )
+
+
+def test_dispatch_writes_agent_interaction_record():
+    orch = Orchestrator(chat_model=_StubModel())
+    reply = orch.dispatch(
+        _manifest(), "You are ooa-agent.", "Wie ist die Auslastung?",
+        conversation_id="conv-1", caller_oid="user-oid",
+    )
+    records = orch.persistence.read_all("agent_interactions")
+    assert len(records) == 1
+    rec = records[0]
+    assert rec["contractId"] == "DC-AGENT-INTERACTION-v1"
+    assert rec["agent"] == "ooa-agent"
+    assert rec["conversationKey"] == "user-oid:ooa-agent"
+    assert rec["response"]["refused"] is False
+    assert rec["interactionId"] == reply.interaction_id
