@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.11.0 |
+| **Version** | 1.12.0 |
 | **Date** | 2026-07-27 |
 | **Author** | @urruegg |
-| **Status** | In progress — repo scope complete + all CI gates green; **live SIT medallion clean**; **ADR-0039 Accepted**; **PROD org/skills parity APPLIED**; **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) data lane landed** (DC-SKILL-EVENT-v1 + seeder + Bronze/Silver/Gold + 28 unit tests) **and LIVE-WIRED in SIT** (Eventstream `es-ihzhhpf-skills-events` Running, CustomEndpoint source → `bronze_skills_events`, `approved-to-apply` #374); **EventHub flip un-parked + IMPLEMENTED for PROD swn** (ADR-0043; live EH bind deferred on Fabric workspace-identity GA); **PROD org/skills medallion (28 gold tables) + `capacity-dashboard`/`external-signals` semantic models + report MATERIALIZED LIVE in Switzerland North** (`approved-to-apply` @urruegg, 2026-07-26/27; [PROD execution record](sprint-23/evidence/2026-07-27-prod-medallion-and-model-publish-execution-record.md)); **remaining: live skills publisher image + e2e SIT/PROD parity test + EventHub live bind (Fabric GA)** |
-| **Previous Version** | 1.10.0 (skills-events near-real-time lane live-wired in SIT + EventHub flip un-parked) |
+| **Status** | **Complete — governing issue [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255) closed 2026-07-27.** Repo scope + all CI gates green; **ADR-0050 Accepted** (unified Curavias landing zone + skills-evidence plugins; renumbered from ADR-0039 via #378); **skills-events near-real-time lane (WS-A4 / FR-SKILL-005) landed** (DC-SKILL-EVENT-v1 + seeder + Bronze/Silver/Gold + 28 unit tests) **and LIVE-WIRED in SIT** (Eventstream `es-ihzhhpf-skills-events` Running, CustomEndpoint source → `bronze_skills_events`, `approved-to-apply` #374); **PROD org/skills medallion (28 gold tables) + `capacity-dashboard`/`external-signals` semantic models + report MATERIALIZED LIVE in Switzerland North** (`approved-to-apply` @urruegg, 2026-07-26/27; [PROD execution record](sprint-23/evidence/2026-07-27-prod-medallion-and-model-publish-execution-record.md)). **Carried over (externally blocked / out of scope):** live EventHub/Eventstream source bind → [#449](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/449) (parked on Fabric workspace-identity GA, ADR-0043); live skills publisher (HRIS/LMS connector) → [#450](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/450). |
+| **Previous Version** | 1.11.0 (live PROD medallion + semantic-model publish materialized) |
 
 > **Sprint theme.** Fold `dim_hospital` into a unified Curavias organisation hierarchy (three Curavias tenants **replace** today's hospital rows), add the Curavias organisation + skills master-data domain as first-class `gold.*` tables, and extend the semantic model, ontology, crosswalk, and Fabric IQ Data Agent grounding. This is **Part 1b** of the Curavias shared-master-data design.
 
