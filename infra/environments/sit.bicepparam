@@ -217,7 +217,7 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 // Bumped 43ace03 -> cb21e2c to ship Sprint 20 OOA (occupancy) screen parity
 // (PR #313, digest sha256:107137a07f48105e35922c43370e1d38dd65938716b72f0371b6350c6fcc4f2b).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:87b2568'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:93c73ac'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
