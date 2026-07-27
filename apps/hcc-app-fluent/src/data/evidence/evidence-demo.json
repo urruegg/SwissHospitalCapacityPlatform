@@ -536,7 +536,7 @@
         "sourcePath": "docs/adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md",
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md"
       },
-      "status": "Proposed",
+      "status": "Accepted",
       "title": "Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport"
     },
     {
