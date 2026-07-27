@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.0 |
+| **Version** | 0.14.0 |
 | **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.12.0 (added DC-AGENT-INTERACTION-v1 capture contract) |
+| **Previous Version** | 0.13.0 (added DC-AGENT-INTERACTION-v1 capture contract); this bump registers the Sprint 31 DQA contracts DC-DQ-TRUSTSCORE-v1 + DC-DQ-GAP-v1 |
 
 ## Purpose
 
@@ -111,6 +111,8 @@ Each contract must define:
 | Specialty-capacity onboarding contract | DC-ONB-CAPACITY-v1 | Specialty-tagged hospital capacity onboarding metadata (Sprint 6) |
 | External signal contract | DC-EXT-SIGNAL-v1 | CAP-Suisse-aligned trusted external hazard signals for advisory CSA trigger evaluation |
 | Agent-interaction contract | DC-AGENT-INTERACTION-v1 | Closed-loop-learning capture: one PHI-free record per agent turn + user events (Sprint 30) |
+| Data-quality trust-score contract | DC-DQ-TRUSTSCORE-v1 | Per-domain deterministic, versioned Trust Score + eight-dimension breakdown over the gold/serving layer (Sprint 31) |
+| Data-quality gap contract | DC-DQ-GAP-v1 | Gap + impact + owner + recommended source + `newSourceNeeded` seam handed to the Signal Agent (Sprint 31; frozen per design §8) |
 
 ### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
 
