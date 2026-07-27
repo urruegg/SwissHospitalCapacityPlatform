@@ -105,6 +105,10 @@ param fabricDataAgentId = ''
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
 param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:87b2568'
+// #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
+// container start so the PROD app calls the PROD (switzerlandnorth) agent-host
+// instead of inheriting the SIT URL from the build-once + import image.
+param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-prod.whiteriver-d854b3bc.switzerlandnorth.azurecontainerapps.io'
 // app.curavias.ch is bound to the switzerlandnorth CA. The custom hostname +
 // managed cert are codified here so CD redeploys preserve the binding (the
 // manual P7 `hostname add/bind` would otherwise be stripped on every deploy).
