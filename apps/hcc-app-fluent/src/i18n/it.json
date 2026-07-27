@@ -96,7 +96,7 @@
           "dca-agent": "Dimissioni",
           "orsa-agent": "Gestione del blocco operatorio",
           "sba-agent": "Personale",
-          "csa-agent": "Crisi",
+          "csa-agent": "Scenario",
           "data-quality-agent": "Piattaforma dati",
           "onboarding-agent": "Piattaforma"
         }
@@ -128,7 +128,7 @@
       "bed-manager": "Gestione letti",
       "or-steering": "Coordinamento sala operatoria",
       "staffing": "Personale",
-      "crisis": "Crisi"
+      "crisis": "Scenario"
     },
     "discharge": "Preparazione dimissioni (72h)",
     "orSteering": "Gestione sala operatoria (72h)",
@@ -142,7 +142,7 @@
     "staffing": "Bilanciamento del personale (72h)",
     "surgeBeds": "Letti surge",
     "fte": "ETP",
-    "crisis": "Preparazione alle crisi (72h)",
+    "crisis": "Preparazione agli scenari (72h)",
     "signals": "Segnali esterni",
     "scenarios": "Scenari",
     "bedDays": "giornate-letto"
@@ -224,7 +224,7 @@
       "bedManager": "Gestione letti",
       "orSteering": "Coordinamento sala operatoria",
       "staffing": "Personale",
-      "crisis": "Crisi e scenari"
+      "crisis": "Pianificazione scenari"
     },
     "capacityTeaser": {
       "title": "Capacità del sito (live)",

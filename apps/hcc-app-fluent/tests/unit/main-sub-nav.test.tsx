@@ -22,14 +22,14 @@ function renderSubNav(roles: string[]) {
 describe('MainSubNav', () => {
   it('lists all six role boards for an admin', () => {
     renderSubNav(['HCC.PlatformAdmin']);
-    ['Occupancy', 'Discharge', 'Bed management', 'OR steering', 'Staffing', 'Crisis'].forEach((n) =>
+    ['Occupancy', 'Discharge', 'Bed management', 'OR steering', 'Staffing', 'Scenario'].forEach((n) =>
       expect(screen.getByRole('tab', { name: n })).toBeInTheDocument(),
     );
   });
 
-  it('disables the Crisis board for a bed manager (csa nav capability off)', () => {
+  it('enables the Scenario board for a bed manager (now gated on main nav)', () => {
     renderSubNav(['HCC.BedManager']);
-    expect(screen.getByRole('tab', { name: 'Crisis' })).toBeDisabled();
+    expect(screen.getByRole('tab', { name: 'Scenario' })).not.toBeDisabled();
     expect(screen.getByRole('tab', { name: 'Occupancy' })).not.toBeDisabled();
   });
 });

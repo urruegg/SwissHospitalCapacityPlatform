@@ -135,7 +135,7 @@ function CrisisRoleBoardBlock() {
         agent={crisisBoard.agent}
         title={t('board.crisis')}
         provenance={data.provenance}
-        lens="Crisis"
+        lens="Scenario"
       />
       <div className={styles.card}>
         <TrustedSignalsPanel

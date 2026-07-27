@@ -96,7 +96,7 @@
           "dca-agent": "Entlassung",
           "orsa-agent": "OP-Steuerung",
           "sba-agent": "Personal",
-          "csa-agent": "Krise",
+          "csa-agent": "Szenario",
           "data-quality-agent": "Datenplattform",
           "onboarding-agent": "Plattform"
         }
@@ -128,7 +128,7 @@
       "bed-manager": "Bettenmanagement",
       "or-steering": "OP-Steuerung",
       "staffing": "Personal",
-      "crisis": "Krise"
+      "crisis": "Szenario"
     },
     "discharge": "Entlassungsbereitschaft (72h)",
     "orSteering": "OP-Steuerung (72h)",
@@ -142,7 +142,7 @@
     "staffing": "Personalabgleich (72h)",
     "surgeBeds": "Surge-Betten",
     "fte": "VZÄ",
-    "crisis": "Krisenbereitschaft (72h)",
+    "crisis": "Szenario-Bereitschaft (72h)",
     "signals": "Externe Signale",
     "scenarios": "Szenarien",
     "bedDays": "Bettentage"
@@ -224,7 +224,7 @@
       "bedManager": "Bettenmanagement",
       "orSteering": "OP-Steuerung",
       "staffing": "Personal",
-      "crisis": "Krise & Szenarien"
+      "crisis": "Szenarioplanung"
     },
     "capacityTeaser": {
       "title": "Standortkapazität (live)",

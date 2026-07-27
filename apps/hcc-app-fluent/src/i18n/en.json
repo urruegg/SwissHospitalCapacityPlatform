@@ -96,7 +96,7 @@
           "dca-agent": "Discharge",
           "orsa-agent": "OR steering",
           "sba-agent": "Staffing",
-          "csa-agent": "Crisis",
+          "csa-agent": "Scenario",
           "data-quality-agent": "Data platform",
           "onboarding-agent": "Platform"
         }
@@ -128,7 +128,7 @@
       "bed-manager": "Bed management",
       "or-steering": "OR steering",
       "staffing": "Staffing",
-      "crisis": "Crisis"
+      "crisis": "Scenario"
     },
     "discharge": "Discharge readiness (72h)",
     "orSteering": "OR steering (72h)",
@@ -142,7 +142,7 @@
     "staffing": "Staffing balance (72h)",
     "surgeBeds": "Surge beds",
     "fte": "FTE",
-    "crisis": "Crisis readiness (72h)",
+    "crisis": "Scenario readiness (72h)",
     "signals": "External signals",
     "scenarios": "Scenarios",
     "bedDays": "bed-days"
@@ -224,7 +224,7 @@
       "bedManager": "Bed management",
       "orSteering": "OR steering",
       "staffing": "Staffing",
-      "crisis": "Crisis & scenarios"
+      "crisis": "Scenario planning"
     },
     "capacityTeaser": {
       "title": "Site capacity (live)",
