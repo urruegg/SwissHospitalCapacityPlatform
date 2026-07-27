@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.3.0 |
-| **Date** | 2026-07-26 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-07-27 |
 | **Author** | GitHub Copilot |
-| **Status** | Draft — procedure; the live-apply step is `approved-to-apply`-gated. WS-B Cosmos seed + WS-C Foundry registration were completed live on 2026-07-26 (all six agents carry `decision_tier_coordination_<role>`), so **re-runs must be Foundry-only** (see Step 2). |
-| **Previous Version** | 1.2.0 (Foundry User RBAC + `--yaml` template-swap run method; corrected the wrong `seed_live` "idempotent" claim in 1.3.0 after the 2026-07-26 live apply) |
+| **Status** | Complete — procedure retained for reference; the live-apply step is `approved-to-apply`-gated. WS-B Cosmos seed + WS-C Foundry registration were completed live on 2026-07-26 and **re-verified 2026-07-27** (all six agents carry `decision_tier_coordination_<role>`; job on image `:a071fbe`; MI holds `Foundry User`); any future re-run must be Foundry-only (see Step 2). |
+| **Previous Version** | 1.3.0 (corrected the wrong `seed_live` "idempotent" claim after the 2026-07-26 live apply) |
 
 > ## Hard gate — the live apply is HITL-gated (AGENTS.md §4)
 >
@@ -280,8 +280,8 @@ If a CLI refuses with an approver error:
 
 Before closing this runbook execution:
 
-- [ ] Step 1 dry-run execution `Succeeded` with plan output captured.
-- [ ] Approver handle (repo-write human) recorded for the live apply.
-- [ ] Step 2 live apply execution `Succeeded`.
-- [ ] `plans` + `proposed_actions` show the seeded documents.
-- [ ] Six Foundry agents carry the `decision_tier_coordination_<role>` tool.
+- [x] Step 1 dry-run execution `Succeeded` with plan output captured.
+- [x] Approver handle (repo-write human) recorded for the live apply. (`urruegg`, 2026-07-26)
+- [x] Step 2 live apply execution `Succeeded`. (2026-07-26)
+- [x] `plans` + `proposed_actions` show the seeded documents. (re-verified 2026-07-27)
+- [x] Six Foundry agents carry the `decision_tier_coordination_<role>` tool. (re-verified 2026-07-27)
