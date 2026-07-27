@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://curavias/schema/agent-interaction-v1.schema.json",
+  "title": "DC-AGENT-INTERACTION-v1",
+  "type": "object",
+  "required": ["contractId", "interactionId", "conversationKey", "agent", "ts", "request", "response", "userEvents", "eval"],
+  "additionalProperties": true,
+  "properties": {
+    "contractId": { "const": "DC-AGENT-INTERACTION-v1" },
+    "interactionId": { "type": "string", "pattern": "^AIX-[0-9a-f]+$" },
+    "conversationKey": { "type": "string" },
+    "agent": { "type": "string" },
+    "ts": { "type": "string", "format": "date-time" },
+    "env": { "type": "string" },
+    "region": { "type": "string" },
+    "scope": { "type": "object" },
+    "request": {
+      "type": "object",
+      "required": ["promptHash"],
+      "properties": {
+        "promptHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "promptRedacted": { "type": "string" },
+        "lang": { "type": "string" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "required": ["refused"],
+      "properties": {
+        "answerRedacted": { "type": "string" },
+        "citations": { "type": "array", "items": { "type": "string" } },
+        "refused": { "type": "boolean" },
+        "reco": { "type": ["object", "null"] }
+      }
+    },
+    "model": { "type": "object" },
+    "tools": { "type": "array" },
+    "timing": { "type": "object" },
+    "provenance": { "type": "string", "enum": ["live", "simulated"] },
+    "userEvents": { "type": "array", "items": { "type": "object" } },
+    "eval": { "type": "object", "required": ["scored"], "properties": { "scored": { "type": "boolean" } } }
+  }
+}
