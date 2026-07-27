@@ -91,3 +91,39 @@ export async function iqAgentList<T>(): Promise<T> {
   if (!res.ok) throw new Error(`agent list failed: ${res.status}`);
   return (await res.json()) as T;
 }
+
+/** A user-interaction event on a captured agent turn (Sprint 30 M2; DC-AGENT-INTERACTION-v1.userEvents). */
+export interface InteractionEvent {
+  /** Event kind, e.g. `thumbs`. */
+  type: string;
+  /** Optional value, e.g. `up` / `down`. */
+  value?: string;
+  /** Optional client timestamp (ISO 8601); the server also stamps its own. */
+  ts?: string;
+}
+
+/**
+ * Append a user-interaction event to a captured agent turn via the agent-host
+ * (`POST /agents/{name}/interactions/{id}/events`, merged in Sprint 30 Plan 1).
+ * The IQ gateway is the only permitted `fetch` site (ingress guard), so the
+ * event POST lives here. Resolves the base URL at call-time so a runtime-injected
+ * host (window.__ENV__) is honoured. Throws loud on transport / HTTP error so the
+ * caller can surface a failure rather than silently drop feedback. Only call when
+ * `isAgentHostConfigured()`.
+ */
+export async function postInteractionEvent(
+  agent: string,
+  interactionId: string,
+  event: InteractionEvent,
+): Promise<void> {
+  const base = getAgentHostUrl();
+  const res = await fetch(
+    `${base}/agents/${encodeURIComponent(agent)}/interactions/${encodeURIComponent(interactionId)}/events`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(event),
+    },
+  );
+  if (!res.ok) throw new Error(`interaction event failed: ${res.status}`);
+}
