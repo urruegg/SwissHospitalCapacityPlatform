@@ -19,10 +19,13 @@
 > Microsoft best practice. This is the instrumentation that the upcoming **hybrid
 > testing** (mock data → live Copilot agents) will run on top of.
 >
-> **Autonomy note**: the sprint-scope question was delegated ("work autonomously").
-> This design takes the recommended **walking-skeleton** decision — build a thin but
-> complete turn of the loop this sprint, design the rest, and stage it — and records
-> every scoping decision explicitly in §9 and §11 for later review.
+> **Autonomy + revision note**: the sprint-scope question was delegated ("work
+> autonomously"); the initial design took a thin **walking-skeleton** cut. Per an
+> explicit later decision, the **Improve** stage (prompt / Agent Optimizer,
+> knowledge refresh, fine-tune SFT/DPO/RFT) is now **pulled into this sprint** for
+> the lead agent, making Sprint 30 a **full single-agent closed loop** (capture →
+> evaluate → curate → improve → human-gated promote). Every scoping decision is
+> recorded in §9 and §10.
 
 ---
 
@@ -66,7 +69,7 @@ Improve** loop, with a **Govern/Comply** overlay, so that:
 - captured conversations are **continuously evaluated** for quality and safety;
 - real traces are **curated** into versioned golden datasets;
 - low-quality / uncited / mis-refused interactions become an **advisory
-  improvement backlog** that feeds prompts, knowledge, guardrails, and (later)
+  improvement backlog** that feeds prompts, knowledge, guardrails, and
   fine-tuning — always human-gated;
 - the Foundry **Build + Operate** capabilities are assessed against Microsoft best
   practice so we know what to strengthen next.
@@ -75,6 +78,19 @@ Improve** loop, with a **Govern/Comply** overlay, so that:
 Foundry agents while boards still serve mock data. If we instrument the loop
 *first*, hybrid testing immediately produces real, evaluable traces instead of
 throwaway sessions.
+
+**Alignment with the COO review (2026-07-24).** The customer COO's central finding
+— *data quality is the single point of failure* — and the two discovered ideas that
+answer it (a **Data-Quality-Agent** + **Signal-Agent** forming a *data-quality*
+closed loop) are the **sibling** of this *agent-quality* loop. They interlock: the
+DQA trust score becomes an **input signal** to evaluation (groundedness / citation
+scores depend on the grounding data's quality), and this loop's uncited-claim
+findings feed the DQA/SGA backlog. The COO's NDA follow-up — supplying **work
+instructions / job descriptions** for *Agenten-Feinjustierung* — is exactly the fuel
+for the **Improve** stage (knowledge refresh + fine-tune) now in scope (§10), and the
+review's missing **forecast-backtest harness** is the same evaluation-harness
+investment this sprint seeds. See
+[`docs/reviews/2026-07-24-ama-coo-review.md`](../../reviews/2026-07-24-ama-coo-review.md).
 
 ---
 
@@ -216,16 +232,17 @@ Tools, Knowledge, Guardrails, Memory, Data, Evaluations, Fine-tune) and **Operat
 | **Memory** | Partial: per-(user×agent) conversation scope (S29), Cosmos threads | Memory scope captured; cross-agent-leak tests | Record `conversationKey` + envelope scope |
 | **Data** | Live: Cosmos (`proposed_actions` / `plans`), Fabric medallion, OneLake | The capture + dataset substrate | Add `agent_interactions` container + `evals/` datasets |
 | **Evaluations** | Partial: PO golden-question harness (offline, 1 agent) | The core of stage 2 | Extend to online continuous eval + all agents |
-| **Fine-tune** | Gap: none | Improve stage from curated preference data (DPO / RFT) | **Designed, deferred** — needs curated data first |
+| **Fine-tune** | Gap: none | Improve stage from curated preference data (SFT / DPO / RFT) | **In scope (demo-scope eastus2)** — runs on the M5 curated dataset once it exists |
 | **Operate · Compliance** | Policy-level: ADR-0016 no-PHI, Swiss residency, HITL; evidence partial | Compliance evaluators + audit evidence from captures | Add PHI-leak + residency + HITL-honored checks |
 | **Operate · Observability** | Gap: App Insights specified, not wired for agent turns | Trace substrate for Observe | Wire OTel → App Insights (M1) |
 
 **Reading of the assessment.** Build is strong on Services / Tools / Data, partial
 on Knowledge / Guardrails / Memory / Evaluations, and a genuine gap on Fine-tune.
 Operate is policy-defined but under-instrumented (Observability + Compliance
-evidence). The walking skeleton (§10) targets the highest-leverage gaps —
-Observability, Evaluations, and Compliance evidence — because everything else in
-the loop depends on them.
+evidence). This sprint (§10) now spans the **whole loop for the lead agent** — from
+the highest-leverage gaps (Observability, Evaluations, Compliance evidence) through
+to **Improve** (prompt / knowledge optimization + fine-tune) — because the Improve
+stage is only meaningful once capture + eval + curate feed it a dataset.
 
 ---
 
@@ -320,12 +337,15 @@ per-agent quality dashboard (App Insights workbook / Fabric report).
   quality feedback loop" the PO-agent proposal describes, generalised to all
   agents. The loop **never** mutates a prompt, knowledge source, guardrail, or
   model autonomously.
-- **Improve (staged).** With a curated preference/quality dataset in hand, the
-  Improve stage runs (later sprints): `prompt_optimize` / Agent Optimizer for
-  instructions, knowledge refresh for uncited gaps, guardrail tuning for
-  mis-refusals, and fine-tuning (DPO from thumbs pairs, RFT with graders) for
-  systematic quality lift. Each promotion is gated by the offline regression suite
-  **and** a human `approved-to-apply`.
+- **Improve (in scope this sprint, lead agent).** With a curated preference/quality
+  dataset in hand (M5), the Improve stage runs **this sprint for `ooa-agent`**:
+  `prompt_optimize` / Agent Optimizer for instructions (M7), knowledge refresh for
+  uncited gaps (M8), guardrail tuning for mis-refusals, and fine-tuning (SFT, DPO
+  from thumbs pairs, RFT with graders) for systematic quality lift (M9). Each
+  promotion is gated by the offline regression suite **and** a human
+  `approved-to-apply`. Where real-trace volume is thin early on, Improve bootstraps
+  from the curated golden dataset plus synthetic seeds and matures as
+  hybrid-testing traces accumulate.
 
 ---
 
@@ -334,22 +354,26 @@ per-agent quality dashboard (App Insights workbook / Fabric report).
 - **A — Observability foundation only.** Capture + tracing, defer evaluation.
   *Pro:* smallest, unblocks everything. *Con:* no quality signal this sprint; the
   loop stays open a sprint longer.
-- **B — Walking skeleton (chosen).** One thin but complete turn of the loop for a
-  single lead agent: capture → continuous + offline eval → curate → advisory
-  backlog; full architecture + capability assessment designed; Improve/fine-tune
-  staged. *Pro:* proves the whole pattern, hybrid testing runs on an instrumented
-  loop, low risk. *Con:* only one agent end-to-end this sprint.
+- **B — Full single-agent loop (chosen, revised).** One complete turn of the loop
+  for a single lead agent, now **including Improve**: capture → continuous +
+  offline eval → curate → **optimize + fine-tune** → human-gated promote. *Pro:*
+  proves the *entire* pattern end-to-end incl. quality lift; hybrid testing runs on
+  an instrumented, self-improving loop. *Con:* larger sprint; early fine-tune runs
+  on a bootstrap dataset until real-trace volume grows.
 - **C — Full loop across all six agents now.** *Pro:* maximal coverage. *Con:*
   spans too many subsystems at once; high risk of a shallow, unverified result.
 - **D — Design/assessment only.** *Pro:* cheapest. *Con:* leaves the loop open;
   no instrumentation before hybrid testing.
 
-**Decision — B (walking skeleton), lead agent = `ooa-agent`.** Rationale: OOA is
-the journey entry board, already exercised against the live Foundry-hosted agent
+**Decision — B (full single-agent loop), lead agent = `ooa-agent`.** Rationale: OOA
+is the journey entry board, already exercised against the live Foundry-hosted agent
 and the live Fabric Data Agent, so it yields the richest real traces during hybrid
-testing. The capture contract, redaction gate, evaluator library, and curator are
-built agent-agnostic, so extending to the other five agents in Sprint 31 is
-configuration, not redesign.
+testing. The capture contract, redaction gate, evaluator library, curator, and the
+Improve tooling are built agent-agnostic, so extending to the other five agents in
+Sprint 31 is configuration, not redesign. Per the revised D3 decision (§10), the
+**Improve** stage — prompt/instruction optimization, knowledge refresh, and
+fine-tuning (SFT/DPO/RFT) — is **in scope this sprint** for the lead agent, run on
+the curated dataset the earlier milestones produce.
 
 ---
 
@@ -364,34 +388,35 @@ configuration, not redesign.
 | M4 | Online continuous eval | Scheduled ACA job samples + scores recent interactions; scores roll up to a per-agent quality view | Evaluations, Compliance |
 | M5 | Curator + advisory backlog | Trace → versioned dataset (lineage) + GitHub-issue backlog emitter (advisory) | Learn, Knowledge |
 | M6 | ADR + docs | New ADR (capture contract + retention + online-eval approach); update `docs/AI.md` §Evaluation, `docs/DATA.md` (new contract + container), `docs/COMPLIANCE.md` | Governance |
+| M7 | Improve · prompts | `prompt_optimize` / Agent Optimizer run on `ooa-agent` instructions, driven by the M5 curated dataset; offline-regression-gated + `approved-to-apply` | Guardrails, Evaluations |
+| M8 | Improve · knowledge | Knowledge refresh for the top uncited-claim gaps (Foundry IQ / Fabric grounding source); human-gated | Knowledge |
+| M9 | Improve · fine-tune | SFT / DPO (thumbs pairs) / RFT (graders) on the curated dataset (demo-scope eastus2); checkpoint selection; evaluation-gated deploy | Fine-tune |
 
-**Explicitly out of scope this sprint** (designed, staged to §11): the Improve
-stage (prompt-optimizer / Agent Optimizer runs, knowledge-refresh automation,
-fine-tuning), extension beyond `ooa-agent`, and any autonomous change promotion.
+**Explicitly out of scope this sprint** (staged to §11): extension **beyond
+`ooa-agent`** to the other five runtime agents, and **any autonomous change
+promotion** (every prompt / knowledge / model change stays human-gated).
 
-> **Decision note (D3 · Improve deferred).** I put **Improve** (prompt-optimizer /
-> Agent Optimizer, knowledge refresh, **fine-tune SFT/DPO/RFT**) **out of scope
-> this sprint** → staged to Sprint 31–33. This sprint = **capture + evaluate +
-> curate + advisory backlog**. Confidence: **medium** — you may want fine-tune
-> sooner or later. The sequencing reflects a hard **data dependency** (you cannot
-> optimize a prompt or fine-tune a model without a curated dataset, which is the
-> *output* of capture + eval + curate), so Improve comes after — but the timing is
-> adjustable and can be pulled forward once the first curated dataset exists.
+> **Decision note (D3 · Improve IN scope — revised per user).** The **Improve**
+> stage (prompt-optimizer / Agent Optimizer, knowledge refresh, **fine-tune
+> SFT/DPO/RFT**) is **covered in this sprint** for the lead agent (M7–M9), making
+> Sprint 30 a **full single-agent closed loop**. Sequencing still honours the hard
+> **data dependency** — Improve consumes the curated dataset produced by M5, so
+> M7–M9 run *after* capture + eval + curate within the sprint, not before. Early
+> runs bootstrap from the curated golden dataset + synthetic seeds and strengthen
+> as hybrid-testing traces accumulate. Fine-tune executes in the **demo region
+> (eastus2)** where the surface is available; Swiss-region GA fine-tune follows the
+> standing Preview-exception path (ADR-0006 / ADR-0042).
 
 ---
 
 ## 11. Staged roadmap (later sprints)
 
-- **Sprint 31 — Breadth.** Roll the capture + evaluators + curator across the other
-  five runtime agents (bmca / dca / orsa / sba / csa) + the PO agent; per-agent
-  quality dashboards.
-- **Sprint 32 — Improve (prompts + knowledge).** Wire `prompt_optimize` / Agent
-  Optimizer and knowledge-refresh from the curated backlog; offline regression
-  gate + `approved-to-apply` promotion.
-- **Sprint 33 — Improve (fine-tune).** DPO from thumbs pairs / RFT with graders on
-  the curated datasets; checkpoint selection; evaluation-gated deployment.
-- **Sprint 34 — Operate hardening.** Swiss-region capture store for GA, retention
-  automation, Purview lineage, compliance-evidence workbook.
+- **Sprint 31 — Breadth.** Roll the whole loop (capture + evaluators + curator +
+  Improve tooling) across the other five runtime agents (bmca / dca / orsa / sba /
+  csa) + the PO agent; per-agent quality dashboards; continuous-improvement cadence.
+- **Sprint 32 — Operate hardening.** Swiss-region capture store for GA, retention
+  automation, Purview lineage, compliance-evidence workbook, and Swiss-region GA
+  fine-tune once the surface is GA-in-region.
 
 ---
 
@@ -422,8 +447,14 @@ fine-tuning), extension beyond `ooa-agent`, and any autonomous change promotion.
 - **LLM-as-judge reliability.** Mitigation: fix the judge prompt + version it;
   prefer deterministic evaluators where possible; keep humans on the curation gate.
 - **Preview-surface availability in-region.** Foundry continuous-eval / Agent
-  Optimizer / fine-tune GA-in-Switzerland is not guaranteed; the codeful `evals/`
-  fallback keeps the loop portable (consistent with ADR-0006 / ADR-0042).
+  Optimizer / fine-tune GA-in-Switzerland is not guaranteed; **this sprint runs
+  Improve in the demo region (eastus2)** where the surface is available, and the
+  codeful `evals/` fallback keeps the loop portable (consistent with ADR-0006 /
+  ADR-0042).
+- **Fine-tune data volume.** A foundation sprint yields thin real-trace volume, so
+  early SFT/DPO/RFT bootstraps from the curated golden dataset + synthetic seeds;
+  treat the first fine-tuned checkpoint as a *proof of the loop*, not a production
+  model, and let it mature as hybrid-testing traces accumulate.
 - **Open — sampling rate** for online eval (cost vs coverage): proposed 10–20 %,
   to confirm in the ADR.
 - **Open — dataset retention window** and reviewer ownership of the curation gate.
@@ -443,7 +474,7 @@ New IDs proposed for ratification in `docs/PRD.md` §7 when the sprint is accept
 | `FR-LEARN-002` | Continuously evaluate captured interactions (citation coverage, groundedness, refusal correctness, actionability, safety) |
 | `FR-LEARN-003` | Curate versioned golden datasets from real traces with full lineage |
 | `FR-LEARN-004` | Surface an advisory improvement backlog from low-scoring / uncited / mis-refused interactions |
-| `FR-LEARN-005` | (staged) Optimize prompts / knowledge / guardrails and fine-tune from curated data, human-gated |
+| `FR-LEARN-005` | Optimize prompts / knowledge / guardrails and fine-tune (SFT/DPO/RFT) from curated data for the lead agent, human-gated |
 | `NFR-LEARN-001` | No PHI in captured interactions (redaction gate; ADR-0016) |
 | `NFR-LEARN-002` | Interaction store honours Swiss residency + a defined retention class |
 | `NFR-LEARN-003` | No prompt / knowledge / model change promoted without offline regression pass + `approved-to-apply` |
@@ -459,6 +490,7 @@ family.
 - [`docs/AI.md`](../../AI.md) — §Evaluation, §Observability, §Model and Prompt Governance
 - [`docs/DATA.md`](../../DATA.md) — data contracts, `DC-*` convention, AI/decision-trace domain
 - [`docs/COMPLIANCE.md`](../../COMPLIANCE.md) — Swiss DSG controls
+- [`docs/reviews/2026-07-24-ama-coo-review.md`](../../reviews/2026-07-24-ama-coo-review.md) — COO showcase review: data-quality-as-SPOF, DQA/SGA data-quality loop, fine-tune (NDA docs) follow-up
 - [ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md), [ADR-0008](../../adr/0008-agent-runtime-pattern-scope-and-selection.md) — agent runtime pattern + HITL release gates
 - [ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md), [ADR-0016](../../adr/0016-no-phi-in-mvp-demo-scope.md) — demo region + no-PHI
 - [ADR-0032](../../adr/0032-foundry-control-plane-eastus2.md), [ADR-0034](../../adr/0034-fabric-iq-demo-scope-artefacts.md) — Foundry control plane + Fabric IQ
