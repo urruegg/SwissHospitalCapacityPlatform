@@ -104,7 +104,7 @@ param fabricDataAgentId = ''
 
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:5ee02a6'
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:87b2568'
 // app.curavias.ch is bound to the switzerlandnorth CA. The custom hostname +
 // managed cert are codified here so CD redeploys preserve the binding (the
 // manual P7 `hostname add/bind` would otherwise be stripped on every deploy).
