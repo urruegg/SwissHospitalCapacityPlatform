@@ -159,20 +159,23 @@
       "rehab": "Ci sono posti liberi in riabilitazione?"
     },
     "table": {
-      "hint": "Fai clic su una riga → azioni di dimissione",
+      "title": "Elenco dimissioni — {{count}} candidati, anonimizzato",
+      "hint": "fai clic su una riga → playbook di sblocco Copilot",
       "patient": "Paziente",
       "ward": "Reparto",
       "readiness": "Preparazione",
-      "blocker": "Ostacolo",
-      "estFree": "Libero in (h)"
+      "barrier": "Ostacolo",
+      "estFree": "Libero tra",
+      "noBarrier": "—"
     },
     "barriers": {
-      "hint": "Ostacoli alla capacità ordinati per impatto sui letti",
-      "rank": "Rango",
-      "label": "Ostacolo",
-      "bedImpact": "Letti",
-      "detail": "Dettaglio",
-      "cta": "Sequenza automatica per anzianità e impatto →"
+      "title": "Ostacoli alla capacità — ordinati per impatto sui letti",
+      "hint": "fai clic su un ostacolo → playbook Copilot sistemico",
+      "summary": "{{ready}} pronti · {{blocked}} bloccati su {{barriers}} ostacoli · {{beds}} letti recuperabili",
+      "bedOne": "{{n}} letto",
+      "bedMany": "{{n}} letti",
+      "agingRisk": "RISCHIO DI ANZIANITÀ",
+      "cta": "Vedi il piano coordinato →"
     },
     "gap": {
       "label": "Divario dimissioni previsto",

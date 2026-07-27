@@ -1,10 +1,27 @@
 import { useTranslation } from 'react-i18next';
-import { Badge, Caption1, makeStyles, tokens } from '@fluentui/react-components';
-import { chipBadgeColor } from '../../../../copilot-rail/reco';
+import {
+  Badge,
+  Body2,
+  Caption1,
+  Text,
+  Tooltip,
+  makeStyles,
+  mergeClasses,
+  tokens,
+} from '@fluentui/react-components';
 import type { DischargeCandidate, ReadinessStatus } from '../../../../data/roleboard/discharge-data';
+import { ragColors } from '../../../../theme/curavias-theme';
 
 const useStyles = makeStyles({
-  wrap: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXS },
+  wrap: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalS,
+  },
+  title: { fontWeight: tokens.fontWeightSemibold },
   hint: { color: tokens.colorNeutralForeground3 },
   table: { width: '100%', borderCollapse: 'collapse' },
   th: {
@@ -14,45 +31,58 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground3,
     fontWeight: tokens.fontWeightSemibold,
   },
+  thNum: { textAlign: 'right' },
   td: { padding: tokens.spacingVerticalXS, borderBottom: `1px solid ${tokens.colorNeutralStroke2}` },
+  tdNum: { textAlign: 'right' },
+  patient: { fontWeight: tokens.fontWeightSemibold },
+  patientTrigger: { borderBottom: `1px dotted ${tokens.colorNeutralStroke1}`, cursor: 'help' },
+  patientCard: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS, maxWidth: '260px' },
+  patientHead: { fontWeight: tokens.fontWeightSemibold },
+  muted: { color: tokens.colorNeutralForeground3 },
 });
 
-function readinessBadgeColor(r: ReadinessStatus) {
-  if (r === 'READY') return chipBadgeColor('ok');
-  if (r === 'BLOCKED') return chipBadgeColor('blocked');
-  return chipBadgeColor('pending');
-}
+/** readiness → Fluent badge colour: READY green, BLOCKED red, PENDING amber. */
+const READINESS_COLOR: Record<ReadinessStatus, 'success' | 'danger' | 'warning'> = {
+  READY: 'success',
+  BLOCKED: 'danger',
+  PENDING: 'warning',
+};
 
 interface DischargeWorklistTableProps {
   candidates: DischargeCandidate[];
   onSelectCandidate: (candidate: DischargeCandidate) => void;
 }
 
+/** Sprint 27 — Discharge worklist: PATIENT / WARD / READINESS / BARRIER / EST. FREE, anonymised. */
 export function DischargeWorklistTable({ candidates, onSelectCandidate }: DischargeWorklistTableProps) {
   const s = useStyles();
   const { t } = useTranslation();
   return (
     <div className={s.wrap}>
-      <Caption1 className={s.hint}>{t('dca.table.hint')}</Caption1>
+      <div className={s.header}>
+        <Text className={s.title}>{t('dca.table.title', { count: candidates.length })}</Text>
+        <Caption1 className={s.hint}>{t('dca.table.hint')}</Caption1>
+      </div>
       <table className={s.table}>
         <thead>
           <tr>
             <th className={s.th}>{t('dca.table.patient')}</th>
             <th className={s.th}>{t('dca.table.ward')}</th>
             <th className={s.th}>{t('dca.table.readiness')}</th>
-            <th className={s.th}>{t('dca.table.blocker')}</th>
-            <th className={s.th}>{t('dca.table.estFree')}</th>
+            <th className={s.th}>{t('dca.table.barrier')}</th>
+            <th className={mergeClasses(s.th, s.thNum)}>{t('dca.table.estFree')}</th>
           </tr>
         </thead>
         <tbody>
           {candidates.map((c) => {
             const rowLabel = t('insight.dischargeExpediteDetail', { ward: c.ward, blocker: c.blocker });
+            const ready = c.readiness === 'READY';
             return (
               <tr
                 key={c.id}
                 role="button"
                 tabIndex={0}
-                aria-label={rowLabel}
+                aria-label={`${c.patientId} — ${rowLabel}`}
                 onClick={() => onSelectCandidate(c)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') onSelectCandidate(c);
@@ -60,15 +90,36 @@ export function DischargeWorklistTable({ candidates, onSelectCandidate }: Discha
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <td className={s.td}>{c.patientId}</td>
+                <td className={mergeClasses(s.td, s.patient)}>
+                  <Tooltip
+                    withArrow
+                    positioning="after"
+                    relationship="description"
+                    content={
+                      <div className={s.patientCard}>
+                        <Body2 className={s.patientHead}>{c.ward} · {c.readiness}</Body2>
+                        <Caption1 className={s.muted}>
+                          {c.blocker || t('dca.table.noBarrier')} · {t('dca.table.estFree')}: {c.estFreeLabel}
+                        </Caption1>
+                      </div>
+                    }
+                  >
+                    <span className={s.patientTrigger}>{c.patientId}</span>
+                  </Tooltip>
+                </td>
                 <td className={s.td}>{c.ward}</td>
                 <td className={s.td}>
-                  <Badge appearance="tint" color={readinessBadgeColor(c.readiness)}>
+                  <Badge appearance="tint" color={READINESS_COLOR[c.readiness]}>
                     {c.readiness}
                   </Badge>
                 </td>
-                <td className={s.td}>{c.blocker}</td>
-                <td className={s.td}>{c.estFreeHours}h</td>
+                <td className={s.td}>{c.blocker || t('dca.table.noBarrier')}</td>
+                <td
+                  className={mergeClasses(s.td, s.tdNum)}
+                  style={ready ? { color: ragColors.good, fontWeight: tokens.fontWeightSemibold } : undefined}
+                >
+                  {c.estFreeLabel}
+                </td>
               </tr>
             );
           })}

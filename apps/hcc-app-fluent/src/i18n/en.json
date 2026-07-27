@@ -159,20 +159,23 @@
       "rehab": "Are there free rehab slots?"
     },
     "table": {
-      "hint": "Click a row → discharge actions",
+      "title": "Discharge worklist — {{count}} candidates, anonymised",
+      "hint": "click a row → Copilot unblock playbook",
       "patient": "Patient",
       "ward": "Ward",
       "readiness": "Readiness",
-      "blocker": "Blocker",
-      "estFree": "Free in (h)"
+      "barrier": "Barrier",
+      "estFree": "Est. free",
+      "noBarrier": "—"
     },
     "barriers": {
-      "hint": "Capacity barriers sorted by bed impact",
-      "rank": "Rank",
-      "label": "Barrier",
-      "bedImpact": "Beds",
-      "detail": "Detail",
-      "cta": "Auto-sequence by aging & impact →"
+      "title": "Capacity barriers — ranked by bed impact",
+      "hint": "click a barrier → systemic Copilot playbook",
+      "summary": "{{ready}} ready now · {{blocked}} blocked across {{barriers}} barriers · {{beds}} beds recoverable",
+      "bedOne": "{{n}} bed",
+      "bedMany": "{{n}} beds",
+      "agingRisk": "AGING RISK",
+      "cta": "View coordinated plan →"
     },
     "gap": {
       "label": "Projected discharge gap",

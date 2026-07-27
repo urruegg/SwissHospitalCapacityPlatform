@@ -55,9 +55,10 @@ describe('DischargeBoard surface', () => {
       </Harness>,
     );
 
+    // The worklist renders every candidate; wards/barriers repeat across rows,
+    // so assert each candidate by its unique anonymised patient id.
     for (const candidate of DISCHARGE_PINNED.candidates) {
-      await waitFor(() => expect(screen.getAllByText(candidate.ward)[0]).toBeInTheDocument());
-      expect(screen.getByText(candidate.blocker)).toBeInTheDocument();
+      await waitFor(() => expect(screen.getAllByText(candidate.patientId)[0]).toBeInTheDocument());
     }
     expect(screen.getByText(/simulated data/i)).toBeInTheDocument();
     expect(screen.getByText(/Carried from ooa-agent/i)).toBeInTheDocument();
@@ -80,7 +81,7 @@ describe('DischargeBoard surface', () => {
     expect(invokeInsight).toHaveBeenCalledWith('dca-agent', {
       candidate: 'med-a-spitex',
       ward: 'Medicine A',
-      blocker: 'Awaiting Spitex slot',
+      blocker: '',
       bedsFreeable: 4,
     });
   });

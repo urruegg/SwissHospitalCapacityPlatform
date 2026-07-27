@@ -15,18 +15,37 @@ export interface DischargeCandidate {
   patientId: string;        // PHI-safe synthetic: PT-xxxx
   ward: string;
   readiness: ReadinessStatus;
-  blocker: string;
-  estFreeHours: number;     // estimated hours until bed is free if actioned now
+  blocker: string;          // barrier reason ('' when READY -> shown as '—')
+  estFreeHours: number;     // numeric hours until the bed frees if actioned now
+  estFreeLabel: string;     // display, e.g. '< 2h', 'today', '24h'
   bedsFreeable: number;
   recoId: string;
 }
 
+/** Leading glyph per capacity barrier. */
+export type BarrierIcon = 'transport' | 'meds' | 'stepdown' | 'signoff' | 'homecare';
+
 export interface CapacityBarrier {
   id: string;
-  label: string;
-  bedImpact: number;        // beds blocked by this barrier
-  detail: string;
+  name: string;               // barrier title
+  description: string;        // one-line context
+  bedImpact: number;          // beds recovered when resolved
+  impactLabel?: string;       // overrides the "N beds" label, e.g. '1 ICU'
+  icon: BarrierIcon;          // leading glyph
+  owner: string;              // responsible queue/team
+  wait: string;               // e.g. 'stuck 4h'
+  waitTone: 'ok' | 'watch' | 'over'; // dot colour: green | amber | red
+  action: string;             // right-side next-step, e.g. 'clears today', 'by 14:00'
+  agingRisk?: boolean;        // 'AGING RISK' badge
   recoId: string;
+}
+
+/** Header roll-up for the capacity barriers board (display). */
+export interface BarrierSummary {
+  readyNow: number;
+  blocked: number;
+  barriers: number;
+  bedsRecoverable: number;
 }
 
 export interface DischargePayload {
@@ -34,9 +53,15 @@ export interface DischargePayload {
   bedsFreeable: number;
   residualBeds: number;
   candidates: DischargeCandidate[];
-  barriers: CapacityBarrier[];
+  barriers: CapacityBarrier[];  // pre-sorted by bedImpact desc (stable)
+  barrierSummary: BarrierSummary;
   recoById: Record<string, GroundedReco>;
   defaultReco: GroundedReco;
+}
+
+/** Stable sort by bedImpact desc; preserves the curated order for ties (matches the mockup rank). */
+export function sortCapacityBarriers(barriers: CapacityBarrier[]): CapacityBarrier[] {
+  return [...barriers].sort((a, b) => b.bedImpact - a.bedImpact);
 }
 
 const AGENT_LABEL = 'Discharge Copilot';
@@ -220,79 +245,30 @@ export const DISCHARGE_PINNED: DischargePayload = {
   bedsNeeded: 16,
   bedsFreeable: 9,
   residualBeds: -7, // MUST be -7 to preserve the golden-thread chain (OOA -16 → DCA -7)
+  // 8 discharge candidates (Medicine A relief). The two canonical golden-thread
+  // recos (med-a-spitex, med-a-rehab) back the two READY candidates so the insight
+  // chain + dca→bmca handoff stay intact; the rest route to the discharge-gap playbook.
   candidates: [
-    {
-      id: 'med-a-spitex',
-      patientId: 'PT-1001',
-      ward: 'Medicine A',
-      readiness: 'READY',
-      blocker: 'Awaiting Spitex slot',
-      estFreeHours: 4,
-      bedsFreeable: 4,
-      recoId: 'med-a-spitex',
-    },
-    {
-      id: 'med-a-rehab',
-      patientId: 'PT-1005',
-      ward: 'Medicine A',
-      readiness: 'READY',
-      blocker: 'Rehab transfer pending',
-      estFreeHours: 6,
-      bedsFreeable: 3,
-      recoId: 'med-a-rehab',
-    },
-    {
-      id: 'surg-a-imaging',
-      patientId: 'PT-2001',
-      ward: 'Surgery A',
-      readiness: 'READY',
-      blocker: 'Discharge imaging pending',
-      estFreeHours: 2,
-      bedsFreeable: 2,
-      recoId: 'surg-a-imaging',
-    },
-    {
-      id: 'med-b-family',
-      patientId: 'PT-3001',
-      ward: 'Medicine B',
-      readiness: 'PENDING',
-      blocker: 'Family readiness',
-      estFreeHours: 12,
-      bedsFreeable: 2,
-      recoId: 'med-b-family',
-    },
+    { id: 'med-a-spitex', patientId: 'PT-4471', ward: 'Medicine A', readiness: 'READY', blocker: '', estFreeHours: 2, estFreeLabel: '< 2h', bedsFreeable: 4, recoId: 'med-a-spitex' },
+    { id: 'cand-4488', patientId: 'PT-4488', ward: 'Medicine A', readiness: 'BLOCKED', blocker: 'TTO meds pending', estFreeHours: 4, estFreeLabel: '4h', bedsFreeable: 1, recoId: 'discharge-gap' },
+    { id: 'cand-4501', patientId: 'PT-4501', ward: 'Medicine A', readiness: 'BLOCKED', blocker: 'Transport not booked', estFreeHours: 3, estFreeLabel: '3h', bedsFreeable: 1, recoId: 'discharge-gap' },
+    { id: 'cand-4459', patientId: 'PT-4459', ward: 'ICU', readiness: 'BLOCKED', blocker: 'HDU step-down bed', estFreeHours: 6, estFreeLabel: '6h', bedsFreeable: 1, recoId: 'discharge-gap' },
+    { id: 'cand-4423', patientId: 'PT-4423', ward: 'Surgery B', readiness: 'PENDING', blocker: 'Consultant sign-off', estFreeHours: 8, estFreeLabel: 'today', bedsFreeable: 1, recoId: 'discharge-gap' },
+    { id: 'cand-4510', patientId: 'PT-4510', ward: 'Medicine A', readiness: 'BLOCKED', blocker: 'Spitex placement', estFreeHours: 24, estFreeLabel: '24h', bedsFreeable: 1, recoId: 'med-a-spitex' },
+    { id: 'med-a-rehab', patientId: 'PT-4467', ward: 'Cardiology', readiness: 'READY', blocker: '', estFreeHours: 2, estFreeLabel: '< 2h', bedsFreeable: 1, recoId: 'med-a-rehab' },
+    { id: 'cand-4495', patientId: 'PT-4495', ward: 'Medicine A', readiness: 'BLOCKED', blocker: 'Family transport', estFreeHours: 5, estFreeLabel: '5h', bedsFreeable: 1, recoId: 'discharge-gap' },
   ],
-  // Pre-sorted by bedImpact desc; component also sorts to handle live data
+  // Pre-sorted by bedImpact desc (stable). Mockup rank 1..5:
+  //   patient-transport (2) > take-home-meds > icu-step-down > consultant-signoff > spitex-home-care (all 1)
   barriers: [
-    {
-      id: 'spitex-shortage',
-      label: 'Spitex capacity shortage',
-      bedImpact: 4,
-      detail: '4 Medicine A patients awaiting Spitex home-care slot assignment',
-      recoId: 'med-a-spitex',
-    },
-    {
-      id: 'rehab-transfer',
-      label: 'Rehab transfer backlog',
-      bedImpact: 3,
-      detail: '3 Medicine A patients awaiting rehab facility transfer confirmation',
-      recoId: 'med-a-rehab',
-    },
-    {
-      id: 'imaging-pending',
-      label: 'Pending discharge imaging',
-      bedImpact: 2,
-      detail: '2 Surgery A patients awaiting final imaging clearance before discharge',
-      recoId: 'surg-a-imaging',
-    },
-    {
-      id: 'family-readiness',
-      label: 'Family care readiness',
-      bedImpact: 2,
-      detail: '2 Medicine B patients pending family-care arrangement confirmation',
-      recoId: 'med-b-family',
-    },
+    { id: 'patient-transport', name: 'Patient transport', description: '2 patients · Medicine A · PT-4501, PT-4495', bedImpact: 2, icon: 'transport', owner: 'Transport desk', wait: 'stuck 4h', waitTone: 'watch', action: 'clears today', recoId: 'discharge-gap' },
+    { id: 'take-home-meds', name: 'Take-home meds (TTO)', description: '1 patient · Medicine A · PT-4488', bedImpact: 1, icon: 'meds', owner: 'Pharmacy', wait: 'stuck 2h', waitTone: 'ok', action: 'by 14:00', recoId: 'discharge-gap' },
+    { id: 'icu-step-down', name: 'ICU step-down', description: '1 patient · ICU → HDU · PT-4459', bedImpact: 1, impactLabel: '1 ICU', icon: 'stepdown', owner: 'HDU / bed mgmt', wait: 'stuck 6h', waitTone: 'watch', action: 'clears today', recoId: 'discharge-gap' },
+    { id: 'consultant-signoff', name: 'Consultant sign-off', description: '1 patient · Surgery B · PT-4423', bedImpact: 1, icon: 'signoff', owner: 'On-call consultant', wait: 'stuck 3h', waitTone: 'watch', action: 'by 17:00', recoId: 'discharge-gap' },
+    { id: 'spitex-home-care', name: 'Spitex home-care', description: '1 patient · Medicine A · PT-4510 · longest lead', bedImpact: 1, icon: 'homecare', owner: 'Spitex liaison', wait: 'stuck 20h', waitTone: 'over', action: 'within 24h', agingRisk: true, recoId: 'med-a-spitex' },
   ],
+  // Display roll-up for the barriers header: 2 ready now, 6 blocked across 5 barriers, 8 beds recoverable.
+  barrierSummary: { readyNow: 2, blocked: 6, barriers: 5, bedsRecoverable: 8 },
   recoById,
   defaultReco,
 };
