@@ -96,7 +96,7 @@
           "dca-agent": "Dimissioni",
           "orsa-agent": "Gestione del blocco operatorio",
           "sba-agent": "Personale",
-          "csa-agent": "Crisi",
+          "csa-agent": "Scenario",
           "data-quality-agent": "Piattaforma dati",
           "onboarding-agent": "Piattaforma"
         }
@@ -128,7 +128,7 @@
       "bed-manager": "Gestione letti",
       "or-steering": "Coordinamento sala operatoria",
       "staffing": "Personale",
-      "crisis": "Crisi"
+      "crisis": "Scenario"
     },
     "discharge": "Preparazione dimissioni (72h)",
     "orSteering": "Gestione sala operatoria (72h)",
@@ -142,7 +142,7 @@
     "staffing": "Bilanciamento del personale (72h)",
     "surgeBeds": "Letti surge",
     "fte": "ETP",
-    "crisis": "Preparazione alle crisi (72h)",
+    "crisis": "Preparazione agli scenari (72h)",
     "signals": "Segnali esterni",
     "scenarios": "Scenari",
     "bedDays": "giornate-letto"
@@ -224,7 +224,7 @@
       "bedManager": "Gestione letti",
       "orSteering": "Coordinamento sala operatoria",
       "staffing": "Personale",
-      "crisis": "Crisi e scenari"
+      "crisis": "Pianificazione scenari"
     },
     "capacityTeaser": {
       "title": "Capacità del sito (live)",
@@ -470,24 +470,38 @@
       "scenarioSimulation": "Quale scenario simulare per primo?"
     },
     "signals": {
-      "title": "Segnali esterni (Trust-A)",
-      "hint": "Fai clic su una riga → azioni segnale",
-      "source": "Fonte",
-      "feed": "Feed",
-      "status": "Stato",
-      "trustClass": "Classe di fiducia",
-      "certainty": "Certezza",
-      "probability": "Probabilità"
+      "title": "Segnali attendibili — esterni & interni, mappati a scenario & probabilità",
+      "hint": "fai clic su uno scenario → lettura segnale Copilot",
+      "external": "Segnali esterni · Trust-A",
+      "internal": "Segnali interni",
+      "scenarios": "Scenari potenziali",
+      "probability": "Probabilità",
+      "fedBy": "alimentato da segnali Trust-A · {{p}}% di certezza",
+      "certainty": "banda di certezza {{c}}%",
+      "scaleTitle": "certezza → probabilità",
+      "scale": "Osservato 90 · Probabile 68 · Possibile 31 · Improbabile 6",
+      "trustLine": "MeteoSwiss · BAG · BABS · SED — Trust-A · solo trigger Actual"
     },
-    "scenarios": {
-      "title": "Scenari classificati per probabilità",
-      "hint": "Fai clic su una riga → avvia simulazione (approvazione richiesta)",
-      "rank": "Rango",
-      "name": "Scenario",
-      "bedImpact": "Impatto letti",
-      "probability": "Probabilità (%)",
-      "spof": "SPOF",
-      "cta": "Simula lo scenario principale →"
+    "queue": {
+      "title": "Coda scenari — {{count}} shock testati sotto stress",
+      "hint": "fai clic su una riga → simulazione Copilot",
+      "scenario": "Scenario",
+      "trigger": "Trigger",
+      "impact": "Impatto",
+      "likelihood": "Verosimiglianza",
+      "result": "Risultato"
+    },
+    "levers": {
+      "title": "Leve di resilienza — ordinate per letti protetti",
+      "hint": "fai clic su una leva → playbook di resilienza",
+      "summary": "{{tested}} shock testati · il piano tiene sotto {{holds}} · {{reserve}} richiede la riserva · decisione agenzia in sospeso",
+      "bedOne": "{{n}} letto",
+      "bedMany": "{{n}} letti",
+      "spof": "IL SPOF",
+      "cta": "Vedi il piano di resilienza →",
+      "absorbedLabel": "Shock assorbiti come leve pre-posizionate",
+      "absorbed": "{{absorbed}} / {{total}} internamente",
+      "liveSync": "↻ Sync live → previsione ooa: Medicine A tiene al 94% — robusto sotto sick-call + surge · piano confermato → la vista comando exec ha l'anello completo dei 6 ruoli"
     },
     "status": {
       "filtered": "In quarantena",

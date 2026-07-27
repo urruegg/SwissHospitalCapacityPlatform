@@ -62,8 +62,9 @@ describe('CsaView crisis RoleBoard surface', () => {
     expect(screen.getByTestId('CsaWizard')).toBeInTheDocument();
     expect((await screen.findAllByText(/simulated/i)).length).toBeGreaterThan(0);
     expect(screen.getByTestId('loop-back')).toBeInTheDocument();
-    expect(screen.getByText('Summer heatwave demand surge')).toBeInTheDocument();
-    expect(screen.getByText('Respiratory virus surge')).toBeInTheDocument();
+    // Scenario names render in both the potential-scenarios and probability columns.
+    expect(screen.getAllByText('Summer heatwave demand surge')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Respiratory virus surge')[0]).toBeInTheDocument();
   });
 
   it('opens the Copilot rail and invokes the csa-agent with scenario context', async () => {

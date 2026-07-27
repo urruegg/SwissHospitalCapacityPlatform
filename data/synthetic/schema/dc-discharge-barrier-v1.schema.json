@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-discharge-barrier-v1.schema.json",
+  "title": "Discharge Barrier Contract (DC-DISCHARGE-BARRIER-v1)",
+  "description": "Sprint 26 WS-B Decision tier contract. One flat record per systemic discharge barrier: the deterministic collapse of N discharge-blocked candidate rows into a ranked list of barriers grouped by barrier_type (the DCA '8 candidates collapse into 5 barriers' pattern), grounding the reference ontology hcp:Barrier ICE (barrierForWard to hcp:Ward). Records are produced by the pure, deterministic derive_barriers builder and materialise gold.fact_discharge_barrier; row shape is 1:1 with the Gold Delta table. No PHI: every candidate contributes only an opaque candidate_key and ontology ward IDs (no names, no MRNs), so barrier rows carry only aggregate counts, bed impact, age, clear time, and ward IDs. Ranking is deterministic (bedImpact DESC, agedH DESC, barrierType ASC). ADR-0013 / ADR-0016 apply. See docs/ontology/reference-layer.ttl and docs/ontology/crosswalk.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "datasetId", "contractId", "contractVersion",
+    "classification", "residency", "purposeTags",
+    "_pseudonymisation_flag", "records"
+  ],
+  "properties": {
+    "datasetId":              { "type": "string", "pattern": "^DS-DISCHARGE-BARRIER-[a-z0-9-]+$" },
+    "contractId":             { "type": "string", "enum": ["DC-DISCHARGE-BARRIER-v1"] },
+    "contractVersion":        { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "classification":         { "type": "string", "enum": ["operational-confidential"] },
+    "residency":              { "type": "string", "enum": ["CH"] },
+    "purposeTags": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["discharge-planning", "capacity-planning"] }
+    },
+    "_pseudonymisation_flag": {
+      "type": "boolean",
+      "const": true,
+      "description": "ADR-0016 gate 1: barrier records are aggregate rows derived from opaque candidate keys and contain no patient identifiers by construction."
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractId", "barrierId", "hospitalId", "producedAt", "producedBy",
+          "barrierType", "ownerRole", "rank", "candidateCount", "bedImpact",
+          "agedH", "clearsAt", "wards", "purposeTag", "asOfTimestamp"
+        ],
+        "properties": {
+          "contractId":     { "type": "string", "enum": ["DC-DISCHARGE-BARRIER-v1"] },
+          "barrierId":      { "type": "string", "pattern": "^DB-[A-Z0-9-]+$", "description": "Deterministic barrier id: DB-<hospital>-<barrierType>-<producedAt hour>." },
+          "hospitalId":     { "type": "string", "pattern": "^H_[A-Z0-9_]+$" },
+          "producedAt":     { "type": "string", "format": "date-time" },
+          "producedBy":     { "type": "string", "minLength": 1, "description": "Generator run id (deterministic synthetic builder today; real-model seam per design D2)." },
+          "barrierType":    { "type": "string", "pattern": "^[a-z][a-z_]*$", "description": "Systemic barrier category (e.g. pharmacy, transport, social_placement, imaging, consult); extensible." },
+          "ownerRole":      { "type": "string", "pattern": "^[a-z][a-z_]*$", "description": "Role that owns unblocking this barrier (DCA owns all discharge barrier types today)." },
+          "rank":           { "type": "integer", "minimum": 1, "description": "Deterministic rank position (1 = highest priority) by bedImpact DESC, agedH DESC, barrierType ASC." },
+          "candidateCount": { "type": "integer", "minimum": 1, "description": "Number of discharge-blocked candidates collapsed into this barrier." },
+          "bedImpact":      { "type": "integer", "minimum": 1, "description": "Sum of member candidate bed impact (beds freed once the barrier clears)." },
+          "agedH":          { "type": ["integer", "null"], "minimum": 0, "description": "Worst-aged member candidate age in hours (drives barrier urgency); null when no member reports an age." },
+          "clearsAt":       { "type": ["string", "null"], "format": "date-time", "description": "Latest member clear time (barrier is fully cleared only when its slowest member clears); null when unknown." },
+          "wards": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "description": "Sorted unique ontology ward IDs the barrier spans (hcp:Ward). May be empty when no member reports a ward."
+          },
+          "purposeTag":     { "type": "string", "enum": ["discharge-planning", "capacity-planning"] },
+          "asOfTimestamp":  { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

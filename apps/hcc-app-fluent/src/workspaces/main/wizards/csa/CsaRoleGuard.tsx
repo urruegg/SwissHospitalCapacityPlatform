@@ -2,13 +2,14 @@
  * Sprint 16.1 · S16.5 — role guard for the CSA wizard.
  *
  * Wraps the wizard render with a role check per S16 design spec §8. Users
- * without any of the allowed roles see a friendly deny message instead of the
- * wizard, matching the "least data exposure" default from claim-parser.ts.
+ * without any of the allowed roles see nothing here — the informational
+ * Scenario board (rendered by CsaView) is the shared surface, so a deny
+ * message below it would only be noise. Matches the "least data exposure"
+ * default from claim-parser.ts.
  *
  * Pure component; unit-tested against the role-context.
  */
 import type { ReactNode } from 'react';
-import { Body1, MessageBar, Title2 } from '@fluentui/react-components';
 import { useRoleLens } from '../../../../context/role-context';
 
 /**
@@ -29,16 +30,9 @@ interface CsaRoleGuardProps {
 export function CsaRoleGuard({ children }: CsaRoleGuardProps) {
   const { capabilities } = useRoleLens();
   const allowed = capabilities.nav.csa;
-  if (allowed) return <>{children}</>;
-  return (
-    <section aria-label="CSA wizard access denied" data-testid="CsaRoleGuardDenied">
-      <Title2>Crisis Scenario Analysis</Title2>
-      <MessageBar intent="warning">
-        <Body1 as="p">
-          You need one of the following app roles to run the CSA wizard:{' '}
-          {CSA_WIZARD_ROLES.join(', ')}. Ask a Platform Admin to grant access.
-        </Body1>
-      </MessageBar>
-    </section>
-  );
+  // Unauthorised callers see nothing here: the informational Scenario board
+  // (rendered by CsaView) is the shared surface, so a deny message below it
+  // would only be noise. The wizard stays gated to CSA-authorised roles.
+  if (!allowed) return null;
+  return <>{children}</>;
 }

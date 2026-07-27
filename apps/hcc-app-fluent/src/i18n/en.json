@@ -96,7 +96,7 @@
           "dca-agent": "Discharge",
           "orsa-agent": "OR steering",
           "sba-agent": "Staffing",
-          "csa-agent": "Crisis",
+          "csa-agent": "Scenario",
           "data-quality-agent": "Data platform",
           "onboarding-agent": "Platform"
         }
@@ -128,7 +128,7 @@
       "bed-manager": "Bed management",
       "or-steering": "OR steering",
       "staffing": "Staffing",
-      "crisis": "Crisis"
+      "crisis": "Scenario"
     },
     "discharge": "Discharge readiness (72h)",
     "orSteering": "OR steering (72h)",
@@ -142,7 +142,7 @@
     "staffing": "Staffing balance (72h)",
     "surgeBeds": "Surge beds",
     "fte": "FTE",
-    "crisis": "Crisis readiness (72h)",
+    "crisis": "Scenario readiness (72h)",
     "signals": "External signals",
     "scenarios": "Scenarios",
     "bedDays": "bed-days"
@@ -224,7 +224,7 @@
       "bedManager": "Bed management",
       "orSteering": "OR steering",
       "staffing": "Staffing",
-      "crisis": "Crisis & scenarios"
+      "crisis": "Scenario planning"
     },
     "capacityTeaser": {
       "title": "Site capacity (live)",
@@ -470,24 +470,38 @@
       "scenarioSimulation": "Which scenario should we simulate first?"
     },
     "signals": {
-      "title": "External signals (Trust-A)",
-      "hint": "Click a row → signal actions",
-      "source": "Source",
-      "feed": "Feed",
-      "status": "Status",
-      "trustClass": "Trust class",
-      "certainty": "Certainty",
-      "probability": "Probability"
+      "title": "Trusted signals — external & internal, mapped to scenario & probability",
+      "hint": "click a scenario → Copilot signal read",
+      "external": "External signals · Trust-A",
+      "internal": "Internal signals",
+      "scenarios": "Potential scenarios",
+      "probability": "Probability",
+      "fedBy": "fed by Trust-A signals · {{p}}% certainty",
+      "certainty": "{{c}}% certainty band",
+      "scaleTitle": "certainty → probability",
+      "scale": "Observed 90 · Likely 68 · Possible 31 · Unlikely 6",
+      "trustLine": "MeteoSwiss · BAG · BABS · SED — Trust-A · only Actual triggers"
     },
-    "scenarios": {
-      "title": "Scenarios ranked by probability",
-      "hint": "Click a row → run simulation (approval required)",
-      "rank": "Rank",
-      "name": "Scenario",
-      "bedImpact": "Bed impact",
-      "probability": "Probability (%)",
-      "spof": "SPOF",
-      "cta": "Simulate top scenario →"
+    "queue": {
+      "title": "Scenario queue — {{count}} shocks pressure-tested",
+      "hint": "click a row → Copilot simulation",
+      "scenario": "Scenario",
+      "trigger": "Trigger",
+      "impact": "Impact",
+      "likelihood": "Likelihood",
+      "result": "Result"
+    },
+    "levers": {
+      "title": "Resilience levers — ranked by beds protected",
+      "hint": "click a lever → resilience playbook",
+      "summary": "{{tested}} shocks stress-tested · plan holds under {{holds}} · {{reserve}} needs the reserve pulled · agency decision pending",
+      "bedOne": "{{n}} bed",
+      "bedMany": "{{n}} beds",
+      "spof": "THE SPOF",
+      "cta": "View resilience plan →",
+      "absorbedLabel": "Shocks absorbed as levers pre-stage",
+      "absorbed": "{{absorbed}} / {{total}} internally",
+      "liveSync": "↻ Live sync → ooa forecast: Medicine A holds 94% — robust under sick-call + surge · plan committed → exec command view has the full 6-role ring"
     },
     "status": {
       "filtered": "Quarantined",

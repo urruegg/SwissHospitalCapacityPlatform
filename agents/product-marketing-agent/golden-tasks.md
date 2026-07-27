@@ -1,19 +1,19 @@
 ---
 agent: product-marketing-agent
-version: 1.0.0
+version: 1.2.0
 requirement: FR-MKT-001, FR-MKT-002, NFR-GOV-003
-last-reviewed: 2026-07-21
+last-reviewed: 2026-07-27
 ---
 
 # `product-marketing-agent` — Golden Tasks
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (retargeted the hero-copy fixture off the retired public website + dropped FR-WEB-001 per ADR-0044) |
+| **Previous Version** | 1.1.0 (grounded the hero-copy fixture on the UX pattern catalogue `docs/brandkit/curavias-ux-patterns.md`; issue #365) |
 
 Four fixtures: one happy-path (draft on-brand DE hero copy with the disclaimer and
 advisory voice) and three failure-mode refusals (non-advisory voice, a dropped
@@ -33,9 +33,10 @@ and advisory. This is customer-facing product copy.
 
 ### Author Expected steps and tool calls
 
-1. Read `docs/brandkit/` (voice) and the north star / tagline / disclaimer + voice
-   rules in `curavias-context.md`, plus the S1 hero row in
-   `04-website-content-bom.md`.
+1. Read `docs/brandkit/` (voice) — including the composed UX pattern catalogue
+   `docs/brandkit/curavias-ux-patterns.md` for copy-in-context (P10 / P12) — and
+   the north star / tagline / disclaimer + voice rules in `curavias-context.md`,
+   plus the S1 hero row in `04-website-content-bom.md`.
 2. Confirm one clarifying question only if the CTA targets are ambiguous
    (`brainstorming` — one question at a time).
 3. Draft the DE hero copy as a `customer` / `de`-tagged copy block using the

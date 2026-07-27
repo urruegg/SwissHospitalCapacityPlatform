@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (dropped the retired public-website copy deliverable + FR-WEB refs per ADR-0044) |
+| **Previous Version** | 1.1.0 (anchored the composed UX pattern catalogue `docs/brandkit/curavias-ux-patterns.md` as a copy-in-context grounding source; issue #365) |
 
 > **Runtime**: GitHub Copilot coding agent (control-plane), per the agent-runtime
 > decision in
@@ -98,6 +98,9 @@ tools.
 
 - `docs/brandkit/` — Curavias brand guidelines, colour system, and **voice**
   (Segoe UI typography, tagline, "the care pathway" idea, legal / Swiss-cross notes).
+- [`docs/brandkit/curavias-ux-patterns.md`](../../docs/brandkit/curavias-ux-patterns.md)
+  — the composed UX pattern catalogue; ground copy-in-context on it (P10 advisory
+  voice, P12 multilingual labels) so message and experience stay consistent.
 - [`curavias-context.md`](../../docs/superpowers/ideas/curavias-product-webpage/curavias-bom/curavias-context.md)
   — north star (*Verlaessliche Vorschau. Erklaerbare Empfehlung. Der Mensch
   entscheidet.*), tagline (*Every patient's path, in Swiss hands.*), positioning

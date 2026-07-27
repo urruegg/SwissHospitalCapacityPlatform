@@ -30,8 +30,8 @@
     dcterms:description "Reference layer of the two-layer ontology per ADR-0014. Skeleton only — full axiomatic content is Phase 3."@en ;
     dcterms:creator     "Urs Rüegg"@en ;
     dcterms:issued      "2026-07-02"^^xsd:date ;
-    owl:versionInfo     "0.4.0" ;
-    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy). See docs/ontology/README.md for scope discipline and versioning."@en ;
+    owl:versionInfo     "0.5.0" ;
+    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy); Sprint 26 WS-B (#335) adds the Decision tier hcp:Barrier + barrierForWard. See docs/ontology/README.md for scope discipline and versioning."@en ;
 
     # Imports declared but not loaded axiomatically in this skeleton.
     # A follow-up PR (or an ontology-authoring tool) resolves these to full IRIs.
@@ -299,6 +299,17 @@ hcp:evidencedBy a owl:ObjectProperty ;
     rdfs:comment "Links a Driver to the ExternalSignal that evidences it (e.g. a seasonality driver evidenced by a BAG epidemic signal). Reuses the Sprint 21 signal spine; advisory only."@en ;
     rdfs:domain  hcp:Driver ;
     rdfs:range   hcp:ExternalSignal .
+
+hcp:Barrier a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Barrier"@en ;
+    rdfs:comment    "A systemic discharge barrier: the deterministic collapse of N discharge-blocked candidates into one ranked, owner-attributed obstacle (barrier_type, owner_role, candidate_count, bed_impact, aged_h, clears_at, spanning wards). The DCA 'N candidates collapse into M barriers' pattern. Runtime-derived by the pure derive_barriers builder and materialised to gold.fact_discharge_barrier (DC-DISCHARGE-BARRIER-v1). No PHI: aggregate over opaque candidate keys + ward IDs. Grounds beat 3 (the actionable barrier) of the actionable-insight pattern for the DCA role."@en .
+
+hcp:barrierForWard a owl:ObjectProperty ;
+    rdfs:label   "barrier for ward"@en ;
+    rdfs:comment "Links a Barrier to each Ward it spans (a barrier may span several wards once its candidates are collapsed by barrier_type)."@en ;
+    rdfs:domain  hcp:Barrier ;
+    rdfs:range   hcp:Ward .
 
 # ===========================================================================
 # Curavias organisation spine + skills ontology extension (Sprint 23, #255)

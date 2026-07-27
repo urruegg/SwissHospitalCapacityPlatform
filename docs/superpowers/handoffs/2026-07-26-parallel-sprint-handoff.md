@@ -5,7 +5,7 @@
 | **Version** | 1.0.0 |
 | **Date** | 2026-07-26 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
+| **Status** | Superseded (by [2026-07-27](2026-07-27-parallel-sprint-handoff.md)) |
 | **Previous Version** | — (supersedes the 2026-07-24 snapshot) |
 
 > **Purpose**: A point-in-time snapshot to resume the coordinator session **and**

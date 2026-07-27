@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-21 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft |
-| **Previous Version** | 1.1.0 (added the `product-marketing-agent` RACI cross-reference — message vs. experience boundary; issue #262) |
+| **Previous Version** | 1.2.0 (anchored the composed UX pattern catalogue `docs/brandkit/curavias-ux-patterns.md` as a grounding source; issue #365) |
 
 > **Runtime**: GitHub Copilot coding agent (control-plane), per
 > [ADR-0002](../../docs/adr/0002-runtime-is-github-copilot-coding-agent.md). This
@@ -135,6 +135,11 @@ re-validate at the next boundary. Your overall ceiling is `write`; you hold no
   `sprint-20-curavias-ux-mockup.html`.
 - `docs/brandkit/` — Curavias brand tokens (colour, type) that every mockup and
   design must respect.
+- [`docs/brandkit/curavias-ux-patterns.md`](../../docs/brandkit/curavias-ux-patterns.md)
+  and [`curavias-app-style-guide.md`](../../docs/brandkit/curavias-app-style-guide.md)
+  — the composed UX pattern catalogue (P1–P12) and the token / recipe style guide
+  this agent owns; ground every experience decision on them for a consistent,
+  stringent UX.
 - [`docs/PRD.md`](../../docs/PRD.md) — canonical `FR-*` / `NFR-*` IDs; UX work
   advances `FR-CX-*`, `FR-VIZ-*`, `NFR-GOV-003`, `NFR-REL-003`.
 - [ADR-0016](../../docs/adr/0016-no-phi-in-mvp-demo-scope.md) — the no-PHI demo

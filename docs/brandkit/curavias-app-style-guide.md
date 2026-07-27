@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | n/a (new document) |
+| **Previous Version** | 1.0.0 (added the companion UX pattern catalogue cross-reference; issue #365) |
 | **Sprint** | 27 — Curavias App UX Polish (tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` (internal app, app.curavias.ch) |
 
@@ -14,7 +14,9 @@
 > design system (`apps/hcc-app-fluent/src/theme/design-system/`) to the Fluent UI v9
 > primitive each token wraps and the current Microsoft 365 app pattern (Outlook / Teams /
 > M365 Copilot) it mirrors, and defines the per-screen heuristic review gate. Realises
-> `FR-UX-002`; the checklist is the acceptance gate behind `NFR-UX-002`.
+> `FR-UX-002`; the checklist is the acceptance gate behind `NFR-UX-002`. For the
+composed component + layout patterns (P1–P12) built from these tokens and recipes,
+see the companion [`curavias-ux-patterns.md`](curavias-ux-patterns.md).
 
 ---
 

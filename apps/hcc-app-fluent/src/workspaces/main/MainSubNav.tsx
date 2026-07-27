@@ -11,7 +11,7 @@ const BOARDS = [
   { key: 'or-steering', label: 'OR steering', gate: 'main' as const },
   { key: 'staffing', label: 'Staffing', gate: 'main' as const },
   { key: 'discharge', label: 'Discharge', gate: 'main' as const },
-  { key: 'crisis', label: 'Crisis', gate: 'csa' as const },
+  { key: 'crisis', label: 'Scenario', gate: 'main' as const },
 ];
 
 export function MainSubNav() {
