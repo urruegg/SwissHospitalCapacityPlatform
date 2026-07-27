@@ -470,24 +470,38 @@
       "scenarioSimulation": "Quel scénario simuler en premier ?"
     },
     "signals": {
-      "title": "Signaux externes (Trust-A)",
-      "hint": "Cliquez sur une ligne → actions de signal",
-      "source": "Source",
-      "feed": "Flux",
-      "status": "Statut",
-      "trustClass": "Classe de confiance",
-      "certainty": "Certitude",
-      "probability": "Probabilité"
+      "title": "Signaux de confiance — externes & internes, mappés au scénario & à la probabilité",
+      "hint": "cliquez sur un scénario → lecture de signal Copilot",
+      "external": "Signaux externes · Trust-A",
+      "internal": "Signaux internes",
+      "scenarios": "Scénarios potentiels",
+      "probability": "Probabilité",
+      "fedBy": "alimenté par des signaux Trust-A · {{p}}% de certitude",
+      "certainty": "bande de certitude {{c}}%",
+      "scaleTitle": "certitude → probabilité",
+      "scale": "Observé 90 · Probable 68 · Possible 31 · Improbable 6",
+      "trustLine": "MeteoSwiss · BAG · BABS · SED — Trust-A · seuls les déclencheurs Actual"
     },
-    "scenarios": {
-      "title": "Scénarios classés par probabilité",
-      "hint": "Cliquez sur une ligne → lancer la simulation (approbation requise)",
-      "rank": "Rang",
-      "name": "Scénario",
-      "bedImpact": "Impact lits",
-      "probability": "Probabilité (%)",
-      "spof": "SPOF",
-      "cta": "Simuler le scénario principal →"
+    "queue": {
+      "title": "File de scénarios — {{count}} chocs testés sous pression",
+      "hint": "cliquez sur une ligne → simulation Copilot",
+      "scenario": "Scénario",
+      "trigger": "Déclencheur",
+      "impact": "Impact",
+      "likelihood": "Vraisemblance",
+      "result": "Résultat"
+    },
+    "levers": {
+      "title": "Leviers de résilience — classés par lits protégés",
+      "hint": "cliquez sur un levier → playbook de résilience",
+      "summary": "{{tested}} chocs testés · le plan tient sous {{holds}} · {{reserve}} nécessite la réserve · décision intérim en attente",
+      "bedOne": "{{n}} lit",
+      "bedMany": "{{n}} lits",
+      "spof": "LE SPOF",
+      "cta": "Voir le plan de résilience →",
+      "absorbedLabel": "Chocs absorbés comme leviers pré-positionnés",
+      "absorbed": "{{absorbed}} / {{total}} en interne",
+      "liveSync": "↻ Sync live → prévision ooa : Medicine A tient à 94% — robuste sous sick-call + surge · plan validé → la vue commandement exec a l'anneau complet des 6 rôles"
     },
     "status": {
       "filtered": "En quarantaine",
