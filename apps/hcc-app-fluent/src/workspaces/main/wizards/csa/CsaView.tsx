@@ -3,21 +3,24 @@ import { Text, makeStyles, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
-import type { CrisisPayload, ExternalSignal, Scenario } from '../../../../data/roleboard/crisis-data';
-import { sortScenarios } from '../../../../data/roleboard/crisis-data';
+import type { CrisisPayload, Scenario, QueuedScenario, ResilienceLever } from '../../../../data/roleboard/crisis-data';
+import { space, radii, elevation } from '../../../../theme/design-system';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
+import { useDataSource } from '../../../../context/data-source-context';
 import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { HandoffBanner } from '../../../../shell/HandoffBanner';
 import { BoardHeader } from '../../boards/occupancy/BoardHeader';
+import { GroundingNotice } from '../../boards/GroundingNotice';
 import { bannerFor, residualFromPrev } from '../../../../journey/handoff-orchestrator';
 import { GOLDEN_THREAD_SCOPE } from '../../../../journey/golden-thread';
 import { routeInsight } from '../../../../copilot-rail/InsightRouter';
 import { CsaRoleGuard } from './CsaRoleGuard';
 import { CsaWizard } from './CsaWizard';
 import { crisisBoard } from '../../boards/crisis/crisis-board';
-import { CrisisSignalsTable } from '../../boards/crisis/CrisisSignalsTable';
-import { CrisisScenariosBoard } from '../../boards/crisis/CrisisScenariosBoard';
+import { TrustedSignalsPanel } from '../../boards/crisis/TrustedSignalsPanel';
+import { ScenarioQueueTable } from '../../boards/crisis/ScenarioQueueTable';
+import { ResilienceLeversBoard } from '../../boards/crisis/ResilienceLeversBoard';
 
 const useStyles = makeStyles({
   root: {
@@ -28,8 +31,14 @@ const useStyles = makeStyles({
   panel: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalL,
-    padding: tokens.spacingHorizontalL,
+    gap: space.l,
+    padding: space.l,
+  },
+  card: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: radii.card,
+    boxShadow: elevation.card,
+    padding: space.l,
   },
 });
 
@@ -61,6 +70,7 @@ function CrisisRoleBoardBlock() {
   const { t } = useTranslation();
   const { mode } = useMode();
   const { hospital } = useHospital();
+  const { source } = useDataSource();
   const rail = useCopilotRail();
   const [data, setData] = useState<RoleBoardData<CrisisPayload> | null>(null);
   const [prev, setPrev] = useState<ResidualPressure | null>(null);
@@ -84,7 +94,7 @@ function CrisisRoleBoardBlock() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     // rail.showDefault calls a stable useState setter; intentionally excluded so the effect runs only when mode/hospital changes
-  }, [mode, hospital]);
+  }, [mode, hospital, source]);
 
   if (!data) return <Text>{t('board.loading', 'Loading...')}</Text>;
 
@@ -96,14 +106,6 @@ function CrisisRoleBoardBlock() {
     void routeInsight(insight, reco, { agent: crisisBoard.agent, openWithReco: rail.openWithReco });
   };
 
-  const onSelectSignal = (signal: ExternalSignal) => {
-    route({
-      id: signal.id,
-      label: `${signal.source}: ${signal.feed}`,
-      context: { signal: signal.id, source: signal.source, filtered: signal.filtered ?? false },
-    });
-  };
-
   const onSelectScenario = (scenario: Scenario) => {
     route({
       id: scenario.id,
@@ -112,26 +114,48 @@ function CrisisRoleBoardBlock() {
     });
   };
 
-  const onSimulateTop = () => {
-    const top = sortScenarios(payload.scenarios)[0];
-    if (top) onSelectScenario(top);
+  const onSelectQueued = (row: QueuedScenario) => {
+    route({ id: row.recoId, label: `${row.id} \u00b7 ${row.name}`, context: { queued: row.id, result: row.result } });
+  };
+
+  const onSelectLever = (lever: ResilienceLever) => {
+    route({ id: lever.recoId, label: lever.label, context: { lever: lever.id, bedsProtected: lever.bedsProtected } });
+  };
+
+  // The "View resilience plan" CTA opens the crisis-readiness playbook.
+  const onViewPlan = () => {
+    route({ id: 'crisis-readiness', label: t('csa.levers.title'), context: { residualBeds: payload.residualBeds } });
   };
 
   return (
     <div className={styles.panel} data-testid="board-crisis-panel">
       <HandoffBanner banner={banner} provenance={data.provenance} />
+      <GroundingNotice degraded={data.degraded} />
       <BoardHeader
         agent={crisisBoard.agent}
         title={t('board.crisis')}
         provenance={data.provenance}
         lens="Crisis"
       />
-      <CrisisSignalsTable signals={payload.signals} onSelectSignal={onSelectSignal} />
-      <CrisisScenariosBoard
-        scenarios={payload.scenarios}
-        onSelectScenario={onSelectScenario}
-        onSimulateTop={onSimulateTop}
-      />
+      <div className={styles.card}>
+        <TrustedSignalsPanel
+          boardSignals={payload.boardSignals}
+          scenarios={payload.scenarios}
+          onSelectScenario={onSelectScenario}
+        />
+      </div>
+      <div className={styles.card}>
+        <ScenarioQueueTable queue={payload.scenarioQueue} onSelectQueued={onSelectQueued} />
+      </div>
+      <div className={styles.card}>
+        <ResilienceLeversBoard
+          levers={payload.resilienceLevers}
+          onSelectLever={onSelectLever}
+          onViewPlan={onViewPlan}
+          summary={payload.resilienceSummary}
+          absorbed={payload.absorbed}
+        />
+      </div>
     </div>
   );
 }
