@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.9.0 |
-| **Date** | 2026-07-26 |
+| **Version** | 1.10.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Approved (brainstorming) |
-| **Previous Version** | 1.8.0 (manual-trigger Container Apps Job for the CustomEndpoint skills-events simulator) |
+| **Previous Version** | 1.9.0 (static SIT<->PROD module-selection parity harness) |
 | **Sprint** | [Sprint 23 - Unified Curavias organisation spine + org/skills ontology (P1b)](../../sprints/sprint-23-curavias-org-spine-and-skills-ontology.md) |
 | **Issue** | [#255](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/255) |
 | **Extends** | Idea pack [`unified-curavias-organisation-and-skills-ontology/`](../ideas/unified-curavias-organisation-and-skills-ontology/) (Steps 1-4 + 20 CSVs + generator); shared design [`2026-07-19-curavias-shared-master-data-and-ontology-design.md`](2026-07-19-curavias-shared-master-data-and-ontology-design.md) |
@@ -199,7 +199,7 @@ every PR; any deploy/delete hard-gated by `approved-to-apply`.
 - [x] Semantic model: skills + live-vs-simulated + bed-vs-ops (`care_setting`) measures; `verify-semantic-model.yml` re-baselined + green
 - [ ] Ontology + crosswalk + conformance + Fabric IQ Data Agent cover org/skills + care-setting
 - [ ] New ADR Accepted; PRD FR/NFR + section 7 updated; DSG tagging applied
-- [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed — **module-selection parity is now machine-checked** by the static harness [`infra/tests/test_sit_prod_parity.py`](../../../infra/tests/test_sit_prod_parity.py) (offline; wired into `ci-infra-validate.yml`), which asserts effective `enable*Module` parity between `sit.bicepparam` and `prod-swn.bicepparam` against an ADR-sourced deliberate-asymmetry allow-list. Complements the live `deployed-parity-check` job (resource-types, `workflow_dispatch`).
+- [ ] SIT + PROD deployed identically; live applies gated by `approved-to-apply`; PR merges human-performed — **module-selection parity is now machine-checked** by the static harness [`infra/tests/test_sit_prod_parity.py`](../../../infra/tests/test_sit_prod_parity.py) (offline; wired into `ci-infra-validate.yml`), which asserts effective `enable*Module` parity between `sit.bicepparam` and `prod-swn.bicepparam` against an ADR-sourced deliberate-asymmetry allow-list. Complements the live `deployed-parity-check` job (resource-types, `workflow_dispatch`). **PROD org/skills medallion (28 gold tables) + `capacity-dashboard`/`external-signals` semantic models + report are now materialized live in Switzerland North** (`approved-to-apply` @urruegg, 2026-07-26/27) — [PROD execution record](../../sprints/sprint-23/evidence/2026-07-27-prod-medallion-and-model-publish-execution-record.md).
 - [ ] All CI checks pass
 
 ## 6. Open items / to confirm
