@@ -1,0 +1,114 @@
+[
+  {
+    "contractId": "DC-REF-CERTIFICATION-v1",
+    "workId": "WID-abcdef01",
+    "issuer": "NAREG",
+    "credentialType": "ICU nursing certification",
+    "competencyCodes": ["comp.icu.core", "comp.ventilation"],
+    "validFrom": "2024-01-15",
+    "validUntil": "2028-01-14",
+    "verificationStatus": "verified",
+    "_classification": "staff-PII",
+    "_residency": "CH",
+    "_legal_basis": "credential-verification",
+    "_retention": {
+      "policy": "staff-credential-retention",
+      "maxRetentionDays": 3650
+    },
+    "_provenance": {
+      "sourceAuthority": "NAREG",
+      "sourceMode": "synthetic",
+      "generatedAt": "2026-07-27T21:00:00Z",
+      "licence": "synthetic-demo"
+    },
+    "_pseudonymisation": {
+      "identifier": "workId",
+      "method": "stable-synthetic-work-id",
+      "directIdentifiersExcluded": true
+    }
+  },
+  {
+    "contractId": "DC-REF-CERTIFICATION-v1",
+    "workId": "WID-1234abcd",
+    "issuer": "FMH",
+    "credentialType": "FMH anaesthesia title",
+    "competencyCodes": ["comp.anaesthesia", "comp.airway"],
+    "validFrom": "2021-06-01",
+    "validUntil": null,
+    "verificationStatus": "self-attested",
+    "_classification": "staff-PII",
+    "_residency": "CH",
+    "_legal_basis": "credential-verification",
+    "_retention": {
+      "policy": "staff-credential-retention",
+      "maxRetentionDays": 3650
+    },
+    "_provenance": {
+      "sourceAuthority": "FMH",
+      "sourceMode": "synthetic",
+      "generatedAt": "2026-07-27T21:00:00Z",
+      "licence": "synthetic-demo"
+    },
+    "_pseudonymisation": {
+      "identifier": "workId",
+      "method": "stable-synthetic-work-id",
+      "directIdentifiersExcluded": true
+    }
+  },
+  {
+    "contractId": "DC-REF-CERTIFICATION-v1",
+    "workId": "WID-deadbeef",
+    "issuer": "SwissRescueTraining",
+    "credentialType": "Advanced life support refresher",
+    "competencyCodes": ["comp.resuscitation", "comp.emergency.triage"],
+    "validFrom": "2022-03-10",
+    "validUntil": "2025-03-09",
+    "verificationStatus": "expired",
+    "_classification": "staff-PII",
+    "_residency": "demo-westus2",
+    "_legal_basis": "synthetic-workforce-planning",
+    "_retention": {
+      "policy": "synthetic-demo-retention",
+      "maxRetentionDays": 730
+    },
+    "_provenance": {
+      "sourceAuthority": "SwissRescueTraining",
+      "sourceMode": "synthetic",
+      "generatedAt": "2026-07-27T21:00:00Z",
+      "licence": "synthetic-demo"
+    },
+    "_pseudonymisation": {
+      "identifier": "workId",
+      "method": "stable-synthetic-work-id",
+      "directIdentifiersExcluded": true
+    }
+  },
+  {
+    "contractId": "DC-REF-CERTIFICATION-v1",
+    "workId": "WID-feedc0de",
+    "issuer": "NAREG",
+    "credentialType": "Ward medication safety attestation",
+    "competencyCodes": ["comp.medication.safety", "comp.ward.operations"],
+    "validFrom": "2025-09-01",
+    "validUntil": "2027-08-31",
+    "verificationStatus": "revoked",
+    "_classification": "staff-PII",
+    "_residency": "CH",
+    "_legal_basis": "synthetic-workforce-planning",
+    "_retention": {
+      "policy": "synthetic-demo-retention",
+      "maxRetentionDays": 730
+    },
+    "_provenance": {
+      "sourceAuthority": "NAREG",
+      "sourceMode": "synthetic",
+      "generatedAt": "2026-07-27T21:00:00Z",
+      "licence": "synthetic-demo"
+    },
+    "_pseudonymisation": {
+      "identifier": "workId",
+      "method": "stable-synthetic-work-id",
+      "directIdentifiersExcluded": true
+    }
+  }
+]

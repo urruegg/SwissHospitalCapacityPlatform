@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-ref-certification-v1.schema.json",
+  "title": "DC-REF-CERTIFICATION-v1",
+  "description": "Credential-to-competency crosswalk contract for synthetic workforce certification records. Staff-PII is limited to a pseudonymised Work-ID; direct identifiers are forbidden by ADR-0016.",
+  "type": "object",
+  "required": ["contractId", "workId", "issuer", "credentialType", "competencyCodes", "verificationStatus", "_classification"],
+  "additionalProperties": false,
+  "properties": {
+    "contractId": { "const": "DC-REF-CERTIFICATION-v1" },
+    "workId": {
+      "type": "string",
+      "pattern": "^WID-[0-9a-f]{8,}$",
+      "description": "pseudonymised staff work-ID; never a name/AHV"
+    },
+    "issuer": { "type": "string" },
+    "credentialType": { "type": "string" },
+    "competencyCodes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "validFrom": { "type": "string", "format": "date" },
+    "validUntil": { "type": ["string", "null"], "format": "date" },
+    "verificationStatus": {
+      "type": "string",
+      "enum": ["verified", "self-attested", "expired", "revoked"]
+    },
+    "_classification": { "const": "staff-PII" },
+    "_residency": {
+      "type": "string",
+      "enum": ["CH", "demo-westus2"],
+      "description": "Data residency marker for the curated synthetic feed."
+    },
+    "_legal_basis": {
+      "type": "string",
+      "enum": ["synthetic-workforce-planning", "credential-verification"],
+      "description": "Purpose/legal-basis tag carried with the contract for governance routing."
+    },
+    "_retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "maxRetentionDays"],
+      "properties": {
+        "policy": { "type": "string", "enum": ["synthetic-demo-retention", "staff-credential-retention"] },
+        "maxRetentionDays": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceAuthority", "sourceMode", "generatedAt", "licence"],
+      "properties": {
+        "sourceAuthority": { "type": "string" },
+        "sourceMode": { "type": "string", "enum": ["synthetic"] },
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "licence": { "type": "string" }
+      }
+    },
+    "_pseudonymisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifier", "method", "directIdentifiersExcluded"],
+      "properties": {
+        "identifier": { "type": "string", "enum": ["workId"] },
+        "method": { "type": "string", "enum": ["stable-synthetic-work-id"] },
+        "directIdentifiersExcluded": {
+          "type": "boolean",
+          "const": true,
+          "description": "ADR-0016 gate: certification records use WID-* only and exclude direct staff identifiers."
+        }
+      }
+    }
+  }
+}
