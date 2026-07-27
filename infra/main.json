@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "3443236019267286894"
+      "templateHash": "5334424658002745034"
     }
   },
   "parameters": {
@@ -622,6 +622,13 @@
       "defaultValue": "nginxinc/nginx-unprivileged:1.27-alpine",
       "metadata": {
         "description": "Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR."
+      }
+    },
+    "appFluentAgentHostUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "#447 — Foundry agent-host base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.AGENT_HOST_URL). Set per-env to the environment-local agent-host FQDN (SIT vs PROD) so the app calls its own region's agent-host. Empty keeps the built-in mock. Replaces the former build-time VITE_AGENT_HOST_URL bake so one image is env-agnostic."
       }
     },
     "appFluentCustomHostname": {
@@ -7783,6 +7790,9 @@
           "logAnalyticsWorkspaceResourceId": {
             "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
           },
+          "agentHostUrl": {
+            "value": "[parameters('appFluentAgentHostUrl')]"
+          },
           "containerRegistryLoginServer": {
             "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
           },
@@ -7803,7 +7813,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "3570153104393533044"
+              "templateHash": "11780358885654141899"
             }
           },
           "parameters": {
@@ -7875,6 +7885,13 @@
               "defaultValue": 8080,
               "metadata": {
                 "description": "Container target port. Fluent Dockerfile serves via nginx-unprivileged on 8080."
+              }
+            },
+            "agentHostUrl": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "#447 — Foundry agent-host base URL injected into the app at container start (window.__ENV__.AGENT_HOST_URL). Per-env value (SIT vs PROD agent-host FQDN); empty keeps the built-in mock. Runtime injection replaces the former build-time VITE_AGENT_HOST_URL bake so a single image is env-agnostic."
               }
             },
             "customHostname": {
@@ -7991,7 +8008,13 @@
                       "resources": {
                         "cpu": "[json('0.5')]",
                         "memory": "1.0Gi"
-                      }
+                      },
+                      "env": [
+                        {
+                          "name": "AGENT_HOST_URL",
+                          "value": "[parameters('agentHostUrl')]"
+                        }
+                      ]
                     }
                   ],
                   "scale": {

@@ -37,6 +37,9 @@ param maxReplicas int = 3
 @description('Container target port. Fluent Dockerfile serves via nginx-unprivileged on 8080.')
 param targetPort int = 8080
 
+@description('#447 — Foundry agent-host base URL injected into the app at container start (window.__ENV__.AGENT_HOST_URL). Per-env value (SIT vs PROD agent-host FQDN); empty keeps the built-in mock. Runtime injection replaces the former build-time VITE_AGENT_HOST_URL bake so a single image is env-agnostic.')
+param agentHostUrl string = ''
+
 @description('Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030.')
 param customHostname string = ''
 
@@ -180,6 +183,14 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1.0Gi'
           }
+          // #447 runtime env injection — read at container start by
+          // docker-entrypoint.d/30-env-config.sh into window.__ENV__.
+          env: [
+            {
+              name: 'AGENT_HOST_URL'
+              value: agentHostUrl
+            }
+          ]
         }
       ]
       scale: {
