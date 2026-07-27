@@ -96,7 +96,7 @@
           "dca-agent": "Sorties",
           "orsa-agent": "Gestion du bloc opératoire",
           "sba-agent": "Ressources humaines",
-          "csa-agent": "Crise",
+          "csa-agent": "Scénario",
           "data-quality-agent": "Plateforme de données",
           "onboarding-agent": "Plateforme"
         }
@@ -128,7 +128,7 @@
       "bed-manager": "Gestion des lits",
       "or-steering": "Pilotage du bloc",
       "staffing": "Personnel",
-      "crisis": "Crise"
+      "crisis": "Scénario"
     },
     "discharge": "Préparation des sorties (72 h)",
     "orSteering": "Pilotage du bloc (72 h)",
@@ -142,7 +142,7 @@
     "staffing": "Équilibrage du personnel (72 h)",
     "surgeBeds": "Lits de renfort",
     "fte": "ETP",
-    "crisis": "Préparation aux crises (72 h)",
+    "crisis": "Préparation aux scénarios (72 h)",
     "signals": "Signaux externes",
     "scenarios": "Scénarios",
     "bedDays": "jours-lits"
@@ -224,7 +224,7 @@
       "bedManager": "Gestion des lits",
       "orSteering": "Pilotage du bloc",
       "staffing": "Personnel",
-      "crisis": "Crise & scénarios"
+      "crisis": "Planification de scénarios"
     },
     "capacityTeaser": {
       "title": "Capacité du site (live)",

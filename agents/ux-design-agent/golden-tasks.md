@@ -1,19 +1,19 @@
 ---
 agent: ux-design-agent
-version: 1.1.0
+version: 1.2.0
 requirement: FR-CX-001, FR-CX-005, FR-VIZ-001, FR-VIZ-002, NFR-GOV-003, NFR-REL-003
-last-reviewed: 2026-07-18
+last-reviewed: 2026-07-27
 ---
 
 # `ux-design-agent` — Golden Tasks
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-18 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (added the Playwright visual + `axe` accessibility verification fixture; issue #258) |
+| **Previous Version** | 1.1.0 (grounded the refine-mockup fixture on the UX pattern catalogue `docs/brandkit/curavias-ux-patterns.md`; issue #365) |
 
 Five fixtures: two happy-path (refine the Curavias baseline mockup into a new
 brand-token-aligned idea variant plus a design summary; and a Playwright visual +
@@ -36,8 +36,10 @@ Bed Manager role. Keep it a mockup for the ideas folder — no app changes yet.
 ### Author Expected steps and tool calls
 
 1. Read the baseline
-   `docs/superpowers/ideas/curavias-ux-ideas/sprint-20-curavias-ux-mockup.html`
-   and the Sprint 20 UX design spec.
+   `docs/superpowers/ideas/curavias-ux-ideas/sprint-20-curavias-ux-mockup.html`,
+   the Sprint 20 UX design spec, and the composed UX pattern catalogue
+   `docs/brandkit/curavias-ux-patterns.md` (reuse P1–P12 rather than inventing
+   layout).
 2. Confirm the idea direction with one clarifying question if the layout intent
    is ambiguous (`brainstorming` — one question at a time).
 3. Author a new PHI-free variant mockup under
