@@ -6,6 +6,7 @@
  *   Likely → 68%, Possible → 31%, Unlikely → 6%
  */
 import type { GroundedReco } from '../../copilot-rail/reco';
+import type { BoardSignal } from './occupancy-data';
 
 export type Certainty = 'Likely' | 'Possible' | 'Unlikely';
 
@@ -52,10 +53,62 @@ export interface ScenarioRun {
   result?: Record<string, unknown>;
 }
 
+/** Scenario-queue result badge (Sprint 27 — middle lane). */
+export type QueueResult = 'SIMULATE' | 'MODELLED' | 'WATCH' | 'HOLDS' | 'STRESS-MAX';
+
+/** A pressure-tested shock in the scenario queue. */
+export interface QueuedScenario {
+  id: string;            // 'SC-01'
+  name: string;          // 'Oncology RN sick-call'
+  trigger: string;       // 'binding constraint fails'
+  impact: string;        // '−2 oncology beds'
+  impactTone: 'over' | 'watch' | 'ok' | 'muted';
+  likelihood: string;    // 'Likely'
+  result: QueueResult;
+  recoId: string;        // route target when the row is clicked
+}
+
+/** Leading glyph per resilience lever (Sprint 27 — lower lane). */
+export type ResilienceLeverIcon = 'spof' | 'buffer' | 'discharge' | 'gate' | 'escalation';
+
+export interface ResilienceLever {
+  id: string;
+  label: string;
+  description: string;
+  bedsProtected: number;   // beds the lever protects (drives the bar)
+  impactLabel?: string;    // overrides the "N beds" label, e.g. 'last'
+  icon: ResilienceLeverIcon;
+  owner: string;
+  timing: string;          // e.g. 'likely', 'possible', 'ready', 'worst-case'
+  timingTone: 'over' | 'watch' | 'ok' | 'muted';
+  window: string;          // right-side action, e.g. 'pre-stage', 'arm', 'gate'
+  spof?: boolean;          // 'THE SPOF' badge
+  handoffTo?: string;      // cross-agent handoff, e.g. 'sba reserve', 'exec'
+  recoId: string;
+}
+
+/** Header roll-up for the resilience levers board (display). */
+export interface ResilienceSummary {
+  stressTested: number;  // shocks stress-tested
+  holdsUnder: number;    // plan holds under N
+  needsReserve: number;  // N need the reserve pulled
+}
+
+/** Footer roll-up: how many shocks are absorbed as levers pre-stage. */
+export interface AbsorbedSummary {
+  absorbed: number;      // 5
+  total: number;         // 6
+}
+
 export interface CrisisPayload {
   residualBeds: number;   // carried in from sba (0 = balanced steady state)
   signals: ExternalSignal[];
+  boardSignals: BoardSignal[];
   scenarios: Scenario[];
+  scenarioQueue: QueuedScenario[];
+  resilienceLevers: ResilienceLever[];
+  resilienceSummary: ResilienceSummary;
+  absorbed: AbsorbedSummary;
   recoById: Record<string, GroundedReco>;
   defaultReco: GroundedReco;
 }
@@ -329,6 +382,39 @@ export const CRISIS_PINNED: CrisisPayload = {
       triggerSignal: 'sed-seismic',
     },
   ],
+  // Trusted signals for the upper-lane left column — external Trust-A feeds +
+  // internal operational feeds, in the shared BoardSignal shape (mirrors OOA's
+  // SignalsPanel: [icon] label · detail — [RAG badge] [provenance icon]).
+  boardSignals: [
+    { id: 'meteoswiss-heat', label: 'MeteoSwiss', detail: 'heat L3/5', iconKey: 'weather', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTUAL', statusTone: 'watch' },
+    { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', iconKey: 'pulse', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTUAL', statusTone: 'watch' },
+    { id: 'alertswiss-heat-test', label: 'Alertswiss/BABS', detail: 'quiet', iconKey: 'alert', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: '1 Test quar.', statusTone: 'signal' },
+    { id: 'sed-seismic', label: 'SED-ETH', detail: 'seismic nominal', iconKey: 'seismic', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'OK', statusTone: 'ok' },
+    { id: 'onco-rn-roster', label: 'Oncology RN roster', detail: '1 free', iconKey: 'people', scope: 'internal', provenance: 'simulated', statusLabel: 'THIN', statusTone: 'over' },
+    { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', iconKey: 'heartpulse', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+    { id: 'transfer-in-queue', label: 'Transfer-in queue', detail: '3 pending', iconKey: 'swap', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+    { id: 'evs-turnaround', label: 'EVS turnaround', detail: '+2h', iconKey: 'clock', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
+  ],
+  // Scenario queue (middle lane) — 6 shocks pressure-tested. recoIds resolve to
+  // existing crisis recos (approval-gated); unknown ids fall back to defaultReco.
+  scenarioQueue: [
+    { id: 'SC-01', name: 'Oncology RN sick-call', trigger: 'binding constraint fails', impact: '−2 oncology beds', impactTone: 'over', likelihood: 'Likely', result: 'SIMULATE', recoId: 'crisis-readiness' },
+    { id: 'SC-02', name: 'ED surge +4', trigger: 'winter respiratory peak', impact: '−4 beds beyond relief', impactTone: 'watch', likelihood: 'Possible', result: 'MODELLED', recoId: 'heatwave-surge' },
+    { id: 'SC-03', name: 'Transfer-in surge', trigger: 'partner site divert', impact: '+3 inbound', impactTone: 'watch', likelihood: 'Possible', result: 'MODELLED', recoId: 'resp-virus-surge' },
+    { id: 'SC-04', name: 'EVS turnaround slip', trigger: 'housekeeping backlog', impact: '+2h on 4 beds', impactTone: 'watch', likelihood: 'Watch', result: 'WATCH', recoId: 'crisis-readiness' },
+    { id: 'SC-05', name: 'OR case overrun', trigger: 'oncology case runs long', impact: '2 post-op late', impactTone: 'ok', likelihood: 'Watch', result: 'HOLDS', recoId: 'crisis-readiness' },
+    { id: 'SC-06', name: 'Combined shock', trigger: 'sick-call + surge stack', impact: '−6 beds worst-case', impactTone: 'muted', likelihood: 'Unlikely', result: 'STRESS-MAX', recoId: 'seismic-event' },
+  ],
+  // Resilience levers (lower lane) — curated priority order (SPOF first), matching the mockup rank 1..5.
+  resilienceLevers: [
+    { id: 'pre-stage-oncology', label: 'Pre-stage oncology backup', description: 'activate the agency-bank oncology RN sba held · standby-only, no cost unless SC-01 fires', bedsProtected: 2, icon: 'spof', owner: 'Staffing command', timing: 'likely', timingTone: 'over', window: 'pre-stage', spof: true, handoffTo: 'sba reserve', recoId: 'crisis-readiness' },
+    { id: 'surge-buffer', label: 'Surge buffer', description: 'flex 4 beds in Surgery B (low-pressure) if ED spikes · cross-cover via sba SH-4405', bedsProtected: 4, icon: 'buffer', owner: 'Site flow', timing: 'possible', timingTone: 'watch', window: 'arm', recoId: 'crisis-readiness' },
+    { id: 'discharge-accelerator', label: 'Discharge accelerator', description: "pull tomorrow's 4 dca-ready discharges forward if beds land late", bedsProtected: 4, impactLabel: '+4 beds', icon: 'discharge', owner: 'dca-agent', timing: 'ready', timingTone: 'ok', window: 'pull fwd', recoId: 'crisis-readiness' },
+    { id: 'transfer-hold-gate', label: 'Transfer-hold gate', description: 'pause accepting regional transfers if shocks stack · auto-release once buffers arm', bedsProtected: 3, icon: 'gate', owner: 'Transfer desk', timing: 'possible', timingTone: 'watch', window: 'gate', recoId: 'crisis-readiness' },
+    { id: 'site-command-escalation', label: 'Site command escalation', description: 'declare an internal capacity alert · exec bridge · combined worst-case only', bedsProtected: 0, impactLabel: 'last', icon: 'escalation', owner: 'Exec · START', timing: 'worst-case', timingTone: 'muted', window: 'bridge', handoffTo: 'exec', recoId: 'crisis-readiness' },
+  ],
+  resilienceSummary: { stressTested: 3, holdsUnder: 2, needsReserve: 1 },
+  absorbed: { absorbed: 5, total: 6 },
   recoById,
   defaultReco,
 };
