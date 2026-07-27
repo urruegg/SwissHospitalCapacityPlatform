@@ -23,6 +23,7 @@ from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from cache.redis_client import RedisCache
 from persistence.cosmos_client import CosmosPersistence
 from orchestrator.redaction import redact, contains_sensitive
+from orchestrator.interaction_record import build_interaction_record
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,7 @@ class GroundedReply:
     citations: tuple[str, ...]
     refused: bool
     correlation_id: str
+    interaction_id: str = ""
 
 
 @dataclass
@@ -96,6 +98,7 @@ class Orchestrator:
         conversation_id: str,
         caller_oid: str,
     ) -> GroundedReply:
+        started = time.perf_counter()
         correlation_id = hashlib.sha256(
             f"{manifest.agent}:{conversation_id}:{time.time_ns()}".encode()
         ).hexdigest()[:16]
@@ -128,11 +131,17 @@ class Orchestrator:
                     "timestampUtc": time.time(),
                 },
             )
+            interaction_id = self._capture(
+                agent=manifest.agent, caller_oid=caller_oid, prompt=user_prompt,
+                answer=refusal_answer, citations=citations, refused=True,
+                degraded=False, started=started,
+            )
             return GroundedReply(
                 answer=refusal_answer,
                 citations=tuple(citations),
                 refused=True,
                 correlation_id=correlation_id,
+                interaction_id=interaction_id,
             )
 
         raw_answer = self.chat_model.complete(system_prompt, user_prompt, grounding)
@@ -169,9 +178,43 @@ class Orchestrator:
             },
         )
 
+        interaction_id = self._capture(
+            agent=manifest.agent, caller_oid=caller_oid, prompt=user_prompt,
+            answer=answer, citations=citations, refused=refused,
+            degraded=degraded, started=started,
+        )
         return GroundedReply(
             answer=answer,
             citations=tuple(citations),
             refused=refused,
             correlation_id=correlation_id,
+            interaction_id=interaction_id,
         )
+
+    def _capture(
+        self,
+        *,
+        agent: str,
+        caller_oid: str,
+        prompt: str,
+        answer: str,
+        citations: list[str],
+        refused: bool,
+        degraded: bool,
+        started: float,
+    ) -> str:
+        """Build + persist a DC-AGENT-INTERACTION-v1 record; return its id."""
+        record = build_interaction_record(
+            agent=agent,
+            conversation_key=f"{caller_oid}:{agent}",
+            prompt=prompt,
+            answer=answer,
+            citations=citations,
+            refused=refused,
+            reco=None,
+            model={"name": type(self.chat_model).__name__},
+            provenance="live" if not degraded else "simulated",
+            total_ms=int((time.perf_counter() - started) * 1000),
+        )
+        self.persistence.write("agent_interactions", record)
+        return record["interactionId"]
