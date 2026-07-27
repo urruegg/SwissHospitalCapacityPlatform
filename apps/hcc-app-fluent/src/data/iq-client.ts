@@ -1,4 +1,5 @@
 import type { Provenance } from '../journey/RoleBoard';
+import { getAgentHostUrl } from '../config/runtime-config';
 
 /**
  * Sprint 27 — IQ-layer data-access gateway (the single data ingress).
@@ -40,7 +41,9 @@ export interface IqResult<T> {
 // without code edits. (MSAL config lives in auth/msal-provider.ts and is not a
 // golden-data ingress, so it is out of this gateway's scope.)
 const goldenSourceUrl: string = import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
-const agentHostBaseUrl: string = import.meta.env.VITE_AGENT_HOST_URL ?? '';
+// #447 — runtime-injected first (window.__ENV__), build-time VITE_* as fallback,
+// so one env-agnostic image serves every environment (no per-env bake).
+const agentHostBaseUrl: string = getAgentHostUrl();
 
 /** True when the golden structured-data surface (Fabric Data Agent / Gold REST) is configured. */
 export function isGoldenSourceConfigured(): boolean {

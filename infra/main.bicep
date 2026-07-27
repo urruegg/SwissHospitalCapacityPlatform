@@ -301,6 +301,9 @@ param enableAppFluentModule bool = false
 @description('Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR.')
 param appFluentImage string = 'nginxinc/nginx-unprivileged:1.27-alpine'
 
+@description('#447 — Foundry agent-host base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.AGENT_HOST_URL). Set per-env to the environment-local agent-host FQDN (SIT vs PROD) so the app calls its own region\'s agent-host. Empty keeps the built-in mock. Replaces the former build-time VITE_AGENT_HOST_URL bake so one image is env-agnostic.')
+param appFluentAgentHostUrl string = ''
+
 // Sprint 13.1 T-DNS — curavias.ch public custom hostname for the Fluent app (ADR-0030).
 @description('Public custom hostname for the hcc-app-fluent CA ingress. Empty string keeps the CA on its default *.azurecontainerapps.io hostname. Set to appsit.curavias.ch in SIT and app.curavias.ch in PROD per ADR-0030.')
 param appFluentCustomHostname string = ''
@@ -753,6 +756,8 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     tags: tags
     appImage: appFluentImage
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    // #447 runtime agent-host URL (per-env), injected into window.__ENV__ at container start.
+    agentHostUrl: appFluentAgentHostUrl
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

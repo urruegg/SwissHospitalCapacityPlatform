@@ -1,2 +1,3 @@
 # Keep shell hooks LF so Git-for-Windows bash can execute them.
 .githooks/pre-commit text eol=lf
+apps/hcc-app-fluent/docker-entrypoint.d/*.sh text eol=lf
