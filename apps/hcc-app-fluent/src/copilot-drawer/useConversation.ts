@@ -2,6 +2,8 @@ import { useCallback, useSyncExternalStore } from 'react';
 import { invokeAgent, type GroundedReply } from './agent-manifest';
 import type { ConversationTurn } from './AgentInvoker';
 import { conversationStore, conversationKey } from './conversation-store';
+import { foundryThreadMap, foundryThreadsEnabled } from './foundry-thread-map';
+import type { ContextEnvelope } from '../context/context-envelope';
 
 /**
  * Sprint 29 M1 — per-(user x agent) conversation hook.
@@ -12,8 +14,18 @@ import { conversationStore, conversationKey } from './conversation-store';
  * argument surfaces *that* agent's own thread instead of leaking the previous
  * agent's turns (design Q2). `userOid` is optional in M1 and becomes the primary
  * scoping key in M4.
+ *
+ * #424 M1 — when an agent-scoped `env` is supplied and live Foundry threads are
+ * enabled (`VITE_FOUNDRY_THREADS_ENABLED`), each send resolves/reuses this
+ * `(user x agent)` Foundry thread via {@link foundryThreadMap}. The `threadId`
+ * is handed to the agent-host in the live-thread milestone (#424 M3); here it
+ * seeds the map so the wiring — and its reset on sign-out — is exercised.
  */
-export function useConversation(agent: string, userOid?: string | null) {
+export function useConversation(
+  agent: string,
+  userOid?: string | null,
+  env?: ContextEnvelope | null,
+) {
   const key = conversationKey(agent, userOid);
 
   const slice = useSyncExternalStore(
@@ -25,6 +37,12 @@ export function useConversation(agent: string, userOid?: string | null) {
   const send = useCallback(
     async (prompt: string) => {
       if (!prompt.trim()) return;
+      // #424 M1 — resolve/reuse the live Foundry thread for this (user x agent)
+      // when threads are enabled. The record's threadId is passed to the
+      // agent-host in #424 M3; here it seeds the map (reset on sign-out).
+      if (env && env.agent != null && foundryThreadsEnabled()) {
+        foundryThreadMap.getOrCreate(env);
+      }
       conversationStore.appendTurn(key, { role: 'user', text: prompt });
       conversationStore.setBusy(key, true);
       try {
@@ -40,7 +58,7 @@ export function useConversation(agent: string, userOid?: string | null) {
         conversationStore.setBusy(key, false);
       }
     },
-    [key, agent],
+    [key, agent, env],
   );
 
   return { turns: slice.turns, busy: slice.busy, send };
