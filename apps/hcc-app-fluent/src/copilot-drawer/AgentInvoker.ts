@@ -9,6 +9,8 @@ export interface ConversationTurn {
   refused?: boolean;
   /** Structured grounded artefact when the agent returned one (Foundry Agent). */
   reco?: GroundedReco;
+  /** Sprint 30 M2 — capture id of this turn, for attaching user-interaction events. */
+  interactionId?: string;
 }
 
 /**
@@ -36,6 +38,7 @@ export function useAgentInvoker(agent: string) {
             citations: reply.citations,
             refused: reply.refused,
             reco: reply.reco,
+            interactionId: reply.interactionId,
           },
         ]);
       } finally {

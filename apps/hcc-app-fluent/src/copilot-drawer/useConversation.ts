@@ -1,5 +1,5 @@
 import { useCallback, useSyncExternalStore } from 'react';
-import { invokeAgent, type GroundedReply } from './agent-manifest';
+import { invokeAgent, sendInteractionEvent, type GroundedReply } from './agent-manifest';
 import type { ConversationTurn } from './AgentInvoker';
 import { conversationStore, conversationKey } from './conversation-store';
 import { foundryThreadMap, foundryThreadsEnabled } from './foundry-thread-map';
@@ -52,6 +52,7 @@ export function useConversation(
           text: reply.answer,
           citations: reply.citations,
           refused: reply.refused,
+          interactionId: reply.interactionId,
         };
         conversationStore.appendTurn(key, turn);
       } finally {
@@ -61,5 +62,17 @@ export function useConversation(
     [key, agent, env],
   );
 
-  return { turns: slice.turns, busy: slice.busy, send };
+  /**
+   * Sprint 30 M2 — emit a thumbs user-event for a captured turn. Best-effort and
+   * advisory-only: routes through `sendInteractionEvent`, which no-ops without a
+   * live agent-host and never throws into the UI.
+   */
+  const rate = useCallback(
+    async (interactionId: string, value: 'up' | 'down') => {
+      await sendInteractionEvent(agent, interactionId, 'thumbs', value);
+    },
+    [agent],
+  );
+
+  return { turns: slice.turns, busy: slice.busy, send, rate };
 }
