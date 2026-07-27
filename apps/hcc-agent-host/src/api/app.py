@@ -123,6 +123,12 @@ class ToolRequest(BaseModel):
     hitlEvidence: dict[str, dict[str, Any]] = {}
 
 
+class UserEventRequest(BaseModel):
+    type: str
+    value: str | None = None
+    ts: str | None = None
+
+
 def create_app() -> FastAPI:
     app = FastAPI(title="hcc-agent-host", version="0.1.0")
 
@@ -190,6 +196,17 @@ def create_app() -> FastAPI:
             )
         # Positive-path tool execution wiring lands per agent in follow-up sprints.
         return {"decision": "allow", "gateId": gate.gate_id, "tool": tool}
+
+    @app.post("/agents/{name}/interactions/{interaction_id}/events")
+    def append_event(name: str, interaction_id: str, req: UserEventRequest) -> dict[str, Any]:
+        state = get_state()
+        state.require(name)  # 404 on unknown agent
+        event = {k: v for k, v in req.model_dump().items() if v is not None}
+        try:
+            state.orchestrator.persistence.append_user_event(interaction_id, event)
+        except KeyError:
+            raise HTTPException(status_code=404, detail=f"unknown interactionId '{interaction_id}'")
+        return {"ok": True, "interactionId": interaction_id}
 
     return app
 
