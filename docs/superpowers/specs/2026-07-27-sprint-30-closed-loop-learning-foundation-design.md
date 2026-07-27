@@ -369,6 +369,15 @@ configuration, not redesign.
 stage (prompt-optimizer / Agent Optimizer runs, knowledge-refresh automation,
 fine-tuning), extension beyond `ooa-agent`, and any autonomous change promotion.
 
+> **Decision note (D3 · Improve deferred).** I put **Improve** (prompt-optimizer /
+> Agent Optimizer, knowledge refresh, **fine-tune SFT/DPO/RFT**) **out of scope
+> this sprint** → staged to Sprint 31–33. This sprint = **capture + evaluate +
+> curate + advisory backlog**. Confidence: **medium** — you may want fine-tune
+> sooner or later. The sequencing reflects a hard **data dependency** (you cannot
+> optimize a prompt or fine-tune a model without a curated dataset, which is the
+> *output* of capture + eval + curate), so Improve comes after — but the timing is
+> adjustable and can be pulled forward once the first curated dataset exists.
+
 ---
 
 ## 11. Staged roadmap (later sprints)
