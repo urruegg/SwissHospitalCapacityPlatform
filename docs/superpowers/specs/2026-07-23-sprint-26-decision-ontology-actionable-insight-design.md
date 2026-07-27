@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.8.0 |
+| **Version** | 1.9.0 |
 | **Date** | 2026-07-27 |
 | **Author** | @urruegg |
-| **Status** | Approved — in delivery (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration in fix per §9.11; WS-B barrier Gold materialised per §9.12; prescriptive terms `hcp:Recommendation`/`hcp:Lever` landed per §9.13 — all three originally-deferred items closed) |
-| **Previous Version** | 1.7.0 (added §9.12 WS-B barrier Gold materialization) |
+| **Status** | Complete — all workstreams delivered (WS-A done; WS-B/C/D vertical slice merged #369; fan-out merged #376; WS-C live-apply tooling merged #382/#388; job enabled in SIT #403; WS-B Cosmos seed live-applied; WS-C Foundry registration live-applied + re-verified per §9.11/§9.14; WS-B barrier Gold materialised per §9.12; prescriptive terms `hcp:Recommendation`/`hcp:Lever` landed per §9.13 — all three originally-deferred items closed; live Cosmos/Foundry apply verified complete per §9.14) |
+| **Previous Version** | 1.8.0 (added §9.13 prescriptive ontology terms `hcp:Recommendation`/`hcp:Lever`) |
 | **Related** | [Fabric IQ to Foundry readiness design](2026-07-17-fabric-iq-foundry-readiness-design.md), [Fabric IQ ready evidence](../../architecture/fabric-iq-ready-evidence.md), [Curavias clickable prototype](../ideas/curavias-ux-ideas/prototype/index.html), Sprint 21 (#247) external signals, Sprint 23 (#255) org/skills ontology, Sprint 19 (#239) PROD Switzerland North |
 
 ---
@@ -472,7 +472,8 @@ resolves.
    The complete existing definition (model, instructions, reasoning, existing
    tools such as `ooa-agent`'s `fabric_dataagent`) is echoed verbatim so no agent
    capability is lost. 13 factory tests + the full 147-test decision suite pass.
-4. **Operational follow-up (human-gated, after merge).** Rebuild the
+4. **Operational follow-up (human-gated, after merge) — ✅ COMPLETE (2026-07-26,
+   re-verified 2026-07-27; see §9.14).** Rebuild the
    `hcc-agent-host` image (CI watches `data-platform/decision/**`), bump
    `decisionApplyJobImage` in `sit.bicepparam` to the new merge-SHA tag, redeploy
    SIT, grant the job MI `Foundry User` on `ai-ihzhhpf-sit-eastus2`, then re-run
@@ -558,5 +559,37 @@ recommendation) is ontology-conformant like beats 1-3.
 `expected_impact` on a recommendation is deterministic per D2/D4). No new
 `DC-*` contract, no schema file, no infra / MCP / runtime change. With this
 slice **all three originally-deferred Sprint 26 items are closed**; the live
-Cosmos/Foundry `apply` remains an operational, human-gated step (§9.11 step 4),
-not a modelling gap.
+Cosmos/Foundry `apply` (§9.11 step 4) was completed live 2026-07-26 and
+re-verified 2026-07-27 (§9.14), so it is no longer an open operational step.
+
+### 9.14 WS-C live apply — verified complete (current)
+
+Documentation-only closeout (branch `sprint-26/ws-c-live-apply-closeout`,
+**Platform-control + AI + Docs** lanes). Records the verified live state of the
+§9.11 step-4 operational follow-up. No live mutation was performed — re-seeding
+Cosmos would `409` (seed is not idempotent per the runbook) and Foundry
+re-registration is unnecessary; this section captures the read-only evidence.
+
+Live SIT ground truth re-verified 2026-07-27 (subscription
+`66a9953a-…`, tenant `1337187a-…` MCAP164444):
+
+1. **Decision-apply job** — `caj-decision-apply-ihzhhpf-sit` deployed on the
+   VNet-integrated `cae-ihzhhpf-sit`, image `:a071fbe` (the Agents-API-fixed
+   build pinned per §9.11), plan-first default command.
+2. **RBAC** — the agent-host MI `id-ca-agent-host-ihzhhpf-sit` holds both
+   `Cognitive Services User` and `Foundry User` on `ai-ihzhhpf-sit-eastus2`.
+3. **Foundry registration** — all six decision-tier agents carry the
+   `decision_tier_coordination_<role>` function tool + `decision_tier_role`
+   metadata (csa/sba/orsa/bmca/dca at version 3, ooa at version 5); `ooa-agent`
+   retains its `fabric_dataagent_preview` tool (no capability lost); the two
+   non-decision agents (onboarding, data-quality) correctly carry no decision
+   tool.
+4. **Cosmos** — `plans` (pk `/episode_key`) and `proposed_actions`
+   (pk `/plan_id`) containers live in `cosmos-csa-ihzhhpf-sit` / `csa`; seed
+   applied 2026-07-26 (`{"applied": true, "approvedBy": "urruegg",
+   "planCount": 5}`).
+
+**Guardrails held:** read-only verification + docs only; no LLM-guessed numbers;
+no infra / MCP / code change. Sprint 26 (Decision Ontology & Actionable-Insight
+Layer, #335) is now functionally **complete** — all workstreams delivered and
+all originally-deferred items closed and verified.
