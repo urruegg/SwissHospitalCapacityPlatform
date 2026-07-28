@@ -19,7 +19,10 @@ answer content from a trace.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Iterable
+
+from lib import curator, harness
 
 # Metric -> targeted advisory instruction directive. Insertion order is the
 # canonical directive order (Python dicts preserve insertion order), matching the
@@ -116,3 +119,70 @@ def build_candidate_instructions(base_instructions: str, directives: list[str]) 
         return true_base
     body = "\n".join(f"- {d}" for d in directives)
     return f"{true_base}{_BLOCK_MARKER}\n\n{body}\n"
+
+
+def run_prompt_optimization(
+    *,
+    agent: str,
+    scored_records: list[dict],
+    instructions_path,
+    gate_dataset_path,
+    random_rate: float = 0.0,
+    seed: int = 0,
+    low_score_threshold: float = curator.DEFAULT_LOW_SCORE_THRESHOLD,
+) -> dict:
+    """Produce an advisory prompt-optimization proposal for ``agent``.
+
+    Improvement signal: the curated **scored records** for ``agent`` (design M5
+    seam) drive the failing metrics via :func:`curator.select` +
+    :func:`curator.to_backlog_items`. Guardrail: the candidate is only promotable
+    if the **offline regression gate** over ``gate_dataset_path`` passes
+    (:mod:`lib.harness`). ``random_rate`` defaults to ``0.0`` so only concrete
+    failing metrics - not a random sample - drive directives.
+
+    Returns an advisory proposal dict. This function **never writes**
+    ``AGENT.md`` or any file, opens an issue, or mutates a model (NFR-LEARN-003):
+    a human applies the candidate only after the offline gate passes **and** an
+    explicit ``approved-to-apply``.
+    """
+    scored_for_agent = [
+        r
+        for r in scored_records
+        if r.get("agent") == agent and r.get("eval", {}).get("scored")
+    ]
+    selected = curator.select(
+        scored_for_agent,
+        random_rate=random_rate,
+        seed=seed,
+        low_score_threshold=low_score_threshold,
+    )
+    backlog = curator.to_backlog_items(selected, low_score_threshold=low_score_threshold)
+
+    metrics = sorted({item["metric"] for item in backlog})
+    source_ids = sorted({iid for item in backlog for iid in item["interactionIds"]})
+    directives = propose_directives(set(metrics))
+
+    base = Path(instructions_path).read_text(encoding="utf-8")
+    candidate = build_candidate_instructions(base, directives)
+
+    gate = harness.run_dataset(gate_dataset_path)
+
+    rationale = (
+        f"{len(source_ids)} interaction(s) across {len(metrics)} metric(s) drove "
+        f"{len(directives)} advisory directive(s); offline gate "
+        f"{'passed' if gate['passed'] else 'FAILED'}. Advisory only - promotion "
+        "requires the offline regression pass plus approved-to-apply."
+    )
+
+    return {
+        "agent": agent,
+        "sourceMetrics": metrics,
+        "sourceInteractionIds": source_ids,
+        "directives": directives,
+        "candidateInstructions": candidate,
+        "offlineGatePassed": gate["passed"],
+        "advisory": True,
+        "applied": False,
+        "approvedToApply": False,
+        "rationale": rationale,
+    }
