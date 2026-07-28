@@ -22,6 +22,19 @@ build-time `VITE_AGENT_HOST_URL` fallback. This lets one image (built once and
 region's agent-host — replacing the former build-once+import quirk where PROD
 inherited the SIT agent-host URL.
 
+### Golden-source URL (#424 M2)
+
+The same runtime-injection mechanism carries the golden-source base URL. The
+module sets a `GOLDEN_SOURCE_URL` container env var from the `goldenSourceUrl`
+param (wired from top-level `appFluentGoldenSourceUrl`). When left empty it
+**auto-derives** `<agentHostUrl>/golden` — Option 1, where the agent-host itself
+serves the RLS-scoped `GET /golden/{resource}` surface — so no per-env
+`.bicepparam` value is needed. `docker-entrypoint.d/30-env-config.sh` writes
+`window.__ENV__.GOLDEN_SOURCE_URL`; the app reads live board payloads from
+`GET <GOLDEN_SOURCE_URL>/{resource}`. Set the param explicitly only when the
+golden source diverges from the agent-host (e.g. a future Fabric-backed
+endpoint, Option 2).
+
 ## What it does NOT deploy
 
 - **Not the built app image.** Defaults to `nginxinc/nginx-unprivileged:1.27-alpine` until `app-build.yml` is extended to push the real image to ACR (follow-up gap-fill).
