@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.0 |
+| **Version** | 0.13.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.12.0 (added the Sprint 30 M5 Evaluation Curation + Advisory Backlog: selection policy over scored traces, versioned-dataset rows, advisory GitHub-issue drafts) |
+| **Previous Version** | 0.13.0 (added the Sprint 30 M5 Evaluation Curation + Advisory Backlog: selection policy over scored traces, versioned-dataset rows, advisory GitHub-issue drafts); this bump cross-links the ratifying ADR-0055 in §Evaluation and corrects the advisory-only citation to NFR-LEARN-003 (Sprint 30 M6) |
 
 ## Purpose
 
@@ -228,6 +228,10 @@ than a free-form sentence.
 
 ## Evaluation
 
+The closed-loop learning approach below — capture contract, retention class, and
+online-eval sampling — is ratified in
+[ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md) (Sprint 30).
+
 ### Agent-Turn Observability (Sprint 30 M1)
 
 The Observe stage of the closed-loop foundation. Every orchestrator dispatch
@@ -347,7 +351,7 @@ and emits two advisory artefacts:
   grouped by agent + failing metric, tagged `learn` / `advisory` /
   `agent:<name>` / `metric:<name>`, carrying counts + source `interactionId`s.
 
-Advisory-only (`NFR-LEARN-002`): the job **never** writes a dataset file, opens an
+Advisory-only (`NFR-LEARN-003`): the job **never** writes a dataset file, opens an
 issue, or mutates a prompt / knowledge source / guardrail / model. A human reviews
 the rows, sets `signedOff`, and applies changes gated by the offline regression
 suite + `approved-to-apply`. PHI-safety (ADR-0016 / `NFR-LEARN-001`): backlog

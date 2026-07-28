@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.12.0 |
+| **Version** | 0.13.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.1 (repointed the Curavias ADR link ADR-0040 -> ADR-0050 (#378)); this bump adds the Sprint 31 Data Quality Agent proactive-assessment control section |
+| **Previous Version** | 0.12.0 (added the Sprint 31 Data Quality Agent proactive-assessment control section); this bump adds control CH-C11 closed-loop learning governance, ratified in ADR-0055 (Sprint 30, #443) |
 
 ## Purpose
 
@@ -97,6 +97,7 @@ obligations, especially for sensitive data handling and explainability needs.
 | CH-C08 | EPR certification and interoperability | EPDG Art. 11-13 + EPDV-EDI | Certification boundary mapping, conformance evidence for standards/profiles | Not yet defined in detail | Open: add EPR conformance control pack and responsibility matrix |
 | CH-C09 | Research use governance (conditional) | HRA (consent, ethics, export, storage) | Separate legal basis for research, ethics approvals, segregated environments and data pipelines | Not implemented | Open: create optional research lane with explicit opt-in controls |
 | CH-C10 | AI oversight for high-impact workflows | FADP transparency/automated decision context + HRA principles (if research) | Human-in-the-loop, explainability notes, model risk thresholds, post-deployment monitoring | AI guidance exists in docs | Partial: add measurable AI acceptance criteria and override audit trail |
+| CH-C11 | Closed-loop learning governance | FADP (minimization; automated processing) + DPO | PHI-free interaction capture (redaction gate), R3 retention + residency, advisory-only human-gated improvement (offline-regression + `approved-to-apply`), full interaction->dataset->eval->change lineage | Ratified in [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md); implemented Sprint 30 M0-M5 (synthetic, no-PHI) | Partial: extend beyond lead agent (Sprint 31) and finalise legal retention duration |
 
 ### Architecture Challenge Outcome (Compliance Lens)
 
@@ -314,4 +315,3 @@ For this repository, Purview shall be treated as:
 4. Add evidence collection templates for E-01 to E-09.
 5. Add canton-specific annex once target canton rollout plan is fixed.
    Seeded in [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md) (Sprint 05).
-

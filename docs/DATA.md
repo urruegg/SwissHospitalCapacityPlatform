@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.16.0 |
+| **Version** | 0.17.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.15.0 (registered Sprint 30 M3 eval golden-dataset location; Sprint 31 DQA contracts); this bump adds Sprint 32 Signal Agent `DC-REF-CERTIFICATION-v1` contract (#454) |
+| **Previous Version** | 0.16.0 (added Sprint 32 Signal Agent DC-REF-CERTIFICATION-v1 contract); this bump classifies the Sprint 30 agent_interactions store + golden datasets as R3 retention with residency, ratified in ADR-0055 |
 
 ## Purpose
 
@@ -124,6 +124,17 @@ keeps lineage back to its `interactionId` (design §8: trace → dataset → eva
 change). They are synthetic and PHI-free (ADR-0016) and are scored by the shared
 evaluator library (`evals/lib/`) in the offline regression gate; see `docs/AI.md`
 §Evaluation → Offline Evaluation Gate.
+
+### Interaction Capture Retention and Residency (Sprint 30 M6)
+
+The `agent_interactions` capture store and the versioned golden datasets curated
+from it are classified **R3 (AI trace and model evidence, 24 months)** per the
+Retention Policy Proposal below — they are agent decision-trace and grounding
+evidence, not raw operational buffers (R1) or compliance/security evidence (R4).
+The store follows platform residency: the demo region for the synthetic showcase,
+Switzerland North at GA, never crossing region without an approved runbook. The
+records are PHI-free by construction (redaction gate; ADR-0016). Ratified in
+[ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md).
 
 ### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
 
