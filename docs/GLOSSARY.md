@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | n/a (initial version) |
+| **Previous Version** | 1.0.0 (initial version); this bump adds Process IQ, DevSecOps IQ, and Governance IQ to the IQ vocabulary and disambiguates Work IQ for the SD operating-model layering |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -64,10 +64,24 @@ in every in-scope document.
   It serves grounded, cited answers over the shared knowledge classes.
 * **Work IQ** — the Microsoft 365 work-context signal source (meetings, mail,
   meeting-recording transcripts) consumed **read-only** via the `work-iq-mcp`
-  server for review-session and email-feedback intake.
+  server for review-session and email-feedback intake. In the SD operating-model
+  layering, *Work IQ* also names the **experience and role-based control-plane
+  layer** (Fluent UI + Copilot rail + role surfaces), which consumes this
+  narrowly-scoped M365 Work IQ signal.
 * **Copilot IQ** — Copilot-surfaced intelligence in the experience layer: the
   in-app Curavias copilot rail and Copilot-mediated interactions with the
   platform's agents.
+* **Process IQ** — the patient-flow journey layer: the sequence of role copilots
+  (OOA → DCA → BMCA → ORSA → SBA → CSA) through which a single capacity signal is
+  steered end to end. A cross-cutting operating-model spine, not a stacked
+  platform layer; steered by Fabric IQ signals and rendered by Work IQ.
+* **DevSecOps IQ** — the product-team-of-agents layer: functional-role agents
+  that build their Foundry-IQ relatives, plus Dev / Sec / Ops role agents,
+  delivered through the GitHub delivery plane, GitHub CLI Copilot, and the MCP
+  allow-list, and gated by a human agent boss.
+* **Governance IQ** — the NFR-guardrail layer that spans every other layer: Zero
+  Trust, Swiss residency, advisory-only, no-PHI, evidence-first audit, the
+  DSG / CH-C01..C10 control model, and (planned) Purview enforcement.
 
 ### 1.3 Data and delivery vocabulary
 
