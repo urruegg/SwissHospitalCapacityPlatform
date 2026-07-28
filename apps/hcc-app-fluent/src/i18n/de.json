@@ -34,6 +34,7 @@
     "rolesDescription": "Live-Ansicht der App-Rollen aus Microsoft Entra (schreibgeschützt).",
     "evidence": "Nachweise",
     "evidenceDescription": "Presenter-Whiteboard: BOM-, ADR-, Anforderungs-, GA-Nachweis- und Abhängigkeitskarten (synthetisch, keine PHI).",
+    "opportunities": "Opportunities",
     "nav": {
       "label": "Backstage-Bereiche"
     },

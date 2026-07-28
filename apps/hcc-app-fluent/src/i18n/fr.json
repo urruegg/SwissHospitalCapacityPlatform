@@ -34,6 +34,7 @@
     "rolesDescription": "Vue en direct des rôles de l'application depuis Microsoft Entra (lecture seule).",
     "evidence": "Preuves",
     "evidenceDescription": "Tableau blanc du présentateur : cartes BOM, ADR, exigences, preuves GA et dépendances (synthétiques, sans PHI).",
+    "opportunities": "Opportunités",
     "nav": {
       "label": "Sections des coulisses"
     },
