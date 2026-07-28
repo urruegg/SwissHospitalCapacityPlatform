@@ -1,12 +1,12 @@
-﻿# PRD
+# PRD
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.2.0 |
-| **Date** | 2026-07-26 |
+| **Version** | 2.3.0 |
+| **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.1.0 (added Sprint 29 application context-architecture requirements FR-CTX-001..004 + NFR-CTX-001..002, #399); this bump merges the Sprint 27 Curavias app UX-polish requirements FR-UX-001..006 + NFR-UX-001..004 and their traceability row |
+| **Previous Version** | 2.2.0 (merged Sprint 27 app UX-polish requirements); this bump adds Sprint 32 Signal Agent requirements FR-SIG-001..011 + NFR-SIG-001..002 (#454) |
 
 ## Purpose
 
@@ -298,6 +298,29 @@ public site `apps/curavias-web` and any Astro pattern are out of scope.
 | `FR-UX-006` | The solution shall maintain an **ordered polish backlog** applying the same design-system recipe to the remaining role boards and surfaces in later sprints. |
 
 
+### S) Signal Agent — Channel Intake Lifecycle (Sprint 32)
+
+Sprint 32 deltas formalised per the
+[Sprint 31-32 Signal Agent and Data Quality Agent design](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md)
+and issue #454. The `signal-agent` is advisory-only and human-in-the-loop: it
+consumes a curated feed first, treats certification data as staff-PII, and never
+activates a channel or ontology change without recorded data-owner and
+compliance/DPO approval.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-SIG-001` | Discover and rank referenced-vs-wired signal gaps into a Signal Gap Register, demand-driven by a `DC-DQ-GAP-v1` `newSourceNeeded` gap. |
+| `FR-SIG-003` | Classify a candidate channel by domain family, signal type, trust tier A/B/C, and data class PHI/staff-PII/non-PHI. |
+| `FR-SIG-004` | Select a connector adapter from the governed adapter catalogue. |
+| `FR-SIG-005` | Draft and register the channel data contract (`DC-REF-CERTIFICATION-v1` for the certification lane). |
+| `FR-SIG-006` | Bind channel entities to the reference ontology (Credential/Competency/Qualification/IssuingAuthority) and maintain the crosswalk. |
+| `FR-SIG-007` | Run a sandbox Channel Readiness Scorecard (schema conformance, provenance, dedup) on a curated sample feed before activation. |
+| `FR-SIG-008` | Resolve credentials to competency codes and enrich the skills baseline by pseudonymised work-ID, feeding SBA skills-based assignment. |
+| `FR-SIG-009` | Manage the channel lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire) with provenance. |
+| `FR-SIG-010` | Gate channel activation and ontology change on a recorded human data-owner and compliance/DPO `approved-to-apply` approval; the agent remains advisory-only with no autonomous activation. |
+| `FR-SIG-011` | Record provenance and audit evidence for every onboarding decision and activation. |
+
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -437,6 +460,14 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-UX-003` | Every polished screen shall carry **before / after visual evidence** (light / dark, desktop / narrow) attached to its pull request. |
 | `NFR-UX-004` | UX polish shall remain **experience-lane only**: no backend / data-contract / agent-prompt / infrastructure change, no PHI, and no public-site (Astro) patterns introduced into the internal app. |
 
+### O) Signal Agent Governance (Sprint 32)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-SIG-001` | Signal-channel ingestion shall follow Zero-Trust, read-scoped ingestion: every external, MCP, or model value is treated as untrusted and re-validated at each boundary. |
+| `NFR-SIG-002` | Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016). |
+
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -477,6 +508,8 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 
 | [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) + [`docs/superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md`](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md) + [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](adr/0052-app-context-envelope-per-agent-threads.md) *(Sprint 29: app context envelope + per-(user x agent) threads + role-first-eligible board + envelope propagation/guard + config-gated Foundry thread map + simulated OBO/RLS; issue #399)* | `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` |
 | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
+| [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
+
 
 ## Assumptions To Validate In Implementation Planning
 

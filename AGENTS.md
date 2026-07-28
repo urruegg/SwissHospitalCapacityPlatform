@@ -1,12 +1,12 @@
-﻿# AGENTS.md — Agent Registry
+# AGENTS.md — Agent Registry
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.11.0 |
-| **Date** | 2026-07-25 |
-| **Author** | Urs Rüeegg |
+| **Version** | 2.12.0 |
+| **Date** | 2026-07-27 |
+| **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 2.10.0 (added the `product-owner-agent` registry row for the Sprint 28 Curavias Product Owner Agent; issue #377) |
+| **Previous Version** | 2.11.0 (added the `signal-agent` registry row for the Sprint 32 Signal Agent; issue #454) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -191,6 +191,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `sba-agent` | Staffing-balance copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@sba-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/sba-agent/AGENT.md`](agents/sba-agent/AGENT.md) | [`agents/sba-agent/golden-tasks.md`](agents/sba-agent/golden-tasks.md) |
 | `csa-agent` | Crisis / scenario copilot — full **Prepare/Run/Evaluate/Recommend** body (S16 T4; expanded from the S11 scaffold). Supersedes the Sprint 09 v2.0.0 Foundry-hosted CSA body per the 2.0.0 restructure (git log for the old body). | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@csa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp`, `cosmos-mcp` | `deploy` (gated by `approved-to-apply`; Run triggers the `csa-simulate` notebook) | [`agents/csa-agent/AGENT.md`](agents/csa-agent/AGENT.md) | [`agents/csa-agent/golden-tasks.md`](agents/csa-agent/golden-tasks.md) |
 | `signal-triage-agent` | Trusted external-signal triage - dedup, conflict arbitration, TriggerRule match, and advisory CSA handoff for `DC-EXT-SIGNAL-v1` facts (S21 M7) | @urruegg | Activator/Reflex webhook, scheduled poller bridge, or `@signal-triage-agent` mention | `github-mcp`, `fabric-mcp` | `write` | [`agents/signal-triage-agent/AGENT.md`](agents/signal-triage-agent/AGENT.md) | [`agents/signal-triage-agent/golden-tasks.md`](agents/signal-triage-agent/golden-tasks.md) |
+| `signal-agent` | Channel-intake lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor) + the certification→skills onboarding worked example (S32) | @urruegg | `@signal-agent` mention or a channel-onboarding issue consuming a `DC-DQ-GAP-v1` `newSourceNeeded` gap | `github-mcp`, `fabric-mcp` | `write` | [`agents/signal-agent/AGENT.md`](agents/signal-agent/AGENT.md) | [`agents/signal-agent/golden-tasks.md`](agents/signal-agent/golden-tasks.md) |
 | `data-quality-agent` | Bronze/Silver/Gold contract-check + drift alerts (S11), including the Sprint 21 `DC-EXT-SIGNAL-v1` external-signal gate for schema, dedup, quarantine, provenance, licence, provider-manifest schema-validity (`provider.yaml` against `provider.schema.json`), `provenance.activeBinding` presence, `ext_dim_source.dataMode` population, and manifest `licence` presence | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or workflow-scheduled invocation; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/data-quality-agent/AGENT.md`](agents/data-quality-agent/AGENT.md) | [`agents/data-quality-agent/golden-tasks.md`](agents/data-quality-agent/golden-tasks.md) |
 | `onboarding-agent` | Onboarding welcome-PR bot (S11 stretch) | @urruegg | Entra audit-log new-sign-in event via workflow; runs as a workflow-scheduled bot (not through the agent-host) | `github-mcp`, `entra-mcp` (read-only) | `write` (repo); `read` (entra-mcp) | [`agents/onboarding-agent/AGENT.md`](agents/onboarding-agent/AGENT.md) | [`agents/onboarding-agent/golden-tasks.md`](agents/onboarding-agent/golden-tasks.md) |
 | `fabric-data-agent` | Read-only ontology + semantic-model query surface (Sprint 09 v2). Retained through the 2.0.0 restructure as a Fabric IQ-hosted read-only agent; runtime posture reconciliation with ADR-0008 is a separate follow-up. **Live demo artefact:** `da_hospital_capacity` (`b2e53c23-182a-452d-9321-e63f6009e80b`) published in SIT workspace `f3af9733-9503-4e92-98f9-a901d96f1c87` (`westus2`, endpoint `https://api.fabric.microsoft.com/v1/workspaces/f3af9733-.../aiskills/b2e53c23-.../aiassistant/openai`), consumed live by the Foundry `ooa-agent` per [ADR-0034](docs/adr/0034-fabric-iq-demo-scope-artefacts.md) + [evidence doc](docs/architecture/fabric-iq-ready-evidence.md). | @urruegg | Runtime-only; not invoked from repo issues | Fabric IQ (Preview per ADR-0002) | `read` | [`agents/fabric-data-agent/AGENT.md`](agents/fabric-data-agent/AGENT.md) | *(none; Sprint 11 shape not yet applied)* |

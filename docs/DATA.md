@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.0 |
+| **Version** | 0.14.0 |
 | **Date** | 2026-07-27 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.12.0 (added DC-AGENT-INTERACTION-v1 capture contract) |
+| **Previous Version** | 0.13.0 (added DC-AGENT-INTERACTION-v1 capture contract) |
 
 ## Purpose
 
@@ -111,6 +111,7 @@ Each contract must define:
 | Specialty-capacity onboarding contract | DC-ONB-CAPACITY-v1 | Specialty-tagged hospital capacity onboarding metadata (Sprint 6) |
 | External signal contract | DC-EXT-SIGNAL-v1 | CAP-Suisse-aligned trusted external hazard signals for advisory CSA trigger evaluation |
 | Agent-interaction contract | DC-AGENT-INTERACTION-v1 | Closed-loop-learning capture: one PHI-free record per agent turn + user events (Sprint 30) |
+| Certification reference contract | DC-REF-CERTIFICATION-v1 | Credential↔competency crosswalk (staff-PII, pseudonymised work-ID); intake for the certification→skills onboarding lane (Sprint 32) |
 
 ### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
 
@@ -264,6 +265,30 @@ These feed the **`external-signals`** Direct-Lake semantic model
 grounded into the `da_hospital_capacity` data agent. Full proof (row counts,
 trust-badge DAX, data-agent probe, gate record) is in
 [`signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md).
+
+### DC-REF-CERTIFICATION-v1 (staff certification lane)
+
+`DC-REF-CERTIFICATION-v1` is the Sprint 32 staff certification reference
+contract for the certification-to-skills onboarding lane. The machine-readable
+schema is
+[`data/synthetic/schema/dc-ref-certification-v1.schema.json`](../data/synthetic/schema/dc-ref-certification-v1.schema.json),
+and the curated synthetic sample feed is
+[`data/synthetic/schema/certification-sample-feed.json`](../data/synthetic/schema/certification-sample-feed.json).
+
+The contract is classified as staff-PII under nDSG. Records use only
+pseudonymised `WID-*` work-IDs and never carry names, AHV numbers, or direct
+staff identifiers; this keeps patient PHI out of scope while preserving the
+regulated staff-PII handling required by [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md).
+
+The contract is consumed by the deterministic `data-platform/signals/` modules
+and the advisory `signal-agent` to resolve credentials to competency codes,
+enrich the skills baseline by pseudonymised work-ID, and support the sandbox
+Channel Readiness Scorecard before HITL activation.
+
+This contract intentionally uses a flat per-record shape with underscore-prefixed
+governance tags (`_classification`, `_residency`, `_legal_basis`, `_retention`,
+`_provenance`, `_pseudonymisation`) per design §9, which the SGA deterministic
+modules consume, differing from the enveloped older `DC-*` contracts.
 
 ### Sprint 26 WS-A — Foresight tier gold tables and contracts
 
