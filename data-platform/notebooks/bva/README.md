@@ -29,6 +29,22 @@ medallion's `readiness_rules.py`. The notebooks read the Delta/Files sources,
 and write the Gold tables. For the synthetic-seed scale this keeps **one** tested
 implementation with no notebook/reference drift.
 
+## Sprint 33 WS-A cost-basis notebook
+
+`build_gold_bva_costbasis.py` is a thin Fabric I/O wrapper for the Sprint 33
+WS-A BVA cost-basis product. It reads the seven master-data CSVs from
+`Files/master-data/bva/`, delegates transform logic to
+[`data-platform/bva/costbasis.py`](../../bva/costbasis.py), and writes:
+
+- `gold.bva_bom_dim`
+- `gold.bva_cost_fact`
+- `gold.bva_effort_fact`
+- `gold.bva_hospital_profile_dim`
+- `gold.bva_baseline_kpi`
+
+This notebook is separate from, and does not modify, the Sprint 15
+consumption/value-realization notebooks listed above.
+
 ## Adoption join (T4)
 
 `build_gold_bva_facts.py` joins Sprint 12 adoption telemetry into

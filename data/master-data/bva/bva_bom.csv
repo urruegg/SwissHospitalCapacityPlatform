@@ -1,0 +1,9 @@
+resource_type,resource_group,env,resource_id
+resource-group,rg-ihzhhpf-sit,sit,rg-ihzhhpf-sit
+resource-group,rg-ihzhhpf-prod,prod,rg-ihzhhpf-prod
+fabric-capacity,rg-ihzhhpf-sit,sit,fab-ihzhhpf-sit
+storage-account,rg-ihzhhpf-sit,sit,stihzhhpfsit
+key-vault,rg-ihzhhpf-prod,prod,kv-ihzhhpf-prod
+log-analytics,rg-ihzhhpf-prod,prod,law-ihzhhpf-prod
+container-app,rg-ihzhhpf-prod,prod,ca-ihzhhpf-prod
+application-insights,rg-ihzhhpf-prod,prod,appi-ihzhhpf-prod
