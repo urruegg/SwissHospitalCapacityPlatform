@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-07-27 |
 | **Author** | Urs Rüegg |
 | **Decision-makers** | @urruegg |
@@ -46,14 +46,18 @@ Fabric IQ first).
 3. **Weighting per decision class.** Weights are ratified here and may differ per
    decision class. For Sprint 31 the ratified profiles are:
 
-   | Decision class | Weighting profile |
-   |----------------|-------------------|
-   | `default` | Equal weight across all eight dimensions. |
-   | `crisis` / real-time steering | Up-weight `timeliness`, `completeness`, `provenance` (freshness and source-trust dominate under time pressure). |
-   | `planning` / forecast grounding | Up-weight `completeness`, `consistency`, `ontology_mapping` (coverage and semantic alignment dominate). |
+   | Decision class | completeness | timeliness | validity | uniqueness | consistency | lineage_integrity | provenance | ontology_mapping |
+   |----------------|---|---|---|---|---|---|---|---|
+   | `default` | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 |
+   | `crisis` | 2.0 | 3.0 | 1.0 | 1.0 | 1.0 | 1.0 | 2.0 | 1.0 |
+   | `planning` | 2.0 | 1.0 | 1.0 | 1.0 | 2.0 | 1.0 | 1.0 | 2.0 |
 
-   Concrete weight vectors live with the model in code and are changed only by a
-   `modelVersion` bump plus an update to this ADR.
+   Values are **relative** weights normalized by the model (so `default`
+   reproduces equal weighting). The **source of truth** is
+   `data-platform/quality/trustscore-weights.json` (`modelVersion: trustscore-v1`);
+   this table is the human-readable mirror. Values change only by a
+   `modelVersion` bump plus a config PR under the sign-off in the Ratification
+   subsection below.
 
 4. **Grounding-readiness thresholds.** A domain is certified `grounding-ready`
    only when **all** of the following clear the threshold for its decision class;
@@ -65,6 +69,12 @@ Fabric IQ first).
    | `crisis` | ≥ 0.85 | `timeliness` ≥ 0.90, `completeness` ≥ 0.85, `provenance` ≥ 0.85 |
    | `planning` | ≥ 0.80 | `completeness` ≥ 0.85, `consistency` ≥ 0.80, `ontology_mapping` ≥ 0.80 |
 
+The **source of truth** for these thresholds is
+`data-platform/quality/trustscore-weights.json` (`modelVersion: trustscore-v1`);
+the table above is the human-readable mirror. The grounding-readiness *gate*
+that enforces them (compare a domain's score/dimensions, then advise
+degraded-mode or withhold) is a separate implementation slice.
+
 5. **Read-only, advisory, HITL posture.** DQA never edits source data. Each
    below-threshold dimension is emitted as a `DC-DQ-GAP-v1` finding routed to the
    accountable data owner; the owner remediates. The agent cannot self-certify a
@@ -73,6 +83,36 @@ Fabric IQ first).
 6. **The `DC-DQ-GAP-v1` seam (frozen).** A gap with `newSourceNeeded: true` is the
    single, frozen integration point handed to the Sprint 32 Signal Agent (SGA);
    its shape is fixed by the design (§8) and the contract schema.
+
+## Ratification
+
+The eight-dimension model, the three decision-class weight profiles (§3), and the
+grounding-readiness thresholds (§4) are **ratified as an expert-set baseline** by
+the single accountable owner **@urruegg** (platform / data-governance), consistent
+with the repository's single-owner ADR acceptance practice. This is a deliberate,
+signed baseline — not yet backtested against observed forecast/grounding impact
+(see Revision path). Acceptance is recorded here rather than gated on a board
+sign-off.
+
+## Revision path
+
+The weights and thresholds are expected to change as evidence accrues:
+
+1. A **backtest-driven revision** is scheduled once the Sprint 30 evaluation
+   harness has enough scored traces to compare the expert-set thresholds against
+   observed impact.
+2. A revision is a **config PR** to `trustscore-weights.json` + **single-owner
+   sign-off** + a `modelVersion` bump (`trustscore-v{N}`), with this ADR's mirror
+   tables updated in the same PR.
+3. A **new superseding ADR** is required only when the **dimension set or the
+   aggregation method** changes — not for tuning existing values.
+
+## Ownership (RACI)
+
+Every gold domain should have a named accountable owner. An **unowned** gold
+domain is not an acceptance blocker: it surfaces as a `DC-DQ-GAP-v1` finding that
+the DQA raises and routes, so the agent's own mechanism closes the RACI gap over
+time.
 
 ## Consequences
 
@@ -85,9 +125,9 @@ Fabric IQ first).
   the Sprint 30 evaluation harness — an open question in the design §12). Changing
   the model requires a coordinated `modelVersion` bump + ADR update, which is
   deliberate friction to prevent silent drift.
-- **Status.** `Proposed` until the trust-score module + thresholds are exercised
-  on ≥1 gold domain and the sprint is accepted, at which point this ADR moves to
-  `Accepted`.
+- **Status.** `Accepted`. The trust-score module + thresholds are exercised on a
+  gold domain (18 unit tests) and ratified as an expert-set baseline; the values
+  now live in the versioned `trustscore-weights.json` source of truth.
 
 ## Alternatives considered
 
@@ -102,7 +142,8 @@ Fabric IQ first).
 ## References
 
 - Design: [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](../superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) (§6 DQA, §8 seam, §10 governance)
-- Modules: `data-platform/quality/trust_score.py`, `data-platform/quality/gap_assessment.py`
+- Modules: `data-platform/quality/trust_score.py`, `data-platform/quality/gap_assessment.py`, `data-platform/quality/weights_config.py`
+- Config (source of truth): `data-platform/quality/trustscore-weights.json` (`trustscore-v1`)
 - Contracts: `data/synthetic/schema/dc-dq-trustscore-v1.schema.json`, `data/synthetic/schema/dc-dq-gap-v1.schema.json`
 - Agent pack: [`agents/data-quality-agent/AGENT.md`](../../agents/data-quality-agent/AGENT.md)
 - Requirements: `docs/PRD.md` §S (FR-DQA-*) + §O (NFR-DQA-*)

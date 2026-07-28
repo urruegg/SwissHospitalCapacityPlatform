@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.12.0 |
+| **Version** | 0.14.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.0 (added Sprint 30 M5 §Evaluation Curation + Advisory Backlog — selection policy over scored traces, versioned-dataset rows with interaction lineage, and advisory GitHub-issue drafts grouped by agent + failing metric; advisory-only) |
+| **Previous Version** | 0.14.0 (added the Sprint 30 M7 Improve - Prompt Optimization subsection realising FR-LEARN-005); this bump records ADR-0053 as ratified with the versioned trustscore-weights.json source of truth |
 
 ## Purpose
 
@@ -166,6 +166,36 @@ Related architecture decisions:
   out-of-scope or unsafe requests.
 5. Separate prompt bundles by environment (DEV, SIT, PROD) with promotion gates.
 
+## Data Quality Trust Score and Grounding Readiness (Sprint 31)
+
+Sprint 31 (issue #453,
+[ADR-0053](adr/0053-dqa-trust-score-model.md)) elevates the
+`data-quality-agent` from ingestion gates to **proactive** assessment of the
+gold/serving layer. Two deterministic contracts govern the surface:
+`DC-DQ-TRUSTSCORE-v1` (per-domain trust) and `DC-DQ-GAP-v1` (gap detection with
+impact and the frozen "new-source-needed" seam).
+
+1. The per-domain **trust score** is an 8-dimension deterministic, unit-tested
+   computation (`data-platform/quality/trust_score.py`) over governed metadata —
+   **never an LLM estimate** — mirroring the `compute_expected_impact` pattern so
+   every score is reproducible, versioned (`trustscore-v1`), and explainable.
+   The dimension weights and per-decision-class thresholds are ADR-ratified in
+   [ADR-0053](adr/0053-dqa-trust-score-model.md) (Accepted), with the values held
+   in the versioned `data-platform/quality/trustscore-weights.json`
+   (`trustscore-v1`) source of truth.
+2. The agent is **advisory, human-in-the-loop, and read-only** (NFR-DQA-002): it
+   assesses and routes findings to the owning domain, but never edits source
+   data and never self-certifies grounding. It refuses `edit-source-data` and
+   `self-certify-grounding` requests.
+3. A **grounding-readiness certificate** (FR-DQA-012) gates whether a gold domain
+   may be used for trusted grounding. When a domain scores below its
+   decision-class threshold, the certificate is withheld and grounding is served
+   **degraded or withheld** (FR-DQA-006) rather than presented as trusted —
+   preventing a false-trusted answer.
+4. Trust scores and gap assessments are an **input to agent evaluation**,
+   converging with the Sprint 30 evaluation harness: a domain's readiness is one
+   of the signals scored when curating evaluation datasets and advisory backlog.
+
 ## Prescriptive Decision Vocabulary (DC-INSIGHT-v1)
 
 Sprint 26 Slice 1 (issue #335,
@@ -199,6 +229,10 @@ than a free-form sentence.
    runs in-VNet, never from CI.
 
 ## Evaluation
+
+The closed-loop learning approach below — capture contract, retention class, and
+online-eval sampling — is ratified in
+[ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md) (Sprint 30).
 
 ### Agent-Turn Observability (Sprint 30 M1)
 
@@ -319,7 +353,7 @@ and emits two advisory artefacts:
   grouped by agent + failing metric, tagged `learn` / `advisory` /
   `agent:<name>` / `metric:<name>`, carrying counts + source `interactionId`s.
 
-Advisory-only (`NFR-LEARN-002`): the job **never** writes a dataset file, opens an
+Advisory-only (`NFR-LEARN-003`): the job **never** writes a dataset file, opens an
 issue, or mutates a prompt / knowledge source / guardrail / model. A human reviews
 the rows, sets `signedOff`, and applies changes gated by the offline regression
 suite + `approved-to-apply`. PHI-safety (ADR-0016 / `NFR-LEARN-001`): backlog
@@ -327,6 +361,43 @@ drafts carry only ids / counts / metrics; dataset rows carry the already-redacte
 record fields, never new PHI. The lineage trail (`trace → dataset → eval →
 change`) is what makes each downstream Improve step (M7–M9) auditable
 (`FR-LEARN-003`).
+
+### Improve - Prompt Optimization (Sprint 30 M7)
+
+The first Improve step turns curated failing signal into an **advisory prompt
+proposal** for an agent, with no autonomous change. A prompt-optimization job
+(`evals/prompt_optimize_job.py`) reads recent **scored** `agent_interactions`
+through the same source seam as the online-eval and curation jobs
+(`evals/lib/online_store.py`) and calls a deterministic optimizer
+(`evals/lib/prompt_optimize.py`). There is no live Foundry "Agent Optimizer"
+runtime in this repo (ADR-0002); M7 realises that capability as reviewable,
+offline Python:
+
+- **Improvement signal** - `run_prompt_optimization` filters scored records to the
+  target agent, then reuses the curator (`curator.select` +
+  `curator.to_backlog_items`) to derive the concrete **failing metrics** (e.g.
+  `citation_coverage`, `actionability`, `user_feedback`). `random_rate` defaults
+  to `0.0`, so only real failures - not a random sample - drive directives.
+- **Directive library** (`propose_directives`) - maps each failing metric to a
+  small, targeted instruction directive (a generic directive covers unmapped
+  metrics). This is a lookup, not a generative rewrite, so proposals are
+  deterministic and diffable.
+- **Candidate instructions** (`build_candidate_instructions`) - appends a single
+  `## Optimization directives (advisory, Sprint 30 M7)` block to the agent's base
+  `AGENT.md` **in memory**. The transform is idempotent and replacing (re-running
+  supersedes the prior block; it never stacks) and preserves the base verbatim.
+- **Offline-gate guardrail** - the candidate is only promotable if the offline
+  regression suite over the agent's golden dataset (`evals/lib/harness.py`)
+  passes; the proposal carries `offlineGatePassed`.
+
+Advisory-only (`NFR-LEARN-003`): the job **never** writes `AGENT.md`, opens an
+issue, or mutates a prompt / model. It emits a proposal
+(`advisory: true, applied: false, approvedToApply: false`) with full lineage
+(`sourceMetrics`, `sourceInteractionIds`). A human applies the candidate only
+after the offline gate passes **and** an explicit `approved-to-apply`.
+PHI-safety (ADR-0016 / `NFR-LEARN-001`): the proposal carries only metric names,
+interaction ids, directives, and the agent's own instruction text - never raw
+prompt or answer content. This realises `FR-LEARN-005`.
 
 ### Load Validation Plan
 

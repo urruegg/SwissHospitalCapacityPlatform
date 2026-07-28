@@ -7,7 +7,7 @@ become (a) candidate rows for a versioned dataset under
 ``evals/<agent>/datasets/vN/`` keeping lineage back to their ``interactionId``, and
 (b) advisory GitHub-issue drafts grouped by agent + failing metric.
 
-Advisory-only (NFR-LEARN-002): this module emits *drafts*. It never writes a
+Advisory-only (NFR-LEARN-003): this module emits *drafts*. It never writes a
 dataset file, opens an issue, or mutates a prompt / knowledge source / guardrail /
 model. A human reviews, signs off, and applies.
 
@@ -159,7 +159,7 @@ def to_backlog_items(
 ) -> list[dict[str, Any]]:
     """Group selections into advisory GitHub-issue drafts by agent + failing metric.
 
-    Advisory-only (NFR-LEARN-002): returns drafts; it never opens an issue. Each
+    Advisory-only (NFR-LEARN-003): returns drafts; it never opens an issue. Each
     draft is PHI-safe (NFR-LEARN-001) — it carries the agent, the failing metric,
     a count, and the source interaction ids, never raw prompt or answer text.
     Deterministically ordered by (agent, metric). ``low_score_threshold`` must
@@ -179,7 +179,7 @@ def to_backlog_items(
         count = len(ids_sorted)
         id_lines = "\n".join(f"- `{i}`" for i in ids_sorted)
         body = (
-            f"**Advisory only** (NFR-LEARN-002). Curated finding for `{agent}` on "
+            f"**Advisory only** (NFR-LEARN-003). Curated finding for `{agent}` on "
             f"metric **{metric}**: {count} interaction(s) flagged for human review.\n\n"
             f"Source interactions (lineage):\n{id_lines}\n\n"
             "No prompt, knowledge source, guardrail, or model is changed by this "
