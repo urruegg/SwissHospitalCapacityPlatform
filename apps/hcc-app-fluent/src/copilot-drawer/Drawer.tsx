@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Drawer,
   DrawerHeader,
@@ -14,6 +14,9 @@ import { useTranslation } from 'react-i18next';
 import { ConversationView } from './ConversationView';
 import { useConversation } from './useConversation';
 import { useRoleLens } from '../context/role-context';
+import { useDataSource } from '../context/data-source-context';
+import { buildEnvelope, type ContextEnvelope } from '../context/context-envelope';
+import type { ParsedClaims } from '../auth/claim-parser';
 
 const useStyles = makeStyles({
   inputRow: {
@@ -34,8 +37,23 @@ interface CopilotDrawerProps {
 export function CopilotDrawer({ agent, open, onOpenChange }: CopilotDrawerProps) {
   const styles = useStyles();
   const { t } = useTranslation();
-  const { userOid } = useRoleLens();
-  const { turns, busy, send } = useConversation(agent, userOid);
+  const lens = useRoleLens();
+  const { userOid } = lens;
+  const { source } = useDataSource();
+  // #424 M1 — agent-scoped envelope for this turn: user + role + hospitalScope +
+  // dataSource from the lens, agent from the drawer. Seeds the Foundry thread
+  // map in the send path when live threads are enabled.
+  const env = useMemo<ContextEnvelope>(
+    () =>
+      buildEnvelope(
+        { oid: userOid ?? undefined } as ParsedClaims,
+        lens,
+        source,
+        agent as ContextEnvelope['agent'],
+      ),
+    [lens, source, agent, userOid],
+  );
+  const { turns, busy, send, rate } = useConversation(agent, userOid, env);
   const [draft, setDraft] = useState('');
 
   const submit = () => {
@@ -56,7 +74,7 @@ export function CopilotDrawer({ agent, open, onOpenChange }: CopilotDrawerProps)
         </DrawerHeaderTitle>
       </DrawerHeader>
       <DrawerBody>
-        <ConversationView turns={turns} onFollowUp={(q) => void send(q)} />
+        <ConversationView turns={turns} onFollowUp={(q) => void send(q)} onRate={rate} />
         <div className={styles.inputRow}>
           <Input
             value={draft}

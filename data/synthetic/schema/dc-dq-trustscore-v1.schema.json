@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-dq-trustscore-v1.schema.json",
+  "title": "Data-Quality Trust Score Contract (DC-DQ-TRUSTSCORE-v1)",
+  "description": "Sprint 31 Data Quality Agent (DQA) contract for a per-domain, deterministic, versioned Trust Score over the gold/serving decision layer that grounds Fabric IQ / Foundry IQ. One record is one domain assessment: an overall score in [0,1], a per-dimension breakdown (completeness, timeliness, validity, uniqueness, consistency, lineage-integrity, provenance, ontology-mapping), the model version that produced it, and the as-of timestamp. The score is a pure function of its dimension inputs (data-platform/quality/trust_score.py) — NEVER an LLM estimate — so it is reproducible and explainable (design spec Sec 6, docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md). Advisory + HITL + read-only; no PHI by construction (aggregate domain metadata only). See docs/adr/0053-dqa-trust-score-model.md.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["contractId", "domain", "score", "dimensions", "modelVersion", "asOf"],
+  "properties": {
+    "contractId": {
+      "const": "DC-DQ-TRUSTSCORE-v1",
+      "description": "Contract discriminator."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The gold/serving domain assessed, e.g. staffing.skills."
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Overall trust score in [0,1] — the weighted aggregate of the dimensions."
+    },
+    "dimensions": {
+      "type": "object",
+      "description": "Per-dimension quality scores, each in [0,1]. The eight canonical dimensions of the trust-score model (design Sec 6).",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "decisionClass": {
+      "type": ["string", "null"],
+      "description": "Optional decision class whose weighting produced the score; thresholds are ADR-ratified per decision class."
+    },
+    "modelVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Deterministic trust-score model version, e.g. trustscore-v1. Bumps when weights/dimensions change."
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp the assessment reflects."
+    }
+  }
+}

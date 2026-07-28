@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.3.0 |
-| **Date** | 2026-07-27 |
+| **Version** | 2.4.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.2.0 (merged Sprint 27 app UX-polish requirements); this bump adds Sprint 32 Signal Agent requirements FR-SIG-001..011 + NFR-SIG-001..002 (#454) |
+| **Previous Version** | 2.3.0 (added Sprint 31 DQA requirements FR-DQA-001..006/010/012 + NFR-DQA-001..002); this bump adds Sprint 32 Signal Agent requirements FR-SIG-001..011 + NFR-SIG-001..002 (#454) |
 
 ## Purpose
 
@@ -298,7 +298,29 @@ public site `apps/curavias-web` and any Astro pattern are out of scope.
 | `FR-UX-006` | The solution shall maintain an **ordered polish backlog** applying the same design-system recipe to the remaining role boards and surfaces in later sprints. |
 
 
-### S) Signal Agent — Channel Intake Lifecycle (Sprint 32)
+### S) Data Quality Agent — Proactive Assessment And Trust (Sprint 31)
+
+Sprint 31 deltas formalised per the
+[Sprint 31–32 SGA+DQA design](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md),
+the [Sprint 31 implementation plan](superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md),
+and [ADR-0053](adr/0053-dqa-trust-score-model.md). Elevates the existing
+`data-quality-agent` from ingestion-time gates to **proactive** assessment of the
+gold/serving decision layer. Advisory + HITL + read-only, GA-only, synthetic /
+no-PHI. Answers the COO review's #1 finding — data quality is the single point of
+failure.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-DQA-001` | Continuously assess gold/serving domains across completeness, timeliness, validity, uniqueness, consistency, and lineage-integrity. |
+| `FR-DQA-002` | Detect data gaps and quantify each gap's impact on the KPIs and agents that depend on the affected domain. |
+| `FR-DQA-003` | Publish a per-domain **Trust Score** that is deterministic, versioned, and explainable (never an LLM estimate), emitted as `DC-DQ-TRUSTSCORE-v1`. |
+| `FR-DQA-004` | Route each gap to the accountable data owner (advisory / HITL) as a `DC-DQ-GAP-v1` finding; the owner remediates. |
+| `FR-DQA-005` | Re-assess a domain after remediation and report the trust-score delta, closing the gap on the record. |
+| `FR-DQA-006` | Advise **degraded-mode** for a below-threshold domain rather than silently serving low-trust data. |
+| `FR-DQA-010` | Persist every assessment, gap, and remediation as an auditable GitHub-native artefact (HITL + audit). |
+| `FR-DQA-012` | Certify a domain **grounding-ready** only when its trust score and gating dimensions clear the ADR-ratified threshold; certification is GA-gated (Fabric IQ first, Foundry IQ behind the same gate). |
+
+### T) Signal Agent — Channel Intake Lifecycle (Sprint 32)
 
 Sprint 32 deltas formalised per the
 [Sprint 31-32 Signal Agent and Data Quality Agent design](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md)
@@ -319,7 +341,6 @@ compliance/DPO approval.
 | `FR-SIG-009` | Manage the channel lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire) with provenance. |
 | `FR-SIG-010` | Gate channel activation and ontology change on a recorded human data-owner and compliance/DPO `approved-to-apply` approval; the agent remains advisory-only with no autonomous activation. |
 | `FR-SIG-011` | Record provenance and audit evidence for every onboarding decision and activation. |
-
 
 ## Non-Functional Requirements
 
@@ -460,13 +481,23 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-UX-003` | Every polished screen shall carry **before / after visual evidence** (light / dark, desktop / narrow) attached to its pull request. |
 | `NFR-UX-004` | UX polish shall remain **experience-lane only**: no backend / data-contract / agent-prompt / infrastructure change, no PHI, and no public-site (Astro) patterns introduced into the internal app. |
 
-### O) Signal Agent Governance (Sprint 32)
+### O) Data Quality Agent Governance (Sprint 31)
+
+Sprint 31 non-functional deltas per the
+[Sprint 31–32 SGA+DQA design](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md)
+and [ADR-0053](adr/0053-dqa-trust-score-model.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-DQA-001` | The Trust Score shall be **reproducible**: the same dimension inputs always produce the same score, with the model version recorded on every record. |
+| `NFR-DQA-002` | The agent shall operate **read-only under Zero-Trust**: it never edits source data, and treats every value returned by a tool or model as untrusted. |
+
+### P) Signal Agent Governance (Sprint 32)
 
 | ID | Requirement |
 | -- | ----------- |
 | `NFR-SIG-001` | Signal-channel ingestion shall follow Zero-Trust, read-scoped ingestion: every external, MCP, or model value is treated as untrusted and re-validated at each boundary. |
 | `NFR-SIG-002` | Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016). |
-
 
 ## MVP Definition
 
@@ -508,8 +539,8 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 
 | [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) + [`docs/superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md`](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md) + [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](adr/0052-app-context-envelope-per-agent-threads.md) *(Sprint 29: app context envelope + per-(user x agent) threads + role-first-eligible board + envelope propagation/guard + config-gated Foundry thread map + simulated OBO/RLS; issue #399)* | `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` |
 | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
+| [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md`](superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md) + [`docs/adr/0053-dqa-trust-score-model.md`](adr/0053-dqa-trust-score-model.md) *(Sprint 31: Data Quality Agent — proactive assessment, deterministic Trust Score, gap→owner remediation, grounding-readiness cert, frozen DC-DQ-GAP-v1 seam; issues #451, #453)* | `FR-DQA-001` to `FR-DQA-006`, `FR-DQA-010`, `FR-DQA-012`, `NFR-DQA-001` to `NFR-DQA-002` |
 | [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
-
 
 ## Assumptions To Validate In Implementation Planning
 

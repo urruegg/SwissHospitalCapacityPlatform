@@ -1,5 +1,5 @@
 agent: data-quality-agent
-version: 1.1.0
+version: 1.2.0
 runtime: agent-host
 invocation: workflow-scheduled  # not directly user-invoked; agent-host loads it for scheduled runs
 modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
@@ -20,4 +20,12 @@ grounding:
   - table: ops.data_quality_runs        # was Ops.DataQualityRuns
     scope: aggregated
     status: pending                     # NOT YET IN SPRINT 10 MEDALLION; the ops schema does not exist — see docs/sprints/sprint-10/gold-medallion-pending-tables.md
+  # Sprint 31: deterministic proactive-assessment modules (read-only; pure, no LLM estimate).
+  - module: data-platform/quality/trust_score.py      # DC-DQ-TRUSTSCORE-v1 producer
+    scope: aggregated
+  - module: data-platform/quality/gap_assessment.py   # DC-DQ-GAP-v1 producer (SGA seam)
+    scope: aggregated
+contracts:
+  - DC-DQ-TRUSTSCORE-v1   # data/synthetic/schema/dc-dq-trustscore-v1.schema.json
+  - DC-DQ-GAP-v1          # data/synthetic/schema/dc-dq-gap-v1.schema.json (frozen SGA seam, design Sec 8)
 goldenTasksRef: ./golden-tasks.md

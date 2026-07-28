@@ -1,0 +1,56 @@
+name: quality-lane
+
+# Sprint 31 Data Quality Agent (DQA) -- quality-lane gate.
+#
+# Runs the deterministic trust-score + gap-assessment unit tests under
+# data-platform/quality/. These modules are pure (no randomness, never an LLM
+# estimate) and stdlib-only, so the suite needs only pytest. The runbook's
+# stated gate is: python -m pytest data-platform/quality/tests -q.
+
+on:
+  pull_request:
+    paths:
+      - 'data-platform/quality/**'
+      - 'data/synthetic/schema/dc-dq-trustscore-v1.schema.json'
+      - 'data/synthetic/schema/dc-dq-gap-v1.schema.json'
+      - '.github/workflows/quality-lane.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data-platform/quality/**'
+      - 'data/synthetic/schema/dc-dq-trustscore-v1.schema.json'
+      - 'data/synthetic/schema/dc-dq-gap-v1.schema.json'
+      - '.github/workflows/quality-lane.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-lane-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-lane-tests:
+    name: DQA quality-lane tests (trust score + gap assessment)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pytest
+        shell: bash
+        run: |
+          set -euo pipefail
+          pip install pytest
+
+      - name: Run DQA quality-lane tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest data-platform/quality/tests -q

@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.14.0 |
-| **Date** | 2026-07-27 |
+| **Version** | 0.16.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.13.0 (added DC-AGENT-INTERACTION-v1 capture contract) |
+| **Previous Version** | 0.15.0 (registered Sprint 30 M3 eval golden-dataset location; Sprint 31 DQA contracts); this bump adds Sprint 32 Signal Agent `DC-REF-CERTIFICATION-v1` contract (#454) |
 
 ## Purpose
 
@@ -111,7 +111,19 @@ Each contract must define:
 | Specialty-capacity onboarding contract | DC-ONB-CAPACITY-v1 | Specialty-tagged hospital capacity onboarding metadata (Sprint 6) |
 | External signal contract | DC-EXT-SIGNAL-v1 | CAP-Suisse-aligned trusted external hazard signals for advisory CSA trigger evaluation |
 | Agent-interaction contract | DC-AGENT-INTERACTION-v1 | Closed-loop-learning capture: one PHI-free record per agent turn + user events (Sprint 30) |
+| Data-quality trust-score contract | DC-DQ-TRUSTSCORE-v1 | Per-domain deterministic, versioned Trust Score + eight-dimension breakdown over the gold/serving layer (Sprint 31) |
+| Data-quality gap contract | DC-DQ-GAP-v1 | Gap + impact + owner + recommended source + `newSourceNeeded` seam handed to the Signal Agent (Sprint 31; frozen per design §8) |
 | Certification reference contract | DC-REF-CERTIFICATION-v1 | Credential↔competency crosswalk (staff-PII, pseudonymised work-ID); intake for the certification→skills onboarding lane (Sprint 32) |
+
+### Evaluation Golden Datasets (Sprint 30 M3)
+
+Versioned golden datasets built from `DC-AGENT-INTERACTION-v1` records live under
+`evals/<agent>/datasets/vN/` (e.g. `evals/ooa-agent/datasets/v1/interactions.jsonl`).
+Each row is a schema-valid interaction record plus an `expected` label block, and
+keeps lineage back to its `interactionId` (design §8: trace → dataset → eval →
+change). They are synthetic and PHI-free (ADR-0016) and are scored by the shared
+evaluator library (`evals/lib/`) in the offline regression gate; see `docs/AI.md`
+§Evaluation → Offline Evaluation Gate.
 
 ### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
 
