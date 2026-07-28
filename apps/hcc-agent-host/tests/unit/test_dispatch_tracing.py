@@ -97,6 +97,18 @@ def test_refusal_emits_event_without_model_span():
     assert events[0].properties["refused"] == "true"
 
 
+def test_binding_without_adapter_reports_table_mode():
+    # Manifest binds a grounding agent but no adapter is wired -> table fallback.
+    rec = tracing.TraceRecorder()
+    orch = Orchestrator(chat_model=_StubModel(), tracer=rec)  # data_agent=None
+    orch.dispatch(
+        _manifest(with_agent=True), "sys", "Wie ist die Auslastung?",
+        conversation_id="c1", caller_oid="oid1",
+    )
+    rspan = next(s for s in rec.spans if s.name == "agent.retrieve")
+    assert rspan.attributes["grounding.mode"] == "table"
+
+
 def test_traces_carry_no_raw_prompt_or_answer_text():
     marker = "ZQXSECRETMARKER"
     rec = tracing.TraceRecorder()

@@ -69,16 +69,18 @@ class Orchestrator:
 
     def _primary_grounding(
         self, manifest: AgentManifest, user_prompt: str
-    ) -> tuple[list[dict[str, Any]], list[str], str | None, bool]:
-        """Return (grounding_rows, citations, refusal_answer, degraded).
+    ) -> tuple[list[dict[str, Any]], list[str], str | None, bool, str]:
+        """Return (grounding_rows, citations, refusal_answer, degraded, mode).
 
-        Uses the Fabric Data Agent when the manifest binds one and an adapter is
-        available. On adapter failure, degrades LOUDLY to table grounding.
+        ``mode`` is the grounding source actually used (``"agent"`` or
+        ``"table"``). Uses the Fabric Data Agent when the manifest binds one and
+        an adapter is available. On adapter failure, degrades LOUDLY to table
+        grounding.
         """
         binding = manifest.grounding_agent
         if binding is None or self.data_agent is None or binding.precedence != "primary":
             rows, citations = self._grounding(manifest)
-            return rows, citations, None, False
+            return rows, citations, None, False, "table"
         try:
             result = self.data_agent.ask(user_prompt)
         except Exception:
@@ -86,11 +88,11 @@ class Orchestrator:
                 "Fabric Data Agent grounding failed; degrading to table grounding"
             )
             rows, citations = self._grounding(manifest)
-            return rows, citations, None, True
+            return rows, citations, None, True, "table"
         if result.get("refused"):
-            return [], list(result.get("citations", [])), result["answer"], False
+            return [], list(result.get("citations", [])), result["answer"], False, "agent"
         rows = [{"dataAgentAnswer": result["answer"]}]
-        return rows, list(result.get("citations", [])), None, False
+        return rows, list(result.get("citations", [])), None, False, "agent"
 
     def dispatch(
         self,
@@ -108,10 +110,10 @@ class Orchestrator:
 
         with self.tracer.span("agent.turn", agent=manifest.agent) as root:
             with self.tracer.span("agent.retrieve", agent=manifest.agent) as rspan:
-                grounding, citations, refusal_answer, degraded = self._primary_grounding(
+                grounding, citations, refusal_answer, degraded, mode = self._primary_grounding(
                     manifest, user_prompt
                 )
-                rspan.set_attribute("grounding.mode", "agent" if degraded is False and manifest.grounding_agent else "table")
+                rspan.set_attribute("grounding.mode", mode)
                 rspan.set_attribute("grounding.degraded", degraded)
                 rspan.set_attribute("citationCount", len(citations))
 
