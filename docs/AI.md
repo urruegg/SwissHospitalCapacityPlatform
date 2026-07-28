@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.11.0 |
+| **Version** | 0.12.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.10.0 (added Sprint 30 M4 §Evaluation Online Continuous Evaluation — scheduled ACA job samples recent interactions, reuses the M3 evaluator library, writes verdicts back via a lazy Cosmos seam, emits a per-agent rollup) |
+| **Previous Version** | 0.11.0 (added Sprint 30 M5 §Evaluation Curation + Advisory Backlog — selection policy over scored traces, versioned-dataset rows with interaction lineage, and advisory GitHub-issue drafts grouped by agent + failing metric; advisory-only) |
 
 ## Purpose
 
@@ -296,6 +296,37 @@ already-redacted record fields; both the `eval` write-back and the rollup carry
 counts / rates / ids / booleans, never raw prompt or answer text. The ACA
 schedule (Bicep) is a deferred infra output; the testable job logic and Cosmos
 runtime seam land in this milestone (`FR-LEARN-002`).
+
+### Curation + Advisory Backlog (Sprint 30 M5)
+
+The Learn step turns scored traces into training/eval signal without any
+autonomous change. A curation job (`evals/curate_job.py`) reads recent **scored**
+`agent_interactions` through the same source seam as the online-eval job
+(`evals/lib/online_store.py`), applies a selection policy (`evals/lib/curator.py`),
+and emits two advisory artefacts:
+
+- **Selection policy** (`curator.select`) — picks *high-signal* interactions:
+  evaluation failures (`passedAll = false`), low scores (any evaluator below a
+  threshold), thumbs-down, and mis-refusals (`refused` disagrees with the
+  `expected.should_refuse` label). A small **deterministic seeded random sample**
+  of the remaining clean traffic is added for coverage without double-counting.
+- **Dataset rows** (`curator.to_dataset_rows`) — candidate rows for a versioned
+  dataset under `evals/<agent>/datasets/vN/`. Each row keeps **lineage** back to
+  its `interactionId` in a `curation` block (`sourceInteractionId`, `reasons`,
+  `curatedAt`, `signedOff: false`, `reviewer: null`) and carries an `expected`
+  block for a reviewer to complete. `eval` is reset to `{"scored": false}`.
+- **Advisory backlog** (`curator.to_backlog_items`) — GitHub-issue **drafts**
+  grouped by agent + failing metric, tagged `learn` / `advisory` /
+  `agent:<name>` / `metric:<name>`, carrying counts + source `interactionId`s.
+
+Advisory-only (`NFR-LEARN-002`): the job **never** writes a dataset file, opens an
+issue, or mutates a prompt / knowledge source / guardrail / model. A human reviews
+the rows, sets `signedOff`, and applies changes gated by the offline regression
+suite + `approved-to-apply`. PHI-safety (ADR-0016 / `NFR-LEARN-001`): backlog
+drafts carry only ids / counts / metrics; dataset rows carry the already-redacted
+record fields, never new PHI. The lineage trail (`trace → dataset → eval →
+change`) is what makes each downstream Improve step (M7–M9) auditable
+(`FR-LEARN-003`).
 
 ### Load Validation Plan
 
