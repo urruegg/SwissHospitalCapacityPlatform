@@ -297,6 +297,9 @@ param fabricDataAgentId string = ''
 @description('#424 M4 — agent-host RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process; `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code.')
 param agentHostRlsProvider string = 'simulated'
 
+@description('#424 M5 — enable the on-behalf-of (OBO) ingress seam on the agent-host golden read. `false` (default) keeps SIT on the simulated/native path (byte-parity with M4). `true` requires a valid caller bearer and exchanges it for a downstream Fabric token; go-live additionally needs OBO_TENANT_ID/CLIENT_ID/CLIENT_SECRET, RLS_PROVIDER=fabric-data-agent, THREAD_PROVIDER=foundry, and #510 (dynamic-RLS TMDL) per ADR-0057. Config, not code.')
+param agentHostOboEnabled bool = false
+
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
 @description('Enable the Sprint 13 hcc-app-fluent Container App module.')
 param enableAppFluentModule bool = false
@@ -680,6 +683,7 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     fabricWorkspaceId: fabricWorkspaceId
     fabricDataAgentId: fabricDataAgentId
     rlsProvider: agentHostRlsProvider
+    oboEnabled: agentHostOboEnabled
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

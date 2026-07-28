@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "10404766073330631312"
+      "templateHash": "9509183128391990162"
     }
   },
   "parameters": {
@@ -77,6 +77,13 @@
       "defaultValue": "simulated",
       "metadata": {
         "description": "#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
+      }
+    },
+    "oboEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity with M4). `true` requires a valid caller bearer on the golden read and exchanges it downstream. See ADR-0057. Config, not code."
       }
     },
     "redisHostName": {
@@ -200,7 +207,7 @@
                 "cpu": "[json('0.5')]",
                 "memory": "1Gi"
               },
-              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider'))), variables('redisEnv'))]"
+              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider')), createObject('name', 'OBO_ENABLED', 'value', if(parameters('oboEnabled'), 'true', 'false'))), variables('redisEnv'))]"
             }
           ],
           "scale": {
