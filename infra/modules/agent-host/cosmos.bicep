@@ -9,7 +9,11 @@ param tags object
 
 // Sprint 13 T5 — Cosmos DB for the agent-host (ADR-0007 §2). Containers:
 // conversations (PK conversationId), audit (PK correlationId), approval-events
-// (PK correlationId). Serverless capacity for the demo scope (ADR-0013).
+// (PK correlationId), and the Sprint 30 closed-loop capture sink
+// agent_interactions (PK conversationKey = <userOid>:<agent>) — the durable
+// DC-AGENT-INTERACTION-v1 record the capture middleware writes each turn and the
+// Observe/Evaluate/Curate/Improve loop reads. Serverless capacity for the demo
+// scope (ADR-0013).
 
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   name: 'cosmos-${nameSuffix}'
@@ -66,6 +70,10 @@ var containers = [
   {
     name: 'approval-events'
     partitionKey: '/correlationId'
+  }
+  {
+    name: 'agent_interactions'
+    partitionKey: '/conversationKey'
   }
 ]
 
