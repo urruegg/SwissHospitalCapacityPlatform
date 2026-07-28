@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.10.0 |
+| **Version** | 0.11.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.9.0 (added Sprint 30 M1 §Evaluation Agent-Turn Observability — OTel-shaped retrieve/model/assemble spans + PHI-safe AgentTurn customEvent + Azure Monitor exporter seam) |
+| **Previous Version** | 0.10.0 (added Sprint 30 M4 §Evaluation Online Continuous Evaluation — scheduled ACA job samples recent interactions, reuses the M3 evaluator library, writes verdicts back via a lazy Cosmos seam, emits a per-agent rollup) |
 
 ## Purpose
 
@@ -266,6 +266,36 @@ change to the evaluator library, the golden dataset, the interaction contract, o
 the `ooa-agent` prompt/manifest surface. No prompt / knowledge / model change is
 promoted without an offline regression pass plus `approved-to-apply`
 (`NFR-LEARN-003`). Rolls out to the other runtime agents in Sprint 31.
+
+### Online Continuous Evaluation (Sprint 30 M4)
+
+The online half of the Evaluate stage scores production traffic on a schedule so
+quality is observed continuously, not only at promotion time. A scheduled **Azure
+Container Apps job** (`evals/online_eval_job.py`) samples recent
+`agent_interactions`, scores each sampled record, writes the verdict back onto the
+record, and emits a per-agent quality rollup:
+
+- **Sampling** — deterministic, rate-limited draw (`evals/lib/online.py`,
+  default ~15%). The sample is seeded so a re-run of the same window yields the
+  same subset; production sets the rate/seed via job parameters.
+- **Scoring** — reuses the **same** six deterministic evaluators as the offline
+  gate (`evals/lib/harness.py`); the metric is defined once and shared, so online
+  and offline verdicts never drift. Online has no golden labels, so
+  refusal-correctness falls back to its vacuous-pass behaviour.
+- **Write-back** — each scored record's `eval` block is patched in place
+  (`eval.scored = true`, `evaluatorSet`, `sampledAt`, per-evaluator `scores`,
+  `passedAll`) through a narrow source/sink seam (`evals/lib/online_store.py`).
+  CI runs against an in-memory store; the lazy Cosmos-backed store
+  (`evals/lib/online_cosmos.py`) is built from `COSMOS_*` env vars only in
+  production, mirroring the M1 Azure Monitor exporter seam.
+- **Rollup** — per-agent, per-evaluator pass rates plus an overall `passedAll`
+  rate feed the quality view. Empty-safe (no division by zero).
+
+PHI-safety (ADR-0016 / `NFR-LEARN-001`): sampling and scoring read only the
+already-redacted record fields; both the `eval` write-back and the rollup carry
+counts / rates / ids / booleans, never raw prompt or answer text. The ACA
+schedule (Bicep) is a deferred infra output; the testable job logic and Cosmos
+runtime seam land in this milestone (`FR-LEARN-002`).
 
 ### Load Validation Plan
 
