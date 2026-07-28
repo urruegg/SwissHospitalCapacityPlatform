@@ -233,8 +233,8 @@ def create_app() -> FastAPI:
             obo = build_obo_context(authorization)
         except TokenValidationError as exc:
             raise HTTPException(status_code=401, detail=str(exc))
-        provider = state.rls_provider_for(obo.obo_token if obo else None)
         try:
+            provider = state.rls_provider_for(obo.obo_token if obo else None)
             payload = load_golden(
                 resource,
                 hospital_scope=x_hospital_scope,
@@ -244,7 +244,9 @@ def create_app() -> FastAPI:
         except UnknownResourceError:
             raise HTTPException(status_code=404, detail=f"unknown golden resource '{resource}'")
         except GoldenScopeError as exc:
-            # Deny-by-default: an ungrounded read is refused, not served wide.
+            # Deny-by-default: an ungrounded read (or a provider that cannot yet
+            # enforce per-user scope, or a fabric provider misconfigured without a
+            # live client) is refused, not served wide.
             raise HTTPException(status_code=401, detail=str(exc))
         rls = payload.get("_rls", {})
         response.headers["X-Data-Provenance"] = "live"
