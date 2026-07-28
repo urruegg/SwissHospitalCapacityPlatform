@@ -4112,55 +4112,7 @@
       "title": "AI-serving behavior shall support provider-local governance and change control."
     },
     {
-      "family": "Business Value Assessment Governance (Sprint 33)",
-      "id": "NFR-BVA-001",
-      "kind": "NFR",
-      "mvp": false,
-      "provenance": {
-        "asOf": "2026-07-10",
-        "sourcePath": "docs/PRD.md",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
-      },
-      "title": "BVA math shall be **deterministic and reproducible** with **no LLM arithmetic**: the same inputs always produce the same figures via the typed `bva.simulate` tool."
-    },
-    {
-      "family": "Business Value Assessment Governance (Sprint 33)",
-      "id": "NFR-BVA-002",
-      "kind": "NFR",
-      "mvp": false,
-      "provenance": {
-        "asOf": "2026-07-10",
-        "sourcePath": "docs/PRD.md",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
-      },
-      "title": "Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot) with snapshot date and currency."
-    },
-    {
-      "family": "Business Value Assessment Governance (Sprint 33)",
-      "id": "NFR-BVA-003",
-      "kind": "NFR",
-      "mvp": false,
-      "provenance": {
-        "asOf": "2026-07-10",
-        "sourcePath": "docs/PRD.md",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
-      },
-      "title": "Costs shall be **CHF-normalized** with an explicit FX line; settling weeks are marked provisional."
-    },
-    {
-      "family": "Business Value Assessment Governance (Sprint 33)",
-      "id": "NFR-BVA-004",
-      "kind": "NFR",
-      "mvp": false,
-      "provenance": {
-        "asOf": "2026-07-10",
-        "sourcePath": "docs/PRD.md",
-        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
-      },
-      "title": "BVA data shall have **SIT / PROD parity**, no PHI (ADR-0016), with demo figures labelled proof-of-technology (ADR-0013)."
-    },
-    {
-      "family": "Business Value Assessment Governance (Sprint 33)",
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
       "id": "NFR-BVA-005",
       "kind": "NFR",
       "mvp": false,
