@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "5334424658002745034"
+      "templateHash": "16621559084906665235"
     }
   },
   "parameters": {
@@ -629,6 +629,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "#447 — Foundry agent-host base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.AGENT_HOST_URL). Set per-env to the environment-local agent-host FQDN (SIT vs PROD) so the app calls its own region's agent-host. Empty keeps the built-in mock. Replaces the former build-time VITE_AGENT_HOST_URL bake so one image is env-agnostic."
+      }
+    },
+    "appFluentGoldenSourceUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "#424 M2 — golden-source base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <url>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host."
       }
     },
     "appFluentCustomHostname": {
@@ -7793,6 +7800,9 @@
           "agentHostUrl": {
             "value": "[parameters('appFluentAgentHostUrl')]"
           },
+          "goldenSourceUrl": {
+            "value": "[parameters('appFluentGoldenSourceUrl')]"
+          },
           "containerRegistryLoginServer": {
             "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
           },
@@ -7813,7 +7823,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "11780358885654141899"
+              "templateHash": "3416758275647475668"
             }
           },
           "parameters": {
@@ -7892,6 +7902,13 @@
               "defaultValue": "",
               "metadata": {
                 "description": "#447 — Foundry agent-host base URL injected into the app at container start (window.__ENV__.AGENT_HOST_URL). Per-env value (SIT vs PROD agent-host FQDN); empty keeps the built-in mock. Runtime injection replaces the former build-time VITE_AGENT_HOST_URL bake so a single image is env-agnostic."
+              }
+            },
+            "goldenSourceUrl": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "#424 M2 — golden-source base URL injected into the app at container start (window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <goldenSourceUrl>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host (e.g. a future Fabric-backed endpoint). Empty + empty agentHostUrl keeps the built-in mock."
               }
             },
             "customHostname": {
@@ -8013,6 +8030,10 @@
                         {
                           "name": "AGENT_HOST_URL",
                           "value": "[parameters('agentHostUrl')]"
+                        },
+                        {
+                          "name": "GOLDEN_SOURCE_URL",
+                          "value": "[if(empty(parameters('goldenSourceUrl')), if(empty(parameters('agentHostUrl')), '', format('{0}/golden', parameters('agentHostUrl'))), parameters('goldenSourceUrl'))]"
                         }
                       ]
                     }

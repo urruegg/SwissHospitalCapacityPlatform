@@ -40,6 +40,9 @@ param targetPort int = 8080
 @description('#447 — Foundry agent-host base URL injected into the app at container start (window.__ENV__.AGENT_HOST_URL). Per-env value (SIT vs PROD agent-host FQDN); empty keeps the built-in mock. Runtime injection replaces the former build-time VITE_AGENT_HOST_URL bake so a single image is env-agnostic.')
 param agentHostUrl string = ''
 
+@description('#424 M2 — golden-source base URL injected into the app at container start (window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <goldenSourceUrl>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host (e.g. a future Fabric-backed endpoint). Empty + empty agentHostUrl keeps the built-in mock.')
+param goldenSourceUrl string = ''
+
 @description('Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030.')
 param customHostname string = ''
 
@@ -183,12 +186,18 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1.0Gi'
           }
-          // #447 runtime env injection — read at container start by
+          // #447 + #424 M2 runtime env injection — read at container start by
           // docker-entrypoint.d/30-env-config.sh into window.__ENV__.
           env: [
             {
               name: 'AGENT_HOST_URL'
               value: agentHostUrl
+            }
+            {
+              // #424 M2 — auto-derive from the agent-host FQDN (Option 1) unless
+              // an explicit golden-source URL is supplied.
+              name: 'GOLDEN_SOURCE_URL'
+              value: empty(goldenSourceUrl) ? (empty(agentHostUrl) ? '' : '${agentHostUrl}/golden') : goldenSourceUrl
             }
           ]
         }
