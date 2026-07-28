@@ -1,0 +1,13 @@
+{
+  "modelVersion": "trustscore-v1",
+  "profiles": {
+    "default":  { "completeness": 1.0, "timeliness": 1.0, "validity": 1.0, "uniqueness": 1.0, "consistency": 1.0, "lineage_integrity": 1.0, "provenance": 1.0, "ontology_mapping": 1.0 },
+    "crisis":   { "completeness": 2.0, "timeliness": 3.0, "validity": 1.0, "uniqueness": 1.0, "consistency": 1.0, "lineage_integrity": 1.0, "provenance": 2.0, "ontology_mapping": 1.0 },
+    "planning": { "completeness": 2.0, "timeliness": 1.0, "validity": 1.0, "uniqueness": 1.0, "consistency": 2.0, "lineage_integrity": 1.0, "provenance": 1.0, "ontology_mapping": 2.0 }
+  },
+  "thresholds": {
+    "default":  { "overall": 0.80, "gating": { "completeness": 0.80, "provenance": 0.80, "ontology_mapping": 0.80 } },
+    "crisis":   { "overall": 0.85, "gating": { "timeliness": 0.90, "completeness": 0.85, "provenance": 0.85 } },
+    "planning": { "overall": 0.80, "gating": { "completeness": 0.85, "consistency": 0.80, "ontology_mapping": 0.80 } }
+  }
+}

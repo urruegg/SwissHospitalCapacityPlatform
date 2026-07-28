@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.0 |
+| **Version** | 0.13.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.12.0 (added the Sprint 31 Data Quality Agent proactive-assessment control section); this bump adds control CH-C11 closed-loop learning governance, ratified in ADR-0055 (Sprint 30, #443) |
+| **Previous Version** | 0.13.0 (added control CH-C11 closed-loop learning governance, ratified in ADR-0055 (Sprint 30, #443)); this bump records ADR-0053 as ratified with the versioned trustscore-weights.json source of truth |
 
 ## Purpose
 
@@ -230,7 +230,10 @@ Sprint 31 (issue #453,
 gold/serving layer via a deterministic per-domain trust score
 (`DC-DQ-TRUSTSCORE-v1`) and gap detection with impact (`DC-DQ-GAP-v1`). The
 agent is **advisory, human-in-the-loop, and read-only** — it never mutates
-source data; the owning domain remediates.
+source data; the owning domain remediates. The trust-score weights and
+thresholds are ratified in
+[ADR-0053](adr/0053-dqa-trust-score-model.md) (Accepted), held in the versioned
+`trustscore-weights.json` (`trustscore-v1`) source of truth.
 
 | Data-quality control | Requirement | Enforcement | Owner role |
 | ----- | ----- | ----- | ----- |

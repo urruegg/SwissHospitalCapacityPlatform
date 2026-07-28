@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.14.0 |
+| **Version** | 0.14.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.13.1 (cross-linked ADR-0055 in §Evaluation and corrected the advisory-only citation to NFR-LEARN-003); this bump adds the Sprint 30 M7 Improve - Prompt Optimization subsection: deterministic advisory optimizer, directive library, in-memory candidate instructions, offline-gate guardrail, realising FR-LEARN-005 |
+| **Previous Version** | 0.14.0 (added the Sprint 30 M7 Improve - Prompt Optimization subsection realising FR-LEARN-005); this bump records ADR-0053 as ratified with the versioned trustscore-weights.json source of truth |
 
 ## Purpose
 
@@ -180,7 +180,9 @@ impact and the frozen "new-source-needed" seam).
    **never an LLM estimate** — mirroring the `compute_expected_impact` pattern so
    every score is reproducible, versioned (`trustscore-v1`), and explainable.
    The dimension weights and per-decision-class thresholds are ADR-ratified in
-   [ADR-0053](adr/0053-dqa-trust-score-model.md) (ratification pending).
+   [ADR-0053](adr/0053-dqa-trust-score-model.md) (Accepted), with the values held
+   in the versioned `data-platform/quality/trustscore-weights.json`
+   (`trustscore-v1`) source of truth.
 2. The agent is **advisory, human-in-the-loop, and read-only** (NFR-DQA-002): it
    assesses and routes findings to the owning domain, but never edits source
    data and never self-certifies grounding. It refuses `edit-source-data` and
