@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.15.0 |
+| **Version** | 0.16.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.14.0 (registered Sprint 31 DQA contracts); this bump registers the Sprint 30 M3 evaluation golden-dataset location `evals/<agent>/datasets/vN/` |
+| **Previous Version** | 0.15.0 (registered Sprint 30 M3 eval golden-dataset location; Sprint 31 DQA contracts); this bump adds Sprint 32 Signal Agent `DC-REF-CERTIFICATION-v1` contract (#454) |
 
 ## Purpose
 
@@ -113,6 +113,7 @@ Each contract must define:
 | Agent-interaction contract | DC-AGENT-INTERACTION-v1 | Closed-loop-learning capture: one PHI-free record per agent turn + user events (Sprint 30) |
 | Data-quality trust-score contract | DC-DQ-TRUSTSCORE-v1 | Per-domain deterministic, versioned Trust Score + eight-dimension breakdown over the gold/serving layer (Sprint 31) |
 | Data-quality gap contract | DC-DQ-GAP-v1 | Gap + impact + owner + recommended source + `newSourceNeeded` seam handed to the Signal Agent (Sprint 31; frozen per design §8) |
+| Certification reference contract | DC-REF-CERTIFICATION-v1 | Credential↔competency crosswalk (staff-PII, pseudonymised work-ID); intake for the certification→skills onboarding lane (Sprint 32) |
 
 ### Evaluation Golden Datasets (Sprint 30 M3)
 
@@ -276,6 +277,30 @@ These feed the **`external-signals`** Direct-Lake semantic model
 grounded into the `da_hospital_capacity` data agent. Full proof (row counts,
 trust-badge DAX, data-agent probe, gate record) is in
 [`signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md).
+
+### DC-REF-CERTIFICATION-v1 (staff certification lane)
+
+`DC-REF-CERTIFICATION-v1` is the Sprint 32 staff certification reference
+contract for the certification-to-skills onboarding lane. The machine-readable
+schema is
+[`data/synthetic/schema/dc-ref-certification-v1.schema.json`](../data/synthetic/schema/dc-ref-certification-v1.schema.json),
+and the curated synthetic sample feed is
+[`data/synthetic/schema/certification-sample-feed.json`](../data/synthetic/schema/certification-sample-feed.json).
+
+The contract is classified as staff-PII under nDSG. Records use only
+pseudonymised `WID-*` work-IDs and never carry names, AHV numbers, or direct
+staff identifiers; this keeps patient PHI out of scope while preserving the
+regulated staff-PII handling required by [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md).
+
+The contract is consumed by the deterministic `data-platform/signals/` modules
+and the advisory `signal-agent` to resolve credentials to competency codes,
+enrich the skills baseline by pseudonymised work-ID, and support the sandbox
+Channel Readiness Scorecard before HITL activation.
+
+This contract intentionally uses a flat per-record shape with underscore-prefixed
+governance tags (`_classification`, `_residency`, `_legal_basis`, `_retention`,
+`_provenance`, `_pseudonymisation`) per design §9, which the SGA deterministic
+modules consume, differing from the enveloped older `DC-*` contracts.
 
 ### Sprint 26 WS-A — Foresight tier gold tables and contracts
 

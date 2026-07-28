@@ -1,0 +1,31 @@
+agent: signal-agent
+version: 1.0.0
+runtime: agent-host
+modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
+modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#4-refusal-rules
+mcpTools:
+  - server: github-mcp
+    tools: [get-issue, add-issue-comment, create-branch, create-or-update-file, create-pull-request, create-issue]
+    ceiling: write
+  - server: fabric-mcp
+    tools: [query]
+    ceiling: read
+hitl:
+  # per ADR-0007 §3 — the downstream gate governing channel activation on staff-PII.
+  # Channel activation requires data-owner + compliance/DPO approved-to-apply per AGENTS.md §4.
+  gates: [HITL-04]  # policy exception (staff-PII channel activation)
+grounding:
+  # Referenced-vs-wired scan and skills-baseline surfaces reconciled with docs/ontology/crosswalk.md.
+  - table: gold.dim_skill
+    scope: skills-baseline
+  - table: gold.fact_skill_assertion
+    scope: skills-baseline
+  - table: gold.fact_skill_gap
+    scope: referenced-vs-wired
+  - table: gold.fact_skill_demand
+    scope: referenced-vs-wired
+  - table: gold.bridge_worker_unit_eligibility
+    scope: skills-baseline
+goldenTasksRef: ./golden-tasks.md
