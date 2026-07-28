@@ -34,6 +34,7 @@
     "rolesDescription": "Live view of app roles from Microsoft Entra (read-only).",
     "evidence": "Evidence",
     "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI).",
+    "opportunities": "Opportunities",
     "nav": {
       "label": "Backstage sections"
     },
