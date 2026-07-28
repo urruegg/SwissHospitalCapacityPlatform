@@ -211,8 +211,8 @@ def groundedness(record: Record, expected: Expected = None) -> EvalResult:
         return _passfail(name, True, "no inline citation to verify")
 
     citations = (record.get("response") or {}).get("citations") or []
-    joined = " ".join(citations)
-    fabricated = [m for m in markers if m not in citations and m not in joined]
+    cite_set = {str(c).strip() for c in citations}
+    fabricated = [m for m in markers if m.strip() not in cite_set]
     if fabricated:
         return _passfail(name, False, f"inline citation not in sources: {fabricated[0]}")
     return _passfail(name, True, "inline citations backed by sources")
