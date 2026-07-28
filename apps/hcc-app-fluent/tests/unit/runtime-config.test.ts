@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getAgentHostUrl, getGoldenSourceUrl, getFoundryThreadsEnabled } from '../../src/config/runtime-config';
+import {
+  getAgentHostUrl,
+  getGoldenSourceUrl,
+  getFoundryThreadsEnabled,
+  getAgentHostScope,
+} from '../../src/config/runtime-config';
 
 /**
  * #447 — runtime config injection. The app must read the agent-host URL from a
@@ -95,5 +100,36 @@ describe('runtime-config getFoundryThreadsEnabled', () => {
   it('returns false when neither runtime nor build-time value is set', () => {
     vi.stubEnv('VITE_FOUNDRY_THREADS_ENABLED', '');
     expect(getFoundryThreadsEnabled()).toBe(false);
+  });
+});
+
+/**
+ * #424 M5 — the agent-host OBO scope follows the same runtime-injection contract.
+ * When set, identity-aware IQ calls attach an MSAL bearer for that scope so the
+ * agent-host can perform the on-behalf-of exchange; when unset (SIT default) the
+ * app stays byte-parity with M4 (no bearer, simulated/native path).
+ */
+describe('runtime-config getAgentHostScope', () => {
+  afterEach(() => {
+    delete (window as { __ENV__?: unknown }).__ENV__;
+    vi.unstubAllEnvs();
+  });
+
+  it('prefers window.__ENV__.AGENT_HOST_SCOPE over the build-time fallback', () => {
+    vi.stubEnv('VITE_AGENT_HOST_SCOPE', 'api://sit/.default');
+    (window as { __ENV__?: { AGENT_HOST_SCOPE?: string } }).__ENV__ = {
+      AGENT_HOST_SCOPE: 'api://prod/.default',
+    };
+    expect(getAgentHostScope()).toBe('api://prod/.default');
+  });
+
+  it('falls back to import.meta.env.VITE_AGENT_HOST_SCOPE when the runtime value is absent', () => {
+    vi.stubEnv('VITE_AGENT_HOST_SCOPE', 'api://fallback/.default');
+    expect(getAgentHostScope()).toBe('api://fallback/.default');
+  });
+
+  it('returns an empty string when neither runtime nor build-time value is set', () => {
+    vi.stubEnv('VITE_AGENT_HOST_SCOPE', '');
+    expect(getAgentHostScope()).toBe('');
   });
 });
