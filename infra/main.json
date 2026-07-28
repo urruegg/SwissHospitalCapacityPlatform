@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "16621559084906665235"
+      "templateHash": "10656662242138750475"
     }
   },
   "parameters": {
@@ -636,6 +636,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "#424 M2 — golden-source base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <url>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host."
+      }
+    },
+    "appFluentFoundryThreadsEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the hcc-app-fluent mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires appFluentAgentHostUrl to be non-empty; with the host unset the app keeps simulated threads. Provider stays native (no OBO) until M5."
       }
     },
     "appFluentCustomHostname": {
@@ -7803,6 +7810,9 @@
           "goldenSourceUrl": {
             "value": "[parameters('appFluentGoldenSourceUrl')]"
           },
+          "foundryThreadsEnabled": {
+            "value": "[parameters('appFluentFoundryThreadsEnabled')]"
+          },
           "containerRegistryLoginServer": {
             "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
           },
@@ -7823,7 +7833,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "3416758275647475668"
+              "templateHash": "9075351793970307405"
             }
           },
           "parameters": {
@@ -7909,6 +7919,13 @@
               "defaultValue": "",
               "metadata": {
                 "description": "#424 M2 — golden-source base URL injected into the app at container start (window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <goldenSourceUrl>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host (e.g. a future Fabric-backed endpoint). Empty + empty agentHostUrl keeps the built-in mock."
+              }
+            },
+            "foundryThreadsEnabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the app mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires a non-empty agentHostUrl; with the host unset the app keeps simulated threads regardless. Provider stays native (no OBO) until M5."
               }
             },
             "customHostname": {
@@ -8034,6 +8051,10 @@
                         {
                           "name": "GOLDEN_SOURCE_URL",
                           "value": "[if(empty(parameters('goldenSourceUrl')), if(empty(parameters('agentHostUrl')), '', format('{0}/golden', parameters('agentHostUrl'))), parameters('goldenSourceUrl'))]"
+                        },
+                        {
+                          "name": "FOUNDRY_THREADS_ENABLED",
+                          "value": "[if(parameters('foundryThreadsEnabled'), 'true', 'false')]"
                         }
                       ]
                     }

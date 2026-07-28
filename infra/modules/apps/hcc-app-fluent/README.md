@@ -35,6 +35,18 @@ serves the RLS-scoped `GET /golden/{resource}` surface — so no per-env
 golden source diverges from the agent-host (e.g. a future Fabric-backed
 endpoint, Option 2).
 
+### Live per-agent thread minting (#424 M3)
+
+The `foundryThreadsEnabled` param (wired from top-level
+`appFluentFoundryThreadsEnabled`) sets a `FOUNDRY_THREADS_ENABLED` container env
+var (`'true'`/`'false'`). `docker-entrypoint.d/30-env-config.sh` writes it into
+`window.__ENV__.FOUNDRY_THREADS_ENABLED`. When `true` **and** an agent-host is
+configured, `useConversation.send` mints a real per-`(user x agent)` thread via
+`POST <agentHostUrl>/agents/{name}/threads` and threads its id onto every chat
+turn; with the host unset the app keeps simulated threads regardless. The server
+provider stays **native** (deterministic id, no OBO) until M5 flips it to the
+Foundry provider under Entra OBO — a config-not-code change.
+
 ## What it does NOT deploy
 
 - **Not the built app image.** Defaults to `nginxinc/nginx-unprivileged:1.27-alpine` until `app-build.yml` is extended to push the real image to ACR (follow-up gap-fill).

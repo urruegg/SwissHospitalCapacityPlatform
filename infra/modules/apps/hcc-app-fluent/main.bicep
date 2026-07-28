@@ -43,6 +43,9 @@ param agentHostUrl string = ''
 @description('#424 M2 — golden-source base URL injected into the app at container start (window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <goldenSourceUrl>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host (e.g. a future Fabric-backed endpoint). Empty + empty agentHostUrl keeps the built-in mock.')
 param goldenSourceUrl string = ''
 
+@description('#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the app mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires a non-empty agentHostUrl; with the host unset the app keeps simulated threads regardless. Provider stays native (no OBO) until M5.')
+param foundryThreadsEnabled bool = false
+
 @description('Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030.')
 param customHostname string = ''
 
@@ -198,6 +201,11 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
               // an explicit golden-source URL is supplied.
               name: 'GOLDEN_SOURCE_URL'
               value: empty(goldenSourceUrl) ? (empty(agentHostUrl) ? '' : '${agentHostUrl}/golden') : goldenSourceUrl
+            }
+            {
+              // #424 M3 — gate the live per-agent thread minter (native provider).
+              name: 'FOUNDRY_THREADS_ENABLED'
+              value: foundryThreadsEnabled ? 'true' : 'false'
             }
           ]
         }
