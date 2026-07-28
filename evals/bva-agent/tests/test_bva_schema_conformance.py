@@ -16,6 +16,8 @@ FIXTURE_DIR = REPO_ROOT / "evals" / "bva-agent" / "fixtures"
 SIM_SCHEMA_PATH = SCHEMA_DIR / "bva-simulation-result-v1.schema.json"
 OPP_SCHEMA_PATH = SCHEMA_DIR / "bva-opportunity-v1.schema.json"
 SIM_FIXTURE_PATH = FIXTURE_DIR / "bva-simulation-result-example.json"
+SIM_WHATIF_FIXTURE_PATH = FIXTURE_DIR / "bva-simulation-result-whatif.json"
+SIM_FIXTURE_PATHS = (SIM_FIXTURE_PATH, SIM_WHATIF_FIXTURE_PATH)
 OPP_FIXTURE_PATH = FIXTURE_DIR / "bva-opportunity-example.json"
 
 
@@ -31,21 +33,25 @@ def test_schemas_exist() -> None:
 def test_simulation_result_validates() -> None:
     import jsonschema
 
-    jsonschema.validate(instance=_load(SIM_FIXTURE_PATH), schema=_load(SIM_SCHEMA_PATH))
+    schema = _load(SIM_SCHEMA_PATH)
+    for fixture_path in SIM_FIXTURE_PATHS:
+        jsonschema.validate(instance=_load(fixture_path), schema=schema)
 
 
 def test_all_money_is_chf() -> None:
-    fixture = _load(SIM_FIXTURE_PATH)
-    assert fixture["currency"] == "CHF"
+    for fixture_path in SIM_FIXTURE_PATHS:
+        fixture = _load(fixture_path)
+        assert fixture["currency"] == "CHF"
 
 
 def test_every_metric_has_a_chunk() -> None:
-    fixture = _load(SIM_FIXTURE_PATH)
-    chunks = fixture["chunks"]
-    assert len(chunks) >= 1
-    for chunk in chunks:
-        assert chunk["classId"] == "C"
-        assert chunk["citation"]["sourceRef"]
+    for fixture_path in SIM_FIXTURE_PATHS:
+        fixture = _load(fixture_path)
+        chunks = fixture["chunks"]
+        assert len(chunks) >= 1
+        for chunk in chunks:
+            assert chunk["classId"] == "C"
+            assert chunk["citation"]["sourceRef"]
 
 
 def test_opportunity_validates() -> None:
