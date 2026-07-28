@@ -68,3 +68,35 @@ def propose_refresh_actions(metrics: Iterable[str]) -> list[str]:
         for metric in KNOWLEDGE_METRICS
         if metric in metric_set
     ]
+
+
+def extract_knowledge_gaps(
+    backlog_items: list[dict[str, Any]], grounding_sources: list[str]
+) -> list[dict[str, Any]]:
+    """Extract uncited-claim gaps from the curator's advisory ``backlog_items``.
+
+    Keeps only items whose ``metric`` is a knowledge metric
+    (:data:`KNOWLEDGE_METRICS`) - prompt-lane items are M7's concern. Each gap
+    carries the failing metric, its interaction-id lineage (sorted), the agent's
+    grounding sources (copied, not aliased), the interaction count, and the
+    targeted refresh action. Gaps are ordered by the canonical
+    :data:`KNOWLEDGE_METRICS` order. Pure and PHI-safe: ids + metric names only.
+    """
+    order = {metric: i for i, metric in enumerate(KNOWLEDGE_METRICS)}
+    gaps: list[dict[str, Any]] = []
+    for item in backlog_items:
+        metric = item.get("metric")
+        if metric not in order:
+            continue
+        ids = sorted(item.get("interactionIds", []))
+        gaps.append(
+            {
+                "metric": metric,
+                "count": len(ids),
+                "interactionIds": ids,
+                "groundingSources": list(grounding_sources),
+                "action": REFRESH_ACTION_LIBRARY[metric],
+            }
+        )
+    gaps.sort(key=lambda g: order[g["metric"]])
+    return gaps
