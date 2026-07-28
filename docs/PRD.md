@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.5.0 |
+| **Version** | 2.6.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.4.1 (renumbered the Signal ADR 0053->0054 and linked it in the traceability matrix); this bump ratifies Sprint 30 closed-loop-learning requirements FR-LEARN-001..005 + NFR-LEARN-001..004 (§U, §Q) + traceability row (ADR-0055, #443) |
+| **Previous Version** | 2.5.0 (ratified Sprint 30 closed-loop-learning requirements FR-LEARN-001..005 + NFR-LEARN-001..004); this bump ratifies Sprint 33 BVA Agent requirements FR-BVA-001..005 + NFR-BVA-001..005 (§V, §R) + traceability row (ADR-0056, #489/#501) |
 
 ## Purpose
 
@@ -360,6 +360,25 @@ and a recorded `approved-to-apply`.
 | `FR-LEARN-004` | Surface an advisory improvement backlog from low-scoring / uncited / mis-refused interactions, grouped by agent + failing metric. |
 | `FR-LEARN-005` | Optimize prompts / knowledge / guardrails and fine-tune (SFT/DPO/RFT) from curated data for the lead agent, human-gated. |
 
+### V) Business Value Assessment Agent (Sprint 33)
+
+Sprint 33 requirements per the
+[Sprint 33 BVA Agent design](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md),
+the [WS-G0 contracts](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md),
+and [ADR-0056](adr/0056-bva-agent-deterministic-computation.md). The `bva-agent`
+is **advisory-only and deterministic**: all arithmetic is performed by the typed
+`bva.simulate` tool (no LLM math), every figure is a cited Class-C `GroundedChunk`,
+and it is a **peer** to the `product-owner-agent` under the App orchestrator — BVA
+owns the numbers, PO owns the go/no-go verdict.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-BVA-001` | The platform shall produce grounded ROI/TCO answers computed over the `bva_*` gold measures, standardized in CHF. |
+| `FR-BVA-002` | The platform shall support interactive new-hospital what-if analysis via the deterministic `bva.simulate` tool, parametric and benchmarked from the three existing hospitals. |
+| `FR-BVA-003` | The platform shall compose a PO ↔ BVA fan-out into one cited answer: BVA numbers plus the Product Owner go/no-go verdict. |
+| `FR-BVA-004` | The platform shall capture an Opportunity in the Cosmos system-of-record, project it into a `bva_opportunity` gold table, and expose it in the Backstage pipeline view. |
+| `FR-BVA-005` | The platform shall surface BVA in the Curavias App Start (inline) and Backstage (pipeline) copilot rail. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -530,6 +549,20 @@ and [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md).
 | `NFR-LEARN-003` | No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval). |
 | `NFR-LEARN-004` | Full lineage is preserved end to end: interaction -> dataset -> eval -> change. |
 
+### R) Business Value Assessment Governance (Sprint 33)
+
+Sprint 33 non-functional deltas per the
+[Sprint 33 BVA Agent design](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md)
+and [ADR-0056](adr/0056-bva-agent-deterministic-computation.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-BVA-001` | BVA math shall be **deterministic and reproducible** with **no LLM arithmetic**: the same inputs always produce the same figures via the typed `bva.simulate` tool. |
+| `NFR-BVA-002` | Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot) with snapshot date and currency. |
+| `NFR-BVA-003` | Costs shall be **CHF-normalized** with an explicit FX line; settling weeks are marked provisional. |
+| `NFR-BVA-004` | BVA data shall have **SIT / PROD parity**, no PHI (ADR-0016), with demo figures labelled proof-of-technology (ADR-0013). |
+| `NFR-BVA-005` | BVA agent output shall preserve **DE / EN parity**. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -573,6 +606,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md`](superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md) + [`docs/adr/0053-dqa-trust-score-model.md`](adr/0053-dqa-trust-score-model.md) *(Sprint 31: Data Quality Agent — proactive assessment, deterministic Trust Score, gap→owner remediation, grounding-readiness cert, frozen DC-DQ-GAP-v1 seam; issues #451, #453)* | `FR-DQA-001` to `FR-DQA-006`, `FR-DQA-010`, `FR-DQA-012`, `NFR-DQA-001` to `NFR-DQA-002` |
 | [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/adr/0054-signal-channel-lifecycle.md`](adr/0054-signal-channel-lifecycle.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
 | [`docs/superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md`](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md) + [`docs/adr/0055-closed-loop-learning-capture-and-eval.md`](adr/0055-closed-loop-learning-capture-and-eval.md) *(Sprint 30: closed-loop learning — capture contract, online + offline eval, curator + advisory backlog; issue #443)* | `FR-LEARN-001` to `FR-LEARN-005`, `NFR-LEARN-001` to `NFR-LEARN-004` |
+| [`docs/superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md`](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md) + [`docs/superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md`](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md) + [`docs/adr/0056-bva-agent-deterministic-computation.md`](adr/0056-bva-agent-deterministic-computation.md) *(Sprint 33: Business Value Assessment Agent — deterministic `bva.simulate` ROI/TCO engine, cited Class-C GroundedChunks, Cosmos Opportunity SoR + gold projection, peer-to-PO fan-out; issues #489, #501)* | `FR-BVA-001` to `FR-BVA-005`, `NFR-BVA-001` to `NFR-BVA-005` |
 
 ## Assumptions To Validate In Implementation Planning
 
