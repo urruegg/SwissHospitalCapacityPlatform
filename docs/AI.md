@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.15.0 |
+| **Version** | 0.16.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.14.1 (recorded ADR-0053 as ratified with the versioned trustscore-weights.json source of truth); this bump adds the Sprint 30 M8 Improve - Knowledge Refresh subsection: deterministic advisory knowledge-refresh over uncited-claim gaps (citation_coverage / groundedness), grounding-source refresh actions, offline-gate guardrail, realising FR-LEARN-005 |
+| **Previous Version** | 0.15.0 (added the Sprint 30 M8 Improve - Knowledge Refresh subsection); this bump adds the Sprint 30 M9 Improve - Fine-tune subsection: deterministic advisory fine-tune planner classifying curated signal into SFT / DPO / RFT, demo-region eastus2, evaluation-gated deploy, completing the Improve stage and realising FR-LEARN-005 |
 
 ## Purpose
 
@@ -439,6 +439,48 @@ after the offline gate passes **and** an explicit `approved-to-apply`.
 PHI-safety (ADR-0016 / `NFR-LEARN-001`): the proposal carries only metric names,
 interaction ids, grounding-source names, and refresh actions - never raw prompt or
 answer content. This realises `FR-LEARN-005`.
+
+### Improve - Fine-tune (Sprint 30 M9)
+
+The third and final Improve step turns the curated dataset into an **advisory
+fine-tune plan** for an agent, with no autonomous change. A fine-tune planning job
+(`evals/finetune_plan_job.py`) reads recent **scored** `agent_interactions` through
+the same source seam as the online-eval, curation, prompt-optimize, and
+knowledge-refresh jobs (`evals/lib/online_store.py`) and calls a deterministic
+planner (`evals/lib/finetune_plan.py`). There is no live Foundry fine-tune runtime
+in this repo (ADR-0002; fine-tune is not GA-in-Switzerland); M9 realises that
+capability as reviewable, offline Python that builds the plan a human then runs:
+
+- **Method classification** - `classify_finetune_examples` assigns each curated
+  selection to the fine-tune method(s) its signal supports:
+  - **SFT** (supervised) - quality-failure examples (eval failures, low scores,
+    mis-refusals) that carry a human-corrected target to imitate.
+  - **DPO** (preference) - **thumbs pairs**: a thumbs-down interaction becomes a
+    preference pair.
+  - **RFT** (reinforcement) - **graders**: examples the deterministic evaluator
+    library can grade act as reward signal.
+  `random_rate` defaults to `0.0`, so only real failure / preference / grader
+  signal drives the plan.
+- **Method library** (`propose_methods`) - a deterministic method -> description
+  lookup (not a generative choice), so the plan is diffable.
+- **Plan** (`build_finetune_plan`) - per-method feasibility, example counts, and
+  interaction-id lineage, pinned to the demo region **eastus2** (ADR-0013 region
+  pin, ADR-0032 Foundry / OpenAI quota). Swiss-region GA fine-tune follows the
+  Preview-exception path (ADR-0006 / ADR-0042).
+- **Evaluation-gated deploy** - `checkpointSelection` is the offline-regression
+  gate: a fine-tuned checkpoint is only promotable if the offline suite over the
+  agent's golden dataset (`evals/lib/harness.py`) passes; the plan carries the
+  baseline `offlineGatePassed`.
+
+Advisory-only (`NFR-LEARN-003`): the job **never** launches a training job, deploys
+or registers a model, writes a file, or opens an issue. It emits a plan
+(`advisory: true, applied: false, approvedToApply: false`) with full lineage
+(`feasibleMethods`, per-method `interactionIds`). A human launches training and the
+deploy requires the offline gate pass **and** an explicit `approved-to-apply`; the
+first checkpoint is a proof of the loop, not a production model.
+PHI-safety (ADR-0016 / `NFR-LEARN-001`): the plan carries only method names,
+interaction ids, counts, and the demo region - never raw prompt or answer content.
+This realises `FR-LEARN-005`.
 
 ### Load Validation Plan
 
