@@ -6,7 +6,7 @@
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 2.12.0 (added the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent; issues #489, #501) |
+| **Previous Version** | 2.12.0 (added the `signal-agent` registry row for the Sprint 32 Signal Agent, issue #454); this bump adds the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent (issues #489, #501) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
