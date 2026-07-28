@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.12.0 |
+| **Version** | 0.13.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.0 (added Sprint 30 M5 §Evaluation Curation + Advisory Backlog — selection policy over scored traces, versioned-dataset rows with interaction lineage, and advisory GitHub-issue drafts grouped by agent + failing metric; advisory-only) |
+| **Previous Version** | 0.12.0 (added the Sprint 30 M5 Evaluation Curation + Advisory Backlog: selection policy over scored traces, versioned-dataset rows, advisory GitHub-issue drafts) |
 
 ## Purpose
 
@@ -165,6 +165,34 @@ Related architecture decisions:
 4. Keep role-aware prompt templates and explicit refusal behavior for
   out-of-scope or unsafe requests.
 5. Separate prompt bundles by environment (DEV, SIT, PROD) with promotion gates.
+
+## Data Quality Trust Score and Grounding Readiness (Sprint 31)
+
+Sprint 31 (issue #453,
+[ADR-0053](adr/0053-dqa-trust-score-model.md)) elevates the
+`data-quality-agent` from ingestion gates to **proactive** assessment of the
+gold/serving layer. Two deterministic contracts govern the surface:
+`DC-DQ-TRUSTSCORE-v1` (per-domain trust) and `DC-DQ-GAP-v1` (gap detection with
+impact and the frozen "new-source-needed" seam).
+
+1. The per-domain **trust score** is an 8-dimension deterministic, unit-tested
+   computation (`data-platform/quality/trust_score.py`) over governed metadata —
+   **never an LLM estimate** — mirroring the `compute_expected_impact` pattern so
+   every score is reproducible, versioned (`trustscore-v1`), and explainable.
+   The dimension weights and per-decision-class thresholds are ADR-ratified in
+   [ADR-0053](adr/0053-dqa-trust-score-model.md) (ratification pending).
+2. The agent is **advisory, human-in-the-loop, and read-only** (NFR-DQA-002): it
+   assesses and routes findings to the owning domain, but never edits source
+   data and never self-certifies grounding. It refuses `edit-source-data` and
+   `self-certify-grounding` requests.
+3. A **grounding-readiness certificate** (FR-DQA-012) gates whether a gold domain
+   may be used for trusted grounding. When a domain scores below its
+   decision-class threshold, the certificate is withheld and grounding is served
+   **degraded or withheld** (FR-DQA-006) rather than presented as trusted —
+   preventing a false-trusted answer.
+4. Trust scores and gap assessments are an **input to agent evaluation**,
+   converging with the Sprint 30 evaluation harness: a domain's readiness is one
+   of the signals scored when curating evaluation datasets and advisory backlog.
 
 ## Prescriptive Decision Vocabulary (DC-INSIGHT-v1)
 
