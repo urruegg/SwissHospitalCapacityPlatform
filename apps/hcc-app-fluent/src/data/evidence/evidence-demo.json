@@ -3177,6 +3177,66 @@
       "title": "The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build."
     },
     {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Capture every agent turn + user interaction as a `DC-AGENT-INTERACTION-v1` record (PHI-free, redaction-gated)."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Continuously evaluate captured interactions (citation coverage, groundedness, refusal correctness, actionability, safety) online + offline."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Curate versioned golden datasets from real traces with full lineage back to the source `interactionId`."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Surface an advisory improvement backlog from low-scoring / uncited / mis-refused interactions, grouped by agent + failing metric."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Optimize prompts / knowledge / guardrails and fine-tune (SFT/DPO/RFT) from curated data for the lead agent, human-gated."
+    },
+    {
       "family": "Product Marketing And Public Web (Sprint 24)",
       "id": "FR-MKT-001",
       "kind": "FR",
@@ -4375,6 +4435,54 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Every dashboard visual shall carry per-visual traceability back to its underlying semantic-model measure and its ontology-grounded source (`hcp:*` entities), aligned with `FR-CX-006` and `FR-ONT-004`."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "No PHI in captured interactions: the deterministic redaction gate is the single persistence choke point; raw prompts are hashed, not stored (ADR-0016)."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The interaction store honours Swiss residency at GA and a defined retention class (R3, AI trace and model evidence)."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval)."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Full lineage is preserved end to end: interaction -> dataset -> eval -> change."
     },
     {
       "family": "Maintainability And Delivery",

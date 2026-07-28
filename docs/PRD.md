@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.4.1 |
+| **Version** | 2.5.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.4.0 (added Sprint 32 Signal Agent requirements FR-SIG-001..011 + NFR-SIG-001..002); this patch renumbers the Signal ADR 0053->0054 (0053 taken by the DQA ADR) and links it in the traceability matrix |
+| **Previous Version** | 2.4.1 (renumbered the Signal ADR 0053->0054 and linked it in the traceability matrix); this bump ratifies Sprint 30 closed-loop-learning requirements FR-LEARN-001..005 + NFR-LEARN-001..004 (§U, §Q) + traceability row (ADR-0055, #443) |
 
 ## Purpose
 
@@ -342,6 +342,24 @@ compliance/DPO approval.
 | `FR-SIG-010` | Gate channel activation and ontology change on a recorded human data-owner and compliance/DPO `approved-to-apply` approval; the agent remains advisory-only with no autonomous activation. |
 | `FR-SIG-011` | Record provenance and audit evidence for every onboarding decision and activation. |
 
+### U) Closed-Loop Learning (Sprint 30)
+
+Sprint 30 requirements per the
+[Sprint 30 closed-loop-learning design](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md)
+and [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md). The loop is
+**advisory-only and human-in-the-loop**: it captures PHI-free interaction records,
+evaluates and curates them, and surfaces an improvement backlog, but never promotes
+a prompt / knowledge / guardrail / model change without an offline regression pass
+and a recorded `approved-to-apply`.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-LEARN-001` | Capture every agent turn + user interaction as a `DC-AGENT-INTERACTION-v1` record (PHI-free, redaction-gated). |
+| `FR-LEARN-002` | Continuously evaluate captured interactions (citation coverage, groundedness, refusal correctness, actionability, safety) online + offline. |
+| `FR-LEARN-003` | Curate versioned golden datasets from real traces with full lineage back to the source `interactionId`. |
+| `FR-LEARN-004` | Surface an advisory improvement backlog from low-scoring / uncited / mis-refused interactions, grouped by agent + failing metric. |
+| `FR-LEARN-005` | Optimize prompts / knowledge / guardrails and fine-tune (SFT/DPO/RFT) from curated data for the lead agent, human-gated. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -499,6 +517,19 @@ and [ADR-0053](adr/0053-dqa-trust-score-model.md).
 | `NFR-SIG-001` | Signal-channel ingestion shall follow Zero-Trust, read-scoped ingestion: every external, MCP, or model value is treated as untrusted and re-validated at each boundary. |
 | `NFR-SIG-002` | Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016). |
 
+### Q) Closed-Loop Learning Governance (Sprint 30)
+
+Sprint 30 non-functional deltas per the
+[Sprint 30 closed-loop-learning design](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md)
+and [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-LEARN-001` | No PHI in captured interactions: the deterministic redaction gate is the single persistence choke point; raw prompts are hashed, not stored (ADR-0016). |
+| `NFR-LEARN-002` | The interaction store honours Swiss residency at GA and a defined retention class (R3, AI trace and model evidence). |
+| `NFR-LEARN-003` | No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval). |
+| `NFR-LEARN-004` | Full lineage is preserved end to end: interaction -> dataset -> eval -> change. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -541,6 +572,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
 | [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md`](superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md) + [`docs/adr/0053-dqa-trust-score-model.md`](adr/0053-dqa-trust-score-model.md) *(Sprint 31: Data Quality Agent — proactive assessment, deterministic Trust Score, gap→owner remediation, grounding-readiness cert, frozen DC-DQ-GAP-v1 seam; issues #451, #453)* | `FR-DQA-001` to `FR-DQA-006`, `FR-DQA-010`, `FR-DQA-012`, `NFR-DQA-001` to `NFR-DQA-002` |
 | [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/adr/0054-signal-channel-lifecycle.md`](adr/0054-signal-channel-lifecycle.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
+| [`docs/superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md`](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md) + [`docs/adr/0055-closed-loop-learning-capture-and-eval.md`](adr/0055-closed-loop-learning-capture-and-eval.md) *(Sprint 30: closed-loop learning — capture contract, online + offline eval, curator + advisory backlog; issue #443)* | `FR-LEARN-001` to `FR-LEARN-005`, `NFR-LEARN-001` to `NFR-LEARN-004` |
 
 ## Assumptions To Validate In Implementation Planning
 
