@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.0 |
+| **Version** | 0.8.0 |
 | **Date** | 2026-07-27 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft — Sprint 09 skeleton (RB-11); Sprint 23 org-spine + skills rows (#255); Sprint 26 WS-A Foresight tier + WS-B `hcp:Barrier` + WS-C `hcp:Recommendation`/`hcp:Lever` (#335) |
-| **Previous Version** | 0.6.0 (Sprint 26 WS-B `hcp:Barrier` row) |
+| **Status** | Draft — Sprint 09 skeleton (RB-11); Sprint 23 org-spine + skills rows (#255); Sprint 26 WS-A Foresight tier + WS-B `hcp:Barrier` + WS-C `hcp:Recommendation`/`hcp:Lever` (#335); Sprint 32 certification/competency block (#454) |
+| **Previous Version** | 0.7.0 (Sprint 26 WS-C prescriptive terms) |
 | **Governance** | Every PR that touches [reference-layer.ttl](reference-layer.ttl) OR the operational-layer semantic model MUST update this file in the same PR. Reviewed by semantic / ontology owner per [FR-GOV-ONT-002](../PRD.md#h-semantic-ontology). |
 | **Enforcement** | Manual review today; CI conformance check delivered by follow-up PR (RB-08) per [FR-GOV-ONT-003](../PRD.md#h-semantic-ontology). |
 
@@ -52,6 +52,11 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:Skill` | `Skill` | `gold.dim_skill` *(contract-pending-2026-Q3)*; referenced by `DC-SKILL-EVIDENCE-v1` | N/A (static reference; ESCO-aligned) | Sprint 23 T7; 66 skills across nursing + ops care settings. |
 | `hcp:OccupationRole` | `OccupationRole` | `gold.dim_occupation_role` *(contract-pending-2026-Q3)* | N/A (static reference; ISCO-08 aligned) | Sprint 23 T7; occupation held by a HealthWorker. |
 | `hcp:HealthWorker` | `HealthWorker` | `gold.dim_employee` (GLN key) *(contract-pending-2026-Q3)* | N/A (static reference; no PHI in binding) | Sprint 23 T7; GLN golden-thread identity (mod-10 validated at silver). |
+| `hcp:Credential` | `Credential` | [`DC-REF-CERTIFICATION-v1`](../../data/synthetic/schema/dc-ref-certification-v1.schema.json) | *(GA-gated; deferred)* | Sprint 32 (#454); staff-PII, pseudonymised work-ID; feeds skills baseline. |
+| `hcp:Certification` | `Certification` | [`DC-REF-CERTIFICATION-v1`](../../data/synthetic/schema/dc-ref-certification-v1.schema.json) | *(GA-gated; deferred)* | Sprint 32 (#454); subtype of Credential. |
+| `hcp:Qualification` | `Qualification` | [`DC-REF-CERTIFICATION-v1`](../../data/synthetic/schema/dc-ref-certification-v1.schema.json) | *(GA-gated; deferred)* | Sprint 32 (#454); subtype of Credential (e.g. FMH title). |
+| `hcp:Competency` | `Competency` | *(no data contract — derived competency codes)* | *(GA-gated; deferred)* | Sprint 32 (#454); certified by a Credential; qualifies staffing of a CapacityUnit; relates to hcp:Skill tags. |
+| `hcp:IssuingAuthority` | `IssuingAuthority` | *(no data contract — reference dimension)* | N/A | Sprint 32 (#454); issues Credentials (NAREG / FMH). |
 | `hcp:SkillAssertion` | `SkillAssertion` | `DC-SKILL-EVIDENCE-v1`; `gold.fact_skill_assertion` | Deferred to WS-B4 live gold run (assertion validity windows) | Sprint 23 T7; carries proficiency (1..5) + assurance (L0..L4). No-PII TMDL surface (PR #339). |
 | `hcp:SkillDemand` | `SkillDemand` | `gold.fact_skill_demand` *(contract-pending-2026-Q3)* | Deferred to WS-B4 live gold run | Sprint 23 T7/T14; min proficiency + min assurance per Department + CareSetting. |
 | `hcp:SkillGap` | `SkillGap` | `gold.fact_skill_gap` *(contract-pending-2026-Q3)* | Deferred to WS-B4 live gold run | Sprint 23 T14; demand − assurance-valid supply; grounds the gap measures (PR #339). |
@@ -75,6 +80,10 @@ Single source of truth for the mapping between the **three artefact planes** the
 | `hcp:orgUnitOfTenant` (OrgUnit → Tenant) | `org_unit_of_tenant` | Sprint 23 T6 org-spine hierarchy; Tenant is folded 1:1 into the Hospital dimension. |
 | `hcp:departmentOfOrgUnit` (Department → OrgUnit) | `department_of_org_unit` | Sprint 23 T6; department is the demand / gap grain. |
 | `hcp:hasOccupationRole` (HealthWorker → OccupationRole) | `has_occupation_role` | Sprint 23 T7; ISCO-08 occupation held by a worker. |
+| `hcp:holdsCredential` (HealthWorker → Credential) | `holds_credential` | Sprint 32 (#454); links pseudonymised worker records to staff-PII credentials. |
+| `hcp:certifiesCompetency` (Credential → Competency) | `certifies_competency` | Sprint 32 (#454); maps verified credentials to derived competency codes. |
+| `hcp:qualifiesForUnit` (Competency → CapacityUnit) | `qualifies_for_unit` | Sprint 32 (#454); supports skills-based staffing eligibility for units and tasks. |
+| `hcp:issuedByAuthority` (Credential → IssuingAuthority) | `issued_by_authority` | Sprint 32 (#454); records NAREG / FMH or equivalent issuing authority provenance. |
 | `hcp:assertsSkill` (SkillAssertion → Skill) | `asserts_skill` | Sprint 23 T7; evidence-backed skill claim with proficiency + assurance. |
 | `hcp:assertedByWorker` (SkillAssertion → HealthWorker) | `asserted_by_worker` | Sprint 23 T7; GLN golden-thread link. |
 | `hcp:demandsSkill` (SkillDemand → Skill) | `demands_skill` | Sprint 23 T7; required skill at min proficiency + min assurance. |
