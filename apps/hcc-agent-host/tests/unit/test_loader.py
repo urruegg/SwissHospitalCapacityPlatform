@@ -71,6 +71,21 @@ def test_loads_real_bmca_manifest_from_repo():
     assert "fabric-data-agent" not in manifests
 
 
+def test_loads_real_signal_agent_manifest_from_repo():
+    # Sprint 32 — the Signal Agent (SGA) pack declares runtime: agent-host, so the
+    # host must auto-discover it with its write ceiling, HITL-04 activation gate,
+    # and skills-baseline / referenced-vs-wired grounding tables.
+    repo_root = Path(__file__).resolve().parents[4]
+    manifests = load_agent_host_manifests(repo_root / "agents")
+    assert "signal-agent" in manifests
+    sga = manifests["signal-agent"]
+    assert sga.runtime == "agent-host"
+    assert sga.max_ceiling == "write"
+    assert sga.hitl_gates == ("HITL-04",)
+    assert "gold.fact_skill_gap" in sga.grounding_tables
+    assert "gold.dim_skill" in sga.grounding_tables
+
+
 def test_parse_manifest_reads_grounding_agent():
     data = _base_manifest()
     data["groundingAgent"] = {

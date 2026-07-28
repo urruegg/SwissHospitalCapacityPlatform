@@ -32,6 +32,9 @@ ENV AGENTS_ROOT=/app/agents
 USER appuser
 EXPOSE 8080
 # The Sprint 11 agent packs (bmca-agent, ooa-agent, dca-agent, orsa-agent,
-# sba-agent, csa-agent, data-quality-agent) are baked into the image at
-# /app/agents; AGENTS_ROOT is set so api/app.py's _agents_root() picks it up.
+# sba-agent, csa-agent, data-quality-agent) plus the Sprint 32 signal-agent
+# (SGA) are baked into the image at /app/agents via the whole-folder COPY above;
+# AGENTS_ROOT is set so api/app.py's _agents_root() picks them up. Any
+# agents/<name>/ pack declaring `runtime: agent-host` is auto-discovered by the
+# manifest loader — no Dockerfile change is needed when a new pack lands.
 CMD ["uvicorn", "api.app:app", "--host", "0.0.0.0", "--port", "8080", "--app-dir", "src"]
