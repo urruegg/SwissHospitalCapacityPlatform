@@ -34,6 +34,7 @@
     "rolesDescription": "Vista in tempo reale dei ruoli dell'app da Microsoft Entra (sola lettura).",
     "evidence": "Prove",
     "evidenceDescription": "Lavagna del presentatore: schede BOM, ADR, requisiti, prove GA e dipendenze (sintetiche, senza PHI).",
+    "opportunities": "Opportunità",
     "nav": {
       "label": "Sezioni backstage"
     },

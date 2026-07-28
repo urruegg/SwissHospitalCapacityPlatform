@@ -1,0 +1,129 @@
+{
+  "generatedAt": "2026-07-28",
+  "opportunities": [
+    {
+      "archetype": "acute",
+      "hospitalName": "Clinica San Gottardo",
+      "id": "opp-clinica-san-gottardo-0001",
+      "language": "en",
+      "latestEvent": {
+        "at": "2026-07-31T16:00:00Z",
+        "by": "account-team",
+        "event": "opportunity marked lost after procurement update"
+      },
+      "poVerdict": "conditional",
+      "roiPct": 19.0,
+      "status": "lost"
+    },
+    {
+      "archetype": "acute",
+      "hospitalName": "Curalp Cantonal Hospital",
+      "id": "opp-curalp-cantonal-hospital-0001",
+      "language": "de",
+      "latestEvent": {
+        "at": "2026-07-30T08:00:00Z",
+        "by": "delivery-lead",
+        "event": "onboarding plan opened"
+      },
+      "poVerdict": "conditional",
+      "roiPct": 33.0,
+      "status": "onboarding"
+    },
+    {
+      "archetype": "acute",
+      "hospitalName": "CuraNova University Hospital",
+      "id": "opp-curanova-university-hospital-0001",
+      "language": "en",
+      "latestEvent": {
+        "at": "2026-07-29T09:00:00Z",
+        "by": "account-team",
+        "event": "commercial approval recorded"
+      },
+      "poVerdict": "go",
+      "roiPct": 42.5,
+      "status": "won"
+    },
+    {
+      "archetype": "acute",
+      "hospitalName": "Hopital de Fribourg",
+      "id": "opp-hopital-fribourg-0001",
+      "language": "en",
+      "latestEvent": {
+        "at": "2026-07-28T09:15:00Z",
+        "by": "app-copilot",
+        "event": "created from START rail ask"
+      },
+      "poVerdict": null,
+      "roiPct": null,
+      "status": "new"
+    },
+    {
+      "archetype": "rehab",
+      "hospitalName": "Reha Zentrum Zurich Sud",
+      "id": "opp-reha-zentrum-zurich-sud-0001",
+      "language": "de",
+      "latestEvent": {
+        "at": "2026-07-28T13:00:00Z",
+        "by": "product-owner-agent",
+        "event": "disqualified after product review"
+      },
+      "poVerdict": "no-go",
+      "roiPct": 8.5,
+      "status": "disqualified"
+    },
+    {
+      "archetype": "spitex",
+      "hospitalName": "Spitex Zurichsee",
+      "id": "opp-spitex-zurichsee-0001",
+      "language": "de",
+      "latestEvent": {
+        "at": "2026-07-28T09:20:00Z",
+        "by": "bva-agent",
+        "event": "awaiting scope details"
+      },
+      "poVerdict": null,
+      "roiPct": null,
+      "status": "evaluating"
+    },
+    {
+      "archetype": "rehab",
+      "hospitalName": "Vialta Regional Hospital",
+      "id": "opp-vialta-regional-hospital-0001",
+      "language": "en",
+      "latestEvent": {
+        "at": "2026-07-28T12:00:00Z",
+        "by": "product-owner-agent",
+        "event": "qualified for rehab flow pilot"
+      },
+      "poVerdict": "go",
+      "roiPct": 27.5,
+      "status": "qualified"
+    }
+  ],
+  "pipeline": {
+    "open": 4,
+    "stageWeights": {
+      "disqualified": 0.0,
+      "evaluating": 0.25,
+      "lost": 0.0,
+      "new": 0.1,
+      "onboarding": 0.8,
+      "qualified": 0.5,
+      "won": 1.0
+    },
+    "statusCounts": {
+      "disqualified": 1,
+      "evaluating": 1,
+      "lost": 1,
+      "new": 1,
+      "onboarding": 1,
+      "qualified": 1,
+      "won": 1
+    },
+    "total": 7,
+    "weightedRoiOpportunityCount": 3,
+    "weightedRoiPct": 35.93,
+    "weightedRoiWeightSum": 2.3
+  },
+  "sourcePath": "data/synthetic/bva/bva-opportunities.json"
+}
