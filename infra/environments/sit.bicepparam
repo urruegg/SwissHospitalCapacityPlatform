@@ -173,7 +173,12 @@ param enableCsaCosmosModule = true
 // (real OpenAI-Assistants flow, ADR-0033 Option A); ci-build-agent-host.yml
 // pushed the tag. Deploy is approval-gated per AGENTS.md §4 (approved-to-apply
 // by @urruegg 2026-07-18).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b796961'
+// Bumped b796961 -> f596cf2 to ship #424 M2: the agent-host GET /golden/{resource}
+// RLS-scoped live golden-source read surface (PR #476 merge to main). f596cf2 is a
+// superset of b796961 (all prior agent-host code incl. the M5 Fabric Data Agent
+// client + the new golden service). Deploy approval-gated per AGENTS.md §4
+// (approved-to-apply by @urruegg 2026-07-28T10:47+02:00).
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:f596cf2'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
@@ -216,11 +221,19 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 // title rebrand) from the #297 consolidation merge commit 43ace03.
 // Bumped 43ace03 -> cb21e2c to ship Sprint 20 OOA (occupancy) screen parity
 // (PR #313, digest sha256:107137a07f48105e35922c43370e1d38dd65938716b72f0371b6350c6fcc4f2b).
+// Bumped ff3dd76 -> bd1fa7e to ship #424 M2 (live golden-source read path): the app
+// now reads live board payloads from GET <GOLDEN_SOURCE_URL>/{resource} when Live is
+// toggled. bd1fa7e = PR #480 merge (M2 app code from #476 + the app-only Docker build
+// fix). Deploy approval-gated per AGENTS.md §4 (approved-to-apply by @urruegg
+// 2026-07-28T10:47+02:00).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:ff3dd76'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:bd1fa7e'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
+// #424 M2 — golden-source URL. Left unset so the module auto-derives
+// `${appFluentAgentHostUrl}/golden` (Option 1: the agent-host serves the RLS-scoped
+// golden surface). Set explicitly only for a future divergent (Fabric-backed) source.
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:
