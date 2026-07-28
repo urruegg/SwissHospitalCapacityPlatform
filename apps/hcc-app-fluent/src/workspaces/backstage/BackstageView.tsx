@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { EvidenceTab } from './tabs/evidence/EvidenceTab';
 import { RolesTab } from './tabs/roles/RolesTab';
 import { StoryTab } from './tabs/story/StoryTab';
+import { OpportunityPipelineView } from './opportunity/OpportunityPipelineView';
 
 const useStyles = makeStyles({
   root: {
@@ -36,6 +37,7 @@ const useStyles = makeStyles({
 const NAV_ITEMS = [
   { key: 'story', to: '/backstage/story', labelKey: 'backstage.story.tab' },
   { key: 'evidence', to: '/backstage/evidence', labelKey: 'backstage.evidence' },
+  { key: 'opportunities', to: '/backstage/opportunities', labelKey: 'backstage.opportunities' },
   { key: 'roles', to: '/backstage/roles', labelKey: 'backstage.roles' },
 ];
 
@@ -56,6 +58,11 @@ const WIDGETS: Record<string, () => JSX.Element> = {
   evidence: () => (
     <div data-testid="widget-evidence">
       <EvidenceTab />
+    </div>
+  ),
+  opportunities: () => (
+    <div data-testid="widget-opportunities">
+      <OpportunityPipelineView />
     </div>
   ),
   roles: () => (

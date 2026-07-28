@@ -16,6 +16,7 @@ by the semantic model (T5) and C-suite reports (T6).
 | `build_silver_bva.py` | Silver | `silver.bva_consumption` (keys + `date_key`/`month_key` + provenance) |
 | `build_gold_bva_dims.py` | Gold | `gold.bva_dim_{service,meter,resource,environment,hospital,capability,date,exec_role}` |
 | `build_gold_bva_facts.py` | Gold | `gold.bva_fact_{azure_consumption,budget,value_realization}` |
+| `build_gold_bva_opportunity.py` | Gold | `gold.bva_opportunity`, `gold.bva_opportunity_pipeline` |
 
 Naming is snake_case + `gold.` schema prefix (per PR #153 reconciliation).
 

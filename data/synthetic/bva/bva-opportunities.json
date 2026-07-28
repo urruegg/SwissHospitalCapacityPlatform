@@ -1,0 +1,198 @@
+[
+  {
+    "id": "opp-curanova-university-hospital-0001",
+    "hospitalName": "CuraNova University Hospital",
+    "archetype": "acute",
+    "createdAt": "2026-07-28T08:00:00Z",
+    "createdBy": "bva-agent",
+    "status": "won",
+    "askText": "Should CuraNova proceed with Curavias onboarding after the pilot value assessment?",
+    "language": "en",
+    "bvaResult": {
+      "currency": "CHF",
+      "oneTimeChf": 1300000,
+      "annualRunChf": 1250000,
+      "metrics": { "roiPct": 42.5, "paybackMonths": 14, "tco3yChf": 5050000, "npvChf": 3120000 }
+    },
+    "poVerdict": {
+      "verdict": "go",
+      "rationale": "Large acute tenant with strong executive sponsor and measurable discharge throughput upside.",
+      "citations": ["data/master-data/bva/bva_hospital_profile.csv#CN"]
+    },
+    "inputs": {
+      "beds": 920,
+      "occupancy": 0.86,
+      "caseMix": "acute tertiary",
+      "scope": "full"
+    },
+    "history": [
+      { "at": "2026-07-28T08:00:00Z", "event": "created from BVA workshop ask", "by": "bva-agent" },
+      { "at": "2026-07-28T10:30:00Z", "event": "qualified by product owner", "by": "product-owner-agent" },
+      { "at": "2026-07-29T09:00:00Z", "event": "commercial approval recorded", "by": "account-team" }
+    ]
+  },
+  {
+    "id": "opp-curalp-cantonal-hospital-0001",
+    "hospitalName": "Curalp Cantonal Hospital",
+    "archetype": "acute",
+    "createdAt": "2026-07-28T08:15:00Z",
+    "createdBy": "bva-agent",
+    "status": "onboarding",
+    "askText": "Welche Onboarding-Option passt fuer Curalp Cantonal Hospital?",
+    "language": "de",
+    "bvaResult": {
+      "currency": "CHF",
+      "oneTimeChf": 1180000,
+      "annualRunChf": 980000,
+      "metrics": { "roiPct": 33.0, "paybackMonths": 16, "tco3yChf": 4120000, "npvChf": 1980000 }
+    },
+    "poVerdict": {
+      "verdict": "conditional",
+      "rationale": "Proceed with acute capacity scope first; defer insurer coordination until governance sign-off.",
+      "citations": ["data/master-data/bva/bva_hospital_profile.csv#CP"]
+    },
+    "inputs": {
+      "beds": 780,
+      "occupancy": 0.84,
+      "caseMix": "acute cantonal",
+      "scope": "acute capacity"
+    },
+    "history": [
+      { "at": "2026-07-28T08:15:00Z", "event": "created from German START rail ask", "by": "bva-agent" },
+      { "at": "2026-07-28T11:00:00Z", "event": "conditional product verdict recorded", "by": "product-owner-agent" },
+      { "at": "2026-07-30T08:00:00Z", "event": "onboarding plan opened", "by": "delivery-lead" }
+    ]
+  },
+  {
+    "id": "opp-vialta-regional-hospital-0001",
+    "hospitalName": "Vialta Regional Hospital",
+    "archetype": "rehab",
+    "createdAt": "2026-07-28T08:30:00Z",
+    "createdBy": "bva-agent",
+    "status": "qualified",
+    "askText": "Can Vialta use Curavias for rehab transfer visibility and discharge coordination?",
+    "language": "en",
+    "bvaResult": {
+      "currency": "CHF",
+      "oneTimeChf": 420000,
+      "annualRunChf": 310000,
+      "metrics": { "roiPct": 27.5, "paybackMonths": 18, "tco3yChf": 1350000, "npvChf": 640000 }
+    },
+    "poVerdict": {
+      "verdict": "go",
+      "rationale": "Rehab flow is aligned to the platform scenario and can reuse the shared discharge ontology.",
+      "citations": ["data/master-data/bva/bva_hospital_profile.csv#VT"]
+    },
+    "inputs": {
+      "beds": 190,
+      "occupancy": 0.82,
+      "caseMix": "rehab",
+      "scope": "rehab transfer visibility"
+    },
+    "history": [
+      { "at": "2026-07-28T08:30:00Z", "event": "created from BVA workshop ask", "by": "bva-agent" },
+      { "at": "2026-07-28T12:00:00Z", "event": "qualified for rehab flow pilot", "by": "product-owner-agent" }
+    ]
+  },
+  {
+    "id": "opp-spitex-zurichsee-0001",
+    "hospitalName": "Spitex Zurichsee",
+    "archetype": "spitex",
+    "createdAt": "2026-07-28T09:00:00Z",
+    "createdBy": "app-copilot",
+    "status": "evaluating",
+    "askText": "Soll Spitex Zurichsee fuer post-akute Kapazitaetskoordination aufgenommen werden?",
+    "language": "de",
+    "bvaResult": null,
+    "poVerdict": null,
+    "inputs": {
+      "beds": 0,
+      "occupancy": null,
+      "caseMix": "home care",
+      "scope": "post-acute coordination"
+    },
+    "history": [
+      { "at": "2026-07-28T09:00:00Z", "event": "created from START rail ask", "by": "app-copilot" },
+      { "at": "2026-07-28T09:20:00Z", "event": "awaiting scope details", "by": "bva-agent" }
+    ]
+  },
+  {
+    "id": "opp-hopital-fribourg-0001",
+    "hospitalName": "Hopital de Fribourg",
+    "archetype": "acute",
+    "createdAt": "2026-07-28T09:15:00Z",
+    "createdBy": "app-copilot",
+    "status": "new",
+    "askText": "Should we onboard Hopital de Fribourg?",
+    "language": "en",
+    "bvaResult": null,
+    "poVerdict": null,
+    "inputs": { "beds": 320, "occupancyTarget": 0.85, "onboardingScope": "full" },
+    "history": [
+      { "at": "2026-07-28T09:15:00Z", "event": "created from START rail ask", "by": "app-copilot" }
+    ]
+  },
+  {
+    "id": "opp-reha-zentrum-zurich-sud-0001",
+    "hospitalName": "Reha Zentrum Zurich Sud",
+    "archetype": "rehab",
+    "createdAt": "2026-07-28T09:45:00Z",
+    "createdBy": "bva-agent",
+    "status": "disqualified",
+    "askText": "Kann Reha Zentrum Zurich Sud als eigenstaendiger Pilot starten?",
+    "language": "de",
+    "bvaResult": {
+      "currency": "CHF",
+      "oneTimeChf": 360000,
+      "annualRunChf": 260000,
+      "metrics": { "roiPct": 8.5, "paybackMonths": 34, "tco3yChf": 1140000, "npvChf": -120000 }
+    },
+    "poVerdict": {
+      "verdict": "no-go",
+      "rationale": "The requested standalone scope is below the minimum evidence threshold for D1 shared fixtures.",
+      "citations": ["docs/BVA.md"]
+    },
+    "inputs": {
+      "beds": 80,
+      "occupancy": 0.77,
+      "caseMix": "rehab",
+      "scope": "standalone pilot"
+    },
+    "history": [
+      { "at": "2026-07-28T09:45:00Z", "event": "created from BVA workshop ask", "by": "bva-agent" },
+      { "at": "2026-07-28T13:00:00Z", "event": "disqualified after product review", "by": "product-owner-agent" }
+    ]
+  },
+  {
+    "id": "opp-clinica-san-gottardo-0001",
+    "hospitalName": "Clinica San Gottardo",
+    "archetype": "acute",
+    "createdAt": "2026-07-28T10:15:00Z",
+    "createdBy": "bva-agent",
+    "status": "lost",
+    "askText": "Can Clinica San Gottardo join the Curavias acute capacity pilot?",
+    "language": "en",
+    "bvaResult": {
+      "currency": "CHF",
+      "oneTimeChf": 540000,
+      "annualRunChf": 390000,
+      "metrics": { "roiPct": 19.0, "paybackMonths": 22, "tco3yChf": 1710000, "npvChf": 410000 }
+    },
+    "poVerdict": {
+      "verdict": "conditional",
+      "rationale": "Fit was plausible, but procurement selected an incumbent bed-management extension.",
+      "citations": ["docs/BVA.md"]
+    },
+    "inputs": {
+      "beds": 140,
+      "occupancy": 0.81,
+      "caseMix": "acute regional",
+      "scope": "acute capacity pilot"
+    },
+    "history": [
+      { "at": "2026-07-28T10:15:00Z", "event": "created from BVA workshop ask", "by": "bva-agent" },
+      { "at": "2026-07-28T14:30:00Z", "event": "conditional fit recorded", "by": "product-owner-agent" },
+      { "at": "2026-07-31T16:00:00Z", "event": "opportunity marked lost after procurement update", "by": "account-team" }
+    ]
+  }
+]
