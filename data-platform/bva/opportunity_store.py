@@ -204,6 +204,7 @@ class OpportunityStore:
         bvaResult: dict[str, Any] | None = None,
         poVerdict: dict[str, Any] | None = None,
         inputs: dict[str, Any] | None = None,
+        historyEvent: str | None = None,
     ) -> dict[str, Any]:
         """Create or update the deterministic Opportunity lineage for a hospital ask."""
         timestamp = at or _utc_now()
@@ -230,7 +231,7 @@ class OpportunityStore:
                 "inputs": inputs,
                 "history": [],
             }
-            doc = append_history(doc, "created from BVA ask", timestamp, by=createdBy)
+            doc = append_history(doc, historyEvent or "created from BVA ask", timestamp, by=createdBy)
             return self.upsert(doc)
 
         updated = deepcopy(existing)
@@ -243,7 +244,7 @@ class OpportunityStore:
             updated["poVerdict"] = poVerdict
         if inputs is not None:
             updated["inputs"] = inputs
-        updated = append_history(updated, "updated from BVA re-ask", timestamp, by=createdBy)
+        updated = append_history(updated, historyEvent or "updated from BVA re-ask", timestamp, by=createdBy)
         return self.upsert(updated)
 
 
