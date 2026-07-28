@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getAgentHostUrl } from '../../src/config/runtime-config';
+import { getAgentHostUrl, getGoldenSourceUrl } from '../../src/config/runtime-config';
 
 /**
  * #447 — runtime config injection. The app must read the agent-host URL from a
@@ -35,5 +35,35 @@ describe('runtime-config getAgentHostUrl', () => {
   it('returns an empty string when neither runtime nor build-time value is set', () => {
     vi.stubEnv('VITE_AGENT_HOST_URL', '');
     expect(getAgentHostUrl()).toBe('');
+  });
+});
+
+/**
+ * #424 M2 — the golden-source (IQ structured-read) base URL follows the same
+ * runtime-injection contract as the agent-host URL, so one env-agnostic image
+ * points at each environment's live golden surface without a rebuild.
+ */
+describe('runtime-config getGoldenSourceUrl', () => {
+  afterEach(() => {
+    delete (window as { __ENV__?: unknown }).__ENV__;
+    vi.unstubAllEnvs();
+  });
+
+  it('prefers window.__ENV__.GOLDEN_SOURCE_URL over the build-time fallback', () => {
+    vi.stubEnv('VITE_GOLDEN_SOURCE_URL', 'https://sit.example/golden');
+    (window as { __ENV__?: { GOLDEN_SOURCE_URL?: string } }).__ENV__ = {
+      GOLDEN_SOURCE_URL: 'https://prod.example/golden',
+    };
+    expect(getGoldenSourceUrl()).toBe('https://prod.example/golden');
+  });
+
+  it('falls back to import.meta.env.VITE_GOLDEN_SOURCE_URL when the runtime value is absent', () => {
+    vi.stubEnv('VITE_GOLDEN_SOURCE_URL', 'https://fallback.example/golden');
+    expect(getGoldenSourceUrl()).toBe('https://fallback.example/golden');
+  });
+
+  it('returns an empty string when neither runtime nor build-time value is set', () => {
+    vi.stubEnv('VITE_GOLDEN_SOURCE_URL', '');
+    expect(getGoldenSourceUrl()).toBe('');
   });
 });

@@ -17,6 +17,8 @@
 export interface RuntimeEnv {
   /** Foundry agent-host base URL for this environment. */
   AGENT_HOST_URL?: string;
+  /** Golden-source (IQ structured-read) base URL for this environment (#424 M2). */
+  GOLDEN_SOURCE_URL?: string;
 }
 
 declare global {
@@ -42,4 +44,17 @@ export function getAgentHostUrl(): string {
     return runtime;
   }
   return import.meta.env.VITE_AGENT_HOST_URL ?? '';
+}
+
+/**
+ * Resolve the golden-source (IQ structured-read) base URL: runtime-injected
+ * value first, then the build-time `VITE_GOLDEN_SOURCE_URL` fallback, then empty
+ * (=> the read path stays simulated / degrades loud). #424 M2.
+ */
+export function getGoldenSourceUrl(): string {
+  const runtime = runtimeEnv().GOLDEN_SOURCE_URL;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  return import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
 }

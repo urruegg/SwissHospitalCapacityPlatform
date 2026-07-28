@@ -20,7 +20,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -28,6 +28,7 @@ from manifests.loader import AgentManifest, load_agent_host_manifests
 from orchestrator.dispatch import Orchestrator
 from orchestrator.mock_model import MockChatModel
 from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
+from golden.service import GoldenScopeError, UnknownResourceError, load_golden
 from hitl.gate_enforcer import enforce_gates
 from observability import tracing
 
@@ -145,7 +146,14 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=_allowed_origins(),
         allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["content-type", "authorization"],
+        allow_headers=[
+            "content-type",
+            "authorization",
+            # #424 M2 — OBO/RLS scope headers the app attaches on live golden reads.
+            "x-user-oid",
+            "x-hospital-scope",
+            "x-active-role",
+        ],
         max_age=600,
     )
 
@@ -164,6 +172,32 @@ def create_app() -> FastAPI:
             }
             for m in state.manifests.values()
         ]
+
+    @app.get("/golden/{resource}")
+    def golden(
+        resource: str,
+        response: Response,
+        hospital: str = "aggregated",
+        window: int = 72,
+        x_user_oid: str = Header(default=""),
+        x_hospital_scope: str = Header(default=""),
+        x_active_role: str = Header(default=""),
+    ) -> dict[str, Any]:
+        # #424 M2 — live golden-source read. The scope is the caller's proven
+        # ContextEnvelope, propagated as headers by the app's IQ gateway; the
+        # `hospital` query param is advisory and never widens the header scope.
+        try:
+            payload = load_golden(
+                resource, hospital_scope=x_hospital_scope, user_oid=x_user_oid
+            )
+        except UnknownResourceError:
+            raise HTTPException(status_code=404, detail=f"unknown golden resource '{resource}'")
+        except GoldenScopeError as exc:
+            # Deny-by-default: an ungrounded read is refused, not served wide.
+            raise HTTPException(status_code=401, detail=str(exc))
+        response.headers["X-Data-Provenance"] = "live"
+        response.headers["X-Applied-Scope"] = x_hospital_scope
+        return payload
 
     @app.post("/agents/{name}/chat")
     def chat(name: str, req: ChatRequest) -> dict[str, Any]:

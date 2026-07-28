@@ -14,12 +14,14 @@ set -eu
 html_dir="${NGINX_HTML_DIR:-/usr/share/nginx/html}"
 target="${html_dir}/env-config.js"
 agent_host_url="${AGENT_HOST_URL:-}"
+golden_source_url="${GOLDEN_SOURCE_URL:-}"
 
 cat > "${target}" <<EOF
-// Generated at container start by docker-entrypoint.d/30-env-config.sh (#447).
+// Generated at container start by docker-entrypoint.d/30-env-config.sh (#447, #424 M2).
 window.__ENV__ = Object.assign(window.__ENV__ || {}, {
-  AGENT_HOST_URL: "${agent_host_url}"
+  AGENT_HOST_URL: "${agent_host_url}",
+  GOLDEN_SOURCE_URL: "${golden_source_url}"
 });
 EOF
 
-echo "[30-env-config] wrote ${target} (AGENT_HOST_URL='${agent_host_url}')"
+echo "[30-env-config] wrote ${target} (AGENT_HOST_URL='${agent_host_url}', GOLDEN_SOURCE_URL='${golden_source_url}')"

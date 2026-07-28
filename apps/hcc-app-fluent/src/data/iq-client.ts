@@ -1,5 +1,5 @@
 import type { Provenance } from '../journey/RoleBoard';
-import { getAgentHostUrl } from '../config/runtime-config';
+import { getAgentHostUrl, getGoldenSourceUrl } from '../config/runtime-config';
 
 /**
  * Sprint 27 — IQ-layer data-access gateway (the single data ingress).
@@ -38,21 +38,28 @@ export interface IqResult<T> {
 
 // The only golden-data endpoint config in the app. Region-agnostic (ADR-0035):
 // values come from env so westus2 (demo) lifts to eastus2 / switzerlandnorth
-// without code edits. (MSAL config lives in auth/msal-provider.ts and is not a
-// golden-data ingress, so it is out of this gateway's scope.)
-const goldenSourceUrl: string = import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
+// without code edits. #424 M2 — resolved at call time (runtime-injected
+// window.__ENV__ first, build-time VITE_* fallback) so one env-agnostic image
+// serves every environment, matching the agent-host URL contract (#447). (MSAL
+// config lives in auth/msal-provider.ts and is not a golden-data ingress, so it
+// is out of this gateway's scope.)
+function goldenSourceUrl(): string {
+  return getGoldenSourceUrl();
+}
 // #447 — runtime-injected first (window.__ENV__), build-time VITE_* as fallback,
 // so one env-agnostic image serves every environment (no per-env bake).
-const agentHostBaseUrl: string = getAgentHostUrl();
+function agentHostBaseUrl(): string {
+  return getAgentHostUrl();
+}
 
 /** True when the golden structured-data surface (Fabric Data Agent / Gold REST) is configured. */
 export function isGoldenSourceConfigured(): boolean {
-  return goldenSourceUrl.length > 0;
+  return goldenSourceUrl().length > 0;
 }
 
 /** True when the Foundry agent host is configured. */
 export function isAgentHostConfigured(): boolean {
-  return agentHostBaseUrl.length > 0;
+  return agentHostBaseUrl().length > 0;
 }
 
 /** The golden source may wrap its payload with citations, or return the bare payload. */
@@ -67,7 +74,7 @@ interface StructuredEnvelope<T> {
  * the caller degrades loudly to its fixture. Only call when `isGoldenSourceConfigured()`.
  */
 export async function iqStructuredRead<T>(path: string): Promise<{ payload: T; citations: string[] }> {
-  const res = await fetch(`${goldenSourceUrl}${path}`);
+  const res = await fetch(`${goldenSourceUrl()}${path}`);
   if (!res.ok) throw new Error(`IQ structured read failed: ${res.status}`);
   const body = (await res.json()) as StructuredEnvelope<T>;
   const payload = body.payload ?? (body as unknown as T);
@@ -76,7 +83,7 @@ export async function iqStructuredRead<T>(path: string): Promise<{ payload: T; c
 
 /** Conversational read / answer through the Foundry agent host. Only call when `isAgentHostConfigured()`. */
 export async function iqAgentChat<T>(agent: string, prompt: string): Promise<T> {
-  const res = await fetch(`${agentHostBaseUrl}/agents/${encodeURIComponent(agent)}/chat`, {
+  const res = await fetch(`${agentHostBaseUrl()}/agents/${encodeURIComponent(agent)}/chat`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ prompt }),
@@ -87,7 +94,7 @@ export async function iqAgentChat<T>(agent: string, prompt: string): Promise<T> 
 
 /** Fetch the deployed agent list from the Foundry agent host. Only call when `isAgentHostConfigured()`. */
 export async function iqAgentList<T>(): Promise<T> {
-  const res = await fetch(`${agentHostBaseUrl}/agents`);
+  const res = await fetch(`${agentHostBaseUrl()}/agents`);
   if (!res.ok) throw new Error(`agent list failed: ${res.status}`);
   return (await res.json()) as T;
 }
