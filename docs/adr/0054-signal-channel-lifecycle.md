@@ -1,4 +1,4 @@
-# ADR-0053: Signal Channel Lifecycle Governance
+# ADR-0054: Signal Channel Lifecycle Governance
 
 | Field | Value |
 | ----- | ----- |
