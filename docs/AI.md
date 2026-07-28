@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.12.0 |
+| **Version** | 0.12.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.0 (added Sprint 30 M5 §Evaluation Curation + Advisory Backlog — selection policy over scored traces, versioned-dataset rows with interaction lineage, and advisory GitHub-issue drafts grouped by agent + failing metric; advisory-only) |
+| **Previous Version** | 0.12.0 (added Sprint 30 M5 §Evaluation Curation + Advisory Backlog); this bump cross-links the ratifying ADR-0055 from §Evaluation (Sprint 30 M6) |
 
 ## Purpose
 
@@ -199,6 +199,10 @@ than a free-form sentence.
    runs in-VNet, never from CI.
 
 ## Evaluation
+
+The closed-loop learning approach below — capture contract, retention class, and
+online-eval sampling — is ratified in
+[ADR-0055](../adr/0055-closed-loop-learning-capture-and-eval.md) (Sprint 30).
 
 ### Agent-Turn Observability (Sprint 30 M1)
 
