@@ -1,0 +1,60 @@
+{
+  "networkLabel": "Curavias Hospital Network",
+  "asOf": "2026-07-28T12:00:00Z",
+  "sites": [
+    {
+      "id": "usz",
+      "hospital": "hospital-usz",
+      "label": "UniversitaetsSpital Zuerich",
+      "occupancyPct": 93,
+      "bedsFree": 9,
+      "status": "over"
+    },
+    {
+      "id": "ksa",
+      "hospital": "hospital-ksa",
+      "label": "Kantonsspital Aarau",
+      "occupancyPct": 78,
+      "bedsFree": 31,
+      "status": "watch"
+    },
+    {
+      "id": "bern",
+      "hospital": "hospital-bern",
+      "label": "Inselspital Bern",
+      "occupancyPct": 71,
+      "bedsFree": 44,
+      "status": "ok"
+    }
+  ],
+  "transfers": [
+    {
+      "id": "t1",
+      "hospital": "hospital-usz",
+      "from": "USZ ICU",
+      "to": "KSA HDU",
+      "patients": 2,
+      "reason": "ICU overflow"
+    },
+    {
+      "id": "t2",
+      "hospital": "hospital-ksa",
+      "from": "KSA Med",
+      "to": "Bern Med",
+      "patients": 1,
+      "reason": "specialty referral"
+    },
+    {
+      "id": "t3",
+      "from": "network",
+      "to": "network",
+      "patients": 0,
+      "reason": "baseline capacity (site-agnostic)"
+    }
+  ],
+  "citations": [
+    "gold.fact_network_capacity",
+    "gold.dim_site"
+  ],
+  "provenance": "simulated"
+}
