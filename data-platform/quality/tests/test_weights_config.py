@@ -82,5 +82,28 @@ class TestLoadThresholds(unittest.TestCase):
             self.assertTrue(all(0.0 <= v <= 1.0 for v in thr["gating"].values()))
 
 
+class TestProfileDrivesTrustScore(unittest.TestCase):
+    def test_default_profile_equals_module_default_score(self):
+        dims = {d: 0.5 for d in DIMENSIONS}
+        dims["completeness"] = 1.0
+        with_config = trust_score("d", dims, weights=load_profile("default"))
+        module_default = trust_score("d", dims)  # equal weights internally
+        self.assertAlmostEqual(with_config["score"], module_default["score"], places=6)
+
+    def test_crisis_profile_rewards_timeliness(self):
+        # A domain strong on timeliness but weak elsewhere scores higher under
+        # crisis weighting than under the equal-weight default.
+        dims = {d: 0.2 for d in DIMENSIONS}
+        dims["timeliness"] = 1.0
+        crisis = trust_score("d", dims, weights=load_profile("crisis"))
+        default = trust_score("d", dims, weights=load_profile("default"))
+        self.assertGreater(crisis["score"], default["score"])
+
+    def test_loaded_profile_is_accepted_by_trust_score_contract(self):
+        out = trust_score("d", {x: 1.0 for x in DIMENSIONS}, weights=load_profile("planning"))
+        self.assertEqual(out["contractId"], "DC-DQ-TRUSTSCORE-v1")
+        self.assertEqual(out["score"], 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()
