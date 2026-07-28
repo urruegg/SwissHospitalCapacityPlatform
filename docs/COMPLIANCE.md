@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.12.0 |
+| **Version** | 0.13.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.1 (repointed the Curavias ADR link ADR-0040 -> ADR-0050 (#378)); this bump adds CH-C11 closed-loop learning governance (ADR-0055) and the Sprint 31 Data Quality Agent proactive-assessment control section |
+| **Previous Version** | 0.12.0 (added the Sprint 31 Data Quality Agent proactive-assessment control section); this bump adds control CH-C11 closed-loop learning governance, ratified in ADR-0055 (Sprint 30, #443) |
 
 ## Purpose
 
