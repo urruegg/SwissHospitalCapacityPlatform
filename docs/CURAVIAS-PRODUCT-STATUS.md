@@ -1,12 +1,18 @@
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+  <img src="brandkit/logo/curavias-logo.svg" alt="Curavias" width="240"/>
+</p>
+<!-- markdownlint-enable MD033 MD041 -->
+
 # Curavias — Product Status (as-deployed)
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.2.0 |
+| **Version** | 1.2.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.1.0 (Sprint 34 WS-3: added the product-anchor line, an executive summary, and the canonical deployment/region diagram) |
+| **Previous Version** | 1.2.0 (Sprint 34 WS-3: added the product-anchor line, an executive summary, and the canonical deployment/region diagram); this bump adds the Curavias brand-kit logo to the document header |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
