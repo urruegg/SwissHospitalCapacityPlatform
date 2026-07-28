@@ -1,4 +1,4 @@
-﻿"""Deterministic unit tests for the BVA Opportunity Gold projection."""
+"""Deterministic unit tests for the BVA Opportunity Gold projection."""
 from __future__ import annotations
 
 import json

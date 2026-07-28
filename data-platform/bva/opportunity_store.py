@@ -9,6 +9,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timezone
 import os
+import re
 from typing import Any, Callable, Optional
 
 from bva.opportunity import make_opportunity_id, validate_opportunity
@@ -20,7 +21,18 @@ OPPORTUNITIES_CONTAINER = "opportunities"
 PARTITION_KEY = "/hospitalName"
 
 _HUMAN_ONLY_STATUSES = {"onboarding", "won", "lost"}
-_AGENT_EXACT_IDENTITIES = {"bva-agent", "app-copilot", "product-owner-agent"}
+_AGENT_EXACT_IDENTITIES = {
+    "bva-agent",
+    "app-copilot",
+    "product-owner-agent",
+    "copilot",
+    "orchestrator",
+    "system",
+}
+# A standalone 'bot' token or common bot/app suffixes (e.g. GitHub app "name[bot]",
+# "handoff-bot"), matched at word boundaries so human names like "Talbot"/"Abbott"
+# are NOT misclassified.
+_BOT_TOKEN = re.compile(r"(?:^|[^a-z])bot(?:[^a-z]|$)")
 _ALLOWED_TRANSITIONS = {
     "new": {"evaluating", "disqualified"},
     "evaluating": {"qualified", "disqualified"},
@@ -72,14 +84,24 @@ def append_history(doc: dict[str, Any], event: str, at: str, by: str | None = No
 
 
 def is_agent_identity(by: str | None) -> bool:
-    """Return True for known agent/bot identity naming patterns."""
+    """Return True for known agent/bot identity naming patterns.
+
+    Safety-net heuristic only: the authoritative control is the authenticated
+    principal (WIF / OBO identity) enforced at the MCP boundary. This classifier
+    is deliberately conservative on both sides — it must not misclassify human
+    names that merely contain ``bot`` (e.g. ``Talbot``, ``Abbott``), and it
+    treats standalone ``bot`` tokens, an ``[bot]`` suffix, and any ``-agent``
+    suffix as agent identities.
+    """
     if by is None:
         return False
     identity = by.strip().lower()
     return (
         identity in _AGENT_EXACT_IDENTITIES
         or identity.endswith("-agent")
-        or "bot" in identity
+        or identity.endswith("-bot")
+        or identity.endswith("[bot]")
+        or bool(_BOT_TOKEN.search(identity))
     )
 
 
@@ -189,6 +211,11 @@ class OpportunityStore:
         existing = self._read_existing(opportunity_id, hospitalName)
 
         if existing is None:
+            if is_agent_advance_forbidden("new", status, createdBy):
+                raise ValueError(
+                    "human-only initial Opportunity status refused for agent identity "
+                    f"{createdBy!r}: {status!r} (agents may create only up to 'qualified')"
+                )
             doc: dict[str, Any] = {
                 "id": opportunity_id,
                 "hospitalName": hospitalName,

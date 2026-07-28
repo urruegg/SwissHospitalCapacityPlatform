@@ -1,4 +1,4 @@
-﻿"""Offline tests for the BVA Opportunity Cosmos store."""
+"""Offline tests for the BVA Opportunity Cosmos store."""
 from __future__ import annotations
 
 import sys
@@ -115,6 +115,64 @@ def test_upsert_refuses_invalid_opportunity_doc(monkeypatch: pytest.MonkeyPatch)
     message = str(exc.value)
     assert "status" in message
     assert "enum" in message or "not in enum" in message
+
+
+def test_record_ask_refuses_agent_creating_at_human_only_status(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("BVA_COSMOS_ENDPOINT", raising=False)
+    from bva.opportunity_store import OpportunityStore
+
+    store = OpportunityStore()
+
+    for forbidden in ("onboarding", "won", "lost"):
+        with pytest.raises(ValueError, match="human-only"):
+            store.record_ask(
+                hospitalName=f"Bypass {forbidden} Hospital",
+                archetype="acute",
+                askText="Should we onboard?",
+                language="en",
+                createdBy="bva-agent",
+                status=forbidden,
+                at="2026-07-28T09:15:00Z",
+            )
+
+    # Agents may still create up to 'qualified'; humans may create at any status.
+    agent_ok = store.record_ask(
+        hospitalName="Agent Qualified Hospital",
+        archetype="acute",
+        askText="Should we onboard?",
+        language="en",
+        createdBy="bva-agent",
+        status="qualified",
+        at="2026-07-28T09:15:00Z",
+    )
+    assert agent_ok["status"] == "qualified"
+
+    human_ok = store.record_ask(
+        hospitalName="Human Onboarding Hospital",
+        archetype="acute",
+        askText="Should we onboard?",
+        language="en",
+        createdBy="urs",
+        status="onboarding",
+        at="2026-07-28T09:15:00Z",
+    )
+    assert human_ok["status"] == "onboarding"
+
+
+def test_is_agent_identity_uses_bounded_bot_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    from bva.opportunity_store import is_agent_identity
+
+    # Human names containing 'bot' as a substring must NOT be classified as agents.
+    assert is_agent_identity("Talbot") is False
+    assert is_agent_identity("Abbott") is False
+    assert is_agent_identity("Robertson") is False
+
+    # Known agent/bot identity patterns ARE classified as agents.
+    assert is_agent_identity("bva-agent") is True
+    assert is_agent_identity("copilot") is True
+    assert is_agent_identity("dependabot[bot]") is True
+    assert is_agent_identity("handoff-bot") is True
+    assert is_agent_identity("bot") is True
 
 
 def test_dry_run_with_env_unset_returns_doc_without_constructing_client(monkeypatch: pytest.MonkeyPatch) -> None:
