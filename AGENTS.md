@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.12.0 |
-| **Date** | 2026-07-27 |
+| **Version** | 2.13.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 2.11.0 (added the `signal-agent` registry row for the Sprint 32 Signal Agent; issue #454) |
+| **Previous Version** | 2.12.0 (added the `signal-agent` registry row for the Sprint 32 Signal Agent, issue #454); this bump adds the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent (issues #489, #501) |
 
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
@@ -201,6 +201,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `ux-design-agent` | UX design steward — anchor for all user-experience questions (mockups, flows, brand tokens, accessibility) and refinement of the Curavias demo showcase; runs the Superpowers brainstorming + visual-companion flow (S20; approved via issue #258) | @urruegg | `@ux-design-agent` mention or any UX / design / mockup / accessibility issue | `github-mcp`, `playwright-mcp` (read; visual + a11y verification) | `write` | [`agents/ux-design-agent/AGENT.md`](agents/ux-design-agent/AGENT.md) | [`agents/ux-design-agent/golden-tasks.md`](agents/ux-design-agent/golden-tasks.md) |
 | `product-marketing-agent` | Product-marketing / communications steward — stringent, brand-aligned Curavias messaging across customer-, user-, and devops-facing channels; RACI-paired with `ux-design-agent` (message vs. experience) (S24; approved via issue #262) | @urruegg | `@product-marketing-agent` mention or any product-messaging / copy / positioning issue | `github-mcp`, `playwright-mcp` (read; copy-in-context review) | `write` | [`agents/product-marketing-agent/AGENT.md`](agents/product-marketing-agent/AGENT.md) | [`agents/product-marketing-agent/golden-tasks.md`](agents/product-marketing-agent/golden-tasks.md) |
 | `product-owner-agent` | Curavias Product Owner Agent — authoritative, source-grounded, **advisory-only** voice of the platform; answers product questions grounded on the four knowledge classes (A corpus / B live-proof / C cost / D ontology) over the frozen `GroundedChunk` contract; **domain #1 on the shared Foundry IQ Knowledge Layer** ([ADR-0043](docs/adr/0043-product-owner-agent-foundry-iq-domain.md)); embedded as the START + BACKSTAGE Copilot rail (S28; approved via issue #377) | @urruegg | `@product-owner-agent` mention, any product-question issue, or the in-app Copilot rail | `github-mcp` (write), `azure-mcp` (read; Class B/C), `fabric-mcp` (read; Class D) | `write` | [`agents/product-owner-agent/AGENT.md`](agents/product-owner-agent/AGENT.md) | [`agents/product-owner-agent/golden-tasks.md`](agents/product-owner-agent/golden-tasks.md) |
+| `bva-agent` | Business Value Assessment Agent — **advisory-only**, deterministic ROI/TCO/payback/NPV reasoning over the `bva_*` gold measures and the typed `bva.simulate` tool (**no LLM arithmetic**); every figure a cited Class-C `GroundedChunk`; captures the Opportunity in the Cosmos system-of-record; **peer to `product-owner-agent`** under the App orchestrator (BVA owns the numbers, PO owns the go/no-go verdict) per [ADR-0056](docs/adr/0056-bva-agent-deterministic-computation.md); loaded at runtime by the Sprint 13 agent-host (S33; approved via issues #489, #501) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@bva-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp` (write), `fabric-mcp` (read; `sm_bva` baseline), `cosmos-mcp` (write; opportunities SoR) | `write` | [`agents/bva-agent/AGENT.md`](agents/bva-agent/AGENT.md) | [`agents/bva-agent/golden-tasks.md`](agents/bva-agent/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per
