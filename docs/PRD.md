@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.4.0 |
+| **Version** | 2.4.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.3.0 (added Sprint 31 DQA requirements FR-DQA-001..006/010/012 + NFR-DQA-001..002); this bump adds Sprint 32 Signal Agent requirements FR-SIG-001..011 + NFR-SIG-001..002 (#454) |
+| **Previous Version** | 2.4.0 (added Sprint 32 Signal Agent requirements FR-SIG-001..011 + NFR-SIG-001..002); this patch renumbers the Signal ADR 0053->0054 (0053 taken by the DQA ADR) and links it in the traceability matrix |
 
 ## Purpose
 
@@ -540,7 +540,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) + [`docs/superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md`](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md) + [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](adr/0052-app-context-envelope-per-agent-threads.md) *(Sprint 29: app context envelope + per-(user x agent) threads + role-first-eligible board + envelope propagation/guard + config-gated Foundry thread map + simulated OBO/RLS; issue #399)* | `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` |
 | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
 | [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md`](superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md) + [`docs/adr/0053-dqa-trust-score-model.md`](adr/0053-dqa-trust-score-model.md) *(Sprint 31: Data Quality Agent — proactive assessment, deterministic Trust Score, gap→owner remediation, grounding-readiness cert, frozen DC-DQ-GAP-v1 seam; issues #451, #453)* | `FR-DQA-001` to `FR-DQA-006`, `FR-DQA-010`, `FR-DQA-012`, `NFR-DQA-001` to `NFR-DQA-002` |
-| [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
+| [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/adr/0054-signal-channel-lifecycle.md`](adr/0054-signal-channel-lifecycle.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
 
 ## Assumptions To Validate In Implementation Planning
 
