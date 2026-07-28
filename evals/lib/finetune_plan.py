@@ -107,3 +107,83 @@ def classify_finetune_examples(selected: list[dict[str, Any]]) -> dict[str, list
         if record.get("eval", {}).get("scores"):
             buckets["rft"].add(iid)
     return {method: sorted(ids) for method, ids in buckets.items()}
+
+
+def build_finetune_plan(
+    *,
+    agent: str,
+    scored_records: list[dict],
+    gate_dataset_path,
+    region: str = DEMO_REGION,
+    random_rate: float = 0.0,
+    seed: int = 0,
+    low_score_threshold: float = curator.DEFAULT_LOW_SCORE_THRESHOLD,
+) -> dict:
+    """Produce an advisory fine-tune plan for ``agent``.
+
+    Improvement signal: the curated **scored records** for ``agent`` (design M5
+    seam) are selected by :func:`curator.select` and classified into SFT / DPO /
+    RFT examples by :func:`classify_finetune_examples`. Guardrail: the deploy is
+    **evaluation-gated** - the checkpoint is only promotable if the **offline
+    regression gate** over ``gate_dataset_path`` passes (:mod:`lib.harness`);
+    ``offlineGatePassed`` records the baseline verdict. ``random_rate`` defaults to
+    ``0.0`` so only concrete failure/preference/grader signal - not a random
+    sample - drives the plan.
+
+    Returns an advisory plan dict. This function **never launches** a training job,
+    deploys or registers a model, writes a file, or opens an issue
+    (NFR-LEARN-003): a human launches training and the deploy requires the offline
+    gate pass **and** an explicit ``approved-to-apply``.
+    """
+    scored_for_agent = [
+        r
+        for r in scored_records
+        if r.get("agent") == agent and r.get("eval", {}).get("scored")
+    ]
+    selected = curator.select(
+        scored_for_agent,
+        random_rate=random_rate,
+        seed=seed,
+        low_score_threshold=low_score_threshold,
+    )
+    examples = classify_finetune_examples(selected)
+
+    method_plans = [
+        {
+            "method": method,
+            "feasible": bool(examples[method]),
+            "exampleCount": len(examples[method]),
+            "interactionIds": examples[method],
+            "description": METHOD_LIBRARY[method],
+        }
+        for method in FINETUNE_METHODS
+    ]
+    feasible_methods = [m for m in FINETUNE_METHODS if examples[m]]
+    source_ids = sorted({iid for ids in examples.values() for iid in ids})
+
+    gate = harness.run_dataset(gate_dataset_path)
+
+    rationale = (
+        f"{len(source_ids)} curated interaction(s) yield {len(feasible_methods)} "
+        f"feasible fine-tune method(s) ({', '.join(feasible_methods) or 'none'}) "
+        f"in demo region {region}; the baseline offline gate "
+        f"{'passed' if gate['passed'] else 'FAILED'}. Advisory only - a human "
+        "launches training and the deploy is evaluation-gated (checkpoint must pass "
+        "the offline regression suite) plus approved-to-apply. The first checkpoint "
+        "is a proof of the loop, not a production model."
+    )
+
+    return {
+        "agent": agent,
+        "region": region,
+        "methods": method_plans,
+        "feasibleMethods": list(feasible_methods),
+        "sourceInteractionIds": source_ids,
+        "checkpointSelection": "offline-regression-gate",
+        "evaluationGatedDeploy": True,
+        "offlineGatePassed": gate["passed"],
+        "advisory": True,
+        "applied": False,
+        "approvedToApply": False,
+        "rationale": rationale,
+    }
