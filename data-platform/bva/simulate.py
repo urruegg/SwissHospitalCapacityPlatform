@@ -153,7 +153,9 @@ def simulate(
     }
     source_ref = (
         "docs/BVA.md ROM baseline; "
-        f"archetype:{delta.archetype}; input:beds={delta.beds},scope={delta.onboarding_scope}"
+        f"archetype:{delta.archetype}; "
+        f"input:beds={delta.beds},occupancy={float(delta.occupancy_target):g},"
+        f"scope={delta.onboarding_scope}"
     )
     text = (
         f"{delta.hospital_name} {delta.archetype} what-if: "

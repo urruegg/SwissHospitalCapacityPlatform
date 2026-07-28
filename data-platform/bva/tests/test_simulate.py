@@ -68,6 +68,9 @@ def test_canonical_acute_what_if_matches_independent_formula_values() -> None:
     assert result["metrics"]["roiPct"] == expected["roi"]
     assert result["metrics"]["paybackMonths"] == expected["payback"]
     assert result["metrics"]["npvChf"] == expected["npv"]
+    assert result["chunks"][0]["citation"]["sourceRef"] == (
+        "docs/BVA.md ROM baseline; archetype:acute; input:beds=320,occupancy=0.85,scope=full"
+    )
 
 
 def test_sensitivity_low_base_high_and_base_matches_metric_roi() -> None:
@@ -92,8 +95,10 @@ def test_pilot_scope_reduces_onboarding_against_full_scope() -> None:
     [
         (_delta(beds=0), "beds"),
         (_delta(beds=-10), "beds"),
+        (_delta(archetype=""), "archetype"),
         (_delta(archetype="clinic"), "archetype"),
         (_delta(occupancy_target=0.0), "occupancy_target"),
+        (_delta(onboarding_scope="unknown"), "onboarding_scope"),
     ],
 )
 def test_insufficient_input_error_names_bad_slot(
