@@ -85,3 +85,34 @@ def propose_directives(metrics: Iterable[str]) -> list[str]:
     if any(m not in DIRECTIVE_LIBRARY for m in metric_set):
         directives.append(GENERIC_DIRECTIVE)
     return directives
+
+
+# Sentinel heading for the appended advisory block. Kept unique so it can be
+# located and replaced (idempotent re-optimization) without touching base text.
+DIRECTIVES_HEADING = "## Optimization directives (advisory, Sprint 30 M7)"
+_BLOCK_MARKER = "\n" + DIRECTIVES_HEADING
+
+
+def _strip_directive_block(instructions: str) -> str:
+    """Return ``instructions`` with any previously appended directive block removed.
+
+    Idempotent: text without the block is returned unchanged.
+    """
+    idx = instructions.find(_BLOCK_MARKER)
+    return instructions if idx == -1 else instructions[:idx]
+
+
+def build_candidate_instructions(base_instructions: str, directives: list[str]) -> str:
+    """Return a candidate instruction text: base + an appended advisory block.
+
+    Pure, in-memory transform - writes nothing to disk. The base content is
+    preserved verbatim above a single ``## Optimization directives`` block.
+    Idempotent and replacing: re-running strips any existing block first, so the
+    block never stacks and re-optimizing supersedes the previous directives.
+    Empty ``directives`` returns the (block-stripped) base with no empty block.
+    """
+    true_base = _strip_directive_block(base_instructions)
+    if not directives:
+        return true_base
+    body = "\n".join(f"- {d}" for d in directives)
+    return f"{true_base}{_BLOCK_MARKER}\n\n{body}\n"
