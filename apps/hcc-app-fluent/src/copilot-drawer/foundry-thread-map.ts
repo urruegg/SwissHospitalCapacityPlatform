@@ -1,12 +1,15 @@
 import type { ContextEnvelope } from '../context/context-envelope';
+import { getFoundryThreadsEnabled } from '../config/runtime-config';
 
 export interface ThreadRecord {
   threadId: string;
   seed: ContextEnvelope;
+  /** Where the thread is persisted server-side (#424 M3): `native` | `foundry` | `simulated`. */
+  provenance?: string;
 }
 
 export function foundryThreadsEnabled(): boolean {
-  return (import.meta.env.VITE_FOUNDRY_THREADS_ENABLED ?? '') === 'true';
+  return getFoundryThreadsEnabled();
 }
 
 export function threadKey(userOid: string | null, agent: string): string {
@@ -32,7 +35,30 @@ export class FoundryThreadMap {
     if (existing) return existing;
 
     const threadId = this.minter(env);
-    const record: ThreadRecord = { threadId, seed: env };
+    const record: ThreadRecord = { threadId, seed: env, provenance: 'simulated' };
+    this.records.set(key, record);
+    return record;
+  }
+
+  /**
+   * #424 M3 — resolve/reuse the live `(user x agent)` thread via an async minter
+   * (the agent-host `POST /threads`). Cached per `(userOid x agent)` so a mint
+   * happens once and later sends reuse it. A failed mint is not stored, so the
+   * next send retries and no agent's thread is corrupted.
+   */
+  async resolve(
+    env: ContextEnvelope,
+    mint: (env: ContextEnvelope) => Promise<{ threadId: string; provenance?: string }>,
+  ): Promise<ThreadRecord> {
+    if (env.agent == null) {
+      throw new Error('Foundry thread requires an agent-scoped ContextEnvelope');
+    }
+    const key = threadKey(env.userOid, env.agent);
+    const existing = this.records.get(key);
+    if (existing) return existing;
+
+    const { threadId, provenance } = await mint(env);
+    const record: ThreadRecord = { threadId, seed: env, provenance: provenance ?? 'native' };
     this.records.set(key, record);
     return record;
   }

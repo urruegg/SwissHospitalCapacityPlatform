@@ -13,6 +13,7 @@ import {
   iqAgentChat,
   iqAgentList,
   postInteractionEvent,
+  type AgentChatOptions,
 } from '../data/iq-client';
 
 export interface AgentManifestEntry {
@@ -254,6 +255,7 @@ function refusalReco(agent: string, prompt: string): GroundedReco {
 export async function invokeAgent(
   agent: string,
   prompt: string,
+  opts?: AgentChatOptions,
 ): Promise<GroundedReply> {
   if (!isAgentHostConfigured()) {
     const reco =
@@ -268,7 +270,7 @@ export async function invokeAgent(
       interactionId: mockInteractionId(),
     };
   }
-  return iqAgentChat<GroundedReply>(agent, prompt);
+  return iqAgentChat<GroundedReply>(agent, prompt, opts);
 }
 
 /** Synthesize a capture id shaped like the agent-host's (`AIX-<hex>`) for the mock path. */

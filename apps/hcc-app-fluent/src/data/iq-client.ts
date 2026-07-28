@@ -1,4 +1,5 @@
 import type { Provenance } from '../journey/RoleBoard';
+import type { ContextEnvelope } from '../context/context-envelope';
 import { getAgentHostUrl, getGoldenSourceUrl } from '../config/runtime-config';
 
 /**
@@ -81,12 +82,63 @@ export async function iqStructuredRead<T>(path: string): Promise<{ payload: T; c
   return { payload, citations: body.citations ?? [] };
 }
 
+/**
+ * Per-user OBO/RLS scope headers (ADR-0052). Attached to identity-aware IQ calls
+ * (thread mint + chat) so the agent-host can scope the thread and its turns to
+ * the signed-in user, exactly as the golden read path does.
+ */
+function identityHeaders(env: ContextEnvelope): Record<string, string> {
+  return {
+    'X-User-Oid': env.userOid ?? '',
+    'X-Hospital-Scope': env.hospitalScope,
+    'X-Active-Role': env.activeRole,
+  };
+}
+
+/** A minted `(userOid x agent)` thread + where it is persisted (#424 M3). */
+export interface ThreadMint {
+  threadId: string;
+  provenance: string;
+}
+
+/**
+ * Mint (or reuse) the live `(userOid x agent)` Foundry thread on the agent-host
+ * (`POST /agents/{name}/threads`, #424 M3). Carries the ContextEnvelope as scoped
+ * identity headers; the server refuses deny-by-default without `X-User-Oid`.
+ * Throws loud on transport / HTTP error so the caller can fall back to a
+ * simulated thread. Only call when `isAgentHostConfigured()`.
+ */
+export async function iqMintThread(agent: string, env: ContextEnvelope): Promise<ThreadMint> {
+  const res = await fetch(`${agentHostBaseUrl()}/agents/${encodeURIComponent(agent)}/threads`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...identityHeaders(env) },
+  });
+  if (!res.ok) throw new Error(`thread mint failed: ${res.status}`);
+  return (await res.json()) as ThreadMint;
+}
+
+/** Options for a thread-scoped, identity-aware chat call (#424 M3). */
+export interface AgentChatOptions {
+  /** The `(userOid x agent)` thread to thread this turn onto (server conversation id). */
+  threadId?: string;
+  /** ContextEnvelope for OBO/RLS identity headers; omitted → no identity headers. */
+  env?: ContextEnvelope | null;
+}
+
 /** Conversational read / answer through the Foundry agent host. Only call when `isAgentHostConfigured()`. */
-export async function iqAgentChat<T>(agent: string, prompt: string): Promise<T> {
+export async function iqAgentChat<T>(
+  agent: string,
+  prompt: string,
+  opts?: AgentChatOptions,
+): Promise<T> {
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (opts?.env) Object.assign(headers, identityHeaders(opts.env));
+  const body: Record<string, unknown> = { prompt };
+  if (opts?.threadId) body.threadId = opts.threadId;
   const res = await fetch(`${agentHostBaseUrl()}/agents/${encodeURIComponent(agent)}/chat`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    headers,
+    body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`agent chat failed: ${res.status}`);
   return (await res.json()) as T;

@@ -19,6 +19,8 @@ export interface RuntimeEnv {
   AGENT_HOST_URL?: string;
   /** Golden-source (IQ structured-read) base URL for this environment (#424 M2). */
   GOLDEN_SOURCE_URL?: string;
+  /** Feature gate for live Foundry threads (#424 M3): "true" enables. */
+  FOUNDRY_THREADS_ENABLED?: string;
 }
 
 declare global {
@@ -57,4 +59,19 @@ export function getGoldenSourceUrl(): string {
     return runtime;
   }
   return import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
+}
+
+/**
+ * Resolve the Foundry-threads feature gate (#424 M3): runtime-injected value
+ * first (`window.__ENV__.FOUNDRY_THREADS_ENABLED`), then the build-time
+ * `VITE_FOUNDRY_THREADS_ENABLED` fallback, then `false`. Enables the live
+ * `(user x agent)` thread minter; when off, the drawer stays on the simulated
+ * thread path (honest `simulated` provenance).
+ */
+export function getFoundryThreadsEnabled(): boolean {
+  const runtime = runtimeEnv().FOUNDRY_THREADS_ENABLED;
+  if (runtime && runtime.length > 0) {
+    return runtime === 'true';
+  }
+  return (import.meta.env.VITE_FOUNDRY_THREADS_ENABLED ?? '') === 'true';
 }

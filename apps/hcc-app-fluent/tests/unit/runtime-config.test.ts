@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getAgentHostUrl, getGoldenSourceUrl } from '../../src/config/runtime-config';
+import { getAgentHostUrl, getGoldenSourceUrl, getFoundryThreadsEnabled } from '../../src/config/runtime-config';
 
 /**
  * #447 — runtime config injection. The app must read the agent-host URL from a
@@ -65,5 +65,35 @@ describe('runtime-config getGoldenSourceUrl', () => {
   it('returns an empty string when neither runtime nor build-time value is set', () => {
     vi.stubEnv('VITE_GOLDEN_SOURCE_URL', '');
     expect(getGoldenSourceUrl()).toBe('');
+  });
+});
+
+/**
+ * #424 M3 — the Foundry-threads feature gate follows the same runtime-injection
+ * contract as the agent-host / golden-source URLs, so one env-agnostic image
+ * flips live threads per environment without a rebuild.
+ */
+describe('runtime-config getFoundryThreadsEnabled', () => {
+  afterEach(() => {
+    delete (window as { __ENV__?: unknown }).__ENV__;
+    vi.unstubAllEnvs();
+  });
+
+  it('prefers window.__ENV__.FOUNDRY_THREADS_ENABLED over the build-time fallback', () => {
+    vi.stubEnv('VITE_FOUNDRY_THREADS_ENABLED', '');
+    (window as { __ENV__?: { FOUNDRY_THREADS_ENABLED?: string } }).__ENV__ = {
+      FOUNDRY_THREADS_ENABLED: 'true',
+    };
+    expect(getFoundryThreadsEnabled()).toBe(true);
+  });
+
+  it('falls back to import.meta.env.VITE_FOUNDRY_THREADS_ENABLED when the runtime value is absent', () => {
+    vi.stubEnv('VITE_FOUNDRY_THREADS_ENABLED', 'true');
+    expect(getFoundryThreadsEnabled()).toBe(true);
+  });
+
+  it('returns false when neither runtime nor build-time value is set', () => {
+    vi.stubEnv('VITE_FOUNDRY_THREADS_ENABLED', '');
+    expect(getFoundryThreadsEnabled()).toBe(false);
   });
 });

@@ -73,4 +73,27 @@ describe('FoundryThreadMap', () => {
 
     expect(foundryThreadsEnabled()).toBe(true);
   });
+
+  it('resolve() mints once via the async minter and reuses it per (user x agent)', async () => {
+    const map = new FoundryThreadMap();
+    const mint = vi.fn(async (e: ContextEnvelope) => ({
+      threadId: `thr-${e.userOid}-${e.agent}`,
+      provenance: 'native',
+    }));
+
+    const first = await map.resolve(baseEnvelope, mint);
+    const second = await map.resolve({ ...baseEnvelope, hospitalScope: 'aggregated' }, mint);
+
+    expect(first.threadId).toBe('thr-oid-1-ooa-agent');
+    expect(first.provenance).toBe('native');
+    expect(second.threadId).toBe(first.threadId);
+    expect(mint).toHaveBeenCalledTimes(1); // minted once, reused after
+  });
+
+  it('resolve() rejects an agent-less envelope', async () => {
+    const map = new FoundryThreadMap();
+    await expect(
+      map.resolve({ ...baseEnvelope, agent: null }, async () => ({ threadId: 'x' })),
+    ).rejects.toThrow(/agent-scoped/);
+  });
 });
