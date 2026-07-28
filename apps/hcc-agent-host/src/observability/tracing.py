@@ -21,9 +21,15 @@ from __future__ import annotations
 
 import os
 import time
+from collections import deque
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Iterator, Protocol, runtime_checkable
+
+# Bound the in-memory buffers so a long-running host does not leak: spans/events
+# are exported to the downstream sink immediately; the local ring buffer is only
+# a diagnostic / test-inspection window over the most recent turns.
+_BUFFER_MAXLEN = 2048
 
 
 @dataclass
@@ -74,8 +80,8 @@ class TraceRecorder:
 
     def __init__(self, exporter: Exporter | None = None) -> None:
         self.exporter: Exporter = exporter or NullExporter()
-        self.spans: list[Span] = []
-        self.events: list[CustomEvent] = []
+        self.spans: deque[Span] = deque(maxlen=_BUFFER_MAXLEN)
+        self.events: deque[CustomEvent] = deque(maxlen=_BUFFER_MAXLEN)
         self._stack: list[str] = []
 
     @contextmanager
