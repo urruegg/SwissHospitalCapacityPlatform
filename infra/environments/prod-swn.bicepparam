@@ -112,7 +112,7 @@ param fabricDataAgentId = ''
 
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:ff3dd76'
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:dadd7ce'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the PROD app calls the PROD (switzerlandnorth) agent-host
 // instead of inheriting the SIT URL from the build-once + import image.
