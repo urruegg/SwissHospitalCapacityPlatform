@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.14.1 |
+| **Version** | 0.15.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.14.0 (added the Sprint 30 M7 Improve - Prompt Optimization subsection realising FR-LEARN-005); this bump records ADR-0053 as ratified with the versioned trustscore-weights.json source of truth |
+| **Previous Version** | 0.14.1 (recorded ADR-0053 as ratified with the versioned trustscore-weights.json source of truth); this bump adds the Sprint 30 M8 Improve - Knowledge Refresh subsection: deterministic advisory knowledge-refresh over uncited-claim gaps (citation_coverage / groundedness), grounding-source refresh actions, offline-gate guardrail, realising FR-LEARN-005 |
 
 ## Purpose
 
@@ -398,6 +398,47 @@ after the offline gate passes **and** an explicit `approved-to-apply`.
 PHI-safety (ADR-0016 / `NFR-LEARN-001`): the proposal carries only metric names,
 interaction ids, directives, and the agent's own instruction text - never raw
 prompt or answer content. This realises `FR-LEARN-005`.
+
+### Improve - Knowledge Refresh (Sprint 30 M8)
+
+The second Improve step turns curated **uncited-claim gaps** into an **advisory
+knowledge-refresh proposal** for an agent, with no autonomous change. A
+knowledge-refresh job (`evals/knowledge_refresh_job.py`) reads recent **scored**
+`agent_interactions` through the same source seam as the online-eval, curation,
+and prompt-optimize jobs (`evals/lib/online_store.py`) and calls a deterministic
+refresher (`evals/lib/knowledge_refresh.py`). There is no live Foundry IQ / Fabric
+knowledge-refresh runtime in this repo (ADR-0002); M8 realises that capability as
+reviewable, offline Python:
+
+- **Gap signal** - an uncited-claim gap is exactly an interaction that fails a
+  **knowledge metric**: `citation_coverage` (a claim with no `Grounded on:`
+  citation) or `groundedness` (a claim not present in or derived from the grounded
+  rows). `run_knowledge_refresh` filters scored records to the target agent, reuses
+  the curator (`curator.select` + `curator.to_backlog_items`) to derive failing
+  metrics, then keeps only `KNOWLEDGE_METRICS`. Prompt-lane failures
+  (actionability, advisory_voice, ...) are M7's concern and are excluded.
+  `random_rate` defaults to `0.0`, so only real gaps drive the proposal.
+- **Refresh-action library** (`propose_refresh_actions`) - maps each knowledge
+  metric to a targeted grounding-source action (verify the gold snapshots are
+  fresh and reachable; expand the reference-layer ontology + Fabric Data Agent
+  `DC-INSIGHT-v1` grounding so the needed facts exist). This is a lookup, not a
+  generative rewrite, so proposals are deterministic and diffable.
+- **Gap extraction** (`extract_knowledge_gaps`) - names the agent's declared
+  grounding sources (`agents/ooa-agent/AGENT.md` section 4) alongside each gap's
+  metric, count, and interaction-id lineage.
+- **Offline-gate guardrail** - the current grounding is only promotable-after-
+  refresh if the offline regression suite over the agent's golden dataset
+  (`evals/lib/harness.py`) passes; the proposal carries `offlineGatePassed`.
+
+Advisory-only (`NFR-LEARN-003`): the job **never** writes a grounding source,
+ontology file, `AGENT.md`, or any file, opens an issue, or mutates a knowledge
+source / model. It emits a proposal (`advisory: true, applied: false,
+approvedToApply: false`) with full lineage (`knowledgeMetrics`,
+`sourceInteractionIds`, `groundingSources`). A human refreshes the grounding only
+after the offline gate passes **and** an explicit `approved-to-apply`.
+PHI-safety (ADR-0016 / `NFR-LEARN-001`): the proposal carries only metric names,
+interaction ids, grounding-source names, and refresh actions - never raw prompt or
+answer content. This realises `FR-LEARN-005`.
 
 ### Load Validation Plan
 
