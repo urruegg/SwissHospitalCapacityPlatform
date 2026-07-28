@@ -1,12 +1,18 @@
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+  <img src="docs/brandkit/logo/curavias-logo-tagline.svg" alt="Curavias" width="360"/>
+</p>
+<!-- markdownlint-enable MD033 MD041 -->
+
 # Curavias — Swiss AI-Powered Patient Flow and Hospital Capacity Platform
 
 | Field | Value |
 | ----- | ----- |
-| Version | 1.6.0 |
+| Version | 1.6.1 |
 | Date | 2026-07-28 |
 | Author | Urs Rueegg |
 | Status | Reviewed |
-| Previous Version | 1.5.0 (Sprint 34 WS-3: elevated README to the Curavias customer hero page — product-anchor line, refreshed executive summary, canonical system-context diagram, glossary + diagram-library navigation) |
+| Previous Version | 1.6.0 (Sprint 34 WS-3: elevated README to the Curavias customer hero page — product-anchor line, refreshed executive summary, canonical system-context diagram, glossary + diagram-library navigation); this bump adds the Curavias brand-kit logo to the page header |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on

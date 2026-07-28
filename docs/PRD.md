@@ -1,12 +1,18 @@
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+  <img src="brandkit/logo/curavias-logo.svg" alt="Curavias" width="240"/>
+</p>
+<!-- markdownlint-enable MD033 MD041 -->
+
 # Curavias — Product Requirements Document
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.7.0 |
+| **Version** | 2.7.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.6.0 (ratified Sprint 33 BVA Agent requirements FR-BVA-001..005 + NFR-BVA-001..005 (§R) + traceability row, ADR-0056, #489/#501); this bump adds Sprint 34 WS-3: Curavias anchor + product-anchor line + executive summary + system-context diagram + new NFR family S Documentation Quality with NFR-DOC-001..004 and its traceability row |
+| **Previous Version** | 2.7.0 (Sprint 34 WS-3: Curavias anchor + product-anchor line + executive summary + system-context diagram + NFR family S Documentation Quality); this bump adds the Curavias brand-kit logo to the document header |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
