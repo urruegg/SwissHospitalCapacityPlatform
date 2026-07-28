@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_MSAL_REDIRECT_URI?: string;
   readonly VITE_AGENT_HOST_URL?: string;
   readonly VITE_GOLDEN_SOURCE_URL?: string;
+  readonly VITE_FOUNDRY_THREADS_ENABLED?: string;
 }
 
 interface ImportMeta {

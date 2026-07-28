@@ -307,6 +307,9 @@ param appFluentAgentHostUrl string = ''
 @description('#424 M2 — golden-source base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <url>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host.')
 param appFluentGoldenSourceUrl string = ''
 
+@description('#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the hcc-app-fluent mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires appFluentAgentHostUrl to be non-empty; with the host unset the app keeps simulated threads. Provider stays native (no OBO) until M5.')
+param appFluentFoundryThreadsEnabled bool = false
+
 // Sprint 13.1 T-DNS — curavias.ch public custom hostname for the Fluent app (ADR-0030).
 @description('Public custom hostname for the hcc-app-fluent CA ingress. Empty string keeps the CA on its default *.azurecontainerapps.io hostname. Set to appsit.curavias.ch in SIT and app.curavias.ch in PROD per ADR-0030.')
 param appFluentCustomHostname string = ''
@@ -763,6 +766,8 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     agentHostUrl: appFluentAgentHostUrl
     // #424 M2 golden-source URL (per-env); empty auto-derives `${agentHostUrl}/golden`.
     goldenSourceUrl: appFluentGoldenSourceUrl
+    // #424 M3 live per-agent thread minting gate (native provider until M5/OBO).
+    foundryThreadsEnabled: appFluentFoundryThreadsEnabled
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

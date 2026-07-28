@@ -29,6 +29,7 @@ from orchestrator.dispatch import Orchestrator
 from orchestrator.mock_model import MockChatModel
 from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from golden.service import GoldenScopeError, UnknownResourceError, load_golden
+from threads.provider import ThreadProviderError, build_thread_provider
 from hitl.gate_enforcer import enforce_gates
 from observability import tracing
 
@@ -101,6 +102,11 @@ class HostState:
             chat_model=MockChatModel(),
             data_agent=adapter,
         )
+        # #424 M3 — server-side (userOid x agent) -> threadId map. Shares the
+        # orchestrator's persistence so a minted thread and its turns co-locate in
+        # the same conversations container. Native by default (ADR-0013 scope);
+        # THREAD_PROVIDER=foundry flips to real Foundry threads at M5 (OBO).
+        self.thread_provider = build_thread_provider(self.orchestrator.persistence)
 
     def require(self, name: str) -> AgentManifest:
         manifest = self.manifests.get(name)
@@ -118,6 +124,10 @@ class ChatRequest(BaseModel):
     prompt: str
     conversationId: str = "demo-conversation"
     callerObjectId: str = "demo.guest"
+    # #424 M3 — when present, the (userOid x agent) thread minted via
+    # POST /agents/{name}/threads; used as the conversation id so turns thread
+    # server-side. Falls back to the legacy conversationId default when absent.
+    threadId: str | None = None
 
 
 class ToolRequest(BaseModel):
@@ -199,17 +209,40 @@ def create_app() -> FastAPI:
         response.headers["X-Applied-Scope"] = x_hospital_scope
         return payload
 
+    @app.post("/agents/{name}/threads")
+    def mint_thread(
+        name: str,
+        x_user_oid: str = Header(default=""),
+        x_active_role: str = Header(default=""),
+    ) -> dict[str, Any]:
+        # #424 M3 — mint (or reuse) the (userOid x agent) thread. Deny-by-default:
+        # an identity-less mint is refused, mirroring the /golden read path.
+        state = get_state()
+        state.require(name)  # 404 on unknown agent
+        if not x_user_oid:
+            raise HTTPException(status_code=401, detail="thread mint requires X-User-Oid")
+        try:
+            ref = state.thread_provider.mint(x_user_oid, name)
+        except ThreadProviderError as exc:
+            # e.g. FoundryThreadProvider selected before OBO lands (M5).
+            raise HTTPException(status_code=503, detail=str(exc))
+        return {"threadId": ref.thread_id, "provenance": ref.provenance}
+
     @app.post("/agents/{name}/chat")
-    def chat(name: str, req: ChatRequest) -> dict[str, Any]:
+    def chat(name: str, req: ChatRequest, x_user_oid: str = Header(default="")) -> dict[str, Any]:
         state = get_state()
         manifest = state.require(name)
         system_prompt = _system_prompt_for(manifest, state.agents_root)
+        # #424 M3 — thread-scoped when a threadId is supplied; identity header
+        # (OBO oid) overrides the demo caller default when present.
+        conversation_id = req.threadId or req.conversationId
+        caller_oid = x_user_oid or req.callerObjectId
         reply = state.orchestrator.dispatch(
             manifest,
             system_prompt,
             req.prompt,
-            conversation_id=req.conversationId,
-            caller_oid=req.callerObjectId,
+            conversation_id=conversation_id,
+            caller_oid=caller_oid,
         )
         return {
             "answer": reply.answer,

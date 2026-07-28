@@ -234,6 +234,11 @@ param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86
 // #424 M2 — golden-source URL. Left unset so the module auto-derives
 // `${appFluentAgentHostUrl}/golden` (Option 1: the agent-host serves the RLS-scoped
 // golden surface). Set explicitly only for a future divergent (Fabric-backed) source.
+// #424 M3 — enable the live per-(user x agent) thread minter in SIT. The app mints a
+// real thread via the SIT agent-host (POST /threads) and threads it onto every chat
+// turn; provider stays native (no OBO) until M5. westus2 synthetic/no-PHI scope
+// (ADR-0013). Deploy approval-gated per AGENTS.md §4.
+param appFluentFoundryThreadsEnabled = true
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:

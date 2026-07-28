@@ -3,6 +3,7 @@ import { invokeAgent, sendInteractionEvent, type GroundedReply } from './agent-m
 import type { ConversationTurn } from './AgentInvoker';
 import { conversationStore, conversationKey } from './conversation-store';
 import { foundryThreadMap, foundryThreadsEnabled } from './foundry-thread-map';
+import { isAgentHostConfigured, iqMintThread } from '../data/iq-client';
 import type { ContextEnvelope } from '../context/context-envelope';
 
 /**
@@ -37,16 +38,23 @@ export function useConversation(
   const send = useCallback(
     async (prompt: string) => {
       if (!prompt.trim()) return;
-      // #424 M1 — resolve/reuse the live Foundry thread for this (user x agent)
-      // when threads are enabled. The record's threadId is passed to the
-      // agent-host in #424 M3; here it seeds the map (reset on sign-out).
+      // #424 M3 — resolve/reuse the live Foundry thread for this (user x agent)
+      // when threads are enabled, and thread the turn onto it. With a configured
+      // agent-host we mint server-side (live `native` provenance); offline/CI we
+      // fall back to the simulated minter so the wiring still exercises + resets.
+      let threadId: string | undefined;
       if (env && env.agent != null && foundryThreadsEnabled()) {
-        foundryThreadMap.getOrCreate(env);
+        if (isAgentHostConfigured()) {
+          const record = await foundryThreadMap.resolve(env, (e) => iqMintThread(agent, e));
+          threadId = record.threadId;
+        } else {
+          threadId = foundryThreadMap.getOrCreate(env).threadId;
+        }
       }
       conversationStore.appendTurn(key, { role: 'user', text: prompt });
       conversationStore.setBusy(key, true);
       try {
-        const reply: GroundedReply = await invokeAgent(agent, prompt);
+        const reply: GroundedReply = await invokeAgent(agent, prompt, { threadId, env });
         const turn: ConversationTurn = {
           role: 'agent',
           text: reply.answer,

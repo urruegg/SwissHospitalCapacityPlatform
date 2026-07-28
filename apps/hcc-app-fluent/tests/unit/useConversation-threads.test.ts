@@ -87,4 +87,42 @@ describe('useConversation — Foundry thread map wiring (send path)', () => {
 
     expect(foundryThreadMap.size()).toBe(0);
   });
+
+  it('mints a live thread via the agent-host and threads it onto chat when a host is configured', async () => {
+    vi.stubEnv('VITE_FOUNDRY_THREADS_ENABLED', 'true');
+    vi.stubEnv('VITE_AGENT_HOST_URL', 'https://host.example');
+    const calls: Array<{ url: string; body: unknown }> = [];
+    const fetchMock = vi.fn(async (url: string, init: RequestInit) => {
+      const body = init.body ? JSON.parse(init.body as string) : undefined;
+      calls.push({ url, body });
+      if (url.endsWith('/threads')) {
+        return { ok: true, json: async () => ({ threadId: 'thr-live-1', provenance: 'native' }) };
+      }
+      return {
+        ok: true,
+        json: async () => ({ answer: 'ok', citations: [], refused: false, interactionId: 'AIX-1' }),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { result } = renderHook(() =>
+      useConversation('bmca-agent', 'oid-1', envFor('bmca-agent')),
+    );
+    await act(async () => {
+      await result.current.send('Frage 1');
+    });
+    await waitFor(() => expect(result.current.turns.length).toBe(2));
+    await act(async () => {
+      await result.current.send('Frage 2');
+    });
+    await waitFor(() => expect(result.current.turns.length).toBe(4));
+
+    // Minted exactly once (reused on the second send); both chats carry the threadId.
+    const mintCalls = calls.filter((c) => c.url.endsWith('/threads'));
+    const chatCalls = calls.filter((c) => c.url.endsWith('/chat'));
+    expect(mintCalls).toHaveLength(1);
+    expect(chatCalls).toHaveLength(2);
+    expect(chatCalls.every((c) => (c.body as { threadId?: string }).threadId === 'thr-live-1')).toBe(true);
+    expect(foundryThreadMap.get('oid-1', 'bmca-agent')?.provenance).toBe('native');
+  });
 });
