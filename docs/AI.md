@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.1 |
+| **Version** | 0.14.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.13.0 (added the Sprint 30 M5 Evaluation Curation + Advisory Backlog: selection policy over scored traces, versioned-dataset rows, advisory GitHub-issue drafts); this bump cross-links the ratifying ADR-0055 in §Evaluation and corrects the advisory-only citation to NFR-LEARN-003 (Sprint 30 M6) |
+| **Previous Version** | 0.13.1 (cross-linked ADR-0055 in §Evaluation and corrected the advisory-only citation to NFR-LEARN-003); this bump adds the Sprint 30 M7 Improve - Prompt Optimization subsection: deterministic advisory optimizer, directive library, in-memory candidate instructions, offline-gate guardrail, realising FR-LEARN-005 |
 
 ## Purpose
 
@@ -359,6 +359,43 @@ drafts carry only ids / counts / metrics; dataset rows carry the already-redacte
 record fields, never new PHI. The lineage trail (`trace → dataset → eval →
 change`) is what makes each downstream Improve step (M7–M9) auditable
 (`FR-LEARN-003`).
+
+### Improve - Prompt Optimization (Sprint 30 M7)
+
+The first Improve step turns curated failing signal into an **advisory prompt
+proposal** for an agent, with no autonomous change. A prompt-optimization job
+(`evals/prompt_optimize_job.py`) reads recent **scored** `agent_interactions`
+through the same source seam as the online-eval and curation jobs
+(`evals/lib/online_store.py`) and calls a deterministic optimizer
+(`evals/lib/prompt_optimize.py`). There is no live Foundry "Agent Optimizer"
+runtime in this repo (ADR-0002); M7 realises that capability as reviewable,
+offline Python:
+
+- **Improvement signal** - `run_prompt_optimization` filters scored records to the
+  target agent, then reuses the curator (`curator.select` +
+  `curator.to_backlog_items`) to derive the concrete **failing metrics** (e.g.
+  `citation_coverage`, `actionability`, `user_feedback`). `random_rate` defaults
+  to `0.0`, so only real failures - not a random sample - drive directives.
+- **Directive library** (`propose_directives`) - maps each failing metric to a
+  small, targeted instruction directive (a generic directive covers unmapped
+  metrics). This is a lookup, not a generative rewrite, so proposals are
+  deterministic and diffable.
+- **Candidate instructions** (`build_candidate_instructions`) - appends a single
+  `## Optimization directives (advisory, Sprint 30 M7)` block to the agent's base
+  `AGENT.md` **in memory**. The transform is idempotent and replacing (re-running
+  supersedes the prior block; it never stacks) and preserves the base verbatim.
+- **Offline-gate guardrail** - the candidate is only promotable if the offline
+  regression suite over the agent's golden dataset (`evals/lib/harness.py`)
+  passes; the proposal carries `offlineGatePassed`.
+
+Advisory-only (`NFR-LEARN-003`): the job **never** writes `AGENT.md`, opens an
+issue, or mutates a prompt / model. It emits a proposal
+(`advisory: true, applied: false, approvedToApply: false`) with full lineage
+(`sourceMetrics`, `sourceInteractionIds`). A human applies the candidate only
+after the offline gate passes **and** an explicit `approved-to-apply`.
+PHI-safety (ADR-0016 / `NFR-LEARN-001`): the proposal carries only metric names,
+interaction ids, directives, and the agent's own instruction text - never raw
+prompt or answer content. This realises `FR-LEARN-005`.
 
 ### Load Validation Plan
 
