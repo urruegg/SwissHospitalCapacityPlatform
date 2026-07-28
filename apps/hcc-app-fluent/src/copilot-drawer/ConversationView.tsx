@@ -5,10 +5,12 @@ import {
   Body1,
   Caption1,
   Badge,
+  Button,
   TagGroup,
   InteractionTag,
   InteractionTagPrimary,
 } from '@fluentui/react-components';
+import { ThumbLikeRegular, ThumbDislikeRegular } from '@fluentui/react-icons';
 import { useTranslation } from 'react-i18next';
 import type { ConversationTurn } from './AgentInvoker';
 import { RecoPanel } from '../copilot-rail/RecoPanel';
@@ -46,6 +48,16 @@ const useStyles = makeStyles({
   },
   citations: { marginTop: tokens.spacingVerticalXS },
   /**
+   * M2-app — thumbs rating under a captured agent reply. Left-aligned, subtle so
+   * it never competes with the reply; emits a user-interaction event for the
+   * turn's `interactionId` (advisory-only feedback signal).
+   */
+  rating: {
+    alignSelf: 'flex-start',
+    display: 'flex',
+    gap: tokens.spacingHorizontalXS,
+  },
+  /**
    * A12 — per-reply follow-up chips ("what next"). Left-aligned under the latest
    * agent reply; clicking one sends it as the next ask.
    */
@@ -63,10 +75,13 @@ const NOOP = () => {};
 export function ConversationView({
   turns,
   onFollowUp,
+  onRate,
 }: {
   turns: ConversationTurn[];
   /** A12 — send a follow-up prompt as the next ask. Chips are hidden when absent. */
   onFollowUp?: (prompt: string) => void;
+  /** M2-app — emit a thumbs rating for a captured turn. Control hidden when absent. */
+  onRate?: (interactionId: string, value: 'up' | 'down') => void;
 }) {
   const styles = useStyles();
   const { t } = useTranslation();
@@ -101,6 +116,31 @@ export function ConversationView({
         return (
           <Fragment key={i}>
             {block}
+            {onRate && turn.role === 'agent' && turn.interactionId ? (
+              <div
+                className={styles.rating}
+                data-testid="rating"
+                role="group"
+                aria-label={t('copilot.rateLabel', 'Rate this reply')}
+              >
+                <Button
+                  size="small"
+                  appearance="subtle"
+                  icon={<ThumbLikeRegular />}
+                  data-testid="rate-up"
+                  aria-label={t('copilot.rateUp', 'Helpful')}
+                  onClick={() => onRate(turn.interactionId!, 'up')}
+                />
+                <Button
+                  size="small"
+                  appearance="subtle"
+                  icon={<ThumbDislikeRegular />}
+                  data-testid="rate-down"
+                  aria-label={t('copilot.rateDown', 'Not helpful')}
+                  onClick={() => onRate(turn.interactionId!, 'down')}
+                />
+              </div>
+            ) : null}
             {followUps && followUps.length > 0 ? (
               <TagGroup
                 className={styles.followUps}

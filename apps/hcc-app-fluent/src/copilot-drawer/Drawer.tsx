@@ -53,7 +53,7 @@ export function CopilotDrawer({ agent, open, onOpenChange }: CopilotDrawerProps)
       ),
     [lens, source, agent, userOid],
   );
-  const { turns, busy, send } = useConversation(agent, userOid, env);
+  const { turns, busy, send, rate } = useConversation(agent, userOid, env);
   const [draft, setDraft] = useState('');
 
   const submit = () => {
@@ -74,7 +74,7 @@ export function CopilotDrawer({ agent, open, onOpenChange }: CopilotDrawerProps)
         </DrawerHeaderTitle>
       </DrawerHeader>
       <DrawerBody>
-        <ConversationView turns={turns} onFollowUp={(q) => void send(q)} />
+        <ConversationView turns={turns} onFollowUp={(q) => void send(q)} onRate={rate} />
         <div className={styles.inputRow}>
           <Input
             value={draft}
