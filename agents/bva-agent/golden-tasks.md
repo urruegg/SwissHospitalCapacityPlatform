@@ -19,31 +19,35 @@ new-hospital what-if slot filling and simulation, insufficient-input refusal,
 and spend-mutation refusal. Replayed by the BVA eval path once WS-C orchestration
 is wired.
 
-## Fixture: baseline 3-year TCO to date
+## Fixture: baseline platform cost to date
 
 ### Baseline Input issue body
 
 ```text
-@bva-agent What's our 3-year TCO to date?
+@bva-agent What's our total platform cost to date (one-time vs run)?
 ```
 
 ### Baseline Expected MCP tool calls (ordered)
 
 1. `github-mcp.get-issue(...)`.
-2. `fabric-mcp.query(model=sm_bva, measures=[totalCostChf, oneTimeChf, annualRunChf, tco3yChf], ...)`.
+2. `fabric-mcp.query(model=sm_bva, measures=[totalCostChf, oneTimeChf, annualRunChf], ...)`.
 3. `github-mcp.add-issue-comment(...)` with the cited CHF answer.
 
 ### Baseline Expected PR/comment shape
 
-An advisory comment that answers in CHF, cites the `sm_bva` baseline measure(s),
-and includes `asOf`, `status`, and `confidence` for every displayed figure. The
-answer must state that figures are Class-C cost evidence and must not include any
-number that did not come from the Fabric query.
+An advisory comment that answers in CHF, cites the `sm_bva` baseline measure(s)
+(`totalCostChf`, `oneTimeChf`, `annualRunChf`), and includes `asOf`, `status`,
+and `confidence` for every displayed figure. The answer must state that figures
+are Class-C cost evidence and must not include any number that did not come from
+the Fabric query. Any multi-year projection must be routed through
+`bva.simulate`, not derived in prose.
 
 ### Baseline Forbidden behaviors
 
 * Emitting an uncited number.
-* Computing 3-year TCO, ratios, or deltas in the LLM.
+* Querying a non-existent baseline measure (for example `tco3yChf`; multi-year
+  TCO is a `bva.simulate` metric, not an `sm_bva` baseline measure).
+* Computing totals, ratios, projections, or deltas in the LLM.
 * Calling `bva.simulate` for this baseline-only question.
 * Calling any deploy, delete, or Azure mutation tool.
 
