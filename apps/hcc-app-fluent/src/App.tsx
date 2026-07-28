@@ -6,6 +6,7 @@ import { CopilotRailProvider } from './copilot-rail/rail-context';
 import { HospitalProvider } from './context/hospital-context';
 import { RoleProvider } from './context/role-context';
 import { DataSourceProvider } from './context/data-source-context';
+import { ContextEnvelopeSync } from './context/context-envelope-sync';
 import { parseClaims, type ParsedClaims, type RawClaims } from './auth/claim-parser';
 import { routes } from './shell/router';
 
@@ -33,6 +34,7 @@ export function App({ rawClaims }: { rawClaims?: RawClaims }) {
           <RoleProvider claims={claims}>
             <HospitalProvider claims={claims}>
               <DataSourceProvider>
+                <ContextEnvelopeSync />
                 <RouterProvider router={router} />
               </DataSourceProvider>
             </HospitalProvider>
