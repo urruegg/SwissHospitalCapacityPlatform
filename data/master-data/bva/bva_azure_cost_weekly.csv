@@ -1,0 +1,11 @@
+service_name,resource_group,resource_id,iso_week,cost_usd
+Microsoft Fabric,rg-ihzhhpf-sit,fab-ihzhhpf-sit,2026-W20,12400
+Storage,rg-ihzhhpf-sit,stihzhhpfsit,2026-W20,850
+Key Vault,rg-ihzhhpf-prod,kv-ihzhhpf-prod,2026-W20,160
+Log Analytics,rg-ihzhhpf-prod,law-ihzhhpf-prod,2026-W20,920
+Container Apps,rg-ihzhhpf-prod,ca-ihzhhpf-prod,2026-W20,1180
+Application Insights,rg-ihzhhpf-prod,appi-ihzhhpf-prod,2026-W20,430
+Microsoft Fabric,rg-ihzhhpf-sit,fab-ihzhhpf-sit,2026-W21,12800
+Storage,rg-ihzhhpf-sit,stihzhhpfsit,2026-W21,875
+Container Apps,rg-ihzhhpf-prod,ca-ihzhhpf-prod,2026-W21,1215
+Log Analytics,rg-ihzhhpf-prod,law-ihzhhpf-prod,2026-W21,945

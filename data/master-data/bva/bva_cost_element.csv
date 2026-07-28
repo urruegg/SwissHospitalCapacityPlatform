@@ -1,0 +1,10 @@
+element_id,cost_type,element_name,amount_chf,driver_source
+ot-build,one_time,MVP design/engineering/integration build,640000,bva_team_effort
+ot-security,one_time,Security & compliance hardening,180000,bva_bom
+ot-data,one_time,Data onboarding & contract implementation,220000,bva_bom
+ot-training,one_time,"Training, change adoption & hypercare",120000,bva_team_effort
+ot-contingency,one_time,Program contingency reserve,140000,bva_cost_element
+run-azure,annual_run,Azure & platform service consumption,760000,bva_azure_cost_weekly
+run-ops,annual_run,"Operations, support & reliability engineering",260000,bva_team_effort
+run-secops,annual_run,"Security operations, audit evidence & compliance cadence",140000,bva_team_effort
+run-monitoring,annual_run,Model monitoring & continuous evaluation,90000,bva_copilot_usage_weekly

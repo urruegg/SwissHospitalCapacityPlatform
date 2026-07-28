@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Golden-source master-data contract gate.
 
-Dependency-free (Python 3 stdlib only). Validates two master-data domains:
+Dependency-free (Python 3 stdlib only). Validates three master-data domains:
 
 * ``data/master-data/capacity`` - capacity dimensions/facts: file presence,
   primary-key uniqueness, foreign-key integrity.
@@ -9,6 +9,9 @@ Dependency-free (Python 3 stdlib only). Validates two master-data domains:
   spine + skills-evidence domain: file presence, primary-key uniqueness,
   foreign-key integrity, **GLN mod-10** check digits, **enum-domain** membership,
   and **load-order** (parents before children).
+* ``data/master-data/bva`` - Sprint 33 BVA cost/BOM master data: file presence,
+  primary-key uniqueness, tenant foreign-key integrity, enum-domain membership,
+  and ROM ledger reconciliation.
 
 This is the silver-gate logic (design D5): when the on-demand pipeline lands the
 synthetic extracts, the same checks run against landed Bronze and quarantine bad
@@ -23,6 +26,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CAPACITY_DIR = REPO_ROOT / "data" / "master-data" / "capacity"
 ORG_SKILLS_DIR = REPO_ROOT / "data" / "master-data" / "curavias-org-skills"
+BVA_DIR = REPO_ROOT / "data" / "master-data" / "bva"
 
 CAPACITY_FILES = [
     "01_dim_hospital.csv", "02_dim_specialty.csv", "03_dim_hospital_service.csv",
@@ -238,6 +242,57 @@ ORG_SKILLS_GLN_COLUMNS = [
 ]
 
 
+# --------------------------------------------------------------------------- #
+# BVA cost/BOM master-data domain (Sprint 33 WS-A, Task A1)                   #
+# --------------------------------------------------------------------------- #
+
+BVA_FILES = [
+    "bva_cost_element.csv",
+    "bva_hospital_profile.csv",
+    "bva_bom.csv",
+    "bva_azure_cost_weekly.csv",
+    "bva_copilot_usage_weekly.csv",
+    "bva_team_effort.csv",
+    "bva_fx_rate.csv",
+]
+
+BVA_PRIMARY_KEYS = {
+    "bva_cost_element.csv": "element_id",
+    "bva_hospital_profile.csv": "tenant_id",
+    "bva_bom.csv": "resource_id",
+    "bva_copilot_usage_weekly.csv": "iso_week",
+    "bva_fx_rate.csv": "period",
+}
+
+BVA_FOREIGN_KEYS = [
+    ("bva_hospital_profile.csv", "tenant_id", "dim_tenant.csv", "tenant_id"),
+]
+
+BVA_ENUM_DOMAINS = {
+    ("bva_cost_element.csv", "cost_type"): {"one_time", "annual_run"},
+    ("bva_hospital_profile.csv", "archetype"): {"acute", "rehab", "spitex"},
+}
+
+BVA_REQUIRED_NUMERIC_COLUMNS = [
+    ("bva_cost_element.csv", "amount_chf"),
+    ("bva_hospital_profile.csv", "beds"),
+    ("bva_hospital_profile.csv", "occupancy_target"),
+    ("bva_azure_cost_weekly.csv", "cost_usd"),
+    ("bva_copilot_usage_weekly.csv", "aiu"),
+    ("bva_copilot_usage_weekly.csv", "tokens_in"),
+    ("bva_copilot_usage_weekly.csv", "tokens_out"),
+    ("bva_copilot_usage_weekly.csv", "cost_usd"),
+    ("bva_team_effort.csv", "elective_hours"),
+    ("bva_team_effort.csv", "role_rate_chf"),
+    ("bva_fx_rate.csv", "usd_to_chf"),
+]
+
+BVA_LEDGER_TARGETS = {
+    "one_time": 1_300_000.0,
+    "annual_run": 1_250_000.0,
+}
+
+
 def gln_is_valid(gln: str) -> bool:
     """GS1 mod-10 check for a 13-digit GLN (weights 1/3 from the right)."""
     if len(gln) != 13 or not gln.isdigit():
@@ -315,9 +370,99 @@ def validate_org_skills(dir_path: Path) -> list[str]:
     return errors
 
 
+def validate_bva(bva_dir: Path, tenant_dir: Path | None = None) -> list[str]:
+    errors: list[str] = []
+    tables: dict[str, list[dict[str, str]]] = {}
+    tenant_tables: dict[str, list[dict[str, str]]] = {}
+    tenant_path = (tenant_dir or ORG_SKILLS_DIR) / "dim_tenant.csv"
+
+    for name in BVA_FILES:
+        path = bva_dir / name
+        if not path.exists():
+            errors.append(f"missing file: {name}")
+            continue
+        tables[name] = _read(path)
+
+    if not tenant_path.exists():
+        errors.append(f"missing file: {tenant_path.name}")
+    else:
+        tenant_tables["dim_tenant.csv"] = _read(tenant_path)
+
+    # Primary-key uniqueness.
+    for name, pk in BVA_PRIMARY_KEYS.items():
+        rows = tables.get(name)
+        if rows is None:
+            continue
+        seen: set[str] = set()
+        for row in rows:
+            key = row.get(pk, "")
+            if key in seen:
+                errors.append(f"{name}: duplicate primary key {pk}={key!r}")
+            seen.add(key)
+
+    # Foreign-key integrity. The BVA hospital profile references dim_tenant in
+    # the curavias-org-skills domain, so parent tables are loaded separately.
+    for name, col, parent_name, parent_col in BVA_FOREIGN_KEYS:
+        rows = tables.get(name)
+        parent_rows = tenant_tables.get(parent_name)
+        if rows is None or parent_rows is None:
+            continue
+        parent_keys = {r.get(parent_col, "") for r in parent_rows}
+        for row in rows:
+            val = row.get(col, "")
+            if val and val not in parent_keys:
+                errors.append(f"{name}: {col}={val!r} has no matching {parent_name}.{parent_col}")
+
+    # Enum-domain membership.
+    for (name, col), allowed in BVA_ENUM_DOMAINS.items():
+        rows = tables.get(name)
+        if rows is None:
+            continue
+        for row in rows:
+            val = row.get(col, "")
+            if val and val not in allowed:
+                errors.append(f"{name}: {col}={val!r} not in domain {sorted(allowed)}")
+
+    # BVA is PHI-free synthetic cost/BOM data. Keep the gate scoped to this data
+    # product: numeric evidence columns must be populated and parse as numbers.
+    for name, col in BVA_REQUIRED_NUMERIC_COLUMNS:
+        rows = tables.get(name)
+        if rows is None:
+            continue
+        for row in rows:
+            val = row.get(col, "")
+            if val == "":
+                errors.append(f"{name}: {col} must not be empty")
+                continue
+            try:
+                float(val)
+            except ValueError:
+                errors.append(f"{name}: {col}={val!r} must be numeric")
+
+    ledger_totals = {cost_type: 0.0 for cost_type in BVA_LEDGER_TARGETS}
+    for row in tables.get("bva_cost_element.csv", []):
+        cost_type = row.get("cost_type", "")
+        if cost_type not in ledger_totals:
+            continue
+        try:
+            ledger_totals[cost_type] += float(row.get("amount_chf", ""))
+        except ValueError:
+            continue
+    for cost_type, expected in BVA_LEDGER_TARGETS.items():
+        actual = ledger_totals[cost_type]
+        if actual != expected:
+            errors.append(
+                f"bva_cost_element.csv: ledger ROM mismatch for {cost_type}: "
+                f"expected {expected:g}, got {actual:g}"
+            )
+
+    return errors
+
+
 def main() -> int:
     errors = validate_capacity(CAPACITY_DIR)
     errors += validate_org_skills(ORG_SKILLS_DIR)
+    errors += validate_bva(BVA_DIR)
     if errors:
         print("MASTER-DATA VALIDATION FAILED:")
         for e in errors:
@@ -325,7 +470,8 @@ def main() -> int:
         return 1
     print(
         f"OK: capacity master-data valid ({len(CAPACITY_FILES)} tables); "
-        f"curavias org/skills master-data valid ({len(ORG_SKILLS_LOAD_ORDER)} tables)."
+        f"curavias org/skills master-data valid ({len(ORG_SKILLS_LOAD_ORDER)} tables); "
+        f"bva master-data valid ({len(BVA_FILES)} tables)."
     )
     return 0
 
