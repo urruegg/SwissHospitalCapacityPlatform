@@ -593,6 +593,17 @@
       },
       "status": "Accepted",
       "title": "Closed-loop learning — capture contract, retention class, and online-eval sampling"
+    },
+    {
+      "decisionSummary": "1. **Deterministic computation posture — no LLM arithmetic (D6).** All BVA arithmetic is performed by a **deterministic Python calc engine** exposed as a single typed tool, `bva.simulate(baseline, delta) -> BvaSimulationResult` (`data-platform/bva/`). The engine is a pure function of its inputs: it uses a fixed `asOf`, never `datetime.now()`, and never delegates math to the model. The LLM only slot-fills inputs, selects the tool, and renders the tool's output; it emits no computed figure of its own. This mirrors the deterministic-not-LLM precedent set for the DQA Trust Score ([ADR-0053](0053-dqa-trust-score-model.md)).",
+      "id": "ADR-0056",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0056-bva-agent-deterministic-computation.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0056-bva-agent-deterministic-computation.md"
+      },
+      "status": "Accepted",
+      "title": "BVA Agent — deterministic ROI/TCO computation as a typed tool, cost data product via the master-data pattern, peer to PO under the App orchestrator"
     }
   ],
   "boms": [
@@ -2325,6 +2336,66 @@
   "generatedAt": "2026-07-10",
   "requirements": [
     {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall produce grounded ROI/TCO answers computed over the `bva_*` gold measures, standardized in CHF."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support interactive new-hospital what-if analysis via the deterministic `bva.simulate` tool, parametric and benchmarked from the three existing hospitals."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall compose a PO ↔ BVA fan-out into one cited answer: BVA numbers plus the Product Owner go/no-go verdict."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall capture an Opportunity in the Cosmos system-of-record, project it into a `bva_opportunity` gold table, and expose it in the Backstage pipeline view."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall surface BVA in the Curavias App Start (inline) and Backstage (pipeline) copilot rail."
+    },
+    {
       "family": "Application Context Architecture (Sprint 29)",
       "id": "FR-CTX-001",
       "kind": "FR",
@@ -4039,6 +4110,66 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "AI-serving behavior shall support provider-local governance and change control."
+    },
+    {
+      "family": "Business Value Assessment Governance (Sprint 33)",
+      "id": "NFR-BVA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA math shall be **deterministic and reproducible** with **no LLM arithmetic**: the same inputs always produce the same figures via the typed `bva.simulate` tool."
+    },
+    {
+      "family": "Business Value Assessment Governance (Sprint 33)",
+      "id": "NFR-BVA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot) with snapshot date and currency."
+    },
+    {
+      "family": "Business Value Assessment Governance (Sprint 33)",
+      "id": "NFR-BVA-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Costs shall be **CHF-normalized** with an explicit FX line; settling weeks are marked provisional."
+    },
+    {
+      "family": "Business Value Assessment Governance (Sprint 33)",
+      "id": "NFR-BVA-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA data shall have **SIT / PROD parity**, no PHI (ADR-0016), with demo figures labelled proof-of-technology (ADR-0013)."
+    },
+    {
+      "family": "Business Value Assessment Governance (Sprint 33)",
+      "id": "NFR-BVA-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA agent output shall preserve **DE / EN parity**."
     },
     {
       "family": "Compliance And Privacy",
