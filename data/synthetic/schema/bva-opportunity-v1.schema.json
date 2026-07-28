@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "bva-opportunity-v1.schema.json",
+  "title": "BVA Opportunity Record Contract (Opportunity v1)",
+  "description": "Frozen Sprint 33 WS-G0 contract: Cosmos DB system-of-record for a hospital-onboarding opportunity (D4), projected one-way to gold.bva_opportunity. Agents never auto-advance status past qualified. See docs/superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "hospitalName",
+    "archetype",
+    "createdAt",
+    "createdBy",
+    "status",
+    "askText",
+    "language",
+    "history"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hospitalName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "archetype": {
+      "type": "string",
+      "enum": ["acute", "rehab", "spitex"]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["new", "evaluating", "qualified", "disqualified", "onboarding", "won", "lost"]
+    },
+    "askText": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": "string",
+      "enum": ["de", "en"]
+    },
+    "bvaResult": {
+      "type": ["object", "null"],
+      "description": "Snapshot of bva-simulation-result-v1 output (nullable until first simulate)."
+    },
+    "poVerdict": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": ["go", "no-go", "conditional"]
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "citations": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "inputs": {
+      "type": ["object", "null"],
+      "description": "Slot-filled deltas (beds, occupancy, case-mix, onboarding scope)."
+    },
+    "history": {
+      "type": "array",
+      "description": "Append-only audit.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["at", "event"],
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "event": {
+            "type": "string",
+            "minLength": 1
+          },
+          "by": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

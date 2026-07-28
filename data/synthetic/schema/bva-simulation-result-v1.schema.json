@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "bva-simulation-result-v1.schema.json",
+  "title": "BVA Agent Simulation Result Contract (BvaSimulationResult v1)",
+  "description": "Frozen Sprint 33 WS-G0 contract: output of the deterministic bva.simulate tool. All figures are CHF, no LLM arithmetic is permitted, and every figure is rendered as a GroundedChunk so the PO citation layer consumes it unchanged. See docs/superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scenarioId",
+    "currency",
+    "asOf",
+    "baseline",
+    "projection",
+    "metrics",
+    "sensitivity",
+    "chunks"
+  ],
+  "properties": {
+    "scenarioId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Scenario identifier and Opportunity join key."
+    },
+    "currency": {
+      "type": "string",
+      "const": "CHF"
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["totalCostChf", "oneTimeChf", "annualRunChf", "hospitals"],
+      "properties": {
+        "totalCostChf": { "type": "number", "minimum": 0 },
+        "oneTimeChf": { "type": "number", "minimum": 0 },
+        "annualRunChf": { "type": "number", "minimum": 0 },
+        "hospitals": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hospitalName",
+        "archetype",
+        "onboardingOneTimeChf",
+        "annualRunDeltaChf",
+        "annualBenefitChf"
+      ],
+      "properties": {
+        "hospitalName": { "type": "string", "minLength": 1 },
+        "archetype": { "type": "string", "enum": ["acute", "rehab", "spitex"] },
+        "onboardingOneTimeChf": { "type": "number", "minimum": 0 },
+        "annualRunDeltaChf": { "type": "number", "minimum": 0 },
+        "annualBenefitChf": {
+          "type": "number",
+          "description": "Modelled benefit, may be provisional."
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roiPct", "paybackMonths", "tco3yChf", "npvChf"],
+      "properties": {
+        "roiPct": { "type": "number" },
+        "paybackMonths": { "type": "number", "minimum": 0 },
+        "tco3yChf": { "type": "number" },
+        "npvChf": { "type": "number" }
+      }
+    },
+    "sensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Low/base/high band on roiPct.",
+      "required": ["low", "base", "high"],
+      "properties": {
+        "low": { "type": "number" },
+        "base": { "type": "number" },
+        "high": { "type": "number" }
+      }
+    },
+    "chunks": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Each headline figure is a GroundedChunk; classId is always C (cost).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["classId", "text", "citation", "asOf", "liveness", "status", "confidence", "language"],
+        "properties": {
+          "classId": {
+            "type": "string",
+            "const": "C",
+            "description": "Cost knowledge class."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "citation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sourceRef"],
+            "properties": {
+              "sourceRef": {
+                "type": "string",
+                "minLength": 1
+              },
+              "anchor": { "type": "string" },
+              "conceptRef": { "type": "string" },
+              "goldBinding": { "type": "string" }
+            }
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "liveness": {
+            "type": "string",
+            "enum": ["live", "snapshot"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["verified", "partial", "requires-validation"]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "language": {
+            "type": "string",
+            "enum": ["de", "en"]
+          }
+        }
+      }
+    }
+  }
+}
