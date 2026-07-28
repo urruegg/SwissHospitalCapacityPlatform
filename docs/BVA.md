@@ -1,12 +1,23 @@
-# BVA
+# Curavias — Business Value Assessment
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.1 |
-| **Date** | 2026-06-01 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (initial ROM ROI and TCO baseline) |
+| **Previous Version** | 1.0.1 (Sprint 34 WS-3: Curavias anchor + product-anchor line + executive summary) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This Business Value Assessment gives executives a Rough Order of Magnitude (ROM)
+view of the return on investment and total cost of ownership for the Curavias
+MVP over a three-year horizon. Figures are business-case shaping estimates
+(plus/minus 30 percent), in CHF, and are not procurement commitments.
 
 ## Purpose
 

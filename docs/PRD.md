@@ -1,18 +1,68 @@
-# PRD
+# Curavias — Product Requirements Document
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.6.0 |
+| **Version** | 2.7.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.5.0 (ratified Sprint 30 closed-loop-learning requirements FR-LEARN-001..005 + NFR-LEARN-001..004); this bump ratifies Sprint 33 BVA Agent requirements FR-BVA-001..005 + NFR-BVA-001..005 (§V, §R) + traceability row (ADR-0056, #489/#501) |
+| **Previous Version** | 2.6.0 (ratified Sprint 33 BVA Agent requirements FR-BVA-001..005 + NFR-BVA-001..005 (§R) + traceability row, ADR-0056, #489/#501); this bump adds Sprint 34 WS-3: Curavias anchor + product-anchor line + executive summary + system-context diagram + new NFR family S Documentation Quality with NFR-DOC-001..004 and its traceability row |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+Curavias is a provider-internal operational intelligence platform for Swiss
+hospital capacity and patient-flow management. This document is the authoritative
+catalogue of its functional and non-functional requirements — each with a stable
+ID and a traceability link to the design, ADR, or evidence that realises it. It
+is the baseline every architecture, security, data, AI, and delivery decision
+maps back to. Curavias is an advisory-only showcase on synthetic data (no PHI);
+it previews and recommends, and is not a medical device.
+
+The diagram below places Curavias in its ecosystem; terminology follows
+[GLOSSARY.md](GLOSSARY.md) and the canonical source is
+[the diagram library](architecture/diagram-library.md).
+
+```mermaid
+flowchart TB
+    subgraph Team["Frontier-Firm team"]
+        CT["Capacity and bed-management teams<br/>(agent bosses, HITL)"]
+    end
+
+    subgraph Network["Swiss care network"]
+        ACUTE["Acute hospitals"]
+        REHAB["Rehabilitation clinics"]
+        SPITEX["Spitex (home care)"]
+        INS["Insurer-linked coordination"]
+    end
+
+    CUR["Curavias platform<br/>advisory-only, synthetic data, no PHI"]
+
+    subgraph IQ["Microsoft IQ backbone (Azure)"]
+        FABRICIQ["Fabric IQ<br/>ontology + semantic backbone"]
+        FOUNDRYIQ["Foundry IQ<br/>knowledge + agents"]
+        WORKIQ["Work IQ<br/>M365 work context (read-only)"]
+    end
+
+    GH["GitHub delivery plane<br/>Copilot coding agent + MCP"]
+
+    CT -->|questions, approvals| CUR
+    CUR -->|advisory insights, cited answers| CT
+    Network -->|synthetic capacity + episode data| CUR
+    CUR --> FABRICIQ
+    CUR --> FOUNDRYIQ
+    CUR --> WORKIQ
+    GH -.builds + governs.-> CUR
+```
 
 ## Purpose
 
 This product requirements document defines the complete functional and non-functional
-requirements for the Swiss AI-Powered Patient Flow and Hospital Capacity Platform,
-derived from the source specifications in `docs/specs`.
+requirements for Curavias, the Swiss AI-powered patient-flow and hospital-capacity
+platform, derived from the source specifications in `docs/specs`.
 
 The target product is a provider-internal operational intelligence platform for one
 Swiss cantonal hospital provider deployment at a time.
@@ -549,19 +599,21 @@ and [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md).
 | `NFR-LEARN-003` | No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval). |
 | `NFR-LEARN-004` | Full lineage is preserved end to end: interaction -> dataset -> eval -> change. |
 
-### R) Business Value Assessment Governance (Sprint 33)
+| `NFR-BVA-005` | BVA agent output shall preserve **DE / EN parity**. |
 
-Sprint 33 non-functional deltas per the
-[Sprint 33 BVA Agent design](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md)
-and [ADR-0056](adr/0056-bva-agent-deterministic-computation.md).
+### S) Documentation Quality (Sprint 34)
+
+Sprint 34 (Curavias Documentation Alignment) non-functional deltas per the
+[Sprint 34 doc-alignment design](superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md),
+grounded on [GLOSSARY.md](GLOSSARY.md) and
+[the canonical diagram library](architecture/diagram-library.md).
 
 | ID | Requirement |
 | -- | ----------- |
-| `NFR-BVA-001` | BVA math shall be **deterministic and reproducible** with **no LLM arithmetic**: the same inputs always produce the same figures via the typed `bva.simulate` tool. |
-| `NFR-BVA-002` | Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot) with snapshot date and currency. |
-| `NFR-BVA-003` | Costs shall be **CHF-normalized** with an explicit FX line; settling weeks are marked provisional. |
-| `NFR-BVA-004` | BVA data shall have **SIT / PROD parity**, no PHI (ADR-0016), with demo figures labelled proof-of-technology (ADR-0013). |
-| `NFR-BVA-005` | BVA agent output shall preserve **DE / EN parity**. |
+| `NFR-DOC-001` | Main solution documentation shall be Curavias-anchored and terminology-consistent with `docs/GLOSSARY.md` (Fabric IQ / Foundry IQ / Work IQ / Frontier Firm used correctly). |
+| `NFR-DOC-002` | Each in-scope main doc shall be customer-ready: a Curavias-anchored title, the one-line product-anchor blockquote, an executive summary, and plain professional wording. |
+| `NFR-DOC-003` | Canonical mermaid diagrams from `docs/architecture/diagram-library.md` shall be embedded in the documents the library assigns them to, and copies kept in sync from that source. |
+| `NFR-DOC-004` | Every documentation edit shall pass the mojibake + markdownlint gates and carry a §9 SemVer version bump. |
 
 ## MVP Definition
 
@@ -607,6 +659,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/adr/0054-signal-channel-lifecycle.md`](adr/0054-signal-channel-lifecycle.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
 | [`docs/superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md`](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md) + [`docs/adr/0055-closed-loop-learning-capture-and-eval.md`](adr/0055-closed-loop-learning-capture-and-eval.md) *(Sprint 30: closed-loop learning — capture contract, online + offline eval, curator + advisory backlog; issue #443)* | `FR-LEARN-001` to `FR-LEARN-005`, `NFR-LEARN-001` to `NFR-LEARN-004` |
 | [`docs/superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md`](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md) + [`docs/superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md`](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md) + [`docs/adr/0056-bva-agent-deterministic-computation.md`](adr/0056-bva-agent-deterministic-computation.md) *(Sprint 33: Business Value Assessment Agent — deterministic `bva.simulate` ROI/TCO engine, cited Class-C GroundedChunks, Cosmos Opportunity SoR + gold projection, peer-to-PO fan-out; issues #489, #501)* | `FR-BVA-001` to `FR-BVA-005`, `NFR-BVA-001` to `NFR-BVA-005` |
+| [`docs/superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md`](superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md) + [`docs/GLOSSARY.md`](GLOSSARY.md) + [`docs/architecture/diagram-library.md`](architecture/diagram-library.md) *(Sprint 34: Curavias Documentation Alignment — Curavias anchor + IQ / Frontier-Firm terminology + canonical mermaid library + customer-ready presentation; tracker #505)* | `NFR-DOC-001` to `NFR-DOC-004` |
 
 ## Assumptions To Validate In Implementation Planning
 
