@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.0 |
+| **Version** | 0.13.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.12.0 (added the Sprint 30 M5 Evaluation Curation + Advisory Backlog: selection policy over scored traces, versioned-dataset rows, advisory GitHub-issue drafts) |
+| **Previous Version** | 0.13.0 (added the Sprint 30 M5 Evaluation Curation + Advisory Backlog: selection policy over scored traces, versioned-dataset rows, advisory GitHub-issue drafts); this bump cross-links the ratifying ADR-0055 in §Evaluation and corrects the advisory-only citation to NFR-LEARN-003 (Sprint 30 M6) |
 
 ## Purpose
 
