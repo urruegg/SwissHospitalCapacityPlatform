@@ -1,18 +1,30 @@
-# AI
+# Curavias — AI
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.16.0 |
+| **Version** | 0.17.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.15.0 (added the Sprint 30 M8 Improve - Knowledge Refresh subsection); this bump adds the Sprint 30 M9 Improve - Fine-tune subsection: deterministic advisory fine-tune planner classifying curated signal into SFT / DPO / RFT, demo-region eastus2, evaluation-gated deploy, completing the Improve stage and realising FR-LEARN-005 |
+| **Previous Version** | 0.16.0 (Sprint 30 M9 Improve - Fine-tune subsection); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical agent-topology + request-sequence diagrams (Sprint 34 WS-1) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document explains how Curavias uses AI responsibly: which AI services it
+relies on, how patient-sensitive data stays in Switzerland, and how every AI
+answer stays advisory-only and grounded in cited evidence. It is written so a
+non-engineer stakeholder can understand what the platform's AI does and the
+guardrails that keep it safe.
 
 ## Purpose
 
-This document defines the AI architecture approach for the Swiss Hospital
-Capacity Platform with a GA-only service baseline and Swiss data residency
-controls.
+This document defines the AI architecture approach for Curavias, the Swiss
+AI-powered patient-flow and hospital-capacity platform, with a GA-only service
+baseline and Swiss data residency controls.
 
 ## Scope and Constraints
 
@@ -31,6 +43,66 @@ controls.
 > [`docs/architecture/runtime-pattern-decision-matrix.md`](architecture/runtime-pattern-decision-matrix.md)
 > and is consistent with `AR-D-007` in [`docs/ARCHITECTURE.md`](ARCHITECTURE.md); no
 > PHI-sensitive workload class uses a Foundry-hosted or hybrid runtime in Sprint 05.
+
+## Reference diagrams
+
+The canonical agent topology and key request sequence below are maintained in
+[architecture/diagram-library.md](architecture/diagram-library.md) and copied
+here; update both places together when either changes.
+
+### Agent topology and orchestration
+
+```mermaid
+flowchart TB
+    USER["Agent boss (human, HITL)"] --> ORCH["App copilot orchestrator"]
+
+    subgraph Capacity["Capacity copilots"]
+        BMCA["bmca-agent<br/>bed management"]
+        OOA["ooa-agent<br/>occupancy / 72h forecast"]
+        DCA["dca-agent<br/>discharge"]
+        ORSA["orsa-agent<br/>OR steering"]
+        SBA["sba-agent<br/>staffing balance"]
+        CSA["csa-agent<br/>crisis / scenario"]
+    end
+
+    subgraph Advisory["Product + value"]
+        PO["product-owner-agent"]
+        BVA["bva-agent<br/>bed-value analysis"]
+    end
+
+    subgraph Support["Data + signal"]
+        DQ["data-quality-agent"]
+        SIG["signal-agent"]
+    end
+
+    ORCH --> Capacity
+    ORCH --> Advisory
+    ORCH --> Support
+    WORKIQ["Work IQ context"] -.read-only.-> ORCH
+    Capacity -->|cited, advisory-only| USER
+    Advisory -->|cited, advisory-only| USER
+```
+
+### Key request sequence
+
+```mermaid
+sequenceDiagram
+    actor User as Agent boss (human)
+    participant App as Curavias App
+    participant Orch as Orchestrator
+    participant Agent as Sub-agent(s)
+    participant IQ as Fabric IQ / Foundry IQ
+
+    User->>App: Ask a capacity question
+    App->>Orch: Forward with work context (Work IQ)
+    Orch->>Agent: Dispatch to matching copilot
+    Agent->>IQ: Retrieve grounded facts + knowledge
+    IQ-->>Agent: Cited evidence (GroundedChunk)
+    Agent-->>Orch: Advisory answer + citations
+    Orch-->>App: Grounded, cited response
+    App-->>User: Preview / recommendation (HITL)
+    User->>App: Approve before any action
+```
 
 ## AI Use Cases
 

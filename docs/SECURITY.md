@@ -1,18 +1,29 @@
-﻿# SECURITY
+# Curavias — Security
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.7.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 0.8.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.6.1 (ADR-0039→0040 reference retarget) |
+| **Previous Version** | 0.7.0 (ADR-0039→0040 reference retarget); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, and executive summary (Sprint 34 WS-1) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document sets out how Curavias is kept secure end to end, using a Zero Trust
+approach across identity, network, workload, and data. It maps each security
+control to the platform's requirements and Swiss healthcare expectations, and
+states the evidence needed to prove the controls work at each release gate.
 
 ## Purpose
 
-Define the security baseline for the Swiss Hospital Capacity Platform using a
-Zero Trust pattern aligned to Microsoft security guidance and Swiss healthcare
-compliance expectations.
+Define the security baseline for Curavias, the Swiss AI-powered patient-flow and
+hospital-capacity platform, using a Zero Trust pattern aligned to Microsoft
+security guidance and Swiss healthcare compliance expectations.
 
 This document provides:
 - Security architecture pattern and mandatory controls.

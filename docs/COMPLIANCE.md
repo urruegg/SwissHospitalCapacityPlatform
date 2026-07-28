@@ -1,18 +1,29 @@
-﻿# COMPLIANCE
+# Curavias — Compliance
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.1 |
+| **Version** | 0.14.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.13.0 (added control CH-C11 closed-loop learning governance, ratified in ADR-0055 (Sprint 30, #443)); this bump records ADR-0053 as ratified with the versioned trustscore-weights.json source of truth |
+| **Previous Version** | 0.13.1 (recorded ADR-0053 as ratified with the versioned trustscore-weights.json source of truth); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, and executive summary (Sprint 34 WS-1) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document makes Curavias's Swiss legal and privacy obligations traceable to
+concrete architecture controls, delivery artifacts, and operational evidence. It
+is written so a non-engineer stakeholder can see which obligations apply and how
+the platform meets them, on synthetic data with no PHI.
 
 ## Purpose
 
-Define the compliance baseline for the Swiss Hospital Capacity Platform and make
-Swiss legal obligations traceable to architecture controls, delivery artifacts,
-and operational evidence.
+Define the compliance baseline for Curavias, the Swiss AI-powered patient-flow
+and hospital-capacity platform, and make Swiss legal obligations traceable to
+architecture controls, delivery artifacts, and operational evidence.
 
 > **Scope carve-out (Sprint 00, time-limited):** the new-tenant demo environment
 > in tenant `1337187a-4c41-4da9-8fca-731bba7a4329` is deployed in `westus2` for
