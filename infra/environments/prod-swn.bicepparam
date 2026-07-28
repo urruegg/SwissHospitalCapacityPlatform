@@ -91,7 +91,15 @@ param simCapacityContainerRegistryResourceId = '/subscriptions/66a9953a-df37-4c5
 
 // --- Compute: agent-host (Container App + Cosmos conversations/audit/approval-events) ---
 param enableAgentHostModule = true
-param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:b796961'
+// Bumped b796961 -> f596cf2 to bring PROD to parity with SIT on the latest main
+// agent-host build, which bakes in the Sprint 32 Signal Agent (SGA) pack
+// (agents/signal-agent, runtime: agent-host — auto-discovered by the manifest
+// loader). f596cf2 is a superset of b796961 (all prior agent-host code incl. the
+// M5 Fabric Data Agent client + the #424 M2 golden service). Image imported into
+// crihzhhpfprod via `az acr import` from the SIT ACR. Deploy approval-gated per
+// AGENTS.md §4 (approved-to-apply by @urruegg 2026-07-28T12:28+02:00); see
+// docs/sprints/sprint-32/signal-agent-sit-prod-parity.md for live /agents evidence.
+param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:f596cf2'
 // Redis: start with the in-memory grounding cache (proven in SIT per ADR-0028)
 // to avoid a deploy-time AllocationFailed on an unverified swn Balanced SKU.
 // Flip to true once the SKU is confirmed in switzerlandnorth (PROD hardening).
