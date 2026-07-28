@@ -74,3 +74,36 @@ def propose_methods(methods: Iterable[str]) -> list[str]:
         for method in FINETUNE_METHODS
         if method in method_set
     ]
+
+
+# Selection reasons that yield a supervised (SFT) example: a quality failure with
+# a human-correctable target answer.
+_SFT_REASONS = frozenset({curator.EVAL_FAILURE, curator.LOW_SCORE, curator.MISREFUSAL})
+
+
+def classify_finetune_examples(selected: list[dict[str, Any]]) -> dict[str, list[str]]:
+    """Assign curator selections to the fine-tune method(s) their signal supports.
+
+    ``selected`` is the :func:`curator.select` output (``{"record", "reasons"}``).
+    Returns ``{"sft": [...], "dpo": [...], "rft": [...]}`` with per-method
+    interaction ids sorted and de-duplicated. A single interaction may feed more
+    than one method. Pure and PHI-safe (ids only):
+
+    - **sft** - a quality-failure reason (eval_failure / low_score / misrefusal).
+    - **dpo** - a thumbs-down reason (a preference pair).
+    - **rft** - the record carries eval scores (gradeable by the evaluator library).
+
+    A pure random sample with no failure signal and no scores feeds no method.
+    """
+    buckets: dict[str, set[str]] = {method: set() for method in FINETUNE_METHODS}
+    for sel in selected:
+        record = sel["record"]
+        iid = record.get("interactionId")
+        reasons = set(sel.get("reasons", []))
+        if reasons & _SFT_REASONS:
+            buckets["sft"].add(iid)
+        if curator.THUMBS_DOWN in reasons:
+            buckets["dpo"].add(iid)
+        if record.get("eval", {}).get("scores"):
+            buckets["rft"].add(iid)
+    return {method: sorted(ids) for method, ids in buckets.items()}
