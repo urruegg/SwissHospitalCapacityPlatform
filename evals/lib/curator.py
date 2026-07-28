@@ -122,3 +122,69 @@ def to_dataset_rows(selected: list[Selection]) -> list[Record]:
         }
         rows.append(row)
     return rows
+
+
+# Metrics synthesised from non-evaluator selection reasons.
+_REASON_METRICS = {
+    THUMBS_DOWN: "user_feedback",
+    MISREFUSAL: "refusal_correctness",
+}
+
+
+def _failing_metrics(record: Record, reasons: list[str]) -> set[str]:
+    """Metrics a selection should file a backlog finding against.
+
+    Derived from concrete signals only: evaluators that failed or scored below
+    threshold, plus synthetic metrics for thumbs-down and mis-refusal. A pure
+    random sample contributes no metric (it feeds the dataset, not the backlog).
+    """
+    metrics: set[str] = set()
+    scores = record.get("eval", {}).get("scores", {})
+    for name, verdict in scores.items():
+        if verdict.get("passed") is False or verdict.get("score", 1.0) < DEFAULT_LOW_SCORE_THRESHOLD:
+            metrics.add(name)
+    for reason in reasons:
+        if reason in _REASON_METRICS:
+            metrics.add(_REASON_METRICS[reason])
+    return metrics
+
+
+def to_backlog_items(selected: list[Selection]) -> list[dict[str, Any]]:
+    """Group selections into advisory GitHub-issue drafts by agent + failing metric.
+
+    Advisory-only (NFR-LEARN-002): returns drafts; it never opens an issue. Each
+    draft is PHI-safe (NFR-LEARN-001) — it carries the agent, the failing metric,
+    a count, and the source interaction ids, never raw prompt or answer text.
+    Deterministically ordered by (agent, metric).
+    """
+    groups: dict[tuple[str, str], list[str]] = {}
+    for sel in selected:
+        record = sel["record"]
+        agent = record.get("agent", "unknown")
+        iid = record.get("interactionId")
+        for metric in _failing_metrics(record, sel["reasons"]):
+            groups.setdefault((agent, metric), []).append(iid)
+
+    items: list[dict[str, Any]] = []
+    for (agent, metric), ids in sorted(groups.items()):
+        ids_sorted = sorted(ids)
+        count = len(ids_sorted)
+        id_lines = "\n".join(f"- `{i}`" for i in ids_sorted)
+        body = (
+            f"**Advisory only** (NFR-LEARN-002). Curated finding for `{agent}` on "
+            f"metric **{metric}**: {count} interaction(s) flagged for human review.\n\n"
+            f"Source interactions (lineage):\n{id_lines}\n\n"
+            "No prompt, knowledge source, guardrail, or model is changed by this "
+            "issue. A human reviews the curated dataset rows and applies changes "
+            "gated by the offline regression suite + `approved-to-apply`."
+        )
+        items.append({
+            "agent": agent,
+            "metric": metric,
+            "title": f"[learn][{agent}] {metric}: {count} interaction(s) need review",
+            "labels": ["learn", "advisory", f"agent:{agent}", f"metric:{metric}"],
+            "count": count,
+            "interactionIds": ids_sorted,
+            "body": body,
+        })
+    return items
