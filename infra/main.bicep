@@ -294,6 +294,9 @@ param fabricWorkspaceId string = ''
 @description('Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback.')
 param fabricDataAgentId string = ''
 
+@description('#424 M4 — agent-host RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process; `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code.')
+param agentHostRlsProvider string = 'simulated'
+
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
 @description('Enable the Sprint 13 hcc-app-fluent Container App module.')
 param enableAppFluentModule bool = false
@@ -676,6 +679,7 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     fabricDataAgentEndpoint: fabricDataAgentEndpoint
     fabricWorkspaceId: fabricWorkspaceId
     fabricDataAgentId: fabricDataAgentId
+    rlsProvider: agentHostRlsProvider
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

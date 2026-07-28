@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "10656662242138750475"
+      "templateHash": "9438921202203147972"
     }
   },
   "parameters": {
@@ -608,6 +608,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "agentHostRlsProvider": {
+      "type": "string",
+      "defaultValue": "simulated",
+      "metadata": {
+        "description": "#424 M4 — agent-host RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process; `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
       }
     },
     "enableAppFluentModule": {
@@ -5968,6 +5975,9 @@
           "fabricDataAgentId": {
             "value": "[parameters('fabricDataAgentId')]"
           },
+          "rlsProvider": {
+            "value": "[parameters('agentHostRlsProvider')]"
+          },
           "containerRegistryLoginServer": {
             "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
           },
@@ -5984,7 +5994,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "14271685339274188062"
+              "templateHash": "15421689759129110713"
             }
           },
           "parameters": {
@@ -6044,6 +6054,13 @@
               "defaultValue": "",
               "metadata": {
                 "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "rlsProvider": {
+              "type": "string",
+              "defaultValue": "simulated",
+              "metadata": {
+                "description": "#424 M4 — RLS provider for the structured golden read (`simulated` default | `fabric-data-agent`). See the M4 design spec + #510. Config, not code."
               }
             },
             "containerRegistryLoginServer": {
@@ -6544,6 +6561,9 @@
                   "fabricDataAgentId": {
                     "value": "[parameters('fabricDataAgentId')]"
                   },
+                  "rlsProvider": {
+                    "value": "[parameters('rlsProvider')]"
+                  },
                   "redisHostName": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value), createObject('value', ''))]",
                   "redisPort": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value), createObject('value', 0))]",
                   "containerRegistryLoginServer": {
@@ -6563,7 +6583,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "7213773335792771551"
+                      "templateHash": "10404766073330631312"
                     }
                   },
                   "parameters": {
@@ -6628,6 +6648,13 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+                      }
+                    },
+                    "rlsProvider": {
+                      "type": "string",
+                      "defaultValue": "simulated",
+                      "metadata": {
+                        "description": "#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
                       }
                     },
                     "redisHostName": {
@@ -6751,7 +6778,7 @@
                                 "cpu": "[json('0.5')]",
                                 "memory": "1Gi"
                               },
-                              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId'))), variables('redisEnv'))]"
+                              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider'))), variables('redisEnv'))]"
                             }
                           ],
                           "scale": {
