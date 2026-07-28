@@ -29,6 +29,7 @@ from orchestrator.dispatch import Orchestrator
 from orchestrator.mock_model import MockChatModel
 from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from hitl.gate_enforcer import enforce_gates
+from observability import tracing
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +132,11 @@ class UserEventRequest(BaseModel):
 
 def create_app() -> FastAPI:
     app = FastAPI(title="hcc-agent-host", version="0.1.0")
+
+    # Sprint 30 M1-observe: wire the agent-turn trace exporter. Defaults to the
+    # dependency-free NullExporter; a real Azure Monitor exporter is built only
+    # when APPLICATIONINSIGHTS_CONNECTION_STRING is set (no azure import in CI).
+    tracing.configure(tracing.build_exporter_from_env())
 
     # Browser cross-origin access for the hcc-app-fluent Copilot Drawer. Only the
     # POST /chat + GET /agents verbs and content-type header are needed; scoped to
