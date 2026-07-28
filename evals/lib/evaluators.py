@@ -184,3 +184,35 @@ def advisory_voice(record: Record, expected: Expected = None) -> EvalResult:
     if match:
         return _passfail(name, False, f"decision-framing token '{match.group(0)}'")
     return _passfail(name, True, "advisory voice preserved")
+
+
+# --- groundedness -----------------------------------------------------------
+
+_INLINE_CITE = re.compile(r"\[([^\[\]]+)\]")
+
+
+def groundedness(record: Record, expected: Expected = None) -> EvalResult:
+    """Cited grounding is consistent — every inline ``[source]`` marker is backed
+    by an entry in ``response.citations`` (no fabricated / hallucinated citation).
+
+    Orthogonal to :func:`citation_coverage` (which asks *whether* a claim is
+    cited); this asks whether the cited sources are *real*. Refusals and
+    marker-free answers are not applicable and pass.
+    """
+    name = "groundedness"
+    if _is_refused(record):
+        return _passfail(name, True, "refusal — not applicable")
+
+    answer = _answer(record)
+    markers = _INLINE_CITE.findall(answer)
+    # Ignore the boilerplate redaction marker.
+    markers = [m for m in markers if m.strip().lower() != "redacted"]
+    if not markers:
+        return _passfail(name, True, "no inline citation to verify")
+
+    citations = (record.get("response") or {}).get("citations") or []
+    joined = " ".join(citations)
+    fabricated = [m for m in markers if m not in citations and m not in joined]
+    if fabricated:
+        return _passfail(name, False, f"inline citation not in sources: {fabricated[0]}")
+    return _passfail(name, True, "inline citations backed by sources")
