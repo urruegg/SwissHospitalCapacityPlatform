@@ -100,3 +100,72 @@ def extract_knowledge_gaps(
         )
     gaps.sort(key=lambda g: order[g["metric"]])
     return gaps
+
+
+def run_knowledge_refresh(
+    *,
+    agent: str,
+    scored_records: list[dict],
+    grounding_sources: list[str],
+    gate_dataset_path,
+    random_rate: float = 0.0,
+    seed: int = 0,
+    low_score_threshold: float = curator.DEFAULT_LOW_SCORE_THRESHOLD,
+) -> dict:
+    """Produce an advisory knowledge-refresh proposal for ``agent``.
+
+    Improvement signal: the curated **scored records** for ``agent`` (design M5
+    seam) drive the failing metrics via :func:`curator.select` +
+    :func:`curator.to_backlog_items`; only the knowledge metrics
+    (:data:`KNOWLEDGE_METRICS`) become gaps. Guardrail: the current grounding is
+    only promotable-after-refresh if the **offline regression gate** over
+    ``gate_dataset_path`` passes (:mod:`lib.harness`). ``random_rate`` defaults to
+    ``0.0`` so only concrete grounding gaps - not a random sample - drive the
+    proposal.
+
+    Returns an advisory proposal dict. This function **never writes** a grounding
+    source, ontology file, ``AGENT.md``, or any file, opens an issue, or mutates a
+    model (NFR-LEARN-003): a human refreshes the grounding only after the offline
+    gate passes **and** an explicit ``approved-to-apply``.
+    """
+    scored_for_agent = [
+        r
+        for r in scored_records
+        if r.get("agent") == agent and r.get("eval", {}).get("scored")
+    ]
+    selected = curator.select(
+        scored_for_agent,
+        random_rate=random_rate,
+        seed=seed,
+        low_score_threshold=low_score_threshold,
+    )
+    backlog = curator.to_backlog_items(selected, low_score_threshold=low_score_threshold)
+
+    gaps = extract_knowledge_gaps(backlog, grounding_sources)
+    knowledge_metrics = [gap["metric"] for gap in gaps]
+    source_ids = sorted({iid for gap in gaps for iid in gap["interactionIds"]})
+    refresh_actions = propose_refresh_actions(set(knowledge_metrics))
+
+    gate = harness.run_dataset(gate_dataset_path)
+
+    rationale = (
+        f"{len(source_ids)} interaction(s) across {len(knowledge_metrics)} "
+        f"knowledge metric(s) flagged uncited-claim gap(s) against "
+        f"{len(grounding_sources)} grounding source(s); offline gate "
+        f"{'passed' if gate['passed'] else 'FAILED'}. Advisory only - refreshing "
+        "the grounding requires the offline regression pass plus approved-to-apply."
+    )
+
+    return {
+        "agent": agent,
+        "knowledgeMetrics": knowledge_metrics,
+        "sourceInteractionIds": source_ids,
+        "groundingSources": list(grounding_sources),
+        "refreshActions": refresh_actions,
+        "gaps": gaps,
+        "offlineGatePassed": gate["passed"],
+        "advisory": True,
+        "applied": False,
+        "approvedToApply": False,
+        "rationale": rationale,
+    }
