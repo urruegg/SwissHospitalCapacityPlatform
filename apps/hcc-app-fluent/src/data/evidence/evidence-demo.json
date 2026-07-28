@@ -604,6 +604,17 @@
       },
       "status": "Accepted",
       "title": "BVA Agent — deterministic ROI/TCO computation as a typed tool, cost data product via the master-data pattern, peer to PO under the App orchestrator"
+    },
+    {
+      "decisionSummary": "Adopt **Path B: complete the OBO seam in code and configuration now; defer live provisioning to a future, separately-gated scope expansion.**",
+      "id": "ADR-0057",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0057-obo-seam-completion-defer-live-provisioning.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0057-obo-seam-completion-defer-live-provisioning.md"
+      },
+      "status": "Accepted",
+      "title": "OBO seam completion, defer live provisioning (#424 M5)"
     }
   ],
   "boms": [

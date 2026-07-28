@@ -32,6 +32,9 @@ param fabricDataAgentId string = ''
 @description('#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code.')
 param rlsProvider string = 'simulated'
 
+@description('#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity with M4). `true` requires a valid caller bearer on the golden read and exchanges it downstream. See ADR-0057. Config, not code.')
+param oboEnabled bool = false
+
 @description('Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope).')
 param redisHostName string = ''
 
@@ -98,6 +101,10 @@ var baseEnv = [
   {
     name: 'RLS_PROVIDER'
     value: rlsProvider
+  }
+  {
+    name: 'OBO_ENABLED'
+    value: oboEnabled ? 'true' : 'false'
   }
 ]
 

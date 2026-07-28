@@ -12,9 +12,10 @@ environment configuration.
 
 from __future__ import annotations
 
+import os
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable
 
 
 class TokenValidationError(Exception):
@@ -68,12 +69,56 @@ def validate_claims(
     )
 
 
-def acquire_obo_token(user_assertion: str, scope: str) -> str:
-    """On-behalf-of token exchange for downstream Fabric calls.
+def _default_obo_credential(
+    *, tenant_id: str, client_id: str, client_secret: str, user_assertion: str
+) -> Any:
+    """Build the live ``azure-identity`` on-behalf-of credential.
 
-    Placeholder for the live ``azure-identity`` OBO flow (wired at deploy time).
-    Raises in dev/CI so no code path silently assumes a real token.
+    Imported lazily so the module imports without the ``runtime`` extra (CI/dev).
+    Never returns a fabricated token — if ``azure-identity`` is absent the import
+    raises, which the caller surfaces as a clear error.
     """
-    raise NotImplementedError(
-        "OBO exchange requires the azure-identity runtime extra (deploy-time)."
+    from azure.identity import OnBehalfOfCredential
+
+    return OnBehalfOfCredential(
+        tenant_id=tenant_id,
+        client_id=client_id,
+        client_secret=client_secret,
+        user_assertion=user_assertion,
     )
+
+
+def acquire_obo_token(
+    user_assertion: str,
+    scope: str,
+    *,
+    credential_factory: Callable[..., Any] | None = None,
+) -> str:
+    """On-behalf-of token exchange for downstream Fabric/Foundry calls.
+
+    Exchanges the signed-in user's assertion for a token scoped to ``scope`` via
+    an ``OnBehalfOfCredential`` built from ``OBO_TENANT_ID`` / ``OBO_CLIENT_ID`` /
+    ``OBO_CLIENT_SECRET`` (no secret is hard-coded — copilot-instructions §4).
+    ``credential_factory`` is injected in tests so the flow is verified without a
+    live tenant. Deny-by-default: a missing assertion or missing config raises
+    rather than returning an unusable or fabricated token.
+    """
+    if not user_assertion:
+        raise TokenValidationError("OBO exchange requires a user assertion")
+
+    tenant_id = os.getenv("OBO_TENANT_ID", "")
+    client_id = os.getenv("OBO_CLIENT_ID", "")
+    client_secret = os.getenv("OBO_CLIENT_SECRET", "")
+    if not (tenant_id and client_id and client_secret):
+        raise TokenValidationError(
+            "OBO exchange requires OBO_TENANT_ID, OBO_CLIENT_ID and OBO_CLIENT_SECRET"
+        )
+
+    factory = credential_factory or _default_obo_credential
+    credential = factory(
+        tenant_id=tenant_id,
+        client_id=client_id,
+        client_secret=client_secret,
+        user_assertion=user_assertion,
+    )
+    return credential.get_token(scope).token

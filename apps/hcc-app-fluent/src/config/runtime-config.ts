@@ -21,6 +21,8 @@ export interface RuntimeEnv {
   GOLDEN_SOURCE_URL?: string;
   /** Feature gate for live Foundry threads (#424 M3): "true" enables. */
   FOUNDRY_THREADS_ENABLED?: string;
+  /** Agent-host OBO scope for MSAL bearer acquisition (#424 M5); empty = no bearer. */
+  AGENT_HOST_SCOPE?: string;
 }
 
 declare global {
@@ -74,4 +76,20 @@ export function getFoundryThreadsEnabled(): boolean {
     return runtime === 'true';
   }
   return (import.meta.env.VITE_FOUNDRY_THREADS_ENABLED ?? '') === 'true';
+}
+
+/**
+ * Resolve the agent-host OBO scope (#424 M5): runtime-injected value first
+ * (`window.__ENV__.AGENT_HOST_SCOPE`), then the build-time `VITE_AGENT_HOST_SCOPE`
+ * fallback, then empty. When empty (SIT default) the app attaches no bearer and
+ * stays byte-parity with M4 (simulated/native path). When set, identity-aware IQ
+ * calls acquire an MSAL token for this scope so the agent-host can perform the
+ * on-behalf-of exchange (ADR-0057). Config, not code.
+ */
+export function getAgentHostScope(): string {
+  const runtime = runtimeEnv().AGENT_HOST_SCOPE;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  return import.meta.env.VITE_AGENT_HOST_SCOPE ?? '';
 }

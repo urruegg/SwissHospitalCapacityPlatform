@@ -1,6 +1,6 @@
 import type { Provenance } from '../journey/RoleBoard';
 import type { ContextEnvelope } from '../context/context-envelope';
-import { getAgentHostUrl, getGoldenSourceUrl } from '../config/runtime-config';
+import { getAgentHostUrl, getGoldenSourceUrl, getAgentHostScope } from '../config/runtime-config';
 
 /**
  * Sprint 27 — IQ-layer data-access gateway (the single data ingress).
@@ -75,7 +75,7 @@ interface StructuredEnvelope<T> {
  * the caller degrades loudly to its fixture. Only call when `isGoldenSourceConfigured()`.
  */
 export async function iqStructuredRead<T>(path: string): Promise<{ payload: T; citations: string[] }> {
-  const res = await fetch(`${goldenSourceUrl()}${path}`);
+  const res = await fetch(`${goldenSourceUrl()}${path}`, { headers: { ...(await bearerHeader()) } });
   if (!res.ok) throw new Error(`IQ structured read failed: ${res.status}`);
   const body = (await res.json()) as StructuredEnvelope<T>;
   const payload = body.payload ?? (body as unknown as T);
@@ -95,6 +95,47 @@ function identityHeaders(env: ContextEnvelope): Record<string, string> {
   };
 }
 
+/**
+ * A bearer-token acquirer for a given scope. Returns the raw access token, or
+ * `null` when none can be obtained (no signed-in account / silent renewal fails).
+ */
+export type BearerAcquirer = (scope: string) => Promise<string | null>;
+
+/**
+ * Default acquirer: silently acquire an MSAL access token for `scope`. Lazily
+ * imports the MSAL provider so module load never constructs a browser client in
+ * tests / SSR — only reached when an agent-host scope is actually configured.
+ */
+const defaultBearerAcquirer: BearerAcquirer = async (scope) => {
+  try {
+    const { msalInstance } = await import('../auth/msal-provider');
+    const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
+    if (!account) return null;
+    const result = await msalInstance.acquireTokenSilent({ scopes: [scope], account });
+    return result.accessToken ?? null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Per-user OBO bearer header (#424 M5, ADR-0057). Deny-by-default posture: when
+ * no agent-host scope is configured (SIT default) this is a no-op — byte-parity
+ * with M4 (no bearer, simulated/native path). When a scope is configured, attach
+ * `Authorization: Bearer <token>` so the agent-host can perform the on-behalf-of
+ * exchange; if the token cannot be acquired, attach nothing (the server denies
+ * loudly when OBO is on rather than serving a wide read). `acquire` is injectable
+ * for tests.
+ */
+export async function bearerHeader(
+  acquire: BearerAcquirer = defaultBearerAcquirer,
+): Promise<Record<string, string>> {
+  const scope = getAgentHostScope();
+  if (!scope) return {};
+  const token = await acquire(scope);
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 /** A minted `(userOid x agent)` thread + where it is persisted (#424 M3). */
 export interface ThreadMint {
   threadId: string;
@@ -111,7 +152,7 @@ export interface ThreadMint {
 export async function iqMintThread(agent: string, env: ContextEnvelope): Promise<ThreadMint> {
   const res = await fetch(`${agentHostBaseUrl()}/agents/${encodeURIComponent(agent)}/threads`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', ...identityHeaders(env) },
+    headers: { 'content-type': 'application/json', ...identityHeaders(env), ...(await bearerHeader()) },
   });
   if (!res.ok) throw new Error(`thread mint failed: ${res.status}`);
   return (await res.json()) as ThreadMint;
@@ -133,6 +174,7 @@ export async function iqAgentChat<T>(
 ): Promise<T> {
   const headers: Record<string, string> = { 'content-type': 'application/json' };
   if (opts?.env) Object.assign(headers, identityHeaders(opts.env));
+  Object.assign(headers, await bearerHeader());
   const body: Record<string, unknown> = { prompt };
   if (opts?.threadId) body.threadId = opts.threadId;
   const res = await fetch(`${agentHostBaseUrl()}/agents/${encodeURIComponent(agent)}/chat`, {

@@ -31,6 +31,8 @@ from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from golden.rls import build_rls_provider
 from golden.service import GoldenScopeError, UnknownResourceError, load_golden
 from threads.provider import ThreadProviderError, build_thread_provider
+from auth.obo_context import build_obo_context
+from auth.token_validator import TokenValidationError
 from hitl.gate_enforcer import enforce_gates
 from observability import tracing
 
@@ -98,6 +100,7 @@ class HostState:
         # live client the adapter answers synthetically (no PHI, ADR-0016); a live
         # Fabric Data Agent client is injected here once the endpoint is provisioned.
         live = _build_live_data_agent()
+        self._live_data_agent = live
         adapter = FabricDataAgentAdapter(ask_fn=(live.ask if live is not None else None))
         self.orchestrator = Orchestrator(
             chat_model=MockChatModel(),
@@ -117,6 +120,20 @@ class HostState:
         # TMDL predicate, so it refuses the structured read until then. No OBO token
         # is available in the current MI flow, hence obo_token stays None.
         self.rls_provider = build_rls_provider(data_agent_client=live)
+
+    def rls_provider_for(self, obo_token: str | None):
+        """#424 M5 — the per-request RLS provider.
+
+        When an OBO context is present (``OBO_ENABLED`` + a valid bearer), build a
+        provider carrying the user's token so the read runs on-behalf-of the user
+        (config-selected via ``RLS_PROVIDER``). Otherwise reuse the startup
+        provider (SIT default: simulated). Config, not code (ADR-0057).
+        """
+        if not obo_token:
+            return self.rls_provider
+        return build_rls_provider(
+            data_agent_client=self._live_data_agent, obo_token=obo_token
+        )
 
     def require(self, name: str) -> AgentManifest:
         manifest = self.manifests.get(name)
@@ -199,6 +216,7 @@ def create_app() -> FastAPI:
         response: Response,
         hospital: str = "aggregated",
         window: int = 72,
+        authorization: str = Header(default=""),
         x_user_oid: str = Header(default=""),
         x_hospital_scope: str = Header(default=""),
         x_active_role: str = Header(default=""),
@@ -207,18 +225,28 @@ def create_app() -> FastAPI:
         # ContextEnvelope, propagated as headers by the app's IQ gateway; the
         # `hospital` query param is advisory and never widens the header scope.
         # #424 M4 — the row-scope decision is made by the RLS provider seam.
+        # #424 M5 — when OBO is enabled and a valid bearer is presented, the read
+        # runs on-behalf-of the user; otherwise it stays on the simulated provider
+        # (SIT default). Deny-by-default: an invalid bearer under OBO is a 401.
         state = get_state()
         try:
+            obo = build_obo_context(authorization)
+        except TokenValidationError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
+        try:
+            provider = state.rls_provider_for(obo.obo_token if obo else None)
             payload = load_golden(
                 resource,
                 hospital_scope=x_hospital_scope,
-                user_oid=x_user_oid,
-                provider=state.rls_provider,
+                user_oid=(obo.user_oid if obo else x_user_oid),
+                provider=provider,
             )
         except UnknownResourceError:
             raise HTTPException(status_code=404, detail=f"unknown golden resource '{resource}'")
         except GoldenScopeError as exc:
-            # Deny-by-default: an ungrounded read is refused, not served wide.
+            # Deny-by-default: an ungrounded read (or a provider that cannot yet
+            # enforce per-user scope, or a fabric provider misconfigured without a
+            # live client) is refused, not served wide.
             raise HTTPException(status_code=401, detail=str(exc))
         rls = payload.get("_rls", {})
         response.headers["X-Data-Provenance"] = "live"
