@@ -571,6 +571,17 @@
       },
       "status": "Proposed",
       "title": "DQA trust-score model, dimensions, and grounding-readiness thresholds"
+    },
+    {
+      "decisionSummary": "Adopt an explicit signal-channel lifecycle owned by the new `signal-agent`: **discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire**. The runtime `signal-triage-agent` remains a consumer of activated signals; it does not own discovery, onboarding, contract registration, ontology binding, or lifecycle governance.",
+      "id": "ADR-0054",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0054-signal-channel-lifecycle.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0054-signal-channel-lifecycle.md"
+      },
+      "status": "Proposed",
+      "title": "Signal Channel Lifecycle Governance"
     }
   ],
   "boms": [
@@ -3515,6 +3526,126 @@
       "title": "The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail."
     },
     {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Discover and rank referenced-vs-wired signal gaps into a Signal Gap Register, demand-driven by a `DC-DQ-GAP-v1` `newSourceNeeded` gap."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Classify a candidate channel by domain family, signal type, trust tier A/B/C, and data class PHI/staff-PII/non-PHI."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Select a connector adapter from the governed adapter catalogue."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Draft and register the channel data contract (`DC-REF-CERTIFICATION-v1` for the certification lane)."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Bind channel entities to the reference ontology (Credential/Competency/Qualification/IssuingAuthority) and maintain the crosswalk."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Run a sandbox Channel Readiness Scorecard (schema conformance, provenance, dedup) on a curated sample feed before activation."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-008",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Resolve credentials to competency codes and enrich the skills baseline by pseudonymised work-ID, feeding SBA skills-based assignment."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-009",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Manage the channel lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire) with provenance."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-010",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Gate channel activation and ontology change on a recorded human data-owner and compliance/DPO `approved-to-apply` approval; the agent remains advisory-only with no autonomous activation."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-011",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Record provenance and audit evidence for every onboarding decision and activation."
+    },
+    {
       "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
       "id": "FR-SKILL-001",
       "kind": "FR",
@@ -4533,6 +4664,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Onboarding identity and cross-tenant boundaries shall be explicit and auditable (Sprint 6)."
+    },
+    {
+      "family": "Signal Agent Governance (Sprint 32)",
+      "id": "NFR-SIG-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Signal-channel ingestion shall follow Zero-Trust, read-scoped ingestion: every external, MCP, or model value is treated as untrusted and re-validated at each boundary."
+    },
+    {
+      "family": "Signal Agent Governance (Sprint 32)",
+      "id": "NFR-SIG-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016)."
     },
     {
       "family": "Curavias Org Spine And Skills Evidence Governance (Sprint 23)",
