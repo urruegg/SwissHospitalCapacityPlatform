@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.43.8.12551",
-      "templateHash": "7585539027046446392"
+      "version": "0.45.6.27763",
+      "templateHash": "10404766073330631312"
     }
   },
   "parameters": {
@@ -51,17 +51,46 @@
         "description": "Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2)."
       }
     },
+    "fabricDataAgentEndpoint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "fabricWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "fabricDataAgentId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "rlsProvider": {
+      "type": "string",
+      "defaultValue": "simulated",
+      "metadata": {
+        "description": "#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
+      }
+    },
     "redisHostName": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Redis host name for the grounding cache (ADR-0007 §1)."
+        "description": "Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope)."
       }
     },
     "redisPort": {
       "type": "int",
       "defaultValue": 10000,
       "metadata": {
-        "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU)."
+        "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU). Ignored when redisHostName is empty."
       }
     },
     "targetPort": {
@@ -70,7 +99,33 @@
       "metadata": {
         "description": "Target port the agent-host container listens on."
       }
+    },
+    "containerRegistryLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId. When empty, the CA uses no `registries` block and relies on public/anonymous pull."
+      }
+    },
+    "containerRegistryResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
+      }
+    },
+    "caeInfrastructureSubnetResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that subnet — Container Apps traffic then reaches Cosmos DB via its private endpoint. Empty string keeps the CAE public (default). Setting this on an EXISTING CAE forces a destructive recreate; the child Container Apps get a new FQDN."
+      }
     }
+  },
+  "variables": {
+    "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+    "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+    "redisEnv": "[if(empty(parameters('redisHostName')), createArray(), createArray(createObject('name', 'REDIS_HOST', 'value', parameters('redisHostName')), createObject('name', 'REDIS_PORT', 'value', string(parameters('redisPort')))))]"
   },
   "resources": [
     {
@@ -86,8 +141,32 @@
             "customerId": "[parameters('logAnalyticsCustomerId')]",
             "sharedKey": "[parameters('logAnalyticsSharedKey')]"
           }
-        }
+        },
+        "vnetConfiguration": "[if(empty(parameters('caeInfrastructureSubnetResourceId')), null(), createObject('infrastructureSubnetId', parameters('caeInfrastructureSubnetResourceId'), 'internal', false()))]"
       }
+    },
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[format('id-ca-agent-host-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "condition": "[variables('useAcrMiPull')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+      "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 13 T5 — agent-host CA pulls image from ACR via user-assigned MI."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+      ]
     },
     {
       "type": "Microsoft.App/containerApps",
@@ -96,7 +175,10 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "identity": {
-        "type": "SystemAssigned"
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))]": {}
+        }
       },
       "properties": {
         "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]",
@@ -106,7 +188,8 @@
             "targetPort": "[parameters('targetPort')]",
             "transport": "auto",
             "allowInsecure": false
-          }
+          },
+          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))), createArray())]"
         },
         "template": {
           "containers": [
@@ -117,24 +200,7 @@
                 "cpu": "[json('0.5')]",
                 "memory": "1Gi"
               },
-              "env": [
-                {
-                  "name": "COSMOS_ENDPOINT",
-                  "value": "[parameters('cosmosEndpoint')]"
-                },
-                {
-                  "name": "REDIS_HOST",
-                  "value": "[parameters('redisHostName')]"
-                },
-                {
-                  "name": "REDIS_PORT",
-                  "value": "[string(parameters('redisPort'))]"
-                },
-                {
-                  "name": "AGENTS_ROOT",
-                  "value": "/app/agents"
-                }
-              ]
+              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider'))), variables('redisEnv'))]"
             }
           ],
           "scale": {
@@ -144,18 +210,32 @@
         }
       },
       "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/'))), 'Microsoft.Authorization/roleAssignments', guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId')))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]",
         "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
       ]
     }
   ],
   "outputs": {
+    "managedEnvironmentId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
+    },
     "fqdn": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01').configuration.ingress.fqdn]"
     },
     "principalId": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]"
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+    },
+    "identityResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+    },
+    "identityClientId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
     }
   }
 }

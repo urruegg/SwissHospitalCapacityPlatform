@@ -25,6 +25,9 @@ param fabricWorkspaceId string = ''
 @description('Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback.')
 param fabricDataAgentId string = ''
 
+@description('#424 M4 — RLS provider for the structured golden read (`simulated` default | `fabric-data-agent`). See the M4 design spec + #510. Config, not code.')
+param rlsProvider string = 'simulated'
+
 @description('Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable Entra-MI-based pull once real images land in ACR.')
 param containerRegistryLoginServer string = ''
 
@@ -99,6 +102,7 @@ module containerApp 'container-app.bicep' = {
     fabricDataAgentEndpoint: fabricDataAgentEndpoint
     fabricWorkspaceId: fabricWorkspaceId
     fabricDataAgentId: fabricDataAgentId
+    rlsProvider: rlsProvider
     redisHostName: enableRedisModule ? redis!.outputs.redisHostName : ''
     redisPort: enableRedisModule ? redis!.outputs.redisPort : 0
     containerRegistryLoginServer: containerRegistryLoginServer

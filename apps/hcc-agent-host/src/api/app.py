@@ -28,6 +28,7 @@ from manifests.loader import AgentManifest, load_agent_host_manifests
 from orchestrator.dispatch import Orchestrator
 from orchestrator.mock_model import MockChatModel
 from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
+from golden.rls import build_rls_provider
 from golden.service import GoldenScopeError, UnknownResourceError, load_golden
 from threads.provider import ThreadProviderError, build_thread_provider
 from hitl.gate_enforcer import enforce_gates
@@ -107,6 +108,15 @@ class HostState:
         # the same conversations container. Native by default (ADR-0013 scope);
         # THREAD_PROVIDER=foundry flips to real Foundry threads at M5 (OBO).
         self.thread_provider = build_thread_provider(self.orchestrator.persistence)
+        # #424 M4 — RLS provider seam for the structured golden read (capability
+        # ladder, see the M4 design spec). Rung 0 `SimulatedRlsProvider` is the SIT
+        # default (provenance `simulated`, honest demonstration of the RLS shape).
+        # Rung 1 `FabricDataAgentRlsProvider` reuses the *proven* live Data Agent
+        # client (`da_hospital_capacity`) — selected via RLS_PROVIDER=fabric-data-
+        # agent — but per-user structured scope still needs OBO (M5) + a dynamic-RLS
+        # TMDL predicate, so it refuses the structured read until then. No OBO token
+        # is available in the current MI flow, hence obo_token stays None.
+        self.rls_provider = build_rls_provider(data_agent_client=live)
 
     def require(self, name: str) -> AgentManifest:
         manifest = self.manifests.get(name)
@@ -196,17 +206,25 @@ def create_app() -> FastAPI:
         # #424 M2 — live golden-source read. The scope is the caller's proven
         # ContextEnvelope, propagated as headers by the app's IQ gateway; the
         # `hospital` query param is advisory and never widens the header scope.
+        # #424 M4 — the row-scope decision is made by the RLS provider seam.
+        state = get_state()
         try:
             payload = load_golden(
-                resource, hospital_scope=x_hospital_scope, user_oid=x_user_oid
+                resource,
+                hospital_scope=x_hospital_scope,
+                user_oid=x_user_oid,
+                provider=state.rls_provider,
             )
         except UnknownResourceError:
             raise HTTPException(status_code=404, detail=f"unknown golden resource '{resource}'")
         except GoldenScopeError as exc:
             # Deny-by-default: an ungrounded read is refused, not served wide.
             raise HTTPException(status_code=401, detail=str(exc))
+        rls = payload.get("_rls", {})
         response.headers["X-Data-Provenance"] = "live"
-        response.headers["X-Applied-Scope"] = x_hospital_scope
+        response.headers["X-Applied-Scope"] = rls.get("scope", x_hospital_scope)
+        response.headers["X-Rls-Provider"] = rls.get("provider", "simulated")
+        response.headers["X-Rls-Provenance"] = rls.get("provenance", "simulated")
         return payload
 
     @app.post("/agents/{name}/threads")
