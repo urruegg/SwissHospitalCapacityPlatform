@@ -18,7 +18,9 @@ item.
 
 from __future__ import annotations
 
+import copy
 import random
+from datetime import datetime, timezone
 from typing import Any
 
 Record = dict[str, Any]
@@ -32,6 +34,10 @@ MISREFUSAL = "misrefusal"
 RANDOM_SAMPLE = "random_sample"
 
 DEFAULT_LOW_SCORE_THRESHOLD = 0.5
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def _high_signal_reasons(record: Record, low_score_threshold: float) -> list[str]:
@@ -90,3 +96,29 @@ def select(
                 selected.append({"record": rec, "reasons": [RANDOM_SAMPLE]})
 
     return selected
+
+
+def to_dataset_rows(selected: list[Selection]) -> list[Record]:
+    """Turn selections into candidate versioned-dataset rows with lineage.
+
+    Each row is a deep copy of the source interaction with its ``eval`` reset to
+    ``{"scored": false}``, a ``curation`` lineage block added (source id, reasons,
+    timestamp, ``signedOff: false``, ``reviewer: null``), and an ``expected`` block
+    preserved (or an empty dict for a reviewer to fill). The source record is not
+    mutated. Rows are advisory until a human sets ``signedOff`` and commits them.
+    """
+    rows: list[Record] = []
+    for sel in selected:
+        record = sel["record"]
+        row = copy.deepcopy(record)
+        row["eval"] = {"scored": False}
+        row.setdefault("expected", {})
+        row["curation"] = {
+            "sourceInteractionId": record.get("interactionId"),
+            "reasons": list(sel["reasons"]),
+            "curatedAt": _now_iso(),
+            "signedOff": False,
+            "reviewer": None,
+        }
+        rows.append(row)
+    return rows
