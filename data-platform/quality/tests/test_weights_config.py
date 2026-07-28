@@ -48,5 +48,39 @@ class TestLoadProfile(unittest.TestCase):
         self.assertEqual(config_model_version(), MODEL_VERSION)
 
 
+class TestLoadThresholds(unittest.TestCase):
+    def test_default_thresholds_shape_and_values(self):
+        thr = load_thresholds("default")
+        self.assertEqual(thr["overall"], 0.80)
+        self.assertEqual(thr["gating"]["completeness"], 0.80)
+        self.assertEqual(thr["gating"]["provenance"], 0.80)
+        self.assertEqual(thr["gating"]["ontology_mapping"], 0.80)
+
+    def test_crisis_thresholds_are_stricter_on_timeliness(self):
+        thr = load_thresholds("crisis")
+        self.assertEqual(thr["overall"], 0.85)
+        self.assertEqual(thr["gating"]["timeliness"], 0.90)
+
+    def test_planning_thresholds(self):
+        thr = load_thresholds("planning")
+        self.assertEqual(thr["overall"], 0.80)
+        self.assertEqual(thr["gating"]["consistency"], 0.80)
+
+    def test_none_and_unknown_class_fall_back_to_default(self):
+        self.assertEqual(load_thresholds(None), load_thresholds("default"))
+        self.assertEqual(load_thresholds("no-such-class"), load_thresholds("default"))
+
+    def test_gating_dimensions_are_known_dimensions(self):
+        for cls in ("default", "crisis", "planning"):
+            for dim in load_thresholds(cls)["gating"]:
+                self.assertIn(dim, DIMENSIONS)
+
+    def test_thresholds_are_unit_interval(self):
+        for cls in ("default", "crisis", "planning"):
+            thr = load_thresholds(cls)
+            self.assertTrue(0.0 <= thr["overall"] <= 1.0)
+            self.assertTrue(all(0.0 <= v <= 1.0 for v in thr["gating"].values()))
+
+
 if __name__ == "__main__":
     unittest.main()
