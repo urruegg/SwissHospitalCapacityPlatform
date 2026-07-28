@@ -61,3 +61,15 @@ def test_backlog_is_deterministically_ordered():
     a = curator.to_backlog_items(curator.select(recs, random_rate=0.0, seed=1))
     b = curator.to_backlog_items(curator.select(recs, random_rate=0.0, seed=1))
     assert [(i["agent"], i["metric"]) for i in a] == [(i["agent"], i["metric"]) for i in b]
+
+
+def test_backlog_threshold_agrees_with_selection_threshold():
+    # Evaluator passed=True but scores 0.6 -> only a "low_score" under a 0.7 threshold.
+    rec = _scored("AIX-soft", scores={
+        "citation_coverage": {"score": 0.6, "passed": True, "detail": ""},
+    })
+    selected = curator.select([rec], random_rate=0.0, seed=1, low_score_threshold=0.7)
+    assert selected and "low_score" in selected[0]["reasons"]
+    # The backlog must honour the same threshold, not the module default (0.5).
+    items = curator.to_backlog_items(selected, low_score_threshold=0.7)
+    assert any(it["metric"] == "citation_coverage" for it in items)

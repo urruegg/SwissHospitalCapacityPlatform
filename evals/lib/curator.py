@@ -131,17 +131,20 @@ _REASON_METRICS = {
 }
 
 
-def _failing_metrics(record: Record, reasons: list[str]) -> set[str]:
+def _failing_metrics(
+    record: Record, reasons: list[str], low_score_threshold: float
+) -> set[str]:
     """Metrics a selection should file a backlog finding against.
 
     Derived from concrete signals only: evaluators that failed or scored below
-    threshold, plus synthetic metrics for thumbs-down and mis-refusal. A pure
-    random sample contributes no metric (it feeds the dataset, not the backlog).
+    ``low_score_threshold``, plus synthetic metrics for thumbs-down and
+    mis-refusal. A pure random sample contributes no metric (it feeds the
+    dataset, not the backlog).
     """
     metrics: set[str] = set()
     scores = record.get("eval", {}).get("scores", {})
     for name, verdict in scores.items():
-        if verdict.get("passed") is False or verdict.get("score", 1.0) < DEFAULT_LOW_SCORE_THRESHOLD:
+        if verdict.get("passed") is False or verdict.get("score", 1.0) < low_score_threshold:
             metrics.add(name)
     for reason in reasons:
         if reason in _REASON_METRICS:
@@ -149,20 +152,25 @@ def _failing_metrics(record: Record, reasons: list[str]) -> set[str]:
     return metrics
 
 
-def to_backlog_items(selected: list[Selection]) -> list[dict[str, Any]]:
+def to_backlog_items(
+    selected: list[Selection],
+    *,
+    low_score_threshold: float = DEFAULT_LOW_SCORE_THRESHOLD,
+) -> list[dict[str, Any]]:
     """Group selections into advisory GitHub-issue drafts by agent + failing metric.
 
     Advisory-only (NFR-LEARN-002): returns drafts; it never opens an issue. Each
     draft is PHI-safe (NFR-LEARN-001) — it carries the agent, the failing metric,
     a count, and the source interaction ids, never raw prompt or answer text.
-    Deterministically ordered by (agent, metric).
+    Deterministically ordered by (agent, metric). ``low_score_threshold`` must
+    match the value passed to :func:`select` so selection and backlog agree.
     """
     groups: dict[tuple[str, str], list[str]] = {}
     for sel in selected:
         record = sel["record"]
         agent = record.get("agent", "unknown")
         iid = record.get("interactionId")
-        for metric in _failing_metrics(record, sel["reasons"]):
+        for metric in _failing_metrics(record, sel["reasons"], low_score_threshold):
             groups.setdefault((agent, metric), []).append(iid)
 
     items: list[dict[str, Any]] = []

@@ -53,7 +53,7 @@ def run_curation(
         "considered": len(scored),
         "selected": len(selected),
         "datasetRows": curator.to_dataset_rows(selected),
-        "backlog": curator.to_backlog_items(selected),
+        "backlog": curator.to_backlog_items(selected, low_score_threshold=low_score_threshold),
         "byReason": by_reason,
     }
 
