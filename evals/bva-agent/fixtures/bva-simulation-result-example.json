@@ -1,0 +1,21 @@
+{
+  "scenarioId": "sim-hopital-fribourg-2026w30",
+  "currency": "CHF",
+  "asOf": "2026-07-28T00:00:00Z",
+  "baseline": { "totalCostChf": 442000.0, "oneTimeChf": 1300000.0, "annualRunChf": 1250000.0, "hospitals": 3 },
+  "projection": { "hospitalName": "Hopital de Fribourg", "archetype": "acute", "onboardingOneTimeChf": 210000.0, "annualRunDeltaChf": 180000.0, "annualBenefitChf": 640000.0 },
+  "metrics": { "roiPct": 34.2, "paybackMonths": 17.5, "tco3yChf": 750000.0, "npvChf": 512000.0 },
+  "sensitivity": { "low": 18.0, "base": 34.2, "high": 51.0 },
+  "chunks": [
+    {
+      "classId": "C",
+      "text": "3-year TCO for onboarding Hopital de Fribourg is CHF 750,000 with a 34.2% ROI and 17.5-month payback.",
+      "citation": { "sourceRef": "sm_bva:bva_baseline_kpi@2026-07-28; input:onboarding-scope", "anchor": "bva.simulate" },
+      "asOf": "2026-07-28T00:00:00Z",
+      "liveness": "live",
+      "status": "requires-validation",
+      "confidence": 0.72,
+      "language": "en"
+    }
+  ]
+}
