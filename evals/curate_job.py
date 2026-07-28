@@ -6,7 +6,7 @@ job uses (:mod:`lib.online_store`), applies the curator selection policy, and
 returns an advisory summary: candidate versioned-dataset rows (with lineage) and
 a GitHub-issue backlog grouped by agent + failing metric.
 
-Advisory-only (NFR-LEARN-002): this job **emits drafts**. It never writes a
+Advisory-only (NFR-LEARN-003): this job **emits drafts**. It never writes a
 dataset file, opens an issue, or mutates any agent asset. A human reviews the
 returned rows / backlog, signs off, and applies changes gated by the offline
 regression suite + ``approved-to-apply``.
