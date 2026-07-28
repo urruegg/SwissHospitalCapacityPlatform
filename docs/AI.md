@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.9.0 |
+| **Version** | 0.10.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.8.0 (added Sprint 30 M3 §Evaluation Offline Evaluation Gate — shared evaluator library + ooa-agent regression gate) |
+| **Previous Version** | 0.9.0 (added Sprint 30 M1 §Evaluation Agent-Turn Observability — OTel-shaped retrieve/model/assemble spans + PHI-safe AgentTurn customEvent + Azure Monitor exporter seam) |
 
 ## Purpose
 
@@ -199,6 +199,38 @@ than a free-form sentence.
    runs in-VNet, never from CI.
 
 ## Evaluation
+
+### Agent-Turn Observability (Sprint 30 M1)
+
+The Observe stage of the closed-loop foundation. Every orchestrator dispatch
+emits an OpenTelemetry-shaped trace — a root `agent.turn` span with three child
+spans (`agent.retrieve` -> `agent.model` -> `agent.assemble`) — plus one
+`AgentTurn` Application Insights `customEvents` record per turn. The tracing
+facade (`apps/hcc-agent-host/src/observability/tracing.py`) buffers spans/events
+in memory behind a pluggable exporter: the dependency-free `NullExporter` is the
+default (so unit tests and CI need no OpenTelemetry / Azure SDK and no network),
+and a lazy `AzureMonitorExporter` is wired at startup only when
+`APPLICATIONINSIGHTS_CONNECTION_STRING` is set. This mirrors the "mock in CI,
+real in prod" pattern used for the chat model and Cosmos persistence.
+
+The `AgentTurn` event carries **only** non-PHI metadata (`NFR-LEARN-001`,
+[ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md)) — never raw prompt or answer
+text:
+
+| Field | Kind | Example |
+|-------|------|---------|
+| `agent` | property | `ooa-agent` |
+| `interactionId` | property | `AIX-<hex>` (joins the `agent_interactions` record) |
+| `correlationId` | property | 16-hex dispatch correlation id |
+| `refused` | property | `true` / `false` |
+| `degraded` | property | grounding degraded to tables |
+| `provenance` | property | `live` / `simulated` |
+| `latencyMs` | measurement | end-to-end turn latency |
+| `citationCount` | measurement | number of cited sources |
+
+A PHI-safety regression test asserts no raw prompt/answer text ever reaches a
+span attribute or event property. The data-agent refusal path emits the event
+with `refused=true` and **no** `agent.model` span (the model is not consulted).
 
 ### Online SLO Metrics
 

@@ -24,6 +24,8 @@ from cache.redis_client import RedisCache
 from persistence.cosmos_client import CosmosPersistence
 from orchestrator.redaction import redact, contains_sensitive
 from orchestrator.interaction_record import build_interaction_record
+from observability import tracing
+from observability.tracing import TraceRecorder
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +53,7 @@ class Orchestrator:
     data_agent: FabricDataAgentAdapter | None = None
     cache: RedisCache = field(default_factory=RedisCache)
     persistence: CosmosPersistence = field(default_factory=CosmosPersistence)
+    tracer: TraceRecorder = field(default_factory=tracing.get_recorder)
 
     def _grounding(self, manifest: AgentManifest) -> tuple[list[dict[str, Any]], list[str]]:
         rows: list[dict[str, Any]] = []
@@ -66,16 +69,18 @@ class Orchestrator:
 
     def _primary_grounding(
         self, manifest: AgentManifest, user_prompt: str
-    ) -> tuple[list[dict[str, Any]], list[str], str | None, bool]:
-        """Return (grounding_rows, citations, refusal_answer, degraded).
+    ) -> tuple[list[dict[str, Any]], list[str], str | None, bool, str]:
+        """Return (grounding_rows, citations, refusal_answer, degraded, mode).
 
-        Uses the Fabric Data Agent when the manifest binds one and an adapter is
-        available. On adapter failure, degrades LOUDLY to table grounding.
+        ``mode`` is the grounding source actually used (``"agent"`` or
+        ``"table"``). Uses the Fabric Data Agent when the manifest binds one and
+        an adapter is available. On adapter failure, degrades LOUDLY to table
+        grounding.
         """
         binding = manifest.grounding_agent
         if binding is None or self.data_agent is None or binding.precedence != "primary":
             rows, citations = self._grounding(manifest)
-            return rows, citations, None, False
+            return rows, citations, None, False, "table"
         try:
             result = self.data_agent.ask(user_prompt)
         except Exception:
@@ -83,11 +88,11 @@ class Orchestrator:
                 "Fabric Data Agent grounding failed; degrading to table grounding"
             )
             rows, citations = self._grounding(manifest)
-            return rows, citations, None, True
+            return rows, citations, None, True, "table"
         if result.get("refused"):
-            return [], list(result.get("citations", [])), result["answer"], False
+            return [], list(result.get("citations", [])), result["answer"], False, "agent"
         rows = [{"dataAgentAnswer": result["answer"]}]
-        return rows, list(result.get("citations", [])), None, False
+        return rows, list(result.get("citations", [])), None, False, "agent"
 
     def dispatch(
         self,
@@ -103,92 +108,143 @@ class Orchestrator:
             f"{manifest.agent}:{conversation_id}:{time.time_ns()}".encode()
         ).hexdigest()[:16]
 
-        grounding, citations, refusal_answer, degraded = self._primary_grounding(
-            manifest, user_prompt
-        )
+        with self.tracer.span("agent.turn", agent=manifest.agent) as root:
+            with self.tracer.span("agent.retrieve", agent=manifest.agent) as rspan:
+                grounding, citations, refusal_answer, degraded, mode = self._primary_grounding(
+                    manifest, user_prompt
+                )
+                rspan.set_attribute("grounding.mode", mode)
+                rspan.set_attribute("grounding.degraded", degraded)
+                rspan.set_attribute("citationCount", len(citations))
 
-        if refusal_answer is not None:
-            # Data Agent refusal propagates verbatim; the model is not consulted.
-            self.persistence.write(
-                "conversations",
-                {
-                    "conversationId": conversation_id,
-                    "agent": manifest.agent,
-                    "userPrompt": redact(user_prompt),
-                    "answer": refusal_answer,
-                    "citations": citations,
-                    "correlationId": correlation_id,
-                },
-            )
-            self.persistence.write(
-                "audit",
-                {
-                    "correlationId": correlation_id,
-                    "agent": manifest.agent,
-                    "callerObjectId": caller_oid,
-                    "event": "agent_dispatch",
-                    "refused": True,
-                    "timestampUtc": time.time(),
-                },
-            )
-            interaction_id = self._capture(
-                agent=manifest.agent, caller_oid=caller_oid, prompt=user_prompt,
-                answer=refusal_answer, citations=citations, refused=True,
-                degraded=False, started=started,
+            if refusal_answer is not None:
+                # Data Agent refusal propagates verbatim; the model is not consulted.
+                with self.tracer.span("agent.assemble", agent=manifest.agent, refused=True):
+                    self.persistence.write(
+                        "conversations",
+                        {
+                            "conversationId": conversation_id,
+                            "agent": manifest.agent,
+                            "userPrompt": redact(user_prompt),
+                            "answer": refusal_answer,
+                            "citations": citations,
+                            "correlationId": correlation_id,
+                        },
+                    )
+                    self.persistence.write(
+                        "audit",
+                        {
+                            "correlationId": correlation_id,
+                            "agent": manifest.agent,
+                            "callerObjectId": caller_oid,
+                            "event": "agent_dispatch",
+                            "refused": True,
+                            "timestampUtc": time.time(),
+                        },
+                    )
+                    interaction_id = self._capture(
+                        agent=manifest.agent, caller_oid=caller_oid, prompt=user_prompt,
+                        answer=refusal_answer, citations=citations, refused=True,
+                        degraded=False, started=started,
+                    )
+                root.set_attribute("refused", True)
+                self._emit_turn_event(
+                    agent=manifest.agent, interaction_id=interaction_id,
+                    correlation_id=correlation_id, refused=True, degraded=False,
+                    provenance="live", citations=citations, started=started,
+                )
+                return GroundedReply(
+                    answer=refusal_answer,
+                    citations=tuple(citations),
+                    refused=True,
+                    correlation_id=correlation_id,
+                    interaction_id=interaction_id,
+                )
+
+            with self.tracer.span(
+                "agent.model", agent=manifest.agent, model=type(self.chat_model).__name__
+            ):
+                raw_answer = self.chat_model.complete(system_prompt, user_prompt, grounding)
+            if degraded:
+                raw_answer = (
+                    "[grounding degraded: Fabric Data Agent unavailable, answered from "
+                    "table grounding] " + raw_answer
+                )
+            # Defence-in-depth: refuse if the model leaked a secret/PHI token.
+            refused = contains_sensitive(raw_answer)
+            answer = redact(raw_answer)
+
+            with self.tracer.span("agent.assemble", agent=manifest.agent, refused=refused):
+                # Persist conversation turn + audit event (ADR-0007 §2).
+                self.persistence.write(
+                    "conversations",
+                    {
+                        "conversationId": conversation_id,
+                        "agent": manifest.agent,
+                        "userPrompt": redact(user_prompt),
+                        "answer": answer,
+                        "citations": citations,
+                        "correlationId": correlation_id,
+                    },
+                )
+                self.persistence.write(
+                    "audit",
+                    {
+                        "correlationId": correlation_id,
+                        "agent": manifest.agent,
+                        "callerObjectId": caller_oid,
+                        "event": "agent_dispatch",
+                        "refused": refused,
+                        "timestampUtc": time.time(),
+                    },
+                )
+                interaction_id = self._capture(
+                    agent=manifest.agent, caller_oid=caller_oid, prompt=user_prompt,
+                    answer=answer, citations=citations, refused=refused,
+                    degraded=degraded, started=started,
+                )
+            root.set_attribute("refused", refused)
+            self._emit_turn_event(
+                agent=manifest.agent, interaction_id=interaction_id,
+                correlation_id=correlation_id, refused=refused, degraded=degraded,
+                provenance="live" if not degraded else "simulated",
+                citations=citations, started=started,
             )
             return GroundedReply(
-                answer=refusal_answer,
+                answer=answer,
                 citations=tuple(citations),
-                refused=True,
+                refused=refused,
                 correlation_id=correlation_id,
                 interaction_id=interaction_id,
             )
 
-        raw_answer = self.chat_model.complete(system_prompt, user_prompt, grounding)
-        if degraded:
-            raw_answer = (
-                "[grounding degraded: Fabric Data Agent unavailable, answered from "
-                "table grounding] " + raw_answer
-            )
-        # Defence-in-depth: refuse if the model leaked a secret/PHI token.
-        refused = contains_sensitive(raw_answer)
-        answer = redact(raw_answer)
-
-        # Persist conversation turn + audit event (ADR-0007 §2).
-        self.persistence.write(
-            "conversations",
-            {
-                "conversationId": conversation_id,
-                "agent": manifest.agent,
-                "userPrompt": redact(user_prompt),
-                "answer": answer,
-                "citations": citations,
+    def _emit_turn_event(
+        self,
+        *,
+        agent: str,
+        interaction_id: str,
+        correlation_id: str,
+        refused: bool,
+        degraded: bool,
+        provenance: str,
+        citations: list[str],
+        started: float,
+    ) -> None:
+        """Emit one PHI-free ``AgentTurn`` customEvent (ids / counts / flags only)."""
+        self.tracer.emit_event(
+            "AgentTurn",
+            properties={
+                "agent": agent,
+                "interactionId": interaction_id,
                 "correlationId": correlation_id,
+                "refused": "true" if refused else "false",
+                "degraded": "true" if degraded else "false",
+                "provenance": provenance,
             },
-        )
-        self.persistence.write(
-            "audit",
-            {
-                "correlationId": correlation_id,
-                "agent": manifest.agent,
-                "callerObjectId": caller_oid,
-                "event": "agent_dispatch",
-                "refused": refused,
-                "timestampUtc": time.time(),
+            measurements={
+                "latencyMs": (time.perf_counter() - started) * 1000,
+                "citationCount": float(len(citations)),
             },
-        )
-
-        interaction_id = self._capture(
-            agent=manifest.agent, caller_oid=caller_oid, prompt=user_prompt,
-            answer=answer, citations=citations, refused=refused,
-            degraded=degraded, started=started,
-        )
-        return GroundedReply(
-            answer=answer,
-            citations=tuple(citations),
-            refused=refused,
-            correlation_id=correlation_id,
-            interaction_id=interaction_id,
         )
 
     def _capture(
