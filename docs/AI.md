@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.8.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 0.9.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.7.0 (added Sprint 26 Prescriptive Decision Vocabulary — DC-INSIGHT-v1, deterministic impact, advisory/HITL) |
+| **Previous Version** | 0.8.0 (added Sprint 30 M3 §Evaluation Offline Evaluation Gate — shared evaluator library + ooa-agent regression gate) |
 
 ## Purpose
 
@@ -213,6 +213,27 @@ than a free-form sentence.
 - Hallucination and unsupported-claim rate from sampled reviews.
 - Actionability score for operations users.
 - Refusal correctness for restricted request categories.
+
+### Offline Evaluation Gate (Sprint 30 M3)
+
+A shared, agent-agnostic **evaluator library** (`evals/lib/`) defines each metric
+once so it is reused by the offline batch gate (this milestone) and the future
+online continuous-eval sampler (M4). Six deterministic seed evaluators score
+`DC-AGENT-INTERACTION-v1` records: citation coverage, groundedness (cited sources
+are real), refusal correctness, PHI-leak, actionability (reco carries a lever +
+deterministic impact), and advisory-voice. All are deterministic and require no
+model access, so the gate runs in CI; LLM-as-judge groundedness is a later
+hardening pass.
+
+The offline harness (`evals/lib/harness.py`) runs the library over a versioned
+golden dataset (`evals/<agent>/datasets/vN/`) and applies the regression gate —
+citation coverage >= 0.95 and zero failures on the other five evaluators. The
+lead agent's suite (`evals/ooa-agent/`) is enforced in CI by
+[`eval-offline-gate.yml`](../.github/workflows/eval-offline-gate.yml) on every
+change to the evaluator library, the golden dataset, the interaction contract, or
+the `ooa-agent` prompt/manifest surface. No prompt / knowledge / model change is
+promoted without an offline regression pass plus `approved-to-apply`
+(`NFR-LEARN-003`). Rolls out to the other runtime agents in Sprint 31.
 
 ### Load Validation Plan
 
