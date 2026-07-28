@@ -202,7 +202,7 @@ than a free-form sentence.
 
 The closed-loop learning approach below — capture contract, retention class, and
 online-eval sampling — is ratified in
-[ADR-0055](../adr/0055-closed-loop-learning-capture-and-eval.md) (Sprint 30).
+[ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md) (Sprint 30).
 
 ### Agent-Turn Observability (Sprint 30 M1)
 
