@@ -4340,6 +4340,54 @@
       "title": "Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver."
     },
     {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Main solution documentation shall be Curavias-anchored and terminology-consistent with `docs/GLOSSARY.md` (Fabric IQ / Foundry IQ / Work IQ / Frontier Firm used correctly)."
+    },
+    {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Each in-scope main doc shall be customer-ready: a Curavias-anchored title, the one-line product-anchor blockquote, an executive summary, and plain professional wording."
+    },
+    {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Canonical mermaid diagrams from `docs/architecture/diagram-library.md` shall be embedded in the documents the library assigns them to, and copies kept in sync from that source."
+    },
+    {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Every documentation edit shall pass the mojibake + markdownlint gates and carry a §9 SemVer version bump."
+    },
+    {
       "family": "Data Quality And Integrity",
       "id": "NFR-DQ-001",
       "kind": "NFR",

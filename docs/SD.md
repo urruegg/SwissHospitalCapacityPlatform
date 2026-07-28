@@ -1,17 +1,29 @@
-# SD
+# Curavias — Solution Design
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.4.0 |
-| **Date** | 2026-07-02 |
+| **Version** | 1.5.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.3.0 (renamed solution short name chhealthpf -> ihzhhpf for tenant migration per D3) |
+| **Previous Version** | 1.4.0 (Sprint 34 WS-3: Curavias anchor + product-anchor line + executive summary) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document translates the Curavias requirements and architecture decisions
+into an implementable MVP solution shape across the data, AI, application,
+integration, security, and operations lanes. It is the bridge from what the
+platform must do (PRD) and how it is structured (ARCHITECTURE) to how the MVP is
+built and delivered.
 
 ## Purpose
 
-This document defines the MVP Solution Design baseline for the Swiss
-Hospital Capacity Platform.
+This document defines the MVP Solution Design baseline for Curavias, the Swiss
+AI-powered patient-flow and hospital-capacity platform.
 
 It translates requirements and architecture decisions into an implementable
 solution shape across data, AI, app, integration, security, and operations.
