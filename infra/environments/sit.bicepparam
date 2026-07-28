@@ -183,7 +183,14 @@ param enableCsaCosmosModule = true
 // main). dadd7ce is a superset of f596cf2 (all prior agent-host code incl. the M2
 // golden service + M5 Fabric Data Agent client). Deploy approval-gated per AGENTS.md
 // §4 (approved-to-apply by @urruegg 2026-07-28).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:dadd7ce'
+// Bumped dadd7ce -> 583f633 to ship #424 M4: the agent-host RlsProvider seam
+// (evidence-grounded capability ladder — SimulatedRlsProvider default +
+// FabricDataAgentRlsProvider Rung 1) + the new /golden/network resource + _rls
+// block + X-Rls-* headers (PR #512 merge to main). 583f633 is a superset of
+// dadd7ce. SIT keeps the default RLS_PROVIDER=simulated (agentHostRlsProvider
+// param default). Deploy approval-gated per AGENTS.md §4 (approved-to-apply by
+// @urruegg 2026-07-28).
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:583f633'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
