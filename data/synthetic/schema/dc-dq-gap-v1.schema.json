@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dc-dq-gap-v1.schema.json",
+  "title": "Data-Quality Gap Contract (DC-DQ-GAP-v1)",
+  "description": "Sprint 31 Data Quality Agent (DQA) contract for a single data-quality gap finding on the gold/serving layer, and the FROZEN seam between Sprint 31 (DQA) and Sprint 32 (Signal Agent, SGA). One record is one below-threshold dimension for one domain: the impacted KPIs/agents, a deterministic impact score in [0,1], a recommended fill source, the accountable owner (advisory / HITL — the owner remediates, DQA never edits source data), the remediation status, and the newSourceNeeded flag. SGA's channel-intake lifecycle is triggered ONLY by a DC-DQ-GAP-v1 record with newSourceNeeded=true; it never onboards a channel no gap demanded (design spec Sec 8, docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md). Emitted by data-platform/quality/gap_assessment.py; deterministic, no PHI. See docs/adr/0053-dqa-trust-score-model.md.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["contractId", "gapId", "domain", "dimension", "impactScore", "newSourceNeeded", "owner", "status"],
+  "properties": {
+    "contractId": {
+      "const": "DC-DQ-GAP-v1",
+      "description": "Contract discriminator."
+    },
+    "gapId": {
+      "type": "string",
+      "pattern": "^GAP-[0-9a-f]+$",
+      "description": "Stable, deterministic gap identifier derived from domain + dimension."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The gold/serving domain the gap was found in, e.g. staffing.skills."
+    },
+    "detected": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the gap was detected."
+    },
+    "dimension": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The trust dimension that fell below threshold, e.g. completeness."
+    },
+    "impactedKpi": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "KPIs degraded by this gap, e.g. skills-based-assignment, forecast-accuracy."
+    },
+    "impactedAgents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Platform agents whose decisions this gap degrades, e.g. sba-agent."
+    },
+    "impactScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Deterministic impact magnitude in [0,1] — the normalised shortfall vs the threshold."
+    },
+    "recommendedSource": {
+      "type": "object",
+      "description": "Recommended fill source for the gap, e.g. { kind: certification-register, example: NAREG / FMH }."
+    },
+    "newSourceNeeded": {
+      "type": "boolean",
+      "description": "The frozen SGA seam flag: true means a new signal channel must be onboarded (Sprint 32 SGA intake trigger)."
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The accountable data owner the gap is routed to (advisory / HITL), e.g. data-owner:staffing."
+    },
+    "effort": {
+      "type": "string",
+      "enum": ["S", "M", "L"],
+      "description": "Rough remediation effort estimate."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "routed", "closed"],
+      "description": "Remediation lifecycle status."
+    }
+  }
+}

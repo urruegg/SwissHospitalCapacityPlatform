@@ -560,6 +560,17 @@
       },
       "status": "Accepted",
       "title": "App context envelope + per-agent threads + simulated per-user RLS"
+    },
+    {
+      "decisionSummary": "1. **Eight-dimension trust model.** A domain's Trust Score is a weighted aggregate of eight dimensions, each scored in `[0,1]`: `completeness`, `timeliness`, `validity`, `uniqueness`, `consistency`, `lineage_integrity`, `provenance`, `ontology_mapping`. These are frozen as the canonical `DIMENSIONS` tuple in `data-platform/quality/trust_score.py`.",
+      "id": "ADR-0053",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0053-dqa-trust-score-model.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0053-dqa-trust-score-model.md"
+      },
+      "status": "Proposed",
+      "title": "DQA trust-score model, dimensions, and grounding-readiness thresholds"
     }
   ],
   "boms": [
@@ -2616,6 +2627,102 @@
       "title": "Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%)."
     },
     {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Continuously assess gold/serving domains across completeness, timeliness, validity, uniqueness, consistency, and lineage-integrity."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Detect data gaps and quantify each gap's impact on the KPIs and agents that depend on the affected domain."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Publish a per-domain **Trust Score** that is deterministic, versioned, and explainable (never an LLM estimate), emitted as `DC-DQ-TRUSTSCORE-v1`."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Route each gap to the accountable data owner (advisory / HITL) as a `DC-DQ-GAP-v1` finding; the owner remediates."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Re-assess a domain after remediation and report the trust-score delta, closing the gap on the record."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Advise **degraded-mode** for a below-threshold domain rather than silently serving low-trust data."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-010",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Persist every assessment, gap, and remediation as an auditable GitHub-native artefact (HITL + audit)."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-012",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Certify a domain **grounding-ready** only when its trust score and gating dimensions clear the ADR-ratified threshold; certification is GA-gated (Fabric IQ first, Foundry IQ behind the same gate)."
+    },
+    {
       "family": "Trusted External Signals (Sprint 21)",
       "id": "FR-EXT-001",
       "kind": "FR",
@@ -3958,6 +4065,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Specialty metadata shall include quality checks and controlled versioning (Sprint 6)."
+    },
+    {
+      "family": "Data Quality Agent Governance (Sprint 31)",
+      "id": "NFR-DQA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The Trust Score shall be **reproducible**: the same dimension inputs always produce the same score, with the model version recorded on every record."
+    },
+    {
+      "family": "Data Quality Agent Governance (Sprint 31)",
+      "id": "NFR-DQA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The agent shall operate **read-only under Zero-Trust**: it never edits source data, and treats every value returned by a tool or model as untrusted."
     },
     {
       "family": "Trusted External Signals Governance (Sprint 21)",
