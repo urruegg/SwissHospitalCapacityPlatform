@@ -178,7 +178,12 @@ param enableCsaCosmosModule = true
 // superset of b796961 (all prior agent-host code incl. the M5 Fabric Data Agent
 // client + the new golden service). Deploy approval-gated per AGENTS.md §4
 // (approved-to-apply by @urruegg 2026-07-28T10:47+02:00).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:f596cf2'
+// Bumped f596cf2 -> dadd7ce to ship #424 M3: the agent-host ThreadProvider seam +
+// POST /agents/{name}/threads mint endpoint + thread-scoped /chat (PR #495 merge to
+// main). dadd7ce is a superset of f596cf2 (all prior agent-host code incl. the M2
+// golden service + M5 Fabric Data Agent client). Deploy approval-gated per AGENTS.md
+// §4 (approved-to-apply by @urruegg 2026-07-28).
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:dadd7ce'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
@@ -227,7 +232,12 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 // fix). Deploy approval-gated per AGENTS.md §4 (approved-to-apply by @urruegg
 // 2026-07-28T10:47+02:00).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:bd1fa7e'
+// Bumped bd1fa7e -> dadd7ce to ship #424 M3 (live per-agent thread minting): the app
+// now mints a real per-(user x agent) thread via the agent-host (POST /threads) and
+// threads it onto every chat turn when FOUNDRY_THREADS_ENABLED is on. dadd7ce = PR
+// #495 merge (M3 app code). Deploy approval-gated per AGENTS.md §4 (approved-to-apply
+// by @urruegg 2026-07-28).
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:dadd7ce'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
