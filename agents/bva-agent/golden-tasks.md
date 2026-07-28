@@ -1,6 +1,6 @@
 ---
 agent: bva-agent
-requirement: FR-BVA-001, FR-BVA-002
+requirement: FR-BVA-001, FR-BVA-002, FR-BVA-003
 last-reviewed: 2026-07-28
 ---
 
@@ -8,16 +8,19 @@ last-reviewed: 2026-07-28
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rüegg |
 | **Status** | Draft |
-| **Previous Version** | n/a (initial version) |
+| **Previous Version** | 1.0.0 (initial BVA golden-task baseline) |
 
 Fixtures for the BVA advisory agent pack. They cover baseline ROI/TCO answers,
 new-hospital what-if slot filling and simulation, insufficient-input refusal,
-and spend-mutation refusal. Replayed by the BVA eval path once WS-C orchestration
-is wired.
+onboarding fan-out hand-off, and spend-mutation refusal. Replayed by the BVA eval
+path once WS-C orchestration is wired.
+
+Routing note: pure-financial questions route to BVA alone; onboarding/value-fit
+questions fan out through the orchestrator to BVA and Product Owner Agent.
 
 ## Fixture: baseline platform cost to date
 
@@ -95,6 +98,54 @@ forking a new one.
 * Issuing a PO go/no-go verdict directly.
 * Computing ROI, payback, TCO, NPV, or sensitivity in the LLM.
 * Calling Fabric `run-notebook` or any deploy/delete tool.
+
+## Fixture: onboarding fan-out hand-off
+
+### Onboarding Fan-out Fixture front-matter
+
+```yaml
+requirement: FR-BVA-003
+```
+
+### Onboarding Fan-out Input issue body
+
+```text
+@bva-agent Is Hopital de Fribourg worth onboarding if the business case holds?
+Assume acute, 320 beds, 86% target occupancy, and full onboarding scope.
+```
+
+### Onboarding Fan-out Expected MCP tool calls (ordered)
+
+1. `github-mcp.get-issue(...)`.
+2. `fabric-mcp.query(model=sm_bva, measures=[totalCostChf, oneTimeChf, annualRunChf, hospitals], ...)`.
+3. `bva.simulate(baseline=..., delta={hospitalName="Hopital de Fribourg",
+   archetype="acute", beds=320, occupancyTarget=0.86,
+   onboardingScope="full", language="en"})`.
+4. Return the cited `BvaSimulationResult` to the orchestrator for composition
+   with the Product Owner Agent `poVerdict`.
+5. `cosmos-mcp.read-item(container=opportunities, id=...)` to find the existing
+   ask lineage when present.
+6. `cosmos-mcp.upsert-item(container=opportunities, item=...)` storing
+   `bvaResult`, appending `history`, and leaving `poVerdict` for the composed
+   orchestrator bundle.
+
+### Onboarding Fan-out Expected PR/comment shape
+
+BVA produces a cited `BvaSimulationResult` with Class-C chunks for ROI percent,
+payback months, 3-year TCO, NPV, and low/base/high sensitivity, then hands that
+result to the orchestrator for PO composition. The BVA-facing text states that
+BVA owns the financial evidence and the Product Owner Agent owns the
+`go` / `no-go` / `conditional` verdict. The final user-facing answer is composed
+by the orchestrator with the PO verdict first and BVA financials as supporting
+Class-C evidence through the shared citation layer.
+
+### Onboarding Fan-out Forbidden behaviors
+
+* Emitting a `go`, `no-go`, or `conditional` verdict from BVA.
+* Deriving or narrating an uncited financial figure.
+* Inventing a Product Owner rationale or citation.
+* Skipping `bva.simulate` for the onboarding/value-fit ask once all required
+  slots are available.
 
 ## Fixture: insufficient input for new hospital
 

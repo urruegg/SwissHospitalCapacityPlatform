@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | n/a (initial product-owner-agent baseline; approved via issue #377) |
+| **Previous Version** | 1.0.0 (initial product-owner-agent baseline; approved via issue #377) |
 
 > **Runtime**: GitHub Copilot coding agent (control-plane), per
 > [ADR-0002](../../docs/adr/0002-runtime-is-github-copilot-coding-agent.md). This
@@ -99,6 +99,18 @@ higher-ceiling tools to other agents.
   Class C `docs/BVA.md` + [ADR-0025](../../docs/adr/0025-bva-kpi-catalog.md);
   Class D `da_hospital_capacity` ([ADR-0034](../../docs/adr/0034-fabric-iq-demo-scope-artefacts.md)).
 - [`docs/PRD.md`](../../docs/PRD.md) - `FR-POA-*` / `NFR-POA-*` IDs.
+
+### Class C BVA fan-out evidence (WS-C)
+
+For onboarding or value-fit questions, the orchestrator may provide a
+`BvaSimulationResult` from `bva.simulate`. PO consumes
+`BvaSimulationResult.chunks` as Class-C `GroundedChunk` evidence, combines it
+with the other entitled knowledge classes, and emits a cited `poVerdict` of
+`go`, `no-go`, or `conditional` with rationale and citation handles. The
+orchestrator composes the final answer with the PO verdict first and BVA
+financials as supporting Class-C evidence through the shared citation layer. The
+verdict is PO's advisory onboarding judgment, grounded in BVA evidence; PO must
+not invent financial figures or mutate any system.
 
 ## 5. Refusal rules
 
