@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-27 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Complete |
-| **Previous Version** | — (initial) |
+| **Previous Version** | 1.0.0 (initial #399 closeout record) |
 | **Design spec** | [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](../superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) |
 | **ADR** | [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](../adr/0052-app-context-envelope-per-agent-threads.md) |
 | **Tracker issue** | [#399](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/399) (epic — closed) |
@@ -90,6 +90,7 @@ and `/index.html` returned 200.
 - **#424 — live SIT lift (Approach B).** ADR-0052 records Approach A (simulated)
   as Accepted; lifting the envelope send path, live Foundry threads, live Fabric
   RLS, and OBO to real SIT endpoints is deferred and tracked here.
+  **Delivered 2026-07-29 (M1–M6) — see [§6](#6-424--live-sit-lift-approach-b-delivered-2026-07-29).**
 
 ## 5. Definition of Done
 
@@ -102,3 +103,49 @@ and `/index.html` returned 200.
 | 5 | Evidence e2e suite 2/2 on SIT + PROD | ✅ |
 | 6 | Deep-link 404 fixed + bicepparams reconciled (#444) | ✅ |
 | 7 | Residual flags tracked (#424, #447) | ✅ |
+
+---
+
+## 6. #424 — Live SIT lift (Approach B) delivered (2026-07-29)
+
+The follow-up tracked in §4 is now delivered. Approach B lifted the envelope
+send path, live golden-source read, live per-(user × agent) Foundry threads,
+Fabric RLS, and the OBO seam to real SIT endpoints — **evidence-grounded and
+config-gated**, honest about what the deployed Fabric/Entra reality can enforce
+today. Each rung is real code + config; live per-user enforcement that the
+platform cannot yet prove is explicitly deferred, not faked.
+
+> **#424 milestones use their own M1–M6 numbering**, distinct from the §1
+> Sprint 29 (#399) M0–M6 table above.
+
+| # | Deliverable | Merge | State |
+|---|-------------|-------|-------|
+| M1 | Wire `ContextEnvelope` + Foundry thread map into the app send path (no new infra) | [#464](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/464) `0c86920` | ✅ merged |
+| M2 | Live golden-source read path — agent-host `GET /golden/{resource}` | `f596cf2` | ✅ merged + live SIT |
+| M3 | Live per-(user × agent) thread map via staged `ThreadProvider` seam | [#495](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/495) `dadd7ce` | ✅ merged + live SIT |
+| M4 | Fabric RLS — evidence-grounded capability ladder (`SimulatedRlsProvider` default + `FabricDataAgentRlsProvider` rung; multi-site `network` resource; `_rls` block + `X-Rls-*` headers) | [#512](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/512) `583f633` | ✅ merged + live SIT |
+| M5 | OBO ingress seam (Entra → Fabric/Foundry) completed in code + config, gated **off** (`OBO_ENABLED=false`); go-live is a config flip per ADR-0057 | [#522](https://github.com/urruegg/SwissHospitalCapacityPlatform/pull/522) `62cc2ae` | ✅ merged |
+| M6 | Provenance + docs + ADR closeout: PRD §7 #424 traceability row (2.8.0), this section, SIT + PROD parity deploy, close #424 | this PR | ✅ |
+
+**Design + decisions.** [`ADR-0057`](../adr/0057-obo-seam-completion-defer-live-provisioning.md)
+records Path B (complete the OBO seam; defer live provisioning). Real per-user
+Fabric RLS additionally needs the dynamic-RLS TMDL predicate + deployable persona
+source ([#510](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/510)) —
+both are the deferred ADR-0057 Path A follow-up. M4/M5 design specs:
+[M4 RLS provider](../superpowers/specs/2026-07-28-sprint-29-m4-rls-provider-design.md),
+[M5 OBO seam](../superpowers/specs/2026-07-28-sprint-29-m5-obo-seam-design.md).
+
+**SIT + PROD parity (M6).** Both environments were lifted to the M5 agent-host
+image **`hcc-agent-host:62cc2ae`** (SIT was at M4 `583f633`, PROD lagged at M2
+`f596cf2`). All new capabilities default off/simulated, so the deploy is
+behaviour-parity — no live per-user enforcement is switched on. `agentHostImage`
+bumped to `:62cc2ae` in
+[`infra/environments/sit.bicepparam`](../../infra/environments/sit.bicepparam)
+and
+[`infra/environments/prod-swn.bicepparam`](../../infra/environments/prod-swn.bicepparam)
+so the bicepparams match the deployed reality (drift-analyzer stays clean).
+
+**Residual (deferred, not blocking #424).** ADR-0057 Path A (live Entra OBO
+provisioning + #510 dynamic-RLS TMDL) · #510 · #477 (stale PROD Fabric coords) ·
+issue #447 (PROD app bakes SIT agent-host URL). All synthetic / no-PHI, westus2
+SIT + switzerlandnorth PROD demo scope.
