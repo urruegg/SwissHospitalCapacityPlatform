@@ -1,32 +1,35 @@
-# Sprint 36 Curavias Solution Design in Backstage Implementation Plan
+# Sprint 36 Curavias Backstage - full showcase Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > superpowers:subagent-driven-development (recommended) or
 > superpowers:executing-plans to implement this plan task-by-task. Steps use
 > checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Deliver a reusable, accessible **Solution design - IQ operating model**
-section as a distinct Backstage Story part that routes section / plane / badge
-context to the existing Product Owner Agent rail.
+**Goal:** Deliver the full **Curavias Backstage showcase** in Backstage > Story -
+**keeping** the Digital feedback loop (Sprint 35) and the Solution design - IQ
+operating model board, and **adding** the Frontier-Firm narrative sections (hero,
+Success Framework, DevSecOps loop, review sessions, PO knowledge classes) - all
+routing to the docked Product Owner Agent rail.
 
 **Architecture:** A typed, framework-independent catalog defines five IQ layers
 and two cross-cutting lanes (Governance, Security) with per-plane capabilities
 and tiers. `SolutionDesignBoard` owns presentation and local selection only;
 `SolutionDesignSection` is the Backstage adapter that maps a selected context
-into the existing Copilot rail. The same board renders without the shell at
-`/present/solution-design`.
+into the existing Copilot rail. The added narrative sections read a typed
+`backstage-narrative-content.ts` model and reuse the same rail-routing pattern.
+The board also renders without the shell at `/present/solution-design`.
 
 **Tech Stack:** React 18, TypeScript 5.7, Fluent UI v9, React Router 6, i18next,
 Vitest, Testing Library, Playwright, and axe-core.
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg (with GitHub Copilot) |
 | **Status** | Approved for delegation |
-| **Previous Version** | n/a (initial implementation plan) |
-| **Sprint** | Sprint 36 - Curavias Solution Design in Backstage |
+| **Previous Version** | 1.0.0 (Solution-design section only; extended to the full Backstage showcase) |
+| **Sprint** | Sprint 36 - Curavias Backstage full showcase |
 | **Issue** | [#540](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/540) |
 
 **Design:**
@@ -45,11 +48,13 @@ Vitest, Testing Library, Playwright, and axe-core.
 | WS-B | Integration subagent | `SolutionDesignSection.tsx`, `StoryTab.tsx`, `en.json`, `de.json`, integration E2E | WS-A contract |
 | WS-C | Verification subagent | `SolutionDesignPresentationView.tsx`, `router.tsx`, Playwright visual/a11y | WS-A contract |
 | WS-D | Governance subagent | `docs/SD.md`, `docs/GLOSSARY.md` | none (parallel) |
+| WS-E | Narrative subagent | `backstage-narrative-content.ts` + B1/B2/B3/B5/B6 section components + six-lanes companion + i18n + narrative E2E | WS-B (StoryTab mount) |
 
 WS-A lands first. WS-B and WS-C rebase on that commit and may run in parallel.
-WS-D is independent. Subagents do not edit files outside their ownership without
-returning to the orchestrator. Each slice is reviewed for spec compliance and
-code quality before the next dependency is released.
+WS-D is independent. WS-E depends on WS-B (the StoryTab mount point) and reuses
+the SD context-routing pattern. Subagents do not edit files outside their
+ownership without returning to the orchestrator. Each slice is reviewed for spec
+compliance and code quality before the next dependency is released.
 
 ## File structure
 
@@ -508,7 +513,112 @@ git add docs/SD.md docs/GLOSSARY.md
 git commit -m "docs(sd): reconcile IQ model - Process IQ layer + Governance/Security lanes"
 ```
 
-## Task 7: Documentation and PR close-out
+## Task 7: Backstage narrative content + hero / Success Framework / PO classes (WS-E)
+
+**Files:**
+
+* Create: `apps/hcc-app-fluent/src/workspaces/backstage/tabs/story/narrative/backstage-narrative-content.ts` (+ `.test.ts`)
+* Create: `.../narrative/BackstageHero.tsx`, `.../narrative/SuccessFrameworkSection.tsx`, `.../narrative/PoKnowledgeClassesSection.tsx`
+* Modify: `.../story/StoryTab.tsx`, `apps/hcc-app-fluent/src/i18n/en.json`, `de.json`
+
+* [ ] **Step 1: Write the failing content test**
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { BACKSTAGE_NARRATIVE } from './backstage-narrative-content';
+
+describe('backstage narrative content', () => {
+  it('defines the narrative sections with i18n keys and no PHI', () => {
+    expect(BACKSTAGE_NARRATIVE.map((s) => s.id)).toEqual(
+      expect.arrayContaining(['hero', 'success-framework', 'devsecops-loop', 'review-sessions', 'po-classes']),
+    );
+    expect(JSON.stringify(BACKSTAGE_NARRATIVE)).not.toMatch(/patient name|birth|mrn/i);
+  });
+});
+```
+
+* [ ] **Step 2: Run + verify failure**
+
+Run: `npx vitest run src/workspaces/backstage/tabs/story/narrative/backstage-narrative-content.test.ts` - FAIL (module missing).
+
+* [ ] **Step 3: Implement the content model + three sections**
+
+`backstage-narrative-content.ts` holds typed section descriptors + i18n keys (hero;
+success-framework principles + numbers; po-classes A/B/C/D). Implement
+`BackstageHero`, `SuccessFrameworkSection` (numbers labelled `as-built`), and
+`PoKnowledgeClassesSection` (CTA opens the rail via `useCopilotRail`). Each root
+carries `data-testid="backstage-<id>"`. Add en/de i18n under
+`backstage.story.narrative.*` (English fallback).
+
+* [ ] **Step 4: Mount in StoryTab (composition order)**
+
+In `StoryTab.tsx` render, in order: `BackstageHero`, `SuccessFrameworkSection`,
+(existing `DigitalFeedbackLoopSection`), (existing `SolutionDesignSection`), then
+the Task 8 sections. Keep `NAV_ITEMS` / `WIDGETS` unchanged.
+
+* [ ] **Step 5: Run + commit**
+
+Run: `npx vitest run src/workspaces/backstage/tabs/story/narrative; npm run lint` - PASS.
+
+```powershell
+git add apps/hcc-app-fluent/src/workspaces/backstage/tabs/story/narrative apps/hcc-app-fluent/src/workspaces/backstage/tabs/story/StoryTab.tsx apps/hcc-app-fluent/src/i18n/en.json apps/hcc-app-fluent/src/i18n/de.json
+git commit -m "feat(backstage): narrative content + hero, Success Framework, PO classes"
+```
+
+## Task 8: DevSecOps loop, review sessions, six-lanes companion (WS-E)
+
+**Files:**
+
+* Create: `.../narrative/DevSecOpsLoopSection.tsx`, `.../narrative/ReviewSessionsSection.tsx`
+* Modify: `.../solution-design/SolutionDesignSection.tsx` (six-lanes companion), `.../story/StoryTab.tsx`, `apps/hcc-app-fluent/tests/e2e/solution-design.spec.ts`, `apps/hcc-app-fluent/tests/e2e/a11y.spec.ts`
+
+* [ ] **Step 1: Write the failing narrative E2E test**
+
+```ts
+test('Backstage Story renders the full narrative composition', async ({ page }) => {
+  await page.goto('/backstage/story');
+  for (const id of ['hero', 'success-framework', 'devsecops-loop', 'review-sessions', 'po-classes']) {
+    await expect(page.getByTestId(`backstage-${id}`)).toBeVisible();
+  }
+  await expect(page.getByTestId('digital-feedback-loop-section')).toBeVisible();
+  await expect(page.getByTestId('solution-design-section')).toBeVisible();
+  await expect(page.locator('[data-testid^="backstage-nav-"]')).toHaveCount(3);
+});
+```
+
+* [ ] **Step 2: Run + verify failure**
+
+Run: `npx playwright test tests/e2e/solution-design.spec.ts` - FAIL (narrative sections absent).
+
+* [ ] **Step 3: Implement DevSecOps loop + review sessions + six-lanes companion**
+
+`DevSecOpsLoopSection` renders the DEV<->OPS loop as an accessible Fluent/SVG figure
+with a text legend + HITL gate + DEV->SIT->PROD strip. `ReviewSessionsSection`
+renders the 7-session table + practitioner grid; external LinkedIn links use
+`target="_blank" rel="noopener"`. Add the compact six-lanes companion inside
+`SolutionDesignSection` (mapping lanes to IQ layers) - not a standalone diagram.
+Mount DevSecOps + review sessions + PO classes in `StoryTab` in composition order.
+
+* [ ] **Step 4: Verify + a11y**
+
+Ensure axe (`a11y.spec.ts`) covers the new sections with no exclusion. Run:
+
+```powershell
+npx playwright test tests/e2e/solution-design.spec.ts
+npx playwright test tests/e2e/a11y.spec.ts
+```
+
+Expected: PASS; no serious/critical WCAG 2.1 AA violation; exactly three Backstage
+nav items.
+
+* [ ] **Step 5: Commit**
+
+```powershell
+git add apps/hcc-app-fluent/src/workspaces/backstage/tabs/story apps/hcc-app-fluent/tests/e2e/solution-design.spec.ts apps/hcc-app-fluent/tests/e2e/a11y.spec.ts
+git commit -m "feat(backstage): DevSecOps loop, review sessions, six-lanes companion"
+```
+
+## Task 9: Documentation and PR close-out
 
 **Files:**
 
@@ -538,13 +648,18 @@ Sprint 36 docs; the `rg` command returns no matches.
 
 Each workstream lands as its own squash PR linked to #540 and includes: the
 requirements advanced (`FR-POA-002`, `FR-CX-006`, `FR-UX-001`, `FR-UX-004`,
-`NFR-POA-001`, `NFR-POA-004`, `NFR-UX-001`..`NFR-UX-004`, `NFR-DOC-001`); lane
+`NFR-POA-001`, `NFR-POA-004`, `NFR-UX-001`..`NFR-UX-004`, `NFR-DOC-001`,
+`FR-GOV-004`); lane
 impact; no API/infra/MCP/PHI/deploy/delete impact; unit/lint/build/Playwright/
 screenshot/axe evidence; residual risks. Never self-merge; a human reviews the
 visual evidence and PO advisory/citation behavior first.
 
 ## Final acceptance checklist
 
+* [ ] Full Backstage Story renders the 7-section composition in order; no 4th tab.
+* [ ] Digital feedback loop (S35) + Solution design sections preserved and unbroken.
+* [ ] Each narrative section routes to the docked PO rail; external links use `rel="noopener"`.
+* [ ] Six-lanes companion maps into the Solution design section (one architecture diagram).
 * [ ] Catalog has 5 layers + 2 lanes, unique IDs, valid tiers, no PHI.
 * [ ] Section is inside Backstage Story; no fourth tab.
 * [ ] Section header, plane headers, and badges route context to the PO rail.
