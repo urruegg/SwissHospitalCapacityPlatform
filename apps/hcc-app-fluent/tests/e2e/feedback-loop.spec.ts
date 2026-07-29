@@ -20,3 +20,12 @@ test('Backstage feedback loop routes domain context to the PO rail', async ({ pa
   await expect(rail).toContainText(/skills|staffing|workload/i);
   await expect(rail.getByTestId('citations')).toContainText('docs/PRD.md#fr-poa-001');
 });
+
+test('standalone route reuses the loop without app-shell chrome', async ({ page }) => {
+  await page.goto('/present/feedback-loop');
+
+  await expect(page.getByTestId('feedback-loop-presentation')).toBeVisible();
+  await expect(page.getByTestId('feedback-loop-canvas')).toBeVisible();
+  await expect(page.getByRole('navigation', { name: /primary/i })).toHaveCount(0);
+  await expect(page.getByRole('complementary', { name: /agent/i })).toHaveCount(0);
+});
