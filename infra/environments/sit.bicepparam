@@ -248,7 +248,7 @@ param enableAppFluentModule = true
 // threads it onto every chat turn when FOUNDRY_THREADS_ENABLED is on. dadd7ce = PR
 // #495 merge (M3 app code). Deploy approval-gated per AGENTS.md §4 (approved-to-apply
 // by @urruegg 2026-07-28).
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:dadd7ce'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:a7fb478'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
