@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Upload the synthetic FOCUS partitions to the SIT lakehouse Bronze zone (T2).
+"""Upload the synthetic FOCUS partitions to a lakehouse Bronze zone (T2).
+
+Targets SIT by default; pass ``--workspace-id``/``--lakehouse-id`` (e.g. the
+PROD coordinates from ``data-platform/fabric/environments.yml``) for a gated
+PROD load.
 
 Sprint 15 · T2 — the ``bva-sim-refresh`` workflow runs
 ``bva_synth_focus.py`` to emit a daily-partitioned dataset under a local
@@ -81,17 +85,37 @@ def _get_token() -> str:
     return out.strip()
 
 
-def upload_file(local_path: str, remote_relpath: str, remote_root: str, token: str) -> int:
+def _remote_url(
+    workspace_id: str, lakehouse_id: str, remote_root: str, remote_relpath: str
+) -> str:
+    """Build the OneLake DFS Files/ URL for one partition, environment-parametrized.
+
+    ``workspace_id`` / ``lakehouse_id`` select the target environment (SIT or
+    PROD) so the same partition tree can be uploaded to either by passing the
+    coordinates from ``data-platform/fabric/environments.yml``. Uses forward
+    slashes regardless of host OS.
+    """
+    return (
+        f"{ONELAKE_HOST}/{workspace_id}/{lakehouse_id}/Files/"
+        f"{remote_root}/{remote_relpath}"
+    )
+
+
+def upload_file(
+    local_path: str,
+    remote_relpath: str,
+    remote_root: str,
+    token: str,
+    workspace_id: str = WORKSPACE_ID,
+    lakehouse_id: str = LAKEHOUSE_ID,
+) -> int:
     """Upload one partition file via the OneLake DFS create/append/flush contract.
 
     Returns the number of bytes uploaded.
     """
     import requests  # imported lazily so unit tests need no network dependency
 
-    base = (
-        f"{ONELAKE_HOST}/{WORKSPACE_ID}/{LAKEHOUSE_ID}/Files/"
-        f"{remote_root}/{remote_relpath}"
-    )
+    base = _remote_url(workspace_id, lakehouse_id, remote_root, remote_relpath)
     headers = {"Authorization": f"{_BEARER}{token}"}
 
     r = requests.put(f"{base}?resource=file", headers=headers)
@@ -129,6 +153,17 @@ def main(argv: list[str] | None = None) -> int:
         help=f"Remote folder under Files/ (default: {DEFAULT_REMOTE_ROOT}).",
     )
     parser.add_argument(
+        "--workspace-id",
+        default=WORKSPACE_ID,
+        help=f"Target Fabric workspace id (default: SIT {WORKSPACE_ID}). "
+        "Pass the PROD workspace id from environments.yml for a PROD load.",
+    )
+    parser.add_argument(
+        "--lakehouse-id",
+        default=LAKEHOUSE_ID,
+        help=f"Target lakehouse id (default: SIT {LAKEHOUSE_ID}).",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print the upload plan and exit without contacting OneLake.",
@@ -141,7 +176,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"FAIL: {exc}")
         return 1
 
-    print(f"Planned {len(pairs)} partition upload(s) to Files/{args.remote_root}/")
+    print(
+        f"Planned {len(pairs)} partition upload(s) to Files/{args.remote_root}/ "
+        f"in workspace {args.workspace_id} / lakehouse {args.lakehouse_id}"
+    )
     if args.dry_run:
         for _, rel in pairs:
             print(f"  DRY-RUN {rel}")
@@ -150,7 +188,10 @@ def main(argv: list[str] | None = None) -> int:
     token = _get_token()
     total_bytes = 0
     for local, rel in pairs:
-        total_bytes += upload_file(local, rel, args.remote_root, token)
+        total_bytes += upload_file(
+            local, rel, args.remote_root, token,
+            workspace_id=args.workspace_id, lakehouse_id=args.lakehouse_id,
+        )
         print(f"  uploaded {rel}")
 
     print(f"PASS: uploaded {len(pairs)} files ({total_bytes} bytes) to Files/{args.remote_root}/")
