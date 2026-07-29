@@ -2,13 +2,38 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.4.0 |
-| **Date** | 2026-07-28 |
+| **Version** | 1.5.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.3.0 (evidence-based matrix, 2026-07-24 reads; PROD-storage gap tracked in-progress) |
+| **Previous Version** | 1.4.0 (live 2026-07-28 re-verification; surfaced the gold-medallion divergence) |
 
 ## 1. Summary
+
+> **2026-07-29 gap remediation (v1.5.0).** The external-signals + forecast
+> gold-medallion gap surfaced in v1.4.0 is now **CLOSED**. A gated
+> (`approved-to-apply` by **@urruegg**, 2026-07-29T09:08 +02:00) PROD medallion
+> rebuild materialised the two approved lanes live in PROD gold, verified by a
+> fresh OneLake DFS re-read (evidence [E15](#e15-prod-gap-remediation-2026-07-29)):
+>
+> * **external-signals lane** — `bronze.ext_signals_raw`,
+>   `silver.ext_signals` + `silver.ext_signals_quarantine`, and all 5
+>   `gold.ext_*` tables (`ext_dim_hazard_type`, `ext_dim_region`,
+>   `ext_dim_source`, `ext_fact_signal`, `ext_fact_trigger_event`) now present in
+>   PROD — the `external-signals` semantic model finally has backing gold data.
+> * **forecast lane** — `gold.fact_forecast_driver`,
+>   `gold.fact_occupancy_forecast`, and `gold.fact_signal` now present in PROD
+>   (deployed from the committed self-contained
+>   `data-platform/notebooks/foresight/run_foresight_evidence.ipynb`, byte-identical
+>   to the proven SIT notebook).
+>
+> PROD gold went **28 → 36**. The only SIT-only gold tables now remaining are the
+> 11 `bva_*` (⏳ gated forward-parity, unchanged) and the legacy nested
+> `patient-flow` namespace (disposition pending — see §5). Both medallion applies
+> were additive (0 deletes), synthetic-only, no PHI.
+
+The v1.4.0 baseline finding that this remediation closes is retained below for
+traceability.
 
 > **2026-07-28 full re-verification (v1.4.0, Sprint 33 close-out).** A fresh
 > end-to-end live re-read (control plane via `az`, plus the OneLake DFS +
@@ -50,12 +75,15 @@ workspace/lakehouse + 2 semantic models, and the Foundry project (3 models + 8
 agents). The remaining non-parity items are the deliberate region/topology
 asymmetries, the Fabric IQ ontology (excluded from GA parity per ADR,
 availability-blocked, #270), and the **new 2026-07-28 gold-medallion divergence**
-— of which the BVA family is a **managed, gated forward-parity item** (Sprint 33
-SIT-first) and the external-signals + forecast families are **genuine PROD-lag
-gaps** where PROD gold has not been rebuilt to the current SIT medallion.
+availability-blocked, #270), and the 2026-07-28 gold-medallion divergence
+— of which the BVA family remains a **managed, gated forward-parity item**
+(Sprint 33 SIT-first) while the external-signals + forecast families were
+**remediated on 2026-07-29** (gated PROD medallion rebuild, §5, E15), leaving
+only the legacy `patient-flow` namespace pending disposition.
 
-**Verdict tally:** ✅ **Parity** 10 · ⚠️ **Deliberate asymmetry** 5 ·
-⏳ **Gated forward-parity** 1 · 🟥 **Gap** 1 · **N-A** 1.
+**Verdict tally (post-2026-07-29 remediation):** ✅ **Parity** 11 ·
+⚠️ **Deliberate asymmetry** 5 · ⏳ **Gated forward-parity** 1 ·
+🟥 **Gap** 1 (legacy `patient-flow` namespace only) · **N-A** 1.
 
 > **Static parity harness (2026-07-26, #255):** module-selection parity between
 > `infra/environments/sit.bicepparam` and `infra/environments/prod-swn.bicepparam`
@@ -105,7 +133,7 @@ gaps** where PROD gold has not been rebuilt to the current SIT medallion.
 | 4 | Cosmos DB and Event Hubs data platform | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `West US 2`; Event Hubs namespace `Standard`, public access enabled. | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `Switzerland North`; Event Hubs namespace `Standard`, public access enabled. | ✅ **Parity** | [E4](#e4-data-platform) |
 | 4 | Storage / ADLS landing zone and data/AI/integration lane | Three StorageV2 accounts with public access disabled: `stcorpusihzhhpfsit` (PO corpus), `stdpihzhhpfsity26y` (data-platform), and `stmasterdataihzhhpfsit` (ADLS Gen2, masterdata landing). | **PROD storage now present (re-verified 2026-07-28):** `stcorpusihzhhpfprod`, `stdpihzhhpfprodi62t`, `stmasterdataihzhhpfprod`, and `stmediaihzhhpfprod` — the former "PROD has no storage accounts" open item is closed. Data/AI/integration lane deployed via the D8 full-parity slices: ML workspace, ADLS masterdata, `sim-capacity` CA + skills-sim jobs/environments, Fabric F2 workspace/lakehouse + 2 semantic models, Foundry project (3 models + 8 agents). Only Fabric IQ Ontology/Data Agent remain Preview-gated (#270). | ✅ **Parity — closed 2026-07-24** by decision D8 (@urruegg, `approved-to-apply`) and re-confirmed live 2026-07-28. PROD storage is present; required BOM items are GA in Switzerland North per ADR-0037. | [E4](#e4-data-platform), [E11](#e11-storage-refresh-2026-07-28) |
 | 4 | Gold data-product medallion — BVA cost product (Sprint 33) | `bva_consumption` (bronze/silver) + 11 `bva_*` gold tables (`bva_dim_*` ×8, `bva_fact_azure_consumption`, `bva_fact_budget`, `bva_fact_value_realization`) present in SIT gold. | Absent from PROD gold. WS-A/WS-D live publish is `approved-to-apply`-gated per the gated-load plans; no `bva`/`opportunities` Cosmos container or `sm_bva` semantic model exists in either environment. | ⏳ **Gated forward-parity (F5)** — Sprint 33 is SIT-first; PROD publish is a tracked, human-gated deploy slice, not an unmanaged gap. | [E12](#e12-medallion-table-diff-2026-07-28) |
-| 4 | Gold data-product medallion — external-signals + forecast facts | `ext_signals_raw` (bronze), `ext_signals`/`ext_signals_quarantine` (silver), 5 `ext_*` gold tables, and forecast facts `fact_forecast_driver`/`fact_occupancy_forecast`/`fact_signal` (+ legacy `patient-flow`) present in SIT gold. | Absent from PROD gold — yet PROD **has** the `external-signals` semantic model and a running `ca-signal-runner-ihzhhpf-prod`, so the PROD model has no backing gold data. PROD retains only the older `forecast_output` shape. | 🟥 **Gap** — PROD gold medallion has not been rebuilt to the current SIT medallion for the external-signals and forecast families. Remediate via a gated PROD medallion rebuild (see §5). | [E12](#e12-medallion-table-diff-2026-07-28) |
+| 4 | Gold data-product medallion — external-signals + forecast facts | `ext_signals_raw` (bronze), `ext_signals`/`ext_signals_quarantine` (silver), 5 `ext_*` gold tables, and forecast facts `fact_forecast_driver`/`fact_occupancy_forecast`/`fact_signal` present in SIT gold. | **Remediated 2026-07-29** — all 5 `gold.ext_*`, the `ext_signals*` bronze/silver sources, and the 3 forecast facts now present in PROD (gold 28→36); `external-signals` semantic model now has backing gold data. | ✅ **Parity** — gated (`approved-to-apply` @urruegg) PROD medallion rebuild closed the v1.4.0 gap; legacy `patient-flow` namespace tracked separately (§5). | [E15](#e15-prod-gap-remediation-2026-07-29) |
 | 4 | Cosmos containers and Fabric semantic models | Platform Cosmos `agenthost` (`agent_interactions`, `approval-events`, `conversations`, `audit`); CSA `csa` (`simulation-runs`, `plans`, `proposed_actions`, `agent-memory`, `response-levers`, `scenarios`); semantic models `capacity-dashboard` + `external-signals`. | Identical Cosmos container set in both platform and CSA accounts; identical semantic models `capacity-dashboard` + `external-signals`. | ✅ **Parity** | [E13](#e13-cosmos-containers--semantic-models-2026-07-28) |
 | 5 | Core Container Apps runtime | Core apps `ca-app-fluent-ihzhhpf-sit`, `ca-agent-host-ihzhhpf-sit`, `ca-signal-runner-ihzhhpf-sit`, and `ca-po-ihzhhpf-sit` are `Succeeded` / `Running`. | Core apps `ca-app-fluent-ihzhhpf-prod`, `ca-agent-host-ihzhhpf-prod`, `ca-signal-runner-ihzhhpf-prod`, and `ca-po-ihzhhpf-prod` are `Succeeded` / `Running` (Product-Owner stack, Sprint 28, now live in both). | ✅ **Parity** | [E5](#e5-compute--runtime), [E14](#e14-container-apps--key-vault-refresh-2026-07-28) |
 | 5 | Simulation-capacity runtime | SIT has `ca-sim-capacity-ihzhhpf-sit` plus the simulation-only CAEs (`cae-sim-*`, `cae-skills-sim-*`). | PROD now carries `ca-sim-capacity-ihzhhpf-prod` (running); the simulation-only CAEs remain SIT-only. | ⚠️ **Deliberate asymmetry (F3 / ADR-0013)** — narrowed: `ca-sim-capacity` reached PROD; only the synthetic-testing CAEs stay SIT-only. | [E5](#e5-compute--runtime), [E14](#e14-container-apps--key-vault-refresh-2026-07-28) |
@@ -486,19 +514,63 @@ Both environments now run the 5-app core set (Product-Owner `ca-po` + `kvpo`
 Key Vault added in both since 2026-07-24), and `ca-sim-capacity` is present in
 PROD as well as SIT.
 
+### E15 PROD gap remediation (2026-07-29)
+
+Gated (`approved-to-apply` @urruegg, 2026-07-29T09:08 +02:00) PROD medallion
+rebuild for the external-signals + forecast lanes, applied via
+[`run_single_notebook.py --environment PROD --apply`](../../../data-platform/scripts/fabric/run_single_notebook.py)
+and verified by a fresh OneLake DFS re-read.
+
+```text
+// external-signals apply — notebook item 13b660fa-50bf-4838-a0a0-548440986719 -> [ok]
+PROD bronze : ext_signals_raw
+PROD silver : ext_signals, ext_signals_quarantine
+PROD gold   : ext_dim_hazard_type, ext_dim_region, ext_dim_source,
+              ext_fact_signal, ext_fact_trigger_event
+
+// forecast apply — notebook run 52931adb-ddd1-445b-a0b4-4496a9081b0f -> [ok]
+PROD gold   : fact_forecast_driver, fact_occupancy_forecast, fact_signal
+
+// post-remediation gold diff (list_gold_tables.py + DFS listing):
+SIT gold = 48, PROD gold = 36 (was 28)
+SIT-only remaining: 11 bva_* (F5, gated forward-parity) + patient-flow (legacy, §5)
+```
+
+Both applies were additive (0 deletes), synthetic-only, no PHI (ADR-0013 /
+ADR-0016). The forecast notebook was confirmed byte-identical (cell-source) to
+the proven SIT `run_foresight_evidence` notebook before apply.
+
 ## 5. Open items
 
 ### 🟥 Gaps
 
-* **PROD gold medallion lags SIT for external-signals + forecast families
-  (2026-07-28).** PROD gold is missing the 5 `ext_*` tables, `fact_forecast_driver`,
-  `fact_occupancy_forecast`, `fact_signal`, and `patient-flow`, and lacks the
-  `ext_signals*` bronze/silver sources — even though PROD has the
-  `external-signals` semantic model and a running `ca-signal-runner-ihzhhpf-prod`.
-  **Remediation:** run a gated (`approved-to-apply`) PROD medallion rebuild to
-  bring the external-signals and forecast lanes up to the current SIT shape, then
-  re-point/refresh the `external-signals` semantic model. Confirm whether
-  `patient-flow` is an intended table or a stale SIT artefact to drop.
+* **Legacy `patient-flow` gold namespace is SIT-only (disposition pending).**
+  SIT gold carries a nested `patient-flow/` namespace (Delta sub-tables
+  `bed_assignment`, `discharge_recommendation`, `discharge_score`, `encounter`,
+  `forecast_output`) from an earlier medallion generation; PROD has none. This is
+  unrelated to the Sprint 33 BVA work and was not in the 2026-07-29 remediation
+  scope. **Action:** confirm whether `patient-flow` is an intended GA data
+  product to forward-port to PROD or a stale SIT artefact to drop; do not rebuild
+  in PROD without an explicit decision.
+
+### ✅ Remediated (2026-07-29)
+
+* **PROD gold medallion — external-signals + forecast lanes (was the v1.4.0
+  gap).** A gated (`approved-to-apply` by **@urruegg**, 2026-07-29T09:08 +02:00)
+  PROD medallion rebuild materialised both lanes live in PROD gold, additive
+  (0 deletes), synthetic-only, no PHI:
+  * external-signals — `data-platform/notebooks/external-signals/run_ext_medallion.ipynb`
+    wrote `bronze.ext_signals_raw`, `silver.ext_signals` +
+    `silver.ext_signals_quarantine`, and 5 `gold.ext_*` tables.
+  * forecast — `data-platform/notebooks/foresight/run_foresight_evidence.ipynb`
+    (byte-identical to the proven SIT notebook) wrote `gold.fact_forecast_driver`,
+    `gold.fact_occupancy_forecast`, `gold.fact_signal`.
+
+  Both applied via the gated
+  [`run_single_notebook.py --environment PROD --apply`](../../../data-platform/scripts/fabric/run_single_notebook.py)
+  runner and verified by a fresh OneLake DFS re-read (PROD gold 28→36, E15). The
+  `external-signals` semantic model is Direct Lake over these gold tables and now
+  resolves against real data.
 
 ### ⏳ Gated forward-parity
 
