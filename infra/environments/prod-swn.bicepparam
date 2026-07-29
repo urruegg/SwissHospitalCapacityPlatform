@@ -111,15 +111,22 @@ param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:62cc2ae'
 // to avoid a deploy-time AllocationFailed on an unverified swn Balanced SKU.
 // Flip to true once the SKU is confirmed in switzerlandnorth (PROD hardening).
 param agentHostEnableRedis = false
-// PROD Fabric Data Agent is published in a later phase (P6). Empty keeps the
-// agent-host synthetic fallback until the PROD swn workspace + Data Agent exist.
-param fabricDataAgentEndpoint = ''
-param fabricWorkspaceId = ''
-param fabricDataAgentId = ''
+// PROD Fabric Data Agent (#477) — cloned from the SIT agent into the swn PROD
+// workspace 1c8408f4, grounded on the capacity-dashboard + external-signals
+// Direct Lake semantic models (ontology grounding deferred). Wiring these live
+// switches the agent-host from synthetic fallback to live grounding.
+param fabricDataAgentEndpoint = 'https://api.fabric.microsoft.com/v1/workspaces/1c8408f4-6eb7-401f-aee9-77fe4c8a515e/aiskills/39cb57b5-4bbf-4d64-af1c-7f0a81b0d570/aiassistant/openai'
+param fabricWorkspaceId = '1c8408f4-6eb7-401f-aee9-77fe4c8a515e'
+param fabricDataAgentId = '39cb57b5-4bbf-4d64-af1c-7f0a81b0d570'
 
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:dadd7ce'
+// Sprint 35 (#543) — Backstage restructure (feedback-loop default + 2-tab sub-nav,
+// Story/Evidence/Roles removed). Bumped dadd7ce -> a7fb478 (PR #544 squash on main).
+// Env-agnostic image (agent-host URL injected at runtime, #447); imported into
+// crihzhhpfprod via `az acr import` from the SIT ACR. approved-to-apply by
+// @urruegg 2026-07-29. Already live + verified in SIT on appsit.curavias.ch.
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:a7fb478'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the PROD app calls the PROD (switzerlandnorth) agent-host
 // instead of inheriting the SIT URL from the build-once + import image.
