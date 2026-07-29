@@ -18,9 +18,6 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground1,
     boxSizing: 'border-box',
     overflowX: 'hidden',
-    '& [aria-pressed="true"] .fui-Caption1': {
-      color: '#0E0F11',
-    },
   },
   frame: {
     width: 'min(1440px, 100%)',

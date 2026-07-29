@@ -1,11 +1,14 @@
 import type { JSX } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { useParams } from 'react-router-dom';
+import { Body1, makeStyles, Title2, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import { EvidenceTab } from './tabs/evidence/EvidenceTab';
-import { RolesTab } from './tabs/roles/RolesTab';
-import { StoryTab } from './tabs/story/StoryTab';
+import { DigitalFeedbackLoopSection } from './tabs/story/feedback-loop/DigitalFeedbackLoopSection';
 import { OpportunityPipelineView } from './opportunity/OpportunityPipelineView';
+import {
+  BACKSTAGE_PARTS,
+  BackstageSubNav,
+  DEFAULT_BACKSTAGE_PART,
+} from './BackstageSubNav';
 
 const useStyles = makeStyles({
   root: {
@@ -13,51 +16,30 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: tokens.spacingVerticalL,
   },
-  nav: {
+  header: {
     display: 'flex',
-    gap: tokens.spacingHorizontalS,
-    flexWrap: 'wrap',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalXS,
+    maxWidth: '820px',
   },
-  navLink: {
-    color: tokens.colorBrandForegroundLink,
-    textDecorationLine: 'none',
-    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
-    borderRadius: tokens.borderRadiusMedium,
-    ':hover': {
-      textDecorationLine: 'underline',
-    },
-  },
-  activeNavLink: {
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-    fontWeight: tokens.fontWeightSemibold,
+  lead: {
+    color: tokens.colorNeutralForeground2,
   },
 });
 
-const NAV_ITEMS = [
-  { key: 'story', to: '/backstage/story', labelKey: 'backstage.story.tab' },
-  { key: 'evidence', to: '/backstage/evidence', labelKey: 'backstage.evidence' },
-  { key: 'opportunities', to: '/backstage/opportunities', labelKey: 'backstage.opportunities' },
-  { key: 'roles', to: '/backstage/roles', labelKey: 'backstage.roles' },
-];
-
 /**
- * Sprint 20 M5 — Backstage surface.
+ * Sprint 35 - Backstage surface.
  *
- * Routes the existing evidence / roles tabs as widgets behind
- * `/backstage/:widget?`, defaulting to the evidence widget. Each tab owns its
- * own whiteboard `Canvas` (evidence) or content, so BackstageView only selects
- * and mounts the widget.
+ * Restructured from the Sprint 20 four-tab layout (Story / Evidence /
+ * Opportunities / Roles). The surface now opens on the Curavias Digital
+ * Feedback Loop as its first part, with a Main-style sub-nav (`BackstageSubNav`)
+ * for additional parts as they land. Each part owns its own content; the view
+ * only selects and mounts the active part behind `/backstage/:widget?`.
  */
-const WIDGETS: Record<string, () => JSX.Element> = {
-  story: () => (
-    <div data-testid="widget-story">
-      <StoryTab />
-    </div>
-  ),
-  evidence: () => (
-    <div data-testid="widget-evidence">
-      <EvidenceTab />
+const PARTS: Record<string, () => JSX.Element> = {
+  'feedback-loop': () => (
+    <div data-testid="widget-feedback-loop">
+      <DigitalFeedbackLoopSection />
     </div>
   ),
   opportunities: () => (
@@ -65,39 +47,27 @@ const WIDGETS: Record<string, () => JSX.Element> = {
       <OpportunityPipelineView />
     </div>
   ),
-  roles: () => (
-    <div data-testid="widget-roles">
-      <RolesTab />
-    </div>
-  ),
 };
 
 export function BackstageView() {
   const styles = useStyles();
   const { t } = useTranslation();
-  const { widget = 'evidence' } = useParams();
-  const W = WIDGETS[widget] ?? WIDGETS.evidence;
-  const selectedWidget = WIDGETS[widget] ? widget : 'evidence';
+  const { widget = DEFAULT_BACKSTAGE_PART } = useParams();
+  const activePart = BACKSTAGE_PARTS.some((p) => p.key === widget)
+    ? widget
+    : DEFAULT_BACKSTAGE_PART;
+  const Part = PARTS[activePart] ?? PARTS[DEFAULT_BACKSTAGE_PART];
 
   return (
-    <div className={styles.root}>
-      <nav className={styles.nav} aria-label={t('backstage.nav.label', 'Backstage sections')}>
-        {NAV_ITEMS.map((item) => {
-          const active = item.key === selectedWidget;
-          return (
-            <Link
-              key={item.key}
-              to={item.to}
-              data-testid={`backstage-nav-${item.key}`}
-              className={mergeClasses(styles.navLink, active && styles.activeNavLink)}
-              aria-current={active ? 'page' : undefined}
-            >
-              {t(item.labelKey)}
-            </Link>
-          );
-        })}
-      </nav>
-      <W />
+    <div className={styles.root} data-testid="backstage-surface">
+      <header className={styles.header}>
+        <Title2>{t('backstage.header.title')}</Title2>
+        <Body1 as="p" className={styles.lead}>
+          {t('backstage.header.lead')}
+        </Body1>
+      </header>
+      <BackstageSubNav />
+      <Part />
     </div>
   );
 }

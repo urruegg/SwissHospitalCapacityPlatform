@@ -7,10 +7,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Backstage feedback loop routes domain context to the PO rail', async ({ page }) => {
-  await page.goto('/backstage/story');
+  await page.goto('/backstage/feedback-loop');
 
   await expect(page.getByTestId('digital-feedback-loop-section')).toBeVisible();
-  await expect(page.locator('[data-testid^="backstage-nav-"]')).toHaveCount(4);
+  await expect(page.locator('[data-testid^="backstage-nav-"]')).toHaveCount(2);
 
   await page.getByRole('button', { name: /empower care teams/i }).click();
 
@@ -32,7 +32,7 @@ test('standalone route reuses the loop without app-shell chrome', async ({ page 
 
 test('desktop feedback loop renders visual evidence without clipping', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/backstage/story');
+  await page.goto('/backstage/feedback-loop');
 
   await expect(page.getByTestId('digital-feedback-loop-section')).toBeVisible();
   await expect(page.getByTestId('feedback-loop-canvas')).toBeVisible();
@@ -59,13 +59,13 @@ test('narrow feedback loop remains readable without horizontal scroll', async ({
 
 test('feedback loop honors reduced-motion preferences', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/backstage/story');
+  await page.goto('/backstage/feedback-loop');
 
   await expect(page.getByTestId('feedback-loop-canvas')).toHaveAttribute('data-reduced-motion', 'true');
 });
 
 test('feedback loop pause control stops the simulation', async ({ page }) => {
-  await page.goto('/backstage/story');
+  await page.goto('/backstage/feedback-loop');
 
   await page.getByRole('button', { name: /pause simulation/i }).click();
   await expect(page.getByTestId('feedback-loop-canvas')).toHaveAttribute('data-playing', 'false');

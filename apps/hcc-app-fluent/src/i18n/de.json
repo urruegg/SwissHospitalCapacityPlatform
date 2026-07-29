@@ -36,7 +36,9 @@
     "evidenceDescription": "Presenter-Whiteboard: BOM-, ADR-, Anforderungs-, GA-Nachweis- und Abhängigkeitskarten (synthetisch, keine PHI).",
     "opportunities": "Opportunities",
     "nav": {
-      "label": "Backstage-Bereiche"
+      "label": "Backstage-Bereiche",
+      "feedbackLoop": "Digitaler Feedback-Loop",
+      "opportunities": "Opportunities"
     },
     "story": {
       "tab": "Story",
@@ -200,6 +202,10 @@
       "pillars": {
         "sectionLabel": "Plattformgrundlagen"
       }
+    },
+    "header": {
+      "title": "Curavias Backstage",
+      "lead": "Die Curavias-Plattformgeschichte - beginnend mit dem digitalen Feedback-Loop. Weitere Bereiche folgen."
     }
   },
   "evidence": {
@@ -284,7 +290,7 @@
     "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
     "placementMove": "Platzierung {{requestNo}}: {{source}} → {{target}}",
-      "admissionEvent": "Steuerung: {{patient}} in {{ward}}",
+    "admissionEvent": "Steuerung: {{patient}} in {{ward}}",
     "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "orCaseEvent": "OP-Fall {{caseNo}} steuern",
