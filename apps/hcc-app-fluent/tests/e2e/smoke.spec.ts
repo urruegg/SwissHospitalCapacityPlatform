@@ -3,24 +3,25 @@ import { test, expect } from '@playwright/test';
 /**
  * Sprint 13 T1 — Playwright smoke test.
  * Sprint 20 M9.3 — re-pointed at the route-driven five-plane shell after the
- * AppRail/TopBar/WorkspaceRouter shell was removed. The Backstage roles widget
- * is reached directly via `/backstage/roles`.
+ * AppRail/TopBar/WorkspaceRouter shell was removed.
+ * Sprint 35 — Backstage restructured: opens on the Digital Feedback Loop part
+ * (`/backstage/feedback-loop`) after Story/Evidence/Roles were removed.
  *
  * Anonymous demo.guest shell: land on the Curavias shell → open the Backstage
- * Roles widget. MSAL sign-in is exercised in a follow-up once the SIT app
- * registration is wired (design spec §8); the smoke proves the shell renders
- * and routes.
+ * Digital Feedback Loop part. MSAL sign-in is exercised in a follow-up once the
+ * SIT app registration is wired (design spec §8); the smoke proves the shell
+ * renders and routes.
  */
-test('demo.guest lands on the Curavias shell and reaches the Backstage roles widget', async ({ page }) => {
+test('demo.guest lands on the Curavias shell and reaches the Backstage feedback loop', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('banner')).toContainText('Curavias');
 
-  // Navigate to the Backstage roles widget (route-driven `/backstage/:widget?`).
-  await page.goto('/backstage/roles');
-  await expect(page.getByTestId('widget-roles')).toBeVisible();
+  // Navigate to the Backstage Digital Feedback Loop part (route-driven `/backstage/:widget?`).
+  await page.goto('/backstage/feedback-loop');
+  await expect(page.getByTestId('widget-feedback-loop')).toBeVisible();
 
-  // Roles widget content renders (read-only Entra app roles).
-  await expect(page.getByRole('table')).toBeVisible();
+  // Feedback loop content renders (advisory, synthetic, no PHI).
+  await expect(page.getByTestId('digital-feedback-loop-section')).toBeVisible();
 });
 
 test('BedManager board renders the parity surface (worklist)', async ({ page }) => {

@@ -5,52 +5,39 @@ import '../../src/i18n';
 import { BackstageView } from '../../src/workspaces/backstage/BackstageView';
 import { RoleProvider } from '../../src/context/role-context';
 
+function renderAt(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <RoleProvider testRoles={['HCC.PlatformAdmin'] as never[]} testHomeSite="usz">
+        <Routes>
+          <Route path="/backstage/:widget?" element={<BackstageView />} />
+        </Routes>
+      </RoleProvider>
+    </MemoryRouter>,
+  );
+}
+
 describe('BackstageView', () => {
-  it('defaults to the evidence widget', () => {
-    render(
-      <MemoryRouter initialEntries={['/backstage']}>
-        <RoleProvider testRoles={['HCC.PlatformAdmin'] as never[]} testHomeSite="usz">
-          <Routes>
-            <Route path="/backstage/:widget?" element={<BackstageView />} />
-          </Routes>
-        </RoleProvider>
-      </MemoryRouter>,
-    );
-    expect(screen.getByTestId('widget-evidence')).toBeInTheDocument();
+  it('defaults to the Digital Feedback Loop part', () => {
+    renderAt('/backstage');
+    expect(screen.getByTestId('widget-feedback-loop')).toBeInTheDocument();
+    expect(screen.getByTestId('digital-feedback-loop-section')).toBeInTheDocument();
   });
 
-  it('renders the story widget with all four pillars', () => {
-    render(
-      <MemoryRouter initialEntries={['/backstage/story']}>
-        <RoleProvider testRoles={['HCC.PlatformAdmin'] as never[]} testHomeSite="usz">
-          <Routes>
-            <Route path="/backstage/:widget?" element={<BackstageView />} />
-          </Routes>
-        </RoleProvider>
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByTestId('widget-story')).toBeInTheDocument();
-    expect(screen.getByTestId('backstage-story')).toBeInTheDocument();
-    expect(screen.getByTestId('story-pillar-agents')).toBeInTheDocument();
-    expect(screen.getByTestId('story-pillar-fabric-fhir')).toBeInTheDocument();
-    expect(screen.getByTestId('story-pillar-dsg')).toBeInTheDocument();
-    expect(screen.getByTestId('story-pillar-alm')).toBeInTheDocument();
+  it('renders the Backstage header and sub-navigation', () => {
+    renderAt('/backstage');
+    expect(screen.getByTestId('backstage-surface')).toBeInTheDocument();
+    expect(screen.getByTestId('backstage-nav-feedback-loop')).toBeInTheDocument();
+    expect(screen.getByTestId('backstage-nav-opportunities')).toBeInTheDocument();
   });
 
-  it('renders backstage sub-navigation with a story link on the default evidence widget', () => {
-    render(
-      <MemoryRouter initialEntries={['/backstage']}>
-        <RoleProvider testRoles={['HCC.PlatformAdmin'] as never[]} testHomeSite="usz">
-          <Routes>
-            <Route path="/backstage/:widget?" element={<BackstageView />} />
-          </Routes>
-        </RoleProvider>
-      </MemoryRouter>,
-    );
+  it('mounts the Opportunities part on its route', () => {
+    renderAt('/backstage/opportunities');
+    expect(screen.getByTestId('widget-opportunities')).toBeInTheDocument();
+  });
 
-    expect(screen.getByTestId('widget-evidence')).toBeInTheDocument();
-    const storyLink = screen.getByTestId('backstage-nav-story');
-    expect(storyLink).toHaveAttribute('href', '/backstage/story');
+  it('falls back to the Digital Feedback Loop part for an unknown widget', () => {
+    renderAt('/backstage/does-not-exist');
+    expect(screen.getByTestId('widget-feedback-loop')).toBeInTheDocument();
   });
 });

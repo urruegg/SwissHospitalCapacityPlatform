@@ -36,7 +36,9 @@
     "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI).",
     "opportunities": "Opportunities",
     "nav": {
-      "label": "Backstage sections"
+      "label": "Backstage sections",
+      "feedbackLoop": "Digital Feedback Loop",
+      "opportunities": "Opportunities"
     },
     "story": {
       "tab": "Story",
@@ -200,6 +202,10 @@
       "pillars": {
         "sectionLabel": "Platform foundations"
       }
+    },
+    "header": {
+      "title": "Curavias Backstage",
+      "lead": "The Curavias platform story - starting with the Digital Feedback Loop. More parts to come."
     }
   },
   "evidence": {
@@ -284,7 +290,7 @@
     "dischargeExpediteDetail": "Expedite {{ward}} discharge — {{blocker}}",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
     "placementMove": "Place {{requestNo}}: {{source}} → {{target}}",
-      "admissionEvent": "Steer from {{ward}} event ({{patient}})",
+    "admissionEvent": "Steer from {{ward}} event ({{patient}})",
     "placementBarrier": "Barrier: {{label}}",
     "orDefer": "Defer {{specialty}} case",
     "orCaseEvent": "Steer OR case {{caseNo}}",

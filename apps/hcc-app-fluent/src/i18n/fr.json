@@ -36,7 +36,9 @@
     "evidenceDescription": "Tableau blanc du présentateur : cartes BOM, ADR, exigences, preuves GA et dépendances (synthétiques, sans PHI).",
     "opportunities": "Opportunités",
     "nav": {
-      "label": "Sections des coulisses"
+      "label": "Sections des coulisses",
+      "feedbackLoop": "Boucle de retroaction numerique",
+      "opportunities": "Opportunites"
     },
     "story": {
       "tab": "Histoire",
@@ -105,6 +107,10 @@
       "pillars": {
         "sectionLabel": "Fondations de la plateforme"
       }
+    },
+    "header": {
+      "title": "Curavias Backstage",
+      "lead": "L'histoire de la plateforme Curavias - en commencant par la boucle de retroaction numerique. D'autres parties a venir."
     }
   },
   "evidence": {
@@ -189,7 +195,7 @@
     "dischargeExpediteDetail": "Accélérer la sortie {{ward}} — {{blocker}}",
     "bedShift": "Déplacer {{beds}} lits {{fromWard}} -> {{toWard}}",
     "placementMove": "Placement {{requestNo}} : {{source}} → {{target}}",
-      "admissionEvent": "Piloter depuis l'événement {{ward}} ({{patient}})",
+    "admissionEvent": "Piloter depuis l'événement {{ward}} ({{patient}})",
     "placementBarrier": "Obstacle : {{label}}",
     "orDefer": "Reporter le cas {{specialty}}",
     "orCaseEvent": "Piloter le cas bloc {{caseNo}}",

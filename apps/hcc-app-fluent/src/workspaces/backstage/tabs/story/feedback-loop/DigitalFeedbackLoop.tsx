@@ -45,6 +45,14 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: tokens.shadow4,
+    // A11y — the selected (primary/brand) domain button paints its secondary
+    // Microsoft-vocabulary caption over the brand fill. `colorNeutralForeground3`
+    // (grey) fails WCAG 2.1 AA contrast on that fill, so pin the caption on any
+    // pressed control to near-black. Baked into the reusable component so every
+    // embedding (Backstage + standalone presentation) inherits the fix.
+    '& [aria-pressed="true"] .fui-Caption1': {
+      color: '#0E0F11',
+    },
     '@media screen and (max-width: 860px)': {
       gridTemplateColumns: '1fr',
       gridTemplateRows: 'auto auto auto auto',
