@@ -2,30 +2,60 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.3.0 |
-| **Date** | 2026-07-26 |
+| **Version** | 1.4.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.2.0 (evidence-based matrix; 2-of-3 flagged gaps reclassified PROD-exceeds-SIT) |
+| **Previous Version** | 1.3.0 (evidence-based matrix, 2026-07-24 reads; PROD-storage gap tracked in-progress) |
 
 ## 1. Summary
 
-Live read-only `az` evidence gathered on 2026-07-24 shows that SIT and PROD are
-aligned for the core production path (agent host, signal runner execution,
-Cosmos, Event Hubs, Key Vault posture, app ingress, and observability), while the
-known region/topology differences are deliberate. Re-verification corrected two
-former red findings: PROD is more hardened than SIT for Key Vault private
-networking and signal-runner identity. The former data/AI/integration-lane gap
-was **closed on 2026-07-24 by the D8 full-parity deploy slices** (additive, 0
-deletes, `Succeeded`): PROD substrate now includes the ML workspace, ADLS
-masterdata, `sim-capacity` CA, skills-sim jobs + managed environments, Fabric F2
-workspace/lakehouse (50 Delta tables) + 2 semantic models, and the Foundry
-project (3 models + 8 agents). No genuine parity gap remains — the only
-non-parity item is the Fabric IQ ontology, excluded from GA parity per ADR
-(availability-blocked, #270).
+> **2026-07-28 full re-verification (v1.4.0, Sprint 33 close-out).** A fresh
+> end-to-end live re-read (control plane via `az`, plus the OneLake DFS +
+> Fabric REST data plane) both **confirmed new parity gained since 2026-07-24**
+> and **surfaced one new data-product divergence** the earlier control-plane-only
+> matrix could not see:
+>
+> * **PROD storage is now genuinely present** — `stcorpusihzhhpfprod`,
+>   `stdpihzhhpfprodi62t`, `stmasterdataihzhhpfprod`, `stmediaihzhhpfprod`
+>   (the former 2026-07-24 "PROD has no storage accounts" open item is
+>   **closed**, superseding the stale §5 gap note).
+> * **Product-Owner stack (Sprint 28) is live in BOTH** environments — `ca-po-*`
+>   Container App, `kvpo*` Key Vault, and `stcorpus*` corpus storage in each RG.
+> * **PROD now carries `ca-sim-capacity-ihzhhpf-prod`** (running), so the
+>   simulation-capacity runtime is no longer SIT-only.
+> * **New finding — gold data-product medallion divergence.** SIT gold has **48**
+>   tables; PROD gold has **28**. PROD is missing 20 SIT tables across three
+>   product families, consistently absent bronze→silver→gold: the **BVA cost
+>   product** (`bva_consumption` + 11 `bva_*` gold), the **external-signals
+>   product** (`ext_signals*` + 5 `ext_*` gold), and newer **forecast facts**
+>   (`fact_forecast_driver`, `fact_occupancy_forecast`, `fact_signal`) plus the
+>   legacy `patient-flow` table. Cosmos containers and the two semantic models
+>   (`capacity-dashboard`, `external-signals`) remain at parity; no `bva`
+>   database / `opportunities` container and no `sm_bva` semantic model exist in
+>   **either** environment (WS-A/WS-D live publish is `approved-to-apply`-gated →
+>   absent-in-both, not a divergence).
 
-**Verdict tally:** ✅ **Parity** 10 · ⚠️ **Deliberate asymmetry** 5 · 🟥 **Gap** 0 ·
-**N-A** 1.
+Live read-only `az` evidence first gathered on 2026-07-24 and re-verified on
+2026-07-28 shows that SIT and PROD are aligned for the core production path
+(agent host, signal runner execution, Cosmos, Event Hubs, Key Vault posture, app
+ingress, observability, and the Product-Owner stack), while the known
+region/topology differences are deliberate. Re-verification corrected two former
+red findings: PROD is more hardened than SIT for Key Vault private networking and
+signal-runner identity. The former data/AI/integration-lane gap was **closed on
+2026-07-24 by the D8 full-parity deploy slices** (additive, 0 deletes,
+`Succeeded`): PROD substrate includes the ML workspace, ADLS masterdata,
+`sim-capacity` CA, skills-sim jobs + managed environments, Fabric F2
+workspace/lakehouse + 2 semantic models, and the Foundry project (3 models + 8
+agents). The remaining non-parity items are the deliberate region/topology
+asymmetries, the Fabric IQ ontology (excluded from GA parity per ADR,
+availability-blocked, #270), and the **new 2026-07-28 gold-medallion divergence**
+— of which the BVA family is a **managed, gated forward-parity item** (Sprint 33
+SIT-first) and the external-signals + forecast families are **genuine PROD-lag
+gaps** where PROD gold has not been rebuilt to the current SIT medallion.
+
+**Verdict tally:** ✅ **Parity** 10 · ⚠️ **Deliberate asymmetry** 5 ·
+⏳ **Gated forward-parity** 1 · 🟥 **Gap** 1 · **N-A** 1.
 
 > **Static parity harness (2026-07-26, #255):** module-selection parity between
 > `infra/environments/sit.bicepparam` and `infra/environments/prod-swn.bicepparam`
@@ -55,6 +85,12 @@ non-parity item is the Fabric IQ ontology, excluded from GA parity per ADR
 * **F4:** SIT deliberately permits cross-region access and is split across
   westus2 plus the eastus2 Foundry control-plane account
   `ai-ihzhhpf-sit-eastus2` per ADR-0032. PROD does not need that eastus2 split.
+* **F5:** The Sprint 33 BVA data product (`bva_consumption` bronze/silver, 11
+  `bva_*` gold tables, the `sm_bva` semantic model, and the `bva`/`opportunities`
+  Cosmos SoR) is authored **SIT-first**; its live PROD publish is
+  `approved-to-apply`-gated per the WS-A/WS-D gated-load plans. SIT-only presence
+  of the BVA family is therefore a **managed, gated forward-parity item**, not an
+  unmanaged gap.
 
 ## 3. Parity matrix
 
@@ -67,9 +103,12 @@ non-parity item is the Fabric IQ ontology, excluded from GA parity per ADR
 | 3 | Agent-host managed identity and platform roles | `ca-agent-host-ihzhhpf-sit` uses UAMI `id-ca-agent-host-ihzhhpf-sit`; has `AcrPull`, `Cognitive Services User`, and Cosmos SQL data-plane role `...0002` on platform + CSA accounts. | `ca-agent-host-ihzhhpf-prod` uses UAMI `id-ca-agent-host-ihzhhpf-prod`; has `AcrPull`, `Cognitive Services User`, and Cosmos SQL data-plane role `...0002` on platform + CSA accounts. | ✅ **Parity** | [E3](#e3-identity--rbac) |
 | 3 | Signal-runner identity and Event Hubs sender | `ca-signal-runner-ihzhhpf-sit` uses a **SystemAssigned** identity; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-sit-y26y`. | `ca-signal-runner-ihzhhpf-prod` uses UAMI `id-signal-runner-ihzhhpf-prod`; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-prod-i62t`. PROD was deliberately hardened to stable UAMI so role assignment survives CAE recreates. | ⚠️ **Deliberate asymmetry — PROD exceeds SIT**. SIT could adopt the stable-UAMI pattern as future hardening, not a GA-parity gap. | [E3](#e3-identity--rbac) |
 | 4 | Cosmos DB and Event Hubs data platform | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `West US 2`; Event Hubs namespace `Standard`, public access enabled. | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `Switzerland North`; Event Hubs namespace `Standard`, public access enabled. | ✅ **Parity** | [E4](#e4-data-platform) |
-| 4 | Storage / ADLS landing zone and data/AI/integration lane | Two StorageV2 accounts exist with public access disabled: `stdpihzhhpfsity26y` (data-platform storage) and `stmasterdataihzhhpfsit` (ADLS Gen2, HNS=true, masterdata landing). | Data/AI/integration lane **deployed** via the D8 full-parity slices (`prod-swn.bicepparam` overrides enable the lane): ML workspace, ADLS masterdata, `sim-capacity` CA + 4 skills-sim jobs + 4 managed environments, Fabric F2 workspace/lakehouse (50 Delta tables) + 2 semantic models, and Foundry project (3 models + 8 agents). Two deploy-blocking Bicep bugs fixed en route (ML KV/ACR override wiring `e72ec67`; `sim-capacity` Event Hubs Data Sender role `a402c35`). Only Fabric IQ Ontology/Data Agent remain Preview-gated (#270). | ✅ **Parity — closed 2026-07-24** by decision D8 (@urruegg, `approved-to-apply`): full P5/P6 data-lane parity applied as additive gated deploy slices (0 deletes, `Succeeded`). Required BOM items are GA in Switzerland North per ADR-0037 and `region-availability.yaml`; only Fabric IQ Ontology + Fabric Data Agent stay Preview (N/A for GA parity, #270). | [E4](#e4-data-platform) |
-| 5 | Core Container Apps runtime | Core apps `ca-app-fluent-ihzhhpf-sit`, `ca-agent-host-ihzhhpf-sit`, and `ca-signal-runner-ihzhhpf-sit` are `Succeeded` / `Running`. | Core apps `ca-app-fluent-ihzhhpf-prod`, `ca-agent-host-ihzhhpf-prod`, and `ca-signal-runner-ihzhhpf-prod` are `Succeeded` / `Running`. | ✅ **Parity** | [E5](#e5-compute--runtime) |
-| 5 | SIT-only simulation runtime | SIT additionally has simulation CAEs/apps (`cae-sim-*`, `cae-skills-sim-*`, `ca-sim-capacity-*`) for synthetic testing. | PROD does not carry those SIT simulation-only runtime resources. | ⚠️ **Deliberate asymmetry (F3 / ADR-0013)** | [E5](#e5-compute--runtime) |
+| 4 | Storage / ADLS landing zone and data/AI/integration lane | Three StorageV2 accounts with public access disabled: `stcorpusihzhhpfsit` (PO corpus), `stdpihzhhpfsity26y` (data-platform), and `stmasterdataihzhhpfsit` (ADLS Gen2, masterdata landing). | **PROD storage now present (re-verified 2026-07-28):** `stcorpusihzhhpfprod`, `stdpihzhhpfprodi62t`, `stmasterdataihzhhpfprod`, and `stmediaihzhhpfprod` — the former "PROD has no storage accounts" open item is closed. Data/AI/integration lane deployed via the D8 full-parity slices: ML workspace, ADLS masterdata, `sim-capacity` CA + skills-sim jobs/environments, Fabric F2 workspace/lakehouse + 2 semantic models, Foundry project (3 models + 8 agents). Only Fabric IQ Ontology/Data Agent remain Preview-gated (#270). | ✅ **Parity — closed 2026-07-24** by decision D8 (@urruegg, `approved-to-apply`) and re-confirmed live 2026-07-28. PROD storage is present; required BOM items are GA in Switzerland North per ADR-0037. | [E4](#e4-data-platform), [E11](#e11-storage-refresh-2026-07-28) |
+| 4 | Gold data-product medallion — BVA cost product (Sprint 33) | `bva_consumption` (bronze/silver) + 11 `bva_*` gold tables (`bva_dim_*` ×8, `bva_fact_azure_consumption`, `bva_fact_budget`, `bva_fact_value_realization`) present in SIT gold. | Absent from PROD gold. WS-A/WS-D live publish is `approved-to-apply`-gated per the gated-load plans; no `bva`/`opportunities` Cosmos container or `sm_bva` semantic model exists in either environment. | ⏳ **Gated forward-parity (F5)** — Sprint 33 is SIT-first; PROD publish is a tracked, human-gated deploy slice, not an unmanaged gap. | [E12](#e12-medallion-table-diff-2026-07-28) |
+| 4 | Gold data-product medallion — external-signals + forecast facts | `ext_signals_raw` (bronze), `ext_signals`/`ext_signals_quarantine` (silver), 5 `ext_*` gold tables, and forecast facts `fact_forecast_driver`/`fact_occupancy_forecast`/`fact_signal` (+ legacy `patient-flow`) present in SIT gold. | Absent from PROD gold — yet PROD **has** the `external-signals` semantic model and a running `ca-signal-runner-ihzhhpf-prod`, so the PROD model has no backing gold data. PROD retains only the older `forecast_output` shape. | 🟥 **Gap** — PROD gold medallion has not been rebuilt to the current SIT medallion for the external-signals and forecast families. Remediate via a gated PROD medallion rebuild (see §5). | [E12](#e12-medallion-table-diff-2026-07-28) |
+| 4 | Cosmos containers and Fabric semantic models | Platform Cosmos `agenthost` (`agent_interactions`, `approval-events`, `conversations`, `audit`); CSA `csa` (`simulation-runs`, `plans`, `proposed_actions`, `agent-memory`, `response-levers`, `scenarios`); semantic models `capacity-dashboard` + `external-signals`. | Identical Cosmos container set in both platform and CSA accounts; identical semantic models `capacity-dashboard` + `external-signals`. | ✅ **Parity** | [E13](#e13-cosmos-containers--semantic-models-2026-07-28) |
+| 5 | Core Container Apps runtime | Core apps `ca-app-fluent-ihzhhpf-sit`, `ca-agent-host-ihzhhpf-sit`, `ca-signal-runner-ihzhhpf-sit`, and `ca-po-ihzhhpf-sit` are `Succeeded` / `Running`. | Core apps `ca-app-fluent-ihzhhpf-prod`, `ca-agent-host-ihzhhpf-prod`, `ca-signal-runner-ihzhhpf-prod`, and `ca-po-ihzhhpf-prod` are `Succeeded` / `Running` (Product-Owner stack, Sprint 28, now live in both). | ✅ **Parity** | [E5](#e5-compute--runtime), [E14](#e14-container-apps--key-vault-refresh-2026-07-28) |
+| 5 | Simulation-capacity runtime | SIT has `ca-sim-capacity-ihzhhpf-sit` plus the simulation-only CAEs (`cae-sim-*`, `cae-skills-sim-*`). | PROD now carries `ca-sim-capacity-ihzhhpf-prod` (running); the simulation-only CAEs remain SIT-only. | ⚠️ **Deliberate asymmetry (F3 / ADR-0013)** — narrowed: `ca-sim-capacity` reached PROD; only the synthetic-testing CAEs stay SIT-only. | [E5](#e5-compute--runtime), [E14](#e14-container-apps--key-vault-refresh-2026-07-28) |
 | 6 | Key Vault / secrets control plane | `kv-ihzhhpf-sit-y26y`: RBAC authorization enabled; public network access disabled. | `kv-ihzhhpf-prod-swn1`: RBAC authorization enabled; public network access disabled. | ✅ **Parity** | [E6](#e6-key-vault--secrets) |
 | 7 | App / experience ingress and custom domain | `ca-app-fluent-ihzhhpf-sit` has external ingress, `appsit.curavias.ch`, and a westus2 Container Apps FQDN. | `ca-app-fluent-ihzhhpf-prod` has external ingress, `app.curavias.ch`, and a Switzerland North Container Apps FQDN. | ✅ **Parity** | [E7](#e7-app--experience) |
 | 8 | Observability | App Insights component `appi-ihzhhpf-sit` exists in westus2. | App Insights component `appi-ihzhhpf-prod` exists in switzerlandnorth. | ✅ **Parity** | [E8](#e8-observability) |
@@ -367,16 +406,107 @@ on the accepted repository facts and ADRs: SIT uses synthetic-only data per
 ADR-0013, and both SIT and PROD remain metadata/episode-driven with no
 customer/patient PID/PHI per ADR-0016.
 
+### E11 Storage refresh (2026-07-28)
+
+```text
+// az storage account list -g rg-ihzhhpf-sit --query '[].name' -o tsv
+stcorpusihzhhpfsit
+stdpihzhhpfsity26y
+stmasterdataihzhhpfsit
+
+// az storage account list -g rg-ihzhhpf-prod --query '[].name' -o tsv
+stcorpusihzhhpfprod
+stdpihzhhpfprodi62t
+stmasterdataihzhhpfprod
+stmediaihzhhpfprod
+```
+
+PROD storage is present, superseding the 2026-07-24 empty result recorded in E4.
+
+### E12 Medallion table diff (2026-07-28)
+
+Data-plane reads via the OneLake DFS filesystem API
+(`https://onelake.dfs.fabric.microsoft.com/<workspace>?resource=filesystem&directory=<lakehouse>/Tables/<schema>`),
+storage-token auth, executed by
+[`data-platform/scripts/fabric/list_gold_tables.py`](../../../data-platform/scripts/fabric/list_gold_tables.py)
+(`--environment SIT|PROD`) and equivalent bronze/silver listings.
+
+```text
+// gold schema — SIT=48, PROD=28; tables present in SIT gold but absent in PROD gold (20):
+bva_dim_capability, bva_dim_date, bva_dim_environment, bva_dim_exec_role,
+bva_dim_hospital, bva_dim_meter, bva_dim_resource, bva_dim_service,
+bva_fact_azure_consumption, bva_fact_budget, bva_fact_value_realization,   # BVA (F5, gated)
+ext_dim_hazard_type, ext_dim_region, ext_dim_source, ext_fact_signal,
+ext_fact_trigger_event,                                                    # external-signals (gap)
+fact_forecast_driver, fact_occupancy_forecast, fact_signal,                # forecast facts (gap)
+patient-flow                                                               # legacy SIT table (gap)
+
+// silver schema — SIT=13, PROD=11; SIT-only: bva_consumption, ext_signals, ext_signals_quarantine
+// bronze schema — SIT=12, PROD=11; SIT-only: bva_consumption, ext_signals_raw
+// (PROD-only 'schema.json.gz' entries are lakehouse metadata blobs, not Delta tables)
+```
+
+The divergence is consistent bronze→silver→gold for both the BVA and
+external-signals families, confirming PROD medallion has not been rebuilt for
+them (rather than a partial/gold-only projection failure).
+
+### E13 Cosmos containers & semantic models (2026-07-28)
+
+```text
+// az cosmosdb sql container list -g <rg> -a <account> -d <db> --query '[].name' -o tsv
+cosmos-ihzhhpf-sit/agenthost   : agent_interactions, approval-events, conversations, audit
+cosmos-csa-ihzhhpf-sit/csa     : simulation-runs, plans, proposed_actions, agent-memory, response-levers, scenarios
+cosmos-ihzhhpf-prod/agenthost  : agent_interactions, conversations, audit, approval-events   # same set
+cosmos-csa-ihzhhpf-prod/csa    : agent-memory, scenarios, proposed_actions, response-levers, plans, simulation-runs   # same set
+// No 'bva' database / 'opportunities' container in either environment (WS-D publish gated).
+
+// GET https://api.fabric.microsoft.com/v1/workspaces/<id>/semanticModels  (displayName)
+SIT  ws-ihzhhpf-sit-data  : capacity-dashboard, external-signals
+PROD ws-ihzhhpf-prod-data : capacity-dashboard, external-signals
+// No 'sm_bva' semantic model in either environment (WS-A publish gated).
+```
+
+### E14 Container Apps & Key Vault refresh (2026-07-28)
+
+```text
+// az containerapp list -g <rg> --query '[].{n:name,s:properties.runningStatus}' -o tsv
+SIT  : ca-sim-capacity-ihzhhpf-sit(Running), ca-app-fluent-ihzhhpf-sit(Running),
+       ca-agent-host-ihzhhpf-sit(Running), ca-signal-runner-ihzhhpf-sit(Running),
+       ca-po-ihzhhpf-sit(Running)
+PROD : ca-app-fluent-ihzhhpf-prod(Running), ca-agent-host-ihzhhpf-prod(Running),
+       ca-signal-runner-ihzhhpf-prod(Running), ca-sim-capacity-ihzhhpf-prod(Running),
+       ca-po-ihzhhpf-prod(Running)
+
+// az keyvault list -g <rg> --query '[].name' -o tsv
+SIT  : kv-ihzhhpf-sit-y26y, kvpoihzhhpfsit
+PROD : kv-ihzhhpf-prod-swn1, kvpoihzhhpfprod
+```
+
+Both environments now run the 5-app core set (Product-Owner `ca-po` + `kvpo`
+Key Vault added in both since 2026-07-24), and `ca-sim-capacity` is present in
+PROD as well as SIT.
+
 ## 5. Open items
 
 ### 🟥 Gaps
 
-* **PROD data/AI/integration lane:** PROD currently has no storage accounts
-  because the Switzerland North rebuild has not yet executed P5/P6 data-lane
-  phases. Remediation is in progress this sprint via the D8 full-parity deploy,
-  tracked in
-  `docs/superpowers/plans/2026-07-24-sprint-19-sit-prod-parity-extension.md`
-  (Phase G/new deploy phase) and ADR-0042.
+* **PROD gold medallion lags SIT for external-signals + forecast families
+  (2026-07-28).** PROD gold is missing the 5 `ext_*` tables, `fact_forecast_driver`,
+  `fact_occupancy_forecast`, `fact_signal`, and `patient-flow`, and lacks the
+  `ext_signals*` bronze/silver sources — even though PROD has the
+  `external-signals` semantic model and a running `ca-signal-runner-ihzhhpf-prod`.
+  **Remediation:** run a gated (`approved-to-apply`) PROD medallion rebuild to
+  bring the external-signals and forecast lanes up to the current SIT shape, then
+  re-point/refresh the `external-signals` semantic model. Confirm whether
+  `patient-flow` is an intended table or a stale SIT artefact to drop.
+
+### ⏳ Gated forward-parity
+
+* **BVA cost product (Sprint 33, F5).** `bva_consumption` + 11 `bva_*` gold
+  tables, the `sm_bva` semantic model, and the `bva`/`opportunities` Cosmos SoR
+  are SIT-first by design; the live PROD publish is `approved-to-apply`-gated per
+  the WS-A/WS-D gated-load plans. Not an unmanaged gap — it becomes a gap only if
+  PROD BVA publish is required for GA and remains unactioned.
 
 ### Accepted asymmetries
 
@@ -384,8 +514,9 @@ customer/patient PID/PHI per ADR-0016.
   target (F1/F3, ADR-0013).
 * **SIT cross-region Foundry:** SIT uses the eastus2 Foundry account
   `ai-ihzhhpf-sit-eastus2`; PROD does not need the split (F4, ADR-0032).
-* **SIT simulation runtime:** SIT carries simulation-only Container Apps and
-  environments for synthetic testing; PROD does not.
+* **SIT-only simulation CAEs:** SIT carries simulation-only Container Apps
+  environments (`cae-sim-*`, `cae-skills-sim-*`) for synthetic testing; PROD does
+  not (though `ca-sim-capacity` itself is now present in PROD).
 * **Key Vault private endpoint:** PROD exceeds SIT with an Approved Key Vault PE
   and vaultcore private DNS zone; SIT intentionally relies on disabled public
   access without a KV PE under F4 and may adopt the pattern later.
