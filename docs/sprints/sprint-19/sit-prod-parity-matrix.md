@@ -2,13 +2,38 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.6.1 |
+| **Version** | 1.7.0 |
 | **Date** | 2026-07-29 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.6.0 (BVA PROD publish + patient-flow disposition; this bump sharpens the product-lineage label — the 11 published tables are the Sprint 15 consumption product, not the still-gated Sprint 33 cost-basis product) |
+| **Previous Version** | 1.6.1 (BVA product-lineage label clarification — the 11 published tables are the Sprint 15 consumption product; this bump records the Sprint 33 cost-basis Gold load to both environments and the residual `sm_bva` + Cosmos-SoR blocked scope) |
 
 ## 1. Summary
+
+> **2026-07-29 BVA cost-basis Gold load — SIT + PROD (v1.7.0).** The Sprint 33
+> WS-A **cost-basis** Gold data product is now materialised **live in both**
+> environments via a gated (`approved-to-apply` by **@urruegg**, 2026-07-29)
+> load: the 7 golden-source CSVs under `data/master-data/bva/` were uploaded to
+> `Files/master-data/bva/` and a self-contained notebook inlining the byte-stable
+> `data-platform/bva/costbasis.py` transform wrote the 5 Gold Delta tables —
+> `gold.bva_bom_dim`, `gold.bva_cost_fact`, `gold.bva_effort_fact`,
+> `gold.bva_hospital_profile_dim`, `gold.bva_baseline_kpi` — in SIT (run
+> `ef342467`) and PROD (run `3221c5cd`). The notebook asserts the ROM
+> reconciliation (one-time **1,300,000** CHF, annual run **1,250,000** CHF,
+> hospitals **3**) before every write, so a successful run proves parity; a fresh
+> OneLake DFS re-read confirms all 5 tables present in both (evidence
+> [E17](#e17-bva-cost-basis-gold-load-2026-07-29); PROD gold 47→52).
+>
+> **Residual absent-in-both scope (unchanged).** The `sm_bva` Direct Lake
+> semantic model is **not yet authored** (no TMDL in the repo — WS-A Step 3 is
+> net-new modelling, tracked as a follow-on), and the WS-D `bva`/`opportunities`
+> **Cosmos SoR** live seed + projection are **not executable from the delivery
+> host**: both CSA Cosmos accounts are `publicNetworkAccess: Disabled`
+> (private-endpoint only, ADR-0029), so the Cosmos data plane is unreachable
+> outside the VNet. The app's opportunity view already reads a committed
+> byte-stable fixture (WS-D D4), so no demo path depends on the live Cosmos SoR.
+
+The v1.6.0 BVA consumption publish that this cost-basis load complements is retained below.
 
 > **2026-07-29 BVA publish + patient-flow disposition (v1.6.0).** The two
 > SIT-only items that survived the v1.5.0 remediation are now both resolved:
@@ -118,13 +143,17 @@ availability-blocked, #270), and the 2026-07-28 gold-medallion divergence
 product (Sprint 15 lineage) was **published to PROD on 2026-07-29** (gated seeded
 load, §5, E16), leaving only the intentionally-not-forward-ported legacy
 `patient-flow` namespace (confirmed stale, no PROD action). The distinct Sprint 33
-BVA **cost-basis** product (`bva_baseline_kpi` + `sm_bva`) remains a managed,
-gated item, absent in both environments.
+BVA **cost-basis** product now has its **5 Gold tables loaded to both** SIT and
+PROD (2026-07-29, §5, E17); only its `sm_bva` Direct Lake model (not yet authored)
+and the WS-D `bva`/`opportunities` Cosmos SoR (private-endpoint-blocked) remain
+absent in both environments.
 
-**Verdict tally (post-2026-07-29 BVA publish, v1.6.x):** ✅ **Parity** 12 ·
+**Verdict tally (post-2026-07-29 BVA cost-basis load, v1.7.x):** ✅ **Parity** 13 ·
 ⚠️ **Deliberate asymmetry** 5 · ⏳ **Gated forward-parity** 0 ·
 🟥 **Gap** 0 · **N-A** 2 (Fabric IQ ontology #270; legacy `patient-flow`
-namespace confirmed stale).
+namespace confirmed stale). The `sm_bva` semantic model and the WS-D
+`bva`/`opportunities` Cosmos SoR remain **absent in both** (residual gated /
+private-endpoint-blocked scope, not a divergence).
 
 > **Static parity harness (2026-07-26, #255):** module-selection parity between
 > `infra/environments/sit.bicepparam` and `infra/environments/prod-swn.bicepparam`
@@ -159,9 +188,11 @@ namespace confirmed stale).
   the drift was surfaced during the Sprint 33 parity review and the product was
   **published to PROD on 2026-07-29** via a gated (`approved-to-apply`) seeded
   load (§5, E16), reaching parity. The separate **Sprint 33 cost-basis product**
-  (`bva_baseline_kpi` + `sm_bva`) and the `bva`/`opportunities` Cosmos SoR remain
-  **absent in both** environments (WS-A/WS-D Cosmos/Direct-Lake publish still
-  `approved-to-apply`-gated → absent-in-both, not a divergence).
+  had its **5 Gold tables loaded to both** environments on 2026-07-29 (§5, E17);
+  its `sm_bva` Direct Lake semantic model (not yet authored — no TMDL) and the
+  `bva`/`opportunities` Cosmos SoR (data plane private-endpoint-only, unreachable
+  from the delivery host) remain **absent in both** (residual gated / blocked
+  scope, not a divergence).
 
 ## 3. Parity matrix
 
@@ -176,6 +207,7 @@ namespace confirmed stale).
 | 4 | Cosmos DB and Event Hubs data platform | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `West US 2`; Event Hubs namespace `Standard`, public access enabled. | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `Switzerland North`; Event Hubs namespace `Standard`, public access enabled. | ✅ **Parity** | [E4](#e4-data-platform) |
 | 4 | Storage / ADLS landing zone and data/AI/integration lane | Three StorageV2 accounts with public access disabled: `stcorpusihzhhpfsit` (PO corpus), `stdpihzhhpfsity26y` (data-platform), and `stmasterdataihzhhpfsit` (ADLS Gen2, masterdata landing). | **PROD storage now present (re-verified 2026-07-28):** `stcorpusihzhhpfprod`, `stdpihzhhpfprodi62t`, `stmasterdataihzhhpfprod`, and `stmediaihzhhpfprod` — the former "PROD has no storage accounts" open item is closed. Data/AI/integration lane deployed via the D8 full-parity slices: ML workspace, ADLS masterdata, `sim-capacity` CA + skills-sim jobs/environments, Fabric F2 workspace/lakehouse + 2 semantic models, Foundry project (3 models + 8 agents). Only Fabric IQ Ontology/Data Agent remain Preview-gated (#270). | ✅ **Parity — closed 2026-07-24** by decision D8 (@urruegg, `approved-to-apply`) and re-confirmed live 2026-07-28. PROD storage is present; required BOM items are GA in Switzerland North per ADR-0037. | [E4](#e4-data-platform), [E11](#e11-storage-refresh-2026-07-28) |
 | 4 | Gold data-product medallion — BVA consumption product (Sprint 15 lineage) | `bva_consumption` (bronze/silver) + 11 `bva_*` gold tables (`bva_dim_*` ×8, `bva_fact_azure_consumption`, `bva_fact_budget`, `bva_fact_value_realization`) present in SIT gold. | **Published 2026-07-29** — `bronze.bva_consumption`, `silver.bva_consumption`, and all 11 `bva_*` gold tables now present in PROD (gold 36→47) via a gated seeded load (fixed seed 42). The distinct Sprint 33 cost-basis product (`bva_baseline_kpi` + `sm_bva`) and the `bva`/`opportunities` Cosmos SoR still absent in either environment (Cosmos/Direct-Lake publish still gated → absent-in-both). | ✅ **Parity (F5)** — gated (`approved-to-apply` @urruegg) BVA PROD publish closed the SIT-only drift; SIT is nightly-seeded so PROD uses a fixed documented seed (data-shape parity, not byte parity). | [E16](#e16-bva-prod-publish-2026-07-29) |
+| 4 | Gold data-product medallion — BVA cost-basis product (Sprint 33 WS-A) | The 5 cost-basis gold tables `bva_bom_dim`, `bva_cost_fact`, `bva_effort_fact`, `bva_hospital_profile_dim`, `bva_baseline_kpi` present in SIT gold; ROM reconciles (one-time 1,300,000 / run 1,250,000 CHF, 3 hospitals). | **Loaded 2026-07-29** — same 5 cost-basis gold tables now present in PROD (gold 47→52) via a gated load of the 7 golden-source CSVs; identical ROM reconciliation asserted before write. `sm_bva` Direct Lake model not yet authored (no TMDL) and `bva`/`opportunities` Cosmos SoR blocked by private-endpoint — both absent in both. | ✅ **Parity (gold)** — gated (`approved-to-apply` @urruegg) cost-basis load reached both environments; `sm_bva` + Cosmos SoR residual (E13). | [E17](#e17-bva-cost-basis-gold-load-2026-07-29) |
 | 4 | Gold data-product medallion — external-signals + forecast facts | `ext_signals_raw` (bronze), `ext_signals`/`ext_signals_quarantine` (silver), 5 `ext_*` gold tables, and forecast facts `fact_forecast_driver`/`fact_occupancy_forecast`/`fact_signal` present in SIT gold. | **Remediated 2026-07-29** — all 5 `gold.ext_*`, the `ext_signals*` bronze/silver sources, and the 3 forecast facts now present in PROD (gold 28→36); `external-signals` semantic model now has backing gold data. | ✅ **Parity** — gated (`approved-to-apply` @urruegg) PROD medallion rebuild closed the v1.4.0 gap; legacy `patient-flow` namespace tracked separately (§5). | [E15](#e15-prod-gap-remediation-2026-07-29) |
 | 4 | Cosmos containers and Fabric semantic models | Platform Cosmos `agenthost` (`agent_interactions`, `approval-events`, `conversations`, `audit`); CSA `csa` (`simulation-runs`, `plans`, `proposed_actions`, `agent-memory`, `response-levers`, `scenarios`); semantic models `capacity-dashboard` + `external-signals`. | Identical Cosmos container set in both platform and CSA accounts; identical semantic models `capacity-dashboard` + `external-signals`. | ✅ **Parity** | [E13](#e13-cosmos-containers--semantic-models-2026-07-28) |
 | 5 | Core Container Apps runtime | Core apps `ca-app-fluent-ihzhhpf-sit`, `ca-agent-host-ihzhhpf-sit`, `ca-signal-runner-ihzhhpf-sit`, and `ca-po-ihzhhpf-sit` are `Succeeded` / `Running`. | Core apps `ca-app-fluent-ihzhhpf-prod`, `ca-agent-host-ihzhhpf-prod`, `ca-signal-runner-ihzhhpf-prod`, and `ca-po-ihzhhpf-prod` are `Succeeded` / `Running` (Product-Owner stack, Sprint 28, now live in both). | ✅ **Parity** | [E5](#e5-compute--runtime), [E14](#e14-container-apps--key-vault-refresh-2026-07-28) |
@@ -529,12 +561,15 @@ cosmos-ihzhhpf-sit/agenthost   : agent_interactions, approval-events, conversati
 cosmos-csa-ihzhhpf-sit/csa     : simulation-runs, plans, proposed_actions, agent-memory, response-levers, scenarios
 cosmos-ihzhhpf-prod/agenthost  : agent_interactions, conversations, audit, approval-events   # same set
 cosmos-csa-ihzhhpf-prod/csa    : agent-memory, scenarios, proposed_actions, response-levers, plans, simulation-runs   # same set
-// No 'bva' database / 'opportunities' container in either environment (WS-D publish gated).
+// The 5 cost-basis gold tables landed in both on 2026-07-29 (E17); the
+// 'bva'/'opportunities' Cosmos SoR data plane is private-endpoint only
+// (publicNetworkAccess=Disabled) -> not reachable from the delivery host.
 
 // GET https://api.fabric.microsoft.com/v1/workspaces/<id>/semanticModels  (displayName)
 SIT  ws-ihzhhpf-sit-data  : capacity-dashboard, external-signals
 PROD ws-ihzhhpf-prod-data : capacity-dashboard, external-signals
-// No 'sm_bva' semantic model in either environment (WS-A publish gated).
+// The 5 cost-basis gold tables landed in both (E17); the 'sm_bva' Direct Lake
+// model over them is not yet authored (no TMDL) -> absent in both.
 ```
 
 ### E14 Container Apps & Key Vault refresh (2026-07-28)
@@ -619,11 +654,54 @@ The uploader `data-platform/scripts/bva_upload_bronze.py` was parametrized with
 `--workspace-id`/`--lakehouse-id` (TDD, defaults = SIT constants) so the same
 partition-preserving OneLake load targets PROD without SIT-hardcoded coordinates.
 The `sm_bva` semantic model and the `bva`/`opportunities` Cosmos SoR were **not**
-part of this load and remain absent in both environments (still gated).
+part of this load; the cost-basis Gold tables were subsequently loaded to both
+environments (E17), while `sm_bva` (not yet authored) and the Cosmos SoR
+(private-endpoint-blocked) remain absent in both.
+
+### E17 BVA cost-basis Gold load (2026-07-29)
+
+Gated (`approved-to-apply` @urruegg, 2026-07-29) load of the Sprint 33 WS-A
+cost-basis Gold data product to **both** environments, applied via
+[`run_single_notebook.py --apply`](../../../data-platform/scripts/fabric/run_single_notebook.py)
+and verified by a fresh OneLake DFS re-read.
+
+```text
+// Gate 0 (no approval): master-data valid; local build_all ROM reconciliation:
+//   oneTimeChf=1,300,000  annualRunChf=1,250,000  hospitals=3  -> OK
+// rows/table: bom_dim 8, cost_fact 9, effort_fact 8, hospital_profile_dim 3, baseline_kpi 7
+
+// 1. upload 7 golden-source CSVs -> Files/master-data/bva/ (upload_to_onelake.py, per-env coords)
+// 2. run self-contained notebook (inlines byte-stable costbasis.py; ROM asserted before write)
+SIT  build_gold_bva_costbasis  run ef342467-6858-4780-9978-39084e848357 -> [ok]
+PROD build_gold_bva_costbasis  run 3221c5cd-2ca4-4741-92a5-6a01dfa50625 -> [ok]
+
+// 3. verify — OneLake DFS re-read of Tables/gold
+SIT  gold : bva_bom_dim, bva_cost_fact, bva_effort_fact, bva_hospital_profile_dim, bva_baseline_kpi
+PROD gold : bva_bom_dim, bva_cost_fact, bva_effort_fact, bva_hospital_profile_dim, bva_baseline_kpi
+// PROD gold count 47 -> 52 (5 cost-basis tables added)
+```
+
+Additive (overwrite-mode, 0 deletes), synthetic-only, no PHI (ADR-0013 /
+ADR-0016). Rollback = re-run the notebook from the golden-source CSVs. **Residual
+absent-in-both:** the `sm_bva` Direct Lake model is not yet authored (no TMDL —
+WS-A Step 3 is net-new modelling), and the WS-D `bva`/`opportunities` Cosmos SoR
+seed + projection cannot run from the delivery host because both CSA Cosmos
+accounts are `publicNetworkAccess: Disabled` (private-endpoint only, ADR-0029);
+the app opportunity view reads a committed fixture (WS-D D4), so no demo path is
+blocked.
 
 ## 5. Open items
 
 ### ✅ Published to PROD (2026-07-29)
+
+* **BVA cost-basis product Gold tables (Sprint 33 WS-A) — parity reached.** The
+  5 cost-basis gold tables (`bva_bom_dim`, `bva_cost_fact`, `bva_effort_fact`,
+  `bva_hospital_profile_dim`, `bva_baseline_kpi`) are now present in **both** SIT
+  and PROD (PROD gold 47→52) via a gated (`approved-to-apply` @urruegg) load of
+  the 7 golden-source CSVs, with the ROM reconciliation asserted before write.
+  The `sm_bva` Direct Lake model (not yet authored) and the WS-D Cosmos SoR
+  (private-endpoint-blocked) remain absent in both. Evidence
+  [E17](#e17-bva-cost-basis-gold-load-2026-07-29).
 
 * **BVA consumption product (Sprint 15 lineage, F5) — parity reached.**
   `bronze.bva_consumption`, `silver.bva_consumption`, and all 11 `bva_*` gold
