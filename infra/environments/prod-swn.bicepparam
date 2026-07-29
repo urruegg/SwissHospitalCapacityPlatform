@@ -121,7 +121,12 @@ param fabricDataAgentId = '39cb57b5-4bbf-4d64-af1c-7f0a81b0d570'
 
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:dadd7ce'
+// Sprint 35 (#543) — Backstage restructure (feedback-loop default + 2-tab sub-nav,
+// Story/Evidence/Roles removed). Bumped dadd7ce -> a7fb478 (PR #544 squash on main).
+// Env-agnostic image (agent-host URL injected at runtime, #447); imported into
+// crihzhhpfprod via `az acr import` from the SIT ACR. approved-to-apply by
+// @urruegg 2026-07-29. Already live + verified in SIT on appsit.curavias.ch.
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:a7fb478'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the PROD app calls the PROD (switzerlandnorth) agent-host
 // instead of inheriting the SIT URL from the build-once + import image.
