@@ -1,13 +1,17 @@
-# AGENTS.md — Agent Registry
+# Curavias — Agent Registry
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.13.0 |
-| **Date** | 2026-07-28 |
+| **Version** | 2.14.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 2.12.0 (added the `signal-agent` registry row for the Sprint 32 Signal Agent, issue #454); this bump adds the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent (issues #489, #501) |
+| **Previous Version** | 2.13.0 (added the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent, issues #489, #501); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical agent-topology diagram (Sprint 34 WS-4) |
 
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+>
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
 > which agents exist, which MCP servers they may call, and how they refuse
@@ -33,6 +37,51 @@
 > infrastructure. The `agents-archive/` folder was retired in the 2.0.0
 > restructure; historical bodies for `bm-copilot` and the Sprint 09 `csa-agent`
 > live in `git log`.
+
+## Executive summary
+
+This document is the authoritative registry of every AI agent in Curavias: what
+each agent does, which Microsoft Cloud (MCP) tools it may call, its side-effect
+ceiling, and how it refuses unsafe or destructive actions. It is written so a
+reviewer can see the full agent roster and the guardrails that keep every agent
+advisory-first and human-approved.
+
+## Canonical diagram
+
+The agent topology below is maintained in
+[docs/architecture/diagram-library.md](docs/architecture/diagram-library.md) and
+copied here; update both places together when it changes.
+
+```mermaid
+flowchart TB
+    USER["Agent boss (human, HITL)"] --> ORCH["App copilot orchestrator"]
+
+    subgraph Capacity["Capacity copilots"]
+        BMCA["bmca-agent<br/>bed management"]
+        OOA["ooa-agent<br/>occupancy / 72h forecast"]
+        DCA["dca-agent<br/>discharge"]
+        ORSA["orsa-agent<br/>OR steering"]
+        SBA["sba-agent<br/>staffing balance"]
+        CSA["csa-agent<br/>crisis / scenario"]
+    end
+
+    subgraph Advisory["Product + value"]
+        PO["product-owner-agent"]
+        BVA["bva-agent<br/>bed-value analysis"]
+    end
+
+    subgraph Support["Data + signal"]
+        DQ["data-quality-agent"]
+        SIG["signal-agent"]
+    end
+
+    ORCH --> Capacity
+    ORCH --> Advisory
+    ORCH --> Support
+    WORKIQ["Work IQ context"] -.read-only.-> ORCH
+    Capacity -->|cited, advisory-only| USER
+    Advisory -->|cited, advisory-only| USER
+```
 
 ## Superpowers Skill Enforcement
 
