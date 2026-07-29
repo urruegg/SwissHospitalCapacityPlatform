@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-28 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft for review |
-| **Previous Version** | 1.0.0 (added WS-D Opportunity SoR + projection live-load) |
+| **Status** | Executed (WS-A complete; WS-D deferred to in-VNet) |
+| **Previous Version** | 1.1.0 (added WS-D Opportunity SoR + projection live-load; this bump records WS-A executed to both environments and the WS-D live-Cosmos disposition) |
 
 **Plan-only.** This document describes the `approved-to-apply`-gated path that
 publishes the Sprint 33 WS-A BVA cost-basis product to live Fabric. **Nothing in
@@ -25,6 +25,34 @@ Related artefacts:
 - Master data (golden source):
   [`data/master-data/bva/`](../../data/master-data/bva/).
 - Plan: [`2026-07-28-sprint-33-bva-agent-ws-a-cost-data-product.md`](../superpowers/plans/2026-07-28-sprint-33-bva-agent-ws-a-cost-data-product.md).
+
+## Execution status (2026-07-29)
+
+All host-feasible steps are **executed and verified live**; the only residual is
+the WS-D live-Cosmos seed/projection, which is **deferred to in-VNet execution**
+(not a code gap). Evidence lives in the parity matrix entries
+[E17](../sprints/sprint-19/sit-prod-parity-matrix.md#e17-bva-cost-basis-gold-load-2026-07-29)
+and [E18](../sprints/sprint-19/sit-prod-parity-matrix.md#e18-bva-sm_bva-semantic-model-publish-2026-07-29).
+
+| Step | Status | Evidence |
+| ---- | ------ | -------- |
+| Gate 0 — CI proof | ✅ Done | master-data validator + `data-platform/bva` / `evals/bva-agent` suites green |
+| WS-A Step 1 — upload master data | ✅ Done (SIT + PROD) | 7 CSVs under `Files/master-data/bva/` both envs |
+| WS-A Step 2 — medallion notebook | ✅ Done (SIT + PROD) | 5 `gold.bva_*` tables; ROM asserted; PROD gold 47→52 (runs `ef342467` / `3221c5cd`, PR #550) |
+| WS-A Step 3 — `sm_bva` semantic model | ✅ Done (SIT + PROD) | `sm_bva` SIT `1ab34928…` / PROD `1cbc0109…`, Fabric REST verified (PR #553) |
+| WS-A Step 4 — ground BVA agent / Fabric IQ | ⏸️ Deferred | Fabric IQ Data Agent grounding is Preview-gated (#270, ADR-0034); `sm_bva` is now a published surface ready for grounding |
+| WS-A Step 5 — data-quality contract-check | ⏸️ Deferred | runs via the agent-host `data-quality-agent`; same in-VNet runner as WS-D |
+| WS-D D0 — CI proof (dry-run) | ✅ Done | store dry-run + byte-stable projection + validator: 42 tests green (`scripts/opportunity/tests`, `data-platform/bva`) |
+| WS-D D1–D3 — live Cosmos seed + projection | ⏸️ **Deferred (in-VNet)** | Cosmos data plane is private-endpoint-only (`publicNetworkAccess: Disabled`, ADR-0029), unreachable from the delivery host; requires the agent-host or a Fabric managed-VNet runner |
+| WS-D D4 — surface in app | ✅ Done (fixture) | committed byte-stable fixture `apps/hcc-app-fluent/src/data/opportunity/opportunity-demo.json`, app-consumed + unit-tested — **no demo path depends on live Cosmos** |
+
+**Disposition of WS-D D1–D3.** This is deferred, not blocked-open: the full WS-D
+logic is proven by the D0 suite, the demo is served by the committed D4 fixture,
+and live execution needs an in-VNet runner because reaching the Cosmos SoR from
+outside the VNet would require reversing the ADR-0029 private-endpoint hardening
+(a security-posture change out of scope for this work). When an in-VNet runner is
+available, D1–D3 run unchanged (`opportunity_store.py` + `build_gold_bva_opportunity.py`)
+and the D4 fixture is regenerated from the projection.
 
 ## SIT + PROD parity method
 
