@@ -190,7 +190,11 @@ param enableCsaCosmosModule = true
 // dadd7ce. SIT keeps the default RLS_PROVIDER=simulated (agentHostRlsProvider
 // param default). Deploy approval-gated per AGENTS.md §4 (approved-to-apply by
 // @urruegg 2026-07-28).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:583f633'
+// #424 M6 parity (2026-07-29): bumped 583f633 -> 62cc2ae (PR #522, M5 OBO
+// seam). 62cc2ae is a superset of 583f633; OBO stays off (agentHostOboEnabled
+// default false) so this is a behaviour-parity redeploy. Matches PROD per M6
+// SIT+PROD parity. approved-to-apply by @urruegg 2026-07-29.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:62cc2ae'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
