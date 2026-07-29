@@ -40,6 +40,8 @@ const SURFACES: { path: string; excludeBoard?: string }[] = [
   // Sprint 27 — dev-only design-system gallery incl. the chat response
   // artefacts catalogue (A1–A14). Scanned so the artefact vocabulary stays AA.
   { path: '/brand' },
+  { path: '/backstage/story' },
+  { path: '/present/feedback-loop' },
 ];
 
 for (const { path, excludeBoard } of SURFACES) {
