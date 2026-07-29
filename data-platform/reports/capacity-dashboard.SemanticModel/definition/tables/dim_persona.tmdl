@@ -78,27 +78,41 @@ table dim_persona
 	partition dim_persona = m
 		mode: import
 		source =
-				// NOTE: this relative File.Contents path is environment-specific and
-				// resolves only when the seed CSV is co-located with the model at
-				// author time. It will not resolve in a Fabric deployment context —
-				// Sprint 12 replaces this partition source with a Fabric mirror of
-				// Entra ID (design spec §6.1), which removes the local-path dependency.
+				// #552 fix: persona rows inlined from data/synthetic/personas.csv to
+				// remove the unresolvable local File.Contents path that failed refresh in
+				// Fabric (DMTS_MonikerWithUnboundDataSources) and blocked Direct Lake
+				// framing of the whole model. Sprint 12 still swaps this to a Fabric
+				// mirror of Entra ID (design spec §6.1).
 				let
-				    Source = Csv.Document(
-				        File.Contents("data/synthetic/personas.csv"),
-				        [Delimiter = ",", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
-				    ),
-				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-				    Typed = Table.TransformColumnTypes(
-				        Promoted,
+				    Source = #table(
+				        type table [upn = text, display_name = text, app_role = text, default_hospital = text],
 				        {
-				            {"upn", type text},
-				            {"display_name", type text},
-				            {"app_role", type text},
-				            {"default_hospital", type text}
+						{"dr.andrea.keller@mngenvmcap164444.onmicrosoft.com", "Dr. Andrea Keller", "HCC.OperationsLead", "USZ"},
+						{"markus.frei@mngenvmcap164444.onmicrosoft.com", "Markus Frei", "HCC.BedManager", "USZ"},
+						{"sandra.huber@mngenvmcap164444.onmicrosoft.com", "Sandra Huber", "HCC.FlowManager", "USZ"},
+						{"thomas.brunner@mngenvmcap164444.onmicrosoft.com", "Dr. Thomas Brunner", "HCC.EDLead", "USZ"},
+						{"nicole.baumann@mngenvmcap164444.onmicrosoft.com", "Nicole Baumann", "HCC.ORCoordinator", "USZ"},
+						{"peter.schmid@mngenvmcap164444.onmicrosoft.com", "Peter Schmid", "HCC.StaffingCoordinator", "USZ"},
+						{"claudia.steiner@mngenvmcap164444.onmicrosoft.com", "Claudia Steiner", "HCC.DischargeCoordinator", "USZ"},
+						{"michael.weber@mngenvmcap164444.onmicrosoft.com", "Dr. Michael Weber", "HCC.CrisisManager", "USZ"},
+						{"regula.bucher@mngenvmcap164444.onmicrosoft.com", "Dr. Regula Bucher", "HCC.OperationsLead", "LUKS"},
+						{"stefan.zuend@mngenvmcap164444.onmicrosoft.com", "Stefan Zünd", "HCC.BedManager", "LUKS"},
+						{"martina.achermann@mngenvmcap164444.onmicrosoft.com", "Martina Achermann", "HCC.DischargeCoordinator", "LUKS"},
+						{"daniel.kaufmann@mngenvmcap164444.onmicrosoft.com", "Daniel Kaufmann", "HCC.ORCoordinator", "LUKS"},
+						{"barbara.widmer@mngenvmcap164444.onmicrosoft.com", "Barbara Widmer", "HCC.OperationsLead", "Zollikerberg"},
+						{"lukas.frei@mngenvmcap164444.onmicrosoft.com", "Lukas Frei", "HCC.FlowManager", "Zollikerberg"},
+						{"christoph.vogt@mngenvmcap164444.onmicrosoft.com", "Dr. Christoph Vogt", "HCC.Executive", "Aggregated"},
+						{"isabelle.girard@mngenvmcap164444.onmicrosoft.com", "Dr. Isabelle Girard", "HCC.CantonalViewer", "Aggregated"},
+						{"urs.ruegg@mngenvmcap164444.onmicrosoft.com", "Urs Rüegg", "HCC.PlatformAdmin", "All"},
+						{"elena.fischer@mngenvmcap164444.onmicrosoft.com", "Elena Fischer", "HCC.OntologySteward", "All"},
+						{"rafael.moser@mngenvmcap164444.onmicrosoft.com", "Rafael Moser", "HCC.AIGovernance", "All"},
+						{"sophie.meier@mngenvmcap164444.onmicrosoft.com", "Sophie Meier", "HCC.DemoOperator", "All"},
+						{"hans.meier@mngenvmcap164444.onmicrosoft.com", "Hans Meier", "HCC.Auditor", "All"},
+						{"super.admin@mngenvmcap164444.onmicrosoft.com", "Super Admin", "HCC.SuperAdmin", "All"},
+						{"demo.guest@mngenvmcap164444.onmicrosoft.com", "Demo Guest", "HCC.GuestReadOnly", "Aggregated"}
 				        }
 				    )
 				in
-				    Typed
+				    Source
 
 	annotation PBI_ResultType = Table
