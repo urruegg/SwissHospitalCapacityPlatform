@@ -2,13 +2,45 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.5.0 |
+| **Version** | 1.6.0 |
 | **Date** | 2026-07-29 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.4.0 (live 2026-07-28 re-verification; surfaced the gold-medallion divergence) |
+| **Previous Version** | 1.5.0 (external-signals + forecast gap-remediation; left BVA gated + patient-flow pending) |
 
 ## 1. Summary
+
+> **2026-07-29 BVA publish + patient-flow disposition (v1.6.0).** The two
+> SIT-only items that survived the v1.5.0 remediation are now both resolved:
+>
+> * **BVA cost product — PUBLISHED to PROD.** The Sprint 33 BVA consumption
+>   product was materialised live in PROD via a gated
+>   (`approved-to-apply` by **@urruegg**, 2026-07-29T11:44 +02:00) load: 90
+>   deterministic FOCUS partitions (fixed **seed 42**, 90 days, end 2026-06-30,
+>   11,880 rows) uploaded to `Files/Bronze/consumption/`, then
+>   `bva_medallion_ingest.ipynb` applied via the gated PROD runner. A fresh
+>   OneLake DFS re-read confirms `bronze.bva_consumption`, `silver.bva_consumption`,
+>   and all **11 `gold.bva_*`** tables now present in PROD (evidence
+>   [E16](#e16-bva-prod-publish-2026-07-29)). SIT is seeded nightly from a
+>   date-derived seed (`bva-sim-refresh.yml`), so byte-identical data parity is
+>   neither achievable nor meaningful; PROD uses a fixed, documented seed for a
+>   reproducible one-time load. The `sm_bva` semantic model and the
+>   `bva`/`opportunities` Cosmos SoR remain absent in **both** environments
+>   (WS-A/WS-D Cosmos/Direct-Lake publish still `approved-to-apply`-gated →
+>   absent-in-both, not a divergence).
+> * **Legacy `patient-flow` namespace — CONFIRMED STALE, no PROD action.** The
+>   nested `gold/patient-flow/` namespace is a superseded Sprint-09-era layout;
+>   its data is served by the **flat** `gold.<entity>` tables (`bed_assignment`,
+>   `encounter`, `or_*`, `fact_capacity_baseline`, …) which are already at parity
+>   in both environments (all 21 canonical `gold_tables_target.txt` entries
+>   present SIT+PROD). Forward-porting the nested layout would re-introduce a
+>   deprecated namespace, so the correct disposition is **no PROD rebuild**; any
+>   SIT cleanup is a separate destructive hygiene item, not a parity gap.
+>
+> PROD gold went **36 → 47** (11 `bva_*` added). The v1.5.0 remediation summary
+> is retained below for traceability.
+
+The v1.5.0 remediation finding that this publish builds on is retained below.
 
 > **2026-07-29 gap remediation (v1.5.0).** The external-signals + forecast
 > gold-medallion gap surfaced in v1.4.0 is now **CLOSED**. A gated
@@ -78,12 +110,15 @@ availability-blocked, #270), and the **new 2026-07-28 gold-medallion divergence*
 availability-blocked, #270), and the 2026-07-28 gold-medallion divergence
 — of which the BVA family remains a **managed, gated forward-parity item**
 (Sprint 33 SIT-first) while the external-signals + forecast families were
-**remediated on 2026-07-29** (gated PROD medallion rebuild, §5, E15), leaving
-only the legacy `patient-flow` namespace pending disposition.
+**remediated on 2026-07-29** (gated PROD medallion rebuild, §5, E15), and the
+BVA family was **published to PROD on 2026-07-29** (gated seeded load, §5, E16),
+leaving only the intentionally-not-forward-ported legacy `patient-flow` namespace
+(confirmed stale, no PROD action).
 
-**Verdict tally (post-2026-07-29 remediation):** ✅ **Parity** 11 ·
-⚠️ **Deliberate asymmetry** 5 · ⏳ **Gated forward-parity** 1 ·
-🟥 **Gap** 1 (legacy `patient-flow` namespace only) · **N-A** 1.
+**Verdict tally (post-2026-07-29 BVA publish, v1.6.0):** ✅ **Parity** 12 ·
+⚠️ **Deliberate asymmetry** 5 · ⏳ **Gated forward-parity** 0 ·
+🟥 **Gap** 0 · **N-A** 2 (Fabric IQ ontology #270; legacy `patient-flow`
+namespace confirmed stale).
 
 > **Static parity harness (2026-07-26, #255):** module-selection parity between
 > `infra/environments/sit.bicepparam` and `infra/environments/prod-swn.bicepparam`
@@ -113,12 +148,12 @@ only the legacy `patient-flow` namespace pending disposition.
 * **F4:** SIT deliberately permits cross-region access and is split across
   westus2 plus the eastus2 Foundry control-plane account
   `ai-ihzhhpf-sit-eastus2` per ADR-0032. PROD does not need that eastus2 split.
-* **F5:** The Sprint 33 BVA data product (`bva_consumption` bronze/silver, 11
-  `bva_*` gold tables, the `sm_bva` semantic model, and the `bva`/`opportunities`
-  Cosmos SoR) is authored **SIT-first**; its live PROD publish is
-  `approved-to-apply`-gated per the WS-A/WS-D gated-load plans. SIT-only presence
-  of the BVA family is therefore a **managed, gated forward-parity item**, not an
-  unmanaged gap.
+* **F5:** The Sprint 33 BVA data product was authored **SIT-first**; its
+  `bva_consumption` bronze/silver + 11 `bva_*` gold tables were **published to
+  PROD on 2026-07-29** via a gated (`approved-to-apply`) seeded load (§5, E16),
+  reaching parity. The `sm_bva` semantic model and the `bva`/`opportunities`
+  Cosmos SoR remain **absent in both** environments (WS-A/WS-D Cosmos/Direct-Lake
+  publish still `approved-to-apply`-gated → absent-in-both, not a divergence).
 
 ## 3. Parity matrix
 
@@ -132,7 +167,7 @@ only the legacy `patient-flow` namespace pending disposition.
 | 3 | Signal-runner identity and Event Hubs sender | `ca-signal-runner-ihzhhpf-sit` uses a **SystemAssigned** identity; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-sit-y26y`. | `ca-signal-runner-ihzhhpf-prod` uses UAMI `id-signal-runner-ihzhhpf-prod`; that principal has `Azure Event Hubs Data Sender` on `evh-ihzhhpf-prod-i62t`. PROD was deliberately hardened to stable UAMI so role assignment survives CAE recreates. | ⚠️ **Deliberate asymmetry — PROD exceeds SIT**. SIT could adopt the stable-UAMI pattern as future hardening, not a GA-parity gap. | [E3](#e3-identity--rbac) |
 | 4 | Cosmos DB and Event Hubs data platform | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `West US 2`; Event Hubs namespace `Standard`, public access enabled. | Platform + CSA Cosmos accounts exist, AAD-only (`disableLocalAuth=true`), public access disabled, single `Switzerland North`; Event Hubs namespace `Standard`, public access enabled. | ✅ **Parity** | [E4](#e4-data-platform) |
 | 4 | Storage / ADLS landing zone and data/AI/integration lane | Three StorageV2 accounts with public access disabled: `stcorpusihzhhpfsit` (PO corpus), `stdpihzhhpfsity26y` (data-platform), and `stmasterdataihzhhpfsit` (ADLS Gen2, masterdata landing). | **PROD storage now present (re-verified 2026-07-28):** `stcorpusihzhhpfprod`, `stdpihzhhpfprodi62t`, `stmasterdataihzhhpfprod`, and `stmediaihzhhpfprod` — the former "PROD has no storage accounts" open item is closed. Data/AI/integration lane deployed via the D8 full-parity slices: ML workspace, ADLS masterdata, `sim-capacity` CA + skills-sim jobs/environments, Fabric F2 workspace/lakehouse + 2 semantic models, Foundry project (3 models + 8 agents). Only Fabric IQ Ontology/Data Agent remain Preview-gated (#270). | ✅ **Parity — closed 2026-07-24** by decision D8 (@urruegg, `approved-to-apply`) and re-confirmed live 2026-07-28. PROD storage is present; required BOM items are GA in Switzerland North per ADR-0037. | [E4](#e4-data-platform), [E11](#e11-storage-refresh-2026-07-28) |
-| 4 | Gold data-product medallion — BVA cost product (Sprint 33) | `bva_consumption` (bronze/silver) + 11 `bva_*` gold tables (`bva_dim_*` ×8, `bva_fact_azure_consumption`, `bva_fact_budget`, `bva_fact_value_realization`) present in SIT gold. | Absent from PROD gold. WS-A/WS-D live publish is `approved-to-apply`-gated per the gated-load plans; no `bva`/`opportunities` Cosmos container or `sm_bva` semantic model exists in either environment. | ⏳ **Gated forward-parity (F5)** — Sprint 33 is SIT-first; PROD publish is a tracked, human-gated deploy slice, not an unmanaged gap. | [E12](#e12-medallion-table-diff-2026-07-28) |
+| 4 | Gold data-product medallion — BVA cost product (Sprint 33) | `bva_consumption` (bronze/silver) + 11 `bva_*` gold tables (`bva_dim_*` ×8, `bva_fact_azure_consumption`, `bva_fact_budget`, `bva_fact_value_realization`) present in SIT gold. | **Published 2026-07-29** — `bronze.bva_consumption`, `silver.bva_consumption`, and all 11 `bva_*` gold tables now present in PROD (gold 36→47) via a gated seeded load (fixed seed 42). No `bva`/`opportunities` Cosmos container or `sm_bva` semantic model exists in either environment (Cosmos/Direct-Lake publish still gated → absent-in-both). | ✅ **Parity (F5)** — gated (`approved-to-apply` @urruegg) BVA PROD publish closed the SIT-first forward-parity slice; SIT is nightly-seeded so PROD uses a fixed documented seed (data-shape parity, not byte parity). | [E16](#e16-bva-prod-publish-2026-07-29) |
 | 4 | Gold data-product medallion — external-signals + forecast facts | `ext_signals_raw` (bronze), `ext_signals`/`ext_signals_quarantine` (silver), 5 `ext_*` gold tables, and forecast facts `fact_forecast_driver`/`fact_occupancy_forecast`/`fact_signal` present in SIT gold. | **Remediated 2026-07-29** — all 5 `gold.ext_*`, the `ext_signals*` bronze/silver sources, and the 3 forecast facts now present in PROD (gold 28→36); `external-signals` semantic model now has backing gold data. | ✅ **Parity** — gated (`approved-to-apply` @urruegg) PROD medallion rebuild closed the v1.4.0 gap; legacy `patient-flow` namespace tracked separately (§5). | [E15](#e15-prod-gap-remediation-2026-07-29) |
 | 4 | Cosmos containers and Fabric semantic models | Platform Cosmos `agenthost` (`agent_interactions`, `approval-events`, `conversations`, `audit`); CSA `csa` (`simulation-runs`, `plans`, `proposed_actions`, `agent-memory`, `response-levers`, `scenarios`); semantic models `capacity-dashboard` + `external-signals`. | Identical Cosmos container set in both platform and CSA accounts; identical semantic models `capacity-dashboard` + `external-signals`. | ✅ **Parity** | [E13](#e13-cosmos-containers--semantic-models-2026-07-28) |
 | 5 | Core Container Apps runtime | Core apps `ca-app-fluent-ihzhhpf-sit`, `ca-agent-host-ihzhhpf-sit`, `ca-signal-runner-ihzhhpf-sit`, and `ca-po-ihzhhpf-sit` are `Succeeded` / `Running`. | Core apps `ca-app-fluent-ihzhhpf-prod`, `ca-agent-host-ihzhhpf-prod`, `ca-signal-runner-ihzhhpf-prod`, and `ca-po-ihzhhpf-prod` are `Succeeded` / `Running` (Product-Owner stack, Sprint 28, now live in both). | ✅ **Parity** | [E5](#e5-compute--runtime), [E14](#e14-container-apps--key-vault-refresh-2026-07-28) |
@@ -540,18 +575,72 @@ Both applies were additive (0 deletes), synthetic-only, no PHI (ADR-0013 /
 ADR-0016). The forecast notebook was confirmed byte-identical (cell-source) to
 the proven SIT `run_foresight_evidence` notebook before apply.
 
+### E16 BVA PROD publish (2026-07-29)
+
+Gated (`approved-to-apply` @urruegg, 2026-07-29T11:44 +02:00) BVA consumption
+publish to PROD. Source data is deterministically regenerated with a **fixed
+documented seed** (SIT is nightly date-seeded via `bva-sim-refresh.yml`, so
+byte-identical data parity is neither achievable nor meaningful — data-shape
+parity is the contract):
+
+```text
+// 1. generate FOCUS parquet (deterministic)
+python data-platform/scripts/bva_synth_focus.py \
+  --seed 42 --days 90 --end-date 2026-06-30 --format parquet --out-dir <tmp>
+// -> 90 daily partitions, 11,880 rows, annualised CHF 759,730 (baseline CHF 760,000, within +/-15%)
+
+// 2. upload to PROD Files/Bronze/consumption/ (bva_upload_bronze.py, parametrized coords)
+//    workspace 1c8408f4-6eb7-401f-aee9-77fe4c8a515e / lakehouse 57bd6e02-5248-439c-9f31-16bf9ee83cb4
+// -> uploaded 90 partitions (1,672,688 bytes)
+
+// 3. apply medallion — run_single_notebook.py --environment PROD --apply
+//    bva_medallion_ingest run fe840f85-715e-4630-b027-f19d5f7b2ad5 -> [ok]
+
+// 4. verify — OneLake DFS re-read of PROD Tables/{bronze,silver,gold}
+PROD bronze : bva_consumption
+PROD silver : bva_consumption
+PROD gold   : bva_dim_capability, bva_dim_date, bva_dim_environment, bva_dim_exec_role,
+              bva_dim_hospital, bva_dim_meter, bva_dim_resource, bva_dim_service,
+              bva_fact_azure_consumption, bva_fact_budget, bva_fact_value_realization  (11)
+
+// post-publish gold count: PROD gold = 47 (was 36); SIT gold = 48
+// remaining SIT-only gold: patient-flow (legacy nested namespace, confirmed stale — §5)
+```
+
+The uploader `data-platform/scripts/bva_upload_bronze.py` was parametrized with
+`--workspace-id`/`--lakehouse-id` (TDD, defaults = SIT constants) so the same
+partition-preserving OneLake load targets PROD without SIT-hardcoded coordinates.
+The `sm_bva` semantic model and the `bva`/`opportunities` Cosmos SoR were **not**
+part of this load and remain absent in both environments (still gated).
+
 ## 5. Open items
 
-### 🟥 Gaps
+### ✅ Published to PROD (2026-07-29)
 
-* **Legacy `patient-flow` gold namespace is SIT-only (disposition pending).**
-  SIT gold carries a nested `patient-flow/` namespace (Delta sub-tables
+* **BVA cost product (Sprint 33, F5) — parity reached.** `bronze.bva_consumption`,
+  `silver.bva_consumption`, and all 11 `bva_*` gold tables are now present in PROD
+  (gold 36→47) via a gated (`approved-to-apply` @urruegg, 2026-07-29T11:44 +02:00)
+  seeded load. SIT is nightly date-seeded (`bva-sim-refresh.yml`), so PROD uses a
+  fixed documented **seed 42** for a reproducible one-time load — the parity
+  contract is data-shape (schema + table set), not byte-for-byte data. The
+  `sm_bva` semantic model and the `bva`/`opportunities` Cosmos SoR remain absent
+  in **both** environments (WS-A/WS-D Cosmos/Direct-Lake publish still gated →
+  absent-in-both, not a divergence). Evidence [E16](#e16-bva-prod-publish-2026-07-29).
+
+### ✅ Dispositioned — no PROD action
+
+* **Legacy `patient-flow` gold namespace is SIT-only — confirmed stale.** SIT
+  gold carries a nested `patient-flow/` namespace (Delta sub-tables
   `bed_assignment`, `discharge_recommendation`, `discharge_score`, `encounter`,
-  `forecast_output`) from an earlier medallion generation; PROD has none. This is
-  unrelated to the Sprint 33 BVA work and was not in the 2026-07-29 remediation
-  scope. **Action:** confirm whether `patient-flow` is an intended GA data
-  product to forward-port to PROD or a stale SIT artefact to drop; do not rebuild
-  in PROD without an explicit decision.
+  `forecast_output`) from an earlier medallion generation. It is **superseded** by
+  the current **flat** `gold.<entity>` layout: `03_gold_eventstream.ipynb` now
+  writes `saveAsTable(f'gold.{entity}')`, and all 21 canonical
+  `gold_tables_target.txt` entries (flat `bed_assignment`, `encounter`, `or_*`,
+  `fact_capacity_baseline`, …) are present in **both** SIT and PROD. Forward-porting
+  the nested namespace would re-introduce a deprecated layout, so the correct
+  disposition is **no PROD rebuild**. Any SIT-side removal of the stale nested
+  namespace is a separate destructive hygiene item (own `approved-to-apply` gate),
+  not a parity gap.
 
 ### ✅ Remediated (2026-07-29)
 
@@ -571,14 +660,6 @@ the proven SIT `run_foresight_evidence` notebook before apply.
   runner and verified by a fresh OneLake DFS re-read (PROD gold 28→36, E15). The
   `external-signals` semantic model is Direct Lake over these gold tables and now
   resolves against real data.
-
-### ⏳ Gated forward-parity
-
-* **BVA cost product (Sprint 33, F5).** `bva_consumption` + 11 `bva_*` gold
-  tables, the `sm_bva` semantic model, and the `bva`/`opportunities` Cosmos SoR
-  are SIT-first by design; the live PROD publish is `approved-to-apply`-gated per
-  the WS-A/WS-D gated-load plans. Not an unmanaged gap — it becomes a gap only if
-  PROD BVA publish is required for GA and remains unactioned.
 
 ### Accepted asymmetries
 

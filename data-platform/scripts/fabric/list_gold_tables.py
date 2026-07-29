@@ -15,8 +15,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import yaml
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ENV_FILE = REPO_ROOT / "data-platform" / "fabric" / "environments.yml"
 ONELAKE_DFS = "https://onelake.dfs.fabric.microsoft.com"
@@ -36,6 +34,8 @@ def parse_table_names(paths_json: dict) -> list[str]:
 
 
 def load_env(environment: str) -> dict:
+    import yaml  # deferred: keeps module import dependency-free for unit tests
+
     envs = yaml.safe_load(ENV_FILE.read_text(encoding="utf-8"))["environments"]
     if environment not in envs:
         raise SystemExit(f"unknown environment '{environment}'")

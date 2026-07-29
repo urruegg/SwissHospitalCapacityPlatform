@@ -33,8 +33,6 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-import yaml
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ENV_FILE = REPO_ROOT / "data-platform" / "fabric" / "environments.yml"
 FABRIC_API = "https://api.fabric.microsoft.com/v1"
@@ -170,6 +168,8 @@ def build_run_config(lakehouse_name: str, lakehouse_id: str,
 
 
 def load_env(environment: str) -> dict:
+    import yaml  # deferred: keeps module import dependency-free for unit tests
+
     envs = yaml.safe_load(ENV_FILE.read_text(encoding="utf-8"))["environments"]
     if environment not in envs:
         raise SystemExit(f"unknown environment '{environment}'; "
