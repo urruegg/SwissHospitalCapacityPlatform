@@ -15,6 +15,7 @@ import { ArrowRightRegular } from '@fluentui/react-icons';
 import { useTranslation } from 'react-i18next';
 import { loadEvidenceDataset } from '../../../../data/evidence/evidence-service';
 import { STORY_PILLARS } from './story-content';
+import { DigitalFeedbackLoopSection } from './feedback-loop/DigitalFeedbackLoopSection';
 import {
   storyStatTiles,
   COPILOT_ROSTER,
@@ -212,6 +213,9 @@ export function StoryTab() {
           </div>
         </div>
       </section>
+
+      {/* ── Digital feedback loop ── */}
+      <DigitalFeedbackLoopSection />
 
       {/* ── Copilot roster ── */}
       <section aria-label={t('backstage.story.roster.sectionLabel')}>
