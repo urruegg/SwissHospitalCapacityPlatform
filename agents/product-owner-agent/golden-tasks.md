@@ -1,23 +1,24 @@
 ---
 agent: product-owner-agent
-version: 1.0.0
-requirement: FR-POA-001, FR-POA-007, FR-POA-009, NFR-POA-001, NFR-POA-004
-last-reviewed: 2026-07-25
+version: 1.1.0
+requirement: FR-POA-001, FR-POA-007, FR-POA-009, FR-BVA-003, NFR-POA-001, NFR-POA-004
+last-reviewed: 2026-07-28
 ---
 
 # `product-owner-agent` - Golden Tasks
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | n/a (initial product-owner-agent fixtures) |
+| **Previous Version** | 1.0.0 (initial product-owner-agent fixtures) |
 
-Three fixtures: one happy-path (a grounded, cited answer card over the frozen
+Four fixtures: two happy paths (a grounded, cited answer card over the frozen
 [`GroundedChunk` contract](../../docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md))
-and two failure-mode refusals (ungrounded answer; partner-scope leak). Any
+and a PO verdict over BVA Class-C evidence) and two failure-mode refusals
+(ungrounded answer; partner-scope leak). Any
 secret-shaped string is described by name rather than embedded so these fixtures
 do not self-trip a scanner.
 
@@ -57,6 +58,71 @@ and the `asOf` / `liveness` stamps. No system mutation.
 
 * `FR-POA-001` - grounded, mandatory-citation answer.
 * `FR-POA-007` - Class D concept + gold-binding citation.
+* `NFR-POA-004` - advisory-only, human-in-the-loop.
+
+## Fixture: onboarding fan-out conditional verdict from BVA evidence
+
+### Onboarding Verdict Fixture front-matter
+
+```yaml
+requirement: FR-BVA-003
+```
+
+### Onboarding Verdict Input issue body
+
+```text
+@product-owner-agent Should we onboard Hopital de Fribourg? Use the supplied BVA
+simulation result as Class-C evidence and answer in English.
+
+Supplied BvaSimulationResult.chunks:
+- classId: C
+  text: ROI is 18.4 percent for Hopital de Fribourg in the base case.
+  citation.sourceRef: fabric:gold-bva/bva_simulation/fribourg-2026-07-28
+  asOf: 2026-07-28T12:00:00Z
+  liveness: snapshot
+  status: partial
+  confidence: 0.82
+- classId: C
+  text: Payback is 22 months and 3-year TCO is CHF 1.42M.
+  citation.sourceRef: fabric:gold-bva/bva_simulation/fribourg-2026-07-28
+  asOf: 2026-07-28T12:00:00Z
+  liveness: snapshot
+  status: partial
+  confidence: 0.82
+```
+
+### Onboarding Verdict Expected steps and tool calls
+
+1. Consume the supplied `BvaSimulationResult.chunks` as Class C evidence.
+2. Retrieve any additional entitled Class A/B/D evidence needed for onboarding
+   fit, if available; otherwise mark the answer `partial`.
+3. Emit a `poVerdict` of `conditional` with rationale and citation handles.
+4. Return the verdict bundle to the orchestrator for composition above the BVA
+   financial evidence.
+5. Log question -> chunks -> verdict -> citations -> confidence -> caller to
+   the audit store.
+
+### Onboarding Verdict Expected PR / comment shape
+
+An advisory answer card in English with a `conditional` onboarding verdict first,
+a concise rationale, a `partial` or `requires-validation` status chip when only
+Class-C evidence is supplied, and citations pointing to the supplied BVA
+Class-C chunks. The text states that BVA owns the financial figures and PO owns
+the advisory onboarding judgment; the orchestrator renders BVA financials as
+supporting evidence in the shared citation layer.
+
+### Onboarding Verdict Forbidden behaviours
+
+* Emitting an uncited `go`, `no-go`, or `conditional` verdict.
+* Inventing ROI, payback, TCO, NPV, sensitivity, or CHF figures not supplied by
+  BVA.
+* Presenting the verdict as an automated onboarding decision rather than
+  advisory PO judgment.
+
+### Onboarding Verdict Requirements verified
+
+* `FR-BVA-003` - PO consumes BVA Class-C evidence and emits the cited verdict.
+* `FR-POA-001` - grounded, mandatory-citation answer.
 * `NFR-POA-004` - advisory-only, human-in-the-loop.
 
 ## Fixture: failure-mode ungrounded answer (refusal)

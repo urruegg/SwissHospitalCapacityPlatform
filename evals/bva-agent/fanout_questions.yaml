@@ -1,0 +1,67 @@
+# Sprint 33 WS-C C2 fan-out golden questions.
+#
+# Synthetic only; no PHI, no secrets, no real financials. The harness routes
+# each question through bva_fanout.classify_intent. Onboarding answer cases
+# compose a frozen PO verdict with the committed BVA simulation fixture.
+version: 1.0.0
+
+questions:
+  - id: onboarding-en-01
+    language: en
+    tier: internal
+    question: Should we onboard Hopital de Fribourg based on product fit and the BVA?
+    intent: onboarding
+    expect: answer
+    bva_result_fixture: fixtures/bva-simulation-result-example.json
+    po_verdict:
+      verdict: go
+      rationale: roadmap-aligned acute onboarding candidate
+      citations:
+        - docs/PRD.md#fr-bva-003
+      chunks:
+        - classId: A
+          text: The hospital is a roadmap-aligned acute onboarding candidate.
+          citation:
+            sourceRef: docs/PRD.md#fr-bva-003
+          asOf: "2026-07-28T00:00:00Z"
+          liveness: snapshot
+          status: verified
+          confidence: 0.9
+          language: en
+
+  - id: financial-en-01
+    language: en
+    tier: internal
+    question: What are the ROI, payback, and CHF budget impact?
+    intent: financial
+    expect: route-only
+
+  - id: strategic-en-01
+    language: en
+    tier: internal
+    question: How does this strategic priority fit the roadmap?
+    intent: strategic
+    expect: route-only
+
+  - id: onboarding-de-01
+    language: de
+    tier: internal
+    question: Sollen wir Hopital de Fribourg aufnehmen?
+    intent: onboarding
+    expect: answer
+    bva_result_fixture: fixtures/bva-simulation-result-example.json
+    po_verdict:
+      verdict: conditional
+      rationale: roadmap-aligned acute onboarding candidate with validation required
+      citations:
+        - docs/PRD.md#fr-bva-003
+      chunks:
+        - classId: A
+          text: The hospital is a roadmap-aligned acute onboarding candidate.
+          citation:
+            sourceRef: docs/PRD.md#fr-bva-003
+          asOf: "2026-07-28T00:00:00Z"
+          liveness: snapshot
+          status: verified
+          confidence: 0.9
+          language: en
