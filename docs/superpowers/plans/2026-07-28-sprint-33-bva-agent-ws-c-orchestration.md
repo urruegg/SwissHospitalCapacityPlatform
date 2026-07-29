@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | n/a (initial version) |
+| **Previous Version** | 1.0.0 (initial version) |
 | **Sprint** | Sprint 33 — Curavias BVA Agent |
 | **Issue** | [#489](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/489) (tracker); [#527](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/527) (WS-C) |
 
@@ -88,8 +88,8 @@ prompt edits ARE in scope, backed by #527). The pre-existing PRD gap
 
 ## Status — WS-C
 
-- [ ] C1 fan-out composer + router
-- [ ] C2 fan-out golden eval
-- [ ] C3 agent-pack prompt updates
-- [ ] C4 integration doc
+- [x] C1 fan-out composer + router (548918c; word-boundary routing + status="new" fixes from code-review)
+- [x] C2 fan-out golden eval (86436ba; routing 100% / citation 100% / verdict-present green)
+- [x] C3 agent-pack prompt updates (56ecf65; bva-agent + product-owner-agent 1.1.0)
+- [x] C4 integration doc (2ddeff4; docs/data-platform/bva-po-fanout.md)
 - [ ] C5 final review + PR
