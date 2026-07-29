@@ -1,0 +1,60 @@
+/// BVA CHF-normalized Azure/Copilot source-week cost fact. Direct Lake over lh_ihzhhpf_sit.
+table bva_cost_fact
+	lineageTag: 3f227d12-2fb5-45e0-9858-a1164ffeb75a
+	sourceLineageTag: [gold].[bva_cost_fact]
+
+	column source
+		dataType: string
+		lineageTag: 76c7f974-3726-4566-a55f-b92790b45085
+		sourceLineageTag: source
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = Automatic
+
+	column iso_week
+		dataType: string
+		lineageTag: c26e1d49-b712-460c-ac2d-e4b7f018e82f
+		sourceLineageTag: iso_week
+		summarizeBy: none
+		sourceColumn: iso_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_usd
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2b40c7be-12af-492a-85a4-5aca63f9e6ea
+		sourceLineageTag: cost_usd
+		summarizeBy: sum
+		sourceColumn: cost_usd
+
+		annotation SummarizationSetBy = Automatic
+
+	column usd_to_chf
+		dataType: double
+		formatString: #,0.0000
+		lineageTag: 7d11666a-edb2-4293-9441-055e5dd8a834
+		sourceLineageTag: usd_to_chf
+		summarizeBy: none
+		sourceColumn: usd_to_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: d3ab748d-c882-48ed-80f0-e26cd575fe29
+		sourceLineageTag: cost_chf
+		summarizeBy: sum
+		sourceColumn: cost_chf
+
+		annotation SummarizationSetBy = Automatic
+
+
+	partition bva_cost_fact = entity
+		mode: directLake
+		source
+			entityName: bva_cost_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

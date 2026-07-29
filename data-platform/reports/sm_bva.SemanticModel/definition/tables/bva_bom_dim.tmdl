@@ -1,0 +1,48 @@
+/// BVA cost-basis BOM dimension (one row per committed SIT/PROD resource). Direct Lake over lh_ihzhhpf_sit.
+table bva_bom_dim
+	lineageTag: 3178d2ee-a25c-44b6-99c6-3f539b66fe14
+	sourceLineageTag: [gold].[bva_bom_dim]
+
+	column resource_type
+		dataType: string
+		lineageTag: 242a6c87-9310-4ec3-ae74-363461f16f0f
+		sourceLineageTag: resource_type
+		summarizeBy: none
+		sourceColumn: resource_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column resource_group
+		dataType: string
+		lineageTag: ef88e56e-385d-4cb6-853d-0da3371ae4f5
+		sourceLineageTag: resource_group
+		summarizeBy: none
+		sourceColumn: resource_group
+
+		annotation SummarizationSetBy = Automatic
+
+	column env
+		dataType: string
+		lineageTag: c3508d56-4d6b-49c8-97a9-5241fa19aa8e
+		sourceLineageTag: env
+		summarizeBy: none
+		sourceColumn: env
+
+		annotation SummarizationSetBy = Automatic
+
+	column resource_id
+		dataType: string
+		lineageTag: 9b55e65c-fe88-4b4e-ada9-962740bce9c6
+		sourceLineageTag: resource_id
+		summarizeBy: none
+		sourceColumn: resource_id
+
+		annotation SummarizationSetBy = Automatic
+
+
+	partition bva_bom_dim = entity
+		mode: directLake
+		source
+			entityName: bva_bom_dim
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

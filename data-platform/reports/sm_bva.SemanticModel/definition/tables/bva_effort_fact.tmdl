@@ -1,0 +1,60 @@
+/// BVA human elective team-effort cost fact (role x ISO week). Direct Lake over lh_ihzhhpf_sit.
+table bva_effort_fact
+	lineageTag: 6a262006-6ed6-4e40-bafe-a4930a3c0ce1
+	sourceLineageTag: [gold].[bva_effort_fact]
+
+	column role
+		dataType: string
+		lineageTag: 98573fb4-1a38-4b62-9e8e-f71779b10b88
+		sourceLineageTag: role
+		summarizeBy: none
+		sourceColumn: role
+
+		annotation SummarizationSetBy = Automatic
+
+	column iso_week
+		dataType: string
+		lineageTag: 129c54d4-a15c-4787-b350-ad3dc5d488f9
+		sourceLineageTag: iso_week
+		summarizeBy: none
+		sourceColumn: iso_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column elective_hours
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b2469763-e991-4eb4-b05d-b65313e5e826
+		sourceLineageTag: elective_hours
+		summarizeBy: sum
+		sourceColumn: elective_hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column role_rate_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b05a86eb-b6de-448c-a2e7-0ef6b6c65e9f
+		sourceLineageTag: role_rate_chf
+		summarizeBy: none
+		sourceColumn: role_rate_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column team_cost_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 1336c8e4-af2d-4892-b2db-2c6f2d80b5d5
+		sourceLineageTag: team_cost_chf
+		summarizeBy: sum
+		sourceColumn: team_cost_chf
+
+		annotation SummarizationSetBy = Automatic
+
+
+	partition bva_effort_fact = entity
+		mode: directLake
+		source
+			entityName: bva_effort_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

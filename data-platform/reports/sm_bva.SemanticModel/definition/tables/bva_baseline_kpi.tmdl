@@ -1,0 +1,97 @@
+/// BVA reconciled ROM baseline KPI fact; hosts the sm_bva measure catalog. Direct Lake over lh_ihzhhpf_sit.
+table bva_baseline_kpi
+	lineageTag: f447a2ba-c51a-47e9-ac8d-890cd87972ec
+	sourceLineageTag: [gold].[bva_baseline_kpi]
+
+	/// Total programme cost (one-time + annual run) in CHF; equals bva_baseline_kpi.totalCostChf.
+	measure 'Total Cost CHF' = ```
+			CALCULATE(SUM(bva_baseline_kpi[value]), bva_baseline_kpi[metric_id] = "totalCostChf")
+		```
+		formatString: #,0
+		lineageTag: 053e6ce2-7cde-4e13-a604-f778b475f298
+
+	/// One-time implementation cost in CHF; equals bva_baseline_kpi.oneTimeChf.
+	measure 'One-Time CHF' = ```
+			CALCULATE(SUM(bva_baseline_kpi[value]), bva_baseline_kpi[metric_id] = "oneTimeChf")
+		```
+		formatString: #,0
+		lineageTag: ba498c4a-d783-4daf-a20f-eef000e3a939
+
+	/// Recurring annual run cost in CHF; equals bva_baseline_kpi.annualRunChf.
+	measure 'Annual Run CHF' = ```
+			CALCULATE(SUM(bva_baseline_kpi[value]), bva_baseline_kpi[metric_id] = "annualRunChf")
+		```
+		formatString: #,0
+		lineageTag: 5b6c9a94-6696-478f-9add-d7402ccffdf5
+
+	/// Total cost per hospital in CHF; equals bva_baseline_kpi.costPerHospitalChf.
+	measure 'Cost per Hospital CHF' = ```
+			CALCULATE(SUM(bva_baseline_kpi[value]), bva_baseline_kpi[metric_id] = "costPerHospitalChf")
+		```
+		formatString: #,0
+		lineageTag: c54e21d0-270e-4a84-8ee0-2dd5657666af
+
+	/// Total cost divided by the total bed count; reconciles to bva_baseline_kpi.costPerBedChf.
+	measure 'Cost per Bed CHF' = DIVIDE([Total Cost CHF], SUM(bva_hospital_profile_dim[beds]))
+		formatString: #,0.00
+		lineageTag: 6180ad1b-5e40-472c-8d0c-d54dc633b0d8
+
+	/// Annual run cost per forecast run (24/day x 365); reconciles to bva_baseline_kpi.costPerForecastRunChf.
+	measure 'Cost per Forecast Run CHF' = DIVIDE([Annual Run CHF], 24 * 365)
+		formatString: #,0.00
+		lineageTag: b8fe3f0d-b930-4801-9213-451749a32a28
+
+
+	column metric_id
+		dataType: string
+		lineageTag: ca8f1503-2c42-46a5-8982-b1b472f25a54
+		sourceLineageTag: metric_id
+		summarizeBy: none
+		sourceColumn: metric_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 41f38e8e-3233-48c8-9d73-1ea36efd7345
+		sourceLineageTag: value
+		summarizeBy: sum
+		sourceColumn: value
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit
+		dataType: string
+		lineageTag: 86fe30e2-bf75-4188-8c31-c27ff18d8313
+		sourceLineageTag: unit
+		summarizeBy: none
+		sourceColumn: unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column as_of
+		dataType: string
+		lineageTag: 31c79a12-01d7-493a-aa4b-649c9673b09b
+		sourceLineageTag: as_of
+		summarizeBy: none
+		sourceColumn: as_of
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_ref
+		dataType: string
+		lineageTag: 3c3aff38-4f0c-4b4c-914d-6030e8f1da65
+		sourceLineageTag: source_ref
+		summarizeBy: none
+		sourceColumn: source_ref
+
+		annotation SummarizationSetBy = Automatic
+
+
+	partition bva_baseline_kpi = entity
+		mode: directLake
+		source
+			entityName: bva_baseline_kpi
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
