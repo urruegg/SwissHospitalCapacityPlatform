@@ -1,18 +1,138 @@
-# ARCHITECTURE
+# Curavias — Architecture
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 0.14.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.12.0 (Sprint 05 CAF/WAF runtime + reliability baseline closure) |
+| **Previous Version** | 0.13.0 (Sprint 05 CAF/WAF runtime + reliability baseline closure); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical system-context, medallion, agent-topology, and request-sequence diagrams (Sprint 34 WS-2) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document describes how Curavias is built: its architecture drivers, the
+Microsoft landing-zone and Well-Architected patterns it follows, its deployment
+regions, and how each design decision traces back to the product requirements. It
+is written so a technical stakeholder can understand the shape of the platform
+and why it is shaped that way.
 
 ## Purpose
 
-This document defines the current baseline architecture for the Swiss AI-Powered
-Patient Flow and Hospital Capacity Platform and maps architecture decisions to
-the requirement baseline in docs/PRD.md.
+This document defines the current baseline architecture for Curavias, the Swiss
+AI-powered patient-flow and hospital-capacity platform, and maps architecture
+decisions to the requirement baseline in docs/PRD.md.
+
+## Canonical diagrams
+
+These diagrams are maintained in
+[architecture/diagram-library.md](architecture/diagram-library.md) and copied
+here; update both places together when any of them changes.
+
+### System context
+
+```mermaid
+flowchart TB
+    subgraph Team["Frontier-Firm team"]
+        CT["Capacity and bed-management teams<br/>(agent bosses, HITL)"]
+    end
+
+    subgraph Network["Swiss care network"]
+        ACUTE["Acute hospitals"]
+        REHAB["Rehabilitation clinics"]
+        SPITEX["Spitex (home care)"]
+        INS["Insurer-linked coordination"]
+    end
+
+    CUR["Curavias platform<br/>advisory-only, synthetic data, no PHI"]
+
+    subgraph IQ["Microsoft IQ backbone (Azure)"]
+        FABRICIQ["Fabric IQ<br/>ontology + semantic backbone"]
+        FOUNDRYIQ["Foundry IQ<br/>knowledge + agents"]
+        WORKIQ["Work IQ<br/>M365 work context (read-only)"]
+    end
+
+    GH["GitHub delivery plane<br/>Copilot coding agent + MCP"]
+
+    CT -->|questions, approvals| CUR
+    CUR -->|advisory insights, cited answers| CT
+    Network -->|synthetic capacity + episode data| CUR
+    CUR --> FABRICIQ
+    CUR --> FOUNDRYIQ
+    CUR --> WORKIQ
+    GH -.builds + governs.-> CUR
+```
+
+### Medallion data flow
+
+```mermaid
+flowchart LR
+    UP["File upload<br/>(synthetic bundles)"] --> BR[("Bronze<br/>raw ingested")]
+    BR --> SV[("Silver<br/>conformed + quality-gated")]
+    SV --> GD[("Gold<br/>analytics-ready Delta")]
+    GD --> SM["Direct Lake<br/>semantic model"]
+    SM --> FIQ["Fabric IQ ontology"]
+    FIQ --> FOIQ["Foundry IQ grounding"]
+    FIQ --> FDA["Fabric Data Agent<br/>da_hospital_capacity"]
+    SV -. data-quality gate .-> DQ["data-quality-agent"]
+```
+
+### Agent topology and orchestration
+
+```mermaid
+flowchart TB
+    USER["Agent boss (human, HITL)"] --> ORCH["App copilot orchestrator"]
+
+    subgraph Capacity["Capacity copilots"]
+        BMCA["bmca-agent<br/>bed management"]
+        OOA["ooa-agent<br/>occupancy / 72h forecast"]
+        DCA["dca-agent<br/>discharge"]
+        ORSA["orsa-agent<br/>OR steering"]
+        SBA["sba-agent<br/>staffing balance"]
+        CSA["csa-agent<br/>crisis / scenario"]
+    end
+
+    subgraph Advisory["Product + value"]
+        PO["product-owner-agent"]
+        BVA["bva-agent<br/>bed-value analysis"]
+    end
+
+    subgraph Support["Data + signal"]
+        DQ["data-quality-agent"]
+        SIG["signal-agent"]
+    end
+
+    ORCH --> Capacity
+    ORCH --> Advisory
+    ORCH --> Support
+    WORKIQ["Work IQ context"] -.read-only.-> ORCH
+    Capacity -->|cited, advisory-only| USER
+    Advisory -->|cited, advisory-only| USER
+```
+
+### Key request sequence
+
+```mermaid
+sequenceDiagram
+    actor User as Agent boss (human)
+    participant App as Curavias App
+    participant Orch as Orchestrator
+    participant Agent as Sub-agent(s)
+    participant IQ as Fabric IQ / Foundry IQ
+
+    User->>App: Ask a capacity question
+    App->>Orch: Forward with work context (Work IQ)
+    Orch->>Agent: Dispatch to matching copilot
+    Agent->>IQ: Retrieve grounded facts + knowledge
+    IQ-->>Agent: Cited evidence (GroundedChunk)
+    Agent-->>Orch: Advisory answer + citations
+    Orch-->>App: Grounded, cited response
+    App-->>User: Preview / recommendation (HITL)
+    User->>App: Approve before any action
+```
 
 ## Architecture Drivers
 
