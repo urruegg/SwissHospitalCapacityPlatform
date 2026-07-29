@@ -8,11 +8,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.8.0 |
+| **Version** | 2.9.0 |
 | **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.7.1 (Sprint 34 WS-3 + Curavias brand-kit logo in the header); this bump adds the §7 traceability row for the Sprint 29 follow-up #424 live SIT lift (Approach B M1-M6: envelope send path, live golden-source, live Foundry threads, Fabric RLS ladder, OBO seam) referencing ADR-0057 + the M4/M5 design specs |
+| **Previous Version** | 2.8.0 (Sprint 34 WS-3 + Curavias brand-kit logo in header + §7 traceability row for Sprint 29 follow-up #424 live SIT lift); this bump restores the missing `### R)` NFR-BVA governance section (rows NFR-BVA-001..004 + header) that §7 traceability already references |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -605,6 +605,19 @@ and [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md).
 | `NFR-LEARN-003` | No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval). |
 | `NFR-LEARN-004` | Full lineage is preserved end to end: interaction -> dataset -> eval -> change. |
 
+### R) Business Value Assessment Agent Governance (Sprint 33)
+
+Sprint 33 non-functional deltas per the
+[Sprint 33 BVA agent design](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md),
+the [BVA agent contracts](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md),
+and [ADR-0056](adr/0056-bva-agent-deterministic-computation.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-BVA-001` | BVA computation shall be **deterministic and reproducible**, with **no LLM arithmetic**: all ROI/TCO math is performed by the `bva.simulate` engine. |
+| `NFR-BVA-002` | Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot, snapshot date, currency). |
+| `NFR-BVA-003` | Monetary output shall be **CHF-normalized with an explicit FX line**; settling weeks are marked provisional. |
+| `NFR-BVA-004` | BVA data shall preserve **SIT / PROD parity** and carry **no PHI** (ADR-0016); demo figures are labelled PoT (ADR-0013). |
 | `NFR-BVA-005` | BVA agent output shall preserve **DE / EN parity**. |
 
 ### S) Documentation Quality (Sprint 34)

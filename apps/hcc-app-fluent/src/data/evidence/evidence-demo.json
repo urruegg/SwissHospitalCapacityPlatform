@@ -4123,7 +4123,55 @@
       "title": "AI-serving behavior shall support provider-local governance and change control."
     },
     {
-      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA computation shall be **deterministic and reproducible**, with **no LLM arithmetic**: all ROI/TCO math is performed by the `bva.simulate` engine."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot, snapshot date, currency)."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Monetary output shall be **CHF-normalized with an explicit FX line**; settling weeks are marked provisional."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA data shall preserve **SIT / PROD parity** and carry **no PHI** (ADR-0016); demo figures are labelled PoT (ADR-0013)."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
       "id": "NFR-BVA-005",
       "kind": "NFR",
       "mvp": false,
