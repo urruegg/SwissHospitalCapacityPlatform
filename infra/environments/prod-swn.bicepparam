@@ -99,7 +99,14 @@ param enableAgentHostModule = true
 // crihzhhpfprod via `az acr import` from the SIT ACR. Deploy approval-gated per
 // AGENTS.md §4 (approved-to-apply by @urruegg 2026-07-28T12:28+02:00); see
 // docs/sprints/sprint-32/signal-agent-sit-prod-parity.md for live /agents evidence.
-param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:f596cf2'
+// #424 M6 SIT+PROD parity (2026-07-29): bumped f596cf2 -> 62cc2ae (PR #522, M5
+// OBO seam). 62cc2ae is a superset of f596cf2 (verified `git merge-base
+// --is-ancestor`) so the Signal Agent pack + #424 M3/M4 seams are retained; OBO
+// stays off (agentHostOboEnabled default false) and RLS stays simulated, so this
+// is a behaviour-parity redeploy that lifts PROD from M2 to M5. Image imported
+// into crihzhhpfprod via `az acr import` from the SIT ACR. approved-to-apply by
+// @urruegg 2026-07-29.
+param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:62cc2ae'
 // Redis: start with the in-memory grounding cache (proven in SIT per ADR-0028)
 // to avoid a deploy-time AllocationFailed on an unverified swn Balanced SKU.
 // Flip to true once the SKU is confirmed in switzerlandnorth (PROD hardening).
