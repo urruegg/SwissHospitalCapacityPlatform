@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.8.0 |
+| **Version** | 1.9.0 |
 | **Date** | 2026-07-29 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.7.0 (recorded the Sprint 33 cost-basis Gold load to both environments; this bump records the `sm_bva` Direct Lake semantic model now authored and published to both SIT and PROD, leaving only the WS-D Cosmos SoR as residual private-endpoint-blocked scope) |
+| **Previous Version** | 1.8.0 (recorded `sm_bva` authored + published to both; this bump formally dispositions the last residual — the WS-D `bva`/`opportunities` live-Cosmos SoR — as deferred to in-VNet execution, closing the Sprint 33 cost-basis parity follow-up) |
 
 ## 1. Summary
 
@@ -39,12 +39,19 @@
 > OneLake DFS re-read confirms all 5 tables present in both (evidence
 > [E17](#e17-bva-cost-basis-gold-load-2026-07-29); PROD gold 47→52).
 >
-> **Residual absent-in-both scope.** The WS-D `bva`/`opportunities`
-> **Cosmos SoR** live seed + projection are **not executable from the delivery
-> host**: both CSA Cosmos accounts are `publicNetworkAccess: Disabled`
-> (private-endpoint only, ADR-0029), so the Cosmos data plane is unreachable
-> outside the VNet. The app's opportunity view already reads a committed
-> byte-stable fixture (WS-D D4), so no demo path depends on the live Cosmos SoR.
+> **Residual — dispositioned (deferred to in-VNet execution).** The WS-D
+> `bva`/`opportunities` **Cosmos SoR** live seed + projection (plan steps D1–D3)
+> are **not a blocked-open gap** but a **deferred** item: both CSA Cosmos
+> accounts are `publicNetworkAccess: Disabled` (private-endpoint only, ADR-0029),
+> so the data plane is unreachable outside the VNet. This is now formally
+> dispositioned (§5, *Dispositioned — deferred (in-VNet)*) because (a) the full
+> WS-D logic is proven green by the D0 CI suite (42 tests: dry-run store +
+> byte-stable projection + validator), and (b) the app's opportunity view reads a
+> committed byte-stable fixture (WS-D D4 —
+> `apps/hcc-app-fluent/src/data/opportunity/opportunity-demo.json`), so **no demo
+> path depends on the live Cosmos SoR**. Live D1–D3 execution needs an in-VNet
+> runner (agent-host or Fabric managed VNet); running it from the delivery host
+> would require reversing the ADR-0029 hardening, which is out of scope.
 
 The v1.6.0 BVA consumption publish that this cost-basis load complements is retained below.
 
@@ -768,6 +775,26 @@ in both (private-endpoint-blocked).
   divergence). Evidence [E16](#e16-bva-prod-publish-2026-07-29).
 
 ### ✅ Dispositioned — no PROD action
+
+* **WS-D `bva`/`opportunities` live-Cosmos SoR (Sprint 33) — deferred to in-VNet
+  execution.** Plan steps D1–D3 (provision `opportunities` container, seed via
+  `opportunity_store.py`, project to `gold.bva_opportunity*` via
+  `build_gold_bva_opportunity.py`) require Cosmos **data-plane** access, but both
+  CSA Cosmos accounts are `publicNetworkAccess: Disabled` (private-endpoint only,
+  ADR-0029), so the plane is unreachable from the delivery host. This is a
+  **deferral, not a gap**: (a) the full WS-D logic is proven green by the D0 CI
+  suite — 42 tests covering the dry-run store (lifecycle guard + idempotent
+  lineage), the byte-stable projection, and the Opportunity validator; and
+  (b) the Backstage opportunity-pipeline view reads a committed byte-stable
+  fixture (`apps/hcc-app-fluent/src/data/opportunity/opportunity-demo.json`,
+  app-consumed + unit-tested), so **no demo path depends on live Cosmos**.
+  Reaching Cosmos from outside the VNet would require reversing the ADR-0029
+  hardening, which is out of scope. When an in-VNet runner (agent-host or Fabric
+  managed VNet) is available, D1–D3 run unchanged and the D4 fixture is
+  regenerated from the projection. Plan + status:
+  [`bva-cost-gated-load-plan.md`](../../data-platform/bva-cost-gated-load-plan.md#execution-status-2026-07-29).
+
+### ✅ Dispositioned — no PROD action (medallion layout)
 
 * **Legacy `patient-flow` gold namespace is SIT-only — confirmed stale.** SIT
   gold carries a nested `patient-flow/` namespace (Delta sub-tables
