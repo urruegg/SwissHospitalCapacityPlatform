@@ -1,16 +1,70 @@
-﻿# Infrastructure Baseline
+# Curavias — Infrastructure
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.6.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.7.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.5.1 (editorial: repaired UTF-8 mojibake; no semantic change) |
+| **Previous Version** | 1.6.0 (editorial: repaired UTF-8 mojibake; no semantic change); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical medallion + deployment diagrams (Sprint 34 WS-2) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document defines the infrastructure baseline for Curavias: the Bicep
+modules, environment parameters, and CI/CD workflows that provision and promote
+the platform across SIT and PROD. It records the as-deployed demo reality
+(synthetic data, no PHI) against the target GA architecture.
 
 ## Purpose
 
-Define the infrastructure baseline for Sprint 3 SIT and PROD provisioning and promotion workflows.
+Define the infrastructure baseline for Curavias, the Swiss AI-powered
+patient-flow and hospital-capacity platform, covering SIT and PROD provisioning
+and promotion workflows.
+
+## Canonical diagrams
+
+These diagrams are maintained in
+[architecture/diagram-library.md](architecture/diagram-library.md) and copied
+here; update both places together when either changes.
+
+### Medallion data flow
+
+```mermaid
+flowchart LR
+    UP["File upload<br/>(synthetic bundles)"] --> BR[("Bronze<br/>raw ingested")]
+    BR --> SV[("Silver<br/>conformed + quality-gated")]
+    SV --> GD[("Gold<br/>analytics-ready Delta")]
+    GD --> SM["Direct Lake<br/>semantic model"]
+    SM --> FIQ["Fabric IQ ontology"]
+    FIQ --> FOIQ["Foundry IQ grounding"]
+    FIQ --> FDA["Fabric Data Agent<br/>da_hospital_capacity"]
+    SV -. data-quality gate .-> DQ["data-quality-agent"]
+```
+
+### Deployment and region
+
+```mermaid
+flowchart TB
+    subgraph Deployed["As-deployed (demo / proof-of-technology)"]
+        direction TB
+        SIT["SIT<br/>westus2 (+ eastus2 Foundry split)<br/>synthetic, no PHI"]
+        PRODD["PROD<br/>switzerlandnorth (single region)<br/>synthetic, no PHI"]
+        SIT -->|promote| PRODD
+    end
+
+    subgraph Target["Target GA architecture"]
+        direction TB
+        SWN["Switzerland North<br/>primary"]
+        SWW["Switzerland West<br/>failover"]
+        SWN -->|failover| SWW
+    end
+
+    Deployed -.sunset to Swiss GA<br/>ADR-0013 / ADR-0032 / ADR-0037.-> Target
+```
 
 ## Current Scope
 

@@ -1,17 +1,29 @@
-# DATA
+# Curavias — Data
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.17.0 |
+| **Version** | 0.18.0 |
 | **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.16.0 (added Sprint 32 Signal Agent DC-REF-CERTIFICATION-v1 contract); this bump classifies the Sprint 30 agent_interactions store + golden datasets as R3 retention with residency, ratified in ADR-0055 |
+| **Previous Version** | 0.17.0 (classified the Sprint 30 agent_interactions store + golden datasets as R3 retention with residency, ratified in ADR-0055); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical medallion diagram (Sprint 34 WS-2) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document defines the data design for Curavias: the data domains, contracts,
+retention rules, and governance controls behind the Bronze/Silver/Gold medallion
+lakehouse. It is written so a technical stakeholder can see how data flows from
+ingestion to grounded consumption, on synthetic data with no PHI.
 
 ## Purpose
 
-Define the MVP data design baseline for the Swiss Hospital Capacity Platform,
-including data domains, data contracts, retention, and governance controls.
+Define the MVP data design baseline for Curavias, the Swiss AI-powered
+patient-flow and hospital-capacity platform, including data domains, data
+contracts, retention, and governance controls.
 
 This document is scoped to the approved MVP service pattern using:
 1. Azure Health Data Services for healthcare interoperability.
@@ -26,6 +38,26 @@ This document is scoped to the approved MVP service pattern using:
 > (metadata/episode-driven per [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md)).
 > Consolidated as-deployed view:
 > [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
+
+## Canonical diagrams
+
+This diagram is maintained in
+[architecture/diagram-library.md](architecture/diagram-library.md) and copied
+here; update both places together when it changes.
+
+### Medallion data flow
+
+```mermaid
+flowchart LR
+    UP["File upload<br/>(synthetic bundles)"] --> BR[("Bronze<br/>raw ingested")]
+    BR --> SV[("Silver<br/>conformed + quality-gated")]
+    SV --> GD[("Gold<br/>analytics-ready Delta")]
+    GD --> SM["Direct Lake<br/>semantic model"]
+    SM --> FIQ["Fabric IQ ontology"]
+    FIQ --> FOIQ["Foundry IQ grounding"]
+    FIQ --> FDA["Fabric Data Agent<br/>da_hospital_capacity"]
+    SV -. data-quality gate .-> DQ["data-quality-agent"]
+```
 
 ## Source Baseline
 
