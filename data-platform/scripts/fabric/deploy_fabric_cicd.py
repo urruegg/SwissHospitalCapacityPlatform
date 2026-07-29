@@ -48,6 +48,7 @@ DEPLOYABLE_ITEMS = [
     "capacity-dashboard.SemanticModel",
     "capacity-dashboard.Report",
     "external-signals.SemanticModel",
+    "sm_bva.SemanticModel",
 ]
 
 

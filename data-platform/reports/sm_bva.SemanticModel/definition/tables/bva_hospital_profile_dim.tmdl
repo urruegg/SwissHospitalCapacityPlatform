@@ -1,0 +1,59 @@
+/// BVA hospital-profile dimension (3 synthetic tenants). Direct Lake over lh_ihzhhpf_sit.
+table bva_hospital_profile_dim
+	lineageTag: 384e22e7-33c5-41d8-aef2-246d8a18ce56
+	sourceLineageTag: [gold].[bva_hospital_profile_dim]
+
+	column tenant_id
+		dataType: string
+		lineageTag: 646abc6d-9cb4-451b-8677-0d5710be47f0
+		sourceLineageTag: tenant_id
+		summarizeBy: none
+		sourceColumn: tenant_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hospital_name
+		dataType: string
+		lineageTag: 54277df1-42e5-472d-9c00-20f64259b363
+		sourceLineageTag: hospital_name
+		summarizeBy: none
+		sourceColumn: hospital_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column beds
+		dataType: int64
+		formatString: #,0
+		lineageTag: c9617491-2dc7-4692-adf4-05f72e543dde
+		sourceLineageTag: beds
+		summarizeBy: sum
+		sourceColumn: beds
+
+		annotation SummarizationSetBy = Automatic
+
+	column occupancy_target
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 34e75df9-2722-43c8-ab35-42e46dcd9e50
+		sourceLineageTag: occupancy_target
+		summarizeBy: none
+		sourceColumn: occupancy_target
+
+		annotation SummarizationSetBy = Automatic
+
+	column archetype
+		dataType: string
+		lineageTag: d97a5b8d-81f8-4966-ad8f-a901b3289062
+		sourceLineageTag: archetype
+		summarizeBy: none
+		sourceColumn: archetype
+
+		annotation SummarizationSetBy = Automatic
+
+
+	partition bva_hospital_profile_dim = entity
+		mode: directLake
+		source
+			entityName: bva_hospital_profile_dim
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
