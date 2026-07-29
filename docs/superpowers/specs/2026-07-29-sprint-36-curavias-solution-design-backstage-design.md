@@ -1,13 +1,13 @@
-# Sprint 36: Curavias Solution Design (IQ operating model) in Backstage - Design
+# Sprint 36: Curavias Backstage - full showcase (Solution design + Frontier-Firm narrative) - Design
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg (with GitHub Copilot) |
 | **Status** | Approved for planning |
-| **Previous Version** | n/a (initial design) |
-| **Sprint** | Sprint 36 - Curavias Solution Design in Backstage |
+| **Previous Version** | 1.0.0 (Solution-design section only; extended to the full Backstage showcase - keeps DFL + SD, adds the Frontier-Firm narrative) |
+| **Sprint** | Sprint 36 - Curavias Backstage full showcase |
 | **Issue** | [#540](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/540) |
 | **Lane** | Experience (`apps/hcc-app-fluent/**`) + a governance reconciliation workstream (`docs/SD.md`, `docs/GLOSSARY.md`) |
 
@@ -15,15 +15,36 @@
 
 ## 1. Goal
 
-Add an executive-facing **Solution design - IQ operating model** section as a
-distinct, full-width part of **Backstage > Story** - a sibling to the Digital
-feedback loop section ([Sprint 35](2026-07-29-sprint-35-curavias-digital-feedback-loop-design.md)).
-It renders the Curavias solution design as a Microsoft Frontier-Firm IQ
-operating model and lets an executive click any element to ask the Product Owner
-Agent about it.
+Deliver the **full Backstage Story showcase** - the "company behind the product"
+narrative - as distinct, full-width sections in **Backstage > Story**. This sprint
+**keeps** the Digital feedback loop ([Sprint 35](2026-07-29-sprint-35-curavias-digital-feedback-loop-design.md),
+merged) and the **Solution design - IQ operating model** board (this spec,
+sections 2-14), and **adds** the product-marketing Frontier-Firm Backstage
+narrative (section 15), all routing to the docked Product Owner Agent rail.
 
-This is an additional part of the Backstage story. It is **not** a fourth
-Backstage tab.
+It is additional content within the existing Backstage Story tab. It is **not** a
+fourth Backstage tab; the Evidence and Roles tabs are unchanged.
+
+### 1.1 Full Backstage Story composition (approved order)
+
+| # | Section | Source | Notes |
+| - | ------- | ------ | ----- |
+| 1 | Backstage hero - "We didn't just build a Frontier Firm. We became one." | new (B1) | intro |
+| 2 | Success Framework - 4 transformation principles + numbers (1 human, 29 sprints, SIT->PROD, 100% human-merged) | new (B2) | the transformation |
+| 3 | Digital feedback loop - signals -> Microsoft IQ -> governed action | Sprint 35 (kept) | the living system |
+| 4 | Solution design - IQ operating model (5 IQ layers + Governance/Security lanes) | this spec sections 2-14 | primary architecture; six-lanes folded in as a companion |
+| 5 | DevSecOps loop - DEV<->OPS + HITL gate + DEV->SIT->PROD | new (B3) | how it is built |
+| 6 | Review sessions & people - 7 sessions + named practitioners | new (B5) | pressure-tested |
+| 7 | Product Owner Agent - the four knowledge classes (A/B/C/D) | new (B6) | explains the docked rail |
+
+**Overlap resolutions:** the PM "six lanes" architecture (B4) is **folded into the
+Solution design section** (row 4) as a compact companion mapping to the IQ
+layers/lanes - not a competing diagram; the **DevSecOps loop** (row 5) stays its
+own section (the build-process visual), complementary to the DevSecOps IQ layer;
+the **PO knowledge classes** (row 7) are an explainer for the already-docked rail.
+
+Sections 2-14 below specify the Solution-design board (unchanged from v1.0.0);
+section 15 specifies the added Frontier-Firm Backstage narrative sections.
 
 ## 2. Approved design decisions
 
@@ -248,10 +269,14 @@ types, selectors, and public props land first (WS-A). Then:
 3. **WS-C - Presentation + verification.** Standalone route, responsive
    behavior, Playwright interaction/visual/a11y coverage.
 4. **WS-D - Governance reconciliation.** `docs/SD.md` §2 + `docs/GLOSSARY.md`.
+5. **WS-E - Frontier-Firm narrative sections.** `backstage-narrative-content.ts`
+   * the B1/B2/B3/B5/B6 section components + the six-lanes companion inside the
+   Solution design section + i18n + Playwright/a11y (section 15).
 
 Each worker starts from current `main`, uses TDD, runs focused checks, and opens
 a human-reviewed PR. No subagent self-merges. WS-B and WS-C depend on the WS-A
-contract; WS-D is independent and may run in parallel.
+contract; WS-D is independent and may run in parallel; WS-E depends on WS-B (the
+StoryTab mount point) and reuses the SD context-routing pattern.
 
 ## 13. Scope and traceability
 
@@ -261,7 +286,8 @@ Advances existing requirements only:
 * `FR-UX-001`, `FR-UX-004`;
 * `NFR-POA-001`, `NFR-POA-004`;
 * `NFR-UX-001` through `NFR-UX-004`;
-* `NFR-DOC-001` (WS-D reconciliation).
+* `NFR-DOC-001` (WS-D reconciliation);
+* `FR-GOV-004` (review-session governance evidence, section 15.5).
 
 No new FR/NFR ID, agent prompt, backend service, data contract, Fabric asset,
 Azure resource, or infrastructure change is introduced. The prototype files in
@@ -270,14 +296,76 @@ inputs.
 
 ## 14. Definition of Done
 
-* The section is a separate full-width Backstage Story section, not a new tab.
+* The full Backstage Story renders the seven-section composition of §1.1 in order
+  (hero, Success Framework, Digital feedback loop [kept], Solution design [kept],
+  DevSecOps loop, Review sessions & people, PO knowledge classes); still no fourth
+  tab, Evidence + Roles unchanged.
+* The Digital feedback loop (Sprint 35) and Solution design sections are preserved
+  and unbroken.
 * Five IQ layers + Governance and Security lanes render with per-layer MVP/Target
-  badges and the one shared card language.
-* The section header, every plane header, and every capability badge route
-  matching, cited, advisory context to the existing Product Owner Agent rail.
+  badges and the one shared card language; the six-lanes companion maps into it.
+* The section header, every plane header, every capability badge, and every
+  narrative section route matching, cited, advisory context to the existing
+  Product Owner Agent rail.
 * Desktop and narrow layouts remain readable without overlap.
 * Standalone presentation reuses the same component and catalog.
+* Review-session external links use `rel="noopener"`; synthetic/no-PHI +
+  advisory-only stay visible.
 * `docs/SD.md` + `docs/GLOSSARY.md` reconciled to the new model.
 * Unit/component, lint, build, Playwright, screenshot, and axe gates pass.
 * Delivery remains experience-lane (plus the scoped WS-D governance edit) and
   uses synthetic, non-PHI content.
+
+## 15. Frontier-Firm Backstage narrative sections
+
+These sections are added to the Backstage Story tab in the composition order of
+§1.1, around the kept Digital feedback loop (Sprint 35) and Solution design
+(sections 2-14) sections. Each is a focused Fluent v9 + Curavias design-system
+component reading its copy from a typed `backstage-narrative-content.ts` model
+(i18n keys; no PHI), and each routes to the docked Product Owner Agent rail using
+the same `openWithReco` pattern as the Solution design section. Source content is
+the product-marketing draft `docs/superpowers/ideas/Curavias-Frontier-Showcase.html`
+(Backstage chapter), intaken as a reviewed BOM.
+
+### 15.1 Backstage hero (B1)
+
+"We didn't just build a Frontier Firm. We became one." An intro band with the
+Curavias mark; no data binding.
+
+### 15.2 Success Framework (B2)
+
+Four transformation principles (organize around outcomes; human-agent teams;
+trust & governance by design; evidence-first) plus a numbers panel (1 human, 29
+sprints, SIT->PROD, 100% human-merged). The numbers are provenance-labelled
+`as-built` facts, not live data.
+
+### 15.3 DevSecOps loop (B3)
+
+The DEV<->OPS build loop (plan/code/build/test <-> release/deploy/operate/monitor)
+with the central HITL gate (PR + Issue + approved-to-apply) and the
+DEV->SIT->PROD delivery strip. Rendered as an accessible Fluent/SVG figure with a
+text-equivalent legend.
+
+### 15.4 Six-lanes companion (B4, folded into section 4)
+
+Not a standalone section: a compact six-lane strip (Experience, API & agent
+runtime, Data platform, AI & decision, Integration, Governance) rendered inside
+the Solution design section, each lane mapping to its IQ layer/lane - so there is
+one architecture diagram, not two.
+
+### 15.5 Review sessions & people (B5)
+
+The seven documented review sessions (perspective challenged + date) and the
+named-practitioners grid (name, competency, contribution, consented LinkedIn
+link). External links open in a new tab with `rel="noopener"`. This is governance
+evidence (`FR-GOV-004`).
+
+### 15.6 Product Owner Agent knowledge classes (B6)
+
+An explainer for the already-docked rail: the four knowledge classes (A Corpus,
+B Live-proof, C Cost, D Ontology), with a CTA that opens the rail. No new agent
+behavior.
+
+Each narrative section carries `data-testid="backstage-<id>"`, is keyboard- and
+screen-reader-accessible, passes axe at WCAG 2.1 AA, and keeps the synthetic/
+no-PHI + advisory-only posture visible.
