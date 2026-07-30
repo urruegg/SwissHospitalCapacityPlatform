@@ -16,8 +16,12 @@ describe('agent context map', () => {
     expect(agentForRoute('/backstage/feedback-loop')).toBe('product-owner-agent');
   });
 
+  it('maps the START surface to the product-owner agent', () => {
+    expect(agentForRoute('/start')).toBe('product-owner-agent');
+    expect(agentForRoute('/start/frontier')).toBe('product-owner-agent');
+  });
+
   it('falls through to the orchestrator for other non-board surfaces', () => {
-    expect(agentForRoute('/start')).toBe('orchestrator');
     expect(agentForRoute('/settings')).toBe('orchestrator');
     expect(agentForRoute('/main')).toBe('orchestrator');
   });

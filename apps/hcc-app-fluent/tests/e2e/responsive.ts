@@ -1,0 +1,2 @@
+export const NARROW_VIEWPORT_WIDTH = 390;
+export const NARROW_VIEWPORT_HEIGHT = 844;

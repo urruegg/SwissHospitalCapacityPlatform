@@ -16,6 +16,7 @@ const BOARD_AGENTS: Record<string, string> = {
 export function agentForRoute(pathname: string): string {
   const board = pathname.match(/^\/main\/([^/]+)/)?.[1];
   if (board && BOARD_AGENTS[board]) return BOARD_AGENTS[board];
+  if (pathname === '/start' || pathname.startsWith('/start/')) return 'product-owner-agent';
   if (pathname.startsWith('/backstage')) return 'product-owner-agent';
   return 'orchestrator';
 }

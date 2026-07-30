@@ -11,9 +11,9 @@ export default defineConfig({
   build: { outDir: 'dist', sourcemap: true },
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: './tests/vitest-environment-jsdom-compatible.ts',
     setupFiles: ['./tests/setup.ts'],
-    include: ['tests/unit/**/*.{test,spec}.{ts,tsx}'],
+    include: ['tests/unit/**/*.{test,spec}.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
     css: false,
   },
 });

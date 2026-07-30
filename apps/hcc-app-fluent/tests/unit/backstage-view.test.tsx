@@ -28,12 +28,12 @@ describe('BackstageView', () => {
     renderAt('/backstage');
     expect(screen.getByTestId('backstage-surface')).toBeInTheDocument();
     expect(screen.getByTestId('backstage-nav-feedback-loop')).toBeInTheDocument();
-    expect(screen.getByTestId('backstage-nav-opportunities')).toBeInTheDocument();
+    expect(screen.getByTestId('backstage-nav-po-classes')).toBeInTheDocument();
   });
 
-  it('mounts the Opportunities part on its route', () => {
-    renderAt('/backstage/opportunities');
-    expect(screen.getByTestId('widget-opportunities')).toBeInTheDocument();
+  it('mounts the PO knowledge classes part on its route', () => {
+    renderAt('/backstage/po-classes');
+    expect(screen.getByTestId('widget-po-classes')).toBeInTheDocument();
   });
 
   it('falls back to the Digital Feedback Loop part for an unknown widget', () => {

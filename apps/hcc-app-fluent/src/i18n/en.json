@@ -38,7 +38,13 @@
     "nav": {
       "label": "Backstage sections",
       "feedbackLoop": "Digital Feedback Loop",
-      "opportunities": "Opportunities"
+      "opportunities": "Opportunities",
+      "company": "Company",
+      "successFramework": "Success Framework",
+      "solutionDesign": "Solution design",
+      "devsecops": "DevSecOps loop",
+      "reviews": "Review sessions",
+      "poClasses": "Product Owner Agent"
     },
     "story": {
       "tab": "Story",
@@ -110,27 +116,42 @@
           "care-ecosystem": {
             "curavias": "Engage care network",
             "microsoft": "Engage customers",
-            "group": "Care ecosystem"
+            "group": "Care ecosystem",
+            "signalText": "Referral demand · partner capacity · experience feedback",
+            "actionText": "Coordinate placement · connect the next care setting",
+            "loopBack": "Continuity, access and experience become new evidence"
           },
           "command-center": {
             "curavias": "Optimize patient flow",
             "microsoft": "Optimize operations",
-            "group": "Command center"
+            "group": "Command center",
+            "signalText": "Occupancy · 72h demand · ED arrivals · trusted hazards",
+            "actionText": "Rebalance beds · prepare scenario · coordinate discharge",
+            "loopBack": "Wait time, utilization and avoided delay feed the loop"
           },
           "frontier-workforce": {
             "curavias": "Empower care teams",
             "microsoft": "Empower employees",
-            "group": "Frontier workforce"
+            "group": "Frontier workforce",
+            "signalText": "Staffing · workload · skills · certifications",
+            "actionText": "Balance roster · mobilize qualified capacity",
+            "loopBack": "Workload, adoption and decision feedback refine support"
           },
           "care-innovation": {
             "curavias": "Transform care delivery",
             "microsoft": "Transform products",
-            "group": "Care innovation"
+            "group": "Care innovation",
+            "signalText": "Outcomes · pathway gaps · agent and service telemetry",
+            "actionText": "Improve pathway · knowledge · agent guidance",
+            "loopBack": "Quality and adoption measurements start the next cycle"
           }
         },
         "iqCore": {
           "caption": "Microsoft IQ core",
-          "title": "Work + Foundry + Fabric + Process + Governance IQ"
+          "title": "Work + Foundry + Fabric + Process + Governance IQ",
+          "name": "Microsoft IQ",
+          "sub": "data · knowledge · context · decisions",
+          "hitl": "Human approval before action"
         },
         "iq": {
           "work": "Work IQ",
@@ -183,6 +204,30 @@
         "empty": {
           "title": "Digital feedback loop unavailable",
           "body": "No feedback-loop domains are configured for this view."
+        },
+        "section": {
+          "header": "Trusted signals become governed action through Microsoft IQ",
+          "tagline": "Backstage · The digital feedback loop",
+          "description": "Every domain sends signals into Microsoft IQ, gets a proposed action back, and returns a measured outcome, with a human approving before anything acts. Select any domain to ask the Product Owner Agent for grounded, cited detail."
+        },
+        "journey": {
+          "dataPoints": "Data points",
+          "iq": "Microsoft IQ",
+          "actionPacket": "Action packet",
+          "approval": "Human approval",
+          "outcome": "Measured outcome"
+        },
+        "note": {
+          "label": "Animation behaviour:",
+          "body": "cyan circles are incoming signal observations; the green packet is a proposed action leaving Microsoft IQ; the amber point returns the measured outcome. Motion stops when you pause or request reduced motion."
+        },
+        "poAgent": {
+          "phase": {
+            "signal": "Signal packets arrive",
+            "iq": "Microsoft IQ makes sense",
+            "action": "Action returns",
+            "outcome": "Outcome closes the loop"
+          }
         }
       },
       "roster": {
@@ -204,8 +249,9 @@
       }
     },
     "header": {
-      "title": "Curavias Backstage",
-      "lead": "The Curavias platform story - starting with the Digital Feedback Loop. More parts to come."
+      "title": "We didn't just build a Frontier Firm. We became one.",
+      "lead": "Two visuals tell the backstage story: how the Curavias organisation ran its own transformation against a success framework, and how the product team actually builds and ships, with humans on the gates of every DevSecOps change.",
+      "eyebrow": "Backstage · the company behind the product"
     }
   },
   "evidence": {
@@ -313,40 +359,46 @@
   },
   "start": {
     "title": "Curavias",
-    "mission": "Coordinating hospital capacity across the Swiss care network.",
+    "mission": "A Frontier Firm runs on human-agent teams: people keep judgment and accountability while specialised copilots plan, ground on evidence and recommend. Curavias makes that real for Swiss hospital capacity.",
     "disclaimer": "Microsoft Innovation Hub Showcase — pure simulated and generic data for demo purposes only.",
     "mode": {
       "demo": "Demo — simulated golden-thread showcase",
       "user": "User — live working mode"
     },
     "launcher": {
-      "title": "Enter a role board",
+      "title": "Step into a role board",
       "occupancy": "Occupancy",
       "discharge": "Discharge",
       "bedManager": "Bed management",
       "orSteering": "OR steering",
       "staffing": "Staffing",
-      "crisis": "Scenario planning"
+      "crisis": "Scenario planning",
+      "tagline": "Main · the live operational product",
+      "description": "Each operational role does the daily work with a specialised copilot alongside — open a role-scoped board to see it live."
     },
     "capacityTeaser": {
-      "title": "Site capacity (live)",
+      "title": "Site capacity, live",
       "peakWard": "{{ward}} → {{pct}}%",
       "siteGapDeficit": "Deficit {{beds}} beds",
       "siteGapSurplus": "Surplus {{beds}} beds",
       "breachEta": "Breach ~{{hours}}h",
       "asOf": "as of {{time}}",
-      "firstSurfacedBy": "surfaced by {{agent}}"
+      "firstSurfacedBy": "surfaced by {{agent}}",
+      "tagline": "Live proof · capacity right now",
+      "description": "72-hour site pressure from the OOA golden source — live or simulated, every figure carries its provenance."
     },
     "valueTiles": {
-      "title": "Value & ROI",
-      "romLabel": "ROM estimate"
+      "title": "The BVA that kick-starts the frontier",
+      "romLabel": "ROM estimate",
+      "tagline": "The decision · Business Value Assessment",
+      "description": "Before the first agent goes live, the numbers make the call — value, TCO, sensitivity and proof from the BVA data product."
     },
     "copilotCount": {
       "label": "{{count}} specialised copilots",
       "caption": "Registry-derived — one per role board"
     },
     "whyNow": {
-      "title": "Why now?",
+      "title": "What changes, and why",
       "caption": "Illustrative comparison — editorial content, not live metrics",
       "colAspect": "Dimension",
       "colToday": "Today",
@@ -380,17 +432,307 @@
         "aspect": "Value evidence",
         "today": "Qualitative reports",
         "curavias": "BVA provenance-stamped — ROM"
-      }
+      },
+      "tagline": "Why now",
+      "description": "A high-level comparison of the operating model, before and after."
     },
     "patientPath": {
-      "title": "Copilot at every care step",
+      "title": "One patient, one flow — humans and agents together",
       "caption": "Illustrative — copilots support each stage without handling real patient data (PHI)",
       "admission": "Admission",
       "triage": "Triage & Placement",
       "treatment": "Treatment",
       "discharge": "Discharge",
       "postAcute": "Post-acute",
-      "occupancyNote": "{{ward}} → {{pct}}% in 72h"
+      "occupancyNote": "{{ward}} → {{pct}}% in 72h",
+      "journeyLabel": "Curavias patient-path operational journey",
+      "openRoleBoard": "Open {{role}} role board",
+      "operationalBadge": "Operational stop",
+      "destinationBadge": "Recovery destination",
+      "recoveryTitle": "Recovery destination",
+      "recoveryBody": "The coordinated path hands over to recovery and community care with accountable follow-through.",
+      "recoveryCaption": "Continuity beyond the hospital",
+      "advisoryBadge": "Advisory",
+      "evidenceLabel": "Patient-path trust signals",
+      "evidenceChip": "Evidence-backed",
+      "goldenThreadChip": "Golden thread",
+      "operational": {
+        "occupancy": "Anticipate demand and capacity pressure before the care journey tightens.",
+        "bedManager": "Coordinate placement and bed flow across the operating site.",
+        "orSteering": "Protect capacity by aligning theatre decisions with downstream beds.",
+        "staffing": "Balance the skilled workforce around the emerging care demand.",
+        "discharge": "Coordinate a safe operational handover toward the next care setting."
+      },
+      "dataQuality": {
+        "ariaLabel": "Data quality advisory",
+        "title": "Data quality across the path",
+        "body": "The Data Quality Agent checks provenance, freshness, and contract health without navigating away from the journey."
+      },
+      "crisis": {
+        "ariaLabel": "Crisis scenario advisory",
+        "body": "When the role lens permits, CSA spans the path with scenario planning and escalation advice.",
+        "cta": "Open advisory scenario planning"
+      },
+      "humanDecision": {
+        "ariaLabel": "Human decision",
+        "title": "The human decides.",
+        "body": "Copilots preview and recommend; accountable operational leaders approve any change."
+      },
+      "tagline": "Key visual · Patient journey",
+      "description": "Every step keeps a person in charge — agents surface the signal, explain it and recommend a lever, with no real patient data (PHI)."
+    },
+    "frontier": {
+      "page": {
+        "title": "Curavias Start",
+        "lead": "Frontier shell for the seven-section Curavias executive start surface.",
+        "loading": "Loading Start shell…",
+        "errorTitle": "Start shell unavailable",
+        "errorBody": "The Start shell could not be prepared. Keep the advisory guardrails visible and retry the page."
+      },
+      "guardrails": {
+        "synthetic": "Microsoft Innovation Hub Showcase — synthetic, generic, non-PHI content only.",
+        "advisory": "Advisory only — human decision required for operational change.",
+        "noPhi": "No PHI"
+      },
+      "mode": {
+        "demo": "Demo — simulated golden-thread showcase",
+        "user": "User — live working mode"
+      },
+      "kind": {
+        "data": "Data section",
+        "static": "Narrative section",
+        "launcher": "Launcher section"
+      },
+      "placeholder": {
+        "data": "Data binding lands in the next workstream; this shell preserves the section order and loading state.",
+        "static": "Narrative copy and visuals land in the next workstream; this shell preserves the approved section slot.",
+        "launcher": "RBAC patient-path launcher wiring lands in the next workstream; this shell preserves the approved section slot."
+      },
+      "hero": {
+        "title": "Hero",
+        "body": "Executive hero shell for the Curavias frontier narrative and evidence-backed value hook.",
+        "eyebrow": "Product overview · operative capacity",
+        "hook": "See the squeeze before it happens. Act before it hurts.",
+        "valueLine": "Reliable preview · Explainable recommendation · The human decides.",
+        "supportingMetricLabel": "ROM context",
+        "capacityTitle": "Site capacity - next 72h",
+        "capacityLoading": "Loading site capacity…",
+        "capacityErrorTitle": "Site capacity unavailable",
+        "ctaPrimary": "Open Backstage",
+        "ctaSecondary": "See the platform story"
+      },
+      "workChart": {
+        "title": "How work changes",
+        "body": "Curavias combines accountable people, specialised agents, and on-demand workflows in one operating model.",
+        "flowLabel": "Curavias work modes",
+        "modeBadge": "Work mode",
+        "modes": {
+          "humans": {
+            "title": "Humans",
+            "body": "Leaders set intent, judge trade-offs, and remain accountable for operational decisions."
+          },
+          "agents": {
+            "title": "Agents",
+            "body": "Specialised copilots monitor signals, explain options, and prepare evidence-backed recommendations."
+          },
+          "on-demand": {
+            "title": "On-demand work",
+            "body": "Cross-functional workflows assemble around the decision, then hand control back to the accountable team."
+          }
+        },
+        "principle": {
+          "title": "Frontier Firm principle",
+          "badge": "Mapped to Curavias",
+          "body": "Work is organised around outcomes instead of static hand-offs between functions.",
+          "curaviasMap": "Curavias maps that principle to hospital capacity: shared signals, specialist agents, and a human decision at every operational boundary."
+        }
+      },
+      "cioWhyNow": {
+        "title": "CIO challenger: why now",
+        "body": "Seven recurring operational decisions show where fragmented coordination can become a governed Curavias preview.",
+        "tableLabel": "Operational decisions: Today compared with Curavias Preview",
+        "caption": "Illustrative qualitative comparison — no live business metrics.",
+        "columns": {
+          "decision": "Operational decision",
+          "today": "Today",
+          "preview": "Curavias Preview"
+        },
+        "decisions": {
+          "bed-allocation": {
+            "decision": "Bed allocation",
+            "today": "Reactive on the morning of admission and under time pressure.",
+            "preview": "Planned from the shared capacity outlook instead of improvised at handover."
+          },
+          "or-slots": {
+            "decision": "OR slot use",
+            "today": "Cancellations and empty slots are discovered on the operating day.",
+            "preview": "Cancellation risk and redistribution options become visible ahead of the decision."
+          },
+          "staffing": {
+            "decision": "Staffing coverage",
+            "today": "Short-notice pools and local workarounds cover emerging gaps.",
+            "preview": "Rosters align to forecast demand and skill requirements."
+          },
+          "discharge": {
+            "decision": "Discharge steering",
+            "today": "Readiness and blockers are unclear during the morning coordination cycle.",
+            "preview": "Candidates, blockers, and hand-offs are visible before the operational window."
+          },
+          "transfers": {
+            "decision": "Transfers and admission stops",
+            "today": "Decisions are ad hoc and communication happens under pressure.",
+            "preview": "Transfer cascades are previewed and partner organisations can be involved earlier."
+          },
+          "crisis": {
+            "decision": "Crisis and scenario response",
+            "today": "Response doctrine remains in documents separate from live operating signals.",
+            "preview": "Scenario-led recommendations connect trusted signals to the approved doctrine."
+          },
+          "data-quality": {
+            "decision": "Data-quality alerts",
+            "today": "Quality issues surface only after a KPI reaches a report.",
+            "preview": "Quality gates alert before an affected measure enters an operational decision."
+          }
+        }
+      },
+      "hospitals": {
+        "title": "Three hospitals",
+        "body": "Three synthetic hospitals share a capacity platform while retaining distinct operating contexts.",
+        "sitesLabel": "Synthetic Curavias hospital network",
+        "syntheticBadge": "Synthetic profile",
+        "sites": {
+          "curanova": {
+            "name": "CuraNova",
+            "profile": "Urban university hospital coordinating complex acute pathways and specialist services.",
+            "focus": "Focus: network-wide flow and tertiary capacity."
+          },
+          "curalp": {
+            "name": "Curalp",
+            "profile": "Regional hospital balancing acute demand with access across dispersed communities.",
+            "focus": "Focus: resilient coverage and timely transfers."
+          },
+          "vialta": {
+            "name": "Vialta",
+            "profile": "Integrated recovery hospital connecting acute discharge with rehabilitation and community care.",
+            "focus": "Focus: transition readiness and continuity."
+          }
+        },
+        "rosterTitle": "Seven-agent capacity team",
+        "rosterBody": "Each agent owns a focused advisory responsibility; accountable people retain the decision.",
+        "agents": {
+          "ooa-agent": {
+            "name": "Occupancy Outlook Agent",
+            "role": "Anticipates capacity pressure and explains forecast confidence."
+          },
+          "bmca-agent": {
+            "name": "Bed Management Copilot",
+            "role": "Coordinates placements, constraints, and site flow."
+          },
+          "dca-agent": {
+            "name": "Discharge Copilot",
+            "role": "Surfaces transition readiness and discharge barriers."
+          },
+          "orsa-agent": {
+            "name": "OR Steering Agent",
+            "role": "Connects theatre choices to downstream capacity."
+          },
+          "sba-agent": {
+            "name": "Staffing Balance Agent",
+            "role": "Aligns skill coverage with emerging operational demand."
+          },
+          "csa-agent": {
+            "name": "Crisis Scenario Agent",
+            "role": "Frames governed scenarios and resilience options."
+          },
+          "data-quality-agent": {
+            "name": "Data Quality Agent",
+            "role": "Checks provenance, freshness, and contract health."
+          }
+        }
+      },
+      "patientPath": {
+        "title": "Patient path",
+        "body": "RBAC-guided operational journey from capacity pressure to recovery, with advisory signals across the path."
+      },
+      "ninetyDay": {
+        "title": "90-day roadmap",
+        "body": "An illustrative ROM sequence moves from aligned decisions to proven workflows and governed scale.",
+        "roadmapLabel": "Illustrative Curavias ninety-day roadmap",
+        "romLabel": "Illustrative ROM",
+        "phases": {
+          "frame-ground": {
+            "title": "Frame & Ground",
+            "range": "Illustrative days 1–30",
+            "body": "Agree the priority decisions, accountable owners, trusted sources, and guardrails.",
+            "outcomes": {
+              "decision-map": "Decision map and shared success evidence",
+              "governance-baseline": "Synthetic data scope and governance baseline"
+            }
+          },
+          "build-prove": {
+            "title": "Build & Prove",
+            "range": "Illustrative days 31–60",
+            "body": "Prototype the highest-value workflows and test them with operational users.",
+            "outcomes": {
+              "workflow-slices": "Reviewable copilot workflow slices",
+              "control-findings": "Usability, evidence, and control findings"
+            }
+          },
+          "operate-scale": {
+            "title": "Operate & Scale",
+            "range": "Illustrative days 61–90",
+            "body": "Establish ownership, monitoring, and repeatable rollout gates for broader adoption.",
+            "outcomes": {
+              "adoption-playbook": "Operating cadence and adoption playbook",
+              "scale-decision": "Scale decision with residual risks"
+            }
+          }
+        }
+      },
+      "bva": {
+        "title": "BVA decision",
+        "body": "ROM-bound Business Value Assessment decision surface with KPI, TCO, sensitivity, and Product Owner handoff.",
+        "tcoTitle": "Annualised TCO",
+        "valueLeversTitle": "Value levers",
+        "sensitivityTitle": "Sensitivity",
+        "proofTitle": "Proof & evidence",
+        "finalTitle": "Executive decision",
+        "finalBadge": "Advisory handoff",
+        "tcoActual": "Actual",
+        "tcoVariance": "Variance",
+        "sensitivitySummary": "{{benefit}} annual benefit · {{tco}} 3-yr TCO · {{roi}} 3-yr ROI",
+        "proofFallback": "Power BI embed fallback",
+        "finalRead": "ROM estimate to review: {{netValue}} net value realised, {{roi}} ROI, {{budget}} annualised TCO vs budget, and {{trend}} per copilot turn.",
+        "railRead": "Review this BVA decision: {{netValue}} net value realised, {{roi}} ROI, {{tcoMeasure}}, and {{trend}}.",
+        "cta": "Ask Product Owner Agent",
+        "columns": {
+          "figure": "Figure",
+          "value": "Value",
+          "lever": "Value lever",
+          "annualBenefit": "Annual benefit (ROM)",
+          "valueLogic": "Value logic"
+        },
+        "followUps": {
+          "provenance": "Explain the provenance behind this BVA view.",
+          "budget": "What does the TCO variance mean for the decision?",
+          "sensitivity": "How sensitive is this view to the selected sensitivity scenario?"
+        }
+      }
+    },
+    "header": {
+      "eyebrow": "Start · for hospital and healthcare C-level · 5–10 min"
+    },
+    "nav": {
+      "label": "Start sections",
+      "welcome": "Welcome",
+      "capacity": "Capacity",
+      "orgWork": "Operating model",
+      "value": "Value",
+      "whyNow": "Why now",
+      "hospitals": "Hospitals",
+      "carePath": "Care path",
+      "ninetyDay": "90-day",
+      "getStarted": "Get started"
     }
   },
   "settings": {

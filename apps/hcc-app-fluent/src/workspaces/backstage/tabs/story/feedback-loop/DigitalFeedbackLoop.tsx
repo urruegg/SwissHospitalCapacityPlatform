@@ -1,22 +1,22 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { Body1, Title3, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import {
-  Badge,
-  Body1,
-  Button,
-  Caption1,
-  Title3,
-  Tooltip,
-  makeStyles,
-  mergeClasses,
-  tokens,
-} from '@fluentui/react-components';
-import { PauseRegular, PlayRegular } from '@fluentui/react-icons';
+  ArrowRightRegular,
+  DataTrendingRegular,
+  DiamondRegular,
+  PeopleCommunityRegular,
+  PeopleTeamRegular,
+  RocketRegular,
+  type FluentIcon,
+} from '@fluentui/react-icons';
 import { useTranslation } from 'react-i18next';
-import type {
-  DigitalFeedbackLoopProps,
-  FeedbackLoopDomain,
-  FeedbackLoopDomainId,
-  FeedbackLoopMode,
+import {
+  IQ_LAYERS,
+  type DigitalFeedbackLoopProps,
+  type FeedbackLoopDomain,
+  type FeedbackLoopDomainId,
+  type FeedbackLoopMode,
+  type IqLayer,
 } from './feedback-loop-model';
 
 const DEFAULT_LABELS: Record<FeedbackLoopDomainId, string> = {
@@ -35,51 +35,80 @@ const DEFAULT_MICROSOFT_LABELS: Record<FeedbackLoopDomainId, string> = {
 
 const useStyles = makeStyles({
   root: {
-    display: 'grid',
-    gridTemplateColumns: 'minmax(220px, 280px) minmax(360px, 1fr) minmax(220px, 280px)',
-    gridTemplateRows: 'auto 1fr auto',
-    gap: tokens.spacingHorizontalL,
-    minHeight: '560px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalL,
+  },
+  presentation: {
     padding: tokens.spacingHorizontalL,
     borderRadius: tokens.borderRadiusXLarge,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground1,
-    boxShadow: tokens.shadow4,
-    // A11y — the selected (primary/brand) domain button paints its secondary
-    // Microsoft-vocabulary caption over the brand fill. `colorNeutralForeground3`
-    // (grey) fails WCAG 2.1 AA contrast on that fill, so pin the caption on any
-    // pressed control to near-black. Baked into the reusable component so every
-    // embedding (Backstage + standalone presentation) inherits the fix.
-    '& [aria-pressed="true"] .fui-Caption1': {
-      color: '#0E0F11',
-    },
-    '@media screen and (max-width: 860px)': {
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: 'auto auto auto auto',
+    boxShadow: tokens.shadow16,
+    '@media screen and (max-width: 900px)': {
       padding: tokens.spacingHorizontalM,
     },
   },
-  presentation: {
-    minHeight: '680px',
-  },
-  header: {
-    gridColumnStart: 1,
-    gridColumnEnd: 4,
+  titlebar: {
     display: 'flex',
-    alignItems: 'start',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
-    gap: tokens.spacingHorizontalM,
-    '@media screen and (max-width: 860px)': {
-      gridColumnStart: 1,
-      gridColumnEnd: 2,
-      flexDirection: 'column',
-    },
+    gap: tokens.spacingHorizontalL,
+    flexWrap: 'wrap',
   },
-  heading: {
+  titleStack: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
-    maxWidth: '720px',
+    gap: tokens.spacingVerticalXXS,
+    maxWidth: '680px',
+  },
+  headline: {
+    margin: 0,
+    fontSize: tokens.fontSizeBase600,
+    lineHeight: tokens.lineHeightBase600,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
+  },
+  subhead: {
+    margin: 0,
+    fontSize: tokens.fontSizeBase300,
+    color: tokens.colorNeutralForeground2,
+  },
+  legend: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalL,
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
+  },
+  legendItem: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    whiteSpace: 'nowrap',
+  },
+  legendArrow: {
+    position: 'relative',
+    width: '26px',
+    height: '3px',
+    borderRadius: '2px',
+    backgroundColor: '#1FA9D6',
+    '::after': {
+      content: '""',
+      position: 'absolute',
+      right: '-1px',
+      top: '-4px',
+      borderTop: '5px solid transparent',
+      borderBottom: '5px solid transparent',
+      borderLeft: '7px solid #1FA9D6',
+    },
+  },
+  legendArrowAction: {
+    backgroundColor: '#17B890',
+    '::after': {
+      borderLeftColor: '#17B890',
+    },
   },
   controls: {
     display: 'flex',
@@ -95,53 +124,17 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusLarge,
     backgroundColor: tokens.colorNeutralBackground3,
   },
-  domainList: {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gap: tokens.spacingVerticalS,
-    alignContent: 'center',
-    minWidth: 0,
-    '@media screen and (max-width: 860px)': {
-      order: 3,
-    },
-  },
-  domainButton: {
-    width: '100%',
-    minHeight: '92px',
-    justifyContent: 'flex-start',
-    whiteSpace: 'normal',
-  },
-  domainButtonInner: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: tokens.spacingVerticalXXS,
-    textAlign: 'left',
-  },
-  microsoftLabel: {
-    color: tokens.colorNeutralForeground3,
-  },
-  selectedBadge: {
-    marginTop: tokens.spacingVerticalXXS,
-  },
   canvas: {
     position: 'relative',
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gridTemplateRows: 'auto 1fr auto',
-    alignItems: 'center',
-    justifyItems: 'center',
-    minHeight: '420px',
-    aspectRatio: '1.45 / 1',
-    borderRadius: tokens.borderRadiusXLarge,
+    width: '100%',
+    aspectRatio: '1200 / 650',
     overflow: 'hidden',
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundImage: `radial-gradient(${tokens.colorNeutralStroke2} 1px, transparent 1px)`,
-    backgroundSize: '22px 22px',
-    '@media screen and (max-width: 860px)': {
-      order: 2,
-      minHeight: '360px',
-      aspectRatio: '1 / 1',
+    '@media screen and (max-width: 900px)': {
+      aspectRatio: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: tokens.spacingVerticalM,
+      padding: 0,
     },
   },
   svg: {
@@ -149,103 +142,329 @@ const useStyles = makeStyles({
     inset: 0,
     width: '100%',
     height: '100%',
+    zIndex: 1,
+    pointerEvents: 'none',
+    '@media screen and (max-width: 900px)': {
+      display: 'none',
+    },
+  },
+  domainCard: {
+    position: 'absolute',
+    width: '25%',
+    height: '32%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+    padding: tokens.spacingHorizontalM,
+    textAlign: 'left',
+    borderRadius: tokens.borderRadiusLarge,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderLeftWidth: '4px',
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+    boxShadow: tokens.shadow2,
+    zIndex: 3,
+    cursor: 'pointer',
+    overflow: 'hidden',
+    fontFamily: 'inherit',
+    transitionProperty: 'box-shadow, transform',
+    transitionDuration: tokens.durationNormal,
+    ':hover': {
+      boxShadow: tokens.shadow4,
+      transform: 'translateY(-2px)',
+    },
+    ':focus-visible': {
+      outlineStyle: 'solid',
+      outlineWidth: '2px',
+      outlineColor: tokens.colorStrokeFocus2,
+      outlineOffset: '2px',
+    },
+    '@media screen and (max-width: 900px)': {
+      position: 'static',
+      width: '100%',
+      height: 'auto',
+    },
+  },
+  cornerTopLeft: {
+    left: '2.4%',
+    top: '4%',
+    '@media screen and (max-width: 900px)': { order: 1 },
+  },
+  cornerTopRight: {
+    right: '2.4%',
+    top: '4%',
+    '@media screen and (max-width: 900px)': { order: 2 },
+  },
+  cornerBottomLeft: {
+    left: '2.4%',
+    bottom: '4%',
+    '@media screen and (max-width: 900px)': { order: 4 },
+  },
+  cornerBottomRight: {
+    right: '2.4%',
+    bottom: '4%',
+    '@media screen and (max-width: 900px)': { order: 5 },
+  },
+  cardActive: {
+    boxShadow: tokens.shadow16,
+  },
+  kicker: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    color: tokens.colorNeutralForeground3,
+    fontSize: '11px',
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+  },
+  kickerIcon: {
+    display: 'grid',
+    placeItems: 'center',
+    width: '24px',
+    height: '24px',
+    borderRadius: tokens.borderRadiusSmall,
+    backgroundColor: tokens.colorNeutralBackground3,
+    color: '#365B7D',
+    fontSize: '16px',
+  },
+  cardTitle: {
+    margin: '4px 0 0',
+    fontSize: tokens.fontSizeBase400,
+    lineHeight: tokens.lineHeightBase300,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
+  },
+  cardMicro: {
+    marginBottom: '4px',
+    fontSize: '11px',
+    color: tokens.colorNeutralForeground3,
+  },
+  row: {
+    display: 'grid',
+    gridTemplateColumns: '58px 1fr',
+    gap: tokens.spacingHorizontalXS,
+    paddingTop: '4px',
+    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
+    fontSize: tokens.fontSizeBase200,
+    lineHeight: 1.3,
+  },
+  rowSignalLabel: {
+    color: '#178FC0',
+    fontSize: '10px',
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.04em',
+  },
+  rowActionLabel: {
+    color: '#0E9B78',
+    fontSize: '10px',
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.04em',
+  },
+  rowOutcomeLabel: {
+    color: '#8A6300',
+    fontSize: '10px',
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.04em',
+  },
+  rowText: {
+    color: tokens.colorNeutralForeground2,
   },
   core: {
-    zIndex: 1,
-    width: 'min(64%, 360px)',
-    minHeight: '190px',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '24%',
+    aspectRatio: '1 / 1',
+    borderRadius: '50%',
+    border: `2px solid #365B7D`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    zIndex: 4,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: tokens.spacingVerticalS,
-    padding: tokens.spacingHorizontalL,
-    borderRadius: '999px',
-    border: `2px solid #365B7D`,
-    backgroundColor: 'rgba(255,255,255,0.92)',
-    boxShadow: tokens.shadow16,
     textAlign: 'center',
-    '@media screen and (max-width: 860px)': {
-      width: 'min(88%, 360px)',
-      order: 1,
+    padding: tokens.spacingHorizontalS,
+    boxShadow: tokens.shadow28,
+    '@media screen and (max-width: 900px)': {
+      position: 'static',
+      transform: 'none',
+      width: '220px',
+      height: '220px',
+      alignSelf: 'center',
+      order: 3,
     },
   },
-  iqBadges: {
+  coreTitle: {
+    margin: 0,
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: tokens.fontWeightBold,
+    color: tokens.colorNeutralForeground1,
+  },
+  coreSub: {
+    margin: '2px 0 8px',
+    fontSize: '11px',
+    color: tokens.colorNeutralForeground3,
+  },
+  iqPills: {
     display: 'flex',
-    justifyContent: 'center',
     flexWrap: 'wrap',
-    gap: tokens.spacingHorizontalXS,
+    justifyContent: 'center',
+    gap: '4px',
+    width: '86%',
   },
-  legend: {
-    gridColumnStart: 1,
-    gridColumnEnd: 4,
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, minmax(160px, 1fr))',
-    gap: tokens.spacingHorizontalS,
-    '@media screen and (max-width: 860px)': {
-      gridColumnStart: 1,
-      gridColumnEnd: 2,
-      gridTemplateColumns: '1fr',
-      order: 4,
+  iqPill: {
+    padding: '3px 7px',
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: tokens.colorNeutralBackground3,
+    color: tokens.colorNeutralForeground3,
+    fontSize: '10px',
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+    transitionProperty: 'background-color, color',
+    transitionDuration: tokens.durationFaster,
+  },
+  iqPillOn: {
+    backgroundColor: '#365B7D',
+    color: '#FFFFFF',
+  },
+  hitl: {
+    marginTop: '8px',
+    padding: '5px 10px',
+    borderRadius: tokens.borderRadiusMedium,
+    backgroundColor: 'rgba(232, 162, 0, 0.16)',
+    color: '#8A6300',
+    fontSize: '11px',
+    fontWeight: tokens.fontWeightBold,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+  },
+  hitlDiamond: {
+    color: '#E8A200',
+    fontSize: '14px',
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
+  journey: {
+    position: 'absolute',
+    left: '10%',
+    right: '10%',
+    bottom: '2.6%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '5px',
+    zIndex: 5,
+    fontSize: '11px',
+    color: tokens.colorNeutralForeground3,
+    '@media screen and (max-width: 900px)': {
+      display: 'none',
     },
   },
-  legendItem: {
+  step: {
+    padding: '3px 6px',
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: tokens.borderRadiusSmall,
+    backgroundColor: tokens.colorNeutralBackground1,
+    whiteSpace: 'nowrap',
+  },
+  stepNum: {
+    color: tokens.colorNeutralForeground1,
+    fontWeight: tokens.fontWeightBold,
+  },
+  chevron: {
+    color: '#0E9B78',
+    fontWeight: tokens.fontWeightBold,
+    fontSize: '16px',
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
+  footer: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalXXS,
-    minHeight: '70px',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalL,
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
+  },
+  footerStrong: {
+    color: tokens.colorNeutralForeground1,
+    fontWeight: tokens.fontWeightSemibold,
+  },
+  note: {
     padding: tokens.spacingHorizontalM,
-    borderRadius: tokens.borderRadiusLarge,
+    borderRadius: tokens.borderRadiusMedium,
+    borderLeft: `3px solid #1FA9D6`,
     backgroundColor: tokens.colorNeutralBackground2,
+    color: tokens.colorNeutralForeground2,
+    fontSize: tokens.fontSizeBase200,
+    lineHeight: 1.4,
   },
-  legendSignal: {
-    color: '#1FA9D6',
+  noteStrong: {
+    color: tokens.colorNeutralForeground1,
+    fontWeight: tokens.fontWeightSemibold,
   },
-  legendAction: {
-    color: '#107C64',
-  },
-  legendOutcome: {
-    color: '#946200',
-  },
-  rail: {
+  pathSignal: {
     fill: 'none',
-    strokeWidth: 2.4,
-    strokeLinecap: 'round',
-    opacity: 0.78,
-  },
-  inbound: {
     stroke: '#1FA9D6',
+    strokeWidth: 4,
   },
-  outbound: {
+  pathAction: {
+    fill: 'none',
     stroke: '#17B890',
+    strokeWidth: 4,
   },
-  returnPath: {
+  pathReturn: {
+    fill: 'none',
     stroke: '#E8A200',
-    strokeDasharray: '6 8',
+    strokeWidth: 2,
+    strokeDasharray: '5 7',
+    opacity: 0.7,
   },
-  marker: {
-    transitionProperty: 'opacity, transform',
-    transitionDuration: tokens.durationNormal,
-    opacity: 0.45,
+  pathDim: {
+    opacity: 0.14,
+  },
+  labelRect: {
+    fill: tokens.colorNeutralBackground1,
+    stroke: tokens.colorNeutralStroke2,
+  },
+  labelSignalText: {
+    fill: '#178FC0',
+    fontSize: '13px',
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.5px',
+  },
+  labelActionText: {
+    fill: '#0E9B78',
+    fontSize: '13px',
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.5px',
+  },
+  pulse: {
+    transformOrigin: 'center',
+    transformBox: 'fill-box',
     animationDuration: '2400ms',
     animationIterationCount: 'infinite',
     animationTimingFunction: 'ease-in-out',
     animationName: {
-      '0%': { transform: 'scale(0.88)', opacity: 0.35 },
-      '50%': { transform: 'scale(1.18)', opacity: 1 },
-      '100%': { transform: 'scale(0.88)', opacity: 0.35 },
+      '0%': { transform: 'scale(0.82)', opacity: 0.45 },
+      '50%': { transform: 'scale(1.28)', opacity: 1 },
+      '100%': { transform: 'scale(0.82)', opacity: 0.45 },
     },
     '@media (prefers-reduced-motion: reduce)': {
       animationName: 'none',
-      transform: 'none',
     },
   },
-  markerPaused: {
+  pulsePaused: {
     animationName: 'none',
-    opacity: 0.62,
+    opacity: 0.72,
   },
-  markerInactive: {
-    opacity: 0.16,
+  pulseInactive: {
+    opacity: 0.12,
   },
   empty: {
     display: 'flex',
@@ -259,53 +478,104 @@ const useStyles = makeStyles({
   },
 });
 
-type DomainPosition = {
-  anchor: { x: number; y: number };
-  inbound: string;
-  outbound: string;
+interface DomainGeometry {
+  icon: FluentIcon;
+  accent: string;
+  corner: 'cornerTopLeft' | 'cornerTopRight' | 'cornerBottomLeft' | 'cornerBottomRight';
+  signalPath: string;
+  actionPath: string;
   returnPath: string;
-  signal: { x: number; y: number };
-  action: { x: number; y: number };
-  outcome: { x: number; y: number };
-};
+  signalLabel: { x: number; y: number };
+  actionLabel: { x: number; y: number };
+  signalDot: { x: number; y: number };
+  actionDot: { x: number; y: number };
+}
 
-const DOMAIN_POSITIONS: Record<FeedbackLoopDomainId, DomainPosition> = {
+const DOMAIN_META: Record<FeedbackLoopDomainId, DomainGeometry> = {
   'care-ecosystem': {
-    anchor: { x: 16, y: 26 },
-    inbound: 'M 16 26 C 28 18, 38 20, 50 38',
-    outbound: 'M 52 42 C 40 30, 28 28, 16 26',
-    returnPath: 'M 16 26 C 30 9, 55 11, 72 28',
-    signal: { x: 34, y: 25 },
-    action: { x: 40, y: 34 },
-    outcome: { x: 58, y: 18 },
+    icon: PeopleCommunityRegular,
+    accent: '#17B890',
+    corner: 'cornerTopLeft',
+    signalPath: 'M330 144 C400 154 430 225 490 266',
+    actionPath: 'M488 322 C430 286 405 205 330 195',
+    returnPath: 'M496 238 C445 113 370 85 332 99',
+    signalLabel: { x: 382, y: 151 },
+    actionLabel: { x: 371, y: 218 },
+    signalDot: { x: 455, y: 243 },
+    actionDot: { x: 452, y: 300 },
   },
   'command-center': {
-    anchor: { x: 84, y: 26 },
-    inbound: 'M 84 26 C 72 18, 62 20, 50 38',
-    outbound: 'M 48 42 C 60 30, 72 28, 84 26',
-    returnPath: 'M 84 26 C 70 9, 45 11, 28 28',
-    signal: { x: 66, y: 25 },
-    action: { x: 60, y: 34 },
-    outcome: { x: 42, y: 18 },
+    icon: DataTrendingRegular,
+    accent: '#1FA9D6',
+    corner: 'cornerTopRight',
+    signalPath: 'M870 144 C800 154 770 225 710 266',
+    actionPath: 'M712 322 C770 286 795 205 870 195',
+    returnPath: 'M704 238 C755 113 830 85 868 99',
+    signalLabel: { x: 756, y: 151 },
+    actionLabel: { x: 765, y: 218 },
+    signalDot: { x: 745, y: 243 },
+    actionDot: { x: 748, y: 300 },
   },
   'frontier-workforce': {
-    anchor: { x: 16, y: 74 },
-    inbound: 'M 16 74 C 28 82, 38 80, 50 62',
-    outbound: 'M 52 58 C 40 70, 28 72, 16 74',
-    returnPath: 'M 16 74 C 30 91, 55 89, 72 72',
-    signal: { x: 34, y: 75 },
-    action: { x: 40, y: 66 },
-    outcome: { x: 58, y: 82 },
+    icon: PeopleTeamRegular,
+    accent: '#5A6CF0',
+    corner: 'cornerBottomLeft',
+    signalPath: 'M330 506 C400 496 430 425 490 384',
+    actionPath: 'M488 328 C430 364 405 445 330 455',
+    returnPath: 'M496 412 C445 537 370 565 332 551',
+    signalLabel: { x: 382, y: 477 },
+    actionLabel: { x: 371, y: 410 },
+    signalDot: { x: 455, y: 407 },
+    actionDot: { x: 452, y: 350 },
   },
   'care-innovation': {
-    anchor: { x: 84, y: 74 },
-    inbound: 'M 84 74 C 72 82, 62 80, 50 62',
-    outbound: 'M 48 58 C 60 70, 72 72, 84 74',
-    returnPath: 'M 84 74 C 70 91, 45 89, 28 72',
-    signal: { x: 66, y: 75 },
-    action: { x: 60, y: 66 },
-    outcome: { x: 42, y: 82 },
+    icon: RocketRegular,
+    accent: '#365B7D',
+    corner: 'cornerBottomRight',
+    signalPath: 'M870 506 C800 496 770 425 710 384',
+    actionPath: 'M712 328 C770 364 795 445 870 455',
+    returnPath: 'M704 412 C755 537 830 565 868 551',
+    signalLabel: { x: 756, y: 477 },
+    actionLabel: { x: 765, y: 410 },
+    signalDot: { x: 745, y: 407 },
+    actionDot: { x: 748, y: 350 },
   },
+};
+
+const DEFAULT_GROUP: Record<FeedbackLoopDomainId, string> = {
+  'care-ecosystem': 'Care ecosystem',
+  'command-center': 'Command center',
+  'frontier-workforce': 'Frontier workforce',
+  'care-innovation': 'Care innovation',
+};
+
+const DOMAIN_SIGNAL_DEFAULT: Record<FeedbackLoopDomainId, string> = {
+  'care-ecosystem': 'Referral demand · partner capacity · experience feedback',
+  'command-center': 'Occupancy · 72h demand · ED arrivals · trusted hazards',
+  'frontier-workforce': 'Staffing · workload · skills · certifications',
+  'care-innovation': 'Outcomes · pathway gaps · agent and service telemetry',
+};
+
+const DOMAIN_ACTION_DEFAULT: Record<FeedbackLoopDomainId, string> = {
+  'care-ecosystem': 'Coordinate placement · connect the next care setting',
+  'command-center': 'Rebalance beds · prepare scenario · coordinate discharge',
+  'frontier-workforce': 'Balance roster · mobilize qualified capacity',
+  'care-innovation': 'Improve pathway · knowledge · agent guidance',
+};
+
+const DOMAIN_LOOPBACK_DEFAULT: Record<FeedbackLoopDomainId, string> = {
+  'care-ecosystem': 'Continuity, access and experience become new evidence',
+  'command-center': 'Wait time, utilization and avoided delay feed the loop',
+  'frontier-workforce': 'Workload, adoption and decision feedback refine support',
+  'care-innovation': 'Quality and adoption measurements start the next cycle',
+};
+
+const IQ_PILL_LABEL: Record<IqLayer, string> = {
+  work: 'Work IQ',
+  foundry: 'Foundry IQ',
+  fabric: 'Fabric IQ',
+  process: 'Process IQ',
+  governance: 'Governance IQ',
 };
 
 function useReducedMotion(): boolean {
@@ -343,13 +613,21 @@ export function DigitalFeedbackLoop({
   const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
   const [selectedId, setSelectedId] = useState<FeedbackLoopDomainId>('command-center');
-  const [mode, setMode] = useState<FeedbackLoopMode>('all');
-  const [playing, setPlaying] = useState(true);
+  const mode: FeedbackLoopMode = 'all';
+  const playing = true;
 
   const selectedDomain = useMemo(
     () => domains.find((domain) => domain.id === selectedId) ?? domains[0],
     [domains, selectedId],
   );
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg || typeof svg.pauseAnimations !== 'function') return;
+    if (playing && !reducedMotion) svg.unpauseAnimations();
+    else svg.pauseAnimations();
+  }, [playing, reducedMotion]);
 
   if (domains.length === 0) {
     return (
@@ -377,81 +655,9 @@ export function DigitalFeedbackLoop({
   return (
     <section
       className={mergeClasses(styles.root, presentationMode && styles.presentation)}
-      aria-labelledby="digital-feedback-loop-title"
+      aria-label="Digital feedback loop"
       data-testid="digital-feedback-loop"
     >
-      <div className={styles.header}>
-        <div className={styles.heading}>
-          <Title3 id="digital-feedback-loop-title">
-            {t('backstage.story.feedbackLoop.title', 'Digital Feedback Loop')}
-          </Title3>
-          <Body1 as="p">
-            {t(
-              'backstage.story.feedbackLoop.purpose',
-              'Signals become governed recommendations, return through human decision, and improve the next loop.',
-            )}
-          </Body1>
-        </div>
-        <div className={styles.controls}>
-          <Badge appearance="tint" color={playing ? 'success' : 'subtle'}>
-            {playing
-              ? t('backstage.story.feedbackLoop.status.playing', 'Live simulation')
-              : t('backstage.story.feedbackLoop.status.paused', 'Simulation paused')}
-          </Badge>
-          <div className={styles.modeGroup} role="group" aria-label="Feedback loop stream mode">
-            <Button
-              appearance={mode === 'all' ? 'primary' : 'subtle'}
-              aria-pressed={mode === 'all'}
-              onClick={() => setMode('all')}
-            >
-              All loops
-            </Button>
-            <Button
-              appearance={mode === 'selected' ? 'primary' : 'subtle'}
-              aria-pressed={mode === 'selected'}
-              onClick={() => setMode('selected')}
-            >
-              Selected domain
-            </Button>
-          </div>
-          <Tooltip content={playing ? 'Pause simulation' : 'Play simulation'} relationship="label">
-            <Button
-              icon={playing ? <PauseRegular /> : <PlayRegular />}
-              aria-label={playing ? 'Pause simulation' : 'Play simulation'}
-              onClick={() => setPlaying((value) => !value)}
-            />
-          </Tooltip>
-        </div>
-      </div>
-
-      <div className={styles.domainList} aria-label="Curavias feedback-loop domains">
-        {domains.map((domain) => {
-          const selected = domain.id === selectedDomain?.id;
-          const label = domainLabel(domain, t);
-          return (
-            <Button
-              key={domain.id}
-              className={styles.domainButton}
-              appearance={selected ? 'primary' : 'outline'}
-              aria-label={label}
-              aria-pressed={selected}
-              data-domain-id={domain.id}
-              onClick={() => handleDomainSelect(domain)}
-            >
-              <span className={styles.domainButtonInner}>
-                <span>{label}</span>
-                <Caption1 className={styles.microsoftLabel}>{microsoftLabel(domain, t)}</Caption1>
-                {selected && (
-                  <Badge appearance="tint" color="success" size="small" className={styles.selectedBadge}>
-                    {t('backstage.story.feedbackLoop.selected', 'Selected')}
-                  </Badge>
-                )}
-              </span>
-            </Button>
-          );
-        })}
-      </div>
-
       <div
         className={styles.canvas}
         data-testid="feedback-loop-canvas"
@@ -459,58 +665,183 @@ export function DigitalFeedbackLoop({
         data-playing={String(playing)}
         data-reduced-motion={String(reducedMotion)}
       >
-        <svg className={styles.svg} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-          {domains.map((domain) => {
-            const position = DOMAIN_POSITIONS[domain.id];
+        <svg
+          ref={svgRef}
+          className={styles.svg}
+          viewBox="0 0 1200 650"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {domains.map((domain, i) => {
+            const geo = DOMAIN_META[domain.id];
             const active = mode === 'all' || domain.id === selectedDomain?.id;
-            const markerClass = mergeClasses(
-              styles.marker,
-              (!playing || reducedMotion) && styles.markerPaused,
-              !active && styles.markerInactive,
-            );
+            const dimClass = !active ? styles.pathDim : undefined;
+            const sigBegin = `${(-0.4 * i).toFixed(2)}s`;
+            const actBegin = `${(1.3 - 0.2 * i).toFixed(2)}s`;
+            const retBegin = `${(2.0 - 0.2 * i).toFixed(2)}s`;
             return (
               <g key={domain.id} data-domain-id={domain.id}>
-                <path className={mergeClasses(styles.rail, styles.inbound)} d={position.inbound} />
-                <path className={mergeClasses(styles.rail, styles.outbound)} d={position.outbound} />
-                <path className={mergeClasses(styles.rail, styles.returnPath)} d={position.returnPath} />
-                <circle className={markerClass} cx={position.signal.x} cy={position.signal.y} r="1.8" fill="#1FA9D6" />
-                <circle className={markerClass} cx={position.action.x} cy={position.action.y} r="2.1" fill="#17B890" />
-                <circle className={markerClass} cx={position.outcome.x} cy={position.outcome.y} r="1.8" fill="#E8A200" />
+                <path
+                  id={`dfl-ret-${domain.id}`}
+                  className={mergeClasses(styles.pathReturn, dimClass)}
+                  d={geo.returnPath}
+                />
+                <path
+                  id={`dfl-sig-${domain.id}`}
+                  className={mergeClasses(styles.pathSignal, dimClass)}
+                  d={geo.signalPath}
+                />
+                <path
+                  id={`dfl-act-${domain.id}`}
+                  className={mergeClasses(styles.pathAction, dimClass)}
+                  d={geo.actionPath}
+                />
+                <g className={dimClass} transform={`translate(${geo.signalLabel.x} ${geo.signalLabel.y})`}>
+                  <rect className={styles.labelRect} width="62" height="22" rx="5" />
+                  <text className={styles.labelSignalText} x="9" y="15">
+                    SIGNAL
+                  </text>
+                </g>
+                <g className={dimClass} transform={`translate(${geo.actionLabel.x} ${geo.actionLabel.y})`}>
+                  <rect className={styles.labelRect} width="64" height="22" rx="5" />
+                  <text className={styles.labelActionText} x="8" y="15">
+                    ACTION
+                  </text>
+                </g>
+                {!reducedMotion && (
+                  <g className={dimClass}>
+                    <circle r="5" fill="#1FA9D6">
+                      <animateMotion dur="3.2s" repeatCount="indefinite" begin={sigBegin}>
+                        <mpath href={`#dfl-sig-${domain.id}`} />
+                      </animateMotion>
+                    </circle>
+                    <rect width="12" height="8" rx="2" fill="#17B890">
+                      <animateMotion dur="3.2s" repeatCount="indefinite" begin={actBegin}>
+                        <mpath href={`#dfl-act-${domain.id}`} />
+                      </animateMotion>
+                    </rect>
+                    <circle r="4" fill="#E8A200">
+                      <animateMotion
+                        dur="3.2s"
+                        repeatCount="indefinite"
+                        begin={retBegin}
+                        keyPoints="1;0"
+                        keyTimes="0;1"
+                        calcMode="linear"
+                      >
+                        <mpath href={`#dfl-ret-${domain.id}`} />
+                      </animateMotion>
+                    </circle>
+                  </g>
+                )}
               </g>
             );
           })}
         </svg>
 
-        <div className={styles.core}>
-          <Caption1>{t('backstage.story.feedbackLoop.iqCore.caption', 'Microsoft IQ core')}</Caption1>
-          <Title3 as="h4">{t('backstage.story.feedbackLoop.iqCore.title', 'Work + Foundry + Fabric + Process + Governance IQ')}</Title3>
-          <div className={styles.iqBadges} aria-label="Active IQ layers">
-            {['work', 'foundry', 'fabric', 'process', 'governance'].map((layer) => (
-              <Badge
-                key={layer}
-                appearance={activeLayers.includes(layer as never) ? 'filled' : 'outline'}
-                color={activeLayers.includes(layer as never) ? 'informative' : 'subtle'}
-              >
-                {t(`backstage.story.feedbackLoop.iq.${layer}`, `${layer[0].toUpperCase()}${layer.slice(1)} IQ`)}
-              </Badge>
-            ))}
+        {domains.map((domain) => {
+          const geo = DOMAIN_META[domain.id];
+          const DomainIcon = geo.icon;
+          const selected = domain.id === selectedDomain?.id;
+          const label = domainLabel(domain, t);
+          return (
+            <button
+              key={domain.id}
+              type="button"
+              className={mergeClasses(styles.domainCard, styles[geo.corner], selected && styles.cardActive)}
+              style={{ borderLeftColor: geo.accent }}
+              aria-label={label}
+              aria-pressed={selected}
+              data-domain-id={domain.id}
+              onClick={() => handleDomainSelect(domain)}
+            >
+              <span className={styles.kicker}>
+                <span className={styles.kickerIcon} aria-hidden="true" style={{ color: geo.accent }}>
+                  <DomainIcon />
+                </span>
+                {t(domain.groupLabelKey, DEFAULT_GROUP[domain.id])}
+              </span>
+              <span className={styles.cardTitle}>{label}</span>
+              <span className={styles.cardMicro}>{microsoftLabel(domain, t)}</span>
+              <span className={styles.row}>
+                <span className={styles.rowSignalLabel}>SIGNAL</span>
+                <span className={styles.rowText}>
+                  {t(
+                    `backstage.story.feedbackLoop.domain.${domain.id}.signalText`,
+                    DOMAIN_SIGNAL_DEFAULT[domain.id],
+                  )}
+                </span>
+              </span>
+              <span className={styles.row}>
+                <span className={styles.rowActionLabel}>ACTION</span>
+                <span className={styles.rowText}>
+                  {t(
+                    `backstage.story.feedbackLoop.domain.${domain.id}.actionText`,
+                    DOMAIN_ACTION_DEFAULT[domain.id],
+                  )}
+                </span>
+              </span>
+              <span className={styles.row}>
+                <span className={styles.rowOutcomeLabel}>OUTCOME</span>
+                <span className={styles.rowText}>
+                  {t(
+                    `backstage.story.feedbackLoop.domain.${domain.id}.loopBack`,
+                    DOMAIN_LOOPBACK_DEFAULT[domain.id],
+                  )}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+
+        <section
+          className={styles.core}
+          aria-label={t('backstage.story.feedbackLoop.iqCore.caption', 'Microsoft IQ core')}
+        >
+          <p className={styles.coreTitle}>{t('backstage.story.feedbackLoop.iqCore.name', 'Microsoft IQ')}</p>
+          <p className={styles.coreSub}>
+            {t('backstage.story.feedbackLoop.iqCore.sub', 'data \u00b7 knowledge \u00b7 context \u00b7 decisions')}
+          </p>
+          <div className={styles.iqPills} aria-label="Active IQ layers">
+            {IQ_LAYERS.map((layer) => {
+              const on = activeLayers.includes(layer);
+              return (
+                <span key={layer} className={mergeClasses(styles.iqPill, on && styles.iqPillOn)}>
+                  {t(`backstage.story.feedbackLoop.iq.${layer}`, IQ_PILL_LABEL[layer])}
+                </span>
+              );
+            })}
           </div>
+          <div className={styles.hitl}>
+            <span className={styles.hitlDiamond} aria-hidden="true">
+              <DiamondRegular />
+            </span>
+            {t('backstage.story.feedbackLoop.iqCore.hitl', 'Human approval before action')}
+          </div>
+        </section>
+
+        <div className={styles.journey} aria-hidden="true">
+          <span className={styles.step}>{t('backstage.story.feedbackLoop.journey.dataPoints', 'Data points')}</span>
+          <span className={styles.chevron}><ArrowRightRegular /></span>
+          <span className={styles.step}>{t('backstage.story.feedbackLoop.journey.iq', 'Microsoft IQ')}</span>
+          <span className={styles.chevron}><ArrowRightRegular /></span>
+          <span className={styles.step}>{t('backstage.story.feedbackLoop.journey.actionPacket', 'Action packet')}</span>
+          <span className={styles.chevron}><ArrowRightRegular /></span>
+          <span className={styles.step}>{t('backstage.story.feedbackLoop.journey.approval', 'Human approval')}</span>
+          <span className={styles.chevron}><ArrowRightRegular /></span>
+          <span className={styles.step}>{t('backstage.story.feedbackLoop.journey.outcome', 'Measured outcome')}</span>
         </div>
       </div>
 
-      <div className={styles.legend} aria-label="Digital feedback-loop legend">
-        <div className={styles.legendItem}>
-          <Caption1 className={styles.legendSignal}>SIGNAL</Caption1>
-          <Body1>{t('backstage.story.feedbackLoop.legend.signal', 'Operational observations flow into Microsoft IQ.')}</Body1>
-        </div>
-        <div className={styles.legendItem}>
-          <Caption1 className={styles.legendAction}>ACTION</Caption1>
-          <Body1>{t('backstage.story.feedbackLoop.legend.action', 'A grounded recommendation returns for human approval.')}</Body1>
-        </div>
-        <div className={styles.legendItem}>
-          <Caption1 className={styles.legendOutcome}>OUTCOME</Caption1>
-          <Body1>{t('backstage.story.feedbackLoop.legend.outcome', 'Measured outcomes close the loop and improve the next decision.')}</Body1>
-        </div>
+      <div className={styles.note}>
+        <span className={styles.noteStrong}>
+          {t('backstage.story.feedbackLoop.note.label', 'Animation behaviour:')}
+        </span>{' '}
+        {t(
+          'backstage.story.feedbackLoop.note.body',
+          'cyan circles are incoming signal observations; the green packet is a proposed action leaving Microsoft IQ; the amber point returns the measured outcome. Motion stops when you pause or request reduced motion.',
+        )}
       </div>
     </section>
   );

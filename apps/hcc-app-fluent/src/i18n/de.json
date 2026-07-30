@@ -390,7 +390,278 @@
       "treatment": "Behandlung",
       "discharge": "Entlassung",
       "postAcute": "Nachversorgung",
-      "occupancyNote": "{{ward}} → {{pct}} % in 72 h"
+      "occupancyNote": "{{ward}} → {{pct}} % in 72 h",
+      "journeyLabel": "Operativer Curavias-Patientenpfad",
+      "openRoleBoard": "Rollenboard {{role}} öffnen",
+      "operationalBadge": "Operative Station",
+      "destinationBadge": "Ziel Nachversorgung",
+      "recoveryTitle": "Ziel Nachversorgung",
+      "recoveryBody": "Der koordinierte Pfad übergibt mit klarer Verantwortung an Rehabilitation und gemeindenahe Versorgung.",
+      "recoveryCaption": "Kontinuität über das Spital hinaus",
+      "advisoryBadge": "Beratend",
+      "evidenceLabel": "Vertrauenssignale des Patientenpfads",
+      "evidenceChip": "Evidenzgestützt",
+      "goldenThreadChip": "Golden Thread",
+      "operational": {
+        "occupancy": "Bedarf und Kapazitätsdruck erkennen, bevor sich der Versorgungspfad verengt.",
+        "bedManager": "Platzierung und Bettenfluss über den Betriebsstandort koordinieren.",
+        "orSteering": "Kapazität schützen, indem OP-Entscheide mit nachgelagerten Betten abgestimmt werden.",
+        "staffing": "Qualifiziertes Personal am entstehenden Versorgungsbedarf ausrichten.",
+        "discharge": "Eine sichere operative Übergabe in die nächste Versorgungsstufe koordinieren."
+      },
+      "dataQuality": {
+        "ariaLabel": "Beratung zur Datenqualität",
+        "title": "Datenqualität entlang des Pfads",
+        "body": "Der Data Quality Agent prüft Herkunft, Aktualität und Vertragszustand, ohne den Pfad zu verlassen."
+      },
+      "crisis": {
+        "ariaLabel": "Beratung zu Krisenszenarien",
+        "body": "Wenn die Rollenberechtigung es erlaubt, spannt CSA Szenarioplanung und Eskalationsberatung über den Pfad.",
+        "cta": "Beratende Szenarioplanung öffnen"
+      },
+      "humanDecision": {
+        "ariaLabel": "Menschlicher Entscheid",
+        "title": "Der Mensch entscheidet.",
+        "body": "Copilots zeigen voraus und empfehlen; verantwortliche Betriebsleitungen genehmigen jede Änderung."
+      }
+    },
+    "frontier": {
+      "page": {
+        "title": "Curavias Start",
+        "lead": "Frontier-Hülle für die siebenteilige Curavias-Startansicht für Führungskräfte.",
+        "loading": "Start-Hülle wird geladen…",
+        "errorTitle": "Start-Hülle nicht verfügbar",
+        "errorBody": "Die Start-Hülle konnte nicht vorbereitet werden. Lassen Sie die beratenden Leitplanken sichtbar und laden Sie die Seite erneut."
+      },
+      "guardrails": {
+        "synthetic": "Microsoft Innovation Hub Showcase — nur synthetische, generische Inhalte ohne PHI.",
+        "advisory": "Nur beratend — für betriebliche Änderungen ist eine menschliche Entscheidung erforderlich.",
+        "noPhi": "Keine PHI"
+      },
+      "mode": {
+        "demo": "Demo — simulierter Golden-Thread-Showcase",
+        "user": "Benutzer — Live-Arbeitsmodus"
+      },
+      "kind": {
+        "data": "Datenabschnitt",
+        "static": "Narrativer Abschnitt",
+        "launcher": "Launcher-Abschnitt"
+      },
+      "placeholder": {
+        "data": "Die Datenanbindung kommt im nächsten Workstream; diese Hülle bewahrt die Abschnittsreihenfolge und den Ladezustand.",
+        "static": "Narrative Texte und Visualisierungen kommen im nächsten Workstream; diese Hülle bewahrt den freigegebenen Abschnittsplatz.",
+        "launcher": "Die RBAC-Anbindung für den Patientenpfad-Launcher kommt im nächsten Workstream; diese Hülle bewahrt den freigegebenen Abschnittsplatz."
+      },
+      "hero": {
+        "title": "Hero-Bereich",
+        "body": "Hülle für den Hero-Bereich der Curavias-Frontier-Erzählung und das evidenzgestützte Wertversprechen.",
+        "eyebrow": "Produktübersicht · operative Kapazität",
+        "hook": "Den Engpass sehen, bevor er entsteht. Handeln, bevor es weh tut.",
+        "valueLine": "Verlässliche Vorschau · Erklärbare Empfehlung · Der Mensch entscheidet.",
+        "supportingMetricLabel": "ROM-Kontext",
+        "capacityTitle": "Standortkapazität - nächste 72 h",
+        "capacityLoading": "Standortkapazität wird geladen…",
+        "capacityErrorTitle": "Standortkapazität nicht verfügbar",
+        "ctaPrimary": "Backstage öffnen",
+        "ctaSecondary": "Die Plattformgeschichte ansehen"
+      },
+      "workChart": {
+        "title": "Wie sich Arbeit verändert",
+        "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und bedarfsgerechte Arbeitsabläufe in einem Betriebsmodell.",
+        "flowLabel": "Curavias-Arbeitsmodi",
+        "modeBadge": "Arbeitsmodus",
+        "modes": {
+          "humans": {
+            "title": "Menschen",
+            "body": "Führungskräfte setzen die Absicht, beurteilen Zielkonflikte und bleiben für betriebliche Entscheide verantwortlich."
+          },
+          "agents": {
+            "title": "Agents",
+            "body": "Spezialisierte Copilots überwachen Signale, erklären Optionen und bereiten evidenzgestützte Empfehlungen vor."
+          },
+          "on-demand": {
+            "title": "Arbeit nach Bedarf",
+            "body": "Funktionsübergreifende Abläufe formieren sich um den Entscheid und geben die Kontrolle danach an das verantwortliche Team zurück."
+          }
+        },
+        "principle": {
+          "title": "Frontier-Firm-Prinzip",
+          "badge": "Auf Curavias abgebildet",
+          "body": "Arbeit wird um Ergebnisse statt um statische Übergaben zwischen Funktionen organisiert.",
+          "curaviasMap": "Curavias überträgt dieses Prinzip auf die Spitalkapazität: gemeinsame Signale, spezialisierte Agents und ein menschlicher Entscheid an jeder betrieblichen Grenze."
+        }
+      },
+      "cioWhyNow": {
+        "title": "CIO-Challenger: Warum jetzt?",
+        "body": "Sieben wiederkehrende Betriebsentscheide zeigen, wo fragmentierte Koordination zu einer gesteuerten Curavias-Vorschau werden kann.",
+        "tableLabel": "Betriebsentscheide: Heute im Vergleich zur Curavias-Vorschau",
+        "caption": "Illustrativer qualitativer Vergleich — keine Live-Geschäftskennzahlen.",
+        "columns": {
+          "decision": "Betriebsentscheid",
+          "today": "Heute",
+          "preview": "Curavias-Vorschau"
+        },
+        "decisions": {
+          "bed-allocation": {
+            "decision": "Bettenzuweisung",
+            "today": "Reaktiv am Aufnahmemorgen und unter Zeitdruck.",
+            "preview": "Aus der gemeinsamen Kapazitätsvorschau geplant statt bei der Übergabe improvisiert."
+          },
+          "or-slots": {
+            "decision": "OP-Slot-Nutzung",
+            "today": "Absagen und Leerslots werden am OP-Tag entdeckt.",
+            "preview": "Ausfallrisiko und Umverteilungsoptionen werden vor dem Entscheid sichtbar."
+          },
+          "staffing": {
+            "decision": "Personalabdeckung",
+            "today": "Kurzfristige Pools und lokale Umgehungen decken entstehende Lücken.",
+            "preview": "Dienstpläne richten sich auf prognostizierte Nachfrage und Kompetenzbedarf aus."
+          },
+          "discharge": {
+            "decision": "Entlassungssteuerung",
+            "today": "Bereitschaft und Blockaden sind im morgendlichen Koordinationszyklus unklar.",
+            "preview": "Kandidaten, Blockaden und Übergaben sind vor dem Betriebsfenster sichtbar."
+          },
+          "transfers": {
+            "decision": "Verlegungen und Aufnahmestopp",
+            "today": "Entscheide sind ad hoc und die Kommunikation erfolgt unter Druck.",
+            "preview": "Verlegungskaskaden werden vorab betrachtet und Partnerorganisationen früher einbezogen."
+          },
+          "crisis": {
+            "decision": "Krisen- und Szenarioantwort",
+            "today": "Die Reaktionsdoktrin bleibt in Dokumenten, getrennt von aktuellen Betriebssignalen.",
+            "preview": "Szenariogeführte Empfehlungen verbinden vertrauenswürdige Signale mit der freigegebenen Doktrin."
+          },
+          "data-quality": {
+            "decision": "Datenqualitätsalarme",
+            "today": "Qualitätsprobleme werden erst sichtbar, nachdem eine Kennzahl im Bericht erscheint.",
+            "preview": "Qualitäts-Gates alarmieren, bevor eine betroffene Kennzahl in einen Betriebsentscheid einfliesst."
+          }
+        }
+      },
+      "hospitals": {
+        "title": "Drei Spitäler",
+        "body": "Drei synthetische Spitäler teilen eine Kapazitätsplattform und behalten ihre unterschiedlichen Betriebskontexte.",
+        "sitesLabel": "Synthetisches Curavias-Spitalnetz",
+        "syntheticBadge": "Synthetisches Profil",
+        "sites": {
+          "curanova": {
+            "name": "CuraNova",
+            "profile": "Städtisches Universitätsspital für komplexe Akutpfade und spezialisierte Leistungen.",
+            "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität."
+          },
+          "curalp": {
+            "name": "Curalp",
+            "profile": "Regionales Spital, das Akutnachfrage und Zugang in verteilten Gemeinden ausbalanciert.",
+            "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen."
+          },
+          "vialta": {
+            "name": "Vialta",
+            "profile": "Integriertes Erholungsspital, das Akutaustritt, Rehabilitation und gemeindenahe Versorgung verbindet.",
+            "focus": "Fokus: Übergangsbereitschaft und Kontinuität."
+          }
+        },
+        "rosterTitle": "Kapazitätsteam mit sieben Agents",
+        "rosterBody": "Jeder Agent trägt eine fokussierte beratende Verantwortung; verantwortliche Menschen behalten den Entscheid.",
+        "agents": {
+          "ooa-agent": {
+            "name": "Occupancy Outlook Agent",
+            "role": "Antizipiert Kapazitätsdruck und erklärt die Prognosekonfidenz."
+          },
+          "bmca-agent": {
+            "name": "Bed Management Copilot",
+            "role": "Koordiniert Platzierungen, Einschränkungen und Standortfluss."
+          },
+          "dca-agent": {
+            "name": "Discharge Copilot",
+            "role": "Zeigt Übergangsbereitschaft und Austrittshindernisse."
+          },
+          "orsa-agent": {
+            "name": "OR Steering Agent",
+            "role": "Verbindet OP-Entscheide mit nachgelagerter Kapazität."
+          },
+          "sba-agent": {
+            "name": "Staffing Balance Agent",
+            "role": "Richtet Kompetenzabdeckung auf die entstehende betriebliche Nachfrage aus."
+          },
+          "csa-agent": {
+            "name": "Crisis Scenario Agent",
+            "role": "Rahmt gesteuerte Szenarien und Resilienzoptionen."
+          },
+          "data-quality-agent": {
+            "name": "Data Quality Agent",
+            "role": "Prüft Herkunft, Aktualität und Vertragszustand."
+          }
+        }
+      },
+      "patientPath": {
+        "title": "Patientenpfad",
+        "body": "RBAC-geführter operativer Pfad vom Kapazitätsdruck bis zur Nachversorgung, ergänzt durch beratende Signale."
+      },
+      "ninetyDay": {
+        "title": "90-Tage-Roadmap",
+        "body": "Eine illustrative ROM-Abfolge führt von abgestimmten Entscheiden zu erprobten Abläufen und gesteuerter Skalierung.",
+        "roadmapLabel": "Illustrative 90-Tage-Roadmap für Curavias",
+        "romLabel": "Illustrative ROM",
+        "phases": {
+          "frame-ground": {
+            "title": "Rahmen & Verankern",
+            "range": "Illustrative Tage 1–30",
+            "body": "Prioritäre Entscheide, verantwortliche Personen, vertrauenswürdige Quellen und Leitplanken abstimmen.",
+            "outcomes": {
+              "decision-map": "Entscheidungslandkarte und gemeinsame Erfolgsnachweise",
+              "governance-baseline": "Synthetischer Datenumfang und Governance-Basis"
+            }
+          },
+          "build-prove": {
+            "title": "Bauen & Belegen",
+            "range": "Illustrative Tage 31–60",
+            "body": "Die wertvollsten Abläufe prototypisieren und mit betrieblichen Nutzenden testen.",
+            "outcomes": {
+              "workflow-slices": "Prüfbare Copilot-Ablaufschnitte",
+              "control-findings": "Erkenntnisse zu Nutzbarkeit, Evidenz und Kontrollen"
+            }
+          },
+          "operate-scale": {
+            "title": "Betreiben & Skalieren",
+            "range": "Illustrative Tage 61–90",
+            "body": "Verantwortung, Überwachung und wiederholbare Einführungstore für eine breitere Nutzung etablieren.",
+            "outcomes": {
+              "adoption-playbook": "Betriebstakt und Einführungsleitfaden",
+              "scale-decision": "Skalierungsentscheid mit Restrisiken"
+            }
+          }
+        }
+      },
+      "bva": {
+        "title": "BVA-Entscheid",
+        "body": "ROM-gebundene BVA-Entscheidungsfläche mit KPI, TCO, Sensitivität und Handoff an den Product Owner Agent.",
+        "tcoTitle": "Annualisierte TCO",
+        "valueLeversTitle": "Werthebel",
+        "sensitivityTitle": "Sensitivität",
+        "proofTitle": "Nachweis & Evidenz",
+        "finalTitle": "Executive-Entscheid",
+        "finalBadge": "Beratender Handoff",
+        "tcoActual": "Ist",
+        "tcoVariance": "Abweichung",
+        "sensitivitySummary": "{{benefit}} jährlicher Nutzen · {{tco}} 3-Jahres-TCO · {{roi}} 3-Jahres-ROI",
+        "proofFallback": "Power BI Embed Fallback",
+        "finalRead": "ROM-Schätzung zur Prüfung: {{netValue}} realisierter Nettowert, {{roi}} ROI, {{budget}} annualisierte TCO vs. Budget und {{trend}} pro Copilot-Turn.",
+        "railRead": "Prüfe diesen BVA-Entscheid: {{netValue}} realisierter Nettowert, {{roi}} ROI, {{tcoMeasure}} und {{trend}}.",
+        "cta": "Product Owner Agent fragen",
+        "columns": {
+          "figure": "Kennzahl",
+          "value": "Wert",
+          "lever": "Werthebel",
+          "annualBenefit": "Jährlicher Nutzen (ROM)",
+          "valueLogic": "Wertlogik"
+        },
+        "followUps": {
+          "provenance": "Erkläre die Herkunft hinter dieser BVA-Sicht.",
+          "budget": "Was bedeutet die TCO-Abweichung für den Entscheid?",
+          "sensitivity": "Wie sensitiv ist diese Sicht für das ausgewählte Sensitivitätsszenario?"
+        }
+      }
     }
   },
   "settings": {

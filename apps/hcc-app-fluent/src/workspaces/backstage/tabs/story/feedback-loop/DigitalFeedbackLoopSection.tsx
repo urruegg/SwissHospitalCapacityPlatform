@@ -1,10 +1,10 @@
-import { Body1, makeStyles, Title3, tokens } from '@fluentui/react-components';
+import { makeStyles, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import type { ContextInsight } from '../../../../../journey/RoleBoard';
 import { useCopilotRail } from '../../../../../copilot-rail/rail-context';
-import type { GroundedReco } from '../../../../../copilot-rail/reco';
+import { SectionHeader } from '../../../../shared/narrative/SectionHeader';
 import { DigitalFeedbackLoop } from './DigitalFeedbackLoop';
 import { FEEDBACK_LOOP_DOMAINS, type FeedbackLoopDomain } from './feedback-loop-model';
+import { buildInsight, buildReco } from './build-reco';
 
 const useStyles = makeStyles({
   root: {
@@ -12,85 +12,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: tokens.spacingVerticalM,
   },
-  header: {
-    maxWidth: '820px',
-  },
-  lead: {
-    marginTop: tokens.spacingVerticalS,
-    color: tokens.colorNeutralForeground2,
-  },
 });
-
-function listLabels(ids: readonly string[], keyPrefix: string, t: ReturnType<typeof useTranslation>['t']) {
-  return ids.map((id) => t(`${keyPrefix}.${id}`, id)).join(', ');
-}
-
-function buildInsight(domain: FeedbackLoopDomain, label: string): ContextInsight {
-  return {
-    id: `feedback-loop-${domain.id}`,
-    label,
-    context: {
-      domainId: domain.id,
-      signalIds: domain.signalIds,
-      proposedActionId: domain.proposedActionId,
-      outcomeId: domain.outcomeId,
-      iqLayers: domain.iqLayers,
-      source: 'backstage-digital-feedback-loop',
-    },
-  };
-}
-
-function buildReco(
-  domain: FeedbackLoopDomain,
-  domainLabel: string,
-  t: ReturnType<typeof useTranslation>['t'],
-): GroundedReco {
-  const signalLabels = listLabels(domain.signalIds, 'backstage.story.feedbackLoop.signals', t);
-  const actionLabel = t(
-    `backstage.story.feedbackLoop.actions.${domain.proposedActionId}`,
-    domain.proposedActionId,
-  );
-  const outcomeLabel = t(
-    `backstage.story.feedbackLoop.outcomes.${domain.outcomeId}`,
-    domain.outcomeId,
-  );
-  const iqLabels = listLabels(domain.iqLayers, 'backstage.story.feedbackLoop.iq', t);
-
-  return {
-    agentLabel: 'product-owner-agent',
-    contextChip: {
-      subject: domainLabel,
-      qualifiers: [signalLabels],
-      status: t('backstage.story.feedbackLoop.advisoryNote'),
-      tone: 'signal',
-    },
-    read: t('backstage.story.feedbackLoop.reco.read', {
-      domain: domainLabel,
-      signals: signalLabels,
-      action: actionLabel,
-      outcome: outcomeLabel,
-    }),
-    levers: [
-      {
-        text: t('backstage.story.feedbackLoop.reco.lever', {
-          action: actionLabel,
-          outcome: outcomeLabel,
-        }),
-        impact: {
-          label: t('backstage.story.feedbackLoop.reco.impactLabel'),
-          tone: 'status',
-        },
-      },
-    ],
-    citations: [...domain.citations],
-    provenance: 'simulated',
-    followUps: [
-      t('backstage.story.feedbackLoop.reco.followUps.evidence'),
-      t('backstage.story.feedbackLoop.reco.followUps.iqLayers', { layers: iqLabels }),
-      t('backstage.story.feedbackLoop.reco.followUps.businessValue'),
-    ],
-  };
-}
 
 export function DigitalFeedbackLoopSection() {
   const styles = useStyles();
@@ -102,33 +24,33 @@ export function DigitalFeedbackLoopSection() {
     rail = null;
   }
 
+  // Selecting a domain opens the docked Copilot Product Owner Agent with the grounded response.
   const handleDomainSelect = (domain: FeedbackLoopDomain) => {
-    const mappedDomain = FEEDBACK_LOOP_DOMAINS.find((candidate) => candidate.id === domain.id);
-    if (!mappedDomain) {
-      if (import.meta.env.DEV) {
-        console.warn(`No feedback-loop recommendation mapping found for domain "${domain.id}".`);
-      }
-      return;
-    }
-
-    const label = t(mappedDomain.curaviasLabelKey);
-    rail?.openWithReco(buildInsight(mappedDomain, label), buildReco(mappedDomain, label, t));
+    const mapped = FEEDBACK_LOOP_DOMAINS.find((candidate) => candidate.id === domain.id);
+    if (!mapped) return;
+    const label = t(mapped.curaviasLabelKey);
+    rail?.openWithReco(buildInsight(mapped, label), buildReco(mapped, label, t));
   };
 
   return (
     <section
       className={styles.root}
       data-testid="digital-feedback-loop-section"
-      aria-labelledby="digital-feedback-loop-section-title"
+      aria-labelledby="feedback-loop-title"
     >
-      <div className={styles.header}>
-        <Title3 id="digital-feedback-loop-section-title">
-          {t('backstage.story.feedbackLoop.title')}
-        </Title3>
-        <Body1 as="p" className={styles.lead}>
-          {t('backstage.story.feedbackLoop.lead')}
-        </Body1>
-      </div>
+      <SectionHeader
+        id="feedback-loop"
+        variant="eyebrow"
+        header={t(
+          'backstage.story.feedbackLoop.section.header',
+          'Trusted signals become governed action through Microsoft IQ',
+        )}
+        tagline={t('backstage.story.feedbackLoop.section.tagline', 'Backstage \u00b7 The digital feedback loop')}
+        description={t(
+          'backstage.story.feedbackLoop.section.description',
+          'Every domain sends signals into Microsoft IQ, gets a proposed action back, and returns a measured outcome \u2014 with a human approving before anything acts. Select any domain to ask the Product Owner Agent for grounded, cited detail.',
+        )}
+      />
       <DigitalFeedbackLoop
         domains={FEEDBACK_LOOP_DOMAINS}
         onDomainSelect={handleDomainSelect}

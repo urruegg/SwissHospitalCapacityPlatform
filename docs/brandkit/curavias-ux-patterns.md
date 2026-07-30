@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-27 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-30 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | n/a (new document) |
+| **Previous Version** | 1.0.0 (initial catalogue P1-P12) |
 | **Sprint** | 27 — Curavias App UX Polish (tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` (internal app, app.curavias.ch) |
 
@@ -173,6 +173,85 @@
   (no mojibake); the wording / voice of each label is owned by the
   `product-marketing-agent` (P-voice), placed by the `ux-design-agent`.
 
+> **Narrative / showcase surface patterns (P13-P17, added v1.1.0)** — anchored
+> from the Sprint 27 Backstage build. These govern the **full-surface narrative**
+> experiences (Backstage today; **Start is the next adopter** — migrate its inline
+> hero + role-tile layout onto `NarrativeShell` and P13-P17). They compose the
+> same tokens and recipes as P1-P12 and are the showcase counterpart to the P1
+> board skeleton.
+
+### P13 — Vertical narrative surface (showcase)
+
+- **Intent** — a storytelling surface reads as one governed scroll: an intro that
+  sets the stage, then one layer per topic, all under one persistent section nav.
+- **Anatomy** (render order): full-width sticky section nav (P15) → an **intro
+  rendered as the first section** (`Company` / setting-the-stage) → stacked layer
+  sections, each self-described by a P14 header.
+- **Implementation** — `workspaces/shared/narrative/NarrativeShell.tsx`; the
+  surface passes `sections`, `introTitle` / `introEyebrow` / `introDescription`,
+  `initialKey`, and `leadingGroupCount` (P16). `BackstageView` composes it today.
+- **Rules** — the intro is section 0 (a nav item, not a floating hero); every
+  section owns a stable `key` used for the nav value, the scroll-anchor id, and
+  the scrollspy; content is centred in an up-to-1280 px column with
+  `clamp(16px, 4vw, 48px)` gutters.
+
+### P14 — Narrative section header (eyebrow variant)
+
+- **Intent** — every layer introduces itself the same way, in an editorial voice.
+- **Anatomy** (render order): **eyebrow** (`<Surface> · <topic>`, uppercase,
+  `fontWeightBold`, `#12765F`, with a 22x3 px green `::before` dash) → **title**
+  (`fontSizeBase600`, may be a quote / statement) → **lead** (`Body1`, full
+  content width).
+- **Implementation** — `SectionHeader` with `variant="eyebrow"`; the default
+  variant (title → tagline → lead) stays for board-style headers.
+- **Rules** — the title and lead are **not** width-capped (they use the content
+  column via `flexGrow: 1`); copy avoids em-dash line-breakers; wording / voice is
+  owned by the `product-marketing-agent`, placed by the `ux-design-agent`.
+
+### P15 — Full-width sticky section nav
+
+- **Intent** — the section switcher stays anchored below the header ribbon and
+  always visible, while looking like the Main sub-nav (P11 tab language).
+- **Anatomy** — a **full-width band** (`colorNeutralBackground2`, 1 px bottom
+  border, **no** shadow) that is `position: sticky; top: 0`; inside it a centred
+  `navInner` (up-to-1280 px + gutters) holding a Fluent `TabList` with the green
+  underline indicator.
+- **Implementation** — the `navBar` + `navInner` recipe in `NarrativeShell`.
+- **Rules** — the band spans the full content width but the tabs align to the
+  content column; tab style matches `MainSubNav` (plain tabs, no drop shadow);
+  scroll is smooth and reduced-motion-aware.
+
+### P16 — Storytelling scroll (one section per screen)
+
+- **Intent** — on a normal desktop each layer is read on its own screen; the
+  opening pair (setting-the-stage intro + first layer) share one screen.
+- **Anatomy** — sections from index `leadingGroupCount` onward get a
+  `min-height: calc(100vh - ~150px)` so one fills the viewport; the first
+  `leadingGroupCount` sections render inside one full-height **lead group** (space
+  between them) whose nav tabs both scroll to the group top, so a later section
+  never peeks.
+- **Implementation** — `NarrativeShell` `sectionFull` + `leadGroup` +
+  `scrollTargetFor`; `BackstageView` passes `leadingGroupCount={2}` (Company +
+  Frontier Firm share the first screen).
+- **Rules** — only the surface sets the group size; sections taller than the
+  viewport keep their natural height (scroll within); tune the min-height offset
+  so the next section stays off-screen.
+
+### P17 — Context-click to the Copilot rail (no Ask buttons)
+
+- **Intent** — the user investigates by clicking the **context** (a card, badge,
+  domain, plane), not a separate button; the docked Product Owner Agent opens
+  with a grounded, cited answer.
+- **Anatomy** — every meaningful card / chip is a `<button>` that calls
+  `rail.openWithReco(insight, reco)`; there is **no** "Ask the ..." button.
+- **Implementation** — `useCopilotRail().openWithReco` from the section
+  components (`BackstageNarrativeSections`, `SolutionDesignSection`,
+  `DigitalFeedbackLoopSection`); grounded recos carry `citations` +
+  `provenance: 'simulated'`.
+- **Rules** — clickable context is a real button (focus ring; `aria-pressed`
+  where it is a selection); the reco is advisory-only and cited (P10 voice);
+  display-only evidence (tables, diagrams, credits) need not be clickable.
+
 ---
 
 ## 3. Per-board conformance matrix
@@ -188,6 +267,28 @@ A board is conformant when it uses each applicable pattern. `✓` = in use;
 | Staffing (`sba-agent`) | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Discharge (`dca-agent`) | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Scenario (`csa-agent`) | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+### Backstage narrative surface
+
+The Backstage surface uses the **surface-level** narrative patterns end-to-end:
+**P13** (narrative shell), **P15** (sticky full-width section nav), and **P16**
+(storytelling scroll, `leadingGroupCount={2}` — the Company intro + Frontier Firm
+share the opening screen). Each layer then uses the **per-layer** patterns below.
+`✓` = in use; `—` = not applicable.
+
+| Backstage layer | P14 header | P17 rail | Layer content pattern |
+|-----------------|------------|----------|------------------------|
+| Company (setting the stage) | ✓ | — | intro copy (eyebrow + quote title + lead) |
+| Frontier Firm (Success Framework) | ✓ | ✓ | split — numbered principle rows + "in numbers" card |
+| Digital Feedback Loop | ✓ | ✓ | animated Microsoft IQ loop (domain cards + core) |
+| Solution design (IQ operating model) | ✓ | ✓ | governed board — five IQ layers between gov / sec lanes |
+| DevSecOps loop | ✓ | ✓ | DEV / OPS dual-loop SVG with HITL gate |
+| Review sessions | ✓ | ✓ | sessions table + focus-domain cards + practitioner grid |
+| Product Owner Agent | ✓ | ✓ | four lettered knowledge-class cards (A / B / C / D) |
+
+> **P12 (i18n) follow-up** — the narrative copy is currently English-only (inline
+> defaults + `en.json`); DE / FR / IT keys for the new Backstage sections are a
+> tracked follow-up before this surface is fully P12-conformant.
 
 ---
 
@@ -207,6 +308,9 @@ A board or surface exits review only when **both** gates hold:
    - actionable elements hand off to the Copilot rail per P10 (advisory voice);
    - navigation + labels per P11 / P12 (journey order, four locales, no
      hard-coded copy).
+   - for a **narrative / showcase surface** (Backstage; Start next): the P13
+     shell with a P15 sticky full-width nav, P14 eyebrow headers, P16
+     storytelling scroll, and P17 context-click rail handoff (no Ask buttons).
 
 ---
 
@@ -217,7 +321,7 @@ consistent and stringent:
 
 | Concern | `ux-design-agent` | `product-marketing-agent` |
 |---------|-------------------|---------------------------|
-| Pattern anatomy, layout, component reuse (P1–P11 structure) | **A / R** | C |
+| Pattern anatomy, layout, component reuse (P1–P17 structure) | **A / R** | C |
 | Accessibility (WCAG) + i18n placement | **A / R** | C |
 | Brand-token / RAG colour usage (P5) | **A / R** | C |
 | Label wording, voice, advisory framing, disclaimer (P10, P12) | C | **A / R** |
