@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.45.6.27763",
-      "templateHash": "3443236019267286894"
+      "templateHash": "7668778144141141595"
     }
   },
   "parameters": {
@@ -610,6 +610,20 @@
         "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
       }
     },
+    "agentHostRlsProvider": {
+      "type": "string",
+      "defaultValue": "simulated",
+      "metadata": {
+        "description": "#424 M4 — agent-host RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process; `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
+      }
+    },
+    "agentHostOboEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "#424 M5 — enable the on-behalf-of (OBO) ingress seam on the agent-host golden read. `false` (default) keeps SIT on the simulated/native path (byte-parity with M4). `true` requires a valid caller bearer and exchanges it for a downstream Fabric token; go-live additionally needs OBO_TENANT_ID/CLIENT_ID/CLIENT_SECRET, RLS_PROVIDER=fabric-data-agent, THREAD_PROVIDER=foundry, and #510 (dynamic-RLS TMDL) per ADR-0057. Config, not code."
+      }
+    },
     "enableAppFluentModule": {
       "type": "bool",
       "defaultValue": false,
@@ -622,6 +636,27 @@
       "defaultValue": "nginxinc/nginx-unprivileged:1.27-alpine",
       "metadata": {
         "description": "Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR."
+      }
+    },
+    "appFluentAgentHostUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "#447 — Foundry agent-host base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.AGENT_HOST_URL). Set per-env to the environment-local agent-host FQDN (SIT vs PROD) so the app calls its own region's agent-host. Empty keeps the built-in mock. Replaces the former build-time VITE_AGENT_HOST_URL bake so one image is env-agnostic."
+      }
+    },
+    "appFluentGoldenSourceUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "#424 M2 — golden-source base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <url>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host."
+      }
+    },
+    "appFluentFoundryThreadsEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the hcc-app-fluent mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires appFluentAgentHostUrl to be non-empty; with the host unset the app keeps simulated threads. Provider stays native (no OBO) until M5."
       }
     },
     "appFluentCustomHostname": {
@@ -5947,6 +5982,12 @@
           "fabricDataAgentId": {
             "value": "[parameters('fabricDataAgentId')]"
           },
+          "rlsProvider": {
+            "value": "[parameters('agentHostRlsProvider')]"
+          },
+          "oboEnabled": {
+            "value": "[parameters('agentHostOboEnabled')]"
+          },
           "containerRegistryLoginServer": {
             "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
           },
@@ -5963,7 +6004,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "14271685339274188062"
+              "templateHash": "4668729115024686214"
             }
           },
           "parameters": {
@@ -6023,6 +6064,20 @@
               "defaultValue": "",
               "metadata": {
                 "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "rlsProvider": {
+              "type": "string",
+              "defaultValue": "simulated",
+              "metadata": {
+                "description": "#424 M4 — RLS provider for the structured golden read (`simulated` default | `fabric-data-agent`). See the M4 design spec + #510. Config, not code."
+              }
+            },
+            "oboEnabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity). See ADR-0057. Config, not code."
               }
             },
             "containerRegistryLoginServer": {
@@ -6107,7 +6162,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "1418152727854971719"
+                      "templateHash": "13396941633051548753"
                     }
                   },
                   "parameters": {
@@ -6143,6 +6198,10 @@
                       {
                         "name": "approval-events",
                         "partitionKey": "/correlationId"
+                      },
+                      {
+                        "name": "agent_interactions",
+                        "partitionKey": "/conversationKey"
                       }
                     ]
                   },
@@ -6523,6 +6582,12 @@
                   "fabricDataAgentId": {
                     "value": "[parameters('fabricDataAgentId')]"
                   },
+                  "rlsProvider": {
+                    "value": "[parameters('rlsProvider')]"
+                  },
+                  "oboEnabled": {
+                    "value": "[parameters('oboEnabled')]"
+                  },
                   "redisHostName": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value), createObject('value', ''))]",
                   "redisPort": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value), createObject('value', 0))]",
                   "containerRegistryLoginServer": {
@@ -6542,7 +6607,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.45.6.27763",
-                      "templateHash": "7213773335792771551"
+                      "templateHash": "9509183128391990162"
                     }
                   },
                   "parameters": {
@@ -6607,6 +6672,20 @@
                       "defaultValue": "",
                       "metadata": {
                         "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+                      }
+                    },
+                    "rlsProvider": {
+                      "type": "string",
+                      "defaultValue": "simulated",
+                      "metadata": {
+                        "description": "#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
+                      }
+                    },
+                    "oboEnabled": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity with M4). `true` requires a valid caller bearer on the golden read and exchanges it downstream. See ADR-0057. Config, not code."
                       }
                     },
                     "redisHostName": {
@@ -6730,7 +6809,7 @@
                                 "cpu": "[json('0.5')]",
                                 "memory": "1Gi"
                               },
-                              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId'))), variables('redisEnv'))]"
+                              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider')), createObject('name', 'OBO_ENABLED', 'value', if(parameters('oboEnabled'), 'true', 'false'))), variables('redisEnv'))]"
                             }
                           ],
                           "scale": {
@@ -7783,6 +7862,15 @@
           "logAnalyticsWorkspaceResourceId": {
             "value": "[resourceId('Microsoft.OperationalInsights/workspaces', reference(resourceId('Microsoft.Resources/deployments', format('platform-foundation-{0}', parameters('environmentName'))), '2025-04-01').outputs.logAnalyticsWorkspaceName.value)]"
           },
+          "agentHostUrl": {
+            "value": "[parameters('appFluentAgentHostUrl')]"
+          },
+          "goldenSourceUrl": {
+            "value": "[parameters('appFluentGoldenSourceUrl')]"
+          },
+          "foundryThreadsEnabled": {
+            "value": "[parameters('appFluentFoundryThreadsEnabled')]"
+          },
           "containerRegistryLoginServer": {
             "value": "[parameters('simCapacityContainerRegistryLoginServer')]"
           },
@@ -7803,7 +7891,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.45.6.27763",
-              "templateHash": "3570153104393533044"
+              "templateHash": "9075351793970307405"
             }
           },
           "parameters": {
@@ -7875,6 +7963,27 @@
               "defaultValue": 8080,
               "metadata": {
                 "description": "Container target port. Fluent Dockerfile serves via nginx-unprivileged on 8080."
+              }
+            },
+            "agentHostUrl": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "#447 — Foundry agent-host base URL injected into the app at container start (window.__ENV__.AGENT_HOST_URL). Per-env value (SIT vs PROD agent-host FQDN); empty keeps the built-in mock. Runtime injection replaces the former build-time VITE_AGENT_HOST_URL bake so a single image is env-agnostic."
+              }
+            },
+            "goldenSourceUrl": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "#424 M2 — golden-source base URL injected into the app at container start (window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <goldenSourceUrl>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host (e.g. a future Fabric-backed endpoint). Empty + empty agentHostUrl keeps the built-in mock."
+              }
+            },
+            "foundryThreadsEnabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the app mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires a non-empty agentHostUrl; with the host unset the app keeps simulated threads regardless. Provider stays native (no OBO) until M5."
               }
             },
             "customHostname": {
@@ -7991,7 +8100,21 @@
                       "resources": {
                         "cpu": "[json('0.5')]",
                         "memory": "1.0Gi"
-                      }
+                      },
+                      "env": [
+                        {
+                          "name": "AGENT_HOST_URL",
+                          "value": "[parameters('agentHostUrl')]"
+                        },
+                        {
+                          "name": "GOLDEN_SOURCE_URL",
+                          "value": "[if(empty(parameters('goldenSourceUrl')), if(empty(parameters('agentHostUrl')), '', format('{0}/golden', parameters('agentHostUrl'))), parameters('goldenSourceUrl'))]"
+                        },
+                        {
+                          "name": "FOUNDRY_THREADS_ENABLED",
+                          "value": "[if(parameters('foundryThreadsEnabled'), 'true', 'false')]"
+                        }
+                      ]
                     }
                   ],
                   "scale": {

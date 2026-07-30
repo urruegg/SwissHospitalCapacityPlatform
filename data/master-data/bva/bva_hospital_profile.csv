@@ -1,0 +1,4 @@
+tenant_id,hospital_name,beds,occupancy_target,archetype
+CN,CuraNova University Hospital,920,0.86,acute
+CP,Curalp Cantonal Hospital,780,0.84,acute
+VT,Vialta Regional Hospital,190,0.82,rehab

@@ -1,21 +1,61 @@
-﻿# ALM_PLAN
+# Curavias — Application Lifecycle Management
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.6.0 |
-| **Date** | 2026-06-10 |
+| **Version** | 0.7.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.5.0 (Superpowers-first ALM execution alignment) |
+| **Previous Version** | 0.6.0 (Superpowers-first ALM execution alignment); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical deployment diagram (Sprint 34 WS-2) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document defines how changes to Curavias are planned, built, validated, and
+released. The lifecycle is GitHub-native and governance-first: every change flows
+from an issue through a reviewed pull request to main, with CI gates and
+promotion from SIT to PROD. It is written so a delivery stakeholder can follow
+how work reaches production safely.
 
 ## Purpose
 
 Define the Application Lifecycle Management (ALM) baseline for planning,
-building, validating, and releasing changes in this repository.
+building, validating, and releasing changes to Curavias, the Swiss AI-powered
+patient-flow and hospital-capacity platform, in this repository.
 
 The ALM model is GitHub-native and optimized for a governance-first platform
 where deliverables include requirements, architecture, Superpowers execution
 evidence, compatibility agent prompts, controls, and IaC artifacts.
+
+## Canonical diagrams
+
+This diagram is maintained in
+[architecture/diagram-library.md](architecture/diagram-library.md) and copied
+here; update both places together when it changes.
+
+### Deployment and region
+
+```mermaid
+flowchart TB
+    subgraph Deployed["As-deployed (demo / proof-of-technology)"]
+        direction TB
+        SIT["SIT<br/>westus2 (+ eastus2 Foundry split)<br/>synthetic, no PHI"]
+        PRODD["PROD<br/>switzerlandnorth (single region)<br/>synthetic, no PHI"]
+        SIT -->|promote| PRODD
+    end
+
+    subgraph Target["Target GA architecture"]
+        direction TB
+        SWN["Switzerland North<br/>primary"]
+        SWW["Switzerland West<br/>failover"]
+        SWN -->|failover| SWW
+    end
+
+    Deployed -.sunset to Swiss GA<br/>ADR-0013 / ADR-0032 / ADR-0037.-> Target
+```
 
 ## Source Baseline
 

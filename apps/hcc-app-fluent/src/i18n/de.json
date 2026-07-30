@@ -34,8 +34,11 @@
     "rolesDescription": "Live-Ansicht der App-Rollen aus Microsoft Entra (schreibgeschützt).",
     "evidence": "Nachweise",
     "evidenceDescription": "Presenter-Whiteboard: BOM-, ADR-, Anforderungs-, GA-Nachweis- und Abhängigkeitskarten (synthetisch, keine PHI).",
+    "opportunities": "Opportunities",
     "nav": {
-      "label": "Backstage-Bereiche"
+      "label": "Backstage-Bereiche",
+      "feedbackLoop": "Digitaler Feedback-Loop",
+      "opportunities": "Opportunities"
     },
     "story": {
       "tab": "Story",
@@ -87,6 +90,101 @@
           "prod": "PROD"
         }
       },
+      "feedbackLoop": {
+        "title": "Digitaler Rückkopplungskreis",
+        "purpose": "Signale werden zu gesteuerten Empfehlungen, laufen über menschliche Entscheide zurück und verbessern die nächste Schleife.",
+        "lead": "Curavias übersetzt Betriebssignale in durch Microsoft IQ begründete Empfehlungen, hält den menschlichen Freigabepunkt sichtbar und misst das Ergebnis für die nächste Entscheidung.",
+        "controls": {
+          "allLoops": "Alle Schleifen",
+          "selectedDomain": "Ausgewählte Domäne",
+          "play": "Simulation starten",
+          "pause": "Simulation pausieren",
+          "simulationStatus": "Simulationsstatus"
+        },
+        "status": {
+          "playing": "Live-Simulation",
+          "paused": "Simulation pausiert"
+        },
+        "selected": "Ausgewählt",
+        "domain": {
+          "care-ecosystem": {
+            "curavias": "Versorgungsnetz einbinden",
+            "microsoft": "Kunden einbinden",
+            "group": "Versorgungsökosystem"
+          },
+          "command-center": {
+            "curavias": "Patientenfluss optimieren",
+            "microsoft": "Abläufe optimieren",
+            "group": "Command Center"
+          },
+          "frontier-workforce": {
+            "curavias": "Pflegeteams befähigen",
+            "microsoft": "Mitarbeitende befähigen",
+            "group": "Frontier Workforce"
+          },
+          "care-innovation": {
+            "curavias": "Versorgung weiterentwickeln",
+            "microsoft": "Produkte transformieren",
+            "group": "Versorgungsinnovation"
+          }
+        },
+        "iqCore": {
+          "caption": "Microsoft-IQ-Kern",
+          "title": "Work + Foundry + Fabric + Process + Governance IQ"
+        },
+        "iq": {
+          "work": "Work IQ",
+          "foundry": "Foundry IQ",
+          "fabric": "Fabric IQ",
+          "process": "Process IQ",
+          "governance": "Governance IQ"
+        },
+        "signals": {
+          "referrals": "Zuweisungen",
+          "partner-capacity": "Partnerkapazität",
+          "occupancy": "Belegung",
+          "72-hour-demand": "72-Stunden-Bedarf",
+          "skills": "Kompetenzen",
+          "staffing": "Personalbesetzung",
+          "workload": "Arbeitslast",
+          "outcomes": "Ergebnisse",
+          "telemetry": "Telemetrie"
+        },
+        "actions": {
+          "coordinate-placement": "Platzierungen koordinieren",
+          "rebalance-coordinate": "Kapazität neu ausbalancieren und koordinieren",
+          "mobilize-capacity": "Kapazität der Pflegeteams mobilisieren",
+          "improve-pathway": "Versorgungspfad verbessern"
+        },
+        "outcomes": {
+          "continuity-access": "Kontinuität und Zugang",
+          "wait-time-utilization": "Wartezeit und Auslastung",
+          "workload-adoption": "Arbeitslastbalance und Akzeptanz",
+          "quality-adoption": "Qualität und Akzeptanz"
+        },
+        "legend": {
+          "signal": "Datenpunkte fliessen in Microsoft IQ.",
+          "iq": "Microsoft IQ begründet das Signal.",
+          "action": "Eine vorgeschlagene Aktion geht zur menschlichen Freigabe zurück.",
+          "approval": "Menschliche Freigabe hält den Ablauf beratend.",
+          "outcome": "Das gemessene Ergebnis schliesst die Schleife."
+        },
+        "advisoryNote": "Nur beratend",
+        "reco": {
+          "read": "{{domain}}: {{signals}} zeigen, wo Microsoft IQ {{action}} vorschlagen sollte; die Empfehlung bleibt bis zum menschlichen Entscheid beratend und wird danach als {{outcome}} gemessen.",
+          "lever": "Empfehlung: {{action}} und erwartetes Ergebnis {{outcome}} prüfen, bevor sich der Betrieb ändert.",
+          "impactLabel": "menschlicher Entscheid",
+          "followUps": {
+            "evidence": "Zeige die Nachweise hinter dieser Empfehlung.",
+            "iqLayers": "Erkläre, wie {{layers}} die Empfehlung geprägt haben.",
+            "businessValue": "Schätze den Geschäftswert, falls die Leitung freigibt."
+          }
+        },
+        "empty": {
+          "title": "Digitaler Rückkopplungskreis nicht verfügbar",
+          "body": "Für diese Ansicht sind keine Feedback-Loop-Domänen konfiguriert."
+        }
+      },
       "roster": {
         "sectionLabel": "Runtime-Copilots",
         "countCaption": "{{count}} spezialisierte Copilots",
@@ -104,6 +202,10 @@
       "pillars": {
         "sectionLabel": "Plattformgrundlagen"
       }
+    },
+    "header": {
+      "title": "Curavias Backstage",
+      "lead": "Die Curavias-Plattformgeschichte - beginnend mit dem digitalen Feedback-Loop. Weitere Bereiche folgen."
     }
   },
   "evidence": {
@@ -188,7 +290,7 @@
     "dischargeExpediteDetail": "Entlassung {{ward}} beschleunigen — {{blocker}}",
     "bedShift": "{{beds}} Betten {{fromWard}} -> {{toWard}} verschieben",
     "placementMove": "Platzierung {{requestNo}}: {{source}} → {{target}}",
-      "admissionEvent": "Steuerung: {{patient}} in {{ward}}",
+    "admissionEvent": "Steuerung: {{patient}} in {{ward}}",
     "placementBarrier": "Hindernis: {{label}}",
     "orDefer": "Eingriff {{specialty}} verschieben",
     "orCaseEvent": "OP-Fall {{caseNo}} steuern",

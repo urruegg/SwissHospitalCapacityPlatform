@@ -16,6 +16,7 @@ by the semantic model (T5) and C-suite reports (T6).
 | `build_silver_bva.py` | Silver | `silver.bva_consumption` (keys + `date_key`/`month_key` + provenance) |
 | `build_gold_bva_dims.py` | Gold | `gold.bva_dim_{service,meter,resource,environment,hospital,capability,date,exec_role}` |
 | `build_gold_bva_facts.py` | Gold | `gold.bva_fact_{azure_consumption,budget,value_realization}` |
+| `build_gold_bva_opportunity.py` | Gold | `gold.bva_opportunity`, `gold.bva_opportunity_pipeline` |
 
 Naming is snake_case + `gold.` schema prefix (per PR #153 reconciliation).
 
@@ -28,6 +29,22 @@ medallion's `readiness_rules.py`. The notebooks read the Delta/Files sources,
 `collect()` the synthetic rows (~12k) to the driver, apply the pure functions,
 and write the Gold tables. For the synthetic-seed scale this keeps **one** tested
 implementation with no notebook/reference drift.
+
+## Sprint 33 WS-A cost-basis notebook
+
+`build_gold_bva_costbasis.py` is a thin Fabric I/O wrapper for the Sprint 33
+WS-A BVA cost-basis product. It reads the seven master-data CSVs from
+`Files/master-data/bva/`, delegates transform logic to
+[`data-platform/bva/costbasis.py`](../../bva/costbasis.py), and writes:
+
+- `gold.bva_bom_dim`
+- `gold.bva_cost_fact`
+- `gold.bva_effort_fact`
+- `gold.bva_hospital_profile_dim`
+- `gold.bva_baseline_kpi`
+
+This notebook is separate from, and does not modify, the Sprint 15
+consumption/value-realization notebooks listed above.
 
 ## Adoption join (T4)
 

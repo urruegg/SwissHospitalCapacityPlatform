@@ -1,0 +1,44 @@
+{
+  "scenarioId": "sim-hopital-de-fribourg-acute",
+  "currency": "CHF",
+  "asOf": "2026-07-28T00:00:00Z",
+  "baseline": {
+    "totalCostChf": 2550000.0,
+    "oneTimeChf": 1300000.0,
+    "annualRunChf": 1250000.0,
+    "hospitals": 3
+  },
+  "projection": {
+    "hospitalName": "Hopital de Fribourg",
+    "archetype": "acute",
+    "onboardingOneTimeChf": 209600.0,
+    "annualRunDeltaChf": 173200.0,
+    "annualBenefitChf": 640000.0
+  },
+  "metrics": {
+    "roiPct": 163.3,
+    "paybackMonths": 5.4,
+    "tco3yChf": 729200.0,
+    "npvChf": 1061612.18
+  },
+  "sensitivity": {
+    "low": 84.3,
+    "base": 163.3,
+    "high": 242.3
+  },
+  "chunks": [
+    {
+      "classId": "C",
+      "text": "Hopital de Fribourg acute what-if: 3-year TCO CHF 729200.00, ROI 163.3%, payback 5.4 months.",
+      "citation": {
+        "sourceRef": "docs/BVA.md ROM baseline; archetype:acute; input:beds=320,occupancy=0.85,scope=full",
+        "anchor": "bva.simulate"
+      },
+      "asOf": "2026-07-28T00:00:00Z",
+      "liveness": "snapshot",
+      "status": "requires-validation",
+      "confidence": 0.72,
+      "language": "en"
+    }
+  ]
+}

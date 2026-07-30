@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.43.8.12551",
-      "templateHash": "5199452525710059034"
+      "version": "0.45.6.27763",
+      "templateHash": "4668729115024686214"
     }
   },
   "parameters": {
@@ -38,9 +38,104 @@
       "metadata": {
         "description": "Log Analytics workspace resource ID for the Container Apps environment. Keys are derived internally via reference()/listKeys() so no secret material crosses module boundaries."
       }
+    },
+    "enableRedisModule": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable the Azure Managed Redis grounding cache (ADR-0007 §1). Default true for PROD; set to false in SIT per ADR-0028 (Managed Redis Balanced_B0 SKU is not offered in westus2 for the MCAPS demo subscription; the agent-host runtime already uses an in-memory cache so there is no functional loss for demo scope)."
+      }
+    },
+    "fabricDataAgentEndpoint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "fabricWorkspaceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "fabricDataAgentId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+      }
+    },
+    "rlsProvider": {
+      "type": "string",
+      "defaultValue": "simulated",
+      "metadata": {
+        "description": "#424 M4 — RLS provider for the structured golden read (`simulated` default | `fabric-data-agent`). See the M4 design spec + #510. Config, not code."
+      }
+    },
+    "oboEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity). See ADR-0057. Config, not code."
+      }
+    },
+    "containerRegistryLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable Entra-MI-based pull once real images land in ACR."
+      }
+    },
+    "containerRegistryResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
+      }
+    },
+    "caeInfrastructureSubnetResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that VNet subnet AND the Cosmos private-endpoint module is invoked (both parts of Option A are gated together — a PE without VNet integration is useless, and vice versa)."
+      }
+    },
+    "vnetResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional VNet resource ID that hosts the CAE subnet + Cosmos private endpoint subnet. Required together with caeInfrastructureSubnetResourceId — used to locate the private-endpoint subnet in the same VNet."
+      }
+    },
+    "privateEndpointSubnetName": {
+      "type": "string",
+      "defaultValue": "snet-data",
+      "metadata": {
+        "description": "Name of the subnet (inside vnetResourceId) that hosts the Cosmos private endpoint. Defaults to snet-data — the same subnet used by the CSA cosmos private endpoint (ADR-0029 Option A precedent)."
+      }
     }
   },
+  "variables": {
+    "enableVnetIntegration": "[and(not(empty(parameters('caeInfrastructureSubnetResourceId'))), not(empty(parameters('vnetResourceId'))))]",
+    "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002"
+  },
   "resources": [
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+      "apiVersion": "2024-12-01-preview",
+      "name": "[format('{0}/{1}', format('cosmos-{0}', parameters('nameSuffix')), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix'))), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('cosmosDataContributorRoleId')))]",
+      "properties": {
+        "roleDefinitionId": "[format('{0}/sqlRoleDefinitions/{1}', resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix'))), variables('cosmosDataContributorRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix')))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'agent-host-container-app')]",
+        "[resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos')]"
+      ]
+    },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
@@ -67,8 +162,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "30923671365535976"
+              "version": "0.45.6.27763",
+              "templateHash": "13396941633051548753"
             }
           },
           "parameters": {
@@ -104,6 +199,10 @@
               {
                 "name": "approval-events",
                 "partitionKey": "/correlationId"
+              },
+              {
+                "name": "agent_interactions",
+                "partitionKey": "/conversationKey"
               }
             ]
           },
@@ -119,7 +218,7 @@
                 "databaseAccountOfferType": "Standard",
                 "enableAutomaticFailover": false,
                 "disableLocalAuth": true,
-                "publicNetworkAccess": "Enabled",
+                "publicNetworkAccess": "Disabled",
                 "capabilities": [
                   {
                     "name": "EnableServerless"
@@ -179,6 +278,10 @@
               "type": "string",
               "value": "[format('cosmos-{0}', parameters('nameSuffix'))]"
             },
+            "cosmosAccountResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix')))]"
+            },
             "cosmosEndpoint": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', parameters('nameSuffix'))), '2024-05-15').documentEndpoint]"
@@ -188,6 +291,148 @@
       }
     },
     {
+      "condition": "[variables('enableVnetIntegration')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "agent-host-cosmos-pe",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[parameters('nameSuffix')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "cosmosAccountResourceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosAccountResourceId.value]"
+          },
+          "privateEndpointSubnetResourceId": {
+            "value": "[format('{0}/subnets/{1}', parameters('vnetResourceId'), parameters('privateEndpointSubnetName'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.6.27763",
+              "templateHash": "9808019470207933078"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "cosmosAccountResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the Cosmos DB account to expose via private endpoint."
+              }
+            },
+            "privateEndpointSubnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource ID of the subnet that hosts the private endpoint. Must have `privateEndpointNetworkPolicies: Disabled`."
+              }
+            },
+            "privateDnsZoneName": {
+              "type": "string",
+              "defaultValue": "privatelink.documents.azure.com",
+              "metadata": {
+                "description": "Existing private DNS zone name — Azure-managed for Cosmos SQL is exactly `privatelink.documents.azure.com`. Do not override."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-11-01",
+              "name": "[format('pe-cosmos-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('privateEndpointSubnetResourceId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('pe-cosmos-{0}-conn', parameters('nameSuffix'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('cosmosAccountResourceId')]",
+                      "groupIds": [
+                        "Sql"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-11-01",
+              "name": "[format('{0}/{1}', format('pe-cosmos-{0}', parameters('nameSuffix')), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "privatelink-documents-azure-com",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', format('pe-cosmos-{0}', parameters('nameSuffix')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "privateEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Private endpoint resource name."
+              },
+              "value": "[format('pe-cosmos-{0}', parameters('nameSuffix'))]"
+            },
+            "privateEndpointResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Private endpoint resource ID."
+              },
+              "value": "[resourceId('Microsoft.Network/privateEndpoints', format('pe-cosmos-{0}', parameters('nameSuffix')))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos')]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableRedisModule')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "agent-host-redis",
@@ -213,8 +458,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "8005075735857793013"
+              "version": "0.45.6.27763",
+              "templateHash": "15845063017917743907"
             }
           },
           "parameters": {
@@ -329,11 +574,31 @@
           "cosmosEndpoint": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosEndpoint.value]"
           },
-          "redisHostName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value]"
+          "fabricDataAgentEndpoint": {
+            "value": "[parameters('fabricDataAgentEndpoint')]"
           },
-          "redisPort": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value]"
+          "fabricWorkspaceId": {
+            "value": "[parameters('fabricWorkspaceId')]"
+          },
+          "fabricDataAgentId": {
+            "value": "[parameters('fabricDataAgentId')]"
+          },
+          "rlsProvider": {
+            "value": "[parameters('rlsProvider')]"
+          },
+          "oboEnabled": {
+            "value": "[parameters('oboEnabled')]"
+          },
+          "redisHostName": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisHostName.value), createObject('value', ''))]",
+          "redisPort": "[if(parameters('enableRedisModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisPort.value), createObject('value', 0))]",
+          "containerRegistryLoginServer": {
+            "value": "[parameters('containerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[parameters('containerRegistryResourceId')]"
+          },
+          "caeInfrastructureSubnetResourceId": {
+            "value": "[parameters('caeInfrastructureSubnetResourceId')]"
           }
         },
         "template": {
@@ -342,8 +607,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.43.8.12551",
-              "templateHash": "7585539027046446392"
+              "version": "0.45.6.27763",
+              "templateHash": "9509183128391990162"
             }
           },
           "parameters": {
@@ -389,17 +654,53 @@
                 "description": "Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2)."
               }
             },
+            "fabricDataAgentEndpoint": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "fabricWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "fabricDataAgentId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "rlsProvider": {
+              "type": "string",
+              "defaultValue": "simulated",
+              "metadata": {
+                "description": "#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
+              }
+            },
+            "oboEnabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity with M4). `true` requires a valid caller bearer on the golden read and exchanges it downstream. See ADR-0057. Config, not code."
+              }
+            },
             "redisHostName": {
               "type": "string",
+              "defaultValue": "",
               "metadata": {
-                "description": "Redis host name for the grounding cache (ADR-0007 §1)."
+                "description": "Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope)."
               }
             },
             "redisPort": {
               "type": "int",
               "defaultValue": 10000,
               "metadata": {
-                "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU)."
+                "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU). Ignored when redisHostName is empty."
               }
             },
             "targetPort": {
@@ -408,7 +709,33 @@
               "metadata": {
                 "description": "Target port the agent-host container listens on."
               }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId. When empty, the CA uses no `registries` block and relies on public/anonymous pull."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
+              }
+            },
+            "caeInfrastructureSubnetResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that subnet — Container Apps traffic then reaches Cosmos DB via its private endpoint. Empty string keeps the CAE public (default). Setting this on an EXISTING CAE forces a destructive recreate; the child Container Apps get a new FQDN."
+              }
             }
+          },
+          "variables": {
+            "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+            "redisEnv": "[if(empty(parameters('redisHostName')), createArray(), createArray(createObject('name', 'REDIS_HOST', 'value', parameters('redisHostName')), createObject('name', 'REDIS_PORT', 'value', string(parameters('redisPort')))))]"
           },
           "resources": [
             {
@@ -424,8 +751,32 @@
                     "customerId": "[parameters('logAnalyticsCustomerId')]",
                     "sharedKey": "[parameters('logAnalyticsSharedKey')]"
                   }
-                }
+                },
+                "vnetConfiguration": "[if(empty(parameters('caeInfrastructureSubnetResourceId')), null(), createObject('infrastructureSubnetId', parameters('caeInfrastructureSubnetResourceId'), 'internal', false()))]"
               }
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('id-ca-agent-host-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[variables('useAcrMiPull')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 13 T5 — agent-host CA pulls image from ACR via user-assigned MI."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+              ]
             },
             {
               "type": "Microsoft.App/containerApps",
@@ -434,7 +785,10 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "identity": {
-                "type": "SystemAssigned"
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))]": {}
+                }
               },
               "properties": {
                 "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]",
@@ -444,7 +798,8 @@
                     "targetPort": "[parameters('targetPort')]",
                     "transport": "auto",
                     "allowInsecure": false
-                  }
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))), createArray())]"
                 },
                 "template": {
                   "containers": [
@@ -455,24 +810,7 @@
                         "cpu": "[json('0.5')]",
                         "memory": "1Gi"
                       },
-                      "env": [
-                        {
-                          "name": "COSMOS_ENDPOINT",
-                          "value": "[parameters('cosmosEndpoint')]"
-                        },
-                        {
-                          "name": "REDIS_HOST",
-                          "value": "[parameters('redisHostName')]"
-                        },
-                        {
-                          "name": "REDIS_PORT",
-                          "value": "[string(parameters('redisPort'))]"
-                        },
-                        {
-                          "name": "AGENTS_ROOT",
-                          "value": "/app/agents"
-                        }
-                      ]
+                      "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider')), createObject('name', 'OBO_ENABLED', 'value', if(parameters('oboEnabled'), 'true', 'false'))), variables('redisEnv'))]"
                     }
                   ],
                   "scale": {
@@ -482,18 +820,32 @@
                 }
               },
               "dependsOn": [
+                "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/'))), 'Microsoft.Authorization/roleAssignments', guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]",
                 "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
               ]
             }
           ],
           "outputs": {
+            "managedEnvironmentId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
+            },
             "fqdn": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01').configuration.ingress.fqdn]"
             },
             "principalId": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]"
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+            },
+            "identityResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+            },
+            "identityClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
             }
           }
         }
@@ -513,9 +865,21 @@
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-cosmos'), '2025-04-01').outputs.cosmosAccountName.value]"
     },
+    "agentHostMiPrincipalId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+    },
     "redisName": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisName.value]"
+      "value": "[if(parameters('enableRedisModule'), reference(resourceId('Microsoft.Resources/deployments', 'agent-host-redis'), '2025-04-01').outputs.redisName.value, '')]"
+    },
+    "redisEnabled": {
+      "type": "bool",
+      "value": "[parameters('enableRedisModule')]"
+    },
+    "managedEnvironmentId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-container-app'), '2025-04-01').outputs.managedEnvironmentId.value]"
     }
   }
 }

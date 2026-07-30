@@ -91,20 +91,46 @@ param simCapacityContainerRegistryResourceId = '/subscriptions/66a9953a-df37-4c5
 
 // --- Compute: agent-host (Container App + Cosmos conversations/audit/approval-events) ---
 param enableAgentHostModule = true
-param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:b796961'
+// Bumped b796961 -> f596cf2 to bring PROD to parity with SIT on the latest main
+// agent-host build, which bakes in the Sprint 32 Signal Agent (SGA) pack
+// (agents/signal-agent, runtime: agent-host — auto-discovered by the manifest
+// loader). f596cf2 is a superset of b796961 (all prior agent-host code incl. the
+// M5 Fabric Data Agent client + the #424 M2 golden service). Image imported into
+// crihzhhpfprod via `az acr import` from the SIT ACR. Deploy approval-gated per
+// AGENTS.md §4 (approved-to-apply by @urruegg 2026-07-28T12:28+02:00); see
+// docs/sprints/sprint-32/signal-agent-sit-prod-parity.md for live /agents evidence.
+// #424 M6 SIT+PROD parity (2026-07-29): bumped f596cf2 -> 62cc2ae (PR #522, M5
+// OBO seam). 62cc2ae is a superset of f596cf2 (verified `git merge-base
+// --is-ancestor`) so the Signal Agent pack + #424 M3/M4 seams are retained; OBO
+// stays off (agentHostOboEnabled default false) and RLS stays simulated, so this
+// is a behaviour-parity redeploy that lifts PROD from M2 to M5. Image imported
+// into crihzhhpfprod via `az acr import` from the SIT ACR. approved-to-apply by
+// @urruegg 2026-07-29.
+param agentHostImage = 'crihzhhpfprod.azurecr.io/hcc-agent-host:62cc2ae'
 // Redis: start with the in-memory grounding cache (proven in SIT per ADR-0028)
 // to avoid a deploy-time AllocationFailed on an unverified swn Balanced SKU.
 // Flip to true once the SKU is confirmed in switzerlandnorth (PROD hardening).
 param agentHostEnableRedis = false
-// PROD Fabric Data Agent is published in a later phase (P6). Empty keeps the
-// agent-host synthetic fallback until the PROD swn workspace + Data Agent exist.
-param fabricDataAgentEndpoint = ''
-param fabricWorkspaceId = ''
-param fabricDataAgentId = ''
+// PROD Fabric Data Agent (#477) — cloned from the SIT agent into the swn PROD
+// workspace 1c8408f4, grounded on the capacity-dashboard + external-signals
+// Direct Lake semantic models (ontology grounding deferred). Wiring these live
+// switches the agent-host from synthetic fallback to live grounding.
+param fabricDataAgentEndpoint = 'https://api.fabric.microsoft.com/v1/workspaces/1c8408f4-6eb7-401f-aee9-77fe4c8a515e/aiskills/39cb57b5-4bbf-4d64-af1c-7f0a81b0d570/aiassistant/openai'
+param fabricWorkspaceId = '1c8408f4-6eb7-401f-aee9-77fe4c8a515e'
+param fabricDataAgentId = '39cb57b5-4bbf-4d64-af1c-7f0a81b0d570'
 
 // --- Compute: hcc-app-fluent (Container App) ---
 param enableAppFluentModule = true
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:87b2568'
+// Sprint 35 (#543) — Backstage restructure (feedback-loop default + 2-tab sub-nav,
+// Story/Evidence/Roles removed). Bumped dadd7ce -> a7fb478 (PR #544 squash on main).
+// Env-agnostic image (agent-host URL injected at runtime, #447); imported into
+// crihzhhpfprod via `az acr import` from the SIT ACR. approved-to-apply by
+// @urruegg 2026-07-29. Already live + verified in SIT on appsit.curavias.ch.
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:a7fb478'
+// #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
+// container start so the PROD app calls the PROD (switzerlandnorth) agent-host
+// instead of inheriting the SIT URL from the build-once + import image.
+param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-prod.whiteriver-d854b3bc.switzerlandnorth.azurecontainerapps.io'
 // app.curavias.ch is bound to the switzerlandnorth CA. The custom hostname +
 // managed cert are codified here so CD redeploys preserve the binding (the
 // manual P7 `hostname add/bind` would otherwise be stripped on every deploy).

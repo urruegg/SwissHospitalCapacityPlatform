@@ -84,5 +84,37 @@ class PlanUploadsTests(unittest.TestCase):
             self.assertEqual(rc, 0)
 
 
+class RemoteUrlTests(unittest.TestCase):
+    """The remote URL must be environment-parametrized so the same partition
+    tree can be uploaded to SIT or PROD by passing the target coordinates."""
+
+    def test_defaults_to_sit_constants(self):
+        url = bub._remote_url(
+            bub.WORKSPACE_ID, bub.LAKEHOUSE_ID,
+            "Bronze/consumption", "BillingPeriod=2026-06/ChargePeriodStart=2026-06-30/part-00000.parquet",
+        )
+        self.assertIn(bub.WORKSPACE_ID, url)
+        self.assertIn(bub.LAKEHOUSE_ID, url)
+        self.assertTrue(url.startswith(bub.ONELAKE_HOST))
+        self.assertIn("/Files/Bronze/consumption/", url)
+        self.assertTrue(url.endswith("/part-00000.parquet"))
+
+    def test_targets_given_prod_coordinates(self):
+        prod_ws = "1c8408f4-6eb7-401f-aee9-77fe4c8a515e"
+        prod_lh = "57bd6e02-5248-439c-9f31-16bf9ee83cb4"
+        url = bub._remote_url(
+            prod_ws, prod_lh, "Bronze/consumption",
+            "BillingPeriod=2026-06/ChargePeriodStart=2026-06-30/part-00000.parquet",
+        )
+        self.assertIn(prod_ws, url)
+        self.assertIn(prod_lh, url)
+        self.assertNotIn(bub.WORKSPACE_ID, url)
+
+    def test_forward_slashes_preserved(self):
+        url = bub._remote_url("ws", "lh", "Bronze/consumption", "a=1/b=2/part-00000.parquet")
+        self.assertNotIn("\\", url)
+        self.assertIn("a=1/b=2/", url)
+
+
 if __name__ == "__main__":
     unittest.main()

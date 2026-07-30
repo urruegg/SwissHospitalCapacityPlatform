@@ -560,6 +560,61 @@
       },
       "status": "Accepted",
       "title": "App context envelope + per-agent threads + simulated per-user RLS"
+    },
+    {
+      "decisionSummary": "1. **Eight-dimension trust model.** A domain's Trust Score is a weighted aggregate of eight dimensions, each scored in `[0,1]`: `completeness`, `timeliness`, `validity`, `uniqueness`, `consistency`, `lineage_integrity`, `provenance`, `ontology_mapping`. These are frozen as the canonical `DIMENSIONS` tuple in `data-platform/quality/trust_score.py`.",
+      "id": "ADR-0053",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0053-dqa-trust-score-model.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0053-dqa-trust-score-model.md"
+      },
+      "status": "Accepted",
+      "title": "DQA trust-score model, dimensions, and grounding-readiness thresholds"
+    },
+    {
+      "decisionSummary": "Adopt an explicit signal-channel lifecycle owned by the new `signal-agent`: **discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire**. The runtime `signal-triage-agent` remains a consumer of activated signals; it does not own discovery, onboarding, contract registration, ontology binding, or lifecycle governance.",
+      "id": "ADR-0054",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0054-signal-channel-lifecycle.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0054-signal-channel-lifecycle.md"
+      },
+      "status": "Proposed",
+      "title": "Signal Channel Lifecycle Governance"
+    },
+    {
+      "decisionSummary": "1. **Capture contract — `DC-AGENT-INTERACTION-v1` (ratified).** One versioned record per agent turn, following the platform `DC-*` data-contract convention ([`docs/DATA.md`](../DATA.md)) and validated by `data/synthetic/schema/agent-interaction-v1.schema.json`. The record is **PHI-free by construction**: `promptRedacted` / `answerRedacted` pass through the deterministic redaction gate — the single persistence choke point — before storage, and `promptHash` (`sha256:…`) enables dedup / regression matching without retaining raw content. `userEvents` (thumbs / chip / insight-select / HITL) are appended in place; the `eval` block is filled asynchronously off the hot path. The record is model-agnostic (identical for the deterministic mock or a live Foundry model), so it is valid before and during hybrid testing.",
+      "id": "ADR-0055",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0055-closed-loop-learning-capture-and-eval.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0055-closed-loop-learning-capture-and-eval.md"
+      },
+      "status": "Accepted",
+      "title": "Closed-loop learning — capture contract, retention class, and online-eval sampling"
+    },
+    {
+      "decisionSummary": "1. **Deterministic computation posture — no LLM arithmetic (D6).** All BVA arithmetic is performed by a **deterministic Python calc engine** exposed as a single typed tool, `bva.simulate(baseline, delta) -> BvaSimulationResult` (`data-platform/bva/`). The engine is a pure function of its inputs: it uses a fixed `asOf`, never `datetime.now()`, and never delegates math to the model. The LLM only slot-fills inputs, selects the tool, and renders the tool's output; it emits no computed figure of its own. This mirrors the deterministic-not-LLM precedent set for the DQA Trust Score ([ADR-0053](0053-dqa-trust-score-model.md)).",
+      "id": "ADR-0056",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0056-bva-agent-deterministic-computation.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0056-bva-agent-deterministic-computation.md"
+      },
+      "status": "Accepted",
+      "title": "BVA Agent — deterministic ROI/TCO computation as a typed tool, cost data product via the master-data pattern, peer to PO under the App orchestrator"
+    },
+    {
+      "decisionSummary": "Adopt **Path B: complete the OBO seam in code and configuration now; defer live provisioning to a future, separately-gated scope expansion.**",
+      "id": "ADR-0057",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0057-obo-seam-completion-defer-live-provisioning.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0057-obo-seam-completion-defer-live-provisioning.md"
+      },
+      "status": "Accepted",
+      "title": "OBO seam completion, defer live provisioning (#424 M5)"
     }
   ],
   "boms": [
@@ -2292,6 +2347,66 @@
   "generatedAt": "2026-07-10",
   "requirements": [
     {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall produce grounded ROI/TCO answers computed over the `bva_*` gold measures, standardized in CHF."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall support interactive new-hospital what-if analysis via the deterministic `bva.simulate` tool, parametric and benchmarked from the three existing hospitals."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall compose a PO ↔ BVA fan-out into one cited answer: BVA numbers plus the Product Owner go/no-go verdict."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall capture an Opportunity in the Cosmos system-of-record, project it into a `bva_opportunity` gold table, and expose it in the Backstage pipeline view."
+    },
+    {
+      "family": "Business Value Assessment Agent (Sprint 33)",
+      "id": "FR-BVA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall surface BVA in the Curavias App Start (inline) and Backstage (pipeline) copilot rail."
+    },
+    {
       "family": "Application Context Architecture (Sprint 29)",
       "id": "FR-CTX-001",
       "kind": "FR",
@@ -2614,6 +2729,102 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%)."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Continuously assess gold/serving domains across completeness, timeliness, validity, uniqueness, consistency, and lineage-integrity."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Detect data gaps and quantify each gap's impact on the KPIs and agents that depend on the affected domain."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Publish a per-domain **Trust Score** that is deterministic, versioned, and explainable (never an LLM estimate), emitted as `DC-DQ-TRUSTSCORE-v1`."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Route each gap to the accountable data owner (advisory / HITL) as a `DC-DQ-GAP-v1` finding; the owner remediates."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Re-assess a domain after remediation and report the trust-score delta, closing the gap on the record."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Advise **degraded-mode** for a below-threshold domain rather than silently serving low-trust data."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-010",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Persist every assessment, gap, and remediation as an auditable GitHub-native artefact (HITL + audit)."
+    },
+    {
+      "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+      "id": "FR-DQA-012",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Certify a domain **grounding-ready** only when its trust score and gating dimensions clear the ADR-ratified threshold; certification is GA-gated (Fabric IQ first, Foundry IQ behind the same gate)."
     },
     {
       "family": "Trusted External Signals (Sprint 21)",
@@ -3048,6 +3259,66 @@
       "title": "The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build."
     },
     {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Capture every agent turn + user interaction as a `DC-AGENT-INTERACTION-v1` record (PHI-free, redaction-gated)."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Continuously evaluate captured interactions (citation coverage, groundedness, refusal correctness, actionability, safety) online + offline."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Curate versioned golden datasets from real traces with full lineage back to the source `interactionId`."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Surface an advisory improvement backlog from low-scoring / uncited / mis-refused interactions, grouped by agent + failing metric."
+    },
+    {
+      "family": "Closed-Loop Learning (Sprint 30)",
+      "id": "FR-LEARN-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Optimize prompts / knowledge / guardrails and fine-tune (SFT/DPO/RFT) from curated data for the lead agent, human-gated."
+    },
+    {
       "family": "Product Marketing And Public Web (Sprint 24)",
       "id": "FR-MKT-001",
       "kind": "FR",
@@ -3408,6 +3679,126 @@
       "title": "The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail."
     },
     {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Discover and rank referenced-vs-wired signal gaps into a Signal Gap Register, demand-driven by a `DC-DQ-GAP-v1` `newSourceNeeded` gap."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Classify a candidate channel by domain family, signal type, trust tier A/B/C, and data class PHI/staff-PII/non-PHI."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Select a connector adapter from the governed adapter catalogue."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Draft and register the channel data contract (`DC-REF-CERTIFICATION-v1` for the certification lane)."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Bind channel entities to the reference ontology (Credential/Competency/Qualification/IssuingAuthority) and maintain the crosswalk."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-007",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Run a sandbox Channel Readiness Scorecard (schema conformance, provenance, dedup) on a curated sample feed before activation."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-008",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Resolve credentials to competency codes and enrich the skills baseline by pseudonymised work-ID, feeding SBA skills-based assignment."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-009",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Manage the channel lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire) with provenance."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-010",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Gate channel activation and ontology change on a recorded human data-owner and compliance/DPO `approved-to-apply` approval; the agent remains advisory-only with no autonomous activation."
+    },
+    {
+      "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+      "id": "FR-SIG-011",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Record provenance and audit evidence for every onboarding decision and activation."
+    },
+    {
       "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
       "id": "FR-SKILL-001",
       "kind": "FR",
@@ -3732,6 +4123,66 @@
       "title": "AI-serving behavior shall support provider-local governance and change control."
     },
     {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA computation shall be **deterministic and reproducible**, with **no LLM arithmetic**: all ROI/TCO math is performed by the `bva.simulate` engine."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot, snapshot date, currency)."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Monetary output shall be **CHF-normalized with an explicit FX line**; settling weeks are marked provisional."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA data shall preserve **SIT / PROD parity** and carry **no PHI** (ADR-0016); demo figures are labelled PoT (ADR-0013)."
+    },
+    {
+      "family": "Business Value Assessment Agent Governance (Sprint 33)",
+      "id": "NFR-BVA-005",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "BVA agent output shall preserve **DE / EN parity**."
+    },
+    {
       "family": "Compliance And Privacy",
       "id": "NFR-COMP-001",
       "kind": "NFR",
@@ -3900,6 +4351,54 @@
       "title": "Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver."
     },
     {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Main solution documentation shall be Curavias-anchored and terminology-consistent with `docs/GLOSSARY.md` (Fabric IQ / Foundry IQ / Work IQ / Frontier Firm used correctly)."
+    },
+    {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Each in-scope main doc shall be customer-ready: a Curavias-anchored title, the one-line product-anchor blockquote, an executive summary, and plain professional wording."
+    },
+    {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Canonical mermaid diagrams from `docs/architecture/diagram-library.md` shall be embedded in the documents the library assigns them to, and copies kept in sync from that source."
+    },
+    {
+      "family": "Documentation Quality (Sprint 34)",
+      "id": "NFR-DOC-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Every documentation edit shall pass the mojibake + markdownlint gates and carry a §9 SemVer version bump."
+    },
+    {
       "family": "Data Quality And Integrity",
       "id": "NFR-DQ-001",
       "kind": "NFR",
@@ -3958,6 +4457,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Specialty metadata shall include quality checks and controlled versioning (Sprint 6)."
+    },
+    {
+      "family": "Data Quality Agent Governance (Sprint 31)",
+      "id": "NFR-DQA-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The Trust Score shall be **reproducible**: the same dimension inputs always produce the same score, with the model version recorded on every record."
+    },
+    {
+      "family": "Data Quality Agent Governance (Sprint 31)",
+      "id": "NFR-DQA-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The agent shall operate **read-only under Zero-Trust**: it never edits source data, and treats every value returned by a tool or model as untrusted."
     },
     {
       "family": "Trusted External Signals Governance (Sprint 21)",
@@ -4102,6 +4625,54 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Every dashboard visual shall carry per-visual traceability back to its underlying semantic-model measure and its ontology-grounded source (`hcp:*` entities), aligned with `FR-CX-006` and `FR-ONT-004`."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "No PHI in captured interactions: the deterministic redaction gate is the single persistence choke point; raw prompts are hashed, not stored (ADR-0016)."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The interaction store honours Swiss residency at GA and a defined retention class (R3, AI trace and model evidence)."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval)."
+    },
+    {
+      "family": "Closed-Loop Learning Governance (Sprint 30)",
+      "id": "NFR-LEARN-004",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Full lineage is preserved end to end: interaction -> dataset -> eval -> change."
     },
     {
       "family": "Maintainability And Delivery",
@@ -4402,6 +4973,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Onboarding identity and cross-tenant boundaries shall be explicit and auditable (Sprint 6)."
+    },
+    {
+      "family": "Signal Agent Governance (Sprint 32)",
+      "id": "NFR-SIG-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Signal-channel ingestion shall follow Zero-Trust, read-scoped ingestion: every external, MCP, or model value is treated as untrusted and re-validated at each boundary."
+    },
+    {
+      "family": "Signal Agent Governance (Sprint 32)",
+      "id": "NFR-SIG-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016)."
     },
     {
       "family": "Curavias Org Spine And Skills Evidence Governance (Sprint 23)",

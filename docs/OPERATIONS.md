@@ -1,18 +1,29 @@
-﻿# OPERATIONS
+# Curavias — Operations
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.7.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.8.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.6.1 (editorial: repaired UTF-8 mojibake; no semantic change) |
+| **Previous Version** | 1.7.0 (editorial: repaired UTF-8 mojibake; no semantic change); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical request-sequence diagram (Sprint 34 WS-4) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document defines how Curavias is run day to day: who owns each service, how
+health and incidents are managed, and how the platform is monitored and kept
+reliable. It is written so an operations stakeholder can understand the run model
+and the escalation paths.
 
 ## Purpose
 
-Define the target operating model for the Swiss Hospital Capacity Platform,
-including service ownership, run operations, monitoring, health management,
-and incident response.
+Define the target operating model for Curavias, the Swiss AI-powered
+patient-flow and hospital-capacity platform, including service ownership, run
+operations, monitoring, health management, and incident response.
 
 > **Sprint 00 tenant migration (authoritative as of 2026-07-02):**
 > The platform is now operated from Entra tenant `1337187a-4c41-4da9-8fca-731bba7a4329`
@@ -30,6 +41,33 @@ and incident response.
 
 This baseline supports the MVP scope and is aligned to the platform constraints
 already defined in PRD, architecture, security, compliance, data, and ALM plans.
+
+## Canonical diagram
+
+This diagram is maintained in
+[architecture/diagram-library.md](architecture/diagram-library.md) and copied
+here; update both places together when it changes.
+
+### Key request sequence
+
+```mermaid
+sequenceDiagram
+    actor User as Agent boss (human)
+    participant App as Curavias App
+    participant Orch as Orchestrator
+    participant Agent as Sub-agent(s)
+    participant IQ as Fabric IQ / Foundry IQ
+
+    User->>App: Ask a capacity question
+    App->>Orch: Forward with work context (Work IQ)
+    Orch->>Agent: Dispatch to matching copilot
+    Agent->>IQ: Retrieve grounded facts + knowledge
+    IQ-->>Agent: Cited evidence (GroundedChunk)
+    Agent-->>Orch: Advisory answer + citations
+    Orch-->>App: Grounded, cited response
+    App-->>User: Preview / recommendation (HITL)
+    User->>App: Approve before any action
+```
 
 ## Source Baseline
 

@@ -1,18 +1,29 @@
-﻿# COMPLIANCE
+# Curavias — Compliance
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.11.1 |
-| **Date** | 2026-07-26 |
+| **Version** | 0.14.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.11.0 (Sprint 23 skills-events lane consent enforcement); this bump repoints the Curavias ADR link ADR-0040 -> ADR-0050 (#378) |
+| **Previous Version** | 0.13.1 (recorded ADR-0053 as ratified with the versioned trustscore-weights.json source of truth); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, and executive summary (Sprint 34 WS-1) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document makes Curavias's Swiss legal and privacy obligations traceable to
+concrete architecture controls, delivery artifacts, and operational evidence. It
+is written so a non-engineer stakeholder can see which obligations apply and how
+the platform meets them, on synthetic data with no PHI.
 
 ## Purpose
 
-Define the compliance baseline for the Swiss Hospital Capacity Platform and make
-Swiss legal obligations traceable to architecture controls, delivery artifacts,
-and operational evidence.
+Define the compliance baseline for Curavias, the Swiss AI-powered patient-flow
+and hospital-capacity platform, and make Swiss legal obligations traceable to
+architecture controls, delivery artifacts, and operational evidence.
 
 > **Scope carve-out (Sprint 00, time-limited):** the new-tenant demo environment
 > in tenant `1337187a-4c41-4da9-8fca-731bba7a4329` is deployed in `westus2` for
@@ -97,6 +108,7 @@ obligations, especially for sensitive data handling and explainability needs.
 | CH-C08 | EPR certification and interoperability | EPDG Art. 11-13 + EPDV-EDI | Certification boundary mapping, conformance evidence for standards/profiles | Not yet defined in detail | Open: add EPR conformance control pack and responsibility matrix |
 | CH-C09 | Research use governance (conditional) | HRA (consent, ethics, export, storage) | Separate legal basis for research, ethics approvals, segregated environments and data pipelines | Not implemented | Open: create optional research lane with explicit opt-in controls |
 | CH-C10 | AI oversight for high-impact workflows | FADP transparency/automated decision context + HRA principles (if research) | Human-in-the-loop, explainability notes, model risk thresholds, post-deployment monitoring | AI guidance exists in docs | Partial: add measurable AI acceptance criteria and override audit trail |
+| CH-C11 | Closed-loop learning governance | FADP (minimization; automated processing) + DPO | PHI-free interaction capture (redaction gate), R3 retention + residency, advisory-only human-gated improvement (offline-regression + `approved-to-apply`), full interaction->dataset->eval->change lineage | Ratified in [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md); implemented Sprint 30 M0-M5 (synthetic, no-PHI) | Partial: extend beyond lead agent (Sprint 31) and finalise legal retention duration |
 
 ### Architecture Challenge Outcome (Compliance Lens)
 
@@ -221,6 +233,26 @@ downstream PHI-gate the Eventstream module defers to, and it enforces the same
 | SIT and PROD do not share input services | `NFR-SKILL-002`, `CH-C05` | SIT (`evh-ihzhhpf-sit-*`, westus2/eastus2) and PROD (`evh-ihzhhpf-prod-i62t`, switzerlandnorth) use **separate Event Hubs namespaces, resource groups, and regions**; no input service is shared across environments |
 | Synthetic-only event publishing in PROD swn | `NFR-SKILL-002`, [`ADR-0043`](adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md) | Until the live HRIS/LMS connector lands, `publish_skill_events.py` emits deterministic synthetic `sourceMode=simulated` records only; the GA-only gate is reserved for a real go-live (real-PHI) cut-over |
 
+### Sprint 31 Data Quality Agent Proactive Assessment (no-PHI, degraded-mode, audit)
+
+Sprint 31 (issue #453,
+[ADR-0053](adr/0053-dqa-trust-score-model.md)) elevates the
+`data-quality-agent` from ingestion gates to proactive assessment of the
+gold/serving layer via a deterministic per-domain trust score
+(`DC-DQ-TRUSTSCORE-v1`) and gap detection with impact (`DC-DQ-GAP-v1`). The
+agent is **advisory, human-in-the-loop, and read-only** — it never mutates
+source data; the owning domain remediates. The trust-score weights and
+thresholds are ratified in
+[ADR-0053](adr/0053-dqa-trust-score-model.md) (Accepted), held in the versioned
+`trustscore-weights.json` (`trustscore-v1`) source of truth.
+
+| Data-quality control | Requirement | Enforcement | Owner role |
+| ----- | ----- | ----- | ----- |
+| Assessment operates on synthetic governance metadata only, no PHI | `NFR-DQA-002`, `CH-C01`, [`ADR-0016`](adr/0016-no-phi-in-mvp-demo-scope.md) | The agent scores governed metadata (freshness, completeness, lineage, conformance) over synthetic no-PHI gold assets; a golden-task fixture asserts refusal of any request to read or emit PHI | SEC |
+| Below-threshold domains are withheld, never served as trusted | `FR-DQA-006`, `FR-DQA-012` | When a domain scores below its per-decision-class threshold the grounding-readiness certificate is withheld and grounding is served **degraded or withheld**, preventing a false-trusted answer | ARCH |
+| Findings are GitHub-native and auditable, routed to the owner | `FR-DQA-010`, `NFR-DQA-001` | `DC-DQ-TRUSTSCORE-v1` / `DC-DQ-GAP-v1` records are emitted as auditable GitHub-native artefacts and routed to the owning domain; the agent does not self-certify grounding | SEC |
+| Read-only Zero-Trust posture; owner remediates | `NFR-DQA-002`, `FR-DQA-004`, `FR-DQA-005` | The agent's side-effect ceiling stays `write` (repo artefacts only) and it refuses `edit-source-data`; remediation is owner-driven, never agent-applied | SEC |
+
 ## Microsoft Purview Coverage Evaluation (GA and IaC)
 
 This section defines how Microsoft Purview contributes to the control set
@@ -297,4 +329,3 @@ For this repository, Purview shall be treated as:
 4. Add evidence collection templates for E-01 to E-09.
 5. Add canton-specific annex once target canton rollout plan is fixed.
    Seeded in [`docs/compliance/cantonal-annex.md`](compliance/cantonal-annex.md) (Sprint 05).
-

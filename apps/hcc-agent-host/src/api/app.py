@@ -20,7 +20,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -28,7 +28,13 @@ from manifests.loader import AgentManifest, load_agent_host_manifests
 from orchestrator.dispatch import Orchestrator
 from orchestrator.mock_model import MockChatModel
 from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
+from golden.rls import build_rls_provider
+from golden.service import GoldenScopeError, UnknownResourceError, load_golden
+from threads.provider import ThreadProviderError, build_thread_provider
+from auth.obo_context import build_obo_context
+from auth.token_validator import TokenValidationError
 from hitl.gate_enforcer import enforce_gates
+from observability import tracing
 
 logger = logging.getLogger(__name__)
 
@@ -94,10 +100,39 @@ class HostState:
         # live client the adapter answers synthetically (no PHI, ADR-0016); a live
         # Fabric Data Agent client is injected here once the endpoint is provisioned.
         live = _build_live_data_agent()
+        self._live_data_agent = live
         adapter = FabricDataAgentAdapter(ask_fn=(live.ask if live is not None else None))
         self.orchestrator = Orchestrator(
             chat_model=MockChatModel(),
             data_agent=adapter,
+        )
+        # #424 M3 — server-side (userOid x agent) -> threadId map. Shares the
+        # orchestrator's persistence so a minted thread and its turns co-locate in
+        # the same conversations container. Native by default (ADR-0013 scope);
+        # THREAD_PROVIDER=foundry flips to real Foundry threads at M5 (OBO).
+        self.thread_provider = build_thread_provider(self.orchestrator.persistence)
+        # #424 M4 — RLS provider seam for the structured golden read (capability
+        # ladder, see the M4 design spec). Rung 0 `SimulatedRlsProvider` is the SIT
+        # default (provenance `simulated`, honest demonstration of the RLS shape).
+        # Rung 1 `FabricDataAgentRlsProvider` reuses the *proven* live Data Agent
+        # client (`da_hospital_capacity`) — selected via RLS_PROVIDER=fabric-data-
+        # agent — but per-user structured scope still needs OBO (M5) + a dynamic-RLS
+        # TMDL predicate, so it refuses the structured read until then. No OBO token
+        # is available in the current MI flow, hence obo_token stays None.
+        self.rls_provider = build_rls_provider(data_agent_client=live)
+
+    def rls_provider_for(self, obo_token: str | None):
+        """#424 M5 — the per-request RLS provider.
+
+        When an OBO context is present (``OBO_ENABLED`` + a valid bearer), build a
+        provider carrying the user's token so the read runs on-behalf-of the user
+        (config-selected via ``RLS_PROVIDER``). Otherwise reuse the startup
+        provider (SIT default: simulated). Config, not code (ADR-0057).
+        """
+        if not obo_token:
+            return self.rls_provider
+        return build_rls_provider(
+            data_agent_client=self._live_data_agent, obo_token=obo_token
         )
 
     def require(self, name: str) -> AgentManifest:
@@ -116,6 +151,10 @@ class ChatRequest(BaseModel):
     prompt: str
     conversationId: str = "demo-conversation"
     callerObjectId: str = "demo.guest"
+    # #424 M3 — when present, the (userOid x agent) thread minted via
+    # POST /agents/{name}/threads; used as the conversation id so turns thread
+    # server-side. Falls back to the legacy conversationId default when absent.
+    threadId: str | None = None
 
 
 class ToolRequest(BaseModel):
@@ -132,6 +171,11 @@ class UserEventRequest(BaseModel):
 def create_app() -> FastAPI:
     app = FastAPI(title="hcc-agent-host", version="0.1.0")
 
+    # Sprint 30 M1-observe: wire the agent-turn trace exporter. Defaults to the
+    # dependency-free NullExporter; a real Azure Monitor exporter is built only
+    # when APPLICATIONINSIGHTS_CONNECTION_STRING is set (no azure import in CI).
+    tracing.configure(tracing.build_exporter_from_env())
+
     # Browser cross-origin access for the hcc-app-fluent Copilot Drawer. Only the
     # POST /chat + GET /agents verbs and content-type header are needed; scoped to
     # the configured app origins (not "*") to keep the surface least-privilege.
@@ -139,7 +183,14 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=_allowed_origins(),
         allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["content-type", "authorization"],
+        allow_headers=[
+            "content-type",
+            "authorization",
+            # #424 M2 — OBO/RLS scope headers the app attaches on live golden reads.
+            "x-user-oid",
+            "x-hospital-scope",
+            "x-active-role",
+        ],
         max_age=600,
     )
 
@@ -159,17 +210,85 @@ def create_app() -> FastAPI:
             for m in state.manifests.values()
         ]
 
+    @app.get("/golden/{resource}")
+    def golden(
+        resource: str,
+        response: Response,
+        hospital: str = "aggregated",
+        window: int = 72,
+        authorization: str = Header(default=""),
+        x_user_oid: str = Header(default=""),
+        x_hospital_scope: str = Header(default=""),
+        x_active_role: str = Header(default=""),
+    ) -> dict[str, Any]:
+        # #424 M2 — live golden-source read. The scope is the caller's proven
+        # ContextEnvelope, propagated as headers by the app's IQ gateway; the
+        # `hospital` query param is advisory and never widens the header scope.
+        # #424 M4 — the row-scope decision is made by the RLS provider seam.
+        # #424 M5 — when OBO is enabled and a valid bearer is presented, the read
+        # runs on-behalf-of the user; otherwise it stays on the simulated provider
+        # (SIT default). Deny-by-default: an invalid bearer under OBO is a 401.
+        state = get_state()
+        try:
+            obo = build_obo_context(authorization)
+        except TokenValidationError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
+        try:
+            provider = state.rls_provider_for(obo.obo_token if obo else None)
+            payload = load_golden(
+                resource,
+                hospital_scope=x_hospital_scope,
+                user_oid=(obo.user_oid if obo else x_user_oid),
+                provider=provider,
+            )
+        except UnknownResourceError:
+            raise HTTPException(status_code=404, detail=f"unknown golden resource '{resource}'")
+        except GoldenScopeError as exc:
+            # Deny-by-default: an ungrounded read (or a provider that cannot yet
+            # enforce per-user scope, or a fabric provider misconfigured without a
+            # live client) is refused, not served wide.
+            raise HTTPException(status_code=401, detail=str(exc))
+        rls = payload.get("_rls", {})
+        response.headers["X-Data-Provenance"] = "live"
+        response.headers["X-Applied-Scope"] = rls.get("scope", x_hospital_scope)
+        response.headers["X-Rls-Provider"] = rls.get("provider", "simulated")
+        response.headers["X-Rls-Provenance"] = rls.get("provenance", "simulated")
+        return payload
+
+    @app.post("/agents/{name}/threads")
+    def mint_thread(
+        name: str,
+        x_user_oid: str = Header(default=""),
+        x_active_role: str = Header(default=""),
+    ) -> dict[str, Any]:
+        # #424 M3 — mint (or reuse) the (userOid x agent) thread. Deny-by-default:
+        # an identity-less mint is refused, mirroring the /golden read path.
+        state = get_state()
+        state.require(name)  # 404 on unknown agent
+        if not x_user_oid:
+            raise HTTPException(status_code=401, detail="thread mint requires X-User-Oid")
+        try:
+            ref = state.thread_provider.mint(x_user_oid, name)
+        except ThreadProviderError as exc:
+            # e.g. FoundryThreadProvider selected before OBO lands (M5).
+            raise HTTPException(status_code=503, detail=str(exc))
+        return {"threadId": ref.thread_id, "provenance": ref.provenance}
+
     @app.post("/agents/{name}/chat")
-    def chat(name: str, req: ChatRequest) -> dict[str, Any]:
+    def chat(name: str, req: ChatRequest, x_user_oid: str = Header(default="")) -> dict[str, Any]:
         state = get_state()
         manifest = state.require(name)
         system_prompt = _system_prompt_for(manifest, state.agents_root)
+        # #424 M3 — thread-scoped when a threadId is supplied; identity header
+        # (OBO oid) overrides the demo caller default when present.
+        conversation_id = req.threadId or req.conversationId
+        caller_oid = x_user_oid or req.callerObjectId
         reply = state.orchestrator.dispatch(
             manifest,
             system_prompt,
             req.prompt,
-            conversation_id=req.conversationId,
-            caller_oid=req.callerObjectId,
+            conversation_id=conversation_id,
+            caller_oid=caller_oid,
         )
         return {
             "answer": reply.answer,

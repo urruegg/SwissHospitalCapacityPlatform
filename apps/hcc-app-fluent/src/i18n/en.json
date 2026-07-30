@@ -34,8 +34,11 @@
     "rolesDescription": "Live view of app roles from Microsoft Entra (read-only).",
     "evidence": "Evidence",
     "evidenceDescription": "Presenter whiteboard: BOM, ADR, requirement, GA-evidence & dependency cards (synthetic, no PHI).",
+    "opportunities": "Opportunities",
     "nav": {
-      "label": "Backstage sections"
+      "label": "Backstage sections",
+      "feedbackLoop": "Digital Feedback Loop",
+      "opportunities": "Opportunities"
     },
     "story": {
       "tab": "Story",
@@ -87,6 +90,101 @@
           "prod": "PROD"
         }
       },
+      "feedbackLoop": {
+        "title": "Digital Feedback Loop",
+        "purpose": "Signals become governed recommendations, return through human decision, and improve the next loop.",
+        "lead": "Curavias turns operating signals into Microsoft IQ-grounded recommendations, keeps the human approval point explicit, and measures the outcome for the next decision.",
+        "controls": {
+          "allLoops": "All loops",
+          "selectedDomain": "Selected domain",
+          "play": "Play simulation",
+          "pause": "Pause simulation",
+          "simulationStatus": "Simulation status"
+        },
+        "status": {
+          "playing": "Live simulation",
+          "paused": "Simulation paused"
+        },
+        "selected": "Selected",
+        "domain": {
+          "care-ecosystem": {
+            "curavias": "Engage care network",
+            "microsoft": "Engage customers",
+            "group": "Care ecosystem"
+          },
+          "command-center": {
+            "curavias": "Optimize patient flow",
+            "microsoft": "Optimize operations",
+            "group": "Command center"
+          },
+          "frontier-workforce": {
+            "curavias": "Empower care teams",
+            "microsoft": "Empower employees",
+            "group": "Frontier workforce"
+          },
+          "care-innovation": {
+            "curavias": "Transform care delivery",
+            "microsoft": "Transform products",
+            "group": "Care innovation"
+          }
+        },
+        "iqCore": {
+          "caption": "Microsoft IQ core",
+          "title": "Work + Foundry + Fabric + Process + Governance IQ"
+        },
+        "iq": {
+          "work": "Work IQ",
+          "foundry": "Foundry IQ",
+          "fabric": "Fabric IQ",
+          "process": "Process IQ",
+          "governance": "Governance IQ"
+        },
+        "signals": {
+          "referrals": "referrals",
+          "partner-capacity": "partner capacity",
+          "occupancy": "occupancy",
+          "72-hour-demand": "72-hour demand",
+          "skills": "skills",
+          "staffing": "staffing",
+          "workload": "workload",
+          "outcomes": "outcomes",
+          "telemetry": "telemetry"
+        },
+        "actions": {
+          "coordinate-placement": "coordinate placement",
+          "rebalance-coordinate": "rebalance and coordinate capacity",
+          "mobilize-capacity": "mobilize care-team capacity",
+          "improve-pathway": "improve the care pathway"
+        },
+        "outcomes": {
+          "continuity-access": "continuity and access",
+          "wait-time-utilization": "wait time and utilization",
+          "workload-adoption": "workload balance and adoption",
+          "quality-adoption": "quality and adoption"
+        },
+        "legend": {
+          "signal": "Data points flow into Microsoft IQ.",
+          "iq": "Microsoft IQ grounds the signal.",
+          "action": "A proposed action returns for human approval.",
+          "approval": "Human approval keeps the workflow advisory.",
+          "outcome": "Measured outcome closes the loop."
+        },
+        "advisoryNote": "Advisory only",
+        "reco": {
+          "read": "{{domain}}: {{signals}} signals indicate where Microsoft IQ should propose {{action}}; the recommendation remains advisory until a human decision, then measured as {{outcome}}.",
+          "lever": "Recommendation: review {{action}} and expected {{outcome}} before any operational change.",
+          "impactLabel": "human decision",
+          "followUps": {
+            "evidence": "Show the evidence behind this recommendation.",
+            "iqLayers": "Explain how {{layers}} shaped the recommendation.",
+            "businessValue": "Estimate the business value if leadership approves."
+          }
+        },
+        "empty": {
+          "title": "Digital feedback loop unavailable",
+          "body": "No feedback-loop domains are configured for this view."
+        }
+      },
       "roster": {
         "sectionLabel": "Runtime copilots",
         "countCaption": "{{count}} specialised copilots",
@@ -104,6 +202,10 @@
       "pillars": {
         "sectionLabel": "Platform foundations"
       }
+    },
+    "header": {
+      "title": "Curavias Backstage",
+      "lead": "The Curavias platform story - starting with the Digital Feedback Loop. More parts to come."
     }
   },
   "evidence": {
@@ -188,7 +290,7 @@
     "dischargeExpediteDetail": "Expedite {{ward}} discharge — {{blocker}}",
     "bedShift": "Shift {{beds}} beds {{fromWard}} -> {{toWard}}",
     "placementMove": "Place {{requestNo}}: {{source}} → {{target}}",
-      "admissionEvent": "Steer from {{ward}} event ({{patient}})",
+    "admissionEvent": "Steer from {{ward}} event ({{patient}})",
     "placementBarrier": "Barrier: {{label}}",
     "orDefer": "Defer {{specialty}} case",
     "orCaseEvent": "Steer OR case {{caseNo}}",

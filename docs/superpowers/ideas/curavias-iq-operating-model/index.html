@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curavias · Layered IQ Operating Model</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f5f7; color: #1d1d1f;
+    padding: 1.5rem 1rem; line-height: 1.4;
+  }
+  .page { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 1.35rem; letter-spacing: -0.01em; margin-bottom: 0.15rem; }
+  .subtitle { color: #86868b; font-size: 0.9rem; margin-bottom: 1rem; }
+  .legend { display:flex; gap:1.2rem; flex-wrap:wrap; align-items:center; margin:0.4rem 0 1.1rem; font-size:0.8rem; }
+  .legend .k { display:flex; align-items:center; gap:0.4rem; }
+  .sw { width:18px; height:18px; border-radius:5px; display:inline-block; }
+  .sw.mvp { background:#17B890; }
+  .sw.tgt { background:#fff; border:2px dashed #365B7D; }
+  .spine { border:1.5px solid #d1d1d6; border-radius:12px; padding:0.7rem 0.9rem; margin-bottom:1rem; background:#fbfcfd; }
+  .spine .cap { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#86868b; margin-bottom:0.5rem; font-weight:700; }
+  .flow { display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap; }
+  .node { font-size:0.74rem; font-weight:700; color:#fff; padding:0.32rem 0.6rem; border-radius:7px; }
+  .node.main { background:#17B890; }
+  .arrow { color:#86868b; font-weight:700; }
+  .thread { margin-top:0.5rem; font-size:0.75rem; color:#1d1d1f; }
+  .thread b { color:#0d7a52; }
+  .layer { border-radius:12px; padding:0.75rem 0.9rem; margin-bottom:0.6rem; border:1.5px solid; }
+  .lcap { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:800; margin-bottom:0.55rem; color:#1d1d1f; }
+  .chips { display:flex; gap:0.4rem; flex-wrap:wrap; }
+  .chip2 { font-size:0.73rem; font-weight:600; padding:0.3rem 0.55rem; border-radius:999px; border:2px solid; }
+  .chip2.mvp { background:#eafaf3; border-color:#17B890; color:#0d7a52; }
+  .chip2.tgt { background:#fff; border-color:#365B7D; border-style:dashed; color:#365B7D; }
+  .l-work { background:#eef4f7; border-color:#2A4A5E; }
+  .l-foundry { background:#eef2f6; border-color:#365B7D; }
+  .l-fabric { background:#eafaf3; border-color:#17B890; }
+  .l-devsec { background:#f2eefa; border-color:#8a6fbf; }
+  .l-gov { background:#fdf6e9; border-color:#E8A200; }
+  .note { font-size:0.78rem; color:#86868b; margin-top:0.8rem; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Curavias — Layered IQ Operating Model</h1>
+<p class="subtitle">Reusable visual reference. Green = MVP (built / demoable now); dashed blue = Target full scope.</p>
+
+<div class="legend">
+  <span class="k"><span class="sw mvp"></span> MVP — built / demoable now</span>
+  <span class="k"><span class="sw tgt"></span> Target — full-scope roadmap</span>
+</div>
+
+<div class="spine">
+  <div class="cap">Process IQ — patient-flow journey (role copilots)</div>
+  <div class="flow">
+    <span class="node main">OOA</span><span class="arrow">→</span>
+    <span class="node main">DCA</span><span class="arrow">→</span>
+    <span class="node main">BMCA</span><span class="arrow">→</span>
+    <span class="node main">ORSA</span><span class="arrow">→</span>
+    <span class="node main">SBA</span><span class="arrow">→</span>
+    <span class="node main">CSA</span>
+  </div>
+  <div class="thread">Golden thread: <b>Medicine A → 102% occupancy in 72h → site −16 beds</b> — one signal steered through every role.</div>
+</div>
+
+<div class="layer l-work">
+  <div class="lcap">1 · Work IQ — user experience & role-based actionable-insight control plane</div>
+  <div class="chips">
+    <span class="chip2 mvp">Fluent UI command center</span>
+    <span class="chip2 mvp">In-app Copilot rail</span>
+    <span class="chip2 mvp">Role surfaces (6 copilots)</span>
+    <span class="chip2 mvp">Agent-boss HITL approval</span>
+    <span class="chip2 tgt">Work IQ M365 context (read-only)</span>
+  </div>
+</div>
+
+<div class="layer l-foundry">
+  <div class="lcap">2 · Foundry IQ — orchestrated role agents grounded in closed-loop learning</div>
+  <div class="chips">
+    <span class="chip2 mvp">Copilot orchestrator</span>
+    <span class="chip2 mvp">Agents per role (×6 capacity + PO + BVA)</span>
+    <span class="chip2 mvp">Knowledge base (human work-instruction grounding)</span>
+    <span class="chip2 mvp">Grounded on GroundedChunk</span>
+    <span class="chip2 mvp">Closed-Loop Learning (capture→eval→backlog)</span>
+  </div>
+</div>
+
+<div class="layer l-fabric">
+  <div class="lcap">3 · Fabric IQ — ontology, semantic data & steering signals to downstream systems</div>
+  <div class="chips">
+    <span class="chip2 mvp">Medallion + Direct Lake model</span>
+    <span class="chip2 mvp">Data Agents (da_hospital_capacity)</span>
+    <span class="chip2 mvp">Data Quality Agent gate + trust score</span>
+    <span class="chip2 mvp">Internal + external signals → Process IQ</span>
+    <span class="chip2 tgt">Fabric IQ ontology (GA-gated)</span>
+    <span class="chip2 tgt">Ingestion ↔ KIS / Epic / SAP</span>
+    <span class="chip2 tgt">On-prem to cloud integration</span>
+  </div>
+</div>
+
+<div class="layer l-devsec">
+  <div class="lcap">4 · DevSecOps IQ — a product team of agents that build agents, gated by a human boss</div>
+  <div class="chips">
+    <span class="chip2 mvp">Human agent boss (gated delivery)</span>
+    <span class="chip2 mvp">GitHub delivery plane</span>
+    <span class="chip2 mvp">GitHub CLI Copilot</span>
+    <span class="chip2 mvp">MCP allow-list</span>
+    <span class="chip2 mvp">Functional-role agents build their Foundry-IQ relatives</span>
+    <span class="chip2 mvp">Dev + Sec + Ops role agents</span>
+  </div>
+</div>
+
+<div class="layer l-gov">
+  <div class="lcap">5 · Governance IQ — NFR guardrails spanning every layer</div>
+  <div class="chips">
+    <span class="chip2 mvp">Zero Trust · Swiss residency · advisory-only · no-PHI</span>
+    <span class="chip2 mvp">Evidence-first audit</span>
+    <span class="chip2 tgt">DSG / CH-C01..C10 full control pack</span>
+    <span class="chip2 tgt">Purview enforced</span>
+  </div>
+</div>
+
+<p class="note">Process IQ is drawn as a cross-cutting spine (the patient-flow journey through the 6 role copilots), not a 6th stack layer — signals from Fabric IQ steer it, Work IQ renders it.</p>
+</div>
+</body>
+</html>

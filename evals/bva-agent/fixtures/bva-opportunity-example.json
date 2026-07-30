@@ -1,0 +1,16 @@
+{
+  "id": "opp-hopital-fribourg-0001",
+  "hospitalName": "Hopital de Fribourg",
+  "archetype": "acute",
+  "createdAt": "2026-07-28T09:15:00Z",
+  "createdBy": "app-copilot",
+  "status": "evaluating",
+  "askText": "Should we onboard Hopital de Fribourg?",
+  "language": "en",
+  "bvaResult": null,
+  "poVerdict": null,
+  "inputs": { "beds": 320, "occupancyTarget": 0.85, "onboardingScope": "full" },
+  "history": [
+    { "at": "2026-07-28T09:15:00Z", "event": "created from START rail ask", "by": "app-copilot" }
+  ]
+}

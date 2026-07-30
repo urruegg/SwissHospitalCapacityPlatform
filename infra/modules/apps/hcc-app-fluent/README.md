@@ -9,6 +9,44 @@ Sprint 13 T1 — Container App for the Fluent baseline UI (`apps/hcc-app-fluent/
 - A system-assigned managed identity on the Container App so the app-shell can request tokens for MSAL OBO flows (Graph API for the Backstage Roles tab, agent-host `/chat` endpoint, etc.).
 - (Optional) AcrPull role assignment when `containerRegistryLoginServer` + `containerRegistryResourceId` are set — enables MI-based image pull with no admin creds.
 
+## Runtime configuration (#447)
+
+The app image is **env-agnostic**: the Foundry agent-host URL is injected at
+container start, not baked at build time. The module sets a per-env
+`AGENT_HOST_URL` container environment variable from the `agentHostUrl` param
+(wired from top-level `appFluentAgentHostUrl`, set in each `.bicepparam`). At
+startup `apps/hcc-app-fluent/docker-entrypoint.d/30-env-config.sh` writes
+`env-config.js` (`window.__ENV__.AGENT_HOST_URL`), which the app reads before its
+build-time `VITE_AGENT_HOST_URL` fallback. This lets one image (built once and
+`az acr import`-ed to the PROD ACR) serve SIT and PROD, each calling its own
+region's agent-host — replacing the former build-once+import quirk where PROD
+inherited the SIT agent-host URL.
+
+### Golden-source URL (#424 M2)
+
+The same runtime-injection mechanism carries the golden-source base URL. The
+module sets a `GOLDEN_SOURCE_URL` container env var from the `goldenSourceUrl`
+param (wired from top-level `appFluentGoldenSourceUrl`). When left empty it
+**auto-derives** `<agentHostUrl>/golden` — Option 1, where the agent-host itself
+serves the RLS-scoped `GET /golden/{resource}` surface — so no per-env
+`.bicepparam` value is needed. `docker-entrypoint.d/30-env-config.sh` writes
+`window.__ENV__.GOLDEN_SOURCE_URL`; the app reads live board payloads from
+`GET <GOLDEN_SOURCE_URL>/{resource}`. Set the param explicitly only when the
+golden source diverges from the agent-host (e.g. a future Fabric-backed
+endpoint, Option 2).
+
+### Live per-agent thread minting (#424 M3)
+
+The `foundryThreadsEnabled` param (wired from top-level
+`appFluentFoundryThreadsEnabled`) sets a `FOUNDRY_THREADS_ENABLED` container env
+var (`'true'`/`'false'`). `docker-entrypoint.d/30-env-config.sh` writes it into
+`window.__ENV__.FOUNDRY_THREADS_ENABLED`. When `true` **and** an agent-host is
+configured, `useConversation.send` mints a real per-`(user x agent)` thread via
+`POST <agentHostUrl>/agents/{name}/threads` and threads its id onto every chat
+turn; with the host unset the app keeps simulated threads regardless. The server
+provider stays **native** (deterministic id, no OBO) until M5 flips it to the
+Foundry provider under Entra OBO — a config-not-code change.
+
 ## What it does NOT deploy
 
 - **Not the built app image.** Defaults to `nginxinc/nginx-unprivileged:1.27-alpine` until `app-build.yml` is extended to push the real image to ACR (follow-up gap-fill).

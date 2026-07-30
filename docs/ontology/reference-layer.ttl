@@ -30,8 +30,8 @@
     dcterms:description "Reference layer of the two-layer ontology per ADR-0014. Skeleton only — full axiomatic content is Phase 3."@en ;
     dcterms:creator     "Urs Rüegg"@en ;
     dcterms:issued      "2026-07-02"^^xsd:date ;
-    owl:versionInfo     "0.6.0" ;
-    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy); Sprint 26 WS-B (#335) adds the Decision tier hcp:Barrier + barrierForWard; Sprint 26 WS-C (#335) adds the prescriptive terms hcp:Recommendation + hcp:Lever + recommendsLever (and re-parents hcp:DischargeRecommendation under hcp:Recommendation). See docs/ontology/README.md for scope discipline and versioning."@en ;
+    owl:versionInfo     "0.7.0" ;
+    rdfs:comment        "Sprint 09 RB-11 deliverable; Sprint 23 (#255) adds the Curavias organisation spine + skills ontology block; Sprint 26 WS-A (#335) adds the Foresight tier (hcp:Forecast/Driver + forWard/explainedBy/evidencedBy); Sprint 26 WS-B (#335) adds the Decision tier hcp:Barrier + barrierForWard; Sprint 26 WS-C (#335) adds the prescriptive terms hcp:Recommendation + hcp:Lever + recommendsLever (and re-parents hcp:DischargeRecommendation under hcp:Recommendation); Sprint 32 (#454) adds the certification/competency block: hcp:Credential/Certification/Qualification/Competency/IssuingAuthority + holdsCredential/certifiesCompetency/qualifiesForUnit/issuedByAuthority. See docs/ontology/README.md for scope discipline and versioning."@en ;
 
     # Imports declared but not loaded axiomatically in this skeleton.
     # A follow-up PR (or an ontology-authoring tool) resolves these to full IRIs.
@@ -398,6 +398,31 @@ hcp:RoleSkillTemplate a owl:Class ;
     rdfs:label      "Role Skill Template"@en ;
     rdfs:comment    "The reusable template mapping an OccupationRole (and specialisation) to its required Skills, minimum Proficiency and minimum Assurance. Drives SkillDemand generation and eligibility checks. Reused verbatim from the Curavias skills ontology (D6)."@en .
 
+# --- Certification / competency block (Sprint 32, #454) ---
+
+hcp:Credential a owl:Class ;
+    rdfs:subClassOf hcp:InformationContent ;
+    rdfs:label      "Credential"@en ;
+    rdfs:comment    "An information-content entity asserting that a HealthWorker holds a qualification or certification, issued by an IssuingAuthority, with validity and verification status. Backed by DC-REF-CERTIFICATION-v1; operational binding is staff-PII using a pseudonymised work-ID only, never names or AHV."@en .
+
+hcp:Certification a owl:Class ;
+    rdfs:subClassOf hcp:Credential ;
+    rdfs:label      "Certification"@en ;
+    rdfs:comment    "A formal certification credential, such as an ICU nursing certificate."@en .
+
+hcp:Qualification a owl:Class ;
+    rdfs:subClassOf hcp:Credential ;
+    rdfs:label      "Qualification"@en ;
+    rdfs:comment    "A formal qualification or title, such as an FMH anaesthesia title."@en .
+
+hcp:Competency a owl:Class ;
+    rdfs:label   "Competency"@en ;
+    rdfs:comment "An ability or quality certified by a Credential and required to staff a CapacityUnit or perform a Task. A Competency is the demonstrable ability that existing hcp:Skill tags encode; hcp:Skill is reused rather than redefined."@en .
+
+hcp:IssuingAuthority a owl:Class ;
+    rdfs:label   "Issuing Authority"@en ;
+    rdfs:comment "An organisation bearing an authority role that issues Credentials, such as NAREG or FMH."@en .
+
 # --- Org spine + skills object / datatype properties ---
 
 hcp:orgUnitOfTenant a owl:ObjectProperty ;
@@ -414,6 +439,26 @@ hcp:hasOccupationRole a owl:ObjectProperty ;
     rdfs:label  "has occupation role"@en ;
     rdfs:domain hcp:HealthWorker ;
     rdfs:range  hcp:OccupationRole .
+
+hcp:holdsCredential a owl:ObjectProperty ;
+    rdfs:label  "holds credential"@en ;
+    rdfs:domain hcp:HealthWorker ;
+    rdfs:range  hcp:Credential .
+
+hcp:certifiesCompetency a owl:ObjectProperty ;
+    rdfs:label  "certifies competency"@en ;
+    rdfs:domain hcp:Credential ;
+    rdfs:range  hcp:Competency .
+
+hcp:qualifiesForUnit a owl:ObjectProperty ;
+    rdfs:label  "qualifies for unit"@en ;
+    rdfs:domain hcp:Competency ;
+    rdfs:range  hcp:CapacityUnit .
+
+hcp:issuedByAuthority a owl:ObjectProperty ;
+    rdfs:label  "issued by authority"@en ;
+    rdfs:domain hcp:Credential ;
+    rdfs:range  hcp:IssuingAuthority .
 
 hcp:assertsSkill a owl:ObjectProperty ;
     rdfs:label  "asserts skill"@en ;

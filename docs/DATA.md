@@ -1,17 +1,29 @@
-# DATA
+# Curavias — Data
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.13.0 |
-| **Date** | 2026-07-27 |
+| **Version** | 0.18.0 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.12.0 (added DC-AGENT-INTERACTION-v1 capture contract) |
+| **Previous Version** | 0.17.0 (classified the Sprint 30 agent_interactions store + golden datasets as R3 retention with residency, ratified in ADR-0055); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical medallion diagram (Sprint 34 WS-2) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document defines the data design for Curavias: the data domains, contracts,
+retention rules, and governance controls behind the Bronze/Silver/Gold medallion
+lakehouse. It is written so a technical stakeholder can see how data flows from
+ingestion to grounded consumption, on synthetic data with no PHI.
 
 ## Purpose
 
-Define the MVP data design baseline for the Swiss Hospital Capacity Platform,
-including data domains, data contracts, retention, and governance controls.
+Define the MVP data design baseline for Curavias, the Swiss AI-powered
+patient-flow and hospital-capacity platform, including data domains, data
+contracts, retention, and governance controls.
 
 This document is scoped to the approved MVP service pattern using:
 1. Azure Health Data Services for healthcare interoperability.
@@ -26,6 +38,26 @@ This document is scoped to the approved MVP service pattern using:
 > (metadata/episode-driven per [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md)).
 > Consolidated as-deployed view:
 > [CURAVIAS-PRODUCT-STATUS.md](CURAVIAS-PRODUCT-STATUS.md).
+
+## Canonical diagrams
+
+This diagram is maintained in
+[architecture/diagram-library.md](architecture/diagram-library.md) and copied
+here; update both places together when it changes.
+
+### Medallion data flow
+
+```mermaid
+flowchart LR
+    UP["File upload<br/>(synthetic bundles)"] --> BR[("Bronze<br/>raw ingested")]
+    BR --> SV[("Silver<br/>conformed + quality-gated")]
+    SV --> GD[("Gold<br/>analytics-ready Delta")]
+    GD --> SM["Direct Lake<br/>semantic model"]
+    SM --> FIQ["Fabric IQ ontology"]
+    FIQ --> FOIQ["Foundry IQ grounding"]
+    FIQ --> FDA["Fabric Data Agent<br/>da_hospital_capacity"]
+    SV -. data-quality gate .-> DQ["data-quality-agent"]
+```
 
 ## Source Baseline
 
@@ -111,6 +143,30 @@ Each contract must define:
 | Specialty-capacity onboarding contract | DC-ONB-CAPACITY-v1 | Specialty-tagged hospital capacity onboarding metadata (Sprint 6) |
 | External signal contract | DC-EXT-SIGNAL-v1 | CAP-Suisse-aligned trusted external hazard signals for advisory CSA trigger evaluation |
 | Agent-interaction contract | DC-AGENT-INTERACTION-v1 | Closed-loop-learning capture: one PHI-free record per agent turn + user events (Sprint 30) |
+| Data-quality trust-score contract | DC-DQ-TRUSTSCORE-v1 | Per-domain deterministic, versioned Trust Score + eight-dimension breakdown over the gold/serving layer (Sprint 31) |
+| Data-quality gap contract | DC-DQ-GAP-v1 | Gap + impact + owner + recommended source + `newSourceNeeded` seam handed to the Signal Agent (Sprint 31; frozen per design §8) |
+| Certification reference contract | DC-REF-CERTIFICATION-v1 | Credential↔competency crosswalk (staff-PII, pseudonymised work-ID); intake for the certification→skills onboarding lane (Sprint 32) |
+
+### Evaluation Golden Datasets (Sprint 30 M3)
+
+Versioned golden datasets built from `DC-AGENT-INTERACTION-v1` records live under
+`evals/<agent>/datasets/vN/` (e.g. `evals/ooa-agent/datasets/v1/interactions.jsonl`).
+Each row is a schema-valid interaction record plus an `expected` label block, and
+keeps lineage back to its `interactionId` (design §8: trace → dataset → eval →
+change). They are synthetic and PHI-free (ADR-0016) and are scored by the shared
+evaluator library (`evals/lib/`) in the offline regression gate; see `docs/AI.md`
+§Evaluation → Offline Evaluation Gate.
+
+### Interaction Capture Retention and Residency (Sprint 30 M6)
+
+The `agent_interactions` capture store and the versioned golden datasets curated
+from it are classified **R3 (AI trace and model evidence, 24 months)** per the
+Retention Policy Proposal below — they are agent decision-trace and grounding
+evidence, not raw operational buffers (R1) or compliance/security evidence (R4).
+The store follows platform residency: the demo region for the synthetic showcase,
+Switzerland North at GA, never crossing region without an approved runbook. The
+records are PHI-free by construction (redaction gate; ADR-0016). Ratified in
+[ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md).
 
 ### Sprint 6 Onboarding Contracts (Minimum-Data and Specialty Capacity)
 
@@ -264,6 +320,30 @@ These feed the **`external-signals`** Direct-Lake semantic model
 grounded into the `da_hospital_capacity` data agent. Full proof (row counts,
 trust-badge DAX, data-agent probe, gate record) is in
 [`signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md).
+
+### DC-REF-CERTIFICATION-v1 (staff certification lane)
+
+`DC-REF-CERTIFICATION-v1` is the Sprint 32 staff certification reference
+contract for the certification-to-skills onboarding lane. The machine-readable
+schema is
+[`data/synthetic/schema/dc-ref-certification-v1.schema.json`](../data/synthetic/schema/dc-ref-certification-v1.schema.json),
+and the curated synthetic sample feed is
+[`data/synthetic/schema/certification-sample-feed.json`](../data/synthetic/schema/certification-sample-feed.json).
+
+The contract is classified as staff-PII under nDSG. Records use only
+pseudonymised `WID-*` work-IDs and never carry names, AHV numbers, or direct
+staff identifiers; this keeps patient PHI out of scope while preserving the
+regulated staff-PII handling required by [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md).
+
+The contract is consumed by the deterministic `data-platform/signals/` modules
+and the advisory `signal-agent` to resolve credentials to competency codes,
+enrich the skills baseline by pseudonymised work-ID, and support the sandbox
+Channel Readiness Scorecard before HITL activation.
+
+This contract intentionally uses a flat per-record shape with underscore-prefixed
+governance tags (`_classification`, `_residency`, `_legal_basis`, `_retention`,
+`_provenance`, `_pseudonymisation`) per design §9, which the SGA deterministic
+modules consume, differing from the enveloped older `DC-*` contracts.
 
 ### Sprint 26 WS-A — Foresight tier gold tables and contracts
 

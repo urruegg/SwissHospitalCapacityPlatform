@@ -1,13 +1,23 @@
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+  <img src="brandkit/logo/curavias-logo.svg" alt="Curavias" width="240"/>
+</p>
+<!-- markdownlint-enable MD033 MD041 -->
+
 # Curavias — Product Status (as-deployed)
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.2.1 |
+| **Date** | 2026-07-28 |
 | **Author** | Urs Rüegg |
 | **Status** | Reviewed |
-| **Previous Version** | 1.0.0 (retired the J) Public Curavias web row per ADR-0044) |
+| **Previous Version** | 1.2.0 (Sprint 34 WS-3: added the product-anchor line, an executive summary, and the canonical deployment/region diagram); this bump adds the Curavias brand-kit logo to the document header |
 
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+>
 > **Purpose:** Executive, evidence-backed view of the Curavias platform **as
 > actually deployed** at the end of Sprint 19, plus a requirements-coverage
 > summary mapping every relevant `FR-*` / `NFR-*` family to **Covered**,
@@ -22,6 +32,33 @@
 > it *previews / recommends*, never *decides / diagnoses* — and is **not a
 > medical device**. Governing issue:
 > [#239](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/239).
+
+## Executive summary
+
+This is the executive, evidence-backed view of what Curavias actually runs today
+— a demo / proof-of-technology deployment on synthetic data with no PHI. The
+design docs describe the target GA architecture (Switzerland North primary +
+Switzerland West failover); this document records the deployed reality and cites
+an ADR wherever the two differ. The diagram contrasts the two.
+
+```mermaid
+flowchart TB
+    subgraph Deployed["As-deployed (demo / proof-of-technology)"]
+        direction TB
+        SIT["SIT<br/>westus2 (+ eastus2 Foundry split)<br/>synthetic, no PHI"]
+        PRODD["PROD<br/>switzerlandnorth (single region)<br/>synthetic, no PHI"]
+        SIT -->|promote| PRODD
+    end
+
+    subgraph Target["Target GA architecture"]
+        direction TB
+        SWN["Switzerland North<br/>primary"]
+        SWW["Switzerland West<br/>failover"]
+        SWN -->|failover| SWW
+    end
+
+    Deployed -.sunset to Swiss GA<br/>ADR-0013 / ADR-0032 / ADR-0037.-> Target
+```
 
 ## 1. Deployment posture (confirmed facts)
 

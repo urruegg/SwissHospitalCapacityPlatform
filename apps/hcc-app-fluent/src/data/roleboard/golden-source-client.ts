@@ -1,5 +1,6 @@
 import type { Mode, RoleBoardData, ScenarioScope } from '../../journey/RoleBoard';
 import type { ContextEnvelope } from '../../context/context-envelope';
+import { getGoldenSourceUrl } from '../../config/runtime-config';
 import { getPreferredSource } from '../data-source';
 import { OCCUPANCY_PINNED, type OccupancyPayload, type SiteCapacitySummary, aggregateSiteCapacity } from './occupancy-data';
 import { DISCHARGE_PINNED, type DischargePayload } from './discharge-data';
@@ -23,7 +24,7 @@ import { CRISIS_PINNED, type CrisisPayload } from './crisis-data';
 let currentEnvelope: ContextEnvelope | null = null;
 
 function goldenUrl(): string {
-  return import.meta.env.VITE_GOLDEN_SOURCE_URL ?? '';
+  return getGoldenSourceUrl();
 }
 
 /** The app sets this once the user context/active board is established; the IQ gateway attaches it as scoped headers on every live call. */

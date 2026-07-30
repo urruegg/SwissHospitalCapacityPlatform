@@ -35,11 +35,12 @@ const SURFACES: { path: string; excludeBoard?: string }[] = [
   { path: '/start' },
   { path: '/main', excludeBoard: '[data-testid="board-occupancy"]' },
   { path: '/csa' },
-  { path: '/backstage', excludeBoard: '[data-testid="widget-evidence"]' },
+  { path: '/backstage' },
   { path: '/settings' },
   // Sprint 27 — dev-only design-system gallery incl. the chat response
   // artefacts catalogue (A1–A14). Scanned so the artefact vocabulary stays AA.
   { path: '/brand' },
+  { path: '/present/feedback-loop' },
 ];
 
 for (const { path, excludeBoard } of SURFACES) {

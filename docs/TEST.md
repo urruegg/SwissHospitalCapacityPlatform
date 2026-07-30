@@ -1,17 +1,28 @@
-﻿# TEST
+# Curavias — Test Strategy
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.8.0 |
-| **Date** | 2026-07-09 |
+| **Version** | 0.9.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.7.0 (updated Agent control lane row for the 2.0.0 `agents-archive/` → `agents/` restructure) |
+| **Previous Version** | 0.8.0 (updated Agent control lane row for the 2.0.0 `agents-archive/` → `agents/` restructure); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, and executive summary (Sprint 34 WS-4) |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+This document defines how Curavias proves quality: the test strategy, the quality
+gates every change must pass, and the evidence captured at each release. It is
+written so a stakeholder can see what "done and verified" means for the platform.
 
 ## Purpose
 
-Define the baseline quality strategy, quality gates, and evidence model for the
-Swiss Hospital Capacity Platform repository.
+Define the baseline quality strategy, quality gates, and evidence model for
+Curavias, the Swiss AI-powered patient-flow and hospital-capacity platform,
+in this repository.
 
 This plan is designed for the current repository shape where delivery is
 governance-first (documents, Superpowers execution workflow, compatibility

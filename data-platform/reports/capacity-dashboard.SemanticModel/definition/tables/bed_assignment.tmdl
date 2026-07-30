@@ -113,36 +113,6 @@ table bed_assignment
 
 		annotation SummarizationSetBy = Automatic
 
-	column EventProcessedUtcTime
-		dataType: dateTime
-		formatString: General Date
-		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e1a
-		sourceLineageTag: EventProcessedUtcTime
-		summarizeBy: none
-		sourceColumn: EventProcessedUtcTime
-
-		annotation SummarizationSetBy = Automatic
-
-	column PartitionId
-		dataType: int64
-		formatString: 0
-		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e1b
-		sourceLineageTag: PartitionId
-		summarizeBy: sum
-		sourceColumn: PartitionId
-
-		annotation SummarizationSetBy = Automatic
-
-	column EventEnqueuedUtcTime
-		dataType: dateTime
-		formatString: General Date
-		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e1c
-		sourceLineageTag: EventEnqueuedUtcTime
-		summarizeBy: none
-		sourceColumn: EventEnqueuedUtcTime
-
-		annotation SummarizationSetBy = Automatic
-
 	column _lineage_ref
 		dataType: string
 		lineageTag: c2acdf42-a04f-4c9d-a05b-3f9c1f7d2e1d

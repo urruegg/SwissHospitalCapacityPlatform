@@ -1,0 +1,5 @@
+/// BVA cost-basis read-only role (Sprint 33 WS-A, ADR-0026 precedent).
+/// Cost-basis data is synthetic/demo-scoped and non-PHI (ADR-0016); no
+/// row-level restriction is required in this separate model.
+role BvaReadOnly
+	modelPermission: read

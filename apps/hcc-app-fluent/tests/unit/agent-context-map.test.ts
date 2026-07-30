@@ -13,7 +13,7 @@ describe('agent context map', () => {
 
   it('maps the BACKSTAGE surface to the product-owner agent (Sprint 28 WS-X)', () => {
     expect(agentForRoute('/backstage')).toBe('product-owner-agent');
-    expect(agentForRoute('/backstage/evidence')).toBe('product-owner-agent');
+    expect(agentForRoute('/backstage/feedback-loop')).toBe('product-owner-agent');
   });
 
   it('falls through to the orchestrator for other non-board surfaces', () => {

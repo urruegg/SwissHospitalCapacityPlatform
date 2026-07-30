@@ -173,7 +173,28 @@ param enableCsaCosmosModule = true
 // (real OpenAI-Assistants flow, ADR-0033 Option A); ci-build-agent-host.yml
 // pushed the tag. Deploy is approval-gated per AGENTS.md §4 (approved-to-apply
 // by @urruegg 2026-07-18).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b796961'
+// Bumped b796961 -> f596cf2 to ship #424 M2: the agent-host GET /golden/{resource}
+// RLS-scoped live golden-source read surface (PR #476 merge to main). f596cf2 is a
+// superset of b796961 (all prior agent-host code incl. the M5 Fabric Data Agent
+// client + the new golden service). Deploy approval-gated per AGENTS.md §4
+// (approved-to-apply by @urruegg 2026-07-28T10:47+02:00).
+// Bumped f596cf2 -> dadd7ce to ship #424 M3: the agent-host ThreadProvider seam +
+// POST /agents/{name}/threads mint endpoint + thread-scoped /chat (PR #495 merge to
+// main). dadd7ce is a superset of f596cf2 (all prior agent-host code incl. the M2
+// golden service + M5 Fabric Data Agent client). Deploy approval-gated per AGENTS.md
+// §4 (approved-to-apply by @urruegg 2026-07-28).
+// Bumped dadd7ce -> 583f633 to ship #424 M4: the agent-host RlsProvider seam
+// (evidence-grounded capability ladder — SimulatedRlsProvider default +
+// FabricDataAgentRlsProvider Rung 1) + the new /golden/network resource + _rls
+// block + X-Rls-* headers (PR #512 merge to main). 583f633 is a superset of
+// dadd7ce. SIT keeps the default RLS_PROVIDER=simulated (agentHostRlsProvider
+// param default). Deploy approval-gated per AGENTS.md §4 (approved-to-apply by
+// @urruegg 2026-07-28).
+// #424 M6 parity (2026-07-29): bumped 583f633 -> 62cc2ae (PR #522, M5 OBO
+// seam). 62cc2ae is a superset of 583f633; OBO stays off (agentHostOboEnabled
+// default false) so this is a behaviour-parity redeploy. Matches PROD per M6
+// SIT+PROD parity. approved-to-apply by @urruegg 2026-07-29.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:62cc2ae'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
@@ -216,8 +237,29 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 // title rebrand) from the #297 consolidation merge commit 43ace03.
 // Bumped 43ace03 -> cb21e2c to ship Sprint 20 OOA (occupancy) screen parity
 // (PR #313, digest sha256:107137a07f48105e35922c43370e1d38dd65938716b72f0371b6350c6fcc4f2b).
+// Bumped ff3dd76 -> bd1fa7e to ship #424 M2 (live golden-source read path): the app
+// now reads live board payloads from GET <GOLDEN_SOURCE_URL>/{resource} when Live is
+// toggled. bd1fa7e = PR #480 merge (M2 app code from #476 + the app-only Docker build
+// fix). Deploy approval-gated per AGENTS.md §4 (approved-to-apply by @urruegg
+// 2026-07-28T10:47+02:00).
 param enableAppFluentModule = true
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:87b2568'
+// Bumped bd1fa7e -> dadd7ce to ship #424 M3 (live per-agent thread minting): the app
+// now mints a real per-(user x agent) thread via the agent-host (POST /threads) and
+// threads it onto every chat turn when FOUNDRY_THREADS_ENABLED is on. dadd7ce = PR
+// #495 merge (M3 app code). Deploy approval-gated per AGENTS.md §4 (approved-to-apply
+// by @urruegg 2026-07-28).
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:a7fb478'
+// #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
+// container start so the SIT app calls the SIT agent-host (no build-time bake).
+param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
+// #424 M2 — golden-source URL. Left unset so the module auto-derives
+// `${appFluentAgentHostUrl}/golden` (Option 1: the agent-host serves the RLS-scoped
+// golden surface). Set explicitly only for a future divergent (Fabric-backed) source.
+// #424 M3 — enable the live per-(user x agent) thread minter in SIT. The app mints a
+// real thread via the SIT agent-host (POST /threads) and threads it onto every chat
+// turn; provider stays native (no OBO) until M5. westus2 synthetic/no-PHI scope
+// (ADR-0013). Deploy approval-gated per AGENTS.md §4.
+param appFluentFoundryThreadsEnabled = true
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:

@@ -98,36 +98,6 @@ table encounter
 
 		annotation SummarizationSetBy = Automatic
 
-	column EventProcessedUtcTime
-		dataType: dateTime
-		formatString: General Date
-		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d09
-		sourceLineageTag: EventProcessedUtcTime
-		summarizeBy: none
-		sourceColumn: EventProcessedUtcTime
-
-		annotation SummarizationSetBy = Automatic
-
-	column PartitionId
-		dataType: int64
-		formatString: 0
-		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0a
-		sourceLineageTag: PartitionId
-		summarizeBy: sum
-		sourceColumn: PartitionId
-
-		annotation SummarizationSetBy = Automatic
-
-	column EventEnqueuedUtcTime
-		dataType: dateTime
-		formatString: General Date
-		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0b
-		sourceLineageTag: EventEnqueuedUtcTime
-		summarizeBy: none
-		sourceColumn: EventEnqueuedUtcTime
-
-		annotation SummarizationSetBy = Automatic
-
 	column _lineage_ref
 		dataType: string
 		lineageTag: b19bce31-9f3e-4b8c-9f4a-2f8b0e6c1d0c

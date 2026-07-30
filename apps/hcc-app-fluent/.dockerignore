@@ -1,0 +1,17 @@
+# Build context hygiene for the hcc-app-fluent image (#447).
+# The Dockerfile runs `npm ci` inside the build stage, so host node_modules and
+# build outputs must NOT be uploaded (they bloat the ACR/Docker context and get
+# re-copied by `COPY . .`). Keep the context to source + config only.
+node_modules
+dist
+dist-ssr
+test-results
+playwright-report
+coverage
+*.log
+.vscode
+.git
+.gitignore
+.DS_Store
+# Live/temporary Playwright configs used for ad-hoc SIT/PROD runs.
+playwright.live.config.ts

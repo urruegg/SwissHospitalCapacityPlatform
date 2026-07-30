@@ -294,12 +294,27 @@ param fabricWorkspaceId string = ''
 @description('Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback.')
 param fabricDataAgentId string = ''
 
+@description('#424 M4 — agent-host RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process; `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code.')
+param agentHostRlsProvider string = 'simulated'
+
+@description('#424 M5 — enable the on-behalf-of (OBO) ingress seam on the agent-host golden read. `false` (default) keeps SIT on the simulated/native path (byte-parity with M4). `true` requires a valid caller bearer and exchanges it for a downstream Fabric token; go-live additionally needs OBO_TENANT_ID/CLIENT_ID/CLIENT_SECRET, RLS_PROVIDER=fabric-data-agent, THREAD_PROVIDER=foundry, and #510 (dynamic-RLS TMDL) per ADR-0057. Config, not code.')
+param agentHostOboEnabled bool = false
+
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
 @description('Enable the Sprint 13 hcc-app-fluent Container App module.')
 param enableAppFluentModule bool = false
 
 @description('Container image reference for the hcc-app-fluent (registry/repository:tag). Placeholder until app-build.yml pushes real images to ACR.')
 param appFluentImage string = 'nginxinc/nginx-unprivileged:1.27-alpine'
+
+@description('#447 — Foundry agent-host base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.AGENT_HOST_URL). Set per-env to the environment-local agent-host FQDN (SIT vs PROD) so the app calls its own region\'s agent-host. Empty keeps the built-in mock. Replaces the former build-time VITE_AGENT_HOST_URL bake so one image is env-agnostic.')
+param appFluentAgentHostUrl string = ''
+
+@description('#424 M2 — golden-source base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <url>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host.')
+param appFluentGoldenSourceUrl string = ''
+
+@description('#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the hcc-app-fluent mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires appFluentAgentHostUrl to be non-empty; with the host unset the app keeps simulated threads. Provider stays native (no OBO) until M5.')
+param appFluentFoundryThreadsEnabled bool = false
 
 // Sprint 13.1 T-DNS — curavias.ch public custom hostname for the Fluent app (ADR-0030).
 @description('Public custom hostname for the hcc-app-fluent CA ingress. Empty string keeps the CA on its default *.azurecontainerapps.io hostname. Set to appsit.curavias.ch in SIT and app.curavias.ch in PROD per ADR-0030.')
@@ -667,6 +682,8 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     fabricDataAgentEndpoint: fabricDataAgentEndpoint
     fabricWorkspaceId: fabricWorkspaceId
     fabricDataAgentId: fabricDataAgentId
+    rlsProvider: agentHostRlsProvider
+    oboEnabled: agentHostOboEnabled
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId
@@ -753,6 +770,12 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     tags: tags
     appImage: appFluentImage
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
+    // #447 runtime agent-host URL (per-env), injected into window.__ENV__ at container start.
+    agentHostUrl: appFluentAgentHostUrl
+    // #424 M2 golden-source URL (per-env); empty auto-derives `${agentHostUrl}/golden`.
+    goldenSourceUrl: appFluentGoldenSourceUrl
+    // #424 M3 live per-agent thread minting gate (native provider until M5/OBO).
+    foundryThreadsEnabled: appFluentFoundryThreadsEnabled
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

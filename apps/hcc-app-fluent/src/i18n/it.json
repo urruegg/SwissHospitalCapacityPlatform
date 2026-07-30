@@ -34,8 +34,11 @@
     "rolesDescription": "Vista in tempo reale dei ruoli dell'app da Microsoft Entra (sola lettura).",
     "evidence": "Prove",
     "evidenceDescription": "Lavagna del presentatore: schede BOM, ADR, requisiti, prove GA e dipendenze (sintetiche, senza PHI).",
+    "opportunities": "Opportunità",
     "nav": {
-      "label": "Sezioni backstage"
+      "label": "Sezioni backstage",
+      "feedbackLoop": "Ciclo di feedback digitale",
+      "opportunities": "Opportunita"
     },
     "story": {
       "tab": "Storia",
@@ -104,6 +107,10 @@
       "pillars": {
         "sectionLabel": "Fondamenta della piattaforma"
       }
+    },
+    "header": {
+      "title": "Curavias Backstage",
+      "lead": "La storia della piattaforma Curavias - a partire dal ciclo di feedback digitale. Altre parti in arrivo."
     }
   },
   "evidence": {
@@ -188,7 +195,7 @@
     "dischargeExpediteDetail": "Accelera la dimissione {{ward}} — {{blocker}}",
     "bedShift": "Sposta {{beds}} letti {{fromWard}} -> {{toWard}}",
     "placementMove": "Collocazione {{requestNo}}: {{source}} → {{target}}",
-      "admissionEvent": "Guida dall'evento {{ward}} ({{patient}})",
+    "admissionEvent": "Guida dall'evento {{ward}} ({{patient}})",
     "placementBarrier": "Ostacolo: {{label}}",
     "orDefer": "Rinvia il caso {{specialty}}",
     "orCaseEvent": "Pilota il caso SO {{caseNo}}",

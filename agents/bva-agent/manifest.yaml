@@ -1,0 +1,30 @@
+agent: bva-agent
+version: 1.0.0
+runtime: agent-host
+scaffold: false
+modelDeploymentRef: sprint11-chat  # resolved by the Sprint 13 agent-host per ADR-0020
+modelSelectionAdr: docs/adr/0020-sprint11-agent-model-selection.md
+systemPromptRef: ./AGENT.md
+refusalRulesRef: ./AGENT.md#5-refusal-rules
+mcpTools:
+  - server: github-mcp
+    tools: [get-issue, add-issue-comment, create-pull-request]
+    ceiling: write
+  - server: fabric-mcp
+    tools: [query]  # read sm_bva baseline measures only; no run-notebook
+    ceiling: read
+  - server: cosmos-mcp
+    tools: [read-item, upsert-item]
+    ceiling: write
+# Overall effective ceiling is `write`: BVA is advisory only. Cloud operations
+# are reads except Cosmos Opportunity read/write. Advancing an Opportunity past
+# `qualified` is human-only.
+ceiling: write
+hitl:
+  gates: []
+  inert_until: null
+grounding:
+  - fabric:gold-bva            # sm_bva baseline measures (read)
+  - cosmos:opportunities       # Opportunity system-of-record
+  - adr:0025-bva-kpi-catalog
+goldenTasksRef: ./golden-tasks.md

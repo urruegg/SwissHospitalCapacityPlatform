@@ -1,18 +1,74 @@
-﻿# PRD
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+  <img src="brandkit/logo/curavias-logo.svg" alt="Curavias" width="240"/>
+</p>
+<!-- markdownlint-enable MD033 MD041 -->
+
+# Curavias — Product Requirements Document
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.2.0 |
-| **Date** | 2026-07-26 |
+| **Version** | 2.9.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.1.0 (added Sprint 29 application context-architecture requirements FR-CTX-001..004 + NFR-CTX-001..002, #399); this bump merges the Sprint 27 Curavias app UX-polish requirements FR-UX-001..006 + NFR-UX-001..004 and their traceability row |
+| **Previous Version** | 2.8.0 (Sprint 34 WS-3 + Curavias brand-kit logo in header + §7 traceability row for Sprint 29 follow-up #424 live SIT lift); this bump restores the missing `### R)` NFR-BVA governance section (rows NFR-BVA-001..004 + header) that §7 traceability already references |
+
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+
+## Executive summary
+
+Curavias is a provider-internal operational intelligence platform for Swiss
+hospital capacity and patient-flow management. This document is the authoritative
+catalogue of its functional and non-functional requirements — each with a stable
+ID and a traceability link to the design, ADR, or evidence that realises it. It
+is the baseline every architecture, security, data, AI, and delivery decision
+maps back to. Curavias is an advisory-only showcase on synthetic data (no PHI);
+it previews and recommends, and is not a medical device.
+
+The diagram below places Curavias in its ecosystem; terminology follows
+[GLOSSARY.md](GLOSSARY.md) and the canonical source is
+[the diagram library](architecture/diagram-library.md).
+
+```mermaid
+flowchart TB
+    subgraph Team["Frontier-Firm team"]
+        CT["Capacity and bed-management teams<br/>(agent bosses, HITL)"]
+    end
+
+    subgraph Network["Swiss care network"]
+        ACUTE["Acute hospitals"]
+        REHAB["Rehabilitation clinics"]
+        SPITEX["Spitex (home care)"]
+        INS["Insurer-linked coordination"]
+    end
+
+    CUR["Curavias platform<br/>advisory-only, synthetic data, no PHI"]
+
+    subgraph IQ["Microsoft IQ backbone (Azure)"]
+        FABRICIQ["Fabric IQ<br/>ontology + semantic backbone"]
+        FOUNDRYIQ["Foundry IQ<br/>knowledge + agents"]
+        WORKIQ["Work IQ<br/>M365 work context (read-only)"]
+    end
+
+    GH["GitHub delivery plane<br/>Copilot coding agent + MCP"]
+
+    CT -->|questions, approvals| CUR
+    CUR -->|advisory insights, cited answers| CT
+    Network -->|synthetic capacity + episode data| CUR
+    CUR --> FABRICIQ
+    CUR --> FOUNDRYIQ
+    CUR --> WORKIQ
+    GH -.builds + governs.-> CUR
+```
 
 ## Purpose
 
 This product requirements document defines the complete functional and non-functional
-requirements for the Swiss AI-Powered Patient Flow and Hospital Capacity Platform,
-derived from the source specifications in `docs/specs`.
+requirements for Curavias, the Swiss AI-powered patient-flow and hospital-capacity
+platform, derived from the source specifications in `docs/specs`.
 
 The target product is a provider-internal operational intelligence platform for one
 Swiss cantonal hospital provider deployment at a time.
@@ -298,6 +354,87 @@ public site `apps/curavias-web` and any Astro pattern are out of scope.
 | `FR-UX-006` | The solution shall maintain an **ordered polish backlog** applying the same design-system recipe to the remaining role boards and surfaces in later sprints. |
 
 
+### S) Data Quality Agent — Proactive Assessment And Trust (Sprint 31)
+
+Sprint 31 deltas formalised per the
+[Sprint 31–32 SGA+DQA design](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md),
+the [Sprint 31 implementation plan](superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md),
+and [ADR-0053](adr/0053-dqa-trust-score-model.md). Elevates the existing
+`data-quality-agent` from ingestion-time gates to **proactive** assessment of the
+gold/serving decision layer. Advisory + HITL + read-only, GA-only, synthetic /
+no-PHI. Answers the COO review's #1 finding — data quality is the single point of
+failure.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-DQA-001` | Continuously assess gold/serving domains across completeness, timeliness, validity, uniqueness, consistency, and lineage-integrity. |
+| `FR-DQA-002` | Detect data gaps and quantify each gap's impact on the KPIs and agents that depend on the affected domain. |
+| `FR-DQA-003` | Publish a per-domain **Trust Score** that is deterministic, versioned, and explainable (never an LLM estimate), emitted as `DC-DQ-TRUSTSCORE-v1`. |
+| `FR-DQA-004` | Route each gap to the accountable data owner (advisory / HITL) as a `DC-DQ-GAP-v1` finding; the owner remediates. |
+| `FR-DQA-005` | Re-assess a domain after remediation and report the trust-score delta, closing the gap on the record. |
+| `FR-DQA-006` | Advise **degraded-mode** for a below-threshold domain rather than silently serving low-trust data. |
+| `FR-DQA-010` | Persist every assessment, gap, and remediation as an auditable GitHub-native artefact (HITL + audit). |
+| `FR-DQA-012` | Certify a domain **grounding-ready** only when its trust score and gating dimensions clear the ADR-ratified threshold; certification is GA-gated (Fabric IQ first, Foundry IQ behind the same gate). |
+
+### T) Signal Agent — Channel Intake Lifecycle (Sprint 32)
+
+Sprint 32 deltas formalised per the
+[Sprint 31-32 Signal Agent and Data Quality Agent design](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md)
+and issue #454. The `signal-agent` is advisory-only and human-in-the-loop: it
+consumes a curated feed first, treats certification data as staff-PII, and never
+activates a channel or ontology change without recorded data-owner and
+compliance/DPO approval.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-SIG-001` | Discover and rank referenced-vs-wired signal gaps into a Signal Gap Register, demand-driven by a `DC-DQ-GAP-v1` `newSourceNeeded` gap. |
+| `FR-SIG-003` | Classify a candidate channel by domain family, signal type, trust tier A/B/C, and data class PHI/staff-PII/non-PHI. |
+| `FR-SIG-004` | Select a connector adapter from the governed adapter catalogue. |
+| `FR-SIG-005` | Draft and register the channel data contract (`DC-REF-CERTIFICATION-v1` for the certification lane). |
+| `FR-SIG-006` | Bind channel entities to the reference ontology (Credential/Competency/Qualification/IssuingAuthority) and maintain the crosswalk. |
+| `FR-SIG-007` | Run a sandbox Channel Readiness Scorecard (schema conformance, provenance, dedup) on a curated sample feed before activation. |
+| `FR-SIG-008` | Resolve credentials to competency codes and enrich the skills baseline by pseudonymised work-ID, feeding SBA skills-based assignment. |
+| `FR-SIG-009` | Manage the channel lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire) with provenance. |
+| `FR-SIG-010` | Gate channel activation and ontology change on a recorded human data-owner and compliance/DPO `approved-to-apply` approval; the agent remains advisory-only with no autonomous activation. |
+| `FR-SIG-011` | Record provenance and audit evidence for every onboarding decision and activation. |
+
+### U) Closed-Loop Learning (Sprint 30)
+
+Sprint 30 requirements per the
+[Sprint 30 closed-loop-learning design](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md)
+and [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md). The loop is
+**advisory-only and human-in-the-loop**: it captures PHI-free interaction records,
+evaluates and curates them, and surfaces an improvement backlog, but never promotes
+a prompt / knowledge / guardrail / model change without an offline regression pass
+and a recorded `approved-to-apply`.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-LEARN-001` | Capture every agent turn + user interaction as a `DC-AGENT-INTERACTION-v1` record (PHI-free, redaction-gated). |
+| `FR-LEARN-002` | Continuously evaluate captured interactions (citation coverage, groundedness, refusal correctness, actionability, safety) online + offline. |
+| `FR-LEARN-003` | Curate versioned golden datasets from real traces with full lineage back to the source `interactionId`. |
+| `FR-LEARN-004` | Surface an advisory improvement backlog from low-scoring / uncited / mis-refused interactions, grouped by agent + failing metric. |
+| `FR-LEARN-005` | Optimize prompts / knowledge / guardrails and fine-tune (SFT/DPO/RFT) from curated data for the lead agent, human-gated. |
+
+### V) Business Value Assessment Agent (Sprint 33)
+
+Sprint 33 requirements per the
+[Sprint 33 BVA Agent design](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md),
+the [WS-G0 contracts](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md),
+and [ADR-0056](adr/0056-bva-agent-deterministic-computation.md). The `bva-agent`
+is **advisory-only and deterministic**: all arithmetic is performed by the typed
+`bva.simulate` tool (no LLM math), every figure is a cited Class-C `GroundedChunk`,
+and it is a **peer** to the `product-owner-agent` under the App orchestrator — BVA
+owns the numbers, PO owns the go/no-go verdict.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-BVA-001` | The platform shall produce grounded ROI/TCO answers computed over the `bva_*` gold measures, standardized in CHF. |
+| `FR-BVA-002` | The platform shall support interactive new-hospital what-if analysis via the deterministic `bva.simulate` tool, parametric and benchmarked from the three existing hospitals. |
+| `FR-BVA-003` | The platform shall compose a PO ↔ BVA fan-out into one cited answer: BVA numbers plus the Product Owner go/no-go verdict. |
+| `FR-BVA-004` | The platform shall capture an Opportunity in the Cosmos system-of-record, project it into a `bva_opportunity` gold table, and expose it in the Backstage pipeline view. |
+| `FR-BVA-005` | The platform shall surface BVA in the Curavias App Start (inline) and Backstage (pipeline) copilot rail. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -437,6 +574,66 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-UX-003` | Every polished screen shall carry **before / after visual evidence** (light / dark, desktop / narrow) attached to its pull request. |
 | `NFR-UX-004` | UX polish shall remain **experience-lane only**: no backend / data-contract / agent-prompt / infrastructure change, no PHI, and no public-site (Astro) patterns introduced into the internal app. |
 
+### O) Data Quality Agent Governance (Sprint 31)
+
+Sprint 31 non-functional deltas per the
+[Sprint 31–32 SGA+DQA design](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md)
+and [ADR-0053](adr/0053-dqa-trust-score-model.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-DQA-001` | The Trust Score shall be **reproducible**: the same dimension inputs always produce the same score, with the model version recorded on every record. |
+| `NFR-DQA-002` | The agent shall operate **read-only under Zero-Trust**: it never edits source data, and treats every value returned by a tool or model as untrusted. |
+
+### P) Signal Agent Governance (Sprint 32)
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-SIG-001` | Signal-channel ingestion shall follow Zero-Trust, read-scoped ingestion: every external, MCP, or model value is treated as untrusted and re-validated at each boundary. |
+| `NFR-SIG-002` | Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016). |
+
+### Q) Closed-Loop Learning Governance (Sprint 30)
+
+Sprint 30 non-functional deltas per the
+[Sprint 30 closed-loop-learning design](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md)
+and [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-LEARN-001` | No PHI in captured interactions: the deterministic redaction gate is the single persistence choke point; raw prompts are hashed, not stored (ADR-0016). |
+| `NFR-LEARN-002` | The interaction store honours Swiss residency at GA and a defined retention class (R3, AI trace and model evidence). |
+| `NFR-LEARN-003` | No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval). |
+| `NFR-LEARN-004` | Full lineage is preserved end to end: interaction -> dataset -> eval -> change. |
+
+### R) Business Value Assessment Agent Governance (Sprint 33)
+
+Sprint 33 non-functional deltas per the
+[Sprint 33 BVA agent design](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md),
+the [BVA agent contracts](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md),
+and [ADR-0056](adr/0056-bva-agent-deterministic-computation.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-BVA-001` | BVA computation shall be **deterministic and reproducible**, with **no LLM arithmetic**: all ROI/TCO math is performed by the `bva.simulate` engine. |
+| `NFR-BVA-002` | Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot, snapshot date, currency). |
+| `NFR-BVA-003` | Monetary output shall be **CHF-normalized with an explicit FX line**; settling weeks are marked provisional. |
+| `NFR-BVA-004` | BVA data shall preserve **SIT / PROD parity** and carry **no PHI** (ADR-0016); demo figures are labelled PoT (ADR-0013). |
+| `NFR-BVA-005` | BVA agent output shall preserve **DE / EN parity**. |
+
+### S) Documentation Quality (Sprint 34)
+
+Sprint 34 (Curavias Documentation Alignment) non-functional deltas per the
+[Sprint 34 doc-alignment design](superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md),
+grounded on [GLOSSARY.md](GLOSSARY.md) and
+[the canonical diagram library](architecture/diagram-library.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-DOC-001` | Main solution documentation shall be Curavias-anchored and terminology-consistent with `docs/GLOSSARY.md` (Fabric IQ / Foundry IQ / Work IQ / Frontier Firm used correctly). |
+| `NFR-DOC-002` | Each in-scope main doc shall be customer-ready: a Curavias-anchored title, the one-line product-anchor blockquote, an executive summary, and plain professional wording. |
+| `NFR-DOC-003` | Canonical mermaid diagrams from `docs/architecture/diagram-library.md` shall be embedded in the documents the library assigns them to, and copies kept in sync from that source. |
+| `NFR-DOC-004` | Every documentation edit shall pass the mojibake + markdownlint gates and carry a §9 SemVer version bump. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -476,7 +673,13 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md`](superpowers/specs/2026-07-25-sprint-28-product-owner-agent-design.md) + [`docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md`](superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md) + [`docs/adr/0043-product-owner-agent-foundry-iq-domain.md`](adr/0043-product-owner-agent-foundry-iq-domain.md) *(Sprint 28: Curavias Product Owner Agent full build; frozen GroundedChunk + A/B/C/D tool contracts; PO Agent as Foundry IQ domain #1; issue #377)* | `FR-POA-001` to `FR-POA-009`, `NFR-POA-001` to `NFR-POA-004` |
 
 | [`docs/superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md`](superpowers/specs/2026-07-26-sprint-29-foundry-iq-context-architecture-design.md) + [`docs/superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md`](superpowers/plans/2026-07-26-sprint-29-foundry-iq-context-architecture.md) + [`docs/adr/0052-app-context-envelope-per-agent-threads.md`](adr/0052-app-context-envelope-per-agent-threads.md) *(Sprint 29: app context envelope + per-(user x agent) threads + role-first-eligible board + envelope propagation/guard + config-gated Foundry thread map + simulated OBO/RLS; issue #399)* | `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` |
+| [`docs/superpowers/specs/2026-07-28-sprint-29-m4-rls-provider-design.md`](superpowers/specs/2026-07-28-sprint-29-m4-rls-provider-design.md) + [`docs/superpowers/specs/2026-07-28-sprint-29-m5-obo-seam-design.md`](superpowers/specs/2026-07-28-sprint-29-m5-obo-seam-design.md) + [`docs/adr/0057-obo-seam-completion-defer-live-provisioning.md`](adr/0057-obo-seam-completion-defer-live-provisioning.md) *(Sprint 29 follow-up #424 — live SIT lift, Approach B: envelope send-path wiring (M1, #464), live golden-source read (M2, `f596cf2`), live per-(user x agent) Foundry threads via staged ThreadProvider (M3, #495), evidence-grounded Fabric RLS provider ladder (M4, #512), OBO ingress seam completed in code + config, gated off in SIT/PROD (M5, #522). Realises the "liftable to live Fabric RLS / OBO via configuration without code change" clause of `FR-CTX-004`; live per-user enforcement deferred to the ADR-0057 Path A follow-up + #510. Deploy coverage: SIT + PROD parity on `hcc-agent-host:62cc2ae`.)* | Live-lift coverage for `FR-CTX-001` to `FR-CTX-004`, `NFR-CTX-001` to `NFR-CTX-002` (config-gated; live per-user enforcement deferred per ADR-0057) |
 | [`docs/superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md`](superpowers/specs/2026-07-24-sprint-27-curavias-ux-polish-design.md) + [`docs/superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md`](superpowers/plans/2026-07-24-sprint-27-curavias-ux-polish-plan.md) *(Sprint 27: Curavias app UX polish — OOA reference vertical + design system)* | `FR-UX-001` to `FR-UX-006`, `NFR-UX-001` to `NFR-UX-004` |
+| [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md`](superpowers/plans/2026-07-27-sprint-31-data-quality-agent.md) + [`docs/adr/0053-dqa-trust-score-model.md`](adr/0053-dqa-trust-score-model.md) *(Sprint 31: Data Quality Agent — proactive assessment, deterministic Trust Score, gap→owner remediation, grounding-readiness cert, frozen DC-DQ-GAP-v1 seam; issues #451, #453)* | `FR-DQA-001` to `FR-DQA-006`, `FR-DQA-010`, `FR-DQA-012`, `NFR-DQA-001` to `NFR-DQA-002` |
+| [`docs/superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md`](superpowers/specs/2026-07-27-sprint-31-32-signal-and-data-quality-agents-design.md) + [`docs/adr/0054-signal-channel-lifecycle.md`](adr/0054-signal-channel-lifecycle.md) *(Sprint 32 Signal Agent channel-intake lifecycle; issue #454)* | `FR-SIG-001` to `FR-SIG-011`, `NFR-SIG-001` to `NFR-SIG-002` |
+| [`docs/superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md`](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md) + [`docs/adr/0055-closed-loop-learning-capture-and-eval.md`](adr/0055-closed-loop-learning-capture-and-eval.md) *(Sprint 30: closed-loop learning — capture contract, online + offline eval, curator + advisory backlog; issue #443)* | `FR-LEARN-001` to `FR-LEARN-005`, `NFR-LEARN-001` to `NFR-LEARN-004` |
+| [`docs/superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md`](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md) + [`docs/superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md`](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md) + [`docs/adr/0056-bva-agent-deterministic-computation.md`](adr/0056-bva-agent-deterministic-computation.md) *(Sprint 33: Business Value Assessment Agent — deterministic `bva.simulate` ROI/TCO engine, cited Class-C GroundedChunks, Cosmos Opportunity SoR + gold projection, peer-to-PO fan-out; issues #489, #501)* | `FR-BVA-001` to `FR-BVA-005`, `NFR-BVA-001` to `NFR-BVA-005` |
+| [`docs/superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md`](superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md) + [`docs/GLOSSARY.md`](GLOSSARY.md) + [`docs/architecture/diagram-library.md`](architecture/diagram-library.md) *(Sprint 34: Curavias Documentation Alignment — Curavias anchor + IQ / Frontier-Firm terminology + canonical mermaid library + customer-ready presentation; tracker #505)* | `NFR-DOC-001` to `NFR-DOC-004` |
 
 ## Assumptions To Validate In Implementation Planning
 

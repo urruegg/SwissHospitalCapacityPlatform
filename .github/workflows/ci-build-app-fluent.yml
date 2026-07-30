@@ -67,17 +67,17 @@ jobs:
         # Build context = apps/hcc-app-fluent/ so the Dockerfile's `COPY . .`
         # only picks up the app source, not the whole repo.
         #
-        # VITE_AGENT_HOST_URL is baked into the static bundle so the Copilot
-        # Drawer calls the live agent-host. Sourced from the `sit` environment
-        # variable AGENT_HOST_URL (config, not code); empty => built-in mock.
+        # #447 — the image is now ENV-AGNOSTIC: the agent-host URL is injected at
+        # container start (window.__ENV__ via docker-entrypoint.d/30-env-config.sh)
+        # from the per-env AGENT_HOST_URL Container App env var (set in the
+        # bicepparams), NOT baked at build time. So we no longer pass
+        # --build-arg VITE_AGENT_HOST_URL; the same image serves SIT and PROD and
+        # `az acr import` to PROD no longer inherits the SIT URL.
         shell: bash
-        env:
-          VITE_AGENT_HOST_URL: ${{ vars.AGENT_HOST_URL }}
         run: |
           set -euo pipefail
           docker build \
             -f apps/hcc-app-fluent/Dockerfile \
-            --build-arg VITE_AGENT_HOST_URL="${VITE_AGENT_HOST_URL}" \
             -t "${{ steps.tags.outputs.full_sha }}" \
             -t "${{ steps.tags.outputs.full_latest }}" \
             apps/hcc-app-fluent

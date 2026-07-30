@@ -8,7 +8,13 @@
  * endpoint or `fetch` of its own.
  */
 import type { GroundedReco } from '../copilot-rail/reco';
-import { isAgentHostConfigured, iqAgentChat, iqAgentList } from '../data/iq-client';
+import {
+  isAgentHostConfigured,
+  iqAgentChat,
+  iqAgentList,
+  postInteractionEvent,
+  type AgentChatOptions,
+} from '../data/iq-client';
 
 export interface AgentManifestEntry {
   name: string;
@@ -30,6 +36,13 @@ export interface GroundedReply {
    * citations) instead of a flat text bubble. Absent → plain-text reply.
    */
   reco?: GroundedReco;
+  /**
+   * Sprint 30 M2 — id of the captured `DC-AGENT-INTERACTION-v1` record for this
+   * turn (returned by the agent-host). Lets the UI attach user-interaction events
+   * (e.g. a thumbs rating) to the exact turn. Synthesized on the mock path so the
+   * control is demoable without a live host.
+   */
+  interactionId?: string;
 }
 
 /** Fetch the deployed agent list from the agent-host, or a static fallback. */
@@ -242,15 +255,49 @@ function refusalReco(agent: string, prompt: string): GroundedReco {
 export async function invokeAgent(
   agent: string,
   prompt: string,
+  opts?: AgentChatOptions,
 ): Promise<GroundedReply> {
   if (!isAgentHostConfigured()) {
     const reco =
       REFUSAL_TRIGGER.test(prompt) || PHI_TRIGGER.test(prompt)
         ? refusalReco(agent, prompt)
         : mockReco(agent);
-    return { answer: reco.read, citations: reco.citations, refused: reco.refused ?? false, reco };
+    return {
+      answer: reco.read,
+      citations: reco.citations,
+      refused: reco.refused ?? false,
+      reco,
+      interactionId: mockInteractionId(),
+    };
   }
-  return iqAgentChat<GroundedReply>(agent, prompt);
+  return iqAgentChat<GroundedReply>(agent, prompt, opts);
+}
+
+/** Synthesize a capture id shaped like the agent-host's (`AIX-<hex>`) for the mock path. */
+function mockInteractionId(): string {
+  const hex = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  return `AIX-${hex}`;
+}
+
+/**
+ * Sprint 30 M2 — emit a user-interaction event (e.g. a thumbs rating) for a
+ * captured turn. No-ops when the agent-host is unconfigured (dev/CI: nothing to
+ * persist, advisory-only) so the UI stays functional without a backend; when a
+ * host is configured it routes through the IQ gateway's `postInteractionEvent`.
+ * Best-effort: never throws into the UI (feedback must not break the reply).
+ */
+export async function sendInteractionEvent(
+  agent: string,
+  interactionId: string,
+  type: string,
+  value?: string,
+): Promise<void> {
+  if (!isAgentHostConfigured() || !interactionId) return;
+  try {
+    await postInteractionEvent(agent, interactionId, { type, value });
+  } catch {
+    // Swallow: a failed rating must not disrupt the conversation surface.
+  }
 }
 
 /**

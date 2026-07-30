@@ -1,17 +1,28 @@
-# Development Workflow
+# Curavias — Development Workflow
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-24 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-29 |
 | **Author** | Urs Rueegg |
 | **Status** | Accepted |
-| **Previous Version** | 1.0.0 (initial version) |
+| **Previous Version** | 1.1.0 (initial version); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, and executive summary (Sprint 34 WS-4) |
 
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+>
 > The simplest, best-practice way to run two to three parallel sprints on one
 > desktop with GitHub issues and pull requests as the control plane. Formalised
 > in [ADR-0038](adr/0038-trunk-based-parallel-sprint-workflow.md), which
 > supersedes the retired contract-based branch-locking practice.
+
+## Executive summary
+
+This document describes how work is delivered for Curavias: a trunk-based,
+GitHub-native workflow where each parallel sprint runs in its own worktree and a
+human merges every reviewed pull request. It is written so a contributor can get
+productive on the delivery model quickly.
 
 ## The model in one sentence
 

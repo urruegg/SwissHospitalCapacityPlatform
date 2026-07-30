@@ -1,13 +1,17 @@
-﻿# AGENTS.md — Agent Registry
+# Curavias — Agent Registry
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.11.0 |
-| **Date** | 2026-07-25 |
-| **Author** | Urs Rüeegg |
+| **Version** | 2.14.0 |
+| **Date** | 2026-07-29 |
+| **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 2.10.0 (added the `product-owner-agent` registry row for the Sprint 28 Curavias Product Owner Agent; issue #377) |
+| **Previous Version** | 2.13.0 (added the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent, issues #489, #501); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical agent-topology diagram (Sprint 34 WS-4) |
 
+> **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
+> platform — a Microsoft Frontier-Firm reference implementation grounded on
+> Fabric IQ, Foundry IQ, and Work IQ.
+>
 > **Purpose**: Top-level registry of every agent realised in this repository.
 > The **GitHub Copilot coding agent** reads this file on every run to learn
 > which agents exist, which MCP servers they may call, and how they refuse
@@ -33,6 +37,51 @@
 > infrastructure. The `agents-archive/` folder was retired in the 2.0.0
 > restructure; historical bodies for `bm-copilot` and the Sprint 09 `csa-agent`
 > live in `git log`.
+
+## Executive summary
+
+This document is the authoritative registry of every AI agent in Curavias: what
+each agent does, which Microsoft Cloud (MCP) tools it may call, its side-effect
+ceiling, and how it refuses unsafe or destructive actions. It is written so a
+reviewer can see the full agent roster and the guardrails that keep every agent
+advisory-first and human-approved.
+
+## Canonical diagram
+
+The agent topology below is maintained in
+[docs/architecture/diagram-library.md](docs/architecture/diagram-library.md) and
+copied here; update both places together when it changes.
+
+```mermaid
+flowchart TB
+    USER["Agent boss (human, HITL)"] --> ORCH["App copilot orchestrator"]
+
+    subgraph Capacity["Capacity copilots"]
+        BMCA["bmca-agent<br/>bed management"]
+        OOA["ooa-agent<br/>occupancy / 72h forecast"]
+        DCA["dca-agent<br/>discharge"]
+        ORSA["orsa-agent<br/>OR steering"]
+        SBA["sba-agent<br/>staffing balance"]
+        CSA["csa-agent<br/>crisis / scenario"]
+    end
+
+    subgraph Advisory["Product + value"]
+        PO["product-owner-agent"]
+        BVA["bva-agent<br/>bed-value analysis"]
+    end
+
+    subgraph Support["Data + signal"]
+        DQ["data-quality-agent"]
+        SIG["signal-agent"]
+    end
+
+    ORCH --> Capacity
+    ORCH --> Advisory
+    ORCH --> Support
+    WORKIQ["Work IQ context"] -.read-only.-> ORCH
+    Capacity -->|cited, advisory-only| USER
+    Advisory -->|cited, advisory-only| USER
+```
 
 ## Superpowers Skill Enforcement
 
@@ -191,6 +240,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `sba-agent` | Staffing-balance copilot (S11) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@sba-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/sba-agent/AGENT.md`](agents/sba-agent/AGENT.md) | [`agents/sba-agent/golden-tasks.md`](agents/sba-agent/golden-tasks.md) |
 | `csa-agent` | Crisis / scenario copilot — full **Prepare/Run/Evaluate/Recommend** body (S16 T4; expanded from the S11 scaffold). Supersedes the Sprint 09 v2.0.0 Foundry-hosted CSA body per the 2.0.0 restructure (git log for the old body). | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@csa-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp`, `cosmos-mcp` | `deploy` (gated by `approved-to-apply`; Run triggers the `csa-simulate` notebook) | [`agents/csa-agent/AGENT.md`](agents/csa-agent/AGENT.md) | [`agents/csa-agent/golden-tasks.md`](agents/csa-agent/golden-tasks.md) |
 | `signal-triage-agent` | Trusted external-signal triage - dedup, conflict arbitration, TriggerRule match, and advisory CSA handoff for `DC-EXT-SIGNAL-v1` facts (S21 M7) | @urruegg | Activator/Reflex webhook, scheduled poller bridge, or `@signal-triage-agent` mention | `github-mcp`, `fabric-mcp` | `write` | [`agents/signal-triage-agent/AGENT.md`](agents/signal-triage-agent/AGENT.md) | [`agents/signal-triage-agent/golden-tasks.md`](agents/signal-triage-agent/golden-tasks.md) |
+| `signal-agent` | Channel-intake lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor) + the certification→skills onboarding worked example (S32) | @urruegg | `@signal-agent` mention or a channel-onboarding issue consuming a `DC-DQ-GAP-v1` `newSourceNeeded` gap | `github-mcp`, `fabric-mcp` | `write` | [`agents/signal-agent/AGENT.md`](agents/signal-agent/AGENT.md) | [`agents/signal-agent/golden-tasks.md`](agents/signal-agent/golden-tasks.md) |
 | `data-quality-agent` | Bronze/Silver/Gold contract-check + drift alerts (S11), including the Sprint 21 `DC-EXT-SIGNAL-v1` external-signal gate for schema, dedup, quarantine, provenance, licence, provider-manifest schema-validity (`provider.yaml` against `provider.schema.json`), `provenance.activeBinding` presence, `ext_dim_source.dataMode` population, and manifest `licence` presence | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or workflow-scheduled invocation; loaded at runtime by the Sprint 13 agent-host | `github-mcp`, `fabric-mcp` | `write` | [`agents/data-quality-agent/AGENT.md`](agents/data-quality-agent/AGENT.md) | [`agents/data-quality-agent/golden-tasks.md`](agents/data-quality-agent/golden-tasks.md) |
 | `onboarding-agent` | Onboarding welcome-PR bot (S11 stretch) | @urruegg | Entra audit-log new-sign-in event via workflow; runs as a workflow-scheduled bot (not through the agent-host) | `github-mcp`, `entra-mcp` (read-only) | `write` (repo); `read` (entra-mcp) | [`agents/onboarding-agent/AGENT.md`](agents/onboarding-agent/AGENT.md) | [`agents/onboarding-agent/golden-tasks.md`](agents/onboarding-agent/golden-tasks.md) |
 | `fabric-data-agent` | Read-only ontology + semantic-model query surface (Sprint 09 v2). Retained through the 2.0.0 restructure as a Fabric IQ-hosted read-only agent; runtime posture reconciliation with ADR-0008 is a separate follow-up. **Live demo artefact:** `da_hospital_capacity` (`b2e53c23-182a-452d-9321-e63f6009e80b`) published in SIT workspace `f3af9733-9503-4e92-98f9-a901d96f1c87` (`westus2`, endpoint `https://api.fabric.microsoft.com/v1/workspaces/f3af9733-.../aiskills/b2e53c23-.../aiassistant/openai`), consumed live by the Foundry `ooa-agent` per [ADR-0034](docs/adr/0034-fabric-iq-demo-scope-artefacts.md) + [evidence doc](docs/architecture/fabric-iq-ready-evidence.md). | @urruegg | Runtime-only; not invoked from repo issues | Fabric IQ (Preview per ADR-0002) | `read` | [`agents/fabric-data-agent/AGENT.md`](agents/fabric-data-agent/AGENT.md) | *(none; Sprint 11 shape not yet applied)* |
@@ -200,6 +250,7 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 | `ux-design-agent` | UX design steward — anchor for all user-experience questions (mockups, flows, brand tokens, accessibility) and refinement of the Curavias demo showcase; runs the Superpowers brainstorming + visual-companion flow (S20; approved via issue #258) | @urruegg | `@ux-design-agent` mention or any UX / design / mockup / accessibility issue | `github-mcp`, `playwright-mcp` (read; visual + a11y verification) | `write` | [`agents/ux-design-agent/AGENT.md`](agents/ux-design-agent/AGENT.md) | [`agents/ux-design-agent/golden-tasks.md`](agents/ux-design-agent/golden-tasks.md) |
 | `product-marketing-agent` | Product-marketing / communications steward — stringent, brand-aligned Curavias messaging across customer-, user-, and devops-facing channels; RACI-paired with `ux-design-agent` (message vs. experience) (S24; approved via issue #262) | @urruegg | `@product-marketing-agent` mention or any product-messaging / copy / positioning issue | `github-mcp`, `playwright-mcp` (read; copy-in-context review) | `write` | [`agents/product-marketing-agent/AGENT.md`](agents/product-marketing-agent/AGENT.md) | [`agents/product-marketing-agent/golden-tasks.md`](agents/product-marketing-agent/golden-tasks.md) |
 | `product-owner-agent` | Curavias Product Owner Agent — authoritative, source-grounded, **advisory-only** voice of the platform; answers product questions grounded on the four knowledge classes (A corpus / B live-proof / C cost / D ontology) over the frozen `GroundedChunk` contract; **domain #1 on the shared Foundry IQ Knowledge Layer** ([ADR-0043](docs/adr/0043-product-owner-agent-foundry-iq-domain.md)); embedded as the START + BACKSTAGE Copilot rail (S28; approved via issue #377) | @urruegg | `@product-owner-agent` mention, any product-question issue, or the in-app Copilot rail | `github-mcp` (write), `azure-mcp` (read; Class B/C), `fabric-mcp` (read; Class D) | `write` | [`agents/product-owner-agent/AGENT.md`](agents/product-owner-agent/AGENT.md) | [`agents/product-owner-agent/golden-tasks.md`](agents/product-owner-agent/golden-tasks.md) |
+| `bva-agent` | Business Value Assessment Agent — **advisory-only**, deterministic ROI/TCO/payback/NPV reasoning over the `bva_*` gold measures and the typed `bva.simulate` tool (**no LLM arithmetic**); every figure a cited Class-C `GroundedChunk`; captures the Opportunity in the Cosmos system-of-record; **peer to `product-owner-agent`** under the App orchestrator (BVA owns the numbers, PO owns the go/no-go verdict) per [ADR-0056](docs/adr/0056-bva-agent-deterministic-computation.md); loaded at runtime by the Sprint 13 agent-host (S33; approved via issues #489, #501) | @urruegg | Issue from [`agent-build.yml`](.github/ISSUE_TEMPLATE/agent-build.yml) or `@bva-agent` mention; loaded at runtime by the Sprint 13 agent-host | `github-mcp` (write), `fabric-mcp` (read; `sm_bva` baseline), `cosmos-mcp` (write; opportunities SoR) | `write` | [`agents/bva-agent/AGENT.md`](agents/bva-agent/AGENT.md) | [`agents/bva-agent/golden-tasks.md`](agents/bva-agent/golden-tasks.md) |
 
 > **Status legend**: agents marked *(planned, S`<n>`)* are scaffolded in this
 > registry now and authored in the indicated sprint per

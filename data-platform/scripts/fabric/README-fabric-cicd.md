@@ -1,6 +1,6 @@
 # Fabric IQ release train — reproducible fabric-cicd deploy
 
-> **Version** 1.1.0 · **Date** 2026-07-20 · **Author** Urs Rüegg · **Status** Reviewed · **Previous Version** 1.0.0 (added the reproducible medallion rebuild + gold-parity proof section)
+> **Version** 1.2.0 · **Date** 2026-07-29 · **Author** Urs Rüegg · **Status** Reviewed · **Previous Version** 1.1.0 (added the reproducible medallion rebuild + gold-parity proof section)
 
 Runbook for the **Fabric IQ release train**: a parameterized
 [`fabric-cicd`](https://microsoft.github.io/fabric-cicd/) deploy that takes the
@@ -60,10 +60,10 @@ stay valid.
 
 ## Environment coordinates (as-built)
 
-| Environment | Workspace | Lakehouse | Capacity (westus2) |
-| ----------- | --------- | --------- | ------------------ |
-| SIT | `ws-ihzhhpf-sit-data` `f3af9733-9503-4e92-98f9-a901d96f1c87` | `lh_ihzhhpf_sit` `30594c20-46ba-40ea-91fa-4701b105e0b9` | `fabricihzhhpfsit` |
-| PROD | `ws-ihzhhpf-prod-data` `399b73f6-4b1c-44da-b7f9-1b4a37525a2b` | `lh_ihzhhpf_prod` `4f73c480-6c85-4823-bb98-4e66780c527f` | `fabricihzhhpfprod` |
+| Environment | Workspace | Lakehouse | Capacity | Region |
+| ----------- | --------- | --------- | -------- | ------ |
+| SIT | `ws-ihzhhpf-sit-data` `f3af9733-9503-4e92-98f9-a901d96f1c87` | `lh_ihzhhpf_sit` `30594c20-46ba-40ea-91fa-4701b105e0b9` | `fabricihzhhpfsit` | westus2 |
+| PROD | `ws-ihzhhpf-prod-data` `1c8408f4-6eb7-401f-aee9-77fe4c8a515e` | `lh_ihzhhpf_prod` `57bd6e02-5248-439c-9f31-16bf9ee83cb4` | `fabricihzhhpfprod` | switzerlandnorth |
 
 ## Local prerequisites
 

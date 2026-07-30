@@ -5,6 +5,7 @@ import { MainView } from '../workspaces/main/MainView';
 import { BackstageView } from '../workspaces/backstage/BackstageView';
 import { SettingsView } from '../workspaces/settings/SettingsView';
 import { BrandGalleryView } from '../workspaces/brand/BrandGalleryView';
+import { FeedbackLoopPresentationView } from '../workspaces/backstage/tabs/story/feedback-loop/FeedbackLoopPresentationView';
 
 /**
  * Sprint 20 M2 — five-plane route table.
@@ -15,6 +16,10 @@ import { BrandGalleryView } from '../workspaces/brand/BrandGalleryView';
  * removed.
  */
 export const routes: RouteObject[] = [
+  {
+    path: 'present/feedback-loop',
+    element: <FeedbackLoopPresentationView />,
+  },
   {
     element: <AppShell />,
     children: [
