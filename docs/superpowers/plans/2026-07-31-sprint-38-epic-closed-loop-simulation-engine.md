@@ -1158,6 +1158,8 @@ This test wires the **real decision-tier** (`coordination.store.InMemoryStore`, 
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[3]
 SIM_SRC = ROOT / "apps" / "sim-capacity" / "src"
 DEC_SRC = ROOT / "data-platform" / "decision"
@@ -1167,6 +1169,7 @@ for p in (SIM_SRC, DEC_SRC):
 
 from closedloop.sim_state import build_sim_state, Stage
 from closedloop.actuation import ActuationConsumer
+from closedloop.journey import CANONICAL_JOURNEY
 from coordination.store import InMemoryStore
 from coordination import plan_runtime
 
@@ -1199,21 +1202,26 @@ def test_happy_path_closes_the_loop():
     beds_free_before = sum(1 for b in state.beds_in_ward("C3") if b.state == "available")
     store = InMemoryStore()
     plan = _open_plan(store, state)
-    gold = _gold_from_state(state)
-    action = plan_runtime.propose_action(
-        store, plan_id=plan["id"], role="dca", lever_id="DCA-UNBLOCK-BARRIER",
-        params={"barrier_type": "transport", "n": 2, "ward": "C3"}, gold=gold, catalog=CATALOG,
-        proposed_by="dca",
-    )
-    plan_runtime.approve_action(store, action_id=action["id"], approver="alice", gold=gold, catalog=CATALOG)
-
     consumer = ActuationConsumer(store, {"DCA-UNBLOCK-BARRIER": EFFECT})
-    outcomes = consumer.apply_approved(plan["id"], state)
+
+    all_outcomes = []
+    for step in CANONICAL_JOURNEY:
+        gold = _gold_from_state(state)
+        action = plan_runtime.propose_action(
+            store, plan_id=plan["id"], role=step.role, lever_id=step.lever_id,
+            params={**step.params, "ward": "C3"}, gold=gold, catalog=CATALOG,
+            proposed_by=step.role,
+        )
+        plan_runtime.approve_action(
+            store, action_id=action["id"], approver=step.approver, gold=gold, catalog=CATALOG,
+        )
+        all_outcomes.extend(consumer.apply_approved(plan["id"], state, now="1970-01-01T00:00:00Z"))
 
     beds_free_after = sum(1 for b in state.beds_in_ward("C3") if b.state == "available")
-    assert beds_free_after == beds_free_before + 2       # loop closed: state changed
-    assert len(outcomes) == 1
-    assert outcomes[0]["divergence"] <= 0.5              # predicted ~ realised
+    total_freed = sum(o["realised_impact"]["value"] for o in all_outcomes)
+    assert total_freed > 0                                      # the loop actually did something
+    assert beds_free_after - beds_free_before == total_freed    # state change == recorded realised outcomes
+    assert all_outcomes[0]["divergence"] == 0.0                 # first step: predicted == realised (deterministic)
 
 
 def test_approval_withheld_does_not_change_trajectory():
@@ -1245,8 +1253,7 @@ def test_self_approval_is_refused_by_decision_tier():
         params={"barrier_type": "transport", "n": 2, "ward": "C3"}, gold=gold, catalog=CATALOG,
         proposed_by="dca",
     )
-    import pytest
-    with pytest.raises(Exception):
+    with pytest.raises(PermissionError, match="self-approval"):
         plan_runtime.approve_action(store, action_id=action["id"], approver="dca", gold=gold, catalog=CATALOG)
 
 
@@ -1262,8 +1269,8 @@ def test_second_apply_is_idempotent():
     )
     plan_runtime.approve_action(store, action_id=action["id"], approver="alice", gold=gold, catalog=CATALOG)
     consumer = ActuationConsumer(store, {"DCA-UNBLOCK-BARRIER": EFFECT})
-    consumer.apply_approved(plan["id"], state)
-    assert consumer.apply_approved(plan["id"], state) == []   # already actuated
+    consumer.apply_approved(plan["id"], state, now="1970-01-01T00:00:00Z")
+    assert consumer.apply_approved(plan["id"], state, now="1970-01-01T00:00:00Z") == []   # already actuated
 ```
 
 - [ ] **Step 2: Run the end-to-end test**
