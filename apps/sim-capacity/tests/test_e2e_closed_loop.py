@@ -19,6 +19,7 @@ from coordination import plan_runtime
 EFFECT = {
     "applies_to": "DischargeBarrier", "mutation": "set_status",
     "from": "open", "to": "cleared", "select_by": "barrier_type",
+    "cascade": [{"when": "patient_all_barriers_cleared", "set": "Patient.stage=DISCHARGED"}],
 }
 CATALOG = [{
     "lever_id": "DCA-UNBLOCK-BARRIER", "owner_role": "dca",
