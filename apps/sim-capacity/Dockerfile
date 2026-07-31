@@ -7,7 +7,7 @@ WORKDIR /repo
 # apps/sim-capacity/src/calibration/*.py.
 COPY apps/sim-capacity/pyproject.toml /repo/apps/sim-capacity/
 COPY apps/sim-capacity/src/ /repo/apps/sim-capacity/src/
-COPY docs/reviews/2026-06-29-ama-capacity-metadata-review/*.csv /repo/docs/reviews/2026-06-29-ama-capacity-metadata-review/
+COPY data/master-data/capacity/*.csv /repo/data/master-data/capacity/
 
 RUN pip install --no-cache-dir /repo/apps/sim-capacity
 

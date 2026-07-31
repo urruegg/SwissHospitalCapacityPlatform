@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.17.0 |
-| **Date** | 2026-07-28 |
+| **Version** | 0.18.0 |
+| **Date** | 2026-07-31 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.16.0 (Sprint 30 M9 Improve - Fine-tune subsection); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical agent-topology + request-sequence diagrams (Sprint 34 WS-1) |
+| **Previous Version** | 0.17.0 (Sprint 34 WS-1 rebrand to the Curavias customer-ready template - anchored title, product anchor, executive summary, embedded canonical diagrams); this bump adds the Sprint 38 M5 operational-loop outcome-evaluation subsection (outcome_divergence + calibration gate + advisory backlog, realising FR-CLP-003) |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -305,6 +305,30 @@ than a free-form sentence.
 The closed-loop learning approach below — capture contract, retention class, and
 online-eval sampling — is ratified in
 [ADR-0055](adr/0055-closed-loop-learning-capture-and-eval.md) (Sprint 30).
+
+### Operational-Loop Outcome Evaluation (Sprint 38 M5)
+
+The Sprint 38 EPIC closed-loop simulation engine feeds the learning loop a new,
+non-conversational signal: each HITL-approved action applied to the twin emits a
+`DC-SIM-OUTCOME-v1` record carrying the agent's **predicted-vs-realised
+divergence**. `evals/lib/sim_outcome_eval.py` adds three deterministic,
+advisory-only, PHI-safe surfaces over those records — realising `FR-CLP-003`:
+
+- **`outcome_divergence`** — an evaluator (reusing the Sprint 30 `EvalResult`)
+  that scores an outcome as passing when the agent's predicted impact aligns with
+  the simulator's realised impact within a divergence threshold.
+- **`run_calibration_gate`** — the "simulator is working" batch gate: it hard-
+  fails only on internal inconsistency (`realised value != freed-bed count`,
+  negative divergence, or non-`simulated` provenance) and rolls up the divergence
+  distribution as an advisory signal (high divergence is a lead, not a failure).
+- **`select_high_divergence`** — an advisory backlog of high-divergence journeys
+  (ids / lever / numbers only, never raw state) as an agent-optimisation lead;
+  drafts only, never auto-applied
+  ([ADR-0058](adr/0058-sim-outcome-and-effect-schema.md), `NFR-AI-001`).
+
+Deeper wiring of these leads into the Sprint 30 curator / prompt-optimizer /
+fine-tune-plan jobs and live model fine-tuning remain the deferred continuation
+(design spec §8.3).
 
 ### Agent-Turn Observability (Sprint 30 M1)
 

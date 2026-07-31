@@ -15,9 +15,9 @@ from typing import Dict, Optional
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 _CSV_PATH = (
     _REPO_ROOT
-    / "docs"
-    / "reviews"
-    / "2026-06-29-ama-capacity-metadata-review"
+    / "data"
+    / "master-data"
+    / "capacity"
     / "07_dim_ward_capacityunit.csv"
 )
 

@@ -71,6 +71,29 @@
       "type": "boolean",
       "enum": [true],
       "description": "Always true: every lever requires human-in-the-loop approval before execution."
+    },
+    "effect": {
+      "type": "object",
+      "description": "Declarative state mutation applied to SimState when the action is HITL-approved (Sprint 38, ADR-0058). Interpreted by apps/sim-capacity/src/closedloop/effect.py.",
+      "required": ["applies_to", "mutation"],
+      "properties": {
+        "applies_to": { "type": "string", "enum": ["DischargeBarrier", "Patient", "Bed"] },
+        "mutation": { "type": "string", "enum": ["set_status", "set_stage", "free_bed"] },
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "select_by": { "type": "string", "enum": ["barrier_type", "stage", "ward"] },
+        "cascade": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["when", "set"],
+            "properties": {
+              "when": { "type": "string" },
+              "set": { "type": "string" }
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -8,11 +8,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.9.0 |
-| **Date** | 2026-07-29 |
+| **Version** | 2.10.0 |
+| **Date** | 2026-07-31 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.8.0 (Sprint 34 WS-3 + Curavias brand-kit logo in header + §7 traceability row for Sprint 29 follow-up #424 live SIT lift); this bump restores the missing `### R)` NFR-BVA governance section (rows NFR-BVA-001..004 + header) that §7 traceability already references |
+| **Previous Version** | 2.9.0 (restored the missing `### R)` NFR-BVA governance section - rows NFR-BVA-001..004 + header); this bump adds the Sprint 38 FR-SIM-*/FR-CLP-*/NFR-SIM-* families + §7 traceability row (EPIC closed-loop simulation engine) |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -435,6 +435,27 @@ owns the numbers, PO owns the go/no-go verdict.
 | `FR-BVA-004` | The platform shall capture an Opportunity in the Cosmos system-of-record, project it into a `bva_opportunity` gold table, and expose it in the Backstage pipeline view. |
 | `FR-BVA-005` | The platform shall surface BVA in the Curavias App Start (inline) and Backstage (pipeline) copilot rail. |
 
+### W) EPIC Closed-Loop Simulation Engine (Sprint 38)
+
+Sprint 38 requirements per the
+[Sprint 38 EPIC closed-loop simulation engine design](superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md)
+and [ADR-0058](adr/0058-sim-outcome-and-effect-schema.md). The loop is
+**advisory-only and human-in-the-loop**: the EPIC system-of-record simulator
+applies only HITL-approved agent actions to synthetic, PHI-free patient-flow
+state and grades agents on predicted-vs-realised divergence.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-SIM-001` | The platform shall provide an **EPIC system-of-record simulator** holding durable, synthetic, no-PHI patient-flow state (patients, encounters, beds, wards, OR slots, staff shifts, discharge barriers). |
+| `FR-SIM-002` | The simulator shall advance state on a **seeded, deterministic clock**, such that the same seed and the same approved-action sequence yield the same trajectory. |
+| `FR-SIM-003` | The simulator shall feed demand and capacity data to Curavias via the existing `DC-DEMAND-ENCOUNTER-v1` and capacity contracts, derived from persistent state. |
+| `FR-SIM-004` | The simulator shall **apply HITL-approved agent actions** to its state via declared lever **effect** blocks, mutating patient-flow state (discharge frees a bed, transfer moves a patient, reslot changes the OR schedule). |
+| `FR-SIM-005` | The simulator shall emit a **`DC-SIM-OUTCOME-v1`** record per applied action capturing the pre/post state delta and the predicted-vs-realised **divergence**, PHI-free and linked by `plan_id` / `golden_thread` / `cosmos_id`. |
+| `FR-SIM-006` | The simulator shall expose a **`SystemAdapter`** seam so additional systems of record (SuccessFactors, LMS) are additive without re-architecture (only EPIC ships this sprint). |
+| `FR-CLP-001` | The platform shall provide a **deterministic, CI-runnable end-to-end patient-journey harness** that drives one synthetic patient through the capacity agents with a scripted HITL approval per step and asserts trajectory change. |
+| `FR-CLP-002` | The harness shall cover the **happy path plus failure modes** (approval withheld, state drift/superseded, deliberate divergence), and shall share its journey definition with a **demo-able interactive run**. |
+| `FR-CLP-003` | The platform shall feed `DC-SIM-OUTCOME-v1` **divergence** into the existing Sprint 30 evaluator library and advisory backlog as an agent-optimisation signal, and run a **calibration gate** asserting simulator internal consistency — all human-gated, advisory-only. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -634,6 +655,18 @@ grounded on [GLOSSARY.md](GLOSSARY.md) and
 | `NFR-DOC-003` | Canonical mermaid diagrams from `docs/architecture/diagram-library.md` shall be embedded in the documents the library assigns them to, and copies kept in sync from that source. |
 | `NFR-DOC-004` | Every documentation edit shall pass the mojibake + markdownlint gates and carry a §9 SemVer version bump. |
 
+### T) EPIC Closed-Loop Simulation Engine Governance (Sprint 38)
+
+Sprint 38 non-functional deltas per the
+[Sprint 38 EPIC closed-loop simulation engine design](superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md)
+and [ADR-0058](adr/0058-sim-outcome-and-effect-schema.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-SIM-001` | Simulator state and outcomes shall be **synthetic and PHI-free** by construction; `provenance: simulated` is stamped on every outcome. |
+| `NFR-SIM-002` | The actuation consumer shall apply an action **only** when a human has moved it to `approved-to-apply`; it shall refuse bot/self approvals and shall be **idempotent** per `cosmos_id`; no applied action shall auto-approve another. |
+| `NFR-SIM-003` | The closed loop shall preserve full **proposed -> approved -> applied -> realised -> curated** lineage, extending the Sprint 30 (`CH-C11`) lineage guarantee. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -680,6 +713,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md`](superpowers/specs/2026-07-27-sprint-30-closed-loop-learning-foundation-design.md) + [`docs/adr/0055-closed-loop-learning-capture-and-eval.md`](adr/0055-closed-loop-learning-capture-and-eval.md) *(Sprint 30: closed-loop learning — capture contract, online + offline eval, curator + advisory backlog; issue #443)* | `FR-LEARN-001` to `FR-LEARN-005`, `NFR-LEARN-001` to `NFR-LEARN-004` |
 | [`docs/superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md`](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md) + [`docs/superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md`](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md) + [`docs/adr/0056-bva-agent-deterministic-computation.md`](adr/0056-bva-agent-deterministic-computation.md) *(Sprint 33: Business Value Assessment Agent — deterministic `bva.simulate` ROI/TCO engine, cited Class-C GroundedChunks, Cosmos Opportunity SoR + gold projection, peer-to-PO fan-out; issues #489, #501)* | `FR-BVA-001` to `FR-BVA-005`, `NFR-BVA-001` to `NFR-BVA-005` |
 | [`docs/superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md`](superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md) + [`docs/GLOSSARY.md`](GLOSSARY.md) + [`docs/architecture/diagram-library.md`](architecture/diagram-library.md) *(Sprint 34: Curavias Documentation Alignment — Curavias anchor + IQ / Frontier-Firm terminology + canonical mermaid library + customer-ready presentation; tracker #505)* | `NFR-DOC-001` to `NFR-DOC-004` |
+| [`docs/superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md`](superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md) + [`docs/adr/0058-sim-outcome-and-effect-schema.md`](adr/0058-sim-outcome-and-effect-schema.md) *(Sprint 38: EPIC closed-loop simulation engine — stateful twin, HITL-approved actuation, DC-SIM-OUTCOME-v1, E2E journey)* | `FR-SIM-001` to `FR-SIM-006`, `FR-CLP-001` to `FR-CLP-003`, `NFR-SIM-001` to `NFR-SIM-003` |
 
 ## Assumptions To Validate In Implementation Planning
 
