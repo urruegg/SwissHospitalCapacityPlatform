@@ -250,13 +250,13 @@ const useStyles = makeStyles({
     lineHeight: 1.3,
   },
   rowSignalLabel: {
-    color: '#178FC0',
+    color: '#117A9F',
     fontSize: '10px',
     fontWeight: tokens.fontWeightBold,
     letterSpacing: '0.04em',
   },
   rowActionLabel: {
-    color: '#0E9B78',
+    color: '#0B8265',
     fontSize: '10px',
     fontWeight: tokens.fontWeightBold,
     letterSpacing: '0.04em',
@@ -377,7 +377,7 @@ const useStyles = makeStyles({
     fontWeight: tokens.fontWeightBold,
   },
   chevron: {
-    color: '#0E9B78',
+    color: '#0B8265',
     fontWeight: tokens.fontWeightBold,
     fontSize: '16px',
     display: 'inline-flex',
@@ -433,13 +433,13 @@ const useStyles = makeStyles({
     stroke: tokens.colorNeutralStroke2,
   },
   labelSignalText: {
-    fill: '#178FC0',
+    fill: '#117A9F',
     fontSize: '13px',
     fontWeight: tokens.fontWeightBold,
     letterSpacing: '0.5px',
   },
   labelActionText: {
-    fill: '#0E9B78',
+    fill: '#0B8265',
     fontSize: '13px',
     fontWeight: tokens.fontWeightBold,
     letterSpacing: '0.5px',

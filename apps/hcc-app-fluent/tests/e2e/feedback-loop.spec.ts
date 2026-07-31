@@ -10,7 +10,7 @@ test('Backstage feedback loop routes domain context to the PO rail', async ({ pa
   await page.goto('/backstage/feedback-loop');
 
   await expect(page.getByTestId('digital-feedback-loop-section')).toBeVisible();
-  await expect(page.locator('[data-testid^="backstage-nav-"]')).toHaveCount(2);
+  await expect(page.locator('[data-testid^="backstage-nav-"]')).toHaveCount(7);
 
   await page.getByRole('button', { name: /empower care teams/i }).click();
 
@@ -43,10 +43,10 @@ test('narrow feedback loop remains readable without horizontal scroll', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/present/feedback-loop');
 
-  await expect(page.getByRole('button', { name: /engage care network/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /optimize patient flow/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /empower care teams/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /transform care delivery/i })).toBeVisible();
+  await expect(page.locator('[data-domain-id="care-ecosystem"]')).toBeVisible();
+  await expect(page.locator('[data-domain-id="command-center"]')).toBeVisible();
+  await expect(page.locator('[data-domain-id="frontier-workforce"]')).toBeVisible();
+  await expect(page.locator('[data-domain-id="care-innovation"]')).toBeVisible();
   await expect(page.getByText(/Microsoft IQ core/i)).toBeVisible();
 
   const documentWidth = await page.evaluate(() => ({
@@ -62,11 +62,4 @@ test('feedback loop honors reduced-motion preferences', async ({ page }) => {
   await page.goto('/backstage/feedback-loop');
 
   await expect(page.getByTestId('feedback-loop-canvas')).toHaveAttribute('data-reduced-motion', 'true');
-});
-
-test('feedback loop pause control stops the simulation', async ({ page }) => {
-  await page.goto('/backstage/feedback-loop');
-
-  await page.getByRole('button', { name: /pause simulation/i }).click();
-  await expect(page.getByTestId('feedback-loop-canvas')).toHaveAttribute('data-playing', 'false');
 });

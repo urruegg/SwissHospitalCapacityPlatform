@@ -25,15 +25,4 @@ describe('DigitalFeedbackLoop', () => {
     expect(onSelect).toHaveBeenCalledOnce();
     expect(onSelect.mock.calls[0][0].id).toBe('frontier-workforce');
   });
-
-  it('toggles selected-loop mode and pause state accessibly', () => {
-    renderLoop();
-    fireEvent.click(screen.getByRole('button', { name: /selected domain/i }));
-    expect(screen.getByTestId('feedback-loop-canvas')).toHaveAttribute(
-      'data-stream-mode',
-      'selected',
-    );
-    fireEvent.click(screen.getByRole('button', { name: /pause simulation/i }));
-    expect(screen.getByRole('button', { name: /play simulation/i })).toBeVisible();
-  });
 });

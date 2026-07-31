@@ -85,7 +85,7 @@ export function SectionHeader({ id, header, tagline, description, tools, variant
   const s = useStyles();
   const isEyebrow = variant === 'eyebrow';
   return (
-    <header className={s.root} data-testid={`section-header-${id}`}>
+    <div className={s.root} data-testid={`section-header-${id}`}>
       <div className={s.headRow}>
         <div className={s.headText}>
           {isEyebrow ? (
@@ -103,6 +103,6 @@ export function SectionHeader({ id, header, tagline, description, tools, variant
         </div>
         {tools && <div className={s.tools}>{tools}</div>}
       </div>
-    </header>
+    </div>
   );
 }
