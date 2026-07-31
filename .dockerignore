@@ -32,5 +32,6 @@ agents/**/__pycache__
 data-platform/decision/**/__pycache__
 data-platform/decision/**/*.pyc
 
-# Review CSVs consumed by calibration modules at runtime
-!docs/reviews/2026-06-29-ama-capacity-metadata-review/*.csv
+# Golden-source capacity CSVs consumed by calibration modules at runtime
+# (moved from docs/reviews/2026-06-29-ama-capacity-metadata-review/ in Sprint 22 P1a)
+!data/master-data/capacity/*.csv
