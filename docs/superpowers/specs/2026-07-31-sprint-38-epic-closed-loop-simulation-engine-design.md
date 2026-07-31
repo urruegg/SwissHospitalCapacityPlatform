@@ -579,7 +579,7 @@ autonomous action of any kind; PHI or real EPIC connectivity.
 | R5 | "Finetuning" over-scoped | Thin slice (section 8) proves plumbing only; execution deferred to Sprint 39 (recorded in section 10/11) |
 | Q1 | Should SIT host SimState in Cosmos now, or stay local until Sprint 39? | Proposed: local for CI this sprint; Cosmos container behind the `cosmos-mcp` seam is M0-optional, decided at planning |
 | Q2 | Does the interactive demo run reuse the app HITL surface or a thin CLI? | Proposed: reuse the app HITL surface if ready; otherwise a CLI approver sharing the journey definition — decided in writing-plans |
-| Q3 | New ADR needed? | Yes — proposed **ADR-0057** to ratify `DC-SIM-OUTCOME-v1`, the lever `effect` schema, and the sim-as-ground-truth pattern (see section 14) |
+| Q3 | New ADR needed? | Yes — **ADR-0058** ratifies `DC-SIM-OUTCOME-v1`, the lever `effect` schema, and the sim-as-ground-truth pattern (0057 was already taken by the OBO-seam ADR; see section 14) |
 
 ---
 
@@ -610,8 +610,9 @@ for `FR-SIM-*`); reuses `DC-INSIGHT-v1` (`FR-FC-007`), the decision ontology
 HITL gate ([ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md),
 `NFR-AI-001`), and the closed-loop-learning families `FR-LEARN-*` / `NFR-LEARN-*`
 ([ADR-0055](../../adr/0055-closed-loop-learning-capture-and-eval.md)); governed by
-`NFR-AI-001`, ADR-0016, ADR-0013. Proposed new **ADR-0057** ratifies
-`DC-SIM-OUTCOME-v1`, the lever `effect` schema, and the sim-as-ground-truth pattern.
+`NFR-AI-001`, ADR-0016, ADR-0013. **ADR-0058** ratifies
+`DC-SIM-OUTCOME-v1`, the lever `effect` schema, and the sim-as-ground-truth pattern
+(renumbered from the originally-proposed 0057, which was already taken).
 
 ---
 

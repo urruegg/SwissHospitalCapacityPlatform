@@ -74,7 +74,7 @@
     },
     "effect": {
       "type": "object",
-      "description": "Declarative state mutation applied to SimState when the action is HITL-approved (Sprint 38, ADR-0057). Interpreted by apps/sim-capacity/src/closedloop/effect.py.",
+      "description": "Declarative state mutation applied to SimState when the action is HITL-approved (Sprint 38, ADR-0058). Interpreted by apps/sim-capacity/src/closedloop/effect.py.",
       "required": ["applies_to", "mutation"],
       "properties": {
         "applies_to": { "type": "string", "enum": ["DischargeBarrier", "Patient", "Bed"] },

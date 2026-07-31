@@ -1296,6 +1296,8 @@ git commit -m "test(sim): add end-to-end closed-loop journey (happy path + failu
 
 ### Task 11: Register the contract, requirements, and ADR
 
+> **Execution note (renumber):** ADR-0057 was already taken by the OBO-seam ADR (it landed after this plan was written), so the sim ADR shipped as **ADR-0058** (`docs/adr/0058-sim-outcome-and-effect-schema.md`). Read every `0057` reference in this task as `0058`.
+
 **Files:**
 
 - Modify: `docs/DATA.md`
