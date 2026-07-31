@@ -1,7 +1,9 @@
 """Hospital preset loader for the sim-capacity simulator.
 
-Reads ``01_dim_hospital.csv`` from the 2026-06-29 AMA capacity metadata review
-and returns a :class:`HospitalPreset` for a given hospital short name.
+Reads ``01_dim_hospital.csv`` from the golden-source master data
+(``data/master-data/capacity/``; the file was moved there from the 2026-06-29
+AMA capacity metadata review folder in Sprint 22 P1a's golden-source
+reorganisation).
 
 Design spec: §4.5 (bed inference formula for USZ).
 """
@@ -23,9 +25,9 @@ _SUPPORTED = {"USZ", "LUKS", "SZB", "HSL"}
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 _CSV_PATH = (
     _REPO_ROOT
-    / "docs"
-    / "reviews"
-    / "2026-06-29-ama-capacity-metadata-review"
+    / "data"
+    / "master-data"
+    / "capacity"
     / "01_dim_hospital.csv"
 )
 

@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-_REVIEW_DIR = _REPO_ROOT / "docs" / "reviews" / "2026-06-29-ama-capacity-metadata-review"
+_REVIEW_DIR = _REPO_ROOT / "data" / "master-data" / "capacity"  # golden-source (moved from docs/reviews in Sprint 22 P1a)
 _MAP_CSV = _REVIEW_DIR / "09_map_disease_treatment_specialty_service.csv"
 _DRG_CSV = _REVIEW_DIR / "06_dim_drg.csv"
 _DISEASE_CSV = _REVIEW_DIR / "04_dim_disease.csv"
