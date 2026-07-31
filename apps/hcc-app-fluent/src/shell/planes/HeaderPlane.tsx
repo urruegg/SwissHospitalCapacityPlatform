@@ -18,6 +18,9 @@ const useStyles = makeStyles({
     boxShadow: elevation.flat,
     position: 'relative',
     zIndex: 1,
+    '@media (max-width: 760px)': {
+      overflowX: 'auto',
+    },
   },
   brand: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalS },
   spacer: { flexGrow: 1 },

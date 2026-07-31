@@ -1,73 +1,61 @@
 import type { JSX } from 'react';
 import { useParams } from 'react-router-dom';
-import { Body1, makeStyles, Title2, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { DigitalFeedbackLoopSection } from './tabs/story/feedback-loop/DigitalFeedbackLoopSection';
-import { OpportunityPipelineView } from './opportunity/OpportunityPipelineView';
+import { SolutionDesignSection } from './tabs/story/solution-design/SolutionDesignSection';
 import {
-  BACKSTAGE_PARTS,
-  BackstageSubNav,
-  DEFAULT_BACKSTAGE_PART,
-} from './BackstageSubNav';
-
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalL,
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
-    maxWidth: '820px',
-  },
-  lead: {
-    color: tokens.colorNeutralForeground2,
-  },
-});
+  SuccessFrameworkSection,
+  DevSecOpsLoopSection,
+  ReviewSessionsSection,
+  PoKnowledgeClassesSection,
+} from './tabs/story/narrative/BackstageNarrativeSections';
+import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
+import { BACKSTAGE_PARTS } from './BackstageSubNav';
 
 /**
- * Sprint 35 - Backstage surface.
+ * Sprint 38 - Backstage as a vertical scroll narrative.
  *
- * Restructured from the Sprint 20 four-tab layout (Story / Evidence /
- * Opportunities / Roles). The surface now opens on the Curavias Digital
- * Feedback Loop as its first part, with a Main-style sub-nav (`BackstageSubNav`)
- * for additional parts as they land. Each part owns its own content; the view
- * only selects and mounts the active part behind `/backstage/:widget?`.
+ * The surface stacks its story sections on one
+ * scrollable page with a sticky Main-style section nav (scrollspy) provided by
+ * `NarrativeShell`. `/backstage/:widget` deep-links scroll to the matching
+ * section on mount.
  */
-const PARTS: Record<string, () => JSX.Element> = {
-  'feedback-loop': () => (
-    <div data-testid="widget-feedback-loop">
-      <DigitalFeedbackLoopSection />
-    </div>
-  ),
-  opportunities: () => (
-    <div data-testid="widget-opportunities">
-      <OpportunityPipelineView />
-    </div>
-  ),
+const RENDERERS: Record<string, () => JSX.Element> = {
+  'success-framework': () => <SuccessFrameworkSection />,
+  'feedback-loop': () => <DigitalFeedbackLoopSection />,
+  'solution-design': () => <SolutionDesignSection />,
+  'devsecops-loop': () => <DevSecOpsLoopSection />,
+  'review-sessions': () => <ReviewSessionsSection />,
+  'po-classes': () => <PoKnowledgeClassesSection />,
 };
 
 export function BackstageView() {
-  const styles = useStyles();
   const { t } = useTranslation();
-  const { widget = DEFAULT_BACKSTAGE_PART } = useParams();
-  const activePart = BACKSTAGE_PARTS.some((p) => p.key === widget)
-    ? widget
-    : DEFAULT_BACKSTAGE_PART;
-  const Part = PARTS[activePart] ?? PARTS[DEFAULT_BACKSTAGE_PART];
+  const { widget } = useParams();
+  const initialKey =
+    widget && (widget === 'company' || BACKSTAGE_PARTS.some((p) => p.key === widget))
+      ? widget
+      : undefined;
+
+  const sections: NarrativeSection[] = BACKSTAGE_PARTS.map((part) => ({
+    key: part.key,
+    label: t(part.labelKey),
+    render: RENDERERS[part.key] ?? (() => <div />),
+  }));
 
   return (
-    <div className={styles.root} data-testid="backstage-surface">
-      <header className={styles.header}>
-        <Title2>{t('backstage.header.title')}</Title2>
-        <Body1 as="p" className={styles.lead}>
-          {t('backstage.header.lead')}
-        </Body1>
-      </header>
-      <BackstageSubNav />
-      <Part />
+    <div data-testid="backstage-surface">
+      <NarrativeShell
+        introEyebrow={t('backstage.header.eyebrow', 'Backstage - the company behind the product')}
+        introKey="company"
+        introNavLabel={t('backstage.nav.company', 'Company')}
+        introTitle={t('backstage.header.title')}
+        introDescription={t('backstage.header.lead')}
+        sections={sections}
+        initialKey={initialKey}
+        leadingGroupCount={2}
+        navLabel={t('backstage.nav.label', 'Backstage sections')}
+      />
     </div>
   );
 }

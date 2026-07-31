@@ -33,6 +33,15 @@ function renderAt(path: string) {
 }
 
 describe('routes', () => {
+  it('provides compatible Request and AbortSignal constructors for router navigation', () => {
+    expect(
+      () =>
+        new Request('http://localhost/start', {
+          signal: new AbortController().signal,
+        }),
+    ).not.toThrow();
+  });
+
   it('defaults "/" to the Start surface', () => {
     renderAt('/');
     expect(screen.getByTestId('start-view')).toBeInTheDocument();

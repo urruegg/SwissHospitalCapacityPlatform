@@ -295,7 +295,206 @@
       "treatment": "Traitement",
       "discharge": "Sortie",
       "postAcute": "Soins post-aigus",
-      "occupancyNote": "{{ward}} → {{pct}} % en 72h"
+      "occupancyNote": "{{ward}} → {{pct}} % en 72h",
+      "journeyLabel": "Parcours patient opérationnel Curavias",
+      "openRoleBoard": "Ouvrir le tableau de rôle {{role}}",
+      "operationalBadge": "Étape opérationnelle",
+      "destinationBadge": "Destination rétablissement",
+      "recoveryTitle": "Destination rétablissement",
+      "recoveryBody": "Le parcours coordonné transmet le suivi aux soins de rétablissement et de proximité avec une responsabilité claire.",
+      "recoveryCaption": "Continuité au-delà de l'hôpital",
+      "advisoryBadge": "Consultatif",
+      "evidenceLabel": "Signaux de confiance du parcours patient",
+      "evidenceChip": "Étayé par des preuves",
+      "goldenThreadChip": "Fil rouge",
+      "operational": {
+        "occupancy": "Anticiper la demande et la pression de capacité avant que le parcours ne se tende.",
+        "bedManager": "Coordonner l'affectation et le flux des lits sur le site opérationnel.",
+        "orSteering": "Protéger la capacité en alignant les décisions du bloc avec les lits en aval.",
+        "staffing": "Équilibrer les compétences disponibles autour de la demande de soins émergente.",
+        "discharge": "Coordonner une transmission opérationnelle sûre vers le prochain lieu de soins."
+      },
+      "dataQuality": {
+        "ariaLabel": "Conseil sur la qualité des données",
+        "title": "Qualité des données sur tout le parcours",
+        "body": "Le Data Quality Agent vérifie la provenance, la fraîcheur et la santé des contrats sans quitter le parcours."
+      },
+      "crisis": {
+        "ariaLabel": "Conseil sur les scénarios de crise",
+        "body": "Lorsque la lentille de rôle le permet, CSA couvre le parcours avec la planification de scénarios et des conseils d'escalade.",
+        "cta": "Ouvrir la planification consultative"
+      },
+      "humanDecision": {
+        "ariaLabel": "Décision humaine",
+        "title": "L'humain décide.",
+        "body": "Les copilotes prévisualisent et recommandent ; les responsables opérationnels valident tout changement."
+      }
+    },
+    "frontier": {
+      "workChart": {
+        "title": "Comment le travail évolue",
+        "body": "Curavias réunit des personnes responsables, des agents spécialisés et des flux de travail à la demande dans un même modèle opérationnel.",
+        "flowLabel": "Modes de travail Curavias",
+        "modeBadge": "Mode de travail",
+        "modes": {
+          "humans": {
+            "title": "Humains",
+            "body": "Les responsables fixent l'intention, arbitrent les compromis et restent comptables des décisions opérationnelles."
+          },
+          "agents": {
+            "title": "Agents",
+            "body": "Des copilotes spécialisés surveillent les signaux, expliquent les options et préparent des recommandations étayées."
+          },
+          "on-demand": {
+            "title": "Travail à la demande",
+            "body": "Des flux transverses se forment autour de la décision, puis rendent le contrôle à l'équipe responsable."
+          }
+        },
+        "principle": {
+          "title": "Principe de la Frontier Firm",
+          "badge": "Appliqué à Curavias",
+          "body": "Le travail s'organise autour des résultats plutôt que de transmissions statiques entre fonctions.",
+          "curaviasMap": "Curavias applique ce principe à la capacité hospitalière : signaux partagés, agents spécialistes et décision humaine à chaque frontière opérationnelle."
+        }
+      },
+      "cioWhyNow": {
+        "title": "Défi CIO : pourquoi maintenant ?",
+        "body": "Sept décisions opérationnelles récurrentes montrent comment une coordination fragmentée peut devenir une prévisualisation Curavias gouvernée.",
+        "tableLabel": "Décisions opérationnelles : Aujourd'hui comparé à la prévisualisation Curavias",
+        "caption": "Comparaison qualitative illustrative — aucune métrique métier en direct.",
+        "columns": {
+          "decision": "Décision opérationnelle",
+          "today": "Aujourd'hui",
+          "preview": "Prévisualisation Curavias"
+        },
+        "decisions": {
+          "bed-allocation": {
+            "decision": "Affectation des lits",
+            "today": "Réactive le matin de l'admission et sous pression temporelle.",
+            "preview": "Planifiée depuis la perspective de capacité partagée plutôt qu'improvisée lors de la relève."
+          },
+          "or-slots": {
+            "decision": "Utilisation des créneaux du bloc",
+            "today": "Les annulations et créneaux vides sont découverts le jour de l'intervention.",
+            "preview": "Le risque d'annulation et les options de redistribution sont visibles avant la décision."
+          },
+          "staffing": {
+            "decision": "Couverture du personnel",
+            "today": "Des pools de dernière minute et des solutions locales couvrent les lacunes émergentes.",
+            "preview": "Les plannings s'alignent sur la demande prévue et les compétences requises."
+          },
+          "discharge": {
+            "decision": "Pilotage des sorties",
+            "today": "La préparation et les blocages restent incertains pendant le cycle matinal de coordination.",
+            "preview": "Les candidats, blocages et transmissions sont visibles avant la fenêtre opérationnelle."
+          },
+          "transfers": {
+            "decision": "Transferts et arrêts d'admission",
+            "today": "Les décisions sont ad hoc et la communication se fait sous pression.",
+            "preview": "Les cascades de transfert sont prévisualisées et les partenaires peuvent être impliqués plus tôt."
+          },
+          "crisis": {
+            "decision": "Réponse aux crises et scénarios",
+            "today": "La doctrine de réponse reste dans des documents séparés des signaux opérationnels.",
+            "preview": "Des recommandations guidées par les scénarios relient les signaux fiables à la doctrine approuvée."
+          },
+          "data-quality": {
+            "decision": "Alertes de qualité des données",
+            "today": "Les problèmes de qualité apparaissent seulement après l'arrivée d'un KPI dans un rapport.",
+            "preview": "Les contrôles alertent avant qu'une mesure affectée n'entre dans une décision opérationnelle."
+          }
+        }
+      },
+      "hospitals": {
+        "title": "Trois hôpitaux",
+        "body": "Trois hôpitaux synthétiques partagent une plateforme de capacité tout en conservant des contextes opérationnels distincts.",
+        "sitesLabel": "Réseau hospitalier Curavias synthétique",
+        "syntheticBadge": "Profil synthétique",
+        "sites": {
+          "curanova": {
+            "name": "CuraNova",
+            "profile": "Hôpital universitaire urbain coordonnant des parcours aigus complexes et des services spécialisés.",
+            "focus": "Priorité : flux du réseau et capacité tertiaire."
+          },
+          "curalp": {
+            "name": "Curalp",
+            "profile": "Hôpital régional équilibrant la demande aiguë et l'accès de communautés dispersées.",
+            "focus": "Priorité : couverture résiliente et transferts opportuns."
+          },
+          "vialta": {
+            "name": "Vialta",
+            "profile": "Hôpital de rétablissement intégré reliant la sortie aiguë, la réadaptation et les soins de proximité.",
+            "focus": "Priorité : préparation des transitions et continuité."
+          }
+        },
+        "rosterTitle": "Équipe capacité de sept agents",
+        "rosterBody": "Chaque agent porte une responsabilité consultative ciblée ; les personnes responsables gardent la décision.",
+        "agents": {
+          "ooa-agent": {
+            "name": "Agent de perspective d'occupation",
+            "role": "Anticipe la pression de capacité et explique la confiance de la prévision."
+          },
+          "bmca-agent": {
+            "name": "Copilote de gestion des lits",
+            "role": "Coordonne placements, contraintes et flux du site."
+          },
+          "dca-agent": {
+            "name": "Copilote des sorties",
+            "role": "Fait ressortir la préparation des transitions et les freins à la sortie."
+          },
+          "orsa-agent": {
+            "name": "Agent de pilotage du bloc",
+            "role": "Relie les choix du bloc à la capacité en aval."
+          },
+          "sba-agent": {
+            "name": "Agent d'équilibre du personnel",
+            "role": "Aligne la couverture des compétences sur la demande opérationnelle émergente."
+          },
+          "csa-agent": {
+            "name": "Agent de scénarios de crise",
+            "role": "Cadre des scénarios gouvernés et des options de résilience."
+          },
+          "data-quality-agent": {
+            "name": "Agent de qualité des données",
+            "role": "Vérifie provenance, fraîcheur et santé des contrats."
+          }
+        }
+      },
+      "ninetyDay": {
+        "title": "Feuille de route sur 90 jours",
+        "body": "Une séquence ROM illustrative va de décisions alignées à des flux éprouvés puis à une mise à l'échelle gouvernée.",
+        "roadmapLabel": "Feuille de route Curavias illustrative sur quatre-vingt-dix jours",
+        "romLabel": "ROM illustrative",
+        "phases": {
+          "frame-ground": {
+            "title": "Cadrer & Ancrer",
+            "range": "Jours illustratifs 1–30",
+            "body": "Aligner les décisions prioritaires, les responsables, les sources fiables et les garde-fous.",
+            "outcomes": {
+              "decision-map": "Carte des décisions et preuves de succès partagées",
+              "governance-baseline": "Périmètre de données synthétiques et socle de gouvernance"
+            }
+          },
+          "build-prove": {
+            "title": "Construire & Prouver",
+            "range": "Jours illustratifs 31–60",
+            "body": "Prototyper les flux à plus forte valeur et les tester avec les utilisateurs opérationnels.",
+            "outcomes": {
+              "workflow-slices": "Tranches de flux Copilot révisables",
+              "control-findings": "Constats d'utilisabilité, de preuve et de contrôle"
+            }
+          },
+          "operate-scale": {
+            "title": "Exploiter & Étendre",
+            "range": "Jours illustratifs 61–90",
+            "body": "Établir la responsabilité, le suivi et des jalons reproductibles pour une adoption élargie.",
+            "outcomes": {
+              "adoption-playbook": "Cadence opérationnelle et guide d'adoption",
+              "scale-decision": "Décision d'échelle avec risques résiduels"
+            }
+          }
+        }
+      }
     }
   },
   "settings": {

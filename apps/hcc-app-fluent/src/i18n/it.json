@@ -295,7 +295,206 @@
       "treatment": "Trattamento",
       "discharge": "Dimissione",
       "postAcute": "Cure post-acute",
-      "occupancyNote": "{{ward}} → {{pct}}% in 72h"
+      "occupancyNote": "{{ward}} → {{pct}}% in 72h",
+      "journeyLabel": "Percorso operativo del paziente Curavias",
+      "openRoleBoard": "Apri la board di ruolo {{role}}",
+      "operationalBadge": "Tappa operativa",
+      "destinationBadge": "Destinazione recupero",
+      "recoveryTitle": "Destinazione recupero",
+      "recoveryBody": "Il percorso coordinato passa alle cure di recupero e territoriali con una responsabilità chiara.",
+      "recoveryCaption": "Continuità oltre l'ospedale",
+      "advisoryBadge": "Consultivo",
+      "evidenceLabel": "Segnali di fiducia del percorso paziente",
+      "evidenceChip": "Basato su evidenze",
+      "goldenThreadChip": "Filo conduttore",
+      "operational": {
+        "occupancy": "Anticipare la domanda e la pressione sulla capacità prima che il percorso si restringa.",
+        "bedManager": "Coordinare assegnazioni e flusso dei letti nel sito operativo.",
+        "orSteering": "Proteggere la capacità allineando le decisioni di sala operatoria con i letti a valle.",
+        "staffing": "Bilanciare il personale qualificato rispetto alla domanda di cura emergente.",
+        "discharge": "Coordinare un passaggio operativo sicuro verso la successiva sede di cura."
+      },
+      "dataQuality": {
+        "ariaLabel": "Consulenza sulla qualità dei dati",
+        "title": "Qualità dei dati lungo il percorso",
+        "body": "Il Data Quality Agent verifica provenienza, aggiornamento e salute dei contratti senza lasciare il percorso."
+      },
+      "crisis": {
+        "ariaLabel": "Consulenza sugli scenari di crisi",
+        "body": "Quando la lente di ruolo lo consente, CSA copre il percorso con pianificazione degli scenari e consigli di escalation.",
+        "cta": "Apri la pianificazione consultiva"
+      },
+      "humanDecision": {
+        "ariaLabel": "Decisione umana",
+        "title": "La persona decide.",
+        "body": "I copiloti anticipano e raccomandano; i responsabili operativi approvano ogni cambiamento."
+      }
+    },
+    "frontier": {
+      "workChart": {
+        "title": "Come cambia il lavoro",
+        "body": "Curavias riunisce persone responsabili, agenti specializzati e flussi di lavoro su richiesta in un unico modello operativo.",
+        "flowLabel": "Modalità di lavoro Curavias",
+        "modeBadge": "Modalità di lavoro",
+        "modes": {
+          "humans": {
+            "title": "Persone",
+            "body": "I responsabili definiscono l'intento, valutano i compromessi e restano responsabili delle decisioni operative."
+          },
+          "agents": {
+            "title": "Agenti",
+            "body": "Copiloti specializzati monitorano i segnali, spiegano le opzioni e preparano raccomandazioni basate su evidenze."
+          },
+          "on-demand": {
+            "title": "Lavoro su richiesta",
+            "body": "Flussi interfunzionali si formano attorno alla decisione e poi restituiscono il controllo al team responsabile."
+          }
+        },
+        "principle": {
+          "title": "Principio della Frontier Firm",
+          "badge": "Applicato a Curavias",
+          "body": "Il lavoro è organizzato attorno ai risultati invece che a passaggi statici tra funzioni.",
+          "curaviasMap": "Curavias applica questo principio alla capacità ospedaliera: segnali condivisi, agenti specialisti e una decisione umana a ogni confine operativo."
+        }
+      },
+      "cioWhyNow": {
+        "title": "Sfida CIO: perché ora",
+        "body": "Sette decisioni operative ricorrenti mostrano dove il coordinamento frammentato può diventare un'anteprima Curavias governata.",
+        "tableLabel": "Decisioni operative: Oggi rispetto all'Anteprima Curavias",
+        "caption": "Confronto qualitativo illustrativo — nessuna metrica aziendale live.",
+        "columns": {
+          "decision": "Decisione operativa",
+          "today": "Oggi",
+          "preview": "Anteprima Curavias"
+        },
+        "decisions": {
+          "bed-allocation": {
+            "decision": "Assegnazione dei letti",
+            "today": "Reattiva la mattina del ricovero e sotto pressione temporale.",
+            "preview": "Pianificata dalla prospettiva di capacità condivisa invece che improvvisata al passaggio di consegne."
+          },
+          "or-slots": {
+            "decision": "Utilizzo degli slot di sala operatoria",
+            "today": "Cancellazioni e slot vuoti vengono scoperti il giorno dell'intervento.",
+            "preview": "Il rischio di cancellazione e le opzioni di redistribuzione sono visibili prima della decisione."
+          },
+          "staffing": {
+            "decision": "Copertura del personale",
+            "today": "Pool a breve preavviso e soluzioni locali coprono le lacune emergenti.",
+            "preview": "I turni si allineano alla domanda prevista e ai requisiti di competenza."
+          },
+          "discharge": {
+            "decision": "Coordinamento delle dimissioni",
+            "today": "Prontezza e blocchi restano incerti durante il ciclo di coordinamento mattutino.",
+            "preview": "Candidati, blocchi e passaggi di consegne sono visibili prima della finestra operativa."
+          },
+          "transfers": {
+            "decision": "Trasferimenti e blocchi dei ricoveri",
+            "today": "Le decisioni sono ad hoc e la comunicazione avviene sotto pressione.",
+            "preview": "Le cascate di trasferimento vengono anticipate e i partner possono essere coinvolti prima."
+          },
+          "crisis": {
+            "decision": "Risposta a crisi e scenari",
+            "today": "La dottrina di risposta resta in documenti separati dai segnali operativi correnti.",
+            "preview": "Raccomandazioni guidate dagli scenari collegano segnali affidabili alla dottrina approvata."
+          },
+          "data-quality": {
+            "decision": "Avvisi sulla qualità dei dati",
+            "today": "I problemi di qualità emergono solo dopo che un KPI raggiunge un report.",
+            "preview": "I gate di qualità avvisano prima che una misura interessata entri in una decisione operativa."
+          }
+        }
+      },
+      "hospitals": {
+        "title": "Tre ospedali",
+        "body": "Tre ospedali sintetici condividono una piattaforma di capacità mantenendo contesti operativi distinti.",
+        "sitesLabel": "Rete ospedaliera Curavias sintetica",
+        "syntheticBadge": "Profilo sintetico",
+        "sites": {
+          "curanova": {
+            "name": "CuraNova",
+            "profile": "Ospedale universitario urbano che coordina percorsi acuti complessi e servizi specialistici.",
+            "focus": "Focus: flusso di rete e capacità terziaria."
+          },
+          "curalp": {
+            "name": "Curalp",
+            "profile": "Ospedale regionale che bilancia domanda acuta e accesso per comunità distribuite.",
+            "focus": "Focus: copertura resiliente e trasferimenti tempestivi."
+          },
+          "vialta": {
+            "name": "Vialta",
+            "profile": "Ospedale integrato di recupero che collega dimissione acuta, riabilitazione e cure territoriali.",
+            "focus": "Focus: prontezza della transizione e continuità."
+          }
+        },
+        "rosterTitle": "Team capacità di sette agenti",
+        "rosterBody": "Ogni agente ha una responsabilità consultiva mirata; le persone responsabili mantengono la decisione.",
+        "agents": {
+          "ooa-agent": {
+            "name": "Agente prospettiva occupazione",
+            "role": "Anticipa la pressione sulla capacità e spiega la confidenza della previsione."
+          },
+          "bmca-agent": {
+            "name": "Copilota gestione letti",
+            "role": "Coordina collocamenti, vincoli e flusso del sito."
+          },
+          "dca-agent": {
+            "name": "Copilota dimissioni",
+            "role": "Evidenzia prontezza della transizione e ostacoli alla dimissione."
+          },
+          "orsa-agent": {
+            "name": "Agente coordinamento sala operatoria",
+            "role": "Collega le scelte di sala operatoria alla capacità a valle."
+          },
+          "sba-agent": {
+            "name": "Agente equilibrio del personale",
+            "role": "Allinea la copertura delle competenze alla domanda operativa emergente."
+          },
+          "csa-agent": {
+            "name": "Agente scenari di crisi",
+            "role": "Inquadra scenari governati e opzioni di resilienza."
+          },
+          "data-quality-agent": {
+            "name": "Agente qualità dei dati",
+            "role": "Verifica provenienza, freschezza e salute dei contratti."
+          }
+        }
+      },
+      "ninetyDay": {
+        "title": "Roadmap di 90 giorni",
+        "body": "Una sequenza ROM illustrativa passa da decisioni allineate a flussi provati e a una scala governata.",
+        "roadmapLabel": "Roadmap Curavias illustrativa di novanta giorni",
+        "romLabel": "ROM illustrativa",
+        "phases": {
+          "frame-ground": {
+            "title": "Inquadrare & Radicare",
+            "range": "Giorni illustrativi 1–30",
+            "body": "Allineare decisioni prioritarie, responsabili, fonti affidabili e guardrail.",
+            "outcomes": {
+              "decision-map": "Mappa delle decisioni ed evidenze condivise di successo",
+              "governance-baseline": "Ambito dati sintetici e baseline di governance"
+            }
+          },
+          "build-prove": {
+            "title": "Costruire & Provare",
+            "range": "Giorni illustrativi 31–60",
+            "body": "Prototipare i flussi di maggior valore e testarli con gli utenti operativi.",
+            "outcomes": {
+              "workflow-slices": "Sezioni di flusso Copilot revisionabili",
+              "control-findings": "Riscontri su usabilità, evidenze e controlli"
+            }
+          },
+          "operate-scale": {
+            "title": "Operare & Scalare",
+            "range": "Giorni illustrativi 61–90",
+            "body": "Stabilire responsabilità, monitoraggio e gate ripetibili per un'adozione più ampia.",
+            "outcomes": {
+              "adoption-playbook": "Cadenza operativa e playbook di adozione",
+              "scale-decision": "Decisione di scala con rischi residui"
+            }
+          }
+        }
+      }
     }
   },
   "settings": {

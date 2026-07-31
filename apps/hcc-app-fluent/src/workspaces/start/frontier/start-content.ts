@@ -1,0 +1,262 @@
+export type StartSectionId =
+  | 'hero'
+  | 'work-chart'
+  | 'cio-why-now'
+  | 'hospitals'
+  | 'patient-path'
+  | 'ninety-day'
+  | 'bva';
+
+export type StartSectionKind = 'static' | 'data' | 'launcher';
+
+export interface StartSection {
+  id: StartSectionId;
+  titleKey: string;
+  kind: StartSectionKind;
+}
+
+export const START_SECTIONS = [
+  { id: 'hero', titleKey: 'start.frontier.hero.title', kind: 'data' },
+  { id: 'work-chart', titleKey: 'start.frontier.workChart.title', kind: 'static' },
+  { id: 'cio-why-now', titleKey: 'start.frontier.cioWhyNow.title', kind: 'static' },
+  { id: 'hospitals', titleKey: 'start.frontier.hospitals.title', kind: 'static' },
+  { id: 'patient-path', titleKey: 'start.frontier.patientPath.title', kind: 'launcher' },
+  { id: 'ninety-day', titleKey: 'start.frontier.ninetyDay.title', kind: 'static' },
+  { id: 'bva', titleKey: 'start.frontier.bva.title', kind: 'data' },
+] as const satisfies readonly StartSection[];
+
+export interface PatientPathOperationalStop {
+  boardKey: string;
+  bodyKey: string;
+}
+
+export const PATIENT_PATH_OPERATIONAL_STOPS = [
+  { boardKey: 'occupancy', bodyKey: 'start.patientPath.operational.occupancy' },
+  { boardKey: 'bed-manager', bodyKey: 'start.patientPath.operational.bedManager' },
+  { boardKey: 'or-steering', bodyKey: 'start.patientPath.operational.orSteering' },
+  { boardKey: 'staffing', bodyKey: 'start.patientPath.operational.staffing' },
+  { boardKey: 'discharge', bodyKey: 'start.patientPath.operational.discharge' },
+] as const satisfies readonly PatientPathOperationalStop[];
+
+export type WorkModeId = 'humans' | 'agents' | 'on-demand';
+
+export interface WorkMode {
+  id: WorkModeId;
+  titleKey: `start.frontier.workChart.modes.${WorkModeId}.title`;
+  bodyKey: `start.frontier.workChart.modes.${WorkModeId}.body`;
+}
+
+export const WORK_MODES = [
+  {
+    id: 'humans',
+    titleKey: 'start.frontier.workChart.modes.humans.title',
+    bodyKey: 'start.frontier.workChart.modes.humans.body',
+  },
+  {
+    id: 'agents',
+    titleKey: 'start.frontier.workChart.modes.agents.title',
+    bodyKey: 'start.frontier.workChart.modes.agents.body',
+  },
+  {
+    id: 'on-demand',
+    titleKey: 'start.frontier.workChart.modes.on-demand.title',
+    bodyKey: 'start.frontier.workChart.modes.on-demand.body',
+  },
+] as const satisfies readonly WorkMode[];
+
+export type CioDecisionId =
+  | 'bed-allocation'
+  | 'or-slots'
+  | 'staffing'
+  | 'discharge'
+  | 'transfers'
+  | 'crisis'
+  | 'data-quality';
+
+export interface CioDecision {
+  id: CioDecisionId;
+  decisionKey: `start.frontier.cioWhyNow.decisions.${CioDecisionId}.decision`;
+  todayKey: `start.frontier.cioWhyNow.decisions.${CioDecisionId}.today`;
+  previewKey: `start.frontier.cioWhyNow.decisions.${CioDecisionId}.preview`;
+}
+
+export const CIO_DECISIONS = [
+  {
+    id: 'bed-allocation',
+    decisionKey: 'start.frontier.cioWhyNow.decisions.bed-allocation.decision',
+    todayKey: 'start.frontier.cioWhyNow.decisions.bed-allocation.today',
+    previewKey: 'start.frontier.cioWhyNow.decisions.bed-allocation.preview',
+  },
+  {
+    id: 'or-slots',
+    decisionKey: 'start.frontier.cioWhyNow.decisions.or-slots.decision',
+    todayKey: 'start.frontier.cioWhyNow.decisions.or-slots.today',
+    previewKey: 'start.frontier.cioWhyNow.decisions.or-slots.preview',
+  },
+  {
+    id: 'staffing',
+    decisionKey: 'start.frontier.cioWhyNow.decisions.staffing.decision',
+    todayKey: 'start.frontier.cioWhyNow.decisions.staffing.today',
+    previewKey: 'start.frontier.cioWhyNow.decisions.staffing.preview',
+  },
+  {
+    id: 'discharge',
+    decisionKey: 'start.frontier.cioWhyNow.decisions.discharge.decision',
+    todayKey: 'start.frontier.cioWhyNow.decisions.discharge.today',
+    previewKey: 'start.frontier.cioWhyNow.decisions.discharge.preview',
+  },
+  {
+    id: 'transfers',
+    decisionKey: 'start.frontier.cioWhyNow.decisions.transfers.decision',
+    todayKey: 'start.frontier.cioWhyNow.decisions.transfers.today',
+    previewKey: 'start.frontier.cioWhyNow.decisions.transfers.preview',
+  },
+  {
+    id: 'crisis',
+    decisionKey: 'start.frontier.cioWhyNow.decisions.crisis.decision',
+    todayKey: 'start.frontier.cioWhyNow.decisions.crisis.today',
+    previewKey: 'start.frontier.cioWhyNow.decisions.crisis.preview',
+  },
+  {
+    id: 'data-quality',
+    decisionKey: 'start.frontier.cioWhyNow.decisions.data-quality.decision',
+    todayKey: 'start.frontier.cioWhyNow.decisions.data-quality.today',
+    previewKey: 'start.frontier.cioWhyNow.decisions.data-quality.preview',
+  },
+] as const satisfies readonly CioDecision[];
+
+export type FrontierHospitalId = 'curanova' | 'curalp' | 'vialta';
+
+export interface FrontierHospital {
+  id: FrontierHospitalId;
+  nameKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.name`;
+  profileKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.profile`;
+  focusKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.focus`;
+}
+
+export const FRONTIER_HOSPITALS = [
+  {
+    id: 'curanova',
+    nameKey: 'start.frontier.hospitals.sites.curanova.name',
+    profileKey: 'start.frontier.hospitals.sites.curanova.profile',
+    focusKey: 'start.frontier.hospitals.sites.curanova.focus',
+  },
+  {
+    id: 'curalp',
+    nameKey: 'start.frontier.hospitals.sites.curalp.name',
+    profileKey: 'start.frontier.hospitals.sites.curalp.profile',
+    focusKey: 'start.frontier.hospitals.sites.curalp.focus',
+  },
+  {
+    id: 'vialta',
+    nameKey: 'start.frontier.hospitals.sites.vialta.name',
+    profileKey: 'start.frontier.hospitals.sites.vialta.profile',
+    focusKey: 'start.frontier.hospitals.sites.vialta.focus',
+  },
+] as const satisfies readonly FrontierHospital[];
+
+export type FrontierAgentId =
+  | 'ooa-agent'
+  | 'bmca-agent'
+  | 'dca-agent'
+  | 'orsa-agent'
+  | 'sba-agent'
+  | 'csa-agent'
+  | 'data-quality-agent';
+
+export interface FrontierAgent {
+  id: FrontierAgentId;
+  nameKey: `start.frontier.hospitals.agents.${FrontierAgentId}.name`;
+  roleKey: `start.frontier.hospitals.agents.${FrontierAgentId}.role`;
+}
+
+export const FRONTIER_AGENTS = [
+  {
+    id: 'ooa-agent',
+    nameKey: 'start.frontier.hospitals.agents.ooa-agent.name',
+    roleKey: 'start.frontier.hospitals.agents.ooa-agent.role',
+  },
+  {
+    id: 'bmca-agent',
+    nameKey: 'start.frontier.hospitals.agents.bmca-agent.name',
+    roleKey: 'start.frontier.hospitals.agents.bmca-agent.role',
+  },
+  {
+    id: 'dca-agent',
+    nameKey: 'start.frontier.hospitals.agents.dca-agent.name',
+    roleKey: 'start.frontier.hospitals.agents.dca-agent.role',
+  },
+  {
+    id: 'orsa-agent',
+    nameKey: 'start.frontier.hospitals.agents.orsa-agent.name',
+    roleKey: 'start.frontier.hospitals.agents.orsa-agent.role',
+  },
+  {
+    id: 'sba-agent',
+    nameKey: 'start.frontier.hospitals.agents.sba-agent.name',
+    roleKey: 'start.frontier.hospitals.agents.sba-agent.role',
+  },
+  {
+    id: 'csa-agent',
+    nameKey: 'start.frontier.hospitals.agents.csa-agent.name',
+    roleKey: 'start.frontier.hospitals.agents.csa-agent.role',
+  },
+  {
+    id: 'data-quality-agent',
+    nameKey: 'start.frontier.hospitals.agents.data-quality-agent.name',
+    roleKey: 'start.frontier.hospitals.agents.data-quality-agent.role',
+  },
+] as const satisfies readonly FrontierAgent[];
+
+export type NinetyDayPhaseId = 'frame-ground' | 'build-prove' | 'operate-scale';
+export type NinetyDayOutcomeId =
+  | 'decision-map'
+  | 'governance-baseline'
+  | 'workflow-slices'
+  | 'control-findings'
+  | 'adoption-playbook'
+  | 'scale-decision';
+
+export interface NinetyDayPhase {
+  id: NinetyDayPhaseId;
+  titleKey: `start.frontier.ninetyDay.phases.${NinetyDayPhaseId}.title`;
+  rangeKey: `start.frontier.ninetyDay.phases.${NinetyDayPhaseId}.range`;
+  bodyKey: `start.frontier.ninetyDay.phases.${NinetyDayPhaseId}.body`;
+  outcomeKeys: readonly [
+    `start.frontier.ninetyDay.phases.${NinetyDayPhaseId}.outcomes.${NinetyDayOutcomeId}`,
+    `start.frontier.ninetyDay.phases.${NinetyDayPhaseId}.outcomes.${NinetyDayOutcomeId}`,
+  ];
+}
+
+export const NINETY_DAY_PHASES = [
+  {
+    id: 'frame-ground',
+    titleKey: 'start.frontier.ninetyDay.phases.frame-ground.title',
+    rangeKey: 'start.frontier.ninetyDay.phases.frame-ground.range',
+    bodyKey: 'start.frontier.ninetyDay.phases.frame-ground.body',
+    outcomeKeys: [
+      'start.frontier.ninetyDay.phases.frame-ground.outcomes.decision-map',
+      'start.frontier.ninetyDay.phases.frame-ground.outcomes.governance-baseline',
+    ],
+  },
+  {
+    id: 'build-prove',
+    titleKey: 'start.frontier.ninetyDay.phases.build-prove.title',
+    rangeKey: 'start.frontier.ninetyDay.phases.build-prove.range',
+    bodyKey: 'start.frontier.ninetyDay.phases.build-prove.body',
+    outcomeKeys: [
+      'start.frontier.ninetyDay.phases.build-prove.outcomes.workflow-slices',
+      'start.frontier.ninetyDay.phases.build-prove.outcomes.control-findings',
+    ],
+  },
+  {
+    id: 'operate-scale',
+    titleKey: 'start.frontier.ninetyDay.phases.operate-scale.title',
+    rangeKey: 'start.frontier.ninetyDay.phases.operate-scale.range',
+    bodyKey: 'start.frontier.ninetyDay.phases.operate-scale.body',
+    outcomeKeys: [
+      'start.frontier.ninetyDay.phases.operate-scale.outcomes.adoption-playbook',
+      'start.frontier.ninetyDay.phases.operate-scale.outcomes.scale-decision',
+    ],
+  },
+] as const satisfies readonly NinetyDayPhase[];
