@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-30 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-07-31 |
 | **Author** | Urs Rüegg |
-| **Status** | Draft |
-| **Previous Version** | — (new) |
+| **Status** | Implemented — revised (see §6) |
+| **Previous Version** | 1.0.0 (initial pre-Sprint-37 pattern-only plan; §6 records the delivered Option B) |
 
 ## 1. Problem
 
@@ -92,3 +92,37 @@ tests/unit/start-view.test.tsx` (must stay green), and a browser pass at
 
 DE/FR/IT i18n keys for the new eyebrow/title copy (currently en-only); apply
 the same P13–P17 conformance matrix row for Start in the patterns doc.
+
+## 6. Delivered outcome (revises §2–§5)
+
+After this spec was drafted, the **Sprint 37 "Start (Frontier Firm)"** work
+(dedicated worktree `sprint-37/start-frontier`, design
+[2026-07-29-sprint-37-curavias-start-frontier-design.md](2026-07-29-sprint-37-curavias-start-frontier-design.md))
+was reviewed and found to be a **complete, tested, four-language** Start rebuild.
+Rather than the pattern-only migration of the *old* Start (§2), we **incorporated
+Sprint 37's content and re-layered it onto the shell** (the "Option B" reviewed
+with the user). §2–§4 above describe the superseded plan; the delivered surface is:
+
+- **Sections (7, Sprint 37 blueprint):** hero + squeeze · org → work chart ·
+  CIO why-now (seven decisions) · three hospitals · patient-path launcher ·
+  90-day · BVA decision — with Sprint 37's data bindings (`bva-evidence.ts`,
+  live `siteCapacity`, `LAUNCHER_TILES` + RBAC) and `start.frontier.*` i18n in
+  **en/de/fr/it**. The **Product Owner Agent** rail is docked on `/start`.
+- **Presentation:** `StartView` composes the sections through `NarrativeShell`
+  (P13-P17) — an `overview` intro (page title "Curavias Start" + eyebrow + lead +
+  synthetic/advisory/no-PHI guardrails) + eyebrow `SectionHeader` per content
+  section + sticky nav + scrollspy + one-per-screen (`leadingGroupCount={2}`).
+  Each section wrapper is `<section data-start-section={id} data-testid="start-{id}">`.
+- **Test contract (supersedes §3):** Sprint 37's `start-view.test.tsx` (heading
+  "Curavias Start"; the three guardrails; the mode badge; the **seven
+  `data-start-section` sections in `START_SECTIONS` order**; no legacy
+  launcher/teaser testids) + the frontier component tests + `backstage-view`.
+  **479 unit tests green; `tsc --noEmit` clean.**
+- **Landed as** commit `1843f15` on `sprint-27/curavias-ux-polish` (pushed).
+
+### 6.1 Remaining follow-ups
+
+- Run the Playwright gate `tests/e2e/start.spec.ts` (contracts preserved; not run).
+- DE/FR/IT copy for the P14 **eyebrow kickers** (section titles/bodies already
+  localized in all four locales; only the eyebrows are English inline defaults).
+- Review + polish pass with the user (parked).

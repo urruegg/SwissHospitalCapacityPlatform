@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
-| **Date** | 2026-07-30 |
+| **Version** | 1.2.0 |
+| **Date** | 2026-07-31 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (initial catalogue P1-P12) |
+| **Previous Version** | 1.1.0 (added narrative/showcase patterns P13-P17 from the Backstage build); this bump records Start as a live adopter of P13-P17 and adds the Start narrative-surface conformance note |
 | **Sprint** | 27 — Curavias App UX Polish (tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` (internal app, app.curavias.ch) |
 
@@ -175,8 +175,7 @@
 
 > **Narrative / showcase surface patterns (P13-P17, added v1.1.0)** — anchored
 > from the Sprint 27 Backstage build. These govern the **full-surface narrative**
-> experiences (Backstage today; **Start is the next adopter** — migrate its inline
-> hero + role-tile layout onto `NarrativeShell` and P13-P17). They compose the
+> experiences (**Backstage and Start** both adopt them today). They compose the
 > same tokens and recipes as P1-P12 and are the showcase counterpart to the P1
 > board skeleton.
 
@@ -189,7 +188,8 @@
   sections, each self-described by a P14 header.
 - **Implementation** — `workspaces/shared/narrative/NarrativeShell.tsx`; the
   surface passes `sections`, `introTitle` / `introEyebrow` / `introDescription`,
-  `initialKey`, and `leadingGroupCount` (P16). `BackstageView` composes it today.
+  `initialKey`, and `leadingGroupCount` (P16). `BackstageView` and `StartView`
+  compose it today.
 - **Rules** — the intro is section 0 (a nav item, not a floating hero); every
   section owns a stable `key` used for the nav value, the scroll-anchor id, and
   the scrollspy; content is centred in an up-to-1280 px column with
@@ -232,7 +232,8 @@
   never peeks.
 - **Implementation** — `NarrativeShell` `sectionFull` + `leadGroup` +
   `scrollTargetFor`; `BackstageView` passes `leadingGroupCount={2}` (Company +
-  Frontier Firm share the first screen).
+  Frontier Firm share the first screen); `StartView` passes `leadingGroupCount={2}`
+  (Overview intro + hero share the first screen).
 - **Rules** — only the surface sets the group size; sections taller than the
   viewport keep their natural height (scroll within); tune the min-height offset
   so the next section stays off-screen.
@@ -286,9 +287,34 @@ share the opening screen). Each layer then uses the **per-layer** patterns below
 | Review sessions | ✓ | ✓ | sessions table + focus-domain cards + practitioner grid |
 | Product Owner Agent | ✓ | ✓ | four lettered knowledge-class cards (A / B / C / D) |
 
-> **P12 (i18n) follow-up** — the narrative copy is currently English-only (inline
-> defaults + `en.json`); DE / FR / IT keys for the new Backstage sections are a
-> tracked follow-up before this surface is fully P12-conformant.
+> **P12 (i18n) follow-up** — the Backstage narrative copy is currently
+> English-only (inline defaults + `en.json`); DE / FR / IT keys for the Backstage
+> sections are a tracked follow-up before that surface is fully P12-conformant.
+
+### Start narrative surface
+
+The Start surface (Sprint 37 Frontier-Firm content, incorporated and re-layered
+onto the shell in Sprint 27) uses the **surface-level** patterns end-to-end:
+**P13** (narrative shell), **P15** (sticky full-width section nav), and **P16**
+(storytelling scroll, `leadingGroupCount={2}` — the Overview intro + hero share
+the opening screen). The docked **Product Owner Agent** rail (P10 / P17) is
+present throughout `/start`.
+
+| Start layer | P14 header | Layer content pattern |
+|-------------|------------|------------------------|
+| Overview (intro) | ✓ | page title + eyebrow + lead + guardrails (synthetic / advisory / no-PHI) |
+| Hero + squeeze | — (own showcase header) | value hook + three BVA metrics + live `siteCapacity` squeeze card |
+| Operating model (org → work) | ✓ | Humans / Agents / On-demand work modes + Frontier-Firm principle |
+| CIO challenge (why now) | ✓ | the seven operational-decisions "Today vs Curavias" table |
+| Three hospitals | ✓ | CuraNova / Curalp / Vialta cards + seven-agent roster |
+| Patient path (launcher) | ✓ | RBAC-gated wave-band journey → `/main/<role>` (P11 handoff) |
+| 90-day frontier | ✓ | Frame & Ground / Build & Prove / Operate & Scale phases |
+| BVA (the decision) | ✓ | KPI tiles + TCO + value levers + sensitivity + proof (rail CTA) |
+
+> **Start i18n status** — section titles / bodies are localized in **all four**
+> locales (`start.frontier.*` in `en/de/fr/it`); only the P14 **eyebrow kickers**
+> are English inline defaults — a small tracked follow-up before Start is fully
+> P12-conformant.
 
 ---
 
@@ -308,7 +334,7 @@ A board or surface exits review only when **both** gates hold:
    - actionable elements hand off to the Copilot rail per P10 (advisory voice);
    - navigation + labels per P11 / P12 (journey order, four locales, no
      hard-coded copy).
-   - for a **narrative / showcase surface** (Backstage; Start next): the P13
+   - for a **narrative / showcase surface** (Backstage and Start): the P13
      shell with a P15 sticky full-width nav, P14 eyebrow headers, P16
      storytelling scroll, and P17 context-click rail handoff (no Ask buttons).
 
