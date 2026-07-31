@@ -797,6 +797,7 @@ export function DigitalFeedbackLoop({
 
         <section
           className={styles.core}
+          data-testid="feedback-loop-core"
           aria-label={t('backstage.story.feedbackLoop.iqCore.caption', 'Microsoft IQ core')}
         >
           <p className={styles.coreTitle}>{t('backstage.story.feedbackLoop.iqCore.name', 'Microsoft IQ')}</p>
