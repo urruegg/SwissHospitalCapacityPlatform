@@ -615,6 +615,17 @@
       },
       "status": "Accepted",
       "title": "OBO seam completion, defer live provisioning (#424 M5)"
+    },
+    {
+      "decisionSummary": "1. **`DC-SIM-OUTCOME-v1` (ratified).** One PHI-free record per applied action, capturing pre/post state delta and predicted-vs-realised `divergence`, linked by `plan_id` / `golden_thread` / `cosmos_id`. Validated by `data/synthetic/schema/dc-sim-outcome-v1.schema.json`. Retained R3 alongside `DC-AGENT-INTERACTION-v1` (ADR-0055). 2. **Declarative lever `effect` schema.** Each lever may declare an `effect` block (state mutation) alongside its `impact_formula_ref` (metric prediction). The `apps/sim-capacity` effect interpreter executes it; adding a lever is a YAML change, not new Python. 3. **Sim-as-ground-truth, human-gated.** The simulator is the ground truth agents are graded against, but it applies **only** actions a human moved to `approved-to-apply` (ADR-0007, `NFR-AI-001`). Every outcome is stamped `provenance: simulated`; this is not clinical actuation.",
+      "id": "ADR-0058",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0058-sim-outcome-and-effect-schema.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0058-sim-outcome-and-effect-schema.md"
+      },
+      "status": "Accepted",
+      "title": "Sim-outcome contract, lever effect schema, and sim-as-ground-truth"
     }
   ],
   "boms": [
@@ -2407,6 +2418,42 @@
       "title": "The platform shall surface BVA in the Curavias App Start (inline) and Backstage (pipeline) copilot rail."
     },
     {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-CLP-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall provide a **deterministic, CI-runnable end-to-end patient-journey harness** that drives one synthetic patient through the capacity agents with a scripted HITL approval per step and asserts trajectory change."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-CLP-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The harness shall cover the **happy path plus failure modes** (approval withheld, state drift/superseded, deliberate divergence), and shall share its journey definition with a **demo-able interactive run**."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-CLP-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall feed `DC-SIM-OUTCOME-v1` **divergence** into the existing Sprint 30 evaluator library and advisory backlog as an agent-optimisation signal, and run a **calibration gate** asserting simulator internal consistency — all human-gated, advisory-only."
+    },
+    {
       "family": "Application Context Architecture (Sprint 29)",
       "id": "FR-CTX-001",
       "kind": "FR",
@@ -3799,6 +3846,78 @@
       "title": "Record provenance and audit evidence for every onboarding decision and activation."
     },
     {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-SIM-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall provide an **EPIC system-of-record simulator** holding durable, synthetic, no-PHI patient-flow state (patients, encounters, beds, wards, OR slots, staff shifts, discharge barriers)."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-SIM-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The simulator shall advance state on a **seeded, deterministic clock**, such that the same seed and the same approved-action sequence yield the same trajectory."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-SIM-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The simulator shall feed demand and capacity data to Curavias via the existing `DC-DEMAND-ENCOUNTER-v1` and capacity contracts, derived from persistent state."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-SIM-004",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The simulator shall **apply HITL-approved agent actions** to its state via declared lever **effect** blocks, mutating patient-flow state (discharge frees a bed, transfer moves a patient, reslot changes the OR schedule)."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-SIM-005",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The simulator shall emit a **`DC-SIM-OUTCOME-v1`** record per applied action capturing the pre/post state delta and the predicted-vs-realised **divergence**, PHI-free and linked by `plan_id` / `golden_thread` / `cosmos_id`."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+      "id": "FR-SIM-006",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The simulator shall expose a **`SystemAdapter`** seam so additional systems of record (SuccessFactors, LMS) are additive without re-architecture (only EPIC ships this sprint)."
+    },
+    {
       "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
       "id": "FR-SKILL-001",
       "kind": "FR",
@@ -4997,6 +5116,42 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016)."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine Governance (Sprint 38)",
+      "id": "NFR-SIM-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Simulator state and outcomes shall be **synthetic and PHI-free** by construction; `provenance: simulated` is stamped on every outcome."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine Governance (Sprint 38)",
+      "id": "NFR-SIM-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The actuation consumer shall apply an action **only** when a human has moved it to `approved-to-apply`; it shall refuse bot/self approvals and shall be **idempotent** per `cosmos_id`; no applied action shall auto-approve another."
+    },
+    {
+      "family": "EPIC Closed-Loop Simulation Engine Governance (Sprint 38)",
+      "id": "NFR-SIM-003",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The closed loop shall preserve full **proposed -> approved -> applied -> realised -> curated** lineage, extending the Sprint 30 (`CH-C11`) lineage guarantee."
     },
     {
       "family": "Curavias Org Spine And Skills Evidence Governance (Sprint 23)",
