@@ -858,7 +858,7 @@ def test_consumer_applies_approved_action_to_state():
     consumer = ActuationConsumer(store, {"DCA-UNBLOCK-BARRIER": EFFECT})
     outcomes = consumer.apply_approved("plan-ep1", s)
     assert len(outcomes) == 1
-    assert outcomes[0]["realised_impact"]["delta"] == 2
+    assert outcomes[0]["realised_impact"]["value"] == 2
     assert store.get_action("a0")["sim_applied_at"] is not None
 
 
