@@ -30,5 +30,14 @@ levers:
           minimum: 1
           description: "Number of barrier cases to resolve."
     impact_formula_ref: unblock_barrier_beds
+    effect:
+      applies_to: DischargeBarrier
+      mutation: set_status
+      from: open
+      to: cleared
+      select_by: barrier_type
+      cascade:
+        - when: patient_all_barriers_cleared
+          set: "Patient.stage=DISCHARGED"
     owner_role: dca
     hitl: true
