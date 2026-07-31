@@ -43,10 +43,10 @@ test('narrow feedback loop remains readable without horizontal scroll', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/present/feedback-loop');
 
-  await expect(page.locator('[data-domain-id="care-ecosystem"]')).toBeVisible();
-  await expect(page.locator('[data-domain-id="command-center"]')).toBeVisible();
-  await expect(page.locator('[data-domain-id="frontier-workforce"]')).toBeVisible();
-  await expect(page.locator('[data-domain-id="care-innovation"]')).toBeVisible();
+  await expect(page.locator('button[data-domain-id="care-ecosystem"]')).toBeVisible();
+  await expect(page.locator('button[data-domain-id="command-center"]')).toBeVisible();
+  await expect(page.locator('button[data-domain-id="frontier-workforce"]')).toBeVisible();
+  await expect(page.locator('button[data-domain-id="care-innovation"]')).toBeVisible();
   await expect(page.getByText(/Microsoft IQ core/i)).toBeVisible();
 
   const documentWidth = await page.evaluate(() => ({
