@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://curavias/schema/dc-sim-outcome-v1.schema.json",
+  "title": "DC-SIM-OUTCOME-v1",
+  "type": "object",
+  "required": ["contract", "cosmos_id", "plan_id", "golden_thread", "lever_id", "applied_ts", "predicted_impact", "realised_impact", "state_delta", "divergence", "provenance"],
+  "additionalProperties": true,
+  "properties": {
+    "contract": { "const": "DC-SIM-OUTCOME-v1" },
+    "cosmos_id": { "type": "string" },
+    "plan_id": { "type": "string" },
+    "golden_thread": { "type": "string" },
+    "lever_id": { "type": "string" },
+    "applied_ts": { "type": "string" },
+    "predicted_impact": { "type": "object", "required": ["metric", "value"] },
+    "realised_impact": { "type": "object", "required": ["metric", "value"] },
+    "state_delta": { "type": "object" },
+    "divergence": { "type": "number", "minimum": 0 },
+    "provenance": { "const": "simulated" }
+  }
+}
