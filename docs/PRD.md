@@ -8,11 +8,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.10.0 |
-| **Date** | 2026-07-31 |
+| **Version** | 2.11.0 |
+| **Date** | 2026-08-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.9.0 (restored the missing `### R)` NFR-BVA governance section - rows NFR-BVA-001..004 + header); this bump adds the Sprint 38 FR-SIM-*/FR-CLP-*/NFR-SIM-* families + §7 traceability row (EPIC closed-loop simulation engine) |
+| **Previous Version** | 2.10.0 (added the Sprint 38 FR-SIM-*/FR-CLP-*/NFR-SIM-* families + §7 traceability row, EPIC closed-loop simulation engine); this bump adds the Sprint 39 P1 FR-EVD-001/002 + NFR-EVD-001/002 families + §7 traceability row (real-gold per-role evidence backbone) |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -456,6 +456,21 @@ state and grades agents on predicted-vs-realised divergence.
 | `FR-CLP-002` | The harness shall cover the **happy path plus failure modes** (approval withheld, state drift/superseded, deliberate divergence), and shall share its journey definition with a **demo-able interactive run**. |
 | `FR-CLP-003` | The platform shall feed `DC-SIM-OUTCOME-v1` **divergence** into the existing Sprint 30 evaluator library and advisory backlog as an agent-optimisation signal, and run a **calibration gate** asserting simulator internal consistency — all human-gated, advisory-only. |
 
+### X) EPIC Closed-Loop SIT Evidence (Sprint 39)
+
+Sprint 39 Plan 1 requirements per the
+[Sprint 39 EPIC closed-loop SIT evidence design](superpowers/specs/2026-08-01-epic-closed-loop-sit-evidence-e2e-design.md)
+and [ADR-0059](adr/0059-evidence-trace-and-surface.md). The evidence backbone is
+**advisory-only and human-in-the-loop**: it proves the closed loop end-to-end per
+role on real EPIC-simulator gold, with an accept and a deny branch, on synthetic,
+PHI-free data. The app-facing surface requirements (`FR-EVD-003/004/005`,
+`FR-UXL-*`) land in Sprint 39 Plan 2.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-EVD-001` | The platform shall produce a **`DC-EVIDENCE-TRACE-v1`** record per synthetic patient journey, capturing per role the EPIC-simulator input, agent read, recommendation, copilot accept/deny decision, and outcome, linked by `golden_thread`, PHI-free. |
+| `FR-EVD-002` | The evidence harness shall emit **both an accept and a deny branch**, where deny records no state change (the targeted breach persists), proving the `NFR-AI-001` human gate. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -667,6 +682,17 @@ and [ADR-0058](adr/0058-sim-outcome-and-effect-schema.md).
 | `NFR-SIM-002` | The actuation consumer shall apply an action **only** when a human has moved it to `approved-to-apply`; it shall refuse bot/self approvals and shall be **idempotent** per `cosmos_id`; no applied action shall auto-approve another. |
 | `NFR-SIM-003` | The closed loop shall preserve full **proposed -> approved -> applied -> realised -> curated** lineage, extending the Sprint 30 (`CH-C11`) lineage guarantee. |
 
+### U) EPIC Closed-Loop SIT Evidence Governance (Sprint 39)
+
+Sprint 39 Plan 1 non-functional deltas per the
+[Sprint 39 EPIC closed-loop SIT evidence design](superpowers/specs/2026-08-01-epic-closed-loop-sit-evidence-e2e-design.md)
+and [ADR-0059](adr/0059-evidence-trace-and-surface.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-EVD-001` | Evidence traces shall be **deterministic and PHI-free**; every part carries `provenance` (`simulated`/`live`) and citations; a `simulated` part is never rendered as `live`. |
+| `NFR-EVD-002` | The evidence surface shall take **no `deploy`/`delete`** action; SIT interaction in this sprint is read-only. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -714,6 +740,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md`](superpowers/specs/2026-07-28-sprint-33-curavias-bva-agent-design.md) + [`docs/superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md`](superpowers/specs/2026-07-28-sprint-33-bva-agent-contracts.md) + [`docs/adr/0056-bva-agent-deterministic-computation.md`](adr/0056-bva-agent-deterministic-computation.md) *(Sprint 33: Business Value Assessment Agent — deterministic `bva.simulate` ROI/TCO engine, cited Class-C GroundedChunks, Cosmos Opportunity SoR + gold projection, peer-to-PO fan-out; issues #489, #501)* | `FR-BVA-001` to `FR-BVA-005`, `NFR-BVA-001` to `NFR-BVA-005` |
 | [`docs/superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md`](superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md) + [`docs/GLOSSARY.md`](GLOSSARY.md) + [`docs/architecture/diagram-library.md`](architecture/diagram-library.md) *(Sprint 34: Curavias Documentation Alignment — Curavias anchor + IQ / Frontier-Firm terminology + canonical mermaid library + customer-ready presentation; tracker #505)* | `NFR-DOC-001` to `NFR-DOC-004` |
 | [`docs/superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md`](superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md) + [`docs/adr/0058-sim-outcome-and-effect-schema.md`](adr/0058-sim-outcome-and-effect-schema.md) *(Sprint 38: EPIC closed-loop simulation engine — stateful twin, HITL-approved actuation, DC-SIM-OUTCOME-v1, E2E journey)* | `FR-SIM-001` to `FR-SIM-006`, `FR-CLP-001` to `FR-CLP-003`, `NFR-SIM-001` to `NFR-SIM-003` |
+| [`docs/superpowers/specs/2026-08-01-epic-closed-loop-sit-evidence-e2e-design.md`](superpowers/specs/2026-08-01-epic-closed-loop-sit-evidence-e2e-design.md) + [`docs/adr/0059-evidence-trace-and-surface.md`](adr/0059-evidence-trace-and-surface.md) *(Sprint 39 P1: real-gold per-role evidence backbone — DC-EVIDENCE-TRACE-v1, accept + deny branches, PHI-free)* | `FR-EVD-001` to `FR-EVD-002`, `NFR-EVD-001` to `NFR-EVD-002` |
 
 ## Assumptions To Validate In Implementation Planning
 

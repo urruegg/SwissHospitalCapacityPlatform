@@ -626,6 +626,17 @@
       },
       "status": "Accepted",
       "title": "Sim-outcome contract, lever effect schema, and sim-as-ground-truth"
+    },
+    {
+      "decisionSummary": "1. **`DC-EVIDENCE-TRACE-v1` (ratified).** One PHI-free record per synthetic patient journey; an ordered array of per-role steps (EPIC input, read, recommendation, copilot accept/deny, action, outcome), `golden_thread`-linked; accept + deny branches. Validated by `data/synthetic/schema/dc-evidence-trace-v1.schema.json`. 2. **Real-gold, seeded, human-gated.** Read/recommendation run on real SIT gold (a captured snapshot backs CI); apply/outcome run on an in-host `SimState` seeded from that gold. Only a human accept fires an apply (`NFR-AI-001`); deny changes nothing. No live write-back to the running sim this sprint. 3. **Provenance honesty.** Every part is badged `simulated` or `live`; a `simulated` part is never rendered as `live`. The evidence trace is a derived view of the same operational-loop records (validation == user experience).",
+      "id": "ADR-0059",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0059-evidence-trace-and-surface.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0059-evidence-trace-and-surface.md"
+      },
+      "status": "Accepted",
+      "title": "Evidence-trace contract and per-role evidence surface"
     }
   ],
   "boms": [
@@ -2874,6 +2885,30 @@
       "title": "Certify a domain **grounding-ready** only when its trust score and gating dimensions clear the ADR-ratified threshold; certification is GA-gated (Fabric IQ first, Foundry IQ behind the same gate)."
     },
     {
+      "family": "EPIC Closed-Loop SIT Evidence (Sprint 39)",
+      "id": "FR-EVD-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The platform shall produce a **`DC-EVIDENCE-TRACE-v1`** record per synthetic patient journey, capturing per role the EPIC-simulator input, agent read, recommendation, copilot accept/deny decision, and outcome, linked by `golden_thread`, PHI-free."
+    },
+    {
+      "family": "EPIC Closed-Loop SIT Evidence (Sprint 39)",
+      "id": "FR-EVD-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The evidence harness shall emit **both an accept and a deny branch**, where deny records no state change (the targeted breach persists), proving the `NFR-AI-001` human gate."
+    },
+    {
       "family": "Trusted External Signals (Sprint 21)",
       "id": "FR-EXT-001",
       "kind": "FR",
@@ -4600,6 +4635,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "The agent shall operate **read-only under Zero-Trust**: it never edits source data, and treats every value returned by a tool or model as untrusted."
+    },
+    {
+      "family": "EPIC Closed-Loop SIT Evidence Governance (Sprint 39)",
+      "id": "NFR-EVD-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Evidence traces shall be **deterministic and PHI-free**; every part carries `provenance` (`simulated`/`live`) and citations; a `simulated` part is never rendered as `live`."
+    },
+    {
+      "family": "EPIC Closed-Loop SIT Evidence Governance (Sprint 39)",
+      "id": "NFR-EVD-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The evidence surface shall take **no `deploy`/`delete`** action; SIT interaction in this sprint is read-only."
     },
     {
       "family": "Trusted External Signals Governance (Sprint 21)",

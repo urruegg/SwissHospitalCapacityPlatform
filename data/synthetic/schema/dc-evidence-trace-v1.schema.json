@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://curavias/schema/dc-evidence-trace-v1.schema.json",
+  "title": "DC-EVIDENCE-TRACE-v1",
+  "type": "object",
+  "required": ["contract", "golden_thread", "patient", "branch", "generated_ts", "steps"],
+  "additionalProperties": true,
+  "properties": {
+    "contract": { "const": "DC-EVIDENCE-TRACE-v1" },
+    "golden_thread": { "type": "string" },
+    "patient": { "type": "object", "required": ["synthetic_id", "provenance"] },
+    "branch": { "enum": ["accept", "deny"] },
+    "generated_ts": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "agent", "journey_stage", "epic_input", "agent_read", "recommendation", "copilot", "action", "outcome"],
+        "properties": {
+          "role": { "type": "string" },
+          "agent": { "type": "string" },
+          "journey_stage": { "type": "string" },
+          "epic_input": { "type": "object", "required": ["provenance"] },
+          "agent_read": { "type": "object" },
+          "recommendation": { "type": "object", "required": ["lever_id", "predicted_impact"] },
+          "copilot": { "type": "object", "required": ["decision", "requiresApproval"] },
+          "action": { "type": "object", "required": ["status"] },
+          "outcome": { "type": "object", "required": ["provenance"] }
+        }
+      }
+    }
+  }
+}
