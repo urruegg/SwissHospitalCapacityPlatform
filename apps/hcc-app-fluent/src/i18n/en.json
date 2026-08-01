@@ -276,7 +276,8 @@
       "bed-manager": "Bed management",
       "or-steering": "OR steering",
       "staffing": "Staffing",
-      "crisis": "Scenario"
+      "crisis": "Scenario",
+      "evidence": "Closed-Loop Evidence"
     },
     "discharge": "Discharge readiness (72h)",
     "orSteering": "OR steering (72h)",
@@ -293,7 +294,8 @@
     "crisis": "Scenario readiness (72h)",
     "signals": "External signals",
     "scenarios": "Scenarios",
-    "bedDays": "bed-days"
+    "bedDays": "bed-days",
+    "evidence": "Closed-Loop Evidence"
   },
   "handoff": {
     "live": "live",
@@ -778,6 +780,50 @@
       "divergence": "Divergence: {{value}}",
       "applied": "Applied",
       "notApplied": "Not applied"
+    }
+  },
+  "evidence": {
+    "title": "Closed-Loop Evidence",
+    "lead": "The derived proof of the operational loop - one synthetic patient, closed end-to-end.",
+    "goldenThread": "Golden thread: {{thread}}",
+    "patient": "Patient {{id}} \u00b7 {{specialty}}",
+    "degraded": "Live evidence unavailable - showing the bundled demo trace.",
+    "branch": {
+      "label": "Evidence branch",
+      "accept": "Accept branch",
+      "deny": "Deny branch"
+    },
+    "walk": {
+      "prev": "Previous role",
+      "next": "Next role",
+      "step": "Step {{n}} of {{total}} \u00b7 {{role}}"
+    },
+    "part": {
+      "epic": "EPIC input",
+      "read": "Agent read",
+      "reco": "Recommendation",
+      "copilot": "Copilot decision",
+      "outcome": "Outcome"
+    },
+    "epic": {
+      "occupancy": "Occupancy {{occupied}}/{{capacity}} beds on {{ward}}"
+    },
+    "reco": {
+      "predicted": "Predicted impact: {{value}} {{metric}}",
+      "noLever": "Advisory - no lever"
+    },
+    "copilot": {
+      "accepted": "Accepted",
+      "denied": "Denied",
+      "approver": "Approver: {{approver}}",
+      "requiresApproval": "Requires human approval (HITL gate)"
+    },
+    "outcome": {
+      "realised": "Realised impact: {{value}} {{metric}}",
+      "divergence": "Divergence: {{value}}",
+      "applied": "Applied",
+      "notApplied": "Not applied",
+      "sameContract": "Same DC-SIM-OUTCOME-v1 the operational loop produced \u00b7 {{thread}}"
     }
   },
   "bmca": {

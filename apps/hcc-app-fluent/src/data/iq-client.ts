@@ -338,3 +338,123 @@ export async function iqDecision(
   if (!res.ok) throw new Error(`decision failed: ${res.status}`);
   return (await res.json()) as DecisionOutcome;
 }
+
+/**
+ * Sprint 39 P2 (B3/B4) — the derived proof view of the operational loop.
+ *
+ * `GET /agents/{role}/evidence` returns a DC-EVIDENCE-TRACE-v1: the five-part
+ * proof per journey step (EPIC input -> agent read -> recommendation -> copilot
+ * accept/deny -> outcome), built by the Plan 1 harness on the SAME seeded gold
+ * the loop uses. The `outcome` step is DC-SIM-OUTCOME-v1-shaped (byte-parity with
+ * what `iqDecision` returns) - the validation==UX unification (FR-UXL-004). The
+ * types below mirror `closedloop.evidence.build_evidence_trace`.
+ */
+
+/** Part 1 of a step's proof: the EPIC gold the agent read. */
+export interface EvidenceEpicInput {
+  wardId: string;
+  occupiedBeds: number;
+  bedCapacity: number;
+  citations: string[];
+  provenance: Provenance;
+}
+
+/** Part 2: the agent's grounded read of the signal. */
+export interface EvidenceAgentRead {
+  signal: string;
+}
+
+/** Part 3: the grounded recommendation (deterministic predicted impact). */
+export interface EvidenceRecommendation {
+  lever_id: string | null;
+  params?: Record<string, unknown>;
+  predicted_impact: { metric: string; value: number };
+  insight_text: string;
+}
+
+/** Part 4: the human copilot accept/deny (the HITL gate). */
+export interface EvidenceCopilot {
+  requiresApproval: boolean;
+  decision: string;
+  approver: string;
+  decision_ts: string;
+}
+
+/** The Cosmos-persisted action reference for the step. */
+export interface EvidenceAction {
+  cosmos_id?: string;
+  status: string;
+}
+
+/**
+ * Part 5: the realised outcome - a DC-SIM-OUTCOME-v1 (FR-UXL-004: the SAME
+ * contract + fields `iqDecision` returns for the same `golden_thread`). Optional
+ * fields keep the type tolerant of the accept (applied) vs deny (no-op) shapes.
+ */
+export interface EvidenceOutcome {
+  contract: string;
+  cosmos_id?: string;
+  plan_id?: string;
+  golden_thread: string;
+  lever_id: string | null;
+  applied_ts?: string;
+  predicted_impact: { metric: string; value: number };
+  realised_impact: { metric: string; value: number };
+  state_delta?: { beds_freed: string[]; patients_discharged: string[]; patients_promoted: string[] };
+  divergence: number;
+  provenance: Provenance;
+  applied: boolean;
+}
+
+/** One journey step's five-part proof. */
+export interface EvidenceStep {
+  role: string;
+  agent: string;
+  journey_stage: string;
+  epic_input: EvidenceEpicInput;
+  agent_read: EvidenceAgentRead;
+  recommendation: EvidenceRecommendation;
+  copilot: EvidenceCopilot;
+  action: EvidenceAction;
+  outcome: EvidenceOutcome;
+}
+
+/** The DC-EVIDENCE-TRACE-v1 a role's closed-loop evidence read returns. */
+export interface EvidenceTrace {
+  contract: string;
+  golden_thread: string;
+  patient: { synthetic_id: string; specialty?: string; provenance: Provenance };
+  branch: 'accept' | 'deny';
+  generated_ts: string;
+  steps: EvidenceStep[];
+}
+
+/**
+ * Read a role's closed-loop evidence trace from the agent-host
+ * (`GET /agents/{role}/evidence?branch=accept|deny`, Sprint 39 P2 B3/B4).
+ * Read-only (no oid required); carries the ContextEnvelope as scoped identity
+ * headers for parity with the other gateway calls. Throws loud on transport /
+ * HTTP error so the caller degrades to its bundled fixture and surfaces the
+ * degradation (never silently). Only call when `isAgentHostConfigured()`. The
+ * evidence envelope's `provenance` is the trace's (`simulated` in the demo);
+ * `citations` carry the first step's EPIC grounding ids.
+ */
+export async function iqEvidence(
+  role: string,
+  branch: 'accept' | 'deny',
+  env: ContextEnvelope,
+): Promise<IqResult<EvidenceTrace>> {
+  const res = await fetch(
+    `${agentHostBaseUrl()}/agents/${encodeURIComponent(role)}/evidence?branch=${encodeURIComponent(branch)}&hospital=${encodeURIComponent(hospitalOf(env))}`,
+    { headers: { ...identityHeaders(env), ...(await bearerHeader()) } },
+  );
+  if (!res.ok) throw new Error(`evidence load failed: ${res.status}`);
+  const data = (await res.json()) as EvidenceTrace;
+  return {
+    data,
+    provenance: data.patient?.provenance ?? 'simulated',
+    citations: data.steps?.[0]?.epic_input?.citations ?? [],
+    degraded: false,
+    source: 'foundry-agent',
+  };
+}

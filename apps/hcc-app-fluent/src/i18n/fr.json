@@ -135,7 +135,8 @@
       "bed-manager": "Gestion des lits",
       "or-steering": "Pilotage du bloc",
       "staffing": "Personnel",
-      "crisis": "Scénario"
+      "crisis": "Scénario",
+      "evidence": "Preuve en boucle fermée"
     },
     "discharge": "Préparation des sorties (72 h)",
     "orSteering": "Pilotage du bloc (72 h)",
@@ -152,7 +153,8 @@
     "crisis": "Préparation aux scénarios (72 h)",
     "signals": "Signaux externes",
     "scenarios": "Scénarios",
-    "bedDays": "jours-lits"
+    "bedDays": "jours-lits",
+    "evidence": "Preuve en boucle fermée"
   },
   "handoff": {
     "live": "en direct",
@@ -540,6 +542,50 @@
       "divergence": "Écart : {{value}}",
       "applied": "Appliqué",
       "notApplied": "Non appliqué"
+    }
+  },
+  "evidence": {
+    "title": "Preuve en boucle fermée",
+    "lead": "La preuve dérivée de la boucle opérationnelle - un patient synthétique, bouclé de bout en bout.",
+    "goldenThread": "Fil conducteur : {{thread}}",
+    "patient": "Patient {{id}} \u00b7 {{specialty}}",
+    "degraded": "Preuve en direct indisponible - le trace de démo groupé est affiché.",
+    "branch": {
+      "label": "Branche de preuve",
+      "accept": "Branche acceptée",
+      "deny": "Branche refusée"
+    },
+    "walk": {
+      "prev": "Rôle précédent",
+      "next": "Rôle suivant",
+      "step": "Étape {{n}} sur {{total}} \u00b7 {{role}}"
+    },
+    "part": {
+      "epic": "Entrée EPIC",
+      "read": "Lecture de l'agent",
+      "reco": "Recommandation",
+      "copilot": "Décision Copilot",
+      "outcome": "Résultat"
+    },
+    "epic": {
+      "occupancy": "Occupation {{occupied}}/{{capacity}} lits sur {{ward}}"
+    },
+    "reco": {
+      "predicted": "Impact prévu : {{value}} {{metric}}",
+      "noLever": "Consultatif - aucun levier"
+    },
+    "copilot": {
+      "accepted": "Accepté",
+      "denied": "Refusé",
+      "approver": "Approbateur : {{approver}}",
+      "requiresApproval": "Nécessite une approbation humaine (contrôle HITL)"
+    },
+    "outcome": {
+      "realised": "Impact réalisé : {{value}} {{metric}}",
+      "divergence": "Écart : {{value}}",
+      "applied": "Appliqué",
+      "notApplied": "Non appliqué",
+      "sameContract": "Le même DC-SIM-OUTCOME-v1 produit par la boucle opérationnelle \u00b7 {{thread}}"
     }
   },
   "bmca": {
