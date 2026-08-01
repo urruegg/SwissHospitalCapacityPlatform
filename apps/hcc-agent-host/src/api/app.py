@@ -397,6 +397,22 @@ def create_app() -> FastAPI:
             # Unvalidated params (e.g. unknown ward) or a multi-ward snapshot -> 400.
             raise HTTPException(status_code=400, detail=str(exc))
 
+    @app.get("/agents/{name}/evidence")
+    def evidence(name: str, branch: str = "accept", hospital: str = "USZ") -> dict[str, Any]:
+        # Sprint 39 P2 B3/B4 - the DC-EVIDENCE-TRACE-v1 five-part proof for a role,
+        # built by the Plan 1 harness on the SAME seeded gold the loop uses. This
+        # is the validation==UX unification (FR-UXL-004): the evidence steps carry
+        # the same DC-SIM-OUTCOME-v1 contract the /decisions endpoint produces.
+        # Read-only (no oid); branch in {accept, deny}. Provenance is the gold's.
+        state = get_state()
+        gold = state.load_gold_snapshot(hospital)
+        from closedloop.evidence import build_evidence_trace
+
+        try:
+            return build_evidence_trace(gold, branch)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+
     return app
 
 
