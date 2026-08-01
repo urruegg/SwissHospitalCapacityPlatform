@@ -35,6 +35,7 @@ const useStyles = makeStyles({
   td: { padding: tokens.spacingVerticalXS, borderBottom: `1px solid ${tokens.colorNeutralStroke2}` },
   tdNum: { textAlign: 'right' },
   patient: { fontWeight: tokens.fontWeightSemibold },
+  patientCell: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS, flexWrap: 'wrap' },
   patientTrigger: { borderBottom: `1px dotted ${tokens.colorNeutralStroke1}`, cursor: 'help' },
   patientCard: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS, maxWidth: '260px' },
   patientHead: { fontWeight: tokens.fontWeightSemibold },
@@ -91,21 +92,33 @@ export function DischargeWorklistTable({ candidates, onSelectCandidate }: Discha
                 style={{ cursor: 'pointer' }}
               >
                 <td className={mergeClasses(s.td, s.patient)}>
-                  <Tooltip
-                    withArrow
-                    positioning="after"
-                    relationship="description"
-                    content={
-                      <div className={s.patientCard}>
-                        <Body2 className={s.patientHead}>{c.ward} · {c.readiness}</Body2>
-                        <Caption1 className={s.muted}>
-                          {c.blocker || t('dca.table.noBarrier')} · {t('dca.table.estFree')}: {c.estFreeLabel}
-                        </Caption1>
-                      </div>
-                    }
-                  >
-                    <span className={s.patientTrigger}>{c.patientId}</span>
-                  </Tooltip>
+                  <span className={s.patientCell}>
+                    <Tooltip
+                      withArrow
+                      positioning="after"
+                      relationship="description"
+                      content={
+                        <div className={s.patientCard}>
+                          <Body2 className={s.patientHead}>{c.ward} · {c.readiness}</Body2>
+                          <Caption1 className={s.muted}>
+                            {c.blocker || t('dca.table.noBarrier')} · {t('dca.table.estFree')}: {c.estFreeLabel}
+                          </Caption1>
+                        </div>
+                      }
+                    >
+                      <span className={s.patientTrigger}>{c.patientId}</span>
+                    </Tooltip>
+                    {c.provenance && (
+                      <Badge
+                        appearance="outline"
+                        size="small"
+                        color={c.provenance === 'live' ? 'success' : 'informative'}
+                        aria-label={t('dca.table.provenance', { source: c.provenance })}
+                      >
+                        {t(`dca.table.source.${c.provenance}`)}
+                      </Badge>
+                    )}
+                  </span>
                 </td>
                 <td className={s.td}>{c.ward}</td>
                 <td className={s.td}>

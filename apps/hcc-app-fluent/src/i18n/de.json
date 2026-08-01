@@ -230,7 +230,8 @@
       "bed-manager": "Bettenmanagement",
       "or-steering": "OP-Steuerung",
       "staffing": "Personal",
-      "crisis": "Szenario"
+      "crisis": "Szenario",
+      "evidence": "Closed-Loop-Evidenz"
     },
     "discharge": "Entlassungsbereitschaft (72h)",
     "orSteering": "OP-Steuerung (72h)",
@@ -247,7 +248,8 @@
     "crisis": "Szenario-Bereitschaft (72h)",
     "signals": "Externe Signale",
     "scenarios": "Szenarien",
-    "bedDays": "Bettentage"
+    "bedDays": "Bettentage",
+    "evidence": "Closed-Loop-Evidenz"
   },
   "handoff": {
     "live": "live",
@@ -268,7 +270,12 @@
       "readiness": "Bereitschaft",
       "barrier": "Hindernis",
       "estFree": "Frei in",
-      "noBarrier": "—"
+      "noBarrier": "—",
+      "provenance": "Datenquelle: {{source}}",
+      "source": {
+        "live": "Live",
+        "simulated": "Simuliert"
+      }
     },
     "barriers": {
       "title": "Kapazitätshindernisse — nach Bettauswirkung sortiert",
@@ -684,7 +691,69 @@
     "projection": "Prognose: {{text}}",
     "refused": "Abgelehnt",
     "approvalRequired": "Freigabe erforderlich",
-    "approvalHint": "Mit approved-to-apply antworten, um fortzufahren"
+    "approvalHint": "Mit approved-to-apply antworten, um fortzufahren",
+    "accept": "Annehmen",
+    "deny": "Ablehnen",
+    "advisoryOnly": "Nur beratend — ein Mensch entscheidet; die App wendet nie direkt an.",
+    "decisionRefused": "Aktion durch die Freigabekontrolle abgelehnt — nur beratend, keine Änderung angewendet.",
+    "decisionError": "Entscheidung konnte nicht übermittelt werden. Keine Änderung angewendet.",
+    "decisionPending": "Entscheidung wird übermittelt",
+    "outcome": {
+      "title": "Entscheidungsergebnis",
+      "yourDecision": "Ihre Entscheidung",
+      "accept": "Annehmen",
+      "deny": "Ablehnen",
+      "bedsFreed": "{{count}} Betten frei",
+      "wouldFree": "Würde {{count}} Betten freigeben",
+      "breachPersists": "Engpass bleibt · 0 Betten frei",
+      "divergence": "Abweichung: {{value}}",
+      "applied": "Angewendet",
+      "notApplied": "Nicht angewendet"
+    }
+  },
+  "evidence": {
+    "title": "Closed-Loop-Evidenz",
+    "lead": "Der abgeleitete Nachweis des operativen Regelkreises - ein synthetischer Patient, End-to-End geschlossen.",
+    "goldenThread": "Goldener Faden: {{thread}}",
+    "patient": "Patient {{id}} \u00b7 {{specialty}}",
+    "degraded": "Live-Evidenz nicht verfügbar - der gebündelte Demo-Trace wird angezeigt.",
+    "branch": {
+      "label": "Evidenz-Zweig",
+      "accept": "Annahme-Zweig",
+      "deny": "Ablehnungs-Zweig"
+    },
+    "walk": {
+      "prev": "Vorherige Rolle",
+      "next": "Nächste Rolle",
+      "step": "Schritt {{n}} von {{total}} \u00b7 {{role}}"
+    },
+    "part": {
+      "epic": "EPIC-Eingabe",
+      "read": "Agent-Lesung",
+      "reco": "Empfehlung",
+      "copilot": "Copilot-Entscheidung",
+      "outcome": "Ergebnis"
+    },
+    "epic": {
+      "occupancy": "Belegung {{occupied}}/{{capacity}} Betten auf {{ward}}"
+    },
+    "reco": {
+      "predicted": "Erwartete Wirkung: {{value}} {{metric}}",
+      "noLever": "Beratend - kein Hebel"
+    },
+    "copilot": {
+      "accepted": "Angenommen",
+      "denied": "Abgelehnt",
+      "approver": "Freigebende Person: {{approver}}",
+      "requiresApproval": "Erfordert menschliche Freigabe (HITL-Kontrolle)"
+    },
+    "outcome": {
+      "realised": "Realisierte Wirkung: {{value}} {{metric}}",
+      "divergence": "Abweichung: {{value}}",
+      "applied": "Angewendet",
+      "notApplied": "Nicht angewendet",
+      "sameContract": "Dasselbe DC-SIM-OUTCOME-v1, das der operative Regelkreis erzeugt hat \u00b7 {{thread}}"
+    }
   },
   "bmca": {
     "table": {

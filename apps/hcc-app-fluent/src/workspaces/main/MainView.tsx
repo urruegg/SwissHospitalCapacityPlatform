@@ -6,6 +6,7 @@ import { DischargeBoard } from './boards/discharge/DischargeBoard';
 import { OccupancyBoard } from './boards/occupancy/OccupancyBoard';
 import { OrSteeringBoard } from './boards/or-steering/OrSteeringBoard';
 import { StaffingBoard } from './boards/staffing/StaffingBoard';
+import { ClosedLoopEvidenceBoard } from './boards/evidence/ClosedLoopEvidenceBoard';
 import { CsaView } from './wizards/csa/CsaView';
 import { MainSubNav } from './MainSubNav';
 import { useRoleLens } from '../../context/role-context';
@@ -47,6 +48,11 @@ const BOARDS: Record<string, () => JSX.Element> = {
   crisis: () => (
     <div data-testid="board-crisis">
       <CsaView />
+    </div>
+  ),
+  evidence: () => (
+    <div data-testid="board-evidence-slot">
+      <ClosedLoopEvidenceBoard />
     </div>
   ),
 };

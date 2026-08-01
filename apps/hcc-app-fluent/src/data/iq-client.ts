@@ -228,3 +228,234 @@ export async function postInteractionEvent(
   );
   if (!res.ok) throw new Error(`interaction event failed: ${res.status}`);
 }
+
+/**
+ * Sprint 39 P2 — the operational closed loop (worklist + decisions).
+ *
+ * Two agent-host endpoints wired through the single IQ ingress. The role is the
+ * SHORT role id the host keys on (e.g. `dca`, not `dca-agent`). Both carry the
+ * caller's `ContextEnvelope` as scoped OBO/RLS identity headers so the agent-host
+ * can attribute the human approver — `X-User-Oid` is the HITL approver seam
+ * (NFR-UXL-001): the app never applies directly, it only submits the decision.
+ */
+
+/** One barrier/readiness observation on a role's worklist (agent-host shape). */
+export interface WorklistObservation {
+  patient: string;
+  ward: string;
+  readiness: string;
+  barrier?: string;
+  aged_h?: number;
+  provenance: Provenance;
+}
+
+/** The single grounded recommendation attached to a worklist (agent-host shape). */
+export interface WorklistRecommendation {
+  lever_id: string | null;
+  params?: Record<string, unknown>;
+  predicted_impact?: { metric: string; value: number };
+  insight_text: string;
+  citations: string[];
+}
+
+/** A role's live worklist: observations + one grounded recommendation. */
+export interface Worklist {
+  role: string;
+  ward: string;
+  observations: WorklistObservation[];
+  recommendation: WorklistRecommendation;
+  provenance: Provenance;
+}
+
+/** The `DC-SIM-OUTCOME-v1` a single human accept/deny produces (agent-host shape). */
+export interface DecisionOutcome {
+  contract: string;
+  plan_id: string;
+  golden_thread: string;
+  lever_id: string | null;
+  applied_ts: string;
+  predicted_impact: { metric: string; value: number };
+  realised_impact: { metric: string; value: number };
+  state_delta: { beds_freed: string[]; patients_discharged: string[]; patients_promoted: string[] };
+  divergence: number;
+  provenance: Provenance;
+  applied: boolean;
+  branch: string;
+  decision: string;
+  approver: string;
+}
+
+/** Resolve the target hospital for an operational-loop call from the envelope. */
+function hospitalOf(env: ContextEnvelope): string {
+  const scope = env.hospitalScope;
+  return scope && scope !== 'aggregated' ? scope.toUpperCase() : 'USZ';
+}
+
+/**
+ * Read a role's live worklist from the agent-host
+ * (`GET /agents/{role}/worklist`, Sprint 39 P2). Carries the ContextEnvelope as
+ * scoped identity headers. Throws loud on transport / HTTP error so the caller
+ * degrades to its fixture and surfaces the degradation (never silently). Only
+ * call when `isAgentHostConfigured()`. Returns an evidence envelope whose
+ * `citations` carry the recommendation's grounding ids.
+ */
+export async function iqWorklist(role: string, env: ContextEnvelope): Promise<IqResult<Worklist>> {
+  const res = await fetch(
+    `${agentHostBaseUrl()}/agents/${encodeURIComponent(role)}/worklist?hospital=${encodeURIComponent(hospitalOf(env))}`,
+    { headers: { ...identityHeaders(env), ...(await bearerHeader()) } },
+  );
+  if (!res.ok) throw new Error(`worklist load failed: ${res.status}`);
+  const data = (await res.json()) as Worklist;
+  return {
+    data,
+    provenance: data.provenance,
+    citations: data.recommendation?.citations ?? [],
+    degraded: false,
+    source: 'foundry-agent',
+  };
+}
+
+/**
+ * Submit a single human accept/deny on a role's recommendation to the agent-host
+ * (`POST /agents/{role}/decisions`, Sprint 39 P2). The `X-User-Oid` header is the
+ * HITL approver: the agent-host enforces the gate (a bot/self approver → 403, a
+ * missing oid → 401). The app NEVER applies directly (NFR-UXL-001); it only
+ * submits the decision and renders the returned outcome. Throws loud on HTTP
+ * error (the status is in the message so the caller can surface a refusal without
+ * retrying). Only call when `isAgentHostConfigured()`.
+ */
+export async function iqDecision(
+  role: string,
+  decision: 'accept' | 'deny',
+  params: Record<string, unknown>,
+  env: ContextEnvelope,
+): Promise<DecisionOutcome> {
+  const res = await fetch(`${agentHostBaseUrl()}/agents/${encodeURIComponent(role)}/decisions`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...identityHeaders(env), ...(await bearerHeader()) },
+    body: JSON.stringify({ decision, hospital: hospitalOf(env), params }),
+  });
+  if (!res.ok) throw new Error(`decision failed: ${res.status}`);
+  return (await res.json()) as DecisionOutcome;
+}
+
+/**
+ * Sprint 39 P2 (B3/B4) — the derived proof view of the operational loop.
+ *
+ * `GET /agents/{role}/evidence` returns a DC-EVIDENCE-TRACE-v1: the five-part
+ * proof per journey step (EPIC input -> agent read -> recommendation -> copilot
+ * accept/deny -> outcome), built by the Plan 1 harness on the SAME seeded gold
+ * the loop uses. The `outcome` step is DC-SIM-OUTCOME-v1-shaped - the SAME
+ * contract + fields (`realised_impact`, `divergence`, `applied`, `golden_thread`)
+ * `iqDecision` returns - the validation==UX unification (FR-UXL-004). The
+ * types below mirror `closedloop.evidence.build_evidence_trace`.
+ */
+
+/** Part 1 of a step's proof: the EPIC gold the agent read. */
+export interface EvidenceEpicInput {
+  wardId: string;
+  occupiedBeds: number;
+  bedCapacity: number;
+  citations: string[];
+  provenance: Provenance;
+}
+
+/** Part 2: the agent's grounded read of the signal. */
+export interface EvidenceAgentRead {
+  signal: string;
+}
+
+/** Part 3: the grounded recommendation (deterministic predicted impact). */
+export interface EvidenceRecommendation {
+  lever_id: string | null;
+  params?: Record<string, unknown>;
+  predicted_impact: { metric: string; value: number };
+  insight_text: string;
+}
+
+/** Part 4: the human copilot accept/deny (the HITL gate). */
+export interface EvidenceCopilot {
+  requiresApproval: boolean;
+  decision: string;
+  approver: string;
+  decision_ts: string;
+}
+
+/** The Cosmos-persisted action reference for the step. */
+export interface EvidenceAction {
+  cosmos_id?: string;
+  status: string;
+}
+
+/**
+ * Part 5: the realised outcome - a DC-SIM-OUTCOME-v1 (FR-UXL-004: the SAME
+ * contract + fields `iqDecision` returns for the same `golden_thread`). Optional
+ * fields keep the type tolerant of the accept (applied) vs deny (no-op) shapes.
+ */
+export interface EvidenceOutcome {
+  contract: string;
+  cosmos_id?: string;
+  plan_id?: string;
+  golden_thread: string;
+  lever_id: string | null;
+  applied_ts?: string;
+  predicted_impact: { metric: string; value: number };
+  realised_impact: { metric: string; value: number };
+  state_delta?: { beds_freed: string[]; patients_discharged: string[]; patients_promoted: string[] };
+  divergence: number;
+  provenance: Provenance;
+  applied: boolean;
+}
+
+/** One journey step's five-part proof. */
+export interface EvidenceStep {
+  role: string;
+  agent: string;
+  journey_stage: string;
+  epic_input: EvidenceEpicInput;
+  agent_read: EvidenceAgentRead;
+  recommendation: EvidenceRecommendation;
+  copilot: EvidenceCopilot;
+  action: EvidenceAction;
+  outcome: EvidenceOutcome;
+}
+
+/** The DC-EVIDENCE-TRACE-v1 a role's closed-loop evidence read returns. */
+export interface EvidenceTrace {
+  contract: string;
+  golden_thread: string;
+  patient: { synthetic_id: string; specialty?: string; provenance: Provenance };
+  branch: 'accept' | 'deny';
+  generated_ts: string;
+  steps: EvidenceStep[];
+}
+
+/**
+ * Read a role's closed-loop evidence trace from the agent-host
+ * (`GET /agents/{role}/evidence?branch=accept|deny`, Sprint 39 P2 B3/B4).
+ * Read-only (no oid required); carries the ContextEnvelope as scoped identity
+ * headers for parity with the other gateway calls. Throws loud on transport /
+ * HTTP error so the caller degrades to its bundled fixture and surfaces the
+ * degradation (never silently). Only call when `isAgentHostConfigured()`. The
+ * evidence envelope's `provenance` is the trace's (`simulated` in the demo);
+ * `citations` carry the first step's EPIC grounding ids.
+ */
+export async function iqEvidence(
+  role: string,
+  branch: 'accept' | 'deny',
+  env: ContextEnvelope,
+): Promise<IqResult<EvidenceTrace>> {
+  const res = await fetch(
+    `${agentHostBaseUrl()}/agents/${encodeURIComponent(role)}/evidence?branch=${encodeURIComponent(branch)}&hospital=${encodeURIComponent(hospitalOf(env))}`,
+    { headers: { ...identityHeaders(env), ...(await bearerHeader()) } },
+  );
+  if (!res.ok) throw new Error(`evidence load failed: ${res.status}`);
+  const data = (await res.json()) as EvidenceTrace;
+  return {
+    data,
+    provenance: data.patient?.provenance ?? 'simulated',
+    citations: data.steps?.[0]?.epic_input?.citations ?? [],
+    degraded: false,
+    source: 'foundry-agent',
+  };
+}

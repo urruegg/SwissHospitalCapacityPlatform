@@ -135,7 +135,8 @@
       "bed-manager": "Gestione letti",
       "or-steering": "Coordinamento sala operatoria",
       "staffing": "Personale",
-      "crisis": "Scenario"
+      "crisis": "Scenario",
+      "evidence": "Evidenza a ciclo chiuso"
     },
     "discharge": "Preparazione dimissioni (72h)",
     "orSteering": "Gestione sala operatoria (72h)",
@@ -152,7 +153,8 @@
     "crisis": "Preparazione agli scenari (72h)",
     "signals": "Segnali esterni",
     "scenarios": "Scenari",
-    "bedDays": "giornate-letto"
+    "bedDays": "giornate-letto",
+    "evidence": "Evidenza a ciclo chiuso"
   },
   "handoff": {
     "live": "live",
@@ -173,7 +175,12 @@
       "readiness": "Preparazione",
       "barrier": "Ostacolo",
       "estFree": "Libero tra",
-      "noBarrier": "—"
+      "noBarrier": "—",
+      "provenance": "Origine dati: {{source}}",
+      "source": {
+        "live": "In diretta",
+        "simulated": "Simulato"
+      }
     },
     "barriers": {
       "title": "Ostacoli alla capacità — ordinati per impatto sui letti",
@@ -517,7 +524,69 @@
     "projection": "Proiezione: {{text}}",
     "refused": "Rifiutato",
     "approvalRequired": "Approvazione richiesta",
-    "approvalHint": "Rispondi approved-to-apply per procedere"
+    "approvalHint": "Rispondi approved-to-apply per procedere",
+    "accept": "Accetta",
+    "deny": "Rifiuta",
+    "advisoryOnly": "Solo consultivo — decide un umano; l'app non applica mai direttamente.",
+    "decisionRefused": "Azione rifiutata dal controllo di approvazione — solo consultivo, nessuna modifica applicata.",
+    "decisionError": "Impossibile inviare la decisione. Nessuna modifica applicata.",
+    "decisionPending": "Invio della decisione",
+    "outcome": {
+      "title": "Esito della decisione",
+      "yourDecision": "La tua decisione",
+      "accept": "Accetta",
+      "deny": "Rifiuta",
+      "bedsFreed": "{{count}} letti liberati",
+      "wouldFree": "Libererebbe {{count}} letti",
+      "breachPersists": "Il superamento persiste · 0 letti liberati",
+      "divergence": "Divergenza: {{value}}",
+      "applied": "Applicato",
+      "notApplied": "Non applicato"
+    }
+  },
+  "evidence": {
+    "title": "Evidenza a ciclo chiuso",
+    "lead": "La prova derivata del ciclo operativo - un paziente sintetico, chiuso end-to-end.",
+    "goldenThread": "Filo conduttore: {{thread}}",
+    "patient": "Paziente {{id}} \u00b7 {{specialty}}",
+    "degraded": "Evidenza live non disponibile - viene mostrato il trace demo incluso.",
+    "branch": {
+      "label": "Ramo dell'evidenza",
+      "accept": "Ramo di accettazione",
+      "deny": "Ramo di rifiuto"
+    },
+    "walk": {
+      "prev": "Ruolo precedente",
+      "next": "Ruolo successivo",
+      "step": "Passo {{n}} di {{total}} \u00b7 {{role}}"
+    },
+    "part": {
+      "epic": "Input EPIC",
+      "read": "Lettura dell'agente",
+      "reco": "Raccomandazione",
+      "copilot": "Decisione Copilot",
+      "outcome": "Esito"
+    },
+    "epic": {
+      "occupancy": "Occupazione {{occupied}}/{{capacity}} letti in {{ward}}"
+    },
+    "reco": {
+      "predicted": "Impatto previsto: {{value}} {{metric}}",
+      "noLever": "Consultivo - nessuna leva"
+    },
+    "copilot": {
+      "accepted": "Accettato",
+      "denied": "Rifiutato",
+      "approver": "Approvatore: {{approver}}",
+      "requiresApproval": "Richiede approvazione umana (controllo HITL)"
+    },
+    "outcome": {
+      "realised": "Impatto realizzato: {{value}} {{metric}}",
+      "divergence": "Divergenza: {{value}}",
+      "applied": "Applicato",
+      "notApplied": "Non applicato",
+      "sameContract": "Lo stesso DC-SIM-OUTCOME-v1 prodotto dal ciclo operativo \u00b7 {{thread}}"
+    }
   },
   "bmca": {
     "table": {

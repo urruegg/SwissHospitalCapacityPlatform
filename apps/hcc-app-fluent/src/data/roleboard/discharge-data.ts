@@ -7,6 +7,8 @@
  * PHI: all patient ids are synthetic PT-xxxx tokens — no real patient data.
  */
 import type { GroundedReco } from '../../copilot-rail/reco';
+import type { Provenance } from '../../journey/RoleBoard';
+import type { Worklist } from '../iq-client';
 
 export type ReadinessStatus = 'READY' | 'BLOCKED' | 'PENDING';
 
@@ -20,6 +22,12 @@ export interface DischargeCandidate {
   estFreeLabel: string;     // display, e.g. '< 2h', 'today', '24h'
   bedsFreeable: number;
   recoId: string;
+  /**
+   * Sprint 39 P2 — per-row provenance. Set only on rows sourced from the live
+   * agent-host worklist (`live`); left undefined for the simulated fixtures so
+   * their rendered DOM stays byte-unchanged (no badge). Badge it truthfully.
+   */
+  provenance?: Provenance;
 }
 
 /** Leading glyph per capacity barrier. */
@@ -272,4 +280,64 @@ export const DISCHARGE_PINNED: DischargePayload = {
   recoById,
   defaultReco,
 };
+
+/** Normalise the agent-host readiness string onto the table's status union. */
+function toReadiness(readiness: string): ReadinessStatus {
+  return readiness === 'READY' || readiness === 'PENDING' ? readiness : 'BLOCKED';
+}
+
+/**
+ * Sprint 39 P2 — map a live agent-host worklist's observations onto the
+ * discharge worklist table rows. Every row is stamped with the worklist's
+ * provenance (`live`) so the table can badge it truthfully; all rows route to
+ * the live grounded recommendation (the `discharge-gap` reco slot the board
+ * seeds), which carries the accept/deny gate.
+ */
+export function worklistToCandidates(wl: Worklist): DischargeCandidate[] {
+  return wl.observations.map((o, i) => ({
+    id: `live-${o.patient}-${i}`,
+    patientId: o.patient,
+    ward: o.ward,
+    readiness: toReadiness(o.readiness),
+    blocker: o.barrier ?? '',
+    estFreeHours: o.aged_h ?? 0,
+    estFreeLabel: typeof o.aged_h === 'number' ? `${o.aged_h}h` : '—',
+    bedsFreeable: 1,
+    recoId: 'discharge-gap',
+    provenance: o.provenance,
+  }));
+}
+
+/**
+ * Sprint 39 P2 — build the live grounded recommendation from the agent-host
+ * worklist. Marked `requiresApproval` so the copilot rail renders the human
+ * accept/deny gate (NFR-UXL-001: the app only submits the decision). The
+ * deterministic `predicted_impact` from the host is surfaced as the beds-freeable
+ * metric; provenance + citations are carried through honestly.
+ */
+export function worklistToReco(wl: Worklist): GroundedReco {
+  const rec = wl.recommendation;
+  const beds = rec.predicted_impact?.value ?? 0;
+  const n = wl.observations.length;
+  return {
+    agentLabel: AGENT_LABEL,
+    contextChip: {
+      subject: `${wl.ward} — ${n} discharge barriers`,
+      qualifiers: [`${beds} beds freeable`],
+      status: 'BLOCKED',
+      tone: 'watch',
+    },
+    read: rec.insight_text,
+    metrics: [
+      { label: 'Blocked', value: `${n}` },
+      { label: 'Beds freeable', value: `${beds}`, tone: 'beds' },
+    ],
+    levers: [{ text: rec.insight_text, impact: { label: `+${beds} beds`, tone: 'beds' } }],
+    primaryCta: { label: 'Unblock barriers', kind: 'action', requiresApproval: true },
+    projection: `Resolving the barriers frees ${beds} beds on ${wl.ward}`,
+    citations: rec.citations,
+    provenance: wl.provenance,
+  };
+}
+
 

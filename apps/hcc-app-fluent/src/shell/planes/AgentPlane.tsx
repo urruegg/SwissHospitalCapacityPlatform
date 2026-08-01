@@ -109,8 +109,13 @@ export function AgentPlane() {
   const agent = agentForRoute(loc.pathname);
   const board = boardForRoute(loc.pathname);
   const { turns, busy, send } = useConversation(agent, userOid);
-  const { open, setOpen, activeReco, defaultReco, backToDefault, resetReco } = useCopilotRail();
+  const { open, setOpen, activeReco, defaultReco, onDecision, backToDefault, resetReco } = useCopilotRail();
   const [draft, setDraft] = useState('');
+  // Sprint 39 P2 — the SHORT role id the agent-host keys on (`dca`, not
+  // `dca-agent`). Only the live board registers a decision handler, so
+  // `onDecision` is null on every other surface and RecoPanel keeps the
+  // presentational single-CTA path.
+  const role = agent.replace(/-agent$/, '');
 
   // Reco state is app-global; clear it when leaving a board so one board's
   // grounded recommendation never leaks onto another. Runs on route change
@@ -161,6 +166,8 @@ export function AgentPlane() {
             showBack={activeReco != null}
             onBack={backToDefault}
             onCta={onCta}
+            role={role}
+            onDecision={onDecision ?? undefined}
           />
         )}
         {board && board.askAbout.length > 0 && turns.length === 0 && (

@@ -14,6 +14,7 @@ enforcer for the manifest's declared gates (ADR-0007).
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 from functools import lru_cache
@@ -34,6 +35,7 @@ from threads.provider import ThreadProviderError, build_thread_provider
 from auth.obo_context import build_obo_context
 from auth.token_validator import TokenValidationError
 from hitl.gate_enforcer import enforce_gates
+from loop.sim_registry import SimRegistry
 from observability import tracing
 
 logger = logging.getLogger(__name__)
@@ -45,6 +47,15 @@ def _agents_root() -> Path:
         return Path(override)
     # apps/hcc-agent-host/src/api/app.py → repo root is parents[4].
     return Path(__file__).resolve().parents[4] / "agents"
+
+
+def _default_gold_path() -> Path:
+    # apps/hcc-agent-host/src/api/app.py → repo root is parents[4]. The committed
+    # Plan 1 USZ snapshot is the simulated-MVP default gold source.
+    return (
+        Path(__file__).resolve().parents[4]
+        / "apps" / "sim-capacity" / "tests" / "fixtures" / "gold-snapshot-usz.json"
+    )
 
 
 # Default browser origins for the hcc-app-fluent Copilot Drawer (ADR-0013 westus2
@@ -120,6 +131,17 @@ class HostState:
         # TMDL predicate, so it refuses the structured read until then. No OBO token
         # is available in the current MI flow, hence obo_token stays None.
         self.rls_provider = build_rls_provider(data_agent_client=live)
+        # Sprint 39 P2 — one stateful in-host SimState per hospital, seeded from a
+        # materialized gold snapshot via the Plan 1 gold_seed (no deploy, no live
+        # write-back). Backs GET /agents/{role}/worklist + POST /decisions.
+        self.sim_registry = SimRegistry()
+
+    def load_gold_snapshot(self, hospital: str) -> dict[str, Any]:
+        # Sprint 39 P2 simulated-MVP seam: read a materialized gold snapshot from
+        # GOLD_SNAPSHOT_PATH (default = the committed Plan 1 USZ fixture). The live
+        # golden-source read (golden.service.load_golden) is the follow-on.
+        path = Path(os.environ.get("GOLD_SNAPSHOT_PATH", str(_default_gold_path())))
+        return json.loads(path.read_text(encoding="utf-8"))
 
     def rls_provider_for(self, obo_token: str | None):
         """#424 M5 — the per-request RLS provider.
@@ -166,6 +188,13 @@ class UserEventRequest(BaseModel):
     type: str
     value: str | None = None
     ts: str | None = None
+
+
+class DecisionRequest(BaseModel):
+    # Sprint 39 P2 — a single human accept/deny on a role's recommendation.
+    decision: str  # "accept" | "deny"
+    hospital: str = "USZ"
+    params: dict[str, Any] = {}
 
 
 def create_app() -> FastAPI:
@@ -326,6 +355,63 @@ def create_app() -> FastAPI:
         except KeyError:
             raise HTTPException(status_code=404, detail=f"unknown interactionId '{interaction_id}'")
         return {"ok": True, "interactionId": interaction_id}
+
+    @app.get("/agents/{name}/worklist")
+    def worklist(name: str, hospital: str = "USZ", x_user_oid: str = Header(default="")) -> dict[str, Any]:
+        # Sprint 39 P2 — the role's live observations + one grounded recommendation
+        # on real seeded gold. Simulated-MVP: gold comes from the Plan 1 fixture via
+        # load_gold_snapshot; the live golden-source read is the follow-on.
+        state = get_state()
+        gold = state.load_gold_snapshot(hospital)
+        sim = state.sim_registry.get_or_seed(hospital, gold)
+        from loop.worklist import build_worklist
+
+        try:
+            return build_worklist(name, sim, provenance=gold.get("provenance", "simulated"))
+        except ValueError as exc:
+            # e.g. a multi-ward snapshot is out of the single-ward MVP scope: a
+            # loud 400, not a silent mis-grounding.
+            raise HTTPException(status_code=400, detail=str(exc))
+
+    @app.post("/agents/{name}/decisions")
+    def decisions(name: str, req: DecisionRequest, x_user_oid: str = Header(default="")) -> dict[str, Any]:
+        # Sprint 39 P2 — a human accept/deny drives the REAL HITL apply->outcome on
+        # the in-host SimState. NFR-UXL-001: only a human oid may act; the bot/self
+        # refusal is enforced by plan_runtime.approve_action (surfaced as 403).
+        if not x_user_oid:
+            raise HTTPException(status_code=401, detail="human approver (x-user-oid) required")
+        state = get_state()
+        gold = state.load_gold_snapshot(req.hospital)
+        sim = state.sim_registry.get_or_seed(req.hospital, gold)
+        from loop.decisions import decide
+
+        try:
+            return decide(
+                name, req.decision, approver=x_user_oid, state=state, sim=sim,
+                params=req.params, provenance=gold.get("provenance", "simulated"),
+            )
+        except PermissionError as exc:
+            # NFR-UXL-001: a bot/self approver is refused by approve_action.
+            raise HTTPException(status_code=403, detail=str(exc))
+        except (ValueError, KeyError) as exc:
+            # Unvalidated params (e.g. unknown ward) or a multi-ward snapshot -> 400.
+            raise HTTPException(status_code=400, detail=str(exc))
+
+    @app.get("/agents/{name}/evidence")
+    def evidence(name: str, branch: str = "accept", hospital: str = "USZ") -> dict[str, Any]:
+        # Sprint 39 P2 B3/B4 - the DC-EVIDENCE-TRACE-v1 five-part proof for a role,
+        # built by the Plan 1 harness on the SAME seeded gold the loop uses. This
+        # is the validation==UX unification (FR-UXL-004): the evidence steps carry
+        # the same DC-SIM-OUTCOME-v1 contract the /decisions endpoint produces.
+        # Read-only (no oid); branch in {accept, deny}. Provenance is the gold's.
+        state = get_state()
+        gold = state.load_gold_snapshot(hospital)
+        from closedloop.evidence import build_evidence_trace
+
+        try:
+            return build_evidence_trace(gold, branch)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
 
     return app
 

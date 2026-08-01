@@ -12,6 +12,7 @@ const BOARDS = [
   { key: 'staffing', label: 'Staffing', gate: 'main' as const },
   { key: 'discharge', label: 'Discharge', gate: 'main' as const },
   { key: 'crisis', label: 'Scenario', gate: 'main' as const },
+  { key: 'evidence', label: 'Closed-Loop Evidence', gate: 'main' as const },
 ];
 
 export function MainSubNav() {

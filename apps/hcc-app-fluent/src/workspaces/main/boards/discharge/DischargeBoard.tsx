@@ -4,6 +4,7 @@ import { Text, makeStyles, tokens } from '@fluentui/react-components';
 import { space, radii, elevation } from '../../../../theme/design-system';
 import type { ContextInsight, ResidualPressure, RoleBoardData } from '../../../../journey/RoleBoard';
 import type { DischargePayload, DischargeCandidate, CapacityBarrier } from '../../../../data/roleboard/discharge-data';
+import { worklistToCandidates, worklistToReco } from '../../../../data/roleboard/discharge-data';
 import { dischargeBoard } from './discharge-board';
 import { BoardHeader } from '../occupancy/BoardHeader';
 import { DischargeWorklistTable } from './DischargeWorklistTable';
@@ -17,6 +18,8 @@ import { useCopilotRail } from '../../../../copilot-rail/rail-context';
 import { useMode } from '../../../../context/mode-context';
 import { useHospital } from '../../../../context/hospital-context';
 import { useDataSource } from '../../../../context/data-source-context';
+import { getContextEnvelope } from '../../../../data/roleboard/golden-source-client';
+import { iqWorklist, iqDecision, isAgentHostConfigured } from '../../../../data/iq-client';
 
 const useStyles = makeStyles({
   root: { display: 'flex', flexDirection: 'column', gap: space.l, padding: space.l },
@@ -44,17 +47,73 @@ export function DischargeBoard() {
       ? GOLDEN_THREAD_SCOPE
       : { hospital, windowHours: 72, pinned: false };
     let active = true;
-    void dischargeBoard.load(scope, mode).then((loaded) => {
-      if (active) {
-        setData(loaded);
-        rail.showDefault(dischargeBoard.defaultReco(loaded));
+    // Sprint 39 P2 — the live operational loop engages only when the user picked
+    // Live, the agent-host is configured, and a per-user ContextEnvelope exists
+    // (ADR-0052). Otherwise every board keeps today's fixture path byte-for-byte.
+    const env = getContextEnvelope();
+    const live = source === 'live' && isAgentHostConfigured() && env !== null;
+
+    void (async () => {
+      const loaded = await dischargeBoard.load(scope, mode);
+      if (!active) return;
+      if (live && env) {
+        try {
+          // B1 — overlay the live worklist candidates onto the fixture shell.
+          const result = await iqWorklist('dca', env);
+          if (!active) return;
+          setData({
+            ...loaded,
+            provenance: result.provenance,
+            citations: result.citations,
+            degraded: false,
+            payload: { ...loaded.payload, candidates: worklistToCandidates(result.data) },
+          });
+          // B2 — seed the live grounded reco (requiresApproval) so the copilot
+          // renders the human accept/deny gate, and register the decision
+          // handler the rail invokes. The app NEVER applies directly
+          // (NFR-UXL-001): it submits the decision and, on accept, re-fetches
+          // the worklist so the resolved rows drop out.
+          rail.showDefault(worklistToReco(result.data));
+          const params = result.data.recommendation.params ?? {};
+          rail.setDecisionHandler(async (decision) => {
+            const outcome = await iqDecision('dca', decision, params, env);
+            if (decision === 'accept') {
+              const next = await iqWorklist('dca', env);
+              if (active) {
+                setData((prev) =>
+                  prev
+                    ? { ...prev, payload: { ...prev.payload, candidates: worklistToCandidates(next.data) } }
+                    : prev,
+                );
+              }
+            }
+            return outcome;
+          });
+          return;
+        } catch {
+          // Fail loud: keep the fixtures, flag degraded (GroundingNotice), and
+          // clear the live decision surface. Never silently pretend live.
+          if (!active) return;
+          setData({ ...loaded, degraded: true });
+          rail.showDefault(dischargeBoard.defaultReco(loaded));
+          rail.setDecisionHandler(null);
+          return;
+        }
       }
-    });
+      // Simulated (or host unconfigured): today's fixture path, unchanged.
+      setData(loaded);
+      rail.showDefault(dischargeBoard.defaultReco(loaded));
+      rail.setDecisionHandler(null);
+    })();
+
     void residualFromPrev(dischargeBoard.agent, scope, mode).then((residual) => {
       if (active) setPrev(residual);
     });
     return () => {
       active = false;
+      // Self-contained: drop the live decision handler on unmount / re-run so a
+      // stale handler can never leak onto the next board (not only via the shell).
+      rail.setDecisionHandler(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, hospital, source]);

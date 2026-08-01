@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   Badge,
   Body1,
@@ -10,7 +10,9 @@ import {
   Popover,
   PopoverSurface,
   PopoverTrigger,
+  Spinner,
   makeStyles,
+  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
 import {
@@ -20,8 +22,12 @@ import {
   OpenRegular,
   ShieldTaskRegular,
   ProhibitedRegular,
+  CheckmarkCircleRegular,
+  DismissCircleRegular,
 } from '@fluentui/react-icons';
 import { chipBadgeColor, impactBadgeColor, type GroundedReco, type RecoCta, type RecoLever } from './reco';
+import type { DecisionHandler } from './rail-context';
+import type { DecisionOutcome } from '../data/iq-client';
 
 const useStyles = makeStyles({
   root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS },
@@ -41,6 +47,30 @@ const useStyles = makeStyles({
   gateRow: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS, flexWrap: 'wrap' },
   gateHint: { color: tokens.colorNeutralForeground3 },
   refusedRead: { color: tokens.colorPaletteRedForeground1 },
+  decisionActions: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalS, flexWrap: 'wrap' },
+  disclaimer: { color: tokens.colorNeutralForeground3 },
+  decisionError: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS, color: tokens.colorPaletteRedForeground1 },
+  outcomeGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: tokens.spacingHorizontalS,
+  },
+  outcomeCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalXXS,
+    padding: tokens.spacingHorizontalS,
+    borderRadius: tokens.borderRadiusMedium,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    backgroundColor: tokens.colorNeutralBackground2,
+  },
+  outcomeCardActive: {
+    border: `2px solid ${tokens.colorBrandStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+  },
+  outcomeHead: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS, flexWrap: 'wrap' },
+  outcomeValue: { fontWeight: tokens.fontWeightSemibold },
+  outcomeMeta: { color: tokens.colorNeutralForeground3 },
   evidenceTrigger: {
     padding: 0,
     border: 'none',
@@ -119,11 +149,56 @@ interface RecoPanelProps {
   showBack: boolean;
   onBack: () => void;
   onCta: (cta: RecoCta) => void;
+  /**
+   * Sprint 39 P2 — the short role id the copilot acts for (e.g. `dca`), passed
+   * by the live board so the decision surface is attributable in the DOM. Absent
+   * on the presentational (simulated) call sites.
+   */
+  role?: string;
+  /**
+   * Sprint 39 P2 — the live human accept/deny handler registered by the board.
+   * When present AND the reco requires approval, the single CTA becomes an
+   * Accept + Deny pair that submits the human decision (NFR-UXL-001: the app
+   * never applies directly — it only submits and renders the returned outcome).
+   * Absent on the four presentational call sites, which keep today's single CTA.
+   */
+  onDecision?: DecisionHandler;
 }
 
-export function RecoPanel({ reco, showBack, onBack, onCta }: RecoPanelProps) {
+export function RecoPanel({ reco, showBack, onBack, onCta, role, onDecision }: RecoPanelProps) {
   const s = useStyles();
   const { t } = useTranslation();
+  const [pending, setPending] = useState(false);
+  const [outcome, setOutcome] = useState<DecisionOutcome | null>(null);
+  const [taken, setTaken] = useState<'accept' | 'deny' | null>(null);
+  const [errorText, setErrorText] = useState<string | null>(null);
+  // Reset the decision surface when the reco (or handler) changes so a previous
+  // board's outcome never lingers on the next context. A live accept only
+  // re-fetches the worklist (board setData) - it does NOT re-seed the reco - so
+  // the outcome stays visible after a decision.
+  useEffect(() => {
+    setPending(false);
+    setOutcome(null);
+    setTaken(null);
+    setErrorText(null);
+  }, [reco, onDecision]);
+  const decisionMode = onDecision != null && reco.primaryCta?.requiresApproval === true && !reco.refused;
+  const decide = async (decision: 'accept' | 'deny') => {
+    if (!onDecision) return;
+    setPending(true);
+    setTaken(decision);
+    setErrorText(null);
+    try {
+      setOutcome(await onDecision(decision));
+    } catch (e) {
+      // NFR-UXL-001: surface the HITL gate's refusal (401/403) or a transport
+      // error honestly, and do NOT retry - the app never applies directly.
+      const msg = e instanceof Error ? e.message : String(e);
+      setErrorText(/\b40[13]\b/.test(msg) ? t('reco.decisionRefused') : t('reco.decisionError'));
+    } finally {
+      setPending(false);
+    }
+  };
   const chip = reco.contextChip;
   const chipText = [chip.subject, ...(chip.qualifiers ?? []), chip.status].filter(Boolean).join(' \u00b7 ');
   return (
@@ -180,17 +255,112 @@ export function RecoPanel({ reco, showBack, onBack, onCta }: RecoPanelProps) {
               </Badge>
             </div>
           )}
-          <Button
-            appearance={reco.refused ? 'secondary' : 'primary'}
-            disabled={reco.refused}
-            icon={<CtaIcon kind={reco.primaryCta.kind} requiresApproval={reco.primaryCta.requiresApproval} />}
-            iconPosition="after"
-            onClick={() => onCta(reco.primaryCta!)}
-          >
-            {reco.primaryCta.label}
-          </Button>
-          {reco.primaryCta.requiresApproval && !reco.refused && (
-            <Caption1 className={s.gateHint}>{t('reco.approvalHint')}</Caption1>
+          {decisionMode ? (
+            <div className={s.ctaWrap} data-testid="decision-surface" data-role={role}>
+              {outcome ? (
+                <div className={s.outcomeGrid} data-testid="decision-outcome">
+                  <div
+                    className={taken === 'accept' ? mergeClasses(s.outcomeCard, s.outcomeCardActive) : s.outcomeCard}
+                    data-testid="outcome-accept"
+                    aria-current={taken === 'accept' ? 'true' : undefined}
+                  >
+                    <div className={s.outcomeHead}>
+                      <CheckmarkCircleRegular aria-hidden />
+                      <Body2>{t('reco.outcome.accept')}</Body2>
+                      {taken === 'accept' && (
+                        <Badge appearance="filled" color="important" size="small">{t('reco.outcome.yourDecision')}</Badge>
+                      )}
+                    </div>
+                    <Body1 className={s.outcomeValue}>
+                      {taken === 'accept'
+                        ? t('reco.outcome.bedsFreed', { count: outcome.realised_impact.value })
+                        : t('reco.outcome.wouldFree', { count: outcome.predicted_impact.value })}
+                    </Body1>
+                    {taken === 'accept' && (
+                      <Caption1 className={s.outcomeMeta}>
+                        {t('reco.outcome.divergence', { value: outcome.divergence })}
+                      </Caption1>
+                    )}
+                    {taken === 'accept' && (
+                      <div className={s.outcomeHead}>
+                        <Badge appearance="outline" size="small" color={outcome.provenance === 'live' ? 'success' : 'informative'}>
+                          {t(`dca.table.source.${outcome.provenance}`)}
+                        </Badge>
+                        <Badge appearance="tint" size="small" color={outcome.applied ? 'success' : 'subtle'}>
+                          {outcome.applied ? t('reco.outcome.applied') : t('reco.outcome.notApplied')}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    className={taken === 'deny' ? mergeClasses(s.outcomeCard, s.outcomeCardActive) : s.outcomeCard}
+                    data-testid="outcome-deny"
+                    aria-current={taken === 'deny' ? 'true' : undefined}
+                  >
+                    <div className={s.outcomeHead}>
+                      <DismissCircleRegular aria-hidden />
+                      <Body2>{t('reco.outcome.deny')}</Body2>
+                      {taken === 'deny' && (
+                        <Badge appearance="filled" color="important" size="small">{t('reco.outcome.yourDecision')}</Badge>
+                      )}
+                    </div>
+                    <Body1 className={s.outcomeValue}>{t('reco.outcome.breachPersists')}</Body1>
+                    {taken === 'deny' && (
+                      <div className={s.outcomeHead}>
+                        <Badge appearance="outline" size="small" color={outcome.provenance === 'live' ? 'success' : 'informative'}>
+                          {t(`dca.table.source.${outcome.provenance}`)}
+                        </Badge>
+                        <Badge appearance="tint" size="small" color="subtle">{t('reco.outcome.notApplied')}</Badge>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className={s.decisionActions} data-testid="decision-actions">
+                  {pending ? (
+                    <Spinner size="tiny" label={t('reco.decisionPending')} />
+                  ) : (
+                    <>
+                      <Button
+                        appearance="primary"
+                        icon={<CheckmarkCircleRegular />}
+                        onClick={() => void decide('accept')}
+                      >
+                        {t('reco.accept')}
+                      </Button>
+                      <Button
+                        appearance="secondary"
+                        icon={<DismissCircleRegular />}
+                        onClick={() => void decide('deny')}
+                      >
+                        {t('reco.deny')}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+              {errorText && (
+                <Caption1 className={s.decisionError} role="alert">
+                  <ProhibitedRegular aria-hidden /> {errorText}
+                </Caption1>
+              )}
+              <Caption1 className={s.disclaimer}>{t('reco.advisoryOnly')}</Caption1>
+            </div>
+          ) : (
+            <>
+              <Button
+                appearance={reco.refused ? 'secondary' : 'primary'}
+                disabled={reco.refused}
+                icon={<CtaIcon kind={reco.primaryCta.kind} requiresApproval={reco.primaryCta.requiresApproval} />}
+                iconPosition="after"
+                onClick={() => onCta(reco.primaryCta!)}
+              >
+                {reco.primaryCta.label}
+              </Button>
+              {reco.primaryCta.requiresApproval && !reco.refused && (
+                <Caption1 className={s.gateHint}>{t('reco.approvalHint')}</Caption1>
+              )}
+            </>
           )}
         </div>
       )}
