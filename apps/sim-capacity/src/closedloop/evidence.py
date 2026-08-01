@@ -79,6 +79,8 @@ def build_evidence_trace(gold: Dict[str, Any], branch: str = "accept") -> Dict[s
             outcome = _noop_outcome(action, provenance)
             decision, status = "deny", "denied"
 
+        outcome = {**outcome, "golden_thread": golden_thread, "provenance": provenance}
+
         steps.append({
             "role": js.role,
             "agent": _AGENT_BY_LEVER.get(js.lever_id, f"{js.role}-agent"),
@@ -112,12 +114,14 @@ def build_evidence_trace(gold: Dict[str, Any], branch: str = "accept") -> Dict[s
 
 
 def _noop_outcome(action: Dict[str, Any], provenance: str) -> Dict[str, Any]:
+    predicted = int(action["expected_impact"]["delta"])
     return {
         "contract": "DC-SIM-OUTCOME-v1", "cosmos_id": action["id"], "plan_id": action["plan_id"],
         "golden_thread": f"gt-{action['plan_id']}", "lever_id": action["lever_id"], "applied_ts": _NOW,
-        "predicted_impact": {"metric": "beds", "value": int(action["expected_impact"]["delta"])},
+        "predicted_impact": {"metric": "beds_freed", "value": predicted},
         "realised_impact": {"metric": "beds_freed", "value": 0},
         "state_delta": {"beds_freed": [], "patients_discharged": [], "patients_promoted": []},
-        "divergence": round(abs(int(action["expected_impact"]["delta"]) - 0) / max(int(action["expected_impact"]["delta"]), 1), 4),
+        "divergence": 0.0,
         "provenance": provenance,
+        "applied": False,
     }

@@ -48,3 +48,19 @@ def test_trace_is_phi_free():
     trace = build_evidence_trace(_GOLD, branch="accept")
     assert not _PHI.search(json.dumps(trace))
     assert trace["patient"]["provenance"] in ("simulated", "live")
+
+
+def test_every_outcome_is_threaded_to_the_trace():
+    for branch in ("accept", "deny"):
+        trace = build_evidence_trace(_GOLD, branch=branch)
+        assert all(s["outcome"]["golden_thread"] == trace["golden_thread"] for s in trace["steps"])
+
+
+def test_provenance_is_honest_under_live_gold():
+    import copy
+    live_gold = copy.deepcopy(_GOLD)
+    live_gold["provenance"] = "live"
+    trace = build_evidence_trace(live_gold, branch="accept")
+    assert trace["patient"]["provenance"] == "live"
+    assert all(s["epic_input"]["provenance"] == "live" for s in trace["steps"])
+    assert all(s["outcome"]["provenance"] == "live" for s in trace["steps"])
