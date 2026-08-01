@@ -129,3 +129,29 @@ test('no serious/critical a11y violations on the copilot accept/deny outcome sur
   );
   expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
 });
+
+// Sprint 39 P2 (B3/B4) — scan the Closed-Loop Evidence surface (the five-part
+// proof + golden_thread + branch toggle + demo walk). Uses the bundled Simulated
+// fixture (no host needed) so the scan is deterministic. The surface uses
+// AA-safe tokens only (outline provenance badges, `filled color=important`
+// chips, neutral foregrounds) - never brand tint / colorBrandForeground1, which
+// fail WCAG AA 1.4.3 on this app. Scoped to the evidence panel so pre-existing
+// shell chrome (brand-token contrast gap tracked separately) is not absorbed.
+test('no serious/critical a11y violations on the closed-loop evidence surface', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('curavias.lang', 'en');
+  });
+  await page.goto('/main/evidence');
+  await expect(page.getByTestId('board-evidence')).toBeVisible();
+  await expect(page.getByTestId('evidence-panel')).toBeVisible();
+
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .include('[data-testid="evidence-panel"]')
+    .exclude('[data-tabster-dummy]')
+    .analyze();
+  const blocking = results.violations.filter(
+    (v) => v.impact === 'serious' || v.impact === 'critical',
+  );
+  expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
+});
