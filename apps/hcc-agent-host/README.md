@@ -19,8 +19,10 @@ Language choice recorded in [ADR-0022](../../docs/adr/0022-agent-host-language-p
    path per-agent enforcement lands in follow-up sprints.
 4. **Redaction** (`orchestrator/redaction.py`) — masks secret-like tokens and
    Swiss AHV identifiers before any text is returned or persisted.
-5. **HTTP surface** (`api/app.py`) — FastAPI: `GET /healthz`, `GET /agents`,
-   `POST /agents/{name}/chat`, `POST /agents/{name}/tools/{tool}`.
+5. **HTTP surface** (`api/app.py`) - FastAPI: `GET /healthz`, `GET /agents`,
+   `POST /agents/{name}/chat`, `POST /agents/{name}/tools/{tool}`,
+   `GET /agents/{role}/worklist`, `POST /agents/{role}/decisions`
+   (Sprint 39 P2 operational loop, see below).
 
 The chat model is injected behind a `ChatModel` protocol. Dev/CI use a
 deterministic `MockChatModel`; deploy-time uses a live Foundry client. The
@@ -29,6 +31,33 @@ unit tests install no cloud SDKs (the live SDKs are the optional `runtime` extra
 
 > The HTTP package is named `api` (not `http`) to avoid shadowing the Python
 > standard-library `http` module that Starlette imports.
+
+## Operational loop (Sprint 39 P2)
+
+Two endpoints host the closed-loop engine **in-process** on real EPIC-sim gold
+(seeded snapshot; no deploy, no live write-back):
+
+- **`GET /agents/{role}/worklist`** - the role's live observations + one grounded
+  `DC-INSIGHT`-style recommendation. The predicted impact is the deterministic
+  `compute_expected_impact` on the seeded occupancy, never an LLM guess.
+- **`POST /agents/{role}/decisions`** - a human `accept`/`deny` drives the real
+  decision-tier HITL (`plan_runtime.approve_action` -> `ActuationConsumer` ->
+  `DC-SIM-OUTCOME-v1`). Accept applies the lever to the in-host `SimState` (the
+  worklist shrinks on a re-GET); deny is a no-op that mutates nothing.
+
+The host holds one stateful `SimState` per hospital (`loop/sim_registry.py`),
+seeded from a materialized gold snapshot via the Plan 1 `gold_seed`
+(`closedloop.gold_seed`). The snapshot path is `GOLD_SNAPSHOT_PATH` (default = the
+committed USZ fixture at `apps/sim-capacity/tests/fixtures/gold-snapshot-usz.json`).
+This is the **simulated-MVP** seam; the live golden-source read is the follow-on.
+
+**HITL / no-deploy posture (`NFR-UXL-001`):** only a human Entra oid
+(`X-User-Oid`) may act - a missing oid is refused `401`, and a bot/self approver
+is refused `403` by `approve_action`. This plan changes code only; **enabling it
+in SIT is the gated image-tag bump** (`agentHostImage` in
+`infra/environments/sit.bicepparam` -> `cd-infra-deploy-sit` ->
+`cd-infra-deploy-prod`), which requires the `approved-to-apply` confirmation per
+[AGENTS.md Sec 4](../../AGENTS.md#4-confirmation-rule-for-deploy--delete).
 
 ## Develop
 
