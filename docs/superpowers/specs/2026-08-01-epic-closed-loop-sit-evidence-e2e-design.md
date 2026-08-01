@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-08-01 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.0.0 (evidence-trace harness + per-role app surface); this bump adds §3.5 gap analysis (closed-loop validation <-> user experience) and the operational-UX closure — live per-role observation/recommendation worklists + copilot act-to-proceed + outcome feedback, hosted via the agent-host — plus FR-UXL-* and M7-M10 |
+| **Previous Version** | 1.1.0 (gap analysis + operational-UX closure); this bump records the user-confirmed direction — prove value fast + safely on **real EPIC-simulator data**, shown as a demo E2E flow AND per-role agent interaction; read/reco on real SIT gold, apply/outcome on an in-host SimState seeded from that gold (no deploy, snapshot not live write-back) |
 | **Sprint** | 39 — EPIC Closed-Loop SIT Evidence + Operational UX Closure |
 | **Skill** | Authored via the Superpowers `brainstorming` skill |
 | **Grounding** | Sprint 38 closed-loop engine ([design](2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md), [ADR-0058](../../adr/0058-sim-outcome-and-effect-schema.md)); decision ontology ([ADR-0040](../../adr/0040-prescriptive-decision-ontology-and-runtime-store.md)); HITL gates ([ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md), `NFR-AI-001`); single IQ gateway ([ADR-0044 (IQ layer)](../../adr/0044-app-data-access-via-iq-layer.md)); app context envelope + Live/Simulated toggle (Sprint 27/29); no-PHI demo ([ADR-0016](../../adr/0016-no-phi-in-mvp-demo-scope.md)), demo region ([ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md)); **read-only SIT inventory 2026-08-01 (see §2)** |
@@ -26,6 +26,19 @@
 > **read-only SIT inventory first** (done, §2); (3) surface evidence as a **dedicated
 > per-role "closed-loop evidence / demo mode"**; (4) **visual companion = walk the
 > running app** (deferred to review time; surfaces described from code in §7).
+>
+> **Confirmed direction (2026-08-01, user)**: the ultimate goal is to **prove value
+> fast and safely on real EPIC-simulator data**, shown two ways — (a) a **demo
+> patient flow end-to-end** and (b) **each role interacting with the agent to do the
+> job**. This resolves the open forks: **read + recommendations run on real SIT
+> gold** (the running open-loop sim already produces it; a captured gold snapshot
+> backs CI determinism), and **apply/outcome run on an in-host `SimState` seeded
+> from that real gold** — read-only SIT, HITL-gated, **no deploy** (the live running
+> sim is not written back this sprint; true live write-back is the Sprint 40
+> deploy). Fork outcomes: real-gold read = yes; in-host seeded apply = yes; both
+> demo + per-role modes delivered; accept/deny shown side-by-side (routed to the
+> `ux-design-agent`). Execution: **two plans, subagent-driven** (Plan 1 evidence +
+> demo on real gold; Plan 2 per-role live interaction).
 >
 > **Hard constraint (`NFR-AI-001`)**: the accept/deny is a **human** decision; the
 > evidence proves the loop is human-gated. Everything is synthetic, no-PHI,
