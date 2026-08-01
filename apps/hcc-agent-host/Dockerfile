@@ -15,11 +15,19 @@ RUN pip install --no-cache-dir --upgrade pip build \
 FROM python:3.11-slim AS runtime
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app/data-platform/decision \
     PORT=8080
 WORKDIR /app
 COPY --from=build /wheels /wheels
 COPY apps/hcc-agent-host/pyproject.toml ./
 COPY apps/hcc-agent-host/src ./src
+# Sprint 39 P2 - the in-host operational loop (loop/*, api /worklist,/decisions,
+# /evidence) reuses the sim-capacity closedloop package. Vendor it under src/ so
+# `import closedloop` resolves via --app-dir src; impact/coordination come from
+# data-platform/decision on PYTHONPATH (copied below). Without this the app
+# crashes on startup (ModuleNotFoundError / the loop path bootstrap is a no-op
+# in the container).
+COPY apps/sim-capacity/src/closedloop ./src/closedloop
 COPY agents ./agents
 # Sprint 26 WS-C — decision-lane apply CLIs (coordination.seed_live,
 # foundry.register_decision_tier) for the in-VNet apply job. NOT imported by the
