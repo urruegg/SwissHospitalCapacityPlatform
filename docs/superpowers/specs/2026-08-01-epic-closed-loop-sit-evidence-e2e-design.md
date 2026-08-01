@@ -2,12 +2,12 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-08-01 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | n/a (new document) |
-| **Sprint** | 39 — EPIC Closed-Loop SIT Evidence (E2E per-role proof) |
+| **Previous Version** | 1.0.0 (evidence-trace harness + per-role app surface); this bump adds §3.5 gap analysis (closed-loop validation <-> user experience) and the operational-UX closure — live per-role observation/recommendation worklists + copilot act-to-proceed + outcome feedback, hosted via the agent-host — plus FR-UXL-* and M7-M10 |
+| **Sprint** | 39 — EPIC Closed-Loop SIT Evidence + Operational UX Closure |
 | **Skill** | Authored via the Superpowers `brainstorming` skill |
 | **Grounding** | Sprint 38 closed-loop engine ([design](2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md), [ADR-0058](../../adr/0058-sim-outcome-and-effect-schema.md)); decision ontology ([ADR-0040](../../adr/0040-prescriptive-decision-ontology-and-runtime-store.md)); HITL gates ([ADR-0007](../../adr/0007-mvp-agent-runtime-and-hitl-release-gates.md), `NFR-AI-001`); single IQ gateway ([ADR-0044 (IQ layer)](../../adr/0044-app-data-access-via-iq-layer.md)); app context envelope + Live/Simulated toggle (Sprint 27/29); no-PHI demo ([ADR-0016](../../adr/0016-no-phi-in-mvp-demo-scope.md)), demo region ([ADR-0013](../../adr/0013-temporary-us-region-demo-scope.md)); **read-only SIT inventory 2026-08-01 (see §2)** |
 
@@ -38,6 +38,7 @@
 1. Problem and goal
 2. Current state (repo + read-only SIT inventory)
 3. What "evidence" means here (the per-role E2E chain)
+3.5. Gap analysis and operational UX closure (validation <-> user experience)
 4. The evidence-trace contract (`DC-EVIDENCE-TRACE-v1`)
 5. Reference architecture
 6. The evidence-trace harness (extends the Sprint 38 journey)
@@ -164,6 +165,91 @@ The canonical journey (from Sprint 38 §7.1) supplies the role sequence:
 **OOA** (forecast breach) → **DCA** (unblock discharge) → **BMCA** (rebalance
 census) → **ORSA** (defer elective), with **SBA** (staffing) and **CSA** (crisis
 scenario) as the additional role surfaces.
+
+---
+
+## 3.5 Gap analysis and operational UX closure (validation <-> user experience)
+
+The Sprint 38 closed loop and the §6 evidence harness prove the loop *works*
+(validation). But a reviewer proving it is not the same as a **role operating it**.
+The customer ask is that each role — live in the platform — sees its observations
+and recommendations and acts on them via the copilot. Today those are two
+disconnected worlds; this section analyses the gap and closes it in-sprint.
+
+### 3.5.1 What the app already has
+
+- **Per-role worklists exist** (Sprint 20/27): discharge candidates
+  (`DischargeWorklistTable`), placement worklist + barriers (`BedManagerBoard`),
+  OR case schedule (`OrCaseScheduleTable`), coverage shift-gaps
+  (`CoverageWorklistTable`), and an occupancy board with an "Open discharge
+  worklist" handoff.
+- **A copilot recommendation surface exists** (`copilot-rail/RecoPanel.tsx`,
+  `copilot-drawer/agent-manifest.ts`): a `GroundedReco` with a `requiresApproval`
+  CTA (shield-task affordance).
+- **The agent-host exposes** `GET /golden/{resource}` (RLS-scoped reads),
+  `POST /agents/{name}/chat` (a recommendation), `POST /agents/{name}/tools/{tool}`
+  (a deny-by-default HITL gate), and `.../interactions/{id}/events` (records a
+  thumbs / HITL decision).
+
+### 3.5.2 The gap
+
+| # | Gap | Today | The validation side has it |
+|---|-----|-------|----------------------------|
+| **G1** | Observations + recommendations are **not live per role** | Worklist rows + copilot recos are **fixtures** (`roleboard/*-data.ts`, `agent-manifest.ts`) | The harness grounds each read on real gold + the deterministic decision tier |
+| **G2** | Acting **does not drive the loop** | The `requiresApproval` CTA has no backend wire to propose->approve->apply; the tool gate only returns allow/deny | The harness runs propose -> approve -> `ActuationConsumer` -> outcome |
+| **G3** | **No outcome feedback** in the UX | After a CTA the worklist/board does not change (no bed freed, no metric move) | The harness emits `DC-SIM-OUTCOME-v1` with the realised delta |
+| **G4** | Validation and UX are **separate surfaces** | Evidence is a demo/replay; the boards are operational fixtures | They are literally different code paths |
+
+Net: the UX shows *what could be recommended*; it never *proves a human decision
+moved the flow*. That is the gap to close.
+
+### 3.5.3 Closure design (in-sprint) — the agent-host hosts the operational loop
+
+Close the loop **through the agent-host** (already running in SIT, already holds
+Cosmos + the HITL gate), so the app drives a real loop without deploying a new sim
+image (that stays a §11 item). The closed-loop engine is pure Python and is
+**hosted in-process in the agent-host**:
+
+```mermaid
+sequenceDiagram
+    participant U as Role user (app)
+    participant APP as Curavias app (worklist + copilot)
+    participant AH as agent-host (decision tier + in-host SimState)
+    participant LOOP as closed-loop engine (ActuationConsumer + build_sim_outcome)
+    APP->>AH: GET /agents/{role}/worklist  (live observations + recommendations)
+    AH-->>APP: DC-INSIGHT reads + levers + predicted impact (grounded on gold)
+    U->>APP: ACCEPT (or DENY) the actionable insight in the copilot
+    APP->>AH: POST /agents/{role}/decisions {action_id, decision, approver=user_oid}
+    AH->>AH: approve_action (HITL; refuse bot/self) OR record deny
+    AH->>LOOP: apply approved action to in-host SimState
+    LOOP-->>AH: DC-SIM-OUTCOME-v1 (realised delta / divergence)
+    AH-->>APP: outcome + updated worklist (candidate resolved, metric moved)
+    Note over APP,AH: DENY -> no apply -> worklist unchanged (breach persists)
+```
+
+Three new agent-host endpoints (behind the existing single IQ gateway contract):
+
+1. `GET /agents/{role}/worklist` — the role's **live observations + recommendations**
+   (grounded on gold; `provenance: live` in SIT-hybrid, `simulated` for the fixture).
+2. `POST /agents/{role}/decisions` — the **accept/deny** the human made in the
+   copilot; runs `approve_action` (HITL evidence = the app user's Entra oid, so
+   bot/self approval is refused) on accept, records the deny otherwise.
+3. The decision path **applies** the approved action to an **in-host `SimState`**
+   and returns the **`DC-SIM-OUTCOME-v1`** so the app reflects it.
+
+The app wiring reuses what exists: the per-role worklist components render the live
+observations; the `copilot-rail` `requiresApproval` CTA becomes **accept**, with a
+sibling **deny**; on either, the app calls `/decisions` and updates the worklist +
+board from the returned outcome. **`NFR-AI-001` holds**: the human clicking accept
+is the approval; the agent-host refuses bot/self; deny changes nothing.
+
+### 3.5.4 Validation == user experience (the unification)
+
+The **evidence trace (§4, §6) becomes a derived view of this same operational loop**:
+every accept/deny a role makes produces the same `proposed_action` +
+`DC-SIM-OUTCOME-v1` records the harness produces, so the per-role evidence panel
+(§7) simply renders the role's *real* decisions and outcomes. There is one loop;
+"validation" is the proof view and "user experience" is the operating view of it.
 
 ---
 
@@ -367,6 +453,10 @@ Any SIT read is read-only; no `deploy`/`delete` action is taken in this sprint.
 | **M4** | Copilot accept/deny replay | Drawer replays both branches per role (accept → outcome, deny → breach persists); reuses `requiresApproval` CTA; e2e (Playwright) covers a role's accept and deny |
 | **M5** | Evidence scored + governance | Traces fed to the S38 `outcome_divergence` evaluator + calibration gate; `DC-EVIDENCE-TRACE-v1` registered in `docs/DATA.md`; ADR for the contract |
 | **M6** *(stretch)* | SIT-live-backed read/reco (§8) | App Live toggle shows `provenance: live` for `epic_input`/`recommendation` from SIT gold + live Foundry agent; apply/outcome badged `simulated` |
+| **M7** | Agent-host operational-loop endpoints (§3.5.3) | `GET /agents/{role}/worklist` + `POST /agents/{role}/decisions` + in-host `SimState`/`ActuationConsumer`/`build_sim_outcome`; HITL evidence = app user oid; unit + API tests (accept applies, deny no-op, bot/self refused) |
+| **M8** | App live per-role worklist wiring | The existing worklist components render live observations + recommendations from `/worklist` via the IQ gateway; provenance badged |
+| **M9** | Copilot act-to-proceed + outcome feedback | The `requiresApproval` CTA becomes accept + a sibling deny; both call `/decisions`; the worklist/board update from the returned outcome (candidate resolved / breach persists); e2e covers accept and deny per role |
+| **M10** | Validation == UX unification | The per-role evidence panel (§7) renders the role's real `proposed_action` + `DC-SIM-OUTCOME-v1` from the operational loop; the evidence trace is generated from operational records, not a separate replay |
 
 **Out of scope this sprint** (recorded): publishing/deploying the closed-loop sim
 image to SIT; wiring live actuation back into a running SIT job; live in-app
@@ -376,12 +466,14 @@ firing of real `proposed_actions` from the copilot; PHI or real EPIC connectivit
 
 ## 11. Staged roadmap (later)
 
-- **Sprint 40 — Closed-loop engine in SIT.** Build + publish the `sim-capacity`
-  image carrying the Sprint 38 `closedloop/*`; deploy to `ca-sim-capacity`; wire the
-  `ActuationConsumer` to poll Cosmos `proposed_actions` (approved) and write outcomes.
-  Then the §8 apply/outcome parts become `provenance: live` too.
-- **Sprint 41 — Live in-app HITL.** The copilot fires a real `proposed_actions`
-  record on accept (still `approved-to-apply` gated), closing the loop from the app.
+- **Sprint 40 — Move the loop from in-host to the dedicated sim job.** This sprint
+  closes the operational loop **in the agent-host** (in-host `SimState`, §3.5.3).
+  Sprint 40 builds + publishes the `sim-capacity` image carrying the Sprint 38
+  `closedloop/*`, deploys it to `ca-sim-capacity`, and moves the `ActuationConsumer`
+  there (polling Cosmos `proposed_actions`), so state persists in the dedicated
+  engine and the §8 apply/outcome parts become `provenance: live` too.
+- **Sprint 41 — Fully-live SIT hybrid.** Read/reco *and* apply/outcome all
+  `provenance: live` end-to-end across the running SIT services.
 - **Multi-agent enrichment** (from Sprint 38 follow-on): per-role effect mutations
   so BMCA/ORSA/SBA outcomes are as rich as DCA's.
 
@@ -413,6 +505,7 @@ firing of real `proposed_actions` from the copilot; PHI or real EPIC connectivit
 | R2 | "Live" fidelity overclaimed | Per-part provenance badges; hybrid trace badges apply/outcome as `simulated` until §11 |
 | R3 | Copilot replay mistaken for live actuation | MVP explicitly does not fire real actions; a visible "replay / evidence" mode label |
 | R4 | Multi-agent outcome richness (BMCA/ORSA/SBA effects) | DCA is the proven walking skeleton; other roles show read+reco+decision now, full outcome after the S38 multi-agent enrichment |
+| R5 | Expanded scope — the §3.5 operational-UX closure (M7-M10) is large on top of M0-M6 | Decompose into two plans (evidence harness + surface; then operational-loop closure); M7-M10 may become a fast follow-on if the in-host SimState wiring needs more than the sprint allows |
 | Q1 | Do we surface both accept and deny simultaneously (side by side) or via a branch toggle? | Proposed: a branch toggle per role, with a "compare" view — decided in writing-plans / with `ux-design-agent` |
 | Q2 | Is M6 (SIT-live read/reco) in this sprint or the next? | Proposed: stretch this sprint; promote to Sprint 40 if the live Foundry hybrid needs config work |
 | Q3 | New ADR? | Yes — proposed **ADR-0059** to ratify `DC-EVIDENCE-TRACE-v1` and the evidence-surface / provenance-badging pattern |
@@ -429,7 +522,12 @@ firing of real `proposed_actions` from the copilot; PHI or real EPIC connectivit
 | `FR-EVD-004` | The copilot shall **replay the recommendation with accept and deny affordances** per role, rendering the accepted outcome and the denied (unchanged) trajectory; the MVP shall not fire real actuation from the app. |
 | `FR-EVD-005` | The evidence surface shall honour the **Live/Simulated toggle**: `simulated` renders the deterministic fixture; `live` renders SIT-gold-backed read + recommendation (§8), each part badged by provenance. |
 | `NFR-EVD-001` | Evidence traces shall be **deterministic and PHI-free**; every part carries `provenance` (`simulated`/`live`) and citations; a `simulated` part is never rendered as `live`. |
-| `NFR-EVD-002` | The evidence surface shall take **no `deploy`/`delete`** action and shall not fire real `proposed_actions`; SIT interaction in this sprint is read-only. |
+| `NFR-EVD-002` | The evidence surface shall take **no `deploy`/`delete`** action; SIT interaction in this sprint is read-only. |
+| `FR-UXL-001` | Each role shall see, **live in the app**, its list of **observations + recommendations** (actionable insights) grounded on the EPIC-simulator gold, served by the agent-host `GET /agents/{role}/worklist`. |
+| `FR-UXL-002` | The role shall **act on an actionable insight via the copilot** (accept or deny) to proceed; accept records a HITL `approved-to-apply` decision (approver = the app user), deny records a refusal — `POST /agents/{role}/decisions`. |
+| `FR-UXL-003` | On accept, the agent-host shall **apply** the approved action to an in-host `SimState` and return the **`DC-SIM-OUTCOME-v1`**; the app shall **reflect the outcome** in the worklist/board (candidate resolved, metric moved); on deny nothing changes (the breach persists). |
+| `FR-UXL-004` | The evidence trace (`FR-EVD-*`) shall be a **derived view of the operational loop** — generated from the same `proposed_action` + `DC-SIM-OUTCOME-v1` records the role produced — so validation and user experience are one loop. |
+| `NFR-UXL-001` | The operational loop shall remain **human-gated** (`NFR-AI-001`): only a human accept fires an apply; the agent-host refuses bot/self approval; no autonomous or app-bypassed actuation. |
 
 **Traceability:** extends Sprint 38 `FR-SIM-*` / `FR-CLP-*` and `DC-SIM-OUTCOME-v1`
 ([ADR-0058](../../adr/0058-sim-outcome-and-effect-schema.md)); reuses `DC-INSIGHT-v1`
