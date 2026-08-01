@@ -194,7 +194,9 @@ param enableCsaCosmosModule = true
 // seam). 62cc2ae is a superset of 583f633; OBO stays off (agentHostOboEnabled
 // default false) so this is a behaviour-parity redeploy. Matches PROD per M6
 // SIT+PROD parity. approved-to-apply by @urruegg 2026-07-29.
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:62cc2ae'
+// Sprint 39 P2 (2026-08-02): bumped 62cc2ae -> 2ce00a1 (PR #558) - adds the
+// in-host worklist/decisions/evidence endpoints. approved-to-apply by @urruegg.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:2ce00a1'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
@@ -248,7 +250,9 @@ param enableAppFluentModule = true
 // threads it onto every chat turn when FOUNDRY_THREADS_ENABLED is on. dadd7ce = PR
 // #495 merge (M3 app code). Deploy approval-gated per AGENTS.md §4 (approved-to-apply
 // by @urruegg 2026-07-28).
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:a7fb478'
+// Sprint 39 P2 (2026-08-02): bumped a7fb478 -> 2ce00a1 (PR #558) - live worklist +
+// copilot accept/deny + Closed-Loop Evidence board. approved-to-apply by @urruegg.
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:2ce00a1'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
