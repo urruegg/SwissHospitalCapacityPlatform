@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.19.0 |
-| **Date** | 2026-07-31 |
+| **Version** | 0.20.0 |
+| **Date** | 2026-08-01 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.18.0 (rebranded the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical medallion diagram, Sprint 34 WS-2); this bump registers the DC-SIM-OUTCOME-v1 closed-loop operational-outcome contract (Sprint 38) |
+| **Previous Version** | 0.19.0 (registered the DC-SIM-OUTCOME-v1 closed-loop operational-outcome contract, Sprint 38); this bump registers the DC-EVIDENCE-TRACE-v1 per-role end-to-end evidence-trace contract (Sprint 39 P1) |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -144,6 +144,7 @@ Each contract must define:
 | External signal contract | DC-EXT-SIGNAL-v1 | CAP-Suisse-aligned trusted external hazard signals for advisory CSA trigger evaluation |
 | Agent-interaction contract | DC-AGENT-INTERACTION-v1 | Closed-loop-learning capture: one PHI-free record per agent turn + user events (Sprint 30) |
 | Sim-outcome contract | DC-SIM-OUTCOME-v1 | Closed-loop operational outcome: one PHI-free record per HITL-approved action applied to the EPIC twin, with predicted-vs-realised divergence (Sprint 38). R3 retention alongside DC-AGENT-INTERACTION-v1. |
+| Evidence-trace contract | DC-EVIDENCE-TRACE-v1 | Per-role end-to-end proof for one synthetic patient journey (EPIC input -> read -> recommendation -> copilot accept/deny -> outcome), accept + deny branches, PHI-free, `golden_thread`-linked; a derived view of the operational loop (Sprint 39). |
 | Data-quality trust-score contract | DC-DQ-TRUSTSCORE-v1 | Per-domain deterministic, versioned Trust Score + eight-dimension breakdown over the gold/serving layer (Sprint 31) |
 | Data-quality gap contract | DC-DQ-GAP-v1 | Gap + impact + owner + recommended source + `newSourceNeeded` seam handed to the Signal Agent (Sprint 31; frozen per design §8) |
 | Certification reference contract | DC-REF-CERTIFICATION-v1 | Credential↔competency crosswalk (staff-PII, pseudonymised work-ID); intake for the certification→skills onboarding lane (Sprint 32) |
