@@ -25,7 +25,7 @@
           "recommendation": { "type": "object", "required": ["lever_id", "predicted_impact"] },
           "copilot": { "type": "object", "required": ["decision", "requiresApproval"] },
           "action": { "type": "object", "required": ["status"] },
-          "outcome": { "type": "object", "required": ["provenance"] }
+          "outcome": { "type": "object", "required": ["provenance", "applied"] }
         }
       }
     }

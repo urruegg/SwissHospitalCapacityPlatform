@@ -29,6 +29,10 @@ def test_accept_trace_has_five_part_steps_and_golden_thread():
         assert part in step
     # The accept branch applied the lever, so the outcome is realised.
     assert step["outcome"]["provenance"] in ("simulated", "live")
+    # FR-UXL-004: the /evidence outcome MUST carry the same `applied` field the
+    # /decisions loop sets, so the Live evidence panel badges it honestly (this
+    # guards the harness-vs-loop contract-drift the hardcoded stubs would hide).
+    assert step["outcome"]["applied"] is True
 
 
 def test_deny_branch_differs_from_accept():

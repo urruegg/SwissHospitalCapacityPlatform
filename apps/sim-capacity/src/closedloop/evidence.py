@@ -73,7 +73,13 @@ def build_evidence_trace(gold: Dict[str, Any], branch: str = "accept") -> Dict[s
                 gold=impact_gold, catalog=_CATALOG, now=_NOW,
             )
             outcomes = consumer.apply_approved(plan["id"], state, now=_NOW)
-            outcome = outcomes[-1] if outcomes else _noop_outcome(action, provenance)
+            # Mirror decisions.py: carry the honest `applied` flag so the /evidence
+            # outcome is the SAME DC-SIM-OUTCOME-v1 shape /decisions produces
+            # (FR-UXL-004). build_sim_outcome omits it, so set it here.
+            outcome = (
+                {**outcomes[-1], "applied": True} if outcomes
+                else {**_noop_outcome(action, provenance), "applied": False}
+            )
             decision, status = "accept", "applied"
         else:
             outcome = _noop_outcome(action, provenance)

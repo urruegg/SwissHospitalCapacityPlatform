@@ -158,8 +158,8 @@ function FivePartProof({ step }: FivePartProofProps) {
           <Caption1 className={s.partIndex}>5/5</Caption1>
           <Body2 className={s.partTitle}>{t('evidence.part.outcome')}</Body2>
           <ProvenanceBadge provenance={oc.provenance} />
-          <Badge appearance="outline" size="small" color={oc.applied ? 'success' : 'informative'}>
-            {oc.applied ? t('evidence.outcome.applied') : t('evidence.outcome.notApplied')}
+          <Badge appearance="outline" size="small" color={(oc.applied ?? oc.realised_impact.value > 0) ? 'success' : 'informative'}>
+            {(oc.applied ?? oc.realised_impact.value > 0) ? t('evidence.outcome.applied') : t('evidence.outcome.notApplied')}
           </Badge>
         </div>
         <Body1 className={s.value}>

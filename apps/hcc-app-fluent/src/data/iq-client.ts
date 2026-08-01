@@ -345,8 +345,9 @@ export async function iqDecision(
  * `GET /agents/{role}/evidence` returns a DC-EVIDENCE-TRACE-v1: the five-part
  * proof per journey step (EPIC input -> agent read -> recommendation -> copilot
  * accept/deny -> outcome), built by the Plan 1 harness on the SAME seeded gold
- * the loop uses. The `outcome` step is DC-SIM-OUTCOME-v1-shaped (byte-parity with
- * what `iqDecision` returns) - the validation==UX unification (FR-UXL-004). The
+ * the loop uses. The `outcome` step is DC-SIM-OUTCOME-v1-shaped - the SAME
+ * contract + fields (`realised_impact`, `divergence`, `applied`, `golden_thread`)
+ * `iqDecision` returns - the validation==UX unification (FR-UXL-004). The
  * types below mirror `closedloop.evidence.build_evidence_trace`.
  */
 
