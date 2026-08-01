@@ -190,6 +190,13 @@ class UserEventRequest(BaseModel):
     ts: str | None = None
 
 
+class DecisionRequest(BaseModel):
+    # Sprint 39 P2 — a single human accept/deny on a role's recommendation.
+    decision: str  # "accept" | "deny"
+    hospital: str = "USZ"
+    params: dict[str, Any] = {}
+
+
 def create_app() -> FastAPI:
     app = FastAPI(title="hcc-agent-host", version="0.1.0")
 
@@ -360,6 +367,23 @@ def create_app() -> FastAPI:
         from loop.worklist import build_worklist
 
         return build_worklist(name, sim, provenance=gold.get("provenance", "simulated"))
+
+    @app.post("/agents/{name}/decisions")
+    def decisions(name: str, req: DecisionRequest, x_user_oid: str = Header(default="")) -> dict[str, Any]:
+        # Sprint 39 P2 — a human accept/deny drives the REAL HITL apply->outcome on
+        # the in-host SimState. NFR-UXL-001: only a human oid may act; the bot/self
+        # refusal is enforced by plan_runtime.approve_action (surfaced as 403).
+        if not x_user_oid:
+            raise HTTPException(status_code=401, detail="human approver (x-user-oid) required")
+        state = get_state()
+        gold = state.load_gold_snapshot(req.hospital)
+        sim = state.sim_registry.get_or_seed(req.hospital, gold)
+        from loop.decisions import decide
+
+        try:
+            return decide(name, req.decision, approver=x_user_oid, state=state, sim=sim, params=req.params)
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc))
 
     return app
 
