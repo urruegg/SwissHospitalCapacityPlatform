@@ -1,0 +1,34 @@
+{
+  "hospital_id": "USZ",
+  "captured_ts": "2027-01-15T08:00:00Z",
+  "provenance": "simulated",
+  "wards": [{ "wardId": "C3", "specialty": "internal-medicine", "bedCapacity": 8 }],
+  "beds": [
+    { "bedId": "BED-C3-00", "wardId": "C3", "state": "occupied", "patientId": "PT-0001" },
+    { "bedId": "BED-C3-01", "wardId": "C3", "state": "occupied", "patientId": "PT-0002" },
+    { "bedId": "BED-C3-02", "wardId": "C3", "state": "occupied", "patientId": "PT-0003" },
+    { "bedId": "BED-C3-03", "wardId": "C3", "state": "occupied", "patientId": "PT-0004" },
+    { "bedId": "BED-C3-04", "wardId": "C3", "state": "occupied", "patientId": "PT-0005" },
+    { "bedId": "BED-C3-05", "wardId": "C3", "state": "occupied", "patientId": "PT-0006" },
+    { "bedId": "BED-C3-06", "wardId": "C3", "state": "available", "patientId": null },
+    { "bedId": "BED-C3-07", "wardId": "C3", "state": "available", "patientId": null }
+  ],
+  "encounters": [
+    { "encounterId": "PT-0001", "specialty": "internal-medicine", "acuity": 2, "status": "inpatient" },
+    { "encounterId": "PT-0002", "specialty": "internal-medicine", "acuity": 2, "status": "inpatient" },
+    { "encounterId": "PT-0003", "specialty": "internal-medicine", "acuity": 1, "status": "inpatient" },
+    { "encounterId": "PT-0004", "specialty": "internal-medicine", "acuity": 1, "status": "inpatient" },
+    { "encounterId": "PT-0005", "specialty": "internal-medicine", "acuity": 2, "status": "inpatient" },
+    { "encounterId": "PT-0006", "specialty": "internal-medicine", "acuity": 1, "status": "inpatient" }
+  ],
+  "discharge_scores": [
+    { "encounterId": "PT-0001", "score": 0.92 },
+    { "encounterId": "PT-0002", "score": 0.88 },
+    { "encounterId": "PT-0003", "score": 0.85 }
+  ],
+  "barriers": [
+    { "barrierId": "BAR-PT-0001", "encounterId": "PT-0001", "barrierType": "transport", "status": "open", "agedH": 18 },
+    { "barrierId": "BAR-PT-0002", "encounterId": "PT-0002", "barrierType": "transport", "status": "open", "agedH": 9 },
+    { "barrierId": "BAR-PT-0003", "encounterId": "PT-0003", "barrierType": "transport", "status": "open", "agedH": 6 }
+  ]
+}

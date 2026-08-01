@@ -50,12 +50,11 @@ def _agents_root() -> Path:
 
 
 def _default_gold_path() -> Path:
-    # apps/hcc-agent-host/src/api/app.py → repo root is parents[4]. The committed
-    # Plan 1 USZ snapshot is the simulated-MVP default gold source.
-    return (
-        Path(__file__).resolve().parents[4]
-        / "apps" / "sim-capacity" / "tests" / "fixtures" / "gold-snapshot-usz.json"
-    )
+    # The simulated-MVP default gold source: the USZ snapshot bundled in the
+    # agent-host image at src/loop/, so it resolves in the container (/app/src/
+    # loop) AND locally without reaching into another app's test fixtures and
+    # without a fixed parents[N] depth (which IndexErrors in the container).
+    return Path(__file__).resolve().parent.parent / "loop" / "gold-snapshot-usz.json"
 
 
 # Default browser origins for the hcc-app-fluent Copilot Drawer (ADR-0013 westus2
