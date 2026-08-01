@@ -111,6 +111,9 @@ export function DischargeBoard() {
     });
     return () => {
       active = false;
+      // Self-contained: drop the live decision handler on unmount / re-run so a
+      // stale handler can never leak onto the next board (not only via the shell).
+      rail.setDecisionHandler(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, hospital, source]);
