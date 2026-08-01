@@ -1,17 +1,29 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { ContextInsight } from '../journey/RoleBoard';
 import type { GroundedReco } from './reco';
+import type { DecisionOutcome } from '../data/iq-client';
+
+/**
+ * Sprint 39 P2 — a human accept/deny handler registered by the live board. The
+ * board owns the network call (`iqDecision`) + the worklist re-fetch; the rail
+ * only renders the outcome. `null` means no live decision surface (simulated /
+ * host unconfigured), so the rail keeps the presentational single-CTA path.
+ */
+export type DecisionHandler = (decision: 'accept' | 'deny') => Promise<DecisionOutcome>;
 
 interface CopilotRailValue {
   open: boolean;
   activeContext: ContextInsight | null;
   activeReco: GroundedReco | null;
   defaultReco: GroundedReco | null;
+  /** Live accept/deny handler registered by the board, or `null` when simulated. */
+  onDecision: DecisionHandler | null;
   openWithContext: (insight: ContextInsight) => void;
   openWithReco: (insight: ContextInsight, reco: GroundedReco) => void;
   showDefault: (reco: GroundedReco) => void;
   backToDefault: () => void;
   resetReco: () => void;
+  setDecisionHandler: (handler: DecisionHandler | null) => void;
   setOpen: (open: boolean) => void;
   close: () => void;
 }
@@ -23,10 +35,17 @@ export function CopilotRailProvider({ children }: { children: ReactNode }) {
   const [activeContext, setActiveContext] = useState<ContextInsight | null>(null);
   const [activeReco, setActiveReco] = useState<GroundedReco | null>(null);
   const [defaultReco, setDefaultReco] = useState<GroundedReco | null>(null);
+  const [onDecision, setOnDecision] = useState<DecisionHandler | null>(null);
   const resetReco = useCallback(() => {
     setActiveReco(null);
     setActiveContext(null);
     setDefaultReco(null);
+    setOnDecision(null);
+  }, []);
+  // Store the handler in a functional setState wrapper so a function value is
+  // registered (not invoked) as state.
+  const setDecisionHandler = useCallback((handler: DecisionHandler | null) => {
+    setOnDecision(() => handler);
   }, []);
   const value = useMemo<CopilotRailValue>(
     () => ({
@@ -34,6 +53,7 @@ export function CopilotRailProvider({ children }: { children: ReactNode }) {
       activeContext,
       activeReco,
       defaultReco,
+      onDecision,
       openWithContext: (insight: ContextInsight) => {
         setActiveContext(insight);
         setOpen(true);
@@ -51,10 +71,11 @@ export function CopilotRailProvider({ children }: { children: ReactNode }) {
         setActiveContext(null);
       },
       resetReco,
+      setDecisionHandler,
       setOpen,
       close: () => setOpen(false),
     }),
-    [open, activeContext, activeReco, defaultReco, resetReco],
+    [open, activeContext, activeReco, defaultReco, onDecision, resetReco, setDecisionHandler],
   );
   return <CopilotRailContext.Provider value={value}>{children}</CopilotRailContext.Provider>;
 }

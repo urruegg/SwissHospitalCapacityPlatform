@@ -173,7 +173,12 @@
       "readiness": "Preparazione",
       "barrier": "Ostacolo",
       "estFree": "Libero tra",
-      "noBarrier": "—"
+      "noBarrier": "—",
+      "provenance": "Origine dati: {{source}}",
+      "source": {
+        "live": "In diretta",
+        "simulated": "Simulato"
+      }
     },
     "barriers": {
       "title": "Ostacoli alla capacità — ordinati per impatto sui letti",
@@ -517,7 +522,25 @@
     "projection": "Proiezione: {{text}}",
     "refused": "Rifiutato",
     "approvalRequired": "Approvazione richiesta",
-    "approvalHint": "Rispondi approved-to-apply per procedere"
+    "approvalHint": "Rispondi approved-to-apply per procedere",
+    "accept": "Accetta",
+    "deny": "Rifiuta",
+    "advisoryOnly": "Solo consultivo — decide un umano; l'app non applica mai direttamente.",
+    "decisionRefused": "Azione rifiutata dal controllo di approvazione — solo consultivo, nessuna modifica applicata.",
+    "decisionError": "Impossibile inviare la decisione. Nessuna modifica applicata.",
+    "decisionPending": "Invio della decisione",
+    "outcome": {
+      "title": "Esito della decisione",
+      "yourDecision": "La tua decisione",
+      "accept": "Accetta",
+      "deny": "Rifiuta",
+      "bedsFreed": "{{count}} letti liberati",
+      "wouldFree": "Libererebbe {{count}} letti",
+      "breachPersists": "Il superamento persiste · 0 letti liberati",
+      "divergence": "Divergenza: {{value}}",
+      "applied": "Applicato",
+      "notApplied": "Non applicato"
+    }
   },
   "bmca": {
     "table": {

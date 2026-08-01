@@ -173,7 +173,12 @@
       "readiness": "Préparation",
       "barrier": "Obstacle",
       "estFree": "Libre dans",
-      "noBarrier": "—"
+      "noBarrier": "—",
+      "provenance": "Source de données : {{source}}",
+      "source": {
+        "live": "En direct",
+        "simulated": "Simulé"
+      }
     },
     "barriers": {
       "title": "Obstacles à la capacité — classés par impact sur les lits",
@@ -517,7 +522,25 @@
     "projection": "Projection : {{text}}",
     "refused": "Refusé",
     "approvalRequired": "Approbation requise",
-    "approvalHint": "Répondez approved-to-apply pour continuer"
+    "approvalHint": "Répondez approved-to-apply pour continuer",
+    "accept": "Accepter",
+    "deny": "Refuser",
+    "advisoryOnly": "À titre consultatif — un humain décide ; l'app n'applique jamais directement.",
+    "decisionRefused": "Action refusée par le contrôle d'approbation — à titre consultatif, aucune modification appliquée.",
+    "decisionError": "Impossible de soumettre la décision. Aucune modification appliquée.",
+    "decisionPending": "Envoi de la décision",
+    "outcome": {
+      "title": "Résultat de la décision",
+      "yourDecision": "Votre décision",
+      "accept": "Accepter",
+      "deny": "Refuser",
+      "bedsFreed": "{{count}} lits libérés",
+      "wouldFree": "Libérerait {{count}} lits",
+      "breachPersists": "Le dépassement persiste · 0 lit libéré",
+      "divergence": "Écart : {{value}}",
+      "applied": "Appliqué",
+      "notApplied": "Non appliqué"
+    }
   },
   "bmca": {
     "table": {

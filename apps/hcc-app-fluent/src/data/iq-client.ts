@@ -228,3 +228,113 @@ export async function postInteractionEvent(
   );
   if (!res.ok) throw new Error(`interaction event failed: ${res.status}`);
 }
+
+/**
+ * Sprint 39 P2 — the operational closed loop (worklist + decisions).
+ *
+ * Two agent-host endpoints wired through the single IQ ingress. The role is the
+ * SHORT role id the host keys on (e.g. `dca`, not `dca-agent`). Both carry the
+ * caller's `ContextEnvelope` as scoped OBO/RLS identity headers so the agent-host
+ * can attribute the human approver — `X-User-Oid` is the HITL approver seam
+ * (NFR-UXL-001): the app never applies directly, it only submits the decision.
+ */
+
+/** One barrier/readiness observation on a role's worklist (agent-host shape). */
+export interface WorklistObservation {
+  patient: string;
+  ward: string;
+  readiness: string;
+  barrier?: string;
+  aged_h?: number;
+  provenance: Provenance;
+}
+
+/** The single grounded recommendation attached to a worklist (agent-host shape). */
+export interface WorklistRecommendation {
+  lever_id: string | null;
+  params?: Record<string, unknown>;
+  predicted_impact?: { metric: string; value: number };
+  insight_text: string;
+  citations: string[];
+}
+
+/** A role's live worklist: observations + one grounded recommendation. */
+export interface Worklist {
+  role: string;
+  ward: string;
+  observations: WorklistObservation[];
+  recommendation: WorklistRecommendation;
+  provenance: Provenance;
+}
+
+/** The `DC-SIM-OUTCOME-v1` a single human accept/deny produces (agent-host shape). */
+export interface DecisionOutcome {
+  contract: string;
+  plan_id: string;
+  golden_thread: string;
+  lever_id: string | null;
+  applied_ts: string;
+  predicted_impact: { metric: string; value: number };
+  realised_impact: { metric: string; value: number };
+  state_delta: { beds_freed: string[]; patients_discharged: string[]; patients_promoted: string[] };
+  divergence: number;
+  provenance: Provenance;
+  applied: boolean;
+  branch: string;
+  decision: string;
+  approver: string;
+}
+
+/** Resolve the target hospital for an operational-loop call from the envelope. */
+function hospitalOf(env: ContextEnvelope): string {
+  const scope = env.hospitalScope;
+  return scope && scope !== 'aggregated' ? scope.toUpperCase() : 'USZ';
+}
+
+/**
+ * Read a role's live worklist from the agent-host
+ * (`GET /agents/{role}/worklist`, Sprint 39 P2). Carries the ContextEnvelope as
+ * scoped identity headers. Throws loud on transport / HTTP error so the caller
+ * degrades to its fixture and surfaces the degradation (never silently). Only
+ * call when `isAgentHostConfigured()`. Returns an evidence envelope whose
+ * `citations` carry the recommendation's grounding ids.
+ */
+export async function iqWorklist(role: string, env: ContextEnvelope): Promise<IqResult<Worklist>> {
+  const res = await fetch(
+    `${agentHostBaseUrl()}/agents/${encodeURIComponent(role)}/worklist?hospital=${encodeURIComponent(hospitalOf(env))}`,
+    { headers: { ...identityHeaders(env), ...(await bearerHeader()) } },
+  );
+  if (!res.ok) throw new Error(`worklist load failed: ${res.status}`);
+  const data = (await res.json()) as Worklist;
+  return {
+    data,
+    provenance: data.provenance,
+    citations: data.recommendation?.citations ?? [],
+    degraded: false,
+    source: 'foundry-agent',
+  };
+}
+
+/**
+ * Submit a single human accept/deny on a role's recommendation to the agent-host
+ * (`POST /agents/{role}/decisions`, Sprint 39 P2). The `X-User-Oid` header is the
+ * HITL approver: the agent-host enforces the gate (a bot/self approver → 403, a
+ * missing oid → 401). The app NEVER applies directly (NFR-UXL-001); it only
+ * submits the decision and renders the returned outcome. Throws loud on HTTP
+ * error (the status is in the message so the caller can surface a refusal without
+ * retrying). Only call when `isAgentHostConfigured()`.
+ */
+export async function iqDecision(
+  role: string,
+  decision: 'accept' | 'deny',
+  params: Record<string, unknown>,
+  env: ContextEnvelope,
+): Promise<DecisionOutcome> {
+  const res = await fetch(`${agentHostBaseUrl()}/agents/${encodeURIComponent(role)}/decisions`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...identityHeaders(env), ...(await bearerHeader()) },
+    body: JSON.stringify({ decision, hospital: hospitalOf(env), params }),
+  });
+  if (!res.ok) throw new Error(`decision failed: ${res.status}`);
+  return (await res.json()) as DecisionOutcome;
+}

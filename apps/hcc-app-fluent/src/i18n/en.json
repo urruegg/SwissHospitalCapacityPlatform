@@ -314,7 +314,12 @@
       "readiness": "Readiness",
       "barrier": "Barrier",
       "estFree": "Est. free",
-      "noBarrier": "—"
+      "noBarrier": "—",
+      "provenance": "Data source: {{source}}",
+      "source": {
+        "live": "Live",
+        "simulated": "Simulated"
+      }
     },
     "barriers": {
       "title": "Capacity barriers — ranked by bed impact",
@@ -755,7 +760,25 @@
     "projection": "Projection: {{text}}",
     "refused": "Refused",
     "approvalRequired": "Approval required",
-    "approvalHint": "Reply approved-to-apply to proceed"
+    "approvalHint": "Reply approved-to-apply to proceed",
+    "accept": "Accept",
+    "deny": "Deny",
+    "advisoryOnly": "Advisory only — a human decides; the app never applies directly.",
+    "decisionRefused": "Action refused by the approval gate — advisory only, no change applied.",
+    "decisionError": "Could not submit the decision. No change applied.",
+    "decisionPending": "Submitting decision",
+    "outcome": {
+      "title": "Decision outcome",
+      "yourDecision": "Your decision",
+      "accept": "Accept",
+      "deny": "Deny",
+      "bedsFreed": "{{count}} beds freed",
+      "wouldFree": "Would free {{count}} beds",
+      "breachPersists": "Breach persists · 0 beds freed",
+      "divergence": "Divergence: {{value}}",
+      "applied": "Applied",
+      "notApplied": "Not applied"
+    }
   },
   "bmca": {
     "table": {

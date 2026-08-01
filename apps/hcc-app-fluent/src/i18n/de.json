@@ -268,7 +268,12 @@
       "readiness": "Bereitschaft",
       "barrier": "Hindernis",
       "estFree": "Frei in",
-      "noBarrier": "—"
+      "noBarrier": "—",
+      "provenance": "Datenquelle: {{source}}",
+      "source": {
+        "live": "Live",
+        "simulated": "Simuliert"
+      }
     },
     "barriers": {
       "title": "Kapazitätshindernisse — nach Bettauswirkung sortiert",
@@ -684,7 +689,25 @@
     "projection": "Prognose: {{text}}",
     "refused": "Abgelehnt",
     "approvalRequired": "Freigabe erforderlich",
-    "approvalHint": "Mit approved-to-apply antworten, um fortzufahren"
+    "approvalHint": "Mit approved-to-apply antworten, um fortzufahren",
+    "accept": "Annehmen",
+    "deny": "Ablehnen",
+    "advisoryOnly": "Nur beratend — ein Mensch entscheidet; die App wendet nie direkt an.",
+    "decisionRefused": "Aktion durch die Freigabekontrolle abgelehnt — nur beratend, keine Änderung angewendet.",
+    "decisionError": "Entscheidung konnte nicht übermittelt werden. Keine Änderung angewendet.",
+    "decisionPending": "Entscheidung wird übermittelt",
+    "outcome": {
+      "title": "Entscheidungsergebnis",
+      "yourDecision": "Ihre Entscheidung",
+      "accept": "Annehmen",
+      "deny": "Ablehnen",
+      "bedsFreed": "{{count}} Betten frei",
+      "wouldFree": "Würde {{count}} Betten freigeben",
+      "breachPersists": "Engpass bleibt · 0 Betten frei",
+      "divergence": "Abweichung: {{value}}",
+      "applied": "Angewendet",
+      "notApplied": "Nicht angewendet"
+    }
   },
   "bmca": {
     "table": {
