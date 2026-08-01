@@ -63,3 +63,24 @@ def test_missing_user_oid_is_refused_401():
         json={"decision": "accept", "hospital": "USZ", "params": {}},
     )
     assert resp.status_code == 401
+
+
+def test_bot_approver_is_refused_403():
+    # NFR-UXL-001 at the HTTP boundary: a bot oid reaches approve_action, which
+    # raises PermissionError -> the route maps it to 403 (no state mutation).
+    resp = _client().post(
+        "/agents/dca/decisions",
+        json={"decision": "accept", "hospital": "USZ", "params": {}},
+        headers={"X-User-Oid": "github-actions[bot]"},
+    )
+    assert resp.status_code == 403
+
+
+def test_unknown_ward_is_refused_400():
+    # An authenticated but unvalidated params.ward must be a 400, not a 500.
+    resp = _client().post(
+        "/agents/dca/decisions",
+        json={"decision": "accept", "hospital": "USZ", "params": {"ward": "NOPE"}},
+        headers=_OID,
+    )
+    assert resp.status_code == 400

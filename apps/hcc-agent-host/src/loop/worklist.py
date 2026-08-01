@@ -10,17 +10,18 @@ from typing import Any, Dict
 from closedloop.sim_state import SimState, Stage
 from impact.compute_expected_impact import compute_expected_impact
 
+from .ward_scope import require_single_ward, ward_of
+
 _CATALOG = [{"lever_id": "DCA-UNBLOCK-BARRIER", "owner_role": "dca", "impact_formula_ref": "unblock_barrier_beds"}]
 _BARRIER_TYPE = "transport"
 _CITATIONS = ["gold.discharge_candidates", "gold.fact_capacity_baseline"]
 
 
-def _ward_of(state: SimState) -> str:
-    return next(iter(sorted(state.wards)))
-
-
-def build_worklist(role: str, state: SimState, provenance: str = "live") -> Dict[str, Any]:
-    ward = _ward_of(state)
+def build_worklist(role: str, state: SimState, provenance: str = "simulated") -> Dict[str, Any]:
+    # Single-ward MVP: the dca grounding + the hospital-wide barrier effect only
+    # stay consistent on one ward (see loop/ward_scope). Fail loudly on multi-ward.
+    require_single_ward(state)
+    ward = ward_of(state)
     if role == "dca":
         barriers = sorted(state.open_barriers(_BARRIER_TYPE), key=lambda b: b.barrier_id)
         observations = [

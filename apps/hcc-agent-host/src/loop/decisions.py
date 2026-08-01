@@ -13,6 +13,8 @@ from closedloop.sim_state import SimState
 from coordination import plan_runtime
 from coordination.store import InMemoryStore
 
+from .ward_scope import require_single_ward, ward_of
+
 _NOW = "1970-01-01T00:00:00Z"
 _BARRIER_TYPE = "transport"
 _LEVER_ID = "DCA-UNBLOCK-BARRIER"
@@ -24,10 +26,6 @@ _EFFECT = {
     "cascade": [{"when": "patient_all_barriers_cleared", "set": "Patient.stage=DISCHARGED"}],
 }
 _CATALOG = [{"lever_id": _LEVER_ID, "owner_role": "dca", "impact_formula_ref": "unblock_barrier_beds"}]
-
-
-def _ward_of(sim: SimState) -> str:
-    return next(iter(sorted(sim.wards)))
 
 
 def _gold_for_impact(sim: SimState, ward: str, horizon_h: int = 72) -> Dict[str, Any]:
@@ -82,13 +80,20 @@ def decide(
     state: Any,
     sim: SimState,
     params: Dict[str, Any],
+    provenance: str | None = None,
 ) -> Dict[str, Any]:
     if decision not in ("accept", "deny"):
         raise ValueError(f"decision must be 'accept' or 'deny', got {decision!r}")
 
+    # Single-ward MVP (see loop/ward_scope) + validate any caller-supplied ward so
+    # an unknown ward is a 400, never an unhandled KeyError 500 at the mutation.
+    require_single_ward(sim)
     barrier_type = params.get("barrier_type", _BARRIER_TYPE)
-    ward = params.get("ward") or _ward_of(sim)
-    provenance = _provenance_of(state, sim)
+    ward = params.get("ward") or ward_of(sim)
+    if ward not in sim.wards:
+        raise ValueError(f"unknown ward {ward!r}")
+    if provenance is None:
+        provenance = _provenance_of(state, sim)
     plan_id = f"plan-decide-{sim.hospital_id}"
 
     n = len(sim.open_barriers(barrier_type))
@@ -118,8 +123,10 @@ def decide(
             gold=impact_gold, catalog=_CATALOG, now=_NOW,
         )
         outcomes = consumer.apply_approved(plan["id"], sim, now=_NOW)
-        outcome = outcomes[-1] if outcomes else _noop_outcome(action, provenance)
-        outcome = {**outcome, "applied": True}
+        if outcomes:
+            outcome = {**outcomes[-1], "applied": True}
+        else:  # nothing applied -> honest zero-impact, never applied=True/realised=0
+            outcome = {**_noop_outcome(action, provenance), "applied": False}
     else:  # deny — no approval, no apply, no state mutation
         outcome = {**_noop_outcome(action, provenance), "applied": False}
 

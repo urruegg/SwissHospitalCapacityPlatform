@@ -366,7 +366,12 @@ def create_app() -> FastAPI:
         sim = state.sim_registry.get_or_seed(hospital, gold)
         from loop.worklist import build_worklist
 
-        return build_worklist(name, sim, provenance=gold.get("provenance", "simulated"))
+        try:
+            return build_worklist(name, sim, provenance=gold.get("provenance", "simulated"))
+        except ValueError as exc:
+            # e.g. a multi-ward snapshot is out of the single-ward MVP scope: a
+            # loud 400, not a silent mis-grounding.
+            raise HTTPException(status_code=400, detail=str(exc))
 
     @app.post("/agents/{name}/decisions")
     def decisions(name: str, req: DecisionRequest, x_user_oid: str = Header(default="")) -> dict[str, Any]:
@@ -381,9 +386,16 @@ def create_app() -> FastAPI:
         from loop.decisions import decide
 
         try:
-            return decide(name, req.decision, approver=x_user_oid, state=state, sim=sim, params=req.params)
+            return decide(
+                name, req.decision, approver=x_user_oid, state=state, sim=sim,
+                params=req.params, provenance=gold.get("provenance", "simulated"),
+            )
         except PermissionError as exc:
+            # NFR-UXL-001: a bot/self approver is refused by approve_action.
             raise HTTPException(status_code=403, detail=str(exc))
+        except (ValueError, KeyError) as exc:
+            # Unvalidated params (e.g. unknown ward) or a multi-ward snapshot -> 400.
+            raise HTTPException(status_code=400, detail=str(exc))
 
     return app
 
