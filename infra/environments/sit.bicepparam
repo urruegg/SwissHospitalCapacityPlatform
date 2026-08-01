@@ -195,8 +195,11 @@ param enableCsaCosmosModule = true
 // default false) so this is a behaviour-parity redeploy. Matches PROD per M6
 // SIT+PROD parity. approved-to-apply by @urruegg 2026-07-29.
 // Sprint 39 P2 (2026-08-02): bumped 62cc2ae -> 2ce00a1 (PR #558) - adds the
-// in-host worklist/decisions/evidence endpoints. approved-to-apply by @urruegg.
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:2ce00a1'
+// in-host worklist/decisions/evidence endpoints. Hotfixed 2ce00a1 -> c85d09d:
+// container-deployability fix (vendor closedloop under src/ + PYTHONPATH for
+// impact/coordination + robust loop path bootstrap; 2ce00a1 crash-looped on the
+// parents[4] IndexError). approved-to-apply by @urruegg.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:c85d09d'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
