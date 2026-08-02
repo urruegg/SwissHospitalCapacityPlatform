@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Menu, MenuTrigger, MenuPopover, MenuList, MenuItem, Button, Badge } from '@fluentui/react-components';
 import { PersonRegular, SignOutRegular, ArrowEnterRegular, ContactCardRegular } from '@fluentui/react-icons';
 import { useAuthSession } from '../../auth/auth-session';
-import { resetSessionContext } from '../../context/session-reset';
+import { useSignOut } from '../../auth/use-sign-out';
 import { AccountDialog } from '../account/AccountDialog';
 
 /**
@@ -13,13 +13,9 @@ import { AccountDialog } from '../account/AccountDialog';
  * clears all per-user session context (Sprint 29 #424 M1).
  */
 export function UserMenu() {
-  const { name, isAuthenticated, readOnly, configured, signIn, signOut } = useAuthSession();
+  const { name, isAuthenticated, readOnly, configured, signIn } = useAuthSession();
+  const signOutFully = useSignOut();
   const [accountOpen, setAccountOpen] = useState(false);
-
-  const handleSignOut = () => {
-    resetSessionContext();
-    signOut();
-  };
 
   return (
     <>
@@ -41,7 +37,7 @@ export function UserMenu() {
                 <MenuItem icon={<ContactCardRegular />} onClick={() => setAccountOpen(true)}>
                   My account
                 </MenuItem>
-                <MenuItem icon={<SignOutRegular />} onClick={handleSignOut}>
+                <MenuItem icon={<SignOutRegular />} onClick={signOutFully}>
                   Sign out
                 </MenuItem>
               </>

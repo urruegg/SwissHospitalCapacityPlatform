@@ -4,9 +4,9 @@ import {
 } from '@fluentui/react-components';
 import { SignOutRegular } from '@fluentui/react-icons';
 import { useAuthSession } from '../../auth/auth-session';
+import { useSignOut } from '../../auth/use-sign-out';
 import { useRoleLens } from '../../context/role-context';
 import { getMsalTenantId } from '../../config/runtime-config';
-import { resetSessionContext } from '../../context/session-reset';
 
 /**
  * Sprint A (FR-AUTH-003) - My Account view. Read-only reflection of the signed-in
@@ -15,13 +15,9 @@ import { resetSessionContext } from '../../context/session-reset';
  * session facade and the role lens. Sign out clears all per-user session context.
  */
 export function AccountDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { name, username, signOut } = useAuthSession();
+  const { name, username } = useAuthSession();
   const { userOid, heldRoles, activeRole, capabilities } = useRoleLens();
-
-  const handleSignOut = () => {
-    resetSessionContext();
-    signOut();
-  };
+  const signOutFully = useSignOut();
 
   return (
     <Dialog open={open} onOpenChange={(_, d) => { if (!d.open) onClose(); }}>
@@ -50,7 +46,7 @@ export function AccountDialog({ open, onClose }: { open: boolean; onClose: () =>
           </DialogContent>
           <DialogActions>
             <Button appearance="secondary" onClick={onClose}>Close</Button>
-            <Button appearance="primary" icon={<SignOutRegular />} onClick={handleSignOut}>Sign out</Button>
+            <Button appearance="primary" icon={<SignOutRegular />} onClick={signOutFully}>Sign out</Button>
           </DialogActions>
         </DialogBody>
       </DialogSurface>
