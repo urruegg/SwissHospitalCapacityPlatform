@@ -1,12 +1,21 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import { getMsalClientId, getMsalTenantId, getMsalRedirectUri, getAppEnv } from './runtime-config';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  getMsalClientId,
+  getMsalTenantId,
+  getMsalRedirectUri,
+  getAppEnv,
+  getHomeHospital,
+} from './runtime-config';
 
 describe('runtime MSAL config resolution', () => {
   afterEach(() => {
     delete (window as unknown as { __ENV__?: unknown }).__ENV__;
+    vi.unstubAllEnvs();
   });
 
-  it('prefers window.__ENV__ over build-time fallback', () => {
+  it('prefers window.__ENV__ over the build-time VITE fallback', () => {
+    // Competing build-time value: runtime must still win over VITE, not just the default.
+    vi.stubEnv('VITE_MSAL_CLIENT_ID', 'build-time-should-lose');
     (window as unknown as { __ENV__: Record<string, string> }).__ENV__ = {
       MSAL_CLIENT_ID: '52681a08-c792-44b1-b6b5-01cb560d450f',
       MSAL_TENANT_ID: '1337187a-4c41-4da9-8fca-731bba7a4329',
@@ -21,5 +30,22 @@ describe('runtime MSAL config resolution', () => {
 
   it('falls back to empty client id when nothing is configured (demo)', () => {
     expect(getMsalClientId()).toBe('');
+  });
+
+  it('resolves redirect uri to window.origin when neither runtime nor VITE is set', () => {
+    expect(getMsalRedirectUri()).toBe(window.location.origin);
+  });
+
+  it('resolves redirect uri to the VITE fallback when no window.__ENV__', () => {
+    vi.stubEnv('VITE_MSAL_REDIRECT_URI', 'https://build-time.curavias.ch');
+    expect(getMsalRedirectUri()).toBe('https://build-time.curavias.ch');
+  });
+
+  it('resolves home hospital: runtime APP_HOME_HOSPITAL wins, else empty', () => {
+    expect(getHomeHospital()).toBe('');
+    (window as unknown as { __ENV__: Record<string, string> }).__ENV__ = {
+      APP_HOME_HOSPITAL: 'usz',
+    };
+    expect(getHomeHospital()).toBe('usz');
   });
 });
