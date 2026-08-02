@@ -255,7 +255,11 @@ param enableAppFluentModule = true
 // by @urruegg 2026-07-28).
 // Sprint 39 P2 (2026-08-02): bumped a7fb478 -> 2ce00a1 (PR #558) - live worklist +
 // copilot accept/deny + Closed-Loop Evidence board. approved-to-apply by @urruegg.
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:2ce00a1'
+// Sprint A (2026-08-02): bumped 2ce00a1 -> ab7396d - MSAL member sign-in (runtime
+// MSAL config via window.__ENV__ + role lens + My Account + live-degrade). This
+// deploy also injects the MSAL_* / APP_ENV / APP_HOME_HOSPITAL container env vars.
+// approval-gated per AGENTS.md (section 4).
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:ab7396d'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
