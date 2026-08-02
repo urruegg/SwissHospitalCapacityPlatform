@@ -29,11 +29,31 @@ function Root() {
 
 const rootEl = document.getElementById('root');
 if (rootEl) {
-  createRoot(rootEl).render(
-    <StrictMode>
-      <MsalProvider instance={msalInstance}>
-        <Root />
-      </MsalProvider>
-    </StrictMode>,
-  );
+  const root = createRoot(rootEl);
+  const render = () =>
+    root.render(
+      <StrictMode>
+        <MsalProvider instance={msalInstance}>
+          <Root />
+        </MsalProvider>
+      </StrictMode>,
+    );
+  // Redeem the redirect auth-code response and pin the active account BEFORE the
+  // router mounts. The code arrives in the URL fragment (response_mode=fragment);
+  // React Router's initial navigation would otherwise drop it before MSAL reads
+  // it, leaving the app anonymous after a successful sign-in.
+  msalInstance
+    .initialize()
+    .then(() => msalInstance.handleRedirectPromise())
+    .then((result) => {
+      const account =
+        result?.account ?? msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
+      if (account) {
+        msalInstance.setActiveAccount(account);
+      }
+    })
+    .catch((error) => {
+      console.error('MSAL redirect handling failed', error);
+    })
+    .finally(render);
 }
