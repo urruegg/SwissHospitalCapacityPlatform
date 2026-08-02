@@ -23,6 +23,16 @@ export interface RuntimeEnv {
   FOUNDRY_THREADS_ENABLED?: string;
   /** Agent-host OBO scope for MSAL bearer acquisition (#424 M5); empty = no bearer. */
   AGENT_HOST_SCOPE?: string;
+  /** Sprint A — MSAL application (client) id for this environment; empty = demo (no sign-in). */
+  MSAL_CLIENT_ID?: string;
+  /** Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012). */
+  MSAL_TENANT_ID?: string;
+  /** Sprint A — SPA redirect URI for this slot (e.g. https://appsit.curavias.ch). */
+  MSAL_REDIRECT_URI?: string;
+  /** Sprint A — deployment env (dev|sit|prod) used when the token omits the `env` claim. */
+  APP_ENV?: string;
+  /** Sprint A — home hospital (usz|luks|zollikerberg|aggregated) used when the token omits `hospital`. */
+  APP_HOME_HOSPITAL?: string;
 }
 
 declare global {
@@ -92,4 +102,53 @@ export function getAgentHostScope(): string {
     return runtime;
   }
   return import.meta.env.VITE_AGENT_HOST_SCOPE ?? '';
+}
+
+/** Resolve the MSAL client id: runtime value first, then build-time `VITE_MSAL_CLIENT_ID`, then empty (=> demo, no sign-in). Sprint A. */
+export function getMsalClientId(): string {
+  const runtime = runtimeEnv().MSAL_CLIENT_ID;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  return import.meta.env.VITE_MSAL_CLIENT_ID ?? '';
+}
+
+/** Resolve the MSAL tenant id: runtime first, then `VITE_MSAL_TENANT_ID`, then `common`. Sprint A. */
+export function getMsalTenantId(): string {
+  const runtime = runtimeEnv().MSAL_TENANT_ID;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  return import.meta.env.VITE_MSAL_TENANT_ID ?? 'common';
+}
+
+/** Resolve the SPA redirect URI: runtime first, then `VITE_MSAL_REDIRECT_URI`, then the current origin. Sprint A. */
+export function getMsalRedirectUri(): string {
+  const runtime = runtimeEnv().MSAL_REDIRECT_URI;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  const fallback = import.meta.env.VITE_MSAL_REDIRECT_URI ?? '';
+  if (fallback.length > 0) {
+    return fallback;
+  }
+  return typeof window !== 'undefined' ? window.location.origin : '';
+}
+
+/** Resolve the deployment env used when the ID token omits the `env` claim: runtime `APP_ENV` first, then `VITE_APP_ENV`, then empty. Sprint A. */
+export function getAppEnv(): string {
+  const runtime = runtimeEnv().APP_ENV;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  return import.meta.env.VITE_APP_ENV ?? '';
+}
+
+/** Resolve the home hospital used when the ID token omits the `hospital` claim: runtime `APP_HOME_HOSPITAL` first, then `VITE_APP_HOME_HOSPITAL`, then empty. Sprint A. */
+export function getHomeHospital(): string {
+  const runtime = runtimeEnv().APP_HOME_HOSPITAL;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  return import.meta.env.VITE_APP_HOME_HOSPITAL ?? '';
 }
