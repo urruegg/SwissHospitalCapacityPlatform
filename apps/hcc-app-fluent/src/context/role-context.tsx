@@ -46,6 +46,7 @@ const RoleLensContext = createContext<RoleLensValue | undefined>(undefined);
 const HOSPITAL_SCOPES: readonly HospitalScope[] = ['usz', 'luks', 'zollikerberg', 'aggregated'];
 
 /** Effective env: runtime APP_ENV wins over the (often-absent) token `env` claim. Sprint A. */
+// Override-vs-fallback caveat: runtime wins here; acceptable because SIT emits no custom env claim.
 function effectiveEnv(claims: ParsedClaims): AppEnv {
   const runtime = getAppEnv().toLowerCase();
   if (runtime === 'dev' || runtime === 'sit' || runtime === 'prod') {
@@ -87,6 +88,9 @@ export function RoleProvider({
   const rawHeld: string[] = testRoles ?? effectiveClaims.roles;
   const held: HccRole[] = rawHeld.filter(isHccRole);
   const heldSafe: HccRole[] = held.length > 0 ? held : ['HCC.Viewer'];
+  // Sprint A: runtime APP_HOME_HOSPITAL is an OVERRIDE for the SIT single-site
+  // (USZ) demo (token emits no custom hospital claim today), not a claim-aware
+  // fallback; true per-user hospital scoping is deferred to OBO/RLS (issue #560).
   const runtimeHome = getHomeHospital().toLowerCase();
   const runtimeHomeSite = HOSPITAL_SCOPES.includes(runtimeHome as HospitalScope)
     ? (runtimeHome as HospitalScope)

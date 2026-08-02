@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | 2026-08-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Idea (deferred) |
-| **Previous Version** | - (new) |
+| **Previous Version** | 1.0.0 (initial deferred-ideas capture) |
 
 > Captured while brainstorming **Sprint A** (member sign-in + role-lens E2E, see
 > the Sprint A design spec). These two tracks are explicitly **out of Sprint A**
@@ -72,6 +72,25 @@ Zero-Trust data path.
 3. Author the dynamic-RLS TMDL predicate (userprincipalname / role -> hospital).
 4. Switch the golden read to the Fabric Data Agent RLS provider (Rung 1).
 5. Verify per-user scoping end-to-end; provenance flips to `live`.
+
+### Known limitation carried from Sprint A
+
+The Sprint A role-lens runtime `APP_HOME_HOSPITAL` / `APP_ENV` is an **override**,
+not a claim-presence-aware fallback: `apps/hcc-app-fluent/src/auth/claim-parser.ts`
+coerces a **missing** claim to a default sentinel (`env -> 'dev'`,
+`hospital -> 'aggregated'`), so "omitted" is indistinguishable from "explicitly
+default" downstream. For single-site SIT (USZ emits no custom `env`/`hospital`
+claim) this is correct. For multi-hospital **per-user** scoping the OBO/RLS work
+must:
+
+1. make `claim-parser` distinguish "claim present" from "defaulted" (e.g. an
+   optional `hospital?: Hospital`), and
+2. let a **present** token claim win over the slot default, so a slot-injected
+   `APP_HOME_HOSPITAL=usz` no longer silently mis-scopes e.g. a LUKS member to
+   USZ.
+
+Refs: `apps/hcc-app-fluent/src/context/role-context.tsx`,
+`apps/hcc-app-fluent/src/auth/claim-parser.ts`.
 
 ## Relationship
 
