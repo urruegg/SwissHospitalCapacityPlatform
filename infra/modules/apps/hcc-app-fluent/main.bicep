@@ -59,7 +59,7 @@ param msalRedirectUri string = ''
 param appEnv string = ''
 
 @description('Sprint A — home hospital (usz|luks|zollikerberg|aggregated) injected as window.__ENV__.APP_HOME_HOSPITAL; used for own-site role scope when the ID token omits the hospital claim.')
-param appHomeHospital string = ''
+param homeHospital string = ''
 
 @description('Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030.')
 param customHostname string = ''
@@ -241,7 +241,7 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
             }
             {
               name: 'APP_HOME_HOSPITAL'
-              value: appHomeHospital
+              value: homeHospital
             }
           ]
         }

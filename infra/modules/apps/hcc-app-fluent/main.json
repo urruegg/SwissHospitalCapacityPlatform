@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.46.1.21595",
-      "templateHash": "16777535156568538847"
+      "templateHash": "2320656887678284921"
     }
   },
   "parameters": {
@@ -128,7 +128,7 @@
         "description": "Sprint A — deployment env (dev|sit|prod) injected as window.__ENV__.APP_ENV; used by the role lens when the ID token omits the env claim (gates the SIT role switcher)."
       }
     },
-    "appHomeHospital": {
+    "homeHospital": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -281,7 +281,7 @@
                 },
                 {
                   "name": "APP_HOME_HOSPITAL",
-                  "value": "[parameters('appHomeHospital')]"
+                  "value": "[parameters('homeHospital')]"
                 }
               ]
             }

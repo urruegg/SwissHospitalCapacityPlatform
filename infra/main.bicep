@@ -319,16 +319,16 @@ param appFluentFoundryThreadsEnabled bool = false
 @description('Sprint A — MSAL application (client) id for the hcc-app-fluent (window.__ENV__.MSAL_CLIENT_ID). Empty keeps the app in demo (no sign-in). Set to the ihzhhpf-app registration id in SIT.')
 param appFluentMsalClientId string = ''
 
-@description('Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012) for the hcc-app-fluent.')
+@description('Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012) for the hcc-app-fluent (window.__ENV__.MSAL_TENANT_ID).')
 param appFluentMsalTenantId string = ''
 
 @description('Sprint A — SPA redirect URI for the hcc-app-fluent (appsit.curavias.ch in SIT). Must match a SPA redirect on the ihzhhpf-app registration.')
 param appFluentMsalRedirectUri string = ''
 
-@description('Sprint A — deployment env (dev|sit|prod) injected into the hcc-app-fluent for the role lens env fallback.')
+@description('Sprint A — deployment env (dev|sit|prod) injected into the hcc-app-fluent (window.__ENV__.APP_ENV) for the role lens env fallback.')
 param appFluentAppEnv string = ''
 
-@description('Sprint A — home hospital for own-site role scope when the token omits the hospital claim.')
+@description('Sprint A — home hospital for the hcc-app-fluent (window.__ENV__.APP_HOME_HOSPITAL); own-site role scope when the token omits the hospital claim.')
 param appFluentHomeHospital string = ''
 
 // Sprint 13.1 T-DNS — curavias.ch public custom hostname for the Fluent app (ADR-0030).
@@ -796,7 +796,7 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     msalTenantId: appFluentMsalTenantId
     msalRedirectUri: appFluentMsalRedirectUri
     appEnv: appFluentAppEnv
-    appHomeHospital: appFluentHomeHospital
+    homeHospital: appFluentHomeHospital
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.46.1.21595",
-      "templateHash": "14017230171158091059"
+      "templateHash": "4463037026034871064"
     }
   },
   "parameters": {
@@ -670,7 +670,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012) for the hcc-app-fluent."
+        "description": "Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012) for the hcc-app-fluent (window.__ENV__.MSAL_TENANT_ID)."
       }
     },
     "appFluentMsalRedirectUri": {
@@ -684,14 +684,14 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Sprint A — deployment env (dev|sit|prod) injected into the hcc-app-fluent for the role lens env fallback."
+        "description": "Sprint A — deployment env (dev|sit|prod) injected into the hcc-app-fluent (window.__ENV__.APP_ENV) for the role lens env fallback."
       }
     },
     "appFluentHomeHospital": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Sprint A — home hospital for own-site role scope when the token omits the hospital claim."
+        "description": "Sprint A — home hospital for the hcc-app-fluent (window.__ENV__.APP_HOME_HOSPITAL); own-site role scope when the token omits the hospital claim."
       }
     },
     "appFluentCustomHostname": {
@@ -7918,7 +7918,7 @@
           "appEnv": {
             "value": "[parameters('appFluentAppEnv')]"
           },
-          "appHomeHospital": {
+          "homeHospital": {
             "value": "[parameters('appFluentHomeHospital')]"
           },
           "containerRegistryLoginServer": {
@@ -7941,7 +7941,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.46.1.21595",
-              "templateHash": "16777535156568538847"
+              "templateHash": "2320656887678284921"
             }
           },
           "parameters": {
@@ -8064,7 +8064,7 @@
                 "description": "Sprint A — deployment env (dev|sit|prod) injected as window.__ENV__.APP_ENV; used by the role lens when the ID token omits the env claim (gates the SIT role switcher)."
               }
             },
-            "appHomeHospital": {
+            "homeHospital": {
               "type": "string",
               "defaultValue": "",
               "metadata": {
@@ -8217,7 +8217,7 @@
                         },
                         {
                           "name": "APP_HOME_HOSPITAL",
-                          "value": "[parameters('appHomeHospital')]"
+                          "value": "[parameters('homeHospital')]"
                         }
                       ]
                     }

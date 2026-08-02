@@ -271,7 +271,7 @@ param appFluentFoundryThreadsEnabled = true
 // Sprint A — member sign-in runtime config (ihzhhpf-app, MngEnvMCAP164444 tenant,
 // ADR-0012). Env-agnostic image (#447): values are injected into window.__ENV__ at
 // container start, never baked. appEnv=sit gates the in-session role switcher when
-// the ID token omits the custom env claim. Deploy approval-gated per AGENTS.md section 4.
+// the ID token omits the custom env claim. Deploy approval-gated per AGENTS.md (section 4).
 param appFluentMsalClientId = '52681a08-c792-44b1-b6b5-01cb560d450f'
 param appFluentMsalTenantId = '1337187a-4c41-4da9-8fca-731bba7a4329'
 param appFluentMsalRedirectUri = 'https://appsit.curavias.ch'
