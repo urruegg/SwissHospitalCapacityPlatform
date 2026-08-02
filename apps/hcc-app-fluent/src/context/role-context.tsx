@@ -71,15 +71,15 @@ export function RoleProvider({
 }) {
   const effectiveClaims = claims ?? parseClaims(undefined);
 
-  const value = useMemo<RoleContextValue>(
-    () => ({
+  const value = useMemo<RoleContextValue>(() => {
+    const env = effectiveEnv(effectiveClaims);
+    return {
       roles: effectiveClaims.roles,
-      env: effectiveEnv(effectiveClaims),
+      env,
       canSwitchRole: canSwitchRole(effectiveClaims),
       has: (roles: string[]) => hasAnyRole(effectiveClaims, roles),
-    }),
-    [effectiveClaims],
-  );
+    };
+  }, [effectiveClaims]);
 
   // Held roles for the lens: prefer explicit test roles, else the parsed claim
   // roles, filtered to the five mapped demo roles. Defaults to Viewer (least
