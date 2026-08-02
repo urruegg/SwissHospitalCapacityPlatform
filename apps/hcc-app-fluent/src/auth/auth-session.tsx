@@ -15,6 +15,8 @@ export interface AuthSession {
   isAuthenticated: boolean;
   /** Display name; the read-only Demo Guest when signed out. */
   name: string;
+  /** UPN / email of the signed-in account; undefined for the Demo Guest. */
+  username?: string;
   /** True while running as the anonymous read-only demo guest. */
   readOnly: boolean;
   /** True when MSAL is configured (a client id is present) so sign-in can work. */
@@ -27,6 +29,7 @@ export interface AuthSession {
 const DEMO_GUEST: AuthSession = {
   isAuthenticated: false,
   name: 'Demo Guest',
+  username: undefined,
   readOnly: true,
   configured: false,
   signIn: () => {},
@@ -45,6 +48,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     () => ({
       isAuthenticated,
       name: isAuthenticated && account?.name ? account.name : 'Demo Guest',
+      username: isAuthenticated ? account?.username : undefined,
       readOnly: !isAuthenticated,
       configured,
       signIn: () => {
