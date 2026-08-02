@@ -9,6 +9,7 @@ import {
   type HospitalScope,
   type RoleCapabilities,
 } from '../auth/rbac-model';
+import { getAppEnv, getHomeHospital } from '../config/runtime-config';
 
 /**
  * Sprint 13 T2/T4 — role context.
@@ -42,8 +43,19 @@ interface RoleLensValue {
 const RoleContext = createContext<RoleContextValue | undefined>(undefined);
 const RoleLensContext = createContext<RoleLensValue | undefined>(undefined);
 
+const HOSPITAL_SCOPES: readonly HospitalScope[] = ['usz', 'luks', 'zollikerberg', 'aggregated'];
+
+/** Effective env: runtime APP_ENV wins over the (often-absent) token `env` claim. Sprint A. */
+function effectiveEnv(claims: ParsedClaims): AppEnv {
+  const runtime = getAppEnv().toLowerCase();
+  if (runtime === 'dev' || runtime === 'sit' || runtime === 'prod') {
+    return runtime;
+  }
+  return claims.env;
+}
+
 export function canSwitchRole(claims: ParsedClaims): boolean {
-  return claims.env === 'sit' && hasAnyRole(claims, ROLE_SWITCHER_ROLES);
+  return effectiveEnv(claims) === 'sit' && hasAnyRole(claims, ROLE_SWITCHER_ROLES);
 }
 
 export function RoleProvider({
@@ -62,7 +74,7 @@ export function RoleProvider({
   const value = useMemo<RoleContextValue>(
     () => ({
       roles: effectiveClaims.roles,
-      env: effectiveClaims.env,
+      env: effectiveEnv(effectiveClaims),
       canSwitchRole: canSwitchRole(effectiveClaims),
       has: (roles: string[]) => hasAnyRole(effectiveClaims, roles),
     }),
@@ -75,8 +87,12 @@ export function RoleProvider({
   const rawHeld: string[] = testRoles ?? effectiveClaims.roles;
   const held: HccRole[] = rawHeld.filter(isHccRole);
   const heldSafe: HccRole[] = held.length > 0 ? held : ['HCC.Viewer'];
+  const runtimeHome = getHomeHospital().toLowerCase();
+  const runtimeHomeSite = HOSPITAL_SCOPES.includes(runtimeHome as HospitalScope)
+    ? (runtimeHome as HospitalScope)
+    : undefined;
   const homeSite: HospitalScope =
-    testHomeSite ?? (effectiveClaims.hospital as Hospital as HospitalScope);
+    testHomeSite ?? runtimeHomeSite ?? (effectiveClaims.hospital as Hospital as HospitalScope);
   const userOid = effectiveClaims.oid ?? null;
 
   const [activeRole, setActive] = useState<HccRole>(() => highestRole(heldSafe));
