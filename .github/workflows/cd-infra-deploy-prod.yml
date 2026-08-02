@@ -1,11 +1,11 @@
 name: cd-infra-deploy-prod
 
 on:
-  workflow_run:
-    workflows:
-      - cd-infra-deploy-sit
-    types:
-      - completed
+  # PROD deploys are manual + explicitly gated (AGENTS.md section 4): no
+  # auto-cascade from cd-infra-deploy-sit. Trigger with the magic phrase, e.g.
+  # `gh workflow run cd-infra-deploy-prod.yml -f confirm=approved-to-apply`
+  # (or the Actions UI). This stops every SIT deploy from re-running a full PROD
+  # deploy (which caused the back-to-back Fabric contention on 2026-08-01).
   workflow_dispatch:
     inputs:
       confirm:
@@ -26,11 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    if: >-
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'approved-to-apply') ||
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_branch == 'main')
+    if: github.event.inputs.confirm == 'approved-to-apply'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,16 +59,12 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    if: >-
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'approved-to-apply') ||
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_branch == 'main')
+    if: github.event.inputs.confirm == 'approved-to-apply'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.sha }}
 
       - name: Validate required environment configuration (PROD)
         shell: bash
