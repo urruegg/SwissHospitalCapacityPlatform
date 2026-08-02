@@ -8,11 +8,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.11.0 |
-| **Date** | 2026-08-01 |
+| **Version** | 2.12.0 |
+| **Date** | 2026-08-02 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.10.0 (added the Sprint 38 FR-SIM-*/FR-CLP-*/NFR-SIM-* families + §7 traceability row, EPIC closed-loop simulation engine); this bump adds the Sprint 39 P1 FR-EVD-001/002 + NFR-EVD-001/002 families + §7 traceability row (real-gold per-role evidence backbone) |
+| **Previous Version** | 2.11.0 (added the Sprint 39 P1 FR-EVD-001/002 + NFR-EVD-001/002 families + §7 traceability row, real-gold per-role evidence backbone); this bump adds the Sprint A FR-AUTH-001/002/003 + NFR-AUTH-001/002 families + §7 traceability row (MSAL member sign-in + role lens) |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -471,6 +471,21 @@ PHI-free data. The app-facing surface requirements (`FR-EVD-003/004/005`,
 | `FR-EVD-001` | The platform shall produce a **`DC-EVIDENCE-TRACE-v1`** record per synthetic patient journey, capturing per role the EPIC-simulator input, agent read, recommendation, copilot accept/deny decision, and outcome, linked by `golden_thread`, PHI-free. |
 | `FR-EVD-002` | The evidence harness shall emit **both an accept and a deny branch**, where deny records no state change (the targeted breach persists), proving the `NFR-AI-001` human gate. |
 
+### Y) Member Sign-In And Role Lens (Sprint A)
+
+Sprint A deltas per the
+[Sprint A MSAL member sign-in plan](superpowers/plans/2026-08-02-sprint-a-msal-member-signin.md).
+Experience-lane only: the internal app `apps/hcc-app-fluent` gains real Entra
+member sign-in (the `ihzhhpf-app` registration), a token-derived role lens, and a
+My Account view; the signed-out state remains the read-only Demo Guest. No PHI;
+synthetic data only.
+
+| ID | Requirement |
+| -- | ----------- |
+| `FR-AUTH-001` | A tenant member shall be able to sign in and sign out of the Curavias app via Entra (the `ihzhhpf-app` registration); the signed-out state is the read-only Demo Guest. |
+| `FR-AUTH-002` | The app shall derive the role lens (navigation, hospital scope, agent side-effect ceiling) from the ID-token `roles` claim; in SIT a holder of `HCC.PlatformAdmin` / `HCC.DemoOperator` may narrow to any role they actually hold (never elevate). |
+| `FR-AUTH-003` | A My Account view shall show the signed-in identity (display name, UPN, object id), the held `HCC.*` roles, and the active-role scope plus agent ceiling. |
+
 ## Non-Functional Requirements
 
 ### A) Compliance And Privacy
@@ -693,6 +708,16 @@ and [ADR-0059](adr/0059-evidence-trace-and-surface.md).
 | `NFR-EVD-001` | Evidence traces shall be **deterministic and PHI-free**; every part carries `provenance` (`simulated`/`live`) and citations; a `simulated` part is never rendered as `live`. |
 | `NFR-EVD-002` | The evidence surface shall take **no `deploy`/`delete`** action; SIT interaction in this sprint is read-only. |
 
+### V) Member Sign-In And Role Lens Governance (Sprint A)
+
+Sprint A non-functional deltas per the
+[Sprint A MSAL member sign-in plan](superpowers/plans/2026-08-02-sprint-a-msal-member-signin.md).
+
+| ID | Requirement |
+| -- | ----------- |
+| `NFR-AUTH-001` | MSAL configuration shall be injected at runtime (`window.__ENV__` via the container entrypoint); one env-agnostic image serves every environment with no secrets or per-environment values baked at build time. |
+| `NFR-AUTH-002` | Live data boards shall fail loud (degrade to the fixture with a grounding/degraded notice) and never hang when a golden read is refused or unavailable. |
+
 ## MVP Definition
 
 The MVP is a provider-internal release that demonstrates end-to-end operational value with controlled risk:
@@ -741,6 +766,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md`](superpowers/specs/2026-07-28-sprint-34-doc-alignment-design.md) + [`docs/GLOSSARY.md`](GLOSSARY.md) + [`docs/architecture/diagram-library.md`](architecture/diagram-library.md) *(Sprint 34: Curavias Documentation Alignment — Curavias anchor + IQ / Frontier-Firm terminology + canonical mermaid library + customer-ready presentation; tracker #505)* | `NFR-DOC-001` to `NFR-DOC-004` |
 | [`docs/superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md`](superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md) + [`docs/adr/0058-sim-outcome-and-effect-schema.md`](adr/0058-sim-outcome-and-effect-schema.md) *(Sprint 38: EPIC closed-loop simulation engine — stateful twin, HITL-approved actuation, DC-SIM-OUTCOME-v1, E2E journey)* | `FR-SIM-001` to `FR-SIM-006`, `FR-CLP-001` to `FR-CLP-003`, `NFR-SIM-001` to `NFR-SIM-003` |
 | [`docs/superpowers/specs/2026-08-01-epic-closed-loop-sit-evidence-e2e-design.md`](superpowers/specs/2026-08-01-epic-closed-loop-sit-evidence-e2e-design.md) + [`docs/adr/0059-evidence-trace-and-surface.md`](adr/0059-evidence-trace-and-surface.md) *(Sprint 39 P1: real-gold per-role evidence backbone — DC-EVIDENCE-TRACE-v1, accept + deny branches, PHI-free)* | `FR-EVD-001` to `FR-EVD-002`, `NFR-EVD-001` to `NFR-EVD-002` |
+| [`docs/superpowers/plans/2026-08-02-sprint-a-msal-member-signin.md`](superpowers/plans/2026-08-02-sprint-a-msal-member-signin.md) *(Sprint A: MSAL member sign-in - token-derived role lens, My Account view, runtime MSAL config, fail-loud boards)* | `FR-AUTH-001` (plan Tasks 1-3, 8; `msal-provider.ts` runtime config + `auth-session` sign-in/out; `runtime-config.msal.test.ts`), `FR-AUTH-002` (`role-context.tsx` effectiveEnv + `rbac-model` role lens; `role-context.env-fallback.test.tsx`), `FR-AUTH-003` (`AccountDialog.tsx`; `AccountDialog.test.tsx`), `NFR-AUTH-001` (`runtime-config.ts` getters + `30-env-config.sh` + infra bicep threading; `runtime-config.msal.test.ts`), `NFR-AUTH-002` (`golden-source-client.ts` degrade guard; `golden-source-client.degrade.test.ts`) |
 
 ## Assumptions To Validate In Implementation Planning
 

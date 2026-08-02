@@ -2369,6 +2369,42 @@
   "generatedAt": "2026-07-10",
   "requirements": [
     {
+      "family": "Member Sign-In And Role Lens (Sprint A)",
+      "id": "FR-AUTH-001",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "A tenant member shall be able to sign in and sign out of the Curavias app via Entra (the `ihzhhpf-app` registration); the signed-out state is the read-only Demo Guest."
+    },
+    {
+      "family": "Member Sign-In And Role Lens (Sprint A)",
+      "id": "FR-AUTH-002",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The app shall derive the role lens (navigation, hospital scope, agent side-effect ceiling) from the ID-token `roles` claim; in SIT a holder of `HCC.PlatformAdmin` / `HCC.DemoOperator` may narrow to any role they actually hold (never elevate)."
+    },
+    {
+      "family": "Member Sign-In And Role Lens (Sprint A)",
+      "id": "FR-AUTH-003",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "A My Account view shall show the signed-in identity (display name, UPN, object id), the held `HCC.*` roles, and the active-role scope plus agent ceiling."
+    },
+    {
       "family": "Business Value Assessment Agent (Sprint 33)",
       "id": "FR-BVA-001",
       "kind": "FR",
@@ -4275,6 +4311,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "AI-serving behavior shall support provider-local governance and change control."
+    },
+    {
+      "family": "Member Sign-In And Role Lens Governance (Sprint A)",
+      "id": "NFR-AUTH-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "MSAL configuration shall be injected at runtime (`window.__ENV__` via the container entrypoint); one env-agnostic image serves every environment with no secrets or per-environment values baked at build time."
+    },
+    {
+      "family": "Member Sign-In And Role Lens Governance (Sprint A)",
+      "id": "NFR-AUTH-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Live data boards shall fail loud (degrade to the fixture with a grounding/degraded notice) and never hang when a golden read is refused or unavailable."
     },
     {
       "family": "Business Value Assessment Agent Governance (Sprint 33)",
