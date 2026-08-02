@@ -259,7 +259,10 @@ param enableAppFluentModule = true
 // MSAL config via window.__ENV__ + role lens + My Account + live-degrade). This
 // deploy also injects the MSAL_* / APP_ENV / APP_HOME_HOSPITAL container env vars.
 // approval-gated per AGENTS.md (section 4).
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:ab7396d'
+// Sign-in fix (2026-08-02): bumped ab7396d -> f7da95c - request only OIDC scopes at
+// sign-in (drop unused Graph User.Read) so the tenant admin-consent wall no longer
+// blocks members ("Need admin approval"). approval-gated per AGENTS.md (section 4).
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:f7da95c'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
