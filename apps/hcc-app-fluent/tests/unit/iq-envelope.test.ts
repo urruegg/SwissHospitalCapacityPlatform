@@ -87,10 +87,15 @@ describe('IQ ContextEnvelope propagation (OBO/RLS)', () => {
     setPreferredSource('simulated');
   });
 
-  it('rejects live IQ calls when no ContextEnvelope is set', async () => {
+  it('degrades (never hangs) on a live IQ call when no ContextEnvelope is set', async () => {
     vi.stubEnv('VITE_GOLDEN_SOURCE_URL', 'https://iq.example/gold');
     setContextEnvelope(null);
-    await expect(loadOccupancy(liveScope, 'user')).rejects.toThrow(/ContextEnvelope/);
+    // Sprint A (NFR-AUTH-002): iqFetch still refuses an ungrounded call, but the
+    // loader now catches it and degrades to the fixture (fail loud, never hang)
+    // instead of throwing — an uncaught throw would stall boards on "Wird geladen...".
+    const data = await loadOccupancy(liveScope, 'user');
+    expect(data.provenance).toBe('simulated');
+    expect(data.degraded).toBe(true);
   });
 
   it('attaches scoped ContextEnvelope headers to occupancy live calls', async () => {

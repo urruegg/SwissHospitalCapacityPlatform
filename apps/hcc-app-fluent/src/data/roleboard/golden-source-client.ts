@@ -85,12 +85,19 @@ async function loadBoard<P>(
     return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: true };
   }
   // Live + configured -> OBO/RLS gateway (iqFetch refuses without a ContextEnvelope).
-  const res = await iqFetch(
-    `${goldenUrl()}/${resource}?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
-  );
-  if (!res.ok) throw new Error(`${resource} load failed: ${res.status}`);
-  const payload = (await res.json()) as P;
-  return { provenance: 'live', scope: pinnedScope, payload, citations: cites, degraded: false };
+  try {
+    const res = await iqFetch(
+      `${goldenUrl()}/${resource}?hospital=${encodeURIComponent(scope.hospital)}&window=${scope.windowHours}`,
+    );
+    if (!res.ok) throw new Error(`${resource} load failed: ${res.status}`);
+    const payload = (await res.json()) as P;
+    return { provenance: 'live', scope: pinnedScope, payload, citations: cites, degraded: false };
+  } catch {
+    // Fail loud but never hang (NFR-AUTH-002): fall back to the fixture flagged
+    // `degraded` so the GroundingNotice shows the live read was refused/unavailable
+    // (e.g. anonymous Demo Guest = empty oid -> 401) instead of stalling the board.
+    return { provenance: 'simulated', scope: pinnedScope, payload: fixture, citations: cites, degraded: true };
+  }
 }
 
 export function loadOccupancy(scope: ScenarioScope, mode: Mode): Promise<RoleBoardData<OccupancyPayload>> {
