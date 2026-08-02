@@ -46,6 +46,21 @@ param goldenSourceUrl string = ''
 @description('#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the app mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires a non-empty agentHostUrl; with the host unset the app keeps simulated threads regardless. Provider stays native (no OBO) until M5.')
 param foundryThreadsEnabled bool = false
 
+@description('Sprint A — MSAL application (client) id injected into the app at container start (window.__ENV__.MSAL_CLIENT_ID). Empty = demo (no sign-in). The ihzhhpf-app registration id.')
+param msalClientId string = ''
+
+@description('Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012) injected as window.__ENV__.MSAL_TENANT_ID.')
+param msalTenantId string = ''
+
+@description('Sprint A — SPA redirect URI for this slot injected as window.__ENV__.MSAL_REDIRECT_URI (e.g. appsit.curavias.ch). Must match a SPA redirect on the ihzhhpf-app registration.')
+param msalRedirectUri string = ''
+
+@description('Sprint A — deployment env (dev|sit|prod) injected as window.__ENV__.APP_ENV; used by the role lens when the ID token omits the env claim (gates the SIT role switcher).')
+param appEnv string = ''
+
+@description('Sprint A — home hospital (usz|luks|zollikerberg|aggregated) injected as window.__ENV__.APP_HOME_HOSPITAL; used for own-site role scope when the ID token omits the hospital claim.')
+param appHomeHospital string = ''
+
 @description('Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030.')
 param customHostname string = ''
 
@@ -206,6 +221,27 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
               // #424 M3 — gate the live per-agent thread minter (native provider).
               name: 'FOUNDRY_THREADS_ENABLED'
               value: foundryThreadsEnabled ? 'true' : 'false'
+            }
+            {
+              // Sprint A — MSAL runtime config (env-agnostic image; no build-time bake).
+              name: 'MSAL_CLIENT_ID'
+              value: msalClientId
+            }
+            {
+              name: 'MSAL_TENANT_ID'
+              value: msalTenantId
+            }
+            {
+              name: 'MSAL_REDIRECT_URI'
+              value: msalRedirectUri
+            }
+            {
+              name: 'APP_ENV'
+              value: appEnv
+            }
+            {
+              name: 'APP_HOME_HOSPITAL'
+              value: appHomeHospital
             }
           ]
         }

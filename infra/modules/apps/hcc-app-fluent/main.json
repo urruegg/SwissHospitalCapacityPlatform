@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.43.8.12551",
-      "templateHash": "5172592133799796196"
+      "version": "0.46.1.21595",
+      "templateHash": "16777535156568538847"
     }
   },
   "parameters": {
@@ -78,11 +78,89 @@
       "metadata": {
         "description": "Container target port. Fluent Dockerfile serves via nginx-unprivileged on 8080."
       }
+    },
+    "agentHostUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "#447 — Foundry agent-host base URL injected into the app at container start (window.__ENV__.AGENT_HOST_URL). Per-env value (SIT vs PROD agent-host FQDN); empty keeps the built-in mock. Runtime injection replaces the former build-time VITE_AGENT_HOST_URL bake so a single image is env-agnostic."
+      }
+    },
+    "goldenSourceUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "#424 M2 — golden-source base URL injected into the app at container start (window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <goldenSourceUrl>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host (e.g. a future Fabric-backed endpoint). Empty + empty agentHostUrl keeps the built-in mock."
+      }
+    },
+    "foundryThreadsEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the app mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires a non-empty agentHostUrl; with the host unset the app keeps simulated threads regardless. Provider stays native (no OBO) until M5."
+      }
+    },
+    "msalClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint A — MSAL application (client) id injected into the app at container start (window.__ENV__.MSAL_CLIENT_ID). Empty = demo (no sign-in). The ihzhhpf-app registration id."
+      }
+    },
+    "msalTenantId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012) injected as window.__ENV__.MSAL_TENANT_ID."
+      }
+    },
+    "msalRedirectUri": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint A — SPA redirect URI for this slot injected as window.__ENV__.MSAL_REDIRECT_URI (e.g. appsit.curavias.ch). Must match a SPA redirect on the ihzhhpf-app registration."
+      }
+    },
+    "appEnv": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint A — deployment env (dev|sit|prod) injected as window.__ENV__.APP_ENV; used by the role lens when the ID token omits the env claim (gates the SIT role switcher)."
+      }
+    },
+    "appHomeHospital": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint A — home hospital (usz|luks|zollikerberg|aggregated) injected as window.__ENV__.APP_HOME_HOSPITAL; used for own-site role scope when the ID token omits the hospital claim."
+      }
+    },
+    "customHostname": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030."
+      }
+    },
+    "enableCustomDomainCert": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "When true and customHostname is non-empty, provision a Managed Certificate on the CAE and bind it to the CA ingress. Set FALSE during the first deploy (or when curavias.ch NS delegation to Azure DNS is not yet propagated) to avoid managed-cert issuance failure. Runbook: docs/runbooks/curavias-dns-godaddy-delegation.md."
+      }
+    },
+    "existingCustomDomainCertificateResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "ADR-0031 opt-in. Fully-qualified resource ID of an EXISTING certificate on the CAE (either Microsoft.App/managedEnvironments/certificates — imported from Key Vault — or a pre-provisioned managedCertificates resource). When non-empty AND enableCustomDomainCert=true, this ID is used as the CA customDomains[0].certificateId instead of the Bicep-provisioned managed cert. Empty (default) keeps the current ACA-managed cert path. The Key Vault import itself is provisioned out-of-band in a dedicated module when PROD switches per ADR-0031 §Trigger."
+      }
     }
   },
   "variables": {
     "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
-    "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]"
+    "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+    "useExistingCert": "[not(empty(parameters('existingCustomDomainCertificateResourceId')))]"
   },
   "resources": [
     {
@@ -103,13 +181,53 @@
       }
     },
     {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[format('id-ca-app-fluent-{0}', parameters('nameSuffix'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "condition": "[variables('useAcrMiPull')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+      "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "description": "Sprint 13 T1 — hcc-app-fluent CA pulls image from ACR via user-assigned MI."
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]"
+      ]
+    },
+    {
+      "condition": "[and(and(parameters('enableCustomDomainCert'), not(empty(parameters('customHostname')))), not(variables('useExistingCert')))]",
+      "type": "Microsoft.App/managedEnvironments/managedCertificates",
+      "apiVersion": "2024-03-01",
+      "name": "[format('{0}/{1}', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-')))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "subjectName": "[parameters('customHostname')]",
+        "domainControlValidation": "CNAME"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]"
+      ]
+    },
+    {
       "type": "Microsoft.App/containerApps",
       "apiVersion": "2024-03-01",
       "name": "[format('ca-app-fluent-{0}', parameters('nameSuffix'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "identity": {
-        "type": "SystemAssigned"
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))))]": {}
+        }
       },
       "properties": {
         "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]",
@@ -118,9 +236,10 @@
             "external": true,
             "targetPort": "[parameters('targetPort')]",
             "transport": "auto",
-            "allowInsecure": false
+            "allowInsecure": false,
+            "customDomains": "[if(empty(parameters('customHostname')), createArray(), if(parameters('enableCustomDomainCert'), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'SniEnabled', 'certificateId', if(variables('useExistingCert'), parameters('existingCustomDomainCertificateResourceId'), resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-')))))), createArray(createObject('name', parameters('customHostname'), 'bindingType', 'Disabled'))))]"
           },
-          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', 'system')), createArray())]"
+          "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))))), createArray())]"
         },
         "template": {
           "containers": [
@@ -130,7 +249,41 @@
               "resources": {
                 "cpu": "[json('0.5')]",
                 "memory": "1.0Gi"
-              }
+              },
+              "env": [
+                {
+                  "name": "AGENT_HOST_URL",
+                  "value": "[parameters('agentHostUrl')]"
+                },
+                {
+                  "name": "GOLDEN_SOURCE_URL",
+                  "value": "[if(empty(parameters('goldenSourceUrl')), if(empty(parameters('agentHostUrl')), '', format('{0}/golden', parameters('agentHostUrl'))), parameters('goldenSourceUrl'))]"
+                },
+                {
+                  "name": "FOUNDRY_THREADS_ENABLED",
+                  "value": "[if(parameters('foundryThreadsEnabled'), 'true', 'false')]"
+                },
+                {
+                  "name": "MSAL_CLIENT_ID",
+                  "value": "[parameters('msalClientId')]"
+                },
+                {
+                  "name": "MSAL_TENANT_ID",
+                  "value": "[parameters('msalTenantId')]"
+                },
+                {
+                  "name": "MSAL_REDIRECT_URI",
+                  "value": "[parameters('msalRedirectUri')]"
+                },
+                {
+                  "name": "APP_ENV",
+                  "value": "[parameters('appEnv')]"
+                },
+                {
+                  "name": "APP_HOME_HOSPITAL",
+                  "value": "[parameters('appHomeHospital')]"
+                }
+              ]
             }
           ],
           "scale": {
@@ -140,21 +293,10 @@
         }
       },
       "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/'))), 'Microsoft.Authorization/roleAssignments', guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId')))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]",
+        "[resourceId('Microsoft.App/managedEnvironments/managedCertificates', format('cae-app-fluent-{0}', parameters('nameSuffix')), format('cert-{0}', replace(parameters('customHostname'), '.', '-')))]",
         "[resourceId('Microsoft.App/managedEnvironments', format('cae-app-fluent-{0}', parameters('nameSuffix')))]"
-      ]
-    },
-    {
-      "condition": "[variables('useAcrMiPull')]",
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2022-04-01",
-      "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
-      "properties": {
-        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
-        "principalId": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]",
-        "principalType": "ServicePrincipal"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix')))]"
       ]
     }
   ],
@@ -176,9 +318,30 @@
     "appFluentPrincipalId": {
       "type": "string",
       "metadata": {
-        "description": "System-assigned MI principal ID (for OBO/Graph token wiring)."
+        "description": "User-assigned MI principal ID (for OBO/Graph token wiring)."
       },
-      "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01', 'full').identity.principalId]"
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+    },
+    "appFluentClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "User-assigned MI client ID."
+      },
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+    },
+    "appFluentIdentityResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "User-assigned MI resource ID."
+      },
+      "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-app-fluent-{0}', parameters('nameSuffix')))]"
+    },
+    "customDomainVerificationId": {
+      "type": "string",
+      "metadata": {
+        "description": "Container Apps custom-domain verification ID. Used to populate the asuid.<hostname> TXT record in the curavias.ch DNS zone so the CAE managedCertificate can validate ownership."
+      },
+      "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-app-fluent-{0}', parameters('nameSuffix'))), '2024-03-01').customDomainVerificationId]"
     }
   }
 }

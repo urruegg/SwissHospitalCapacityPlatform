@@ -316,6 +316,21 @@ param appFluentGoldenSourceUrl string = ''
 @description('#424 M3 — when true, injects window.__ENV__.FOUNDRY_THREADS_ENABLED=true so the hcc-app-fluent mints a live per-(user x agent) thread via the agent-host (POST /threads) and threads it onto every chat turn. Requires appFluentAgentHostUrl to be non-empty; with the host unset the app keeps simulated threads. Provider stays native (no OBO) until M5.')
 param appFluentFoundryThreadsEnabled bool = false
 
+@description('Sprint A — MSAL application (client) id for the hcc-app-fluent (window.__ENV__.MSAL_CLIENT_ID). Empty keeps the app in demo (no sign-in). Set to the ihzhhpf-app registration id in SIT.')
+param appFluentMsalClientId string = ''
+
+@description('Sprint A — MSAL tenant id (MngEnvMCAP164444, ADR-0012) for the hcc-app-fluent.')
+param appFluentMsalTenantId string = ''
+
+@description('Sprint A — SPA redirect URI for the hcc-app-fluent (appsit.curavias.ch in SIT). Must match a SPA redirect on the ihzhhpf-app registration.')
+param appFluentMsalRedirectUri string = ''
+
+@description('Sprint A — deployment env (dev|sit|prod) injected into the hcc-app-fluent for the role lens env fallback.')
+param appFluentAppEnv string = ''
+
+@description('Sprint A — home hospital for own-site role scope when the token omits the hospital claim.')
+param appFluentHomeHospital string = ''
+
 // Sprint 13.1 T-DNS — curavias.ch public custom hostname for the Fluent app (ADR-0030).
 @description('Public custom hostname for the hcc-app-fluent CA ingress. Empty string keeps the CA on its default *.azurecontainerapps.io hostname. Set to appsit.curavias.ch in SIT and app.curavias.ch in PROD per ADR-0030.')
 param appFluentCustomHostname string = ''
@@ -776,6 +791,12 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     goldenSourceUrl: appFluentGoldenSourceUrl
     // #424 M3 live per-agent thread minting gate (native provider until M5/OBO).
     foundryThreadsEnabled: appFluentFoundryThreadsEnabled
+    // Sprint A — MSAL + app-env runtime config injected into window.__ENV__ at container start.
+    msalClientId: appFluentMsalClientId
+    msalTenantId: appFluentMsalTenantId
+    msalRedirectUri: appFluentMsalRedirectUri
+    appEnv: appFluentAppEnv
+    appHomeHospital: appFluentHomeHospital
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId
