@@ -39,22 +39,20 @@ resource app 'Microsoft.Graph/applications@v1.0' = {
   spa: {
     redirectUris: spaRedirectUris
   }
-  requiredResourceAccess: [
-    {
-      resourceAppId: '00000003-0000-0000-c000-000000000000' // Microsoft Graph
-      resourceAccess: [
-        {
-          id: 'e1fe6dd8-ba31-4d61-89e7-88639da4683d' // User.Read (delegated)
-          type: 'Scope'
-        }
-      ]
-    }
-  ]
+  // Sprint A (2026-08-02): no Graph permission. The app reads identity (roles,
+  // oid, name) from the ID token and never calls Microsoft Graph. Requesting Graph
+  // User.Read forced tenant admin consent (user consent disabled tenant-wide),
+  // blocking member sign-in; OIDC-only sign-in is user-consentable.
+  requiredResourceAccess: []
 }
 
 resource servicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   appId: app.appId
-  appRoleAssignmentRequired: true
+  // Sprint A (2026-08-02): assignment NOT required. Requiring assignment made the
+  // tenant treat the app as admin-managed and disallow user self-consent, which
+  // blocked sign-in (atcsim-web, which works, has this false). The role lens still
+  // enforces least privilege (unassigned users default to HCC.Viewer).
+  appRoleAssignmentRequired: false
 }
 
 @description('Application (client) ID of the app registration.')

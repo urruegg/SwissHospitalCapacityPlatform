@@ -126,11 +126,23 @@ param enableAppFluentModule = true
 // Env-agnostic image (agent-host URL injected at runtime, #447); imported into
 // crihzhhpfprod via `az acr import` from the SIT ACR. approved-to-apply by
 // @urruegg 2026-07-29. Already live + verified in SIT on appsit.curavias.ch.
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:a7fb478'
+// Sprint A (2026-08-02): bumped a7fb478 -> 8c03420 - MSAL member sign-in (runtime
+// config, role lens, My Account, live-degrade) + 3 sign-in fixes (OIDC-only scopes,
+// no Graph, await MSAL redirect before the router mounts). Env-agnostic image
+// imported into crihzhhpfprod via az acr import from the SIT ACR. approved-to-apply.
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:8c03420'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the PROD app calls the PROD (switzerlandnorth) agent-host
 // instead of inheriting the SIT URL from the build-once + import image.
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-prod.whiteriver-d854b3bc.switzerlandnorth.azurecontainerapps.io'
+// Sprint A (2026-08-02): member sign-in runtime config injected into window.__ENV__.
+// Same shared ihzhhpf-app registration as SIT; PROD redirect is the app.curavias.ch
+// custom hostname. appEnv=prod; home hospital usz. Synthetic / no-PHI (ADR-0013).
+param appFluentMsalClientId = '52681a08-c792-44b1-b6b5-01cb560d450f'
+param appFluentMsalTenantId = '1337187a-4c41-4da9-8fca-731bba7a4329'
+param appFluentMsalRedirectUri = 'https://app.curavias.ch'
+param appFluentAppEnv = 'prod'
+param appFluentHomeHospital = 'usz'
 // app.curavias.ch is bound to the switzerlandnorth CA. The custom hostname +
 // managed cert are codified here so CD redeploys preserve the binding (the
 // manual P7 `hostname add/bind` would otherwise be stripped on every deploy).
