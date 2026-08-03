@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-08-03 |
 | **Author** | Urs Rueegg |
-| **Status** | Approved (autonomous delegation); pending implementation plan |
-| **Previous Version** | - (new) |
+| **Status** | Implemented (all 7 sections, uncommitted); pending SIT-deploy Playwright verification and PROD approval |
+| **Previous Version** | 1.0.0 (initial approved design) |
 
 > Brainstormed 2026-08-03 (Superpowers `brainstorming`). References: the mockup
 > [Curavias-Frontier-Showcase.html](../ideas/Curavias-Frontier-Showcase.html), the
@@ -122,3 +122,54 @@ Build one image, gated `cd-infra-deploy-sit`, then Playwright verify on
   real `hcp:`/`gold.` citations where they exist).
 - **i18n** - de/fr/it eyebrow copy should be reviewed; English is the safe default
   fallback if a key is missing.
+
+## 8. Progress log (2026-08-03 session)
+
+All 7 sections in §4.3 plus §4.4 (eyebrow i18n) are implemented in the working
+tree, on top of the already-merged `8591f13d` (work-chart/hospitals/ninety-day
+first pass). Remaining diff is uncommitted at session end (16 files, ~688
+insertions / 136 deletions across `apps/hcc-app-fluent/src/i18n/*.json` and
+`src/workspaces/{shared/narrative/NarrativeShell.tsx,start/**}`).
+
+### Done this session
+
+- **patient-path** (§4.3): full rail wiring (5 journey stops, data-quality
+  advisory, crisis advisory) + the new DC-INSIGHT 5-beat mini-card and the
+  `102%->94%` worked-example card pairing, sourced verbatim from the mockup.
+  New content model in `start-content.ts` (`DC_INSIGHT_BEATS`); new i18n nodes
+  `start.patientPath.dcInsight.*` / `start.patientPath.workedExample.*` fully
+  localized in en/de/fr/it.
+- **Task B gap fix**: `start.frontier.patientPath.eyebrow` (+ `title`/`body`)
+  was present in en/de but missing entirely from fr/it (the section rendered
+  with an English-fallback eyebrow on those locales). Added the matching node
+  to both files; all 4 bundles re-validated as parseable JSON.
+- **Verification (this session)**:
+  - `PatientPathLauncher.test.tsx` standalone: 7/7 green (5 pre-existing + 2
+    new rail-wiring tests).
+  - A full `start/**` Vitest run surfaced 4 timeout failures in files this
+    session did not touch (`StartHero.test.tsx`, `StaticNarrativeSections.test.tsx`)
+    plus one untouched pre-existing `PatientPathLauncher.test.tsx` case.
+    Isolated re-run of the two suspect files: **9/9 green** - confirms
+    resource-contention flakiness under parallel Vitest workers in this
+    environment, not a real regression (collect-phase alone measured 489s for
+    just 2 files in the isolated run).
+  - `tsc --noEmit` (from `apps/hcc-app-fluent`): clean, exit 0.
+  - `npm run build`: succeeded (`vite build`, 2459 modules, ~2m17s); only the
+    pre-existing chunk-size / dynamic-import advisories, unrelated to this
+    change.
+
+### Open for the next session
+
+1. **Full-suite confirmation**: only the two flagged files were re-verified in
+   isolation; the full `start/**` suite (49 tests across 5 files) was not
+   re-run end-to-end after today's edits because a single pass already costs
+   several minutes in this environment. Re-run once before opening the PR to
+   get one clean aggregate number.
+2. **Commit**: today's diff was reviewed and staged for a single commit at
+   session close (see repo memory `/memories/repo/curavias-ux-patterns.md` for
+   the exact file list); not yet pushed.
+3. **Visual/Playwright verification** (§5): no SIT deploy or Playwright pass
+   happened this session - still the gating step before PROD promotion.
+4. **de/fr/it eyebrow copy review**: newly-added fr/it `patientPath.eyebrow`
+   strings are a first-pass translation, not yet reviewed by a native speaker.
+

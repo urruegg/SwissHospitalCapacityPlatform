@@ -331,6 +331,39 @@
         "body": "Lorsque la lentille de rôle le permet, CSA couvre le parcours avec la planification de scénarios et des conseils d'escalade.",
         "cta": "Ouvrir la planification consultative"
       },
+      "dcInsight": {
+        "title": "Comment un agent répond — le schéma DC-INSIGHT",
+        "beats": {
+          "signal": {
+            "label": "SIGNAL",
+            "body": "Médecine A devrait dépasser le seuil : occupation 102 %."
+          },
+          "understanding": {
+            "label": "COMPRÉHENSION",
+            "body": "Facteurs, fiabilité des sources et confiance, tous cités."
+          },
+          "recommendation": {
+            "label": "RECOMMANDATION",
+            "body": "Leviers classés avec un impact déterministe — jamais une estimation du LLM."
+          },
+          "action": {
+            "label": "ACTION",
+            "body": "Proposée uniquement ; appliquée après qu'un humain a validé « approved-to-apply »."
+          },
+          "coordination": {
+            "label": "COORDINATION",
+            "body": "Plan interrôles et transmission OOA→DCA."
+          }
+        }
+      },
+      "workedExample": {
+        "eyebrow": "Exemple chiffré",
+        "kpiFrom": "102 %",
+        "kpiTo": "94 %",
+        "sub": "Occupation prévue de Médecine A après qu'un humain a approuvé le levier recommandé — recalculée de façon déterministe pour l'unité concernée.",
+        "pillAdvisory": "Consultatif · humain dans la boucle",
+        "pillAuditable": "Auditable · chaque chiffre traçable"
+      },
       "humanDecision": {
         "ariaLabel": "Décision humaine",
         "title": "L'humain décide.",
@@ -341,6 +374,7 @@
       "workChart": {
         "title": "Comment le travail évolue",
         "body": "Curavias réunit des personnes responsables, des agents spécialisés et des flux de travail à la demande dans un même modèle opérationnel.",
+        "eyebrow": "L'idée en une minute",
         "flowLabel": "Modes de travail Curavias",
         "modeBadge": "Mode de travail",
         "modes": {
@@ -367,6 +401,7 @@
       "cioWhyNow": {
         "title": "Défi CIO : pourquoi maintenant ?",
         "body": "Sept décisions opérationnelles récurrentes montrent comment une coordination fragmentée peut devenir une prévisualisation Curavias gouvernée.",
+        "eyebrow": "Le défi du CIO · pourquoi maintenant",
         "tableLabel": "Décisions opérationnelles : Aujourd'hui comparé à la prévisualisation Curavias",
         "caption": "Comparaison qualitative illustrative — aucune métrique métier en direct.",
         "columns": {
@@ -415,6 +450,7 @@
       "hospitals": {
         "title": "Trois hôpitaux",
         "body": "Trois hôpitaux synthétiques partagent une plateforme de capacité tout en conservant des contextes opérationnels distincts.",
+        "eyebrow": "Image clé · Organisation",
         "sitesLabel": "Réseau hospitalier Curavias synthétique",
         "syntheticBadge": "Profil synthétique",
         "sites": {
@@ -467,11 +503,18 @@
           }
         }
       },
+      "patientPath": {
+        "title": "Parcours patient",
+        "body": "Parcours opérationnel guidé par le RBAC, de la pression de capacité jusqu'au rétablissement, avec des signaux consultatifs tout au long du parcours.",
+        "eyebrow": "Le parcours patient Curavias"
+      },
       "ninetyDay": {
         "title": "Feuille de route sur 90 jours",
         "body": "Une séquence ROM illustrative va de décisions alignées à des flux éprouvés puis à une mise à l'échelle gouvernée.",
+        "eyebrow": "La première frontière · 90 jours",
         "roadmapLabel": "Feuille de route Curavias illustrative sur quatre-vingt-dix jours",
         "romLabel": "ROM illustrative",
+        "disclaimer": "Un schéma déjà mis en œuvre, pas une promesse : l'agent de prévision (OOA) est déjà en production dans PROD Switzerland North sur des données synthétiques. Le cadre de 90 jours est la voie reproductible pour un nouveau fournisseur.",
         "phases": {
           "frame-ground": {
             "title": "Cadrer & Ancrer",
@@ -501,6 +544,9 @@
             }
           }
         }
+      },
+      "bva": {
+        "eyebrow": "La décision · Business Value Assessment"
       }
     }
   },

@@ -426,6 +426,39 @@
         "body": "Wenn die Rollenberechtigung es erlaubt, spannt CSA Szenarioplanung und Eskalationsberatung über den Pfad.",
         "cta": "Beratende Szenarioplanung öffnen"
       },
+      "dcInsight": {
+        "title": "Wie ein Agent antwortet — das DC-INSIGHT-Muster",
+        "beats": {
+          "signal": {
+            "label": "SIGNAL",
+            "body": "Medizin A wird voraussichtlich überschreiten: Belegung 102 %."
+          },
+          "understanding": {
+            "label": "VERSTÄNDNIS",
+            "body": "Treiber, Quellvertrauen und Konfidenz, alle mit Beleg."
+          },
+          "recommendation": {
+            "label": "EMPFEHLUNG",
+            "body": "Priorisierte Hebel mit deterministischer Wirkung — nie eine LLM-Vermutung."
+          },
+          "action": {
+            "label": "AKTION",
+            "body": "Nur vorgeschlagen; angewendet, nachdem ein Mensch „approved-to-apply“ bestätigt hat."
+          },
+          "coordination": {
+            "label": "KOORDINATION",
+            "body": "Rollenübergreifender Plan und OOA→DCA-Übergabe."
+          }
+        }
+      },
+      "workedExample": {
+        "eyebrow": "Durchgerechnetes Beispiel",
+        "kpiFrom": "102 %",
+        "kpiTo": "94 %",
+        "sub": "Prognostizierte Belegung von Medizin A, nachdem ein Mensch den empfohlenen Hebel genehmigt hat — deterministisch neu berechnet für die betroffene Station.",
+        "pillAdvisory": "Beratend · Mensch im Kreislauf",
+        "pillAuditable": "Auditierbar · jede Zahl nachvollziehbar"
+      },
       "humanDecision": {
         "ariaLabel": "Menschlicher Entscheid",
         "title": "Der Mensch entscheidet.",
@@ -469,12 +502,13 @@
         "capacityTitle": "Standortkapazität - nächste 72 h",
         "capacityLoading": "Standortkapazität wird geladen…",
         "capacityErrorTitle": "Standortkapazität nicht verfügbar",
-        "ctaPrimary": "Backstage öffnen",
-        "ctaSecondary": "Die Plattformgeschichte ansehen"
+        "ctaPrimary": "Die drei Spitäler entdecken",
+        "ctaSecondary": "So wurde es gebaut"
       },
       "workChart": {
         "title": "Wie sich Arbeit verändert",
         "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und bedarfsgerechte Arbeitsabläufe in einem Betriebsmodell.",
+        "eyebrow": "Die Idee in einer Minute",
         "flowLabel": "Curavias-Arbeitsmodi",
         "modeBadge": "Arbeitsmodus",
         "modes": {
@@ -501,6 +535,7 @@
       "cioWhyNow": {
         "title": "CIO-Challenger: Warum jetzt?",
         "body": "Sieben wiederkehrende Betriebsentscheide zeigen, wo fragmentierte Koordination zu einer gesteuerten Curavias-Vorschau werden kann.",
+        "eyebrow": "Die CIO-Herausforderung · warum jetzt",
         "tableLabel": "Betriebsentscheide: Heute im Vergleich zur Curavias-Vorschau",
         "caption": "Illustrativer qualitativer Vergleich — keine Live-Geschäftskennzahlen.",
         "columns": {
@@ -549,6 +584,7 @@
       "hospitals": {
         "title": "Drei Spitäler",
         "body": "Drei synthetische Spitäler teilen eine Kapazitätsplattform und behalten ihre unterschiedlichen Betriebskontexte.",
+        "eyebrow": "Schlüsselbild · Organisation",
         "sitesLabel": "Synthetisches Curavias-Spitalnetz",
         "syntheticBadge": "Synthetisches Profil",
         "sites": {
@@ -603,13 +639,16 @@
       },
       "patientPath": {
         "title": "Patientenpfad",
-        "body": "RBAC-geführter operativer Pfad vom Kapazitätsdruck bis zur Nachversorgung, ergänzt durch beratende Signale."
+        "body": "RBAC-geführter operativer Pfad vom Kapazitätsdruck bis zur Nachversorgung, ergänzt durch beratende Signale.",
+        "eyebrow": "Der Curavias-Patientenpfad"
       },
       "ninetyDay": {
         "title": "90-Tage-Roadmap",
         "body": "Eine illustrative ROM-Abfolge führt von abgestimmten Entscheiden zu erprobten Abläufen und gesteuerter Skalierung.",
+        "eyebrow": "Die erste Frontier · 90 Tage",
         "roadmapLabel": "Illustrative 90-Tage-Roadmap für Curavias",
         "romLabel": "Illustrative ROM",
+        "disclaimer": "Umgesetztes Muster, kein Versprechen: Der Prognose-Agent (OOA) läuft bereits produktiv in PROD Switzerland North auf synthetischen Daten. Der 90-Tage-Rahmen ist der wiederholbare Weg für einen neuen Anbieter.",
         "phases": {
           "frame-ground": {
             "title": "Rahmen & Verankern",
@@ -643,6 +682,7 @@
       "bva": {
         "title": "BVA-Entscheid",
         "body": "ROM-gebundene BVA-Entscheidungsfläche mit KPI, TCO, Sensitivität und Handoff an den Product Owner Agent.",
+        "eyebrow": "Der Entscheid · Business Value Assessment",
         "tcoTitle": "Annualisierte TCO",
         "valueLeversTitle": "Werthebel",
         "sensitivityTitle": "Sensitivität",
@@ -656,6 +696,7 @@
         "finalRead": "ROM-Schätzung zur Prüfung: {{netValue}} realisierter Nettowert, {{roi}} ROI, {{budget}} annualisierte TCO vs. Budget und {{trend}} pro Copilot-Turn.",
         "railRead": "Prüfe diesen BVA-Entscheid: {{netValue}} realisierter Nettowert, {{roi}} ROI, {{tcoMeasure}} und {{trend}}.",
         "cta": "Product Owner Agent fragen",
+        "launchCta": "Die 90-Tage-Frontier starten",
         "columns": {
           "figure": "Kennzahl",
           "value": "Wert",

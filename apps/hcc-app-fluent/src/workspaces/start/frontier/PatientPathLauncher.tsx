@@ -11,12 +11,23 @@ import {
 } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useCopilotRail } from '../../../copilot-rail/rail-context';
 import { useRoleLens } from '../../../context/role-context';
 import { useSurfaceStyles } from '../../../theme/design-system/recipes';
+import { useShowcaseStyles, SHOWCASE_ACCENT, type ShowcaseAccent } from '../../shared/narrative/showcase-styles';
 import { LAUNCHER_TILES, type LauncherTile } from '../role-launcher';
-import { PATIENT_PATH_OPERATIONAL_STOPS } from './start-content';
+import { startInsight, startReco } from './start-rail';
+import { DC_INSIGHT_BEATS, PATIENT_PATH_OPERATIONAL_STOPS, type DcInsightBeatId } from './start-content';
 
 const PATIENT_PATH_JOURNEY_STOP_COUNT = PATIENT_PATH_OPERATIONAL_STOPS.length + 1;
+
+const BEAT_ACCENT: Record<DcInsightBeatId, ShowcaseAccent> = {
+  signal: 'teal',
+  understanding: 'teal',
+  recommendation: 'green',
+  action: 'amber',
+  coordination: 'violet',
+};
 
 const useStyles = makeStyles({
   root: {
@@ -167,6 +178,61 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     gap: tokens.spacingHorizontalXS,
   },
+  advisoryTitleButton: {
+    display: 'inline',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    margin: 0,
+    font: 'inherit',
+    color: 'inherit',
+    textAlign: 'left',
+    cursor: 'pointer',
+    ':hover': {
+      color: tokens.colorBrandForegroundLink,
+    },
+    ':focus-visible': {
+      outlineStyle: 'solid',
+      outlineWidth: tokens.strokeWidthThick,
+      outlineColor: tokens.colorStrokeFocus2,
+      outlineOffset: '2px',
+    },
+  },
+  beatList: {
+    display: 'grid',
+    gap: tokens.spacingVerticalS,
+    marginTop: tokens.spacingVerticalXS,
+  },
+  beatRow: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: tokens.spacingHorizontalS,
+  },
+  beatCopy: {
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground2,
+    lineHeight: tokens.lineHeightBase200,
+  },
+  kpiRow: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: tokens.spacingHorizontalS,
+    marginTop: tokens.spacingVerticalXS,
+  },
+  kpiValue: {
+    fontSize: '34px',
+    fontWeight: tokens.fontWeightBold,
+    color: tokens.colorNeutralForeground3,
+  },
+  kpiTarget: {
+    color: SHOWCASE_ACCENT.green,
+  },
+  pillRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalXS,
+    marginTop: tokens.spacingVerticalXS,
+  },
 });
 
 function tileFor(boardKey: string): LauncherTile {
@@ -180,8 +246,16 @@ function tileFor(boardKey: string): LauncherTile {
 export function PatientPathLauncher() {
   const styles = useStyles();
   const surface = useSurfaceStyles();
+  const sc = useShowcaseStyles();
   const { t } = useTranslation();
   const { capabilities } = useRoleLens();
+  let rail: ReturnType<typeof useCopilotRail> | null = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    rail = useCopilotRail();
+  } catch {
+    rail = null;
+  }
   const operationalStops = PATIENT_PATH_OPERATIONAL_STOPS.map((stop) => ({
     ...stop,
     tile: tileFor(stop.boardKey),
@@ -207,6 +281,14 @@ export function PatientPathLauncher() {
                 aria-label={t('start.patientPath.openRoleBoard', {
                   role: t(tile.labelKey),
                 })}
+                onClick={() =>
+                  rail?.openWithReco(
+                    startInsight(`patient-path-${tile.boardKey}`, t(tile.labelKey)),
+                    startReco(t(tile.labelKey), t(bodyKey), [tile.agent, tile.ceiling], [
+                      `hcp:PatientPath:${tile.boardKey}`,
+                    ]),
+                  )
+                }
               >
                 <Card className={mergeClasses(surface.surfaceCard, styles.stopCard)}>
                   <Badge appearance="tint" color="brand">
@@ -250,6 +332,83 @@ export function PatientPathLauncher() {
         </ol>
       </div>
 
+      <div className={sc.split} data-testid="patient-path-dc-insight">
+        <button
+          type="button"
+          className={sc.accentCard}
+          style={{ borderLeftColor: SHOWCASE_ACCENT.teal }}
+          data-testid="patient-path-dc-insight-card"
+          onClick={() =>
+            rail?.openWithReco(
+              startInsight('patient-path-dc-insight', t('start.patientPath.dcInsight.title')),
+              startReco(
+                t('start.patientPath.dcInsight.title'),
+                t('start.patientPath.dcInsight.beats.signal.body'),
+                DC_INSIGHT_BEATS.map((beat) => `${t(beat.labelKey)} — ${t(beat.bodyKey)}`),
+                ['hcp:DcInsightPattern'],
+              ),
+            )
+          }
+        >
+          <span className={sc.cardTitle}>{t('start.patientPath.dcInsight.title')}</span>
+          <div className={styles.beatList}>
+            {DC_INSIGHT_BEATS.map((beat, index) => (
+              <div key={beat.id} className={styles.beatRow}>
+                <span
+                  className={sc.numBadge}
+                  style={{ backgroundColor: SHOWCASE_ACCENT[BEAT_ACCENT[beat.id]] }}
+                  aria-hidden="true"
+                >
+                  {index + 1}
+                </span>
+                <span className={styles.beatCopy}>
+                  <Text weight="bold">{t(beat.labelKey)}</Text> — {t(beat.bodyKey)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={sc.accentCard}
+          style={{ borderLeftColor: SHOWCASE_ACCENT.green }}
+          data-testid="patient-path-worked-example-card"
+          onClick={() =>
+            rail?.openWithReco(
+              startInsight('patient-path-worked-example', t('start.patientPath.workedExample.eyebrow')),
+              startReco(
+                t('start.patientPath.workedExample.eyebrow'),
+                t('start.patientPath.workedExample.sub'),
+                [
+                  t('start.patientPath.workedExample.pillAdvisory'),
+                  t('start.patientPath.workedExample.pillAuditable'),
+                ],
+                ['hcp:CapacityForecast'],
+              ),
+            )
+          }
+        >
+          <Caption1>{t('start.patientPath.workedExample.eyebrow')}</Caption1>
+          <div className={styles.kpiRow}>
+            <span className={styles.kpiValue}>{t('start.patientPath.workedExample.kpiFrom')}</span>
+            <Text aria-hidden="true">→</Text>
+            <span className={mergeClasses(styles.kpiValue, styles.kpiTarget)}>
+              {t('start.patientPath.workedExample.kpiTo')}
+            </span>
+          </div>
+          <span className={sc.cardBody}>{t('start.patientPath.workedExample.sub')}</span>
+          <div className={styles.pillRow}>
+            <Badge appearance="tint" color="informative">
+              {t('start.patientPath.workedExample.pillAdvisory')}
+            </Badge>
+            <Badge appearance="tint" color="success">
+              {t('start.patientPath.workedExample.pillAuditable')}
+            </Badge>
+          </div>
+        </button>
+      </div>
+
       <div className={styles.advisoryGrid}>
         <article
           className={styles.advisoryCard}
@@ -257,7 +416,26 @@ export function PatientPathLauncher() {
           aria-label={t('start.patientPath.dataQuality.ariaLabel')}
         >
           <div className={styles.advisoryHeader}>
-            <Title3 as="h3">{t('start.patientPath.dataQuality.title')}</Title3>
+            <Title3 as="h3">
+              <button
+                type="button"
+                className={styles.advisoryTitleButton}
+                data-testid="patient-path-data-quality-trigger"
+                onClick={() =>
+                  rail?.openWithReco(
+                    startInsight('patient-path-data-quality', t('start.patientPath.dataQuality.title')),
+                    startReco(
+                      t('start.patientPath.dataQuality.title'),
+                      t('start.patientPath.dataQuality.body'),
+                      [],
+                      ['hcp:DataQuality'],
+                    ),
+                  )
+                }
+              >
+                {t('start.patientPath.dataQuality.title')}
+              </button>
+            </Title3>
             <Badge appearance="tint" color="informative">
               {t('start.patientPath.advisoryBadge')}
             </Badge>
@@ -286,6 +464,17 @@ export function PatientPathLauncher() {
               aria-label={t('start.patientPath.openRoleBoard', {
                 role: t(crisisTile.labelKey),
               })}
+              onClick={() =>
+                rail?.openWithReco(
+                  startInsight('patient-path-crisis', t(crisisTile.labelKey)),
+                  startReco(
+                    t(crisisTile.labelKey),
+                    t('start.patientPath.crisis.body'),
+                    [crisisTile.agent, crisisTile.ceiling],
+                    ['hcp:PatientPath:crisis'],
+                  ),
+                )
+              }
             >
               {t('start.patientPath.crisis.cta')}
             </Link>

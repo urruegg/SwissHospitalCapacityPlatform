@@ -331,6 +331,39 @@
         "body": "Quando la lente di ruolo lo consente, CSA copre il percorso con pianificazione degli scenari e consigli di escalation.",
         "cta": "Apri la pianificazione consultiva"
       },
+      "dcInsight": {
+        "title": "Come risponde un agente — lo schema DC-INSIGHT",
+        "beats": {
+          "signal": {
+            "label": "SEGNALE",
+            "body": "Medicina A è previsto superi la soglia: occupazione 102%."
+          },
+          "understanding": {
+            "label": "COMPRENSIONE",
+            "body": "Driver, affidabilità della fonte e confidenza, tutti citati."
+          },
+          "recommendation": {
+            "label": "RACCOMANDAZIONE",
+            "body": "Leve classificate con un impatto deterministico — mai una stima dell'LLM."
+          },
+          "action": {
+            "label": "AZIONE",
+            "body": "Solo proposta; applicata dopo che una persona conferma «approved-to-apply»."
+          },
+          "coordination": {
+            "label": "COORDINAMENTO",
+            "body": "Piano tra ruoli e passaggio di consegne OOA→DCA."
+          }
+        }
+      },
+      "workedExample": {
+        "eyebrow": "Esempio pratico",
+        "kpiFrom": "102%",
+        "kpiTo": "94%",
+        "sub": "Occupazione prevista di Medicina A dopo che una persona approva la leva raccomandata — ricalcolata in modo deterministico per il reparto interessato.",
+        "pillAdvisory": "Consultivo · persona nel ciclo",
+        "pillAuditable": "Auditabile · ogni numero tracciabile"
+      },
       "humanDecision": {
         "ariaLabel": "Decisione umana",
         "title": "La persona decide.",
@@ -341,6 +374,7 @@
       "workChart": {
         "title": "Come cambia il lavoro",
         "body": "Curavias riunisce persone responsabili, agenti specializzati e flussi di lavoro su richiesta in un unico modello operativo.",
+        "eyebrow": "L'idea in un minuto",
         "flowLabel": "Modalità di lavoro Curavias",
         "modeBadge": "Modalità di lavoro",
         "modes": {
@@ -367,6 +401,7 @@
       "cioWhyNow": {
         "title": "Sfida CIO: perché ora",
         "body": "Sette decisioni operative ricorrenti mostrano dove il coordinamento frammentato può diventare un'anteprima Curavias governata.",
+        "eyebrow": "La sfida del CIO · perché ora",
         "tableLabel": "Decisioni operative: Oggi rispetto all'Anteprima Curavias",
         "caption": "Confronto qualitativo illustrativo — nessuna metrica aziendale live.",
         "columns": {
@@ -415,6 +450,7 @@
       "hospitals": {
         "title": "Tre ospedali",
         "body": "Tre ospedali sintetici condividono una piattaforma di capacità mantenendo contesti operativi distinti.",
+        "eyebrow": "Immagine chiave · Organizzazione",
         "sitesLabel": "Rete ospedaliera Curavias sintetica",
         "syntheticBadge": "Profilo sintetico",
         "sites": {
@@ -467,11 +503,18 @@
           }
         }
       },
+      "patientPath": {
+        "title": "Percorso paziente",
+        "body": "Percorso operativo guidato da RBAC, dalla pressione di capacità al recupero, con segnali consultivi lungo tutto il percorso.",
+        "eyebrow": "Il percorso paziente Curavias"
+      },
       "ninetyDay": {
         "title": "Roadmap di 90 giorni",
         "body": "Una sequenza ROM illustrativa passa da decisioni allineate a flussi provati e a una scala governata.",
+        "eyebrow": "La prima frontiera · 90 giorni",
         "roadmapLabel": "Roadmap Curavias illustrativa di novanta giorni",
         "romLabel": "ROM illustrativa",
+        "disclaimer": "Uno schema già realizzato, non una promessa: l'agente di previsione (OOA) è già in produzione in PROD Switzerland North su dati sintetici. Il quadro dei 90 giorni è il percorso ripetibile per un nuovo fornitore.",
         "phases": {
           "frame-ground": {
             "title": "Inquadrare & Radicare",
@@ -501,6 +544,9 @@
             }
           }
         }
+      },
+      "bva": {
+        "eyebrow": "La decisione · Business Value Assessment"
       }
     }
   },

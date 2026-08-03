@@ -17,6 +17,7 @@ import type { SiteCapacitySummary } from '../../../data/roleboard/occupancy-data
 import { GOLDEN_THREAD_SCOPE } from '../../../journey/golden-thread';
 import type { Mode, Provenance } from '../../../journey/RoleBoard';
 import { useStateStyles, useSurfaceStyles } from '../../../theme/design-system/recipes';
+import { scrollToSection } from '../../shared/narrative/NarrativeShell';
 
 interface StartHeroProps {
   mode: Mode;
@@ -62,6 +63,10 @@ const useStyles = makeStyles({
   },
   hook: {
     maxWidth: '16ch',
+    backgroundImage: 'linear-gradient(110deg, #365B7D, #17B890 78%)',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
   },
   valueLine: {
     color: tokens.colorNeutralForeground2,
@@ -108,6 +113,10 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusMedium,
     fontWeight: tokens.fontWeightSemibold,
     textDecorationLine: 'none',
+    border: 'none',
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    font: 'inherit',
     ':focus-visible': {
       outlineStyle: 'solid',
       outlineWidth: tokens.strokeWidthThick,
@@ -303,12 +312,13 @@ export function StartHero({ mode }: StartHeroProps) {
         </div>
 
         <div className={styles.ctas}>
-          <RouterLink
-            to="/backstage"
+          <button
+            type="button"
             className={mergeClasses(styles.ctaLink, styles.ctaPrimary)}
+            onClick={() => scrollToSection('hospitals')}
           >
             {t('start.frontier.hero.ctaPrimary')}
-          </RouterLink>
+          </button>
           <RouterLink
             to="/backstage"
             className={mergeClasses(styles.ctaLink, styles.ctaSecondary)}

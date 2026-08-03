@@ -12,15 +12,15 @@ import { StartHero } from './frontier/StartHero';
 import { WorkChartSection } from './frontier/WorkChartSection';
 import { START_SECTIONS, type StartSection } from './frontier/start-content';
 
-// Per-section eyebrow kicker + nav label (English defaults; DE/FR/IT eyebrows are a follow-up).
-const SECTION_META: Record<StartSection['id'], { eyebrow: string; nav: string }> = {
-  hero: { eyebrow: '', nav: 'Value' },
-  'work-chart': { eyebrow: 'The idea in one minute', nav: 'Operating model' },
-  'cio-why-now': { eyebrow: 'The CIO challenge · why now', nav: 'Why now' },
-  hospitals: { eyebrow: 'Key visual · Organisation', nav: 'Hospitals' },
-  'patient-path': { eyebrow: 'The Curavias patient path', nav: 'Care path' },
-  'ninety-day': { eyebrow: 'The first frontier · 90 days', nav: '90-day' },
-  bva: { eyebrow: 'The decision · Business Value Assessment', nav: 'BVA' },
+// Per-section eyebrow kicker (i18n key, localized en/de/fr/it) + nav label (hard-coded English; out of scope).
+const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; nav: string }> = {
+  hero: { eyebrowKey: '', nav: 'Value' },
+  'work-chart': { eyebrowKey: 'start.frontier.workChart.eyebrow', nav: 'Operating model' },
+  'cio-why-now': { eyebrowKey: 'start.frontier.cioWhyNow.eyebrow', nav: 'Why now' },
+  hospitals: { eyebrowKey: 'start.frontier.hospitals.eyebrow', nav: 'Hospitals' },
+  'patient-path': { eyebrowKey: 'start.frontier.patientPath.eyebrow', nav: 'Care path' },
+  'ninety-day': { eyebrowKey: 'start.frontier.ninetyDay.eyebrow', nav: '90-day' },
+  bva: { eyebrowKey: 'start.frontier.bva.eyebrow', nav: 'BVA' },
 };
 
 const useStyles = makeStyles({
@@ -107,7 +107,7 @@ export function StartView() {
               id={section.id}
               variant="eyebrow"
               header={t(section.titleKey)}
-              tagline={SECTION_META[section.id].eyebrow}
+              tagline={t(SECTION_META[section.id].eyebrowKey)}
               description={t(bodyKeyFor(section))}
             />
             {sectionBody(section.id, mode)}

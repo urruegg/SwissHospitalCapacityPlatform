@@ -94,8 +94,11 @@ describe('StartHero', () => {
     expect(screen.getByText(new RegExp(String(Math.abs(summary.siteGapBeds))))).toBeInTheDocument();
     expect(screen.getByText(summary.provenance === 'live' ? /live data/i : /simulated data/i)).toBeInTheDocument();
 
+    // Only the secondary CTA remains a real navigation link to Backstage; the
+    // primary CTA now scrolls to the hospitals section (button, not a link).
     const backstageLinks = screen.getAllByRole('link');
     expect(backstageLinks.every((link) => link.getAttribute('href') === '/backstage')).toBe(true);
+    expect(screen.getByRole('button', { name: /meet the three hospitals/i })).toBeInTheDocument();
   });
 
   it('localizes the hero provenance caption', async () => {

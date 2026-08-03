@@ -88,7 +88,7 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function scrollToSection(key: string) {
+export function scrollToSection(key: string) {
   if (typeof document === 'undefined') return;
   const el = document.getElementById(key);
   el?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });

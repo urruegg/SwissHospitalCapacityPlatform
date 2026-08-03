@@ -5,6 +5,8 @@ import {
   SHOWCASE_ACCENT,
   type ShowcaseAccent,
 } from '../../shared/narrative/showcase-styles';
+import { useCopilotRail } from '../../../copilot-rail/rail-context';
+import { startInsight, startReco } from './start-rail';
 import {
   FRONTIER_AGENTS,
   FRONTIER_HOSPITALS,
@@ -92,6 +94,13 @@ export function HospitalsSection() {
   const styles = useStyles();
   const sc = useShowcaseStyles();
   const { t } = useTranslation();
+  let rail: ReturnType<typeof useCopilotRail> | null = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    rail = useCopilotRail();
+  } catch {
+    rail = null;
+  }
 
   return (
     <div className={styles.root}>
@@ -105,17 +114,29 @@ export function HospitalsSection() {
             className={styles.hospitalArticle}
             data-testid="frontier-hospital-card"
           >
-            <div
-              className={sc.staticCard}
+            <button
+              type="button"
+              className={sc.accentCard}
               style={{ borderLeftColor: SHOWCASE_ACCENT[HOSPITAL_ACCENT[hospital.id]] }}
+              onClick={() =>
+                rail?.openWithReco(
+                  startInsight(`hospitals-${hospital.id}`, t(hospital.nameKey)),
+                  startReco(
+                    t(hospital.nameKey),
+                    t(hospital.profileKey),
+                    [t(hospital.focusKey)],
+                    ['hcp:HospitalNetwork'],
+                  ),
+                )
+              }
             >
               <Badge appearance="tint" color="brand">
                 {t('start.frontier.hospitals.syntheticBadge')}
               </Badge>
-              <Title3 as="h3">{t(hospital.nameKey)}</Title3>
-              <Body1>{t(hospital.profileKey)}</Body1>
+              <span className={sc.cardTitle}>{t(hospital.nameKey)}</span>
+              <span className={sc.cardBody}>{t(hospital.profileKey)}</span>
               <Caption1 className={styles.focus}>{t(hospital.focusKey)}</Caption1>
-            </div>
+            </button>
           </article>
         ))}
       </section>

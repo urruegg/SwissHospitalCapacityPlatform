@@ -91,9 +91,11 @@ describe('HospitalsSection', () => {
     expect(screen.getAllByTestId('frontier-agent-roster-item')).toHaveLength(
       FRONTIER_AGENTS.length,
     );
-    expect(screen.getByRole('heading', { name: 'CuraNova' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Curalp' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Vialta' })).toBeInTheDocument();
+    // Hospital titles render as plain spans (not headings) because each card is
+    // an interactive <button> — button content model disallows heading descendants.
+    expect(screen.getByText('CuraNova')).toBeInTheDocument();
+    expect(screen.getByText('Curalp')).toBeInTheDocument();
+    expect(screen.getByText('Vialta')).toBeInTheDocument();
   });
 });
 
@@ -103,10 +105,12 @@ describe('NinetyDaySection', () => {
 
     const phases = screen.getAllByTestId('ninety-day-phase');
     expect(phases).toHaveLength(NINETY_DAY_PHASES.length);
-    expect(phases.map((phase) => within(phase).getByRole('heading').textContent)).toEqual([
-      'Frame & Ground',
-      'Build & Prove',
-      'Operate & Scale',
+    // Phase titles render as plain spans (not headings) because each phase card is
+    // an interactive <button> — button content model disallows heading descendants.
+    expect(phases.map((phase) => within(phase).getByRole('button').textContent)).toEqual([
+      expect.stringContaining('Frame & Ground'),
+      expect.stringContaining('Build & Prove'),
+      expect.stringContaining('Operate & Scale'),
     ]);
     phases.forEach((phase) => expect(phase).toHaveTextContent(/illustrative ROM/i));
   });

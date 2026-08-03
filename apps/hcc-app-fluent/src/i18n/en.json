@@ -480,6 +480,39 @@
         "body": "When the role lens permits, CSA spans the path with scenario planning and escalation advice.",
         "cta": "Open advisory scenario planning"
       },
+      "dcInsight": {
+        "title": "How an agent answers — the DC-INSIGHT pattern",
+        "beats": {
+          "signal": {
+            "label": "SIGNAL",
+            "body": "Medicine A is forecast to breach: occupancy 102%."
+          },
+          "understanding": {
+            "label": "UNDERSTANDING",
+            "body": "Drivers, source-trust and confidence, all cited."
+          },
+          "recommendation": {
+            "label": "RECOMMENDATION",
+            "body": "Ranked levers with a deterministic impact — never an LLM guess."
+          },
+          "action": {
+            "label": "ACTION",
+            "body": "Proposed only; applied after a human posts approved-to-apply."
+          },
+          "coordination": {
+            "label": "COORDINATION",
+            "body": "Cross-role plan and OOA→DCA handoff."
+          }
+        }
+      },
+      "workedExample": {
+        "eyebrow": "Worked example",
+        "kpiFrom": "102%",
+        "kpiTo": "94%",
+        "sub": "Medicine A forecast occupancy after a human approves the recommended lever — recomputed deterministically for the affected ward.",
+        "pillAdvisory": "Advisory · human-in-the-loop",
+        "pillAuditable": "Auditable · every number traceable"
+      },
       "humanDecision": {
         "ariaLabel": "Human decision",
         "title": "The human decides.",
@@ -525,12 +558,13 @@
         "capacityTitle": "Site capacity - next 72h",
         "capacityLoading": "Loading site capacity…",
         "capacityErrorTitle": "Site capacity unavailable",
-        "ctaPrimary": "Open Backstage",
-        "ctaSecondary": "See the platform story"
+        "ctaPrimary": "Meet the three hospitals",
+        "ctaSecondary": "See how it was built"
       },
       "workChart": {
         "title": "How work changes",
         "body": "Curavias combines accountable people, specialised agents, and on-demand workflows in one operating model.",
+        "eyebrow": "The idea in one minute",
         "flowLabel": "Curavias work modes",
         "modeBadge": "Work mode",
         "modes": {
@@ -557,6 +591,7 @@
       "cioWhyNow": {
         "title": "CIO challenger: why now",
         "body": "Seven recurring operational decisions show where fragmented coordination can become a governed Curavias preview.",
+        "eyebrow": "The CIO challenge · why now",
         "tableLabel": "Operational decisions: Today compared with Curavias Preview",
         "caption": "Illustrative qualitative comparison — no live business metrics.",
         "columns": {
@@ -605,6 +640,7 @@
       "hospitals": {
         "title": "Three hospitals",
         "body": "Three synthetic hospitals share a capacity platform while retaining distinct operating contexts.",
+        "eyebrow": "Key visual · Organisation",
         "sitesLabel": "Synthetic Curavias hospital network",
         "syntheticBadge": "Synthetic profile",
         "sites": {
@@ -659,13 +695,16 @@
       },
       "patientPath": {
         "title": "Patient path",
-        "body": "RBAC-guided operational journey from capacity pressure to recovery, with advisory signals across the path."
+        "body": "RBAC-guided operational journey from capacity pressure to recovery, with advisory signals across the path.",
+        "eyebrow": "The Curavias patient path"
       },
       "ninetyDay": {
         "title": "90-day roadmap",
         "body": "An illustrative ROM sequence moves from aligned decisions to proven workflows and governed scale.",
+        "eyebrow": "The first frontier · 90 days",
         "roadmapLabel": "Illustrative Curavias ninety-day roadmap",
         "romLabel": "Illustrative ROM",
+        "disclaimer": "Delivered pattern, not a promise: the forecast agent (OOA) is already live in PROD Switzerland North on synthetic data. The 90-day frame is the repeatable path for a new provider.",
         "phases": {
           "frame-ground": {
             "title": "Frame & Ground",
@@ -699,6 +738,7 @@
       "bva": {
         "title": "BVA decision",
         "body": "ROM-bound Business Value Assessment decision surface with KPI, TCO, sensitivity, and Product Owner handoff.",
+        "eyebrow": "The decision · Business Value Assessment",
         "tcoTitle": "Annualised TCO",
         "valueLeversTitle": "Value levers",
         "sensitivityTitle": "Sensitivity",
@@ -712,6 +752,7 @@
         "finalRead": "ROM estimate to review: {{netValue}} net value realised, {{roi}} ROI, {{budget}} annualised TCO vs budget, and {{trend}} per copilot turn.",
         "railRead": "Review this BVA decision: {{netValue}} net value realised, {{roi}} ROI, {{tcoMeasure}}, and {{trend}}.",
         "cta": "Ask Product Owner Agent",
+        "launchCta": "Launch the 90-day frontier",
         "columns": {
           "figure": "Figure",
           "value": "Value",

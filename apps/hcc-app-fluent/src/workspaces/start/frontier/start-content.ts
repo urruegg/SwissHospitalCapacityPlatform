@@ -38,6 +38,42 @@ export const PATIENT_PATH_OPERATIONAL_STOPS = [
   { boardKey: 'discharge', bodyKey: 'start.patientPath.operational.discharge' },
 ] as const satisfies readonly PatientPathOperationalStop[];
 
+export type DcInsightBeatId = 'signal' | 'understanding' | 'recommendation' | 'action' | 'coordination';
+
+export interface DcInsightBeat {
+  id: DcInsightBeatId;
+  labelKey: `start.patientPath.dcInsight.beats.${DcInsightBeatId}.label`;
+  bodyKey: `start.patientPath.dcInsight.beats.${DcInsightBeatId}.body`;
+}
+
+export const DC_INSIGHT_BEATS = [
+  {
+    id: 'signal',
+    labelKey: 'start.patientPath.dcInsight.beats.signal.label',
+    bodyKey: 'start.patientPath.dcInsight.beats.signal.body',
+  },
+  {
+    id: 'understanding',
+    labelKey: 'start.patientPath.dcInsight.beats.understanding.label',
+    bodyKey: 'start.patientPath.dcInsight.beats.understanding.body',
+  },
+  {
+    id: 'recommendation',
+    labelKey: 'start.patientPath.dcInsight.beats.recommendation.label',
+    bodyKey: 'start.patientPath.dcInsight.beats.recommendation.body',
+  },
+  {
+    id: 'action',
+    labelKey: 'start.patientPath.dcInsight.beats.action.label',
+    bodyKey: 'start.patientPath.dcInsight.beats.action.body',
+  },
+  {
+    id: 'coordination',
+    labelKey: 'start.patientPath.dcInsight.beats.coordination.label',
+    bodyKey: 'start.patientPath.dcInsight.beats.coordination.body',
+  },
+] as const satisfies readonly DcInsightBeat[];
+
 export type WorkModeId = 'humans' | 'agents' | 'on-demand';
 
 export interface WorkMode {
