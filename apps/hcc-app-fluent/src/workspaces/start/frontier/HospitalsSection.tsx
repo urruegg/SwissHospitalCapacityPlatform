@@ -1,18 +1,35 @@
-import {
-  Badge,
-  Body1,
-  Card,
-  Caption1,
-  Text,
-  Title3,
-  makeStyles,
-  mergeClasses,
-  tokens,
-} from '@fluentui/react-components';
+import { Badge, Body1, Caption1, Text, Title3, makeStyles, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import { useSurfaceStyles } from '../../../theme/design-system/recipes';
-import { FRONTIER_AGENTS, FRONTIER_HOSPITALS } from './start-content';
+import {
+  useShowcaseStyles,
+  SHOWCASE_ACCENT,
+  type ShowcaseAccent,
+} from '../../shared/narrative/showcase-styles';
+import {
+  FRONTIER_AGENTS,
+  FRONTIER_HOSPITALS,
+  type FrontierAgentId,
+  type FrontierHospitalId,
+} from './start-content';
 import { START_NARRATIVE_NARROW_MEDIA_QUERY } from './start-layout';
+
+// Per-site left accent (mockup: distinct hue per synthetic hospital).
+const HOSPITAL_ACCENT: Record<FrontierHospitalId, ShowcaseAccent> = {
+  curanova: 'teal',
+  curalp: 'green',
+  vialta: 'navy',
+};
+
+// Per-agent chip accent (mockup: colored agent roster chips).
+const AGENT_ACCENT: Record<FrontierAgentId, ShowcaseAccent> = {
+  'ooa-agent': 'green',
+  'bmca-agent': 'navy',
+  'dca-agent': 'teal',
+  'orsa-agent': 'violet',
+  'sba-agent': 'amber',
+  'csa-agent': 'red',
+  'data-quality-agent': 'slate',
+};
 
 const useStyles = makeStyles({
   root: {
@@ -28,20 +45,13 @@ const useStyles = makeStyles({
       gridTemplateColumns: '1fr',
     },
   },
-  hospitalCard: {
-    height: '100%',
-    display: 'grid',
-    gap: tokens.spacingVerticalS,
-    alignContent: 'start',
-    backgroundColor: tokens.colorNeutralBackground2,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    boxShadow: 'none',
-  },
   hospitalArticle: {
     minWidth: 0,
+    display: 'flex',
   },
   focus: {
-    color: tokens.colorBrandForeground1,
+    color: SHOWCASE_ACCENT.green,
+    fontWeight: tokens.fontWeightSemibold,
   },
   rosterSection: {
     display: 'grid',
@@ -65,7 +75,9 @@ const useStyles = makeStyles({
     padding: tokens.spacingHorizontalM,
     borderRadius: tokens.borderRadiusLarge,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground2,
+    borderLeftWidth: '4px',
+    backgroundColor: tokens.colorNeutralBackground1,
+    boxShadow: tokens.shadow2,
     minWidth: 0,
   },
   agentName: {
@@ -78,7 +90,7 @@ const useStyles = makeStyles({
 
 export function HospitalsSection() {
   const styles = useStyles();
-  const surface = useSurfaceStyles();
+  const sc = useShowcaseStyles();
   const { t } = useTranslation();
 
   return (
@@ -93,14 +105,17 @@ export function HospitalsSection() {
             className={styles.hospitalArticle}
             data-testid="frontier-hospital-card"
           >
-            <Card className={mergeClasses(surface.surfaceCard, styles.hospitalCard)}>
+            <div
+              className={sc.staticCard}
+              style={{ borderLeftColor: SHOWCASE_ACCENT[HOSPITAL_ACCENT[hospital.id]] }}
+            >
               <Badge appearance="tint" color="brand">
                 {t('start.frontier.hospitals.syntheticBadge')}
               </Badge>
               <Title3 as="h3">{t(hospital.nameKey)}</Title3>
               <Body1>{t(hospital.profileKey)}</Body1>
               <Caption1 className={styles.focus}>{t(hospital.focusKey)}</Caption1>
-            </Card>
+            </div>
           </article>
         ))}
       </section>
@@ -120,6 +135,7 @@ export function HospitalsSection() {
             <li
               key={agent.id}
               className={styles.rosterItem}
+              style={{ borderLeftColor: SHOWCASE_ACCENT[AGENT_ACCENT[agent.id]] }}
               data-testid="frontier-agent-roster-item"
             >
               <Text weight="semibold" className={styles.agentName}>

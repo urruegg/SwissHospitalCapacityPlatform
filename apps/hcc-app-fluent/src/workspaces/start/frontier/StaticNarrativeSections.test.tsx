@@ -54,11 +54,10 @@ describe('WorkChartSection', () => {
 
     const modes = screen.getAllByTestId('work-chart-mode');
     expect(modes).toHaveLength(WORK_MODES.length);
-    expect(modes.map((mode) => within(mode).getByRole('heading').textContent)).toEqual([
-      'Humans',
-      'Agents',
-      'On-demand work',
-    ]);
+    expect(
+      modes.map((mode) => within(mode).getByTestId('work-chart-mode-title').textContent),
+    ).toEqual(['Humans', 'Agents', 'On-demand work']);
+    modes.forEach((mode) => expect(within(mode).getByRole('button')).toBeInTheDocument());
     expect(screen.getByRole('note', { name: /frontier firm principle/i })).toHaveTextContent(
       /curavias/i,
     );
