@@ -33,7 +33,9 @@ describe('StartHero', () => {
     renderHero();
 
     expect(
-      screen.getByRole('heading', { name: /the hospital of the future is a Frontier Firm/i }),
+      screen.getByRole('heading', {
+        name: /the hospital of the future is a Frontier Firm\s*\.\s*Curavias makes it real\./i,
+      }),
     ).toBeInTheDocument();
 
     expect(screen.getByTestId('hero-quote')).toHaveTextContent(
@@ -72,7 +74,9 @@ describe('StartHero', () => {
     renderHero();
 
     expect(
-      screen.getByRole('heading', { name: /Das Spital der Zukunft ist eine Frontier Firm/i }),
+      screen.getByRole('heading', {
+        name: /Das Spital der Zukunft ist eine Frontier Firm\s*\.\s*Curavias macht es real\./i,
+      }),
     ).toBeInTheDocument();
     // Exact strings target the pill-label spans only. A loose /Nur beratend/i
     // would also match the German disclaimer ("Nur beratend — für ...").

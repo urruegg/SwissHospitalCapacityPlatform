@@ -3,7 +3,6 @@ import {
   Caption1,
   Link,
   Text,
-  Title1,
   makeStyles,
   mergeClasses,
   tokens,
@@ -19,13 +18,31 @@ const useStyles = makeStyles({
     alignContent: 'start',
   },
   eyebrow: {
-    // Fluent's link-foreground token is intentional for non-link text: it preserves WCAG contrast in both themes.
-    color: tokens.colorBrandForegroundLink,
-    letterSpacing: '0.04em',
+    // Backstage SectionHeader eyebrow pattern: uppercase kicker + green lead bar.
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: tokens.fontSizeBase200,
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.08em',
     textTransform: 'uppercase',
+    color: '#12765F',
+    '::before': {
+      content: '""',
+      width: '22px',
+      height: '3px',
+      borderRadius: '2px',
+      backgroundColor: '#17B890',
+    },
   },
   hook: {
-    maxWidth: '18ch',
+    // Match the Backstage hero headline (SectionHeader headerLg): base600 on a plain
+    // h2, no width cap, so the title fills the column on one line instead of a narrow stack.
+    margin: 0,
+    fontSize: tokens.fontSizeBase600,
+    lineHeight: tokens.lineHeightBase600,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
   },
   hookInk: {
     color: tokens.colorNeutralForeground1,
@@ -37,7 +54,8 @@ const useStyles = makeStyles({
     color: 'transparent',
   },
   lead: {
-    maxWidth: '66ch',
+    // No width cap — matches the Backstage SectionHeader description, so the lead flows
+    // the full column width rather than being squeezed into a narrow left measure.
     color: tokens.colorNeutralForeground2,
   },
   quote: {
@@ -119,12 +137,12 @@ export function StartHero() {
 
   return (
     <div className={styles.root}>
-      <Caption1 className={styles.eyebrow}>{t('start.frontier.hero.eyebrow')}</Caption1>
-      <Title1 as="h2" className={styles.hook}>
+      <span className={styles.eyebrow}>{t('start.frontier.hero.eyebrow')}</span>
+      <h2 className={styles.hook}>
         <span className={styles.hookInk}>{t('start.frontier.hero.hookPrefix')}</span>
         <span className={styles.hookAccent}>{t('start.frontier.hero.hookAccent')}</span>
         <span className={styles.hookInk}>{t('start.frontier.hero.hookSuffix')}</span>
-      </Title1>
+      </h2>
       <Body1 as="p" className={styles.lead}>
         {t('start.frontier.hero.leadBeforeJournai')}
         <Link href="https://www.journai.ch/" target="_blank" rel="noopener noreferrer">
