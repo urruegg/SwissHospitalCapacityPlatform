@@ -466,6 +466,17 @@
       }
     },
     "frontier": {
+      "nav": {
+        "label": "Start-Bereiche",
+        "overview": "Übersicht",
+        "value": "Wert",
+        "operatingModel": "Betriebsmodell",
+        "whyNow": "Warum jetzt",
+        "hospitals": "Spitäler",
+        "carePath": "Versorgungspfad",
+        "ninetyDay": "90 Tage",
+        "bva": "BVA"
+      },
       "page": {
         "title": "Curavias Start",
         "lead": "Frontier-Hülle für die siebenteilige Curavias-Startansicht für Führungskräfte.",

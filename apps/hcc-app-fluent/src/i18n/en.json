@@ -522,6 +522,17 @@
       "description": "Every step keeps a person in charge — agents surface the signal, explain it and recommend a lever, with no real patient data (PHI)."
     },
     "frontier": {
+      "nav": {
+        "label": "Start sections",
+        "overview": "Overview",
+        "value": "Value",
+        "operatingModel": "Operating model",
+        "whyNow": "Why now",
+        "hospitals": "Hospitals",
+        "carePath": "Care path",
+        "ninetyDay": "90-day",
+        "bva": "BVA"
+      },
       "page": {
         "title": "Curavias Start",
         "lead": "Frontier shell for the seven-section Curavias executive start surface.",

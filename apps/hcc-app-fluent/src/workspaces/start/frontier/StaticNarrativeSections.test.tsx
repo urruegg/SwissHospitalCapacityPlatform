@@ -155,4 +155,29 @@ describe('StartView static narrative integration', () => {
       ).not.toBeInTheDocument();
     });
   });
+
+  it('localises the section nav tab labels (de) instead of hard-coded English', async () => {
+    await i18n.changeLanguage('de');
+    render(
+      <MemoryRouter initialEntries={['/start']}>
+        <FluentProvider theme={webLightTheme}>
+          <RoleProvider testRoles={['HCC.PlatformAdmin']} testHomeSite="usz">
+            <ModeProvider>
+              <StartView />
+            </ModeProvider>
+          </RoleProvider>
+        </FluentProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId('start-nav-overview')).toHaveTextContent('Übersicht');
+    expect(screen.getByTestId('start-nav-hero')).toHaveTextContent('Wert');
+    expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Betriebsmodell');
+    expect(screen.getByTestId('start-nav-cio-why-now')).toHaveTextContent('Warum jetzt');
+    expect(screen.getByTestId('start-nav-hospitals')).toHaveTextContent('Spitäler');
+    expect(screen.getByTestId('start-nav-patient-path')).toHaveTextContent('Versorgungspfad');
+    expect(screen.getByTestId('start-nav-bva')).toHaveTextContent('BVA');
+    // Regression guard: the German tab strip must not fall back to English labels.
+    expect(screen.getByTestId('start-nav-work-chart')).not.toHaveTextContent('Operating model');
+  });
 });

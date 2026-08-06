@@ -12,15 +12,28 @@ import { StartHero } from './frontier/StartHero';
 import { WorkChartSection } from './frontier/WorkChartSection';
 import { START_SECTIONS, type StartSection } from './frontier/start-content';
 
-// Per-section eyebrow kicker (i18n key, localized en/de/fr/it) + nav label (hard-coded English; out of scope).
-const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; nav: string }> = {
-  hero: { eyebrowKey: '', nav: 'Value' },
-  'work-chart': { eyebrowKey: 'start.frontier.workChart.eyebrow', nav: 'Operating model' },
-  'cio-why-now': { eyebrowKey: 'start.frontier.cioWhyNow.eyebrow', nav: 'Why now' },
-  hospitals: { eyebrowKey: 'start.frontier.hospitals.eyebrow', nav: 'Hospitals' },
-  'patient-path': { eyebrowKey: 'start.frontier.patientPath.eyebrow', nav: 'Care path' },
-  'ninety-day': { eyebrowKey: 'start.frontier.ninetyDay.eyebrow', nav: '90-day' },
-  bva: { eyebrowKey: 'start.frontier.bva.eyebrow', nav: 'BVA' },
+// Per-section eyebrow kicker + nav label — both i18n keys, localized en/de/fr/it
+// (matches the Backstage nav-localization pattern in BackstageView.tsx).
+const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; navKey: string }> = {
+  hero: { eyebrowKey: '', navKey: 'start.frontier.nav.value' },
+  'work-chart': {
+    eyebrowKey: 'start.frontier.workChart.eyebrow',
+    navKey: 'start.frontier.nav.operatingModel',
+  },
+  'cio-why-now': {
+    eyebrowKey: 'start.frontier.cioWhyNow.eyebrow',
+    navKey: 'start.frontier.nav.whyNow',
+  },
+  hospitals: { eyebrowKey: 'start.frontier.hospitals.eyebrow', navKey: 'start.frontier.nav.hospitals' },
+  'patient-path': {
+    eyebrowKey: 'start.frontier.patientPath.eyebrow',
+    navKey: 'start.frontier.nav.carePath',
+  },
+  'ninety-day': {
+    eyebrowKey: 'start.frontier.ninetyDay.eyebrow',
+    navKey: 'start.frontier.nav.ninetyDay',
+  },
+  bva: { eyebrowKey: 'start.frontier.bva.eyebrow', navKey: 'start.frontier.nav.bva' },
 };
 
 const useStyles = makeStyles({
@@ -96,7 +109,7 @@ export function StartView() {
 
   const sections: NarrativeSection[] = START_SECTIONS.map((section) => ({
     key: section.id,
-    label: SECTION_META[section.id].nav,
+    label: t(SECTION_META[section.id].navKey),
     render: () => (
       <section data-start-section={section.id} data-testid={`start-${section.id}`}>
         {section.id === 'hero' ? (

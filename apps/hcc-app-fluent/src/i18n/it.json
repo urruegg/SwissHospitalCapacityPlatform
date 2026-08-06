@@ -371,6 +371,17 @@
       }
     },
     "frontier": {
+      "nav": {
+        "label": "Sezioni iniziali",
+        "overview": "Panoramica",
+        "value": "Valore",
+        "operatingModel": "Modello operativo",
+        "whyNow": "Perché ora",
+        "hospitals": "Ospedali",
+        "carePath": "Percorso di cura",
+        "ninetyDay": "90 giorni",
+        "bva": "BVA"
+      },
       "workChart": {
         "title": "Come cambia il lavoro",
         "body": "Curavias riunisce persone responsabili, agenti specializzati e flussi di lavoro su richiesta in un unico modello operativo.",
