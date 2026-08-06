@@ -35,37 +35,6 @@ const useStyles = makeStyles({
     display: 'flex',
   },
   badge: { alignSelf: 'flex-start' },
-  principle: {
-    display: 'grid',
-    gap: tokens.spacingVerticalS,
-    padding: tokens.spacingHorizontalL,
-    borderRadius: tokens.borderRadiusXLarge,
-    border: `1px solid ${tokens.colorBrandStroke2}`,
-    backgroundColor: tokens.colorBrandBackground2,
-  },
-  principleHeader: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: tokens.spacingHorizontalM,
-    flexWrap: 'wrap',
-  },
-  principleTitle: {
-    margin: 0,
-    fontSize: tokens.fontSizeBase400,
-    fontWeight: tokens.fontWeightSemibold,
-    color: tokens.colorNeutralForeground1,
-  },
-  principleBody: {
-    margin: 0,
-    fontSize: tokens.fontSizeBase300,
-    color: tokens.colorNeutralForeground2,
-    lineHeight: 1.5,
-  },
-  mapping: {
-    fontSize: tokens.fontSizeBase200,
-    color: tokens.colorNeutralForeground2,
-  },
   fitCard: {
     display: 'grid',
     gap: tokens.spacingVerticalM,
@@ -142,7 +111,7 @@ export function WorkChartSection() {
                     startReco(
                       t(mode.titleKey),
                       t(mode.bodyKey),
-                      [t('start.frontier.workChart.principle.title')],
+                      [t('start.frontier.workChart.fit.title')],
                       ['hcp:OperatingModel'],
                     ),
                   )
@@ -160,21 +129,6 @@ export function WorkChartSection() {
           );
         })}
       </ol>
-
-      <aside
-        className={styles.principle}
-        role="note"
-        aria-label={t('start.frontier.workChart.principle.title')}
-      >
-        <div className={styles.principleHeader}>
-          <h3 className={styles.principleTitle}>{t('start.frontier.workChart.principle.title')}</h3>
-          <Badge appearance="filled" color="brand">
-            {t('start.frontier.workChart.principle.badge')}
-          </Badge>
-        </div>
-        <p className={styles.principleBody}>{t('start.frontier.workChart.principle.body')}</p>
-        <span className={styles.mapping}>{t('start.frontier.workChart.principle.curaviasMap')}</span>
-      </aside>
 
       <section className={styles.fitCard} aria-labelledby="work-chart-fit-title">
         <div className={styles.fitHeader}>

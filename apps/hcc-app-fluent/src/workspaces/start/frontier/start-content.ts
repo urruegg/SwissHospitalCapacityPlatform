@@ -1,6 +1,7 @@
 export type StartSectionId =
   | 'hero'
   | 'challenger'
+  | 'vision'
   | 'work-chart'
   | 'cio-why-now'
   | 'hospitals'
@@ -19,6 +20,7 @@ export interface StartSection {
 export const START_SECTIONS = [
   { id: 'hero', titleKey: 'start.frontier.hero.title', kind: 'data' },
   { id: 'challenger', titleKey: 'start.frontier.challenger.title', kind: 'static' },
+  { id: 'vision', titleKey: 'start.frontier.vision.title', kind: 'static' },
   { id: 'work-chart', titleKey: 'start.frontier.workChart.title', kind: 'static' },
   { id: 'cio-why-now', titleKey: 'start.frontier.cioWhyNow.title', kind: 'static' },
   { id: 'hospitals', titleKey: 'start.frontier.hospitals.title', kind: 'static' },
@@ -52,6 +54,108 @@ export const CHALLENGER_PERSONAS = [
   { id: 'ops', accent: 'green', hasGloss: false },
   { id: 'it', accent: 'navy', hasGloss: false },
 ] as const satisfies readonly ChallengerPersona[];
+
+/**
+ * Sprint 40 START polish — the mockup's "Why Curavias exists" (vision & mission)
+ * section. Three data groups back it:
+ *  - VISION_WORD_ROWS: the cura/via/curavias etymology table. The Latin term is the
+ *    row `id` (a proper noun rendered verbatim, never translated); meaning + product
+ *    columns are i18n chrome.
+ *  - VISION_MARK_STEPS: the three-step logo journey (Start -> Care -> Success); the
+ *    final Success step is `highlighted` (mockup `.mstep.on`).
+ *  - VISION_PILLS: the closing advisory/human/swiss guarantees. Each pill is a fixed
+ *    EN|DE bilingual brand statement (label + echo, identical across locales per the
+ *    challenger's Approach B); the swiss pill carries the CH flag.
+ * The vision + mission statements themselves are likewise bilingual brand copy carried
+ * as `start.frontier.vision.{vision,mission}.{primary,echo}` (identical en/de).
+ */
+export type VisionWordId = 'cura' | 'via' | 'curavias';
+
+export interface VisionWordRow {
+  id: VisionWordId;
+  meaningKey: `start.frontier.vision.word.rows.${VisionWordId}.meaning`;
+  productKey: `start.frontier.vision.word.rows.${VisionWordId}.product`;
+}
+
+export const VISION_WORD_ROWS = [
+  {
+    id: 'cura',
+    meaningKey: 'start.frontier.vision.word.rows.cura.meaning',
+    productKey: 'start.frontier.vision.word.rows.cura.product',
+  },
+  {
+    id: 'via',
+    meaningKey: 'start.frontier.vision.word.rows.via.meaning',
+    productKey: 'start.frontier.vision.word.rows.via.product',
+  },
+  {
+    id: 'curavias',
+    meaningKey: 'start.frontier.vision.word.rows.curavias.meaning',
+    productKey: 'start.frontier.vision.word.rows.curavias.product',
+  },
+] as const satisfies readonly VisionWordRow[];
+
+export type VisionMarkStepId = 'start' | 'care' | 'success';
+
+export interface VisionMarkStep {
+  id: VisionMarkStepId;
+  labelKey: `start.frontier.vision.mark.steps.${VisionMarkStepId}.label`;
+  captionKey: `start.frontier.vision.mark.steps.${VisionMarkStepId}.caption`;
+  /** True for the final Success step (mockup `.mstep.on`). */
+  highlighted: boolean;
+}
+
+export const VISION_MARK_STEPS = [
+  {
+    id: 'start',
+    labelKey: 'start.frontier.vision.mark.steps.start.label',
+    captionKey: 'start.frontier.vision.mark.steps.start.caption',
+    highlighted: false,
+  },
+  {
+    id: 'care',
+    labelKey: 'start.frontier.vision.mark.steps.care.label',
+    captionKey: 'start.frontier.vision.mark.steps.care.caption',
+    highlighted: false,
+  },
+  {
+    id: 'success',
+    labelKey: 'start.frontier.vision.mark.steps.success.label',
+    captionKey: 'start.frontier.vision.mark.steps.success.caption',
+    highlighted: true,
+  },
+] as const satisfies readonly VisionMarkStep[];
+
+export type VisionPillId = 'advisory' | 'human' | 'swiss';
+
+export interface VisionPill {
+  id: VisionPillId;
+  labelKey: `start.frontier.vision.pills.${VisionPillId}.label`;
+  echoKey: `start.frontier.vision.pills.${VisionPillId}.echo`;
+  /** True for the Swiss-residency pill (mockup CH flag prefix). */
+  flag: boolean;
+}
+
+export const VISION_PILLS = [
+  {
+    id: 'advisory',
+    labelKey: 'start.frontier.vision.pills.advisory.label',
+    echoKey: 'start.frontier.vision.pills.advisory.echo',
+    flag: false,
+  },
+  {
+    id: 'human',
+    labelKey: 'start.frontier.vision.pills.human.label',
+    echoKey: 'start.frontier.vision.pills.human.echo',
+    flag: false,
+  },
+  {
+    id: 'swiss',
+    labelKey: 'start.frontier.vision.pills.swiss.label',
+    echoKey: 'start.frontier.vision.pills.swiss.echo',
+    flag: true,
+  },
+] as const satisfies readonly VisionPill[];
 
 export interface PatientPathOperationalStop {
   boardKey: string;

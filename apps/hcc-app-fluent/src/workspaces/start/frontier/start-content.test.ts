@@ -49,6 +49,7 @@ describe('START_SECTIONS', () => {
     expect(START_SECTIONS.map(({ id }) => id)).toEqual([
       'hero',
       'challenger',
+      'vision',
       'work-chart',
       'cio-why-now',
       'hospitals',

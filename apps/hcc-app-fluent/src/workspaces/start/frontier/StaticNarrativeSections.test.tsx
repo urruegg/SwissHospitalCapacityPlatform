@@ -56,11 +56,8 @@ describe('WorkChartSection', () => {
     expect(modes).toHaveLength(WORK_MODES.length);
     expect(
       modes.map((mode) => within(mode).getByTestId('work-chart-mode-title').textContent),
-    ).toEqual(['Humans', 'Agents', 'On-demand work']);
+    ).toEqual(['Humans', 'Agents', 'On-demand intelligence']);
     modes.forEach((mode) => expect(within(mode).getByRole('button')).toBeInTheDocument());
-    expect(screen.getByRole('note', { name: /frontier firm principle/i })).toHaveTextContent(
-      /curavias/i,
-    );
   });
 
   it('renders the Frontier Firm fit table with all four principle rows', () => {
@@ -149,6 +146,7 @@ describe('StartView static narrative integration', () => {
     const expectedOrder = [
       'start-hero',
       'start-challenger',
+      'start-vision',
       'start-work-chart',
       'start-cio-why-now',
       'start-hospitals',
@@ -189,6 +187,7 @@ describe('StartView static narrative integration', () => {
 
     expect(screen.getByTestId('start-nav-hero')).toHaveTextContent('Wert');
     expect(screen.getByTestId('start-nav-challenger')).toHaveTextContent('Herausforderer');
+    expect(screen.getByTestId('start-nav-vision')).toHaveTextContent('Warum Curavias');
     expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Betriebsmodell');
     expect(screen.getByTestId('start-nav-cio-why-now')).toHaveTextContent('Warum jetzt');
     expect(screen.getByTestId('start-nav-hospitals')).toHaveTextContent('Spitäler');

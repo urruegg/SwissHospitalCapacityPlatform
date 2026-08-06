@@ -558,6 +558,7 @@
         "overview": "Overview",
         "value": "Value",
         "challenger": "Challengers",
+        "vision": "Why Curavias",
         "operatingModel": "Operating model",
         "whyNow": "Why now",
         "hospitals": "Hospitals",
@@ -790,31 +791,83 @@
           }
         }
       },
+      "vision": {
+        "title": "The name is the promise: cura + via",
+        "body": "Curavias is Latin. cura — care. via — path. Together: \"the care pathway.\" Not a capacity tool that happens to sit in a hospital, but the path a patient takes through it — which is why the tagline is \"Every patient's path, in Swiss hands.\"",
+        "eyebrow": "Why Curavias exists",
+        "word": {
+          "heading": "The word",
+          "label": "Curavias etymology",
+          "columns": {
+            "latin": "Latin",
+            "meaning": "Meaning",
+            "product": "In the product"
+          },
+          "rows": {
+            "cura": {
+              "meaning": "care, concern, healing",
+              "product": "The clinical outcome we exist for"
+            },
+            "via": {
+              "meaning": "path, way, road",
+              "product": "The route through beds, OR, staff and discharge"
+            },
+            "curavias": {
+              "meaning": "the care pathway",
+              "product": "Both at once — care along a path"
+            }
+          }
+        },
+        "mark": {
+          "heading": "The mark",
+          "intro": "The logo is the same idea as one glyph — a three-step patient journey rising to success:",
+          "label": "Curavias logo journey",
+          "steps": {
+            "start": { "label": "Start", "caption": "entry into care" },
+            "care": { "label": "Care", "caption": "the Swiss medical cross" },
+            "success": { "label": "Success", "caption": "the patient made well" }
+          },
+          "note": "The Swiss identity is deliberate: the diagonal white and federal-blue split, and the cross — the visual language Swiss institutions already trust."
+        },
+        "vmHeading": "Our vision & mission",
+        "vision": {
+          "tag": "Vision",
+          "primary": "A Swiss healthcare system where capacity never decides who waits.",
+          "echo": "Ein Schweizer Gesundheitswesen, in dem nie die Kapazität entscheidet, wer warten muss."
+        },
+        "mission": {
+          "tag": "Mission",
+          "primary": "Empower every care team in every Swiss hospital to achieve health success — and time — for every patient.",
+          "echo": "Jedes Behandlungsteam in jedem Schweizer Spital befähigen, für jeden Patienten Behandlungserfolg – und Zeit – zu erreichen."
+        },
+        "timeCurrency": "Time is the currency of capacity. Every hour Curavias gives back is an hour of care — the patient treated sooner, the team with time to give, the bed free for the next person who needs it.",
+        "timeCurrencyEcho": "Zeit ist die Währung der Kapazität.",
+        "pillRowLabel": "Curavias guarantees",
+        "pills": {
+          "advisory": { "label": "Advisory, never autonomous", "echo": "Beratend, nie autonom" },
+          "human": { "label": "The human decides, always", "echo": "Der Mensch entscheidet, immer" },
+          "swiss": { "label": "Swiss data, Swiss hosting, no patient data", "echo": "Schweizer Daten, Schweizer Hosting, keine Patientendaten" }
+        }
+      },
       "workChart": {
-        "title": "How work changes",
-        "body": "Curavias combines accountable people, specialised agents, and on-demand workflows in one operating model.",
+        "title": "From the org chart to the work chart",
+        "body": "Curavias combines accountable people, specialised agents, and on-demand intelligence in one operating model — applied to where a hospital feels pressure every day: capacity and patient flow.",
         "eyebrow": "The idea in one minute",
         "flowLabel": "Curavias work modes",
         "modeBadge": "Work mode",
         "modes": {
           "humans": {
             "title": "Humans",
-            "body": "Leaders set intent, judge trade-offs, and remain accountable for operational decisions."
+            "body": "Bed managers, nurses, physicians and planners stay in the loop and in charge — every recommendation needs a human \"approved-to-apply\" before anything moves."
           },
           "agents": {
             "title": "Agents",
-            "body": "Specialised copilots monitor signals, explain options, and prepare evidence-backed recommendations."
+            "body": "Digital colleagues forecast demand, rank discharges, steer the OR and answer questions — on demand, 24×7, always grounded and cited."
           },
           "on-demand": {
-            "title": "On-demand work",
-            "body": "Cross-functional workflows assemble around the decision, then hand control back to the accountable team."
+            "title": "On-demand intelligence",
+            "body": "Capacity insight is no longer a weekly report. It is a living, queryable service your teams can ask, challenge and act on in seconds."
           }
-        },
-        "principle": {
-          "title": "Frontier Firm principle",
-          "badge": "Mapped to Curavias",
-          "body": "Work is organised around outcomes instead of static hand-offs between functions.",
-          "curaviasMap": "Curavias maps that principle to hospital capacity: shared signals, specialist agents, and a human decision at every operational boundary."
         },
         "fit": {
           "title": "How Curavias fits the Microsoft Frontier Firm",

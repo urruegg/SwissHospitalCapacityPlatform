@@ -197,6 +197,7 @@ describe('StartView BVA integration', () => {
     expect(sectionIds).toEqual([
       'start-hero',
       'start-challenger',
+      'start-vision',
       'start-work-chart',
       'start-cio-why-now',
       'start-hospitals',

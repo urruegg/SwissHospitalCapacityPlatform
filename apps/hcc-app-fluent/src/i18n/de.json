@@ -502,6 +502,7 @@
         "overview": "Übersicht",
         "value": "Wert",
         "challenger": "Herausforderer",
+        "vision": "Warum Curavias",
         "operatingModel": "Betriebsmodell",
         "whyNow": "Warum jetzt",
         "hospitals": "Spitäler",
@@ -581,31 +582,72 @@
           "it": { "tag": "IT / Kantonal", "sub": "Cloud-Betriebsmodell" }
         }
       },
+      "vision": {
+        "title": "Der Name ist das Versprechen: cura + via",
+        "body": "Curavias ist Latein. cura — Sorge. via — Weg. Zusammen: \"der Versorgungspfad.\" Kein Kapazitätswerkzeug, das zufällig in einem Spital steht, sondern der Weg, den ein Patient durch es nimmt — weshalb der Claim lautet \"Jeder Patientenpfad, in Schweizer Hand.\"",
+        "eyebrow": "Warum es Curavias gibt",
+        "word": {
+          "heading": "Das Wort",
+          "label": "Curavias-Etymologie",
+          "columns": {
+            "latin": "Latein",
+            "meaning": "Bedeutung",
+            "product": "Im Produkt"
+          },
+          "rows": {
+            "cura": {
+              "meaning": "Sorge, Fürsorge, Heilung",
+              "product": "Das klinische Ergebnis, für das wir da sind"
+            },
+            "via": {
+              "meaning": "Pfad, Weg, Strasse",
+              "product": "Der Weg durch Betten, OP, Personal und Austritt"
+            },
+            "curavias": {
+              "meaning": "der Versorgungspfad",
+              "product": "Beides zugleich — Versorgung entlang eines Pfades"
+            }
+          }
+        },
+        "mark": {
+          "heading": "Das Zeichen",
+          "intro": "Das Logo ist dieselbe Idee als ein Glyph — eine dreistufige Patientenreise, die zum Erfolg aufsteigt:",
+          "label": "Curavias-Logoreise",
+          "steps": {
+            "start": { "label": "Start", "caption": "Eintritt in die Versorgung" },
+            "care": { "label": "Care", "caption": "das Schweizer Medizinkreuz" },
+            "success": { "label": "Success", "caption": "der genesene Patient" }
+          },
+          "note": "Die Schweizer Prägung ist bewusst: die diagonale Weiss-Blau-Teilung und das Kreuz — die visuelle Sprache, der Schweizer Institutionen bereits vertrauen."
+        },
+        "vmHeading": "Unsere Vision & Mission",
+        "vision": {
+          "tag": "Vision"
+        },
+        "mission": {
+          "tag": "Mission"
+        },
+        "pillRowLabel": "Curavias-Zusagen"
+      },
       "workChart": {
-        "title": "Wie sich Arbeit verändert",
-        "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und bedarfsgerechte Arbeitsabläufe in einem Betriebsmodell.",
+        "title": "Vom Organigramm zur Arbeitskarte",
+        "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und Intelligenz auf Abruf in einem Betriebsmodell — angewendet dort, wo ein Spital täglich Druck spürt: Kapazität und Patientenfluss.",
         "eyebrow": "Die Idee in einer Minute",
         "flowLabel": "Curavias-Arbeitsmodi",
         "modeBadge": "Arbeitsmodus",
         "modes": {
           "humans": {
             "title": "Menschen",
-            "body": "Führungskräfte setzen die Absicht, beurteilen Zielkonflikte und bleiben für betriebliche Entscheide verantwortlich."
+            "body": "Bettenmanager, Pflegende, Ärztinnen und Planer bleiben eingebunden und in Verantwortung — jede Empfehlung braucht eine menschliche Freigabe \"approved-to-apply\", bevor sich etwas bewegt."
           },
           "agents": {
             "title": "Agents",
-            "body": "Spezialisierte Copilots überwachen Signale, erklären Optionen und bereiten evidenzgestützte Empfehlungen vor."
+            "body": "Digitale Kolleginnen prognostizieren die Nachfrage, priorisieren Austritte, steuern den OP und beantworten Fragen — auf Abruf, 24×7, stets belegt und zitiert."
           },
           "on-demand": {
-            "title": "Arbeit nach Bedarf",
-            "body": "Funktionsübergreifende Abläufe formieren sich um den Entscheid und geben die Kontrolle danach an das verantwortliche Team zurück."
+            "title": "Intelligenz auf Abruf",
+            "body": "Kapazitätseinblick ist kein Wochenbericht mehr. Er ist ein lebendiger, abfragbarer Dienst, den Ihre Teams in Sekunden fragen, hinterfragen und umsetzen können."
           }
-        },
-        "principle": {
-          "title": "Frontier-Firm-Prinzip",
-          "badge": "Auf Curavias abgebildet",
-          "body": "Arbeit wird um Ergebnisse statt um statische Übergaben zwischen Funktionen organisiert.",
-          "curaviasMap": "Curavias überträgt dieses Prinzip auf die Spitalkapazität: gemeinsame Signale, spezialisierte Agents und ein menschlicher Entscheid an jeder betrieblichen Grenze."
         },
         "fit": {
           "title": "Wie Curavias zur Microsoft Frontier Firm passt",

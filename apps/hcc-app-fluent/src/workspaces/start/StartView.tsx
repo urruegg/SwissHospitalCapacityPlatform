@@ -8,6 +8,7 @@ import { HospitalsSection } from './frontier/HospitalsSection';
 import { NinetyDaySection } from './frontier/NinetyDaySection';
 import { PatientPathLauncher } from './frontier/PatientPathLauncher';
 import { StartHero } from './frontier/StartHero';
+import { WhyCuraviasSection } from './frontier/WhyCuraviasSection';
 import { WorkChartSection } from './frontier/WorkChartSection';
 import { START_SECTIONS, type StartSection } from './frontier/start-content';
 
@@ -18,6 +19,10 @@ const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; navKey: str
   challenger: {
     eyebrowKey: 'start.frontier.challenger.eyebrow',
     navKey: 'start.frontier.nav.challenger',
+  },
+  vision: {
+    eyebrowKey: 'start.frontier.vision.eyebrow',
+    navKey: 'start.frontier.nav.vision',
   },
   'work-chart': {
     eyebrowKey: 'start.frontier.workChart.eyebrow',
@@ -49,6 +54,8 @@ function sectionBody(id: StartSection['id']) {
       return <StartHero />;
     case 'challenger':
       return <ChallengerSection />;
+    case 'vision':
+      return <WhyCuraviasSection />;
     case 'work-chart':
       return <WorkChartSection />;
     case 'cio-why-now':
