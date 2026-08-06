@@ -186,7 +186,6 @@ describe('StartView static narrative integration', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('start-nav-overview')).toHaveTextContent('Übersicht');
     expect(screen.getByTestId('start-nav-hero')).toHaveTextContent('Wert');
     expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Betriebsmodell');
     expect(screen.getByTestId('start-nav-cio-why-now')).toHaveTextContent('Warum jetzt');

@@ -10,8 +10,9 @@ export interface NarrativeSection {
 }
 
 interface NarrativeShellProps {
-  introTitle: string;
-  introDescription: string;
+  /** Intro title. Omit (with introDescription) to render no intro section — the shell starts at the first `sections` entry. */
+  introTitle?: string;
+  introDescription?: string;
   sections: NarrativeSection[];
   /** Deep-link target (route param / hash) scrolled to on mount. */
   initialKey?: string;
@@ -117,15 +118,15 @@ export function NarrativeShell({
         <SectionHeader
           id={introKey}
           variant="eyebrow"
-          header={introTitle}
+          header={introTitle ?? ''}
           tagline={introEyebrow ?? ''}
-          description={introDescription}
+          description={introDescription ?? ''}
         />
         {introExtra && <div className={s.introExtra}>{introExtra}</div>}
       </>
     ),
   };
-  const allSections = [introSection, ...sections];
+  const allSections = introTitle ? [introSection, ...sections] : sections;
   const ids = allSections.map((section) => section.key);
   const active = useScrollSpy(ids);
   const selected = active || ids[0];
