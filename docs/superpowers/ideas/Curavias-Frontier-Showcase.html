@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Curavias — The Swiss Healthcare Frontier Firm</title>
+<style>
+  :root{
+    /* Curavias Brand Kit v2 — green primary, navy secondary, light surfaces */
+    --bg:#eef3f9; --bg2:#ffffff; --panel:#ffffff; --panel2:#f4f8fc;
+    --line:#dde6f1; --line2:#c7d5e6;
+    --ink:#24405f; --navy:#365B7D; --muted:#516585; --faint:#7c8ca3;
+    --green:#17B890; --green-d:#0e8f6e; --teal:#1FA9D6; --violet:#5A6CF0;
+    --amber:#E8A200; --red:#E30613;
+    --radius:16px; --maxw:1180px;
+    --shadow:0 14px 40px rgba(35,64,95,.10); --shadow-s:0 6px 18px rgba(35,64,95,.07);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:
+      radial-gradient(1100px 640px at 82% -6%,#e5f7f0 0%,transparent 55%),
+      radial-gradient(900px 560px at 3% 4%,#e8f1fb 0%,transparent 55%), var(--bg);
+    color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--green-d)}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+
+  /* ---------- top bar ---------- */
+  header.bar{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px);
+    background:rgba(255,255,255,.86); border-bottom:1px solid var(--line);}
+  .bar .wrap{display:flex; align-items:center; gap:18px; height:64px}
+  .brand{display:flex; align-items:center; gap:11px; white-space:nowrap}
+  .brand .sym{width:34px;height:29px;display:block}
+  .brand b{font-weight:800; letter-spacing:-.2px; color:var(--navy); font-size:19px}
+  .brand small{display:block;font-weight:600;color:var(--faint);font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;margin-top:-2px}
+  nav.chapters{display:flex; gap:6px; margin-left:auto; flex-wrap:wrap}
+  nav.chapters button{background:transparent;border:1px solid transparent;color:var(--muted);
+    padding:8px 15px;border-radius:999px;cursor:pointer;font-size:13.5px;font-weight:600;transition:.18s}
+  nav.chapters button:hover{color:var(--navy);background:var(--panel2)}
+  nav.chapters button.active{color:#08321f;background:var(--green);border-color:transparent}
+  .ask-btn{border:1px solid var(--line2);background:var(--navy);color:#fff;
+    padding:9px 15px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
+  .ask-btn:hover{background:#2c4d6b}
+  .dot{width:8px;height:8px;border-radius:50%;background:#8be0c9;box-shadow:0 0 0 3px rgba(23,184,144,.28)}
+
+  /* ---------- chapters ---------- */
+  .chapter{display:none; animation:fade .4s ease}
+  .chapter.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  section.block{padding:52px 0; border-bottom:1px solid var(--line)}
+  section.block:last-child{border-bottom:none}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:1.4px;
+    text-transform:uppercase;color:var(--green-d);margin-bottom:14px}
+  .eyebrow::before{content:"";width:22px;height:3px;background:var(--green);border-radius:2px}
+  h1{font-size:clamp(30px,4.6vw,52px); line-height:1.06; margin:.1em 0 .3em; letter-spacing:-.6px; color:var(--navy)}
+  h2{font-size:clamp(23px,3vw,33px); line-height:1.15; margin:.1em 0 .5em; letter-spacing:-.3px; color:var(--navy)}
+  h3{font-size:18px;margin:.2em 0 .4em;color:var(--ink)}
+  h4{color:var(--ink)}
+  .lead{font-size:clamp(16px,1.7vw,19px); color:var(--muted); max-width:66ch}
+  p{color:var(--muted)}
+  .ink{color:var(--ink)}
+  .grad{background:linear-gradient(110deg,var(--navy),var(--green) 78%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  .pill{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border:1px solid var(--line);
+    border-radius:999px;font-size:12.5px;color:var(--muted);background:var(--panel);box-shadow:var(--shadow-s)}
+  .pill b{color:var(--ink)}
+  .pillrow{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;box-shadow:var(--shadow-s)}
+  .card.raise{box-shadow:var(--shadow)}
+  .card h3{display:flex;align-items:center;gap:9px}
+  .tag{font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:3px 9px;border-radius:6px}
+  .t-green{background:rgba(23,184,144,.14);color:var(--green-d)}
+  .t-teal{background:rgba(31,169,214,.14);color:#127ba0}
+  .t-violet{background:rgba(90,108,240,.14);color:#4453c9}
+  .t-amber{background:rgba(232,162,0,.16);color:#a97600}
+  .t-red{background:rgba(227,6,19,.12);color:#c40512}
+  .t-navy{background:rgba(54,91,125,.13);color:var(--navy)}
+
+  .kpi{font-size:30px;font-weight:800;letter-spacing:-.5px;line-height:1;color:var(--navy)}
+  .kpi.small{font-size:23px}
+  .ksub{font-size:12.5px;color:var(--faint);margin-top:6px}
+
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+  .btn{cursor:pointer;border-radius:11px;padding:12px 20px;font-weight:700;font-size:14.5px;border:1px solid transparent;text-decoration:none;display:inline-flex;gap:9px;align-items:center}
+  .btn.primary{background:var(--green);color:#08321f}
+  .btn.ghost{background:var(--panel);border-color:var(--line2);color:var(--navy)}
+  .btn:hover{transform:translateY(-1px)}
+
+  ul.clean{list-style:none;padding:0;margin:10px 0}
+  ul.clean li{position:relative;padding:6px 0 6px 26px;color:var(--muted);font-size:14.5px}
+  ul.clean li::before{content:"";position:absolute;left:2px;top:12px;width:9px;height:9px;border-radius:3px;background:var(--green)}
+  ul.clean li b{color:var(--ink)}
+
+  .disc{font-size:11.5px;color:var(--faint);border:1px dashed var(--line2);border-radius:10px;padding:9px 13px;background:var(--panel2)}
+
+  table.mini{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.mini th,table.mini td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+  table.mini th{color:var(--faint);font-weight:700;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase}
+  table.mini td{color:var(--muted)}
+  table.mini td b{color:var(--ink)}
+  table.mini tr:last-child td{border-bottom:none}
+  table.mini td .note{font-size:11px;color:var(--faint)}
+
+  /* hospital cards */
+  .hosp .htitle{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .hosp .glyph{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;
+    border:1px solid var(--line);background:var(--panel2)}
+  .row-mini{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+  .rm{display:flex;align-items:center;gap:9px;font-size:12.3px;color:var(--muted);
+    background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 10px}
+  .human{border-left:3px solid var(--navy)} .agent{border-left:3px solid var(--green)} .po{border-left:3px solid var(--violet)}
+  .metarow{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+  .metarow span{font-size:11.5px;color:var(--faint)} .metarow b{color:var(--navy)}
+
+  /* patient journey */
+  .journey{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:22px 0 8px}
+  @media(max-width:900px){.journey{grid-template-columns:1fr}}
+  .step{padding:16px 14px;border:1px solid var(--line);background:var(--panel);position:relative;box-shadow:var(--shadow-s)}
+  .step:first-child{border-radius:14px 0 0 14px}.step:last-child{border-radius:0 14px 14px 0}
+  @media(max-width:900px){.step{border-radius:12px!important;margin-bottom:8px}}
+  .step .num{font-size:11px;font-weight:800;color:var(--faint);letter-spacing:1px}
+  .step h4{margin:6px 0 6px;font-size:14.5px}
+  .step p{font-size:12.3px;margin:0;color:var(--muted)}
+  .step .who{margin-top:10px;display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:6px;border:1px solid var(--line2)}
+  .chip.h{color:var(--navy);border-color:rgba(54,91,125,.35)}
+  .chip.a{color:var(--green-d);border-color:rgba(23,184,144,.4)}
+  .chip.g{color:#a97600;border-color:rgba(232,162,0,.45)}
+
+  .beat{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .beat:last-child{border-bottom:none}
+  .beat .b-ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800;flex:0 0 auto}
+  .beat b{color:var(--ink)} .beat span{font-size:13px;color:var(--muted)}
+
+  /* 90 day */
+  .journey90{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  @media(max-width:900px){.journey90{grid-template-columns:1fr}}
+  .phase{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow-s)}
+  .phase .ph-top{padding:14px 16px;background:linear-gradient(120deg,rgba(23,184,144,.12),rgba(31,169,214,.06));
+    border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .phase .ph-top b{font-size:15px;color:var(--navy)} .phase .ph-top span{font-size:11.5px;color:var(--faint);font-weight:700}
+  .phase .ph-body{padding:14px 16px}
+
+  .frame{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:8px;overflow:hidden;box-shadow:var(--shadow-s)}
+  .frame-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:var(--muted)}
+  .frame-legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:12px;height:12px;border-radius:4px;display:inline-block}
+
+  .sf{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;align-items:center}
+  @media(max-width:900px){.sf{grid-template-columns:1fr}}
+  .sfrow{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:10px;box-shadow:var(--shadow-s)}
+  .sfrow .n{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto;background:var(--green);color:#08321f}
+  .sfrow h4{margin:0 0 3px;font-size:14.5px} .sfrow p{margin:0;font-size:12.7px}
+
+  .role{display:flex;gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:var(--shadow-s)}
+  .role .av{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto}
+  .role h4{margin:0;font-size:14px} .role .comp{font-size:12px;color:var(--faint);margin:2px 0 6px}
+  .role .chal{font-size:12.3px;color:var(--muted);border-left:2px solid var(--amber);padding-left:9px}
+  .lk{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#0a66c2;
+    text-decoration:none;border:1px solid rgba(10,102,194,.32);padding:4px 10px;border-radius:8px;margin-top:9px}
+  .lk:hover{background:rgba(10,102,194,.08)}
+  .av-green{background:rgba(23,184,144,.14);color:var(--green-d)} .av-navy{background:rgba(54,91,125,.14);color:var(--navy)}
+  .av-teal{background:rgba(31,169,214,.14);color:#127ba0} .av-violet{background:rgba(90,108,240,.14);color:#4453c9}
+
+  footer{padding:38px 0 60px;color:var(--faint);font-size:12.5px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+  footer .taglink{color:var(--navy);font-style:italic;font-weight:600}
+
+  .note{font-size:12px;color:var(--faint);margin-top:8px}
+  .maxc{max-width:70ch}
+
+  /* PO rail */
+  .rail-mask{position:fixed;inset:0;background:rgba(36,64,95,.32);backdrop-filter:blur(2px);z-index:70;display:none}
+  .rail-mask.open{display:block}
+  .rail{position:fixed;top:0;right:0;height:100%;width:min(430px,94vw);z-index:80;background:#fff;border-left:1px solid var(--line2);
+    transform:translateX(105%);transition:transform .3s ease;display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(36,64,95,.2)}
+  .rail.open{transform:none}
+  .rail-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;background:var(--navy);color:#fff}
+  .rail-head b{font-size:15px} .rail-head small{color:#cfe0f2;font-size:11.5px}
+  .rail-x{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:16px}
+  .rail-body{padding:16px;overflow:auto;flex:1}
+  .qbtn{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    border-radius:11px;padding:11px 13px;margin-bottom:9px;cursor:pointer;font-size:13px;font-weight:600}
+  .qbtn:hover{border-color:var(--green);background:#fff}
+  .answer{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:6px;font-size:13.4px;color:var(--muted);display:none}
+  .answer.show{display:block}
+  .answer .cite{margin-top:10px;font-size:11px;color:var(--faint);border-top:1px dashed var(--line2);padding-top:9px}
+  .answer .cite b{color:var(--green-d)}
+  .rail-foot{padding:12px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--faint)}
+</style>
+</head>
+<body>
+
+<!-- symbol as reusable SVG snippet is inlined where needed -->
+
+<!-- ================= TOP BAR ================= -->
+<header class="bar">
+  <div class="wrap">
+    <div class="brand">
+      <svg class="sym" viewBox="0 0 300 250" role="img" aria-label="Curavias">
+        <defs><linearGradient id="pS1" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#22C08A"/><stop offset="0.5" stop-color="#1FA9D6"/><stop offset="1" stop-color="#5A6CF0"/></linearGradient></defs>
+        <path d="M46,212 C130,196 150,150 258,74" fill="none" stroke="url(#pS1)" stroke-width="16" stroke-linecap="round"/>
+        <circle cx="46" cy="212" r="16" fill="#365B7D"/>
+        <circle cx="150" cy="146" r="30" fill="#E30613"/>
+        <g transform="translate(150,146)"><rect x="-13" y="-5" width="26" height="10" rx="2" fill="#fff"/><rect x="-5" y="-13" width="10" height="26" rx="2" fill="#fff"/></g>
+        <circle cx="258" cy="74" r="38" fill="#17B890"/>
+        <g transform="translate(258,74) scale(1.5)"><path d="M-14,1 L-4,12 L15,-12" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+      </svg>
+      <div><b>Curavias</b><small>Swiss Hospital Capacity Copilot</small></div>
+    </div>
+    <nav class="chapters">
+      <button data-ch="start" class="active">Start</button>
+      <button data-ch="main">Main</button>
+      <button data-ch="backstage">Backstage</button>
+    </nav>
+    <button class="ask-btn" onclick="openRail()"><span class="dot"></span> Ask the Product Owner Agent</button>
+  </div>
+</header>
+
+<!-- ================================================================= -->
+<!-- ============================  START  ============================= -->
+<!-- ================================================================= -->
+<div class="chapter on" id="ch-start">
+
+  <!-- HERO -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Start · for hospital & healthcare C-level · 5–10 min</div>
+      <h1>The hospital of the future is a<br><span class="grad">Frontier Firm</span>.<br>Curavias makes it real.</h1>
+      <p class="lead">A <b class="ink">Frontier Firm</b> runs on human–agent teams: people keep judgment and accountability, digital
+      colleagues carry the routine. Inspired by the Microsoft Frontier Firm and by
+      <a href="https://www.journai.ch/" target="_blank" rel="noopener">Journai</a> — a Swiss company where 2 people work with 20+ AI colleagues —
+      Curavias brings the same operating model to hospital capacity and patient flow.</p>
+      <p style="font-style:italic;color:var(--navy);font-weight:600;margin-top:-2px">“Every patient’s path, in Swiss hands.”</p>
+      <div class="pillrow">
+        <span class="pill"><span class="dot"></span> <b>Advisory-only</b> · it previews &amp; recommends — never decides or diagnoses</span>
+        <span class="pill">🇨🇭 <b>Swiss-resident</b> · synthetic data · not a medical device</span>
+        <span class="pill">✅ Live in PROD <b>Switzerland North</b> · app.curavias.ch</span>
+      </div>
+      <div class="hero-cta">
+        <a class="btn primary" onclick="go('start','#the3')">Meet the three hospitals →</a>
+        <a class="btn ghost" onclick="go('backstage')">See how it was built</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS A FRONTIER FIRM -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">The idea in one minute</div>
+      <h2>From the org chart to the <span class="grad">work chart</span></h2>
+      <div class="grid g3" style="margin-top:22px">
+        <div class="card"><h3><span class="tag t-navy">Humans</span></h3>
+          <p>Bed managers, nurses, physicians and planners stay <b class="ink">in the loop and in charge</b> — every
+          recommendation needs a human “approved-to-apply” before anything moves.</p></div>
+        <div class="card"><h3><span class="tag t-green">Agents</span></h3>
+          <p>Digital colleagues forecast demand, rank discharges, steer the OR and answer questions —
+          <b class="ink">on demand, 24×7</b>, always grounded and cited.</p></div>
+        <div class="card"><h3><span class="tag t-violet">On-demand intelligence</span></h3>
+          <p>Capacity insight is no longer a weekly report. It is a <b class="ink">living, queryable service</b> your teams
+          can ask, challenge and act on in seconds.</p></div>
+      </div>
+      <div class="card raise" style="margin-top:18px">
+        <div class="sf">
+          <div>
+            <h3>How Curavias fits the Microsoft Frontier Firm</h3>
+            <p class="maxc">The Frontier Firm is defined by human–agent teams, humans acting as “agent bosses”, and
+            intelligence available on demand. Curavias is exactly that model, applied to where a hospital feels pressure
+            every day: <b class="ink">capacity and patient flow</b>.</p>
+          </div>
+          <table class="mini">
+            <tr><th>Frontier Firm principle</th><th>In Curavias</th></tr>
+            <tr><td>Human–agent teams</td><td><b>7 runtime agents</b> + operational staff</td></tr>
+            <tr><td>Humans as “agent bosses”</td><td>HITL <b>approve-to-apply</b> gate</td></tr>
+            <tr><td>Intelligence on demand</td><td>72-h forecast · copilot · simulation</td></tr>
+            <tr><td>Trust by design</td><td>Swiss-resident · no PHI · fully cited</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE THREE HOSPITALS -->
+  <section class="block" id="the3">
+    <div class="wrap">
+      <div class="eyebrow">Key visual 1 · Organisation</div>
+      <h2>Three hospitals, each running as a Frontier Firm</h2>
+      <p class="lead">The Curavias org spine models three Swiss hospital archetypes on <b class="ink">synthetic, no-PHI</b> data —
+      grounded on real reference patterns. In each, physical employees and agents run the <b class="ink">HCC Operation</b>
+      (Hospital Capacity Coordination) and the <b class="ink">Patient Flow</b> end-to-end, human-in-the-loop.</p>
+
+      <div class="grid g3" style="margin-top:20px">
+        <!-- CuraNova -->
+        <div class="card hosp raise">
+          <div class="htitle">
+            <div><h3 style="margin:0">Uniklinik CuraNova</h3><div class="note">University central hospital · Canton Helvetia-Nord</div></div>
+            <div class="glyph">🏛️</div>
+          </div>
+          <div class="metarow"><span><b>~900</b> beds</span><span><b>8,600</b> FTE</span><span>7 medical centres</span></div>
+          <div class="row-mini">
+            <div class="rm human"><span>👩‍⚕️</span> Head of Nursing — bed side</div>
+            <div class="rm human"><span>🩺</span> CMO &amp; specialised teams — ops side</div>
+            <div class="rm agent"><span>🤖</span> Agents — HCC Operation + Patient Flow</div>
+            <div class="rm po"><span>💬</span> Product Owner Agent — answers the hard questions</div>
+          </div>
+        </div>
+        <!-- Curalp -->
+        <div class="card hosp raise">
+          <div class="htitle">
+            <div><h3 style="margin:0">Kantonsspital Curalp</h3><div class="note">Cantonal multi-site group · Canton Curalp</div></div>
+            <div class="glyph">🏥</div>
+          </div>
+          <div class="metarow"><span><b>~840</b> beds</span><span><b>8,600</b> FTE</span><span>5 sites</span></div>
+          <div class="row-mini">
+            <div class="rm human"><span>👩‍⚕️</span> Bed / Flow Manager — bed side</div>
+            <div class="rm human"><span>🩺</span> Physicians &amp; OR — ops side</div>
+            <div class="rm agent"><span>🤖</span> Agents — HCC Operation + Patient Flow</div>
+            <div class="rm po"><span>💬</span> Product Owner Agent — answers the hard questions</div>
+          </div>
+        </div>
+        <!-- Vialta -->
+        <div class="card hosp raise">
+          <div class="htitle">
+            <div><h3 style="margin:0">Spital Vialta</h3><div class="note">Regional acute (private, public mandate)</div></div>
+            <div class="glyph">🏩</div>
+          </div>
+          <div class="metarow"><span><b>174</b> beds</span><span><b>1,200</b> FTE</span><span>24/7 Notfall</span></div>
+          <div class="row-mini">
+            <div class="rm human"><span>👩‍⚕️</span> Nursing lead — bed side</div>
+            <div class="rm human"><span>🩺</span> Medical &amp; OR leads — ops side</div>
+            <div class="rm agent"><span>🤖</span> Agents — HCC Operation + Patient Flow</div>
+            <div class="rm po"><span>💬</span> Product Owner Agent — answers the hard questions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- agent team -->
+      <div class="card" style="margin-top:18px">
+        <h3>The agent team behind every hospital <span class="tag t-green" style="margin-left:6px">7 runtime agents · live</span></h3>
+        <div class="grid g4" style="margin-top:12px;gap:12px">
+          <div class="rm agent"><span>📈</span> <b style="color:var(--ink)">OOA</b>&nbsp;— Occupancy &amp; 72-h forecast</div>
+          <div class="rm agent"><span>🚪</span> <b style="color:var(--ink)">DCA</b>&nbsp;— Discharge coordination</div>
+          <div class="rm agent"><span>🛏️</span> <b style="color:var(--ink)">BMCA</b>&nbsp;— Bed-management copilot</div>
+          <div class="rm agent"><span>🧪</span> <b style="color:var(--ink)">CSA</b>&nbsp;— Capacity what-if simulation</div>
+          <div class="rm agent"><span>🔧</span> <b style="color:var(--ink)">ORSA</b>&nbsp;— OR steering</div>
+          <div class="rm agent"><span>🧑‍⚕️</span> <b style="color:var(--ink)">SBA</b>&nbsp;— Staffing balance</div>
+          <div class="rm agent"><span>✔️</span> <b style="color:var(--ink)">Data-Quality</b>&nbsp;— Bronze/Silver/Gold checks</div>
+          <div class="rm po"><span>💬</span> <b style="color:var(--ink)">PO Agent</b>&nbsp;— grounded Q&amp;A rail</div>
+        </div>
+        <p class="note">All agents are advisory and human-in-the-loop, grounded on governed synthetic data, Swiss-resident, no PHI.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATIENT JOURNEY -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Key visual 2 · Patient journey</div>
+      <h2>One patient, one flow — humans and agents together</h2>
+      <p class="lead">Every step keeps a person in charge. Agents surface the signal, explain it, recommend a lever and
+      prepare the coordination — a human approves before anything is applied.</p>
+      <div class="journey">
+        <div class="step"><div class="num">01 · ARRIVAL</div><h4>ED &amp; admission</h4><p>Operational events (ED, ADT, bed-state) stream in near-real-time.</p><div class="who"><span class="chip a">Data-Quality</span><span class="chip h">Triage nurse</span></div></div>
+        <div class="step"><div class="num">02 · FORECAST</div><h4>72-hour pressure</h4><p>OOA forecasts demand by specialty &amp; window and flags breach risk.</p><div class="who"><span class="chip a">OOA</span><span class="chip h">Flow manager</span></div></div>
+        <div class="step"><div class="num">03 · BED</div><h4>Bed assignment</h4><p>BMCA answers “where is the pressure?” grounded on live state.</p><div class="who"><span class="chip a">BMCA</span><span class="chip h">Bed manager</span></div></div>
+        <div class="step"><div class="num">04 · DISCHARGE</div><h4>Ready to leave</h4><p>DCA ranks discharge candidates with reasons &amp; blockers.</p><div class="who"><span class="chip a">DCA</span><span class="chip h">Physician</span><span class="chip g">Approve</span></div></div>
+        <div class="step"><div class="num">05 · COORDINATE</div><h4>Partner handoff</h4><p>Approved plan drives downstream coordination &amp; a live recompute.</p><div class="who"><span class="chip a">DCA</span><span class="chip g">HITL gate</span></div></div>
+      </div>
+      <div class="grid g2" style="margin-top:20px">
+        <div class="card">
+          <h3>How an agent answers — the <span class="grad">DC-INSIGHT</span> pattern</h3>
+          <div class="beat"><div class="b-ic t-teal">1</div><span><b>SIGNAL</b> — Medicine A is forecast to breach: occupancy 102%.</span></div>
+          <div class="beat"><div class="b-ic t-teal">2</div><span><b>UNDERSTANDING</b> — drivers, source-trust and confidence, all cited.</span></div>
+          <div class="beat"><div class="b-ic t-green">3</div><span><b>RECOMMENDATION</b> — ranked levers with a <b>deterministic</b> impact (never an LLM guess).</span></div>
+          <div class="beat"><div class="b-ic t-amber">4</div><span><b>ACTION</b> — proposed only; applied after a human posts <b>approved-to-apply</b>.</span></div>
+          <div class="beat"><div class="b-ic t-violet">5</div><span><b>COORDINATION</b> — cross-role plan &amp; OOA→DCA handoff.</span></div>
+        </div>
+        <div class="card raise" style="display:flex;flex-direction:column;justify-content:center">
+          <div class="eyebrow" style="margin-bottom:8px">Worked example</div>
+          <div class="kpi" style="font-size:34px">102% <span style="color:var(--faint);font-size:22px">→</span> <span style="color:var(--green-d)">94%</span></div>
+          <div class="ksub">Medicine A forecast occupancy after a human approves the recommended lever — recomputed deterministically for the affected ward.</div>
+          <div class="pillrow" style="margin-bottom:0"><span class="pill"><b>Advisory</b> · human-in-the-loop</span><span class="pill"><b>Auditable</b> · every number traceable</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 90 DAYS -->
+  <section class="block" id="ninety">
+    <div class="wrap">
+      <div class="eyebrow">The first frontier · invented the Journai way</div>
+      <h2>Capacity Forecast — live in <span class="grad">90 days</span>, 1 human + agents</h2>
+      <p class="lead">Journai’s lesson: don’t plan for months — start small, prove value in weeks, then scale. Curavias’
+      first identified frontier is the <b class="ink">72-hour capacity forecast (OOA)</b>: delivered by one human
+      orchestrating supporting agents, validated with real hospital competency.</p>
+      <div class="journey90">
+        <div class="phase"><div class="ph-top"><b>Frame &amp; Ground</b><span>DAY 0–30</span></div><div class="ph-body"><ul class="clean">
+          <li>Pick <b>one</b> frontier use case: the 72-h forecast</li><li>Ground on governed synthetic data — <b>no PHI</b></li>
+          <li>Calibrate to the hospital’s real demand pattern</li><li>Name the human owner &amp; the challenger role</li></ul></div></div>
+        <div class="phase"><div class="ph-top"><b>Build &amp; Prove</b><span>DAY 30–60</span></div><div class="ph-body"><ul class="clean">
+          <li>OOA forecast live in SIT, cited &amp; audited</li><li>DC-INSIGHT prescriptive beats + HITL gate</li>
+          <li>Review with bed &amp; ops roles — challenge &amp; refine</li><li>Measure forecast error at operational horizon</li></ul></div></div>
+        <div class="phase"><div class="ph-top"><b>Operate &amp; Scale</b><span>DAY 60–90</span></div><div class="ph-body"><ul class="clean">
+          <li>Promote to <b>PROD Switzerland North</b> via approval gate</li><li>OOA→DCA handoff for discharge coordination</li>
+          <li>Daily command-center cadence adopted</li><li>Next frontier lever chosen from evidence</li></ul></div></div>
+      </div>
+      <div class="disc" style="margin-top:16px">Delivered pattern, not a promise: the forecast agent (OOA) is already live in PROD
+      Switzerland North on synthetic data. The 90-day frame is the repeatable path for a new provider.</div>
+    </div>
+  </section>
+
+  <!-- BVA / ROI / TCO — THE DECISION -->
+  <section class="block" id="bva">
+    <div class="wrap">
+      <div class="eyebrow">The decision · Business Value Assessment</div>
+      <h2>The <span class="grad">BVA</span> that kick-starts the frontier</h2>
+      <p class="lead">Before the first agent goes live, the numbers make the call. The Business Value Assessment is the
+      executive <b class="ink">go/no-go baseline</b> — and it says <b class="ink">go</b>: payback under six months on a
+      controlled, ROM-level investment.</p>
+
+      <div class="grid g4" style="margin-top:20px">
+        <div class="card"><div class="kpi" style="color:var(--green-d)">127%</div><div class="ksub">3-year ROI (base ROM, ±30%)</div></div>
+        <div class="card"><div class="kpi">~6 mo</div><div class="ksub">Simple payback period</div></div>
+        <div class="card"><div class="kpi">CHF 2.57M</div><div class="ksub">Net annual benefit after run cost</div></div>
+        <div class="card"><div class="kpi">CHF 6.41M</div><div class="ksub">3-year net value</div></div>
+      </div>
+
+      <div class="grid g2" style="margin-top:18px">
+        <div class="card"><h3>Total Cost of Ownership <span class="tag t-navy" style="margin-left:6px">3-year</span></h3>
+          <table class="mini">
+            <tr><th>Component</th><th>ROM</th></tr>
+            <tr><td>One-time implementation (Year 0–1)</td><td><b>CHF 1.30M</b></td></tr>
+            <tr><td>Annual run cost</td><td><b>CHF 1.25M / yr</b></td></tr>
+            <tr><td><b class="ink">3-year TCO</b></td><td><b class="ink">CHF 5.05M</b></td></tr>
+            <tr><td>3-year gross benefit</td><td><b>CHF 11.46M</b></td></tr>
+          </table></div>
+        <div class="card"><h3>Where the annual value comes from</h3>
+          <table class="mini">
+            <tr><th>Value lever</th><th>ROM / yr</th></tr>
+            <tr><td>Reduced bed-day blocking &amp; discharge delay</td><td><b>CHF 1.65M</b></td></tr>
+            <tr><td>Command-center productivity</td><td><b>CHF 0.98M</b></td></tr>
+            <tr><td>Less overtime &amp; agency premium</td><td><b>CHF 0.62M</b></td></tr>
+            <tr><td>Integration &amp; compliance efficiency</td><td><b>CHF 0.57M</b></td></tr>
+            <tr><td><b class="ink">Total gross annual benefit</b></td><td><b class="ink">CHF 3.82M</b></td></tr>
+          </table></div>
+      </div>
+
+      <div class="grid g2" style="margin-top:18px">
+        <div class="card"><h3>Sensitivity — ROI holds across scenarios</h3>
+          <div class="pillrow" style="margin:12px 0 0">
+            <span class="pill">Conservative · <b>48%</b></span>
+            <span class="pill" style="border-color:var(--green)">Base ROM · <b>127%</b></span>
+            <span class="pill">Upside · <b>201%</b></span>
+          </div>
+          <p class="note">3-year ROI by adoption scenario — even the conservative case clears the &gt;60% governance target.</p></div>
+        <div class="card"><h3>Proof it is real <span class="tag t-green" style="margin-left:6px">as-deployed</span></h3>
+          <ul class="clean">
+            <li><b>Live in PROD Switzerland North</b> · app.curavias.ch (200 + TLS)</li>
+            <li><b>7 runtime agents</b> serving · Fabric F2 · 50 governed tables</li>
+            <li><b>Synthetic data only, no PHI</b> — not a medical device</li>
+          </ul></div>
+      </div>
+
+      <div class="card raise" style="margin-top:18px;border-left:4px solid var(--green)">
+        <div class="sf">
+          <div>
+            <h3 style="margin-top:0">Decision: kick-start the first frontier</h3>
+            <p class="maxc">The BVA clears the executive go/no-go — <b class="ink">127% 3-year ROI, payback under 6 months</b>,
+            ±30% ROM. That is the mandate to launch the <b class="ink">72-hour capacity forecast</b> as the first Frontier
+            Firm implementation: live in 90 days with 1 human + supporting agents.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+            <a class="btn primary" onclick="go('start','#ninety')">→ Launch the 90-day frontier</a>
+            <a class="btn ghost" onclick="openRail()">💬 Ask the PO Agent about the BVA</a>
+          </div>
+        </div>
+      </div>
+      <p class="note">ROM (Rough Order of Magnitude) figures for executive decision support, ±30% band. Source: Business Value Assessment (BVA).</p>
+    </div>
+  </section>
+</div>
+
+<!-- ================================================================= -->
+<!-- ============================  MAIN  ============================== -->
+<!-- ================================================================= -->
+<div class="chapter" id="ch-main">
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Main · the live operational product</div>
+      <h2>The Main experience lives in the <span class="grad">Curavias app</span></h2>
+      <p class="lead">The Main section — where operational roles do the daily work with agents alongside them,
+      human-in-the-loop on every board — is <b class="ink">already implemented</b> as the internal Curavias app at
+      <b class="ink">app.curavias.ch</b>. It is intentionally not duplicated in this showcase; this rework covers only
+      <b class="ink">Start</b> and <b class="ink">Backstage</b>.</p>
+
+      <div class="card raise" style="margin-top:14px">
+        <h3>Journey-ordered role boards <span class="tag t-green" style="margin-left:6px">live app</span></h3>
+        <div class="pillrow" style="margin-top:12px">
+          <span class="pill"><b>Occupancy</b> · OOA</span>
+          <span class="pill"><b>Bed management</b> · BMCA</span>
+          <span class="pill"><b>OR steering</b> · ORSA</span>
+          <span class="pill"><b>Staffing</b> · SBA</span>
+          <span class="pill"><b>Discharge</b> · DCA</span>
+          <span class="pill"><b>Scenario</b> · CSA</span>
+        </div>
+        <p class="note">Each board opens on the first patient-journey view the signed-in role may see; agents propose, the
+        operational role decides — no proposed action is applied without an explicit “approved-to-apply”. Every answer is cited.</p>
+      </div>
+      <div class="disc" style="margin-top:16px">Open the real Main at <b>app.curavias.ch</b>. This showcase links Start → Main → Backstage;
+      the Main tab is a pointer to the live product.</div>
+    </div>
+  </section>
+</div>
+
+<!-- ================================================================= -->
+<!-- ==========================  BACKSTAGE  ========================== -->
+<!-- ================================================================= -->
+<div class="chapter" id="ch-backstage">
+
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Backstage · the company behind the product</div>
+      <h1>We didn’t just build a Frontier Firm.<br><span class="grad">We became one.</span></h1>
+      <p class="lead">Two visuals tell the backstage story: how the Curavias organisation ran its own transformation against a
+      success framework, and how the product team actually builds &amp; ships — DevSecOps with humans on the gates.</p>
+    </div>
+  </section>
+
+  <!-- VISUAL A: SUCCESS FRAMEWORK -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Backstage visual 1 · Frontier Firm</div>
+      <h2>“We have organized our own transformation<br>against the <span class="grad">Success Framework</span>.”</h2>
+      <p class="lead">Curavias was built the way we ask hospitals to work: <b class="ink">one human orchestrating a team of
+      agents</b>. The whole platform — 29 sprints of requirements, architecture, code, infrastructure and compliance
+      evidence — was delivered by a single person acting as an “agent boss”, with GitHub &amp; Foundry agents doing the build.</p>
+      <div class="sf" style="margin-top:20px">
+        <div>
+          <div class="sfrow"><div class="n">1</div><div><h4>Organize around outcomes, not roles</h4>
+            <p>Every sprint is one tracker issue → small vertical slices → squash PRs. GitHub is the single control plane.</p></div></div>
+          <div class="sfrow"><div class="n">2</div><div><h4>Human–agent teams</h4>
+            <p>Agents open, update and green pull requests in parallel worktrees; <b>a human merges every PR</b> — agents never self-merge.</p></div></div>
+          <div class="sfrow"><div class="n">3</div><div><h4>Trust &amp; governance by design</h4>
+            <p>ADRs, PR traceability, security &amp; compliance gates, and PHI four-gate enforcement are native, not bolted on.</p></div></div>
+          <div class="sfrow"><div class="n">4</div><div><h4>Evidence-first, measurable</h4>
+            <p>Every release is auditable; requirements map to FR/NFR IDs; value tracked against the BVA baseline.</p></div></div>
+        </div>
+        <div class="card raise">
+          <h3>Our transformation, in numbers</h3>
+          <div class="grid g2" style="gap:12px;margin-top:6px">
+            <div class="card" style="padding:16px"><div class="kpi small" style="color:var(--green-d)">1</div><div class="ksub">human orchestrating the build</div></div>
+            <div class="card" style="padding:16px"><div class="kpi small">29</div><div class="ksub">sprints delivered end-to-end</div></div>
+            <div class="card" style="padding:16px"><div class="kpi small">SIT→PROD</div><div class="ksub">approval-gated promotion</div></div>
+            <div class="card" style="padding:16px"><div class="kpi small">100%</div><div class="ksub">PRs human-merged, CI-gated</div></div>
+          </div>
+          <p class="note">Trunk-based parallel-sprint workflow: <b>main</b> is the baseline of truth, each sprint a worktree with its own Copilot CLI session, CI is the merge gate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISUAL B: DEVSECOPS LOOP -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Backstage visual 2 · The Product Team (DevSecOps)</div>
+      <h2>How the product is built &amp; shipped</h2>
+      <p class="lead">The DevSecOps team runs a governed DEV↔OPS loop. Superpowers turn an idea into a spec; security &amp;
+      compliance gates guard every change; a Human-in-the-Loop gate (PR + Issue) sits at the centre; delivery flows
+      DEV → SIT → PROD behind an approval gate — all on a GitHub &amp; Copilot foundation.</p>
+      <div class="frame" style="margin-top:18px">
+        <svg viewBox="0 0 1000 560" width="100%" role="img" aria-label="Curavias DevSecOps loop">
+          <defs>
+            <linearGradient id="gd" x1="0" x2="1"><stop offset="0" stop-color="#22C08A"/><stop offset="1" stop-color="#17B890"/></linearGradient>
+            <linearGradient id="go" x1="0" x2="1"><stop offset="0" stop-color="#1FA9D6"/><stop offset="1" stop-color="#365B7D"/></linearGradient>
+          </defs>
+          <rect x="20" y="16" width="960" height="44" rx="10" fill="#f4f8fc" stroke="#dde6f1"/>
+          <text x="40" y="43" fill="#4453c9" font-size="13" font-weight="800" font-family="Segoe UI">GOVERNANCE</text>
+          <text x="150" y="43" fill="#516585" font-size="12.5" font-family="Segoe UI">Schemata · Contracts · Compliance gates · ADRs</text>
+          <text x="740" y="43" fill="#a97600" font-size="12" font-weight="700" font-family="Segoe UI">SEC · DSG · PHI-Gates</text>
+          <g font-family="Segoe UI">
+            <text x="40" y="96" fill="#0e8f6e" font-size="12" font-weight="800">SUPERPOWERS — PLAN gates</text>
+            <rect x="40" y="106" width="120" height="34" rx="17" fill="#fff" stroke="#c7d5e6"/><text x="100" y="128" fill="#24405f" font-size="12.5" text-anchor="middle">Brainstorm</text>
+            <rect x="176" y="106" width="96" height="34" rx="17" fill="#fff" stroke="#c7d5e6"/><text x="224" y="128" fill="#24405f" font-size="12.5" text-anchor="middle">Design</text>
+            <rect x="288" y="106" width="80" height="34" rx="17" fill="#fff" stroke="#c7d5e6"/><text x="328" y="128" fill="#24405f" font-size="12.5" text-anchor="middle">Spec</text>
+            <path d="M160 123 h14 M272 123 h14" stroke="#17B890" stroke-width="2"/>
+          </g>
+          <circle cx="330" cy="330" r="132" fill="none" stroke="url(#gd)" stroke-width="26"/>
+          <text x="330" y="322" text-anchor="middle" fill="#24405f" font-size="40" font-weight="800" font-family="Segoe UI">DEV</text>
+          <text x="330" y="352" text-anchor="middle" fill="#516585" font-size="12.5" font-family="Segoe UI">plan · code · build · test</text>
+          <g font-family="Segoe UI" font-size="11.5" font-weight="700">
+            <g><circle cx="330" cy="198" r="20" fill="#fff" stroke="#17B890"/><text x="330" y="202" text-anchor="middle" fill="#0e8f6e">PLAN</text></g>
+            <g><circle cx="205" cy="290" r="20" fill="#fff" stroke="#17B890"/><text x="205" y="294" text-anchor="middle" fill="#0e8f6e">CODE</text></g>
+            <g><circle cx="205" cy="378" r="20" fill="#fff" stroke="#17B890"/><text x="205" y="382" text-anchor="middle" fill="#0e8f6e">BUILD</text></g>
+            <g><circle cx="330" cy="462" r="20" fill="#fff" stroke="#17B890"/><text x="330" y="466" text-anchor="middle" fill="#0e8f6e">TEST</text></g>
+          </g>
+          <circle cx="670" cy="330" r="132" fill="none" stroke="url(#go)" stroke-width="26"/>
+          <text x="670" y="322" text-anchor="middle" fill="#24405f" font-size="40" font-weight="800" font-family="Segoe UI">OPS</text>
+          <text x="670" y="352" text-anchor="middle" fill="#516585" font-size="12.5" font-family="Segoe UI">release · deploy · operate · monitor</text>
+          <g font-family="Segoe UI" font-size="10.5" font-weight="700">
+            <g><circle cx="670" cy="198" r="20" fill="#fff" stroke="#365B7D"/><text x="670" y="202" text-anchor="middle" fill="#365B7D">RELEASE</text></g>
+            <g><circle cx="795" cy="290" r="20" fill="#fff" stroke="#365B7D"/><text x="795" y="294" text-anchor="middle" fill="#365B7D">DEPLOY</text></g>
+            <g><circle cx="795" cy="378" r="20" fill="#fff" stroke="#365B7D"/><text x="795" y="382" text-anchor="middle" fill="#365B7D">OPERATE</text></g>
+            <g><circle cx="670" cy="462" r="20" fill="#fff" stroke="#365B7D"/><text x="670" y="466" text-anchor="middle" fill="#365B7D">MONITOR</text></g>
+          </g>
+          <circle cx="500" cy="330" r="46" fill="#fff" stroke="#E8A200" stroke-width="2.5"/>
+          <text x="500" y="326" text-anchor="middle" fill="#E8A200" font-size="22" font-weight="900" font-family="Segoe UI">✓</text>
+          <text x="500" y="345" text-anchor="middle" fill="#a97600" font-size="9.5" font-weight="800" font-family="Segoe UI">HITL-GATE</text>
+          <text x="500" y="404" text-anchor="middle" fill="#516585" font-size="11" font-family="Segoe UI">PR · Issue · approved-to-apply</text>
+          <g font-family="Segoe UI">
+            <rect x="20" y="500" width="960" height="44" rx="10" fill="#f4f8fc" stroke="#dde6f1"/>
+            <text x="40" y="527" fill="#0e8f6e" font-size="12" font-weight="800">DELIVERY</text>
+            <g font-size="12.5" font-weight="700">
+              <rect x="140" y="510" width="70" height="24" rx="12" fill="#fff" stroke="#c7d5e6"/><text x="175" y="527" text-anchor="middle" fill="#24405f">DEV</text>
+              <text x="222" y="527" fill="#7c8ca3">→</text>
+              <rect x="240" y="510" width="70" height="24" rx="12" fill="#fff" stroke="#c7d5e6"/><text x="275" y="527" text-anchor="middle" fill="#24405f">SIT</text>
+              <rect x="326" y="508" width="96" height="28" rx="14" fill="#fff" stroke="#E8A200"/><text x="374" y="527" text-anchor="middle" fill="#a97600" font-size="11">PR-GATE</text>
+              <text x="436" y="527" fill="#7c8ca3">→</text>
+              <rect x="454" y="510" width="76" height="24" rx="12" fill="#fff" stroke="#c7d5e6"/><text x="492" y="527" text-anchor="middle" fill="#24405f">PROD</text>
+            </g>
+            <text x="620" y="527" fill="#516585" font-size="11.5">Foundation: Platform landing zone · GitHub DevOps · GitHub Copilot · Copilot CLI</text>
+          </g>
+        </svg>
+      </div>
+      <div class="frame-legend">
+        <span><i class="sw" style="background:#17B890"></i> DEV loop — plan, code, build, test</span>
+        <span><i class="sw" style="background:linear-gradient(120deg,#1FA9D6,#365B7D)"></i> OPS loop — release, deploy, operate, monitor</span>
+        <span><i class="sw" style="background:#E8A200"></i> Human-in-the-loop gate</span>
+        <span><i class="sw" style="background:#5A6CF0"></i> Governance &amp; security bands</span>
+      </div>
+      <p class="note">Reference: the product team’s build model — <b>Curavias — Wie das Produkt gebaut wird (DevSecOps-Team)</b>.</p>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Backstage · Frontier architecture</div>
+      <h2>Six lanes, one governed platform</h2>
+      <div class="grid g3" style="margin-top:18px">
+        <div class="card"><h3><span class="tag t-teal">Experience</span></h3><p>React command-center app &amp; copilot rail — the Curavias app at app.curavias.ch.</p></div>
+        <div class="card"><h3><span class="tag t-teal">API &amp; agent runtime</span></h3><p>Azure Container Apps — application-hosted agents, policy checks, correlation IDs.</p></div>
+        <div class="card"><h3><span class="tag t-green">Data platform</span></h3><p>Microsoft Fabric + OneLake — curated Bronze/Silver/Gold, governed semantic models.</p></div>
+        <div class="card"><h3><span class="tag t-green">AI &amp; decision</span></h3><p>Azure OpenAI / Foundry — 72-h forecast, discharge scoring, grounded copilot inference.</p></div>
+        <div class="card"><h3><span class="tag t-violet">Integration</span></h3><p>Logic Apps &amp; Service Bus — partner coordination, acknowledgements, retries.</p></div>
+        <div class="card"><h3><span class="tag t-violet">Governance</span></h3><p>Entra ID · Key Vault · Purview · Monitor · Policy — identity, secrets, lineage, audit.</p></div>
+      </div>
+      <div class="pillrow" style="margin-top:16px">
+        <span class="pill">🇨🇭 <b>Swiss residency</b> — Switzerland North primary</span>
+        <span class="pill"><b>No PHI</b> — synthetic, episode-driven</span>
+        <span class="pill"><b>Advisory-only</b> — not a medical device</span>
+        <span class="pill"><b>Zero Trust</b> — least-privilege, managed identity</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW SESSIONS & PEOPLE -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Backstage · this was a real exercise</div>
+      <h2>Pressure-tested with <span class="grad">real people</span>, in real review sessions</h2>
+      <p class="lead">Curavias was challenged across a documented series of expert reviews (2026-06 to 2026-07) and a named
+      hospital field interview at <b class="ink">Spital Zollikerberg</b> — the real hospital behind the synthetic
+      <b class="ink">Spital Vialta</b> tenant. Reference patterns: USZ (→ Uniklinik CuraNova), Luzerner Kantonsspital
+      (→ Kantonsspital Curalp), Hirslanden, Spital Zollikerberg (→ Spital Vialta).</p>
+
+      <div class="grid g2" style="margin-top:18px">
+        <div class="card">
+          <h3>Review sessions on record</h3>
+          <table class="mini">
+            <tr><th>Session</th><th>Perspective challenged</th></tr>
+            <tr><td><b>Cantonal IT / CSA</b> <span class="note">2026-06-08</span></td><td>Cantonal governance &amp; Zero Trust (Canton Aargau)</td></tr>
+            <tr><td><b>CTO-mentor review</b> <span class="note">2026-06-09</span></td><td>Sovereign landing zone, 24/7 hybrid, cantonal law</td></tr>
+            <tr><td><b>Capacity-metadata review</b> <span class="note">2026-06-29</span></td><td>4-layer master data, no-PHI episode model</td></tr>
+            <tr><td><b>HCC &amp; North-Star review</b> <span class="note">2026-07-01</span></td><td>Integral capacity, ontology, ORSA/CSA/SBA</td></tr>
+            <tr><td><b>Hospital ops field interview</b> <span class="note">2026-07-17</span></td><td>Spital Zollikerberg — patient-flow reality check</td></tr>
+            <tr><td><b>Trusted-signals review</b> <span class="note">2026-07-17</span></td><td>Hospital data-scientist — proactive CSA triggers</td></tr>
+            <tr><td><b>COO showcase</b> <span class="note">2026-07-24</span></td><td>Data quality &amp; adoption as the critical path</td></tr>
+          </table>
+          <p class="note">Held at the Microsoft Technology Center (Innovation Hub), Zurich, and with hospital teams directly.</p>
+        </div>
+        <div class="grid" style="gap:12px">
+          <div class="role"><div class="av av-navy">B</div><div>
+            <h4>Bed / Flow — nursing (bed side)</h4><div class="comp">Competency: live bed-state &amp; discharge readiness</div>
+            <div class="chal">Challenge: “Show me the driver and the source — I won’t act on a black box.”</div></div></div>
+          <div class="role"><div class="av av-green">O</div><div>
+            <h4>Physician / OR &amp; acute (ops side)</h4><div class="comp">Competency: clinical prioritisation &amp; coupled OP/bed/staff steering</div>
+            <div class="chal">Challenge: “The impact number has to be reproducible, not an AI guess.”</div></div></div>
+          <div class="role"><div class="av av-violet">G</div><div>
+            <h4>Governance / compliance &amp; cantonal</h4><div class="comp">Competency: Swiss DSG/KVG, residency, auditability</div>
+            <div class="chal">Challenge: “Prove no PHI leaves Switzerland — and that every answer is cited.”</div></div></div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:26px">The real practitioners who took part</h3>
+      <div class="grid g3" style="margin-top:6px">
+        <div class="role"><div class="av av-navy">CE</div><div><h4>Christian Ernst</h4>
+          <div class="comp">Emergency &amp; Acute Medicine · Spital Zollikerberg</div>
+          <div class="chal">Confirmed the 3–7 day capacity foresight as a major planning &amp; financial advantage and validated the agent-based patient flow.</div>
+          <a href="https://www.linkedin.com/sales/lead/ACwAACwz-BEB3cEFyxLkobEVeNo8E7wgHx25IV4,NAME_SEARCH,updE?_ntb=ZUg5mU2KRMyjzGqX9Jb%2FmQ%3D%3D" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role"><div class="av av-green">RA</div><div><h4>Regula Adams</h4>
+          <div class="comp">Organizational Development · Spital Zollikerberg</div>
+          <div class="chal">Partnered on the operational reality-check for coupled OP / bed / staffing steering.</div>
+          <a href="https://www.linkedin.com/in/regula-adams9988/" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role"><div class="av av-teal">MR</div><div><h4>Dr. med. Marco Rossi</h4>
+          <div class="comp">Physician · Luzerner Kantonsspital (reference for Kantonsspital Curalp)</div>
+          <div class="chal">Clinical perspective on capacity &amp; patient flow.</div>
+          <a href="https://www.luks.ch/newsroom/dr-med-marco-rossi-die-meisten-menschen-erholen-sich-wieder" target="_blank" rel="noopener" class="lk">Profile · LUKS</a></div></div>
+        <div class="role"><div class="av av-violet">PJ</div><div><h4>Petrus Jallo</h4>
+          <div class="comp">Cloud Solution Architect · Canton Aargau</div>
+          <div class="chal">Led the cantonal governance &amp; Zero-Trust review — flagged federal-vs-cantonal legal mapping.</div>
+          <a href="https://www.linkedin.com/in/petrus-jallo/" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role"><div class="av av-teal">RR</div><div><h4>René Raeber</h4>
+          <div class="comp">Director, Solution Engineering · review &amp; mentoring</div>
+          <div class="chal">Programme mentoring and architecture-maturity review across the sprints.</div>
+          <a href="https://www.linkedin.com/in/rraeber/" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role"><div class="av av-green">MW</div><div><h4>Marco Weber</h4>
+          <div class="comp">Full-Stack Developer · product build (DevSecOps)</div>
+          <div class="chal">Hands-on engineering on the Curavias app &amp; delivery pipeline.</div>
+          <a href="https://www.linkedin.com/in/marco-weber-ch/" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role"><div class="av av-navy">RH</div><div><h4>Rebekka Hatzung</h4>
+          <div class="comp">Review &amp; advisory contributor</div>
+          <div class="chal">Contributed to the Curavias review program.</div>
+          <a href="https://www.linkedin.com/in/rebekka-hatzung-48ab181/" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role"><div class="av av-teal">MD</div><div><h4>Michael Döring-Wermelinger</h4>
+          <div class="comp">Review &amp; advisory contributor</div>
+          <div class="chal">Contributed to the Curavias review program.</div>
+          <a href="https://www.linkedin.com/in/michael-d%C3%B6ring-wermelinger-81077412b/" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role"><div class="av av-green">EF</div><div><h4>Emanuel Furler</h4>
+          <div class="comp">Review &amp; advisory contributor</div>
+          <div class="chal">Contributed to the Curavias review program.</div>
+          <a href="https://www.linkedin.com/in/efurler/" target="_blank" rel="noopener" class="lk">in · LinkedIn</a></div></div>
+        <div class="role" style="align-items:center;justify-content:center"><div>
+          <h4 style="margin:0">+ AMA review panel</h4>
+          <div class="comp">Architecture, governance, healthcare-domain, data-science &amp; executive perspectives across the sessions above.</div></div></div>
+      </div>
+      <div class="disc" style="margin-top:16px"><b>Attribution note:</b> named sessions and hospital references are drawn from the
+      Curavias review record. Role-based challenge stances summarise what the sessions surfaced; several sessions recorded
+      participants by role only. Named practitioners are shown with their consent to be credited.</div>
+    </div>
+  </section>
+
+  <!-- PRODUCT OWNER AGENT -->
+  <section class="block">
+    <div class="wrap">
+      <div class="eyebrow">Backstage · answers on demand</div>
+      <h2>The Product Owner Agent handles the hard questions</h2>
+      <p class="lead">Embedded as a Copilot rail on the Start and Backstage surfaces, the PO Agent answers grounded on four
+      knowledge classes — with mandatory citations, in German and English, advisory-only, and it never mutates a system.</p>
+      <div class="grid g4" style="margin-top:16px">
+        <div class="card"><h3><span class="tag t-teal">A</span> Corpus</h3><p>The product’s own documents &amp; reviews — first-order source of truth.</p></div>
+        <div class="card"><h3><span class="tag t-green">B</span> Live-proof</h3><p>Read-only answers to reference questions, reconcile-and-flag.</p></div>
+        <div class="card"><h3><span class="tag t-amber">C</span> Cost</h3><p>Effective PROD cloud + tooling cost reconciled to the BVA/TCO baseline.</p></div>
+        <div class="card"><h3><span class="tag t-violet">D</span> Ontology</h3><p>Data questions answered with concept + data-binding citations.</p></div>
+      </div>
+      <div class="hero-cta">
+        <a class="btn primary" onclick="openRail()">💬 Try the Product Owner Agent</a>
+        <a class="btn ghost" onclick="go('start')">← Back to Start</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div>© Curavias · Swiss Hospital Capacity Copilot · <span class="taglink">“Every patient’s path, in Swiss hands.”</span> · Powered by Microsoft</div>
+    <div class="disc" style="max-width:600px">Showcase only. Curavias is advisory — it previews and recommends, it never
+    decides or diagnoses. Synthetic data only, no PHI. Not a medical device. Deployed in PROD Switzerland North.</div>
+  </div>
+</footer>
+
+<!-- ================= PO AGENT RAIL ================= -->
+<div class="rail-mask" id="railMask" onclick="closeRail()"></div>
+<aside class="rail" id="rail" aria-label="Product Owner Agent">
+  <div class="rail-head">
+    <svg width="30" height="26" viewBox="0 0 300 250" aria-hidden="true">
+      <defs><linearGradient id="pS2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#22C08A"/><stop offset="0.5" stop-color="#1FA9D6"/><stop offset="1" stop-color="#5A6CF0"/></linearGradient></defs>
+      <path d="M46,212 C130,196 150,150 258,74" fill="none" stroke="url(#pS2)" stroke-width="18" stroke-linecap="round"/>
+      <circle cx="46" cy="212" r="16" fill="#fff"/><circle cx="150" cy="146" r="30" fill="#E30613"/>
+      <g transform="translate(150,146)"><rect x="-13" y="-5" width="26" height="10" rx="2" fill="#fff"/><rect x="-5" y="-13" width="10" height="26" rx="2" fill="#fff"/></g>
+      <circle cx="258" cy="74" r="38" fill="#17B890"/><g transform="translate(258,74) scale(1.5)"><path d="M-14,1 L-4,12 L15,-12" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+    </svg>
+    <div><b>Product Owner Agent</b><br><small>Grounded · cited · advisory-only</small></div>
+    <button class="rail-x" onclick="closeRail()">✕</button>
+  </div>
+  <div class="rail-body">
+    <p style="font-size:12.5px;color:var(--faint);margin-top:0">Pick a question a C-level audience often asks. Answers are grounded on the Curavias corpus (demo responses).</p>
+    <button class="qbtn" onclick="ans('a1')">Is this a medical device? Is it safe?</button>
+    <div class="answer" id="a1">No. Curavias is an <b>advisory-only showcase</b> on synthetic data — it previews and recommends,
+      it never decides or diagnoses, and it is <b>not a medical device</b>. Every proposed action needs a human
+      “approved-to-apply” before anything is applied.
+      <div class="cite"><b>Sources:</b> Product status · AI responsible-use rules · governing showcase scope</div></div>
+    <button class="qbtn" onclick="ans('a2')">Where does our data live?</button>
+    <div class="answer" id="a2">Production runs in <b>Azure Switzerland North</b>, single-region and Swiss-resident. The platform
+      is <b>episode-driven with no PHI</b> — pseudonymised reference data only. PHI cross-region failover is default-deny.
+      <div class="cite"><b>Sources:</b> Architecture · Security · Compliance baselines</div></div>
+    <button class="qbtn" onclick="ans('a3')">What is the business case?</button>
+    <div class="answer" id="a3">Base ROM scenario: <b>127% 3-year ROI</b>, <b>~6-month payback</b>, <b>CHF 2.57M net annual
+      benefit</b>. Largest lever is reduced bed-day blocking &amp; discharge delay (CHF 1.65M/yr). Figures are ±30% ROM.
+      <div class="cite"><b>Sources:</b> Business Value Assessment (BVA)</div></div>
+    <button class="qbtn" onclick="ans('a4')">How fast can we get value?</button>
+    <div class="answer" id="a4">The first frontier — the <b>72-hour capacity forecast (OOA)</b> — follows a <b>90-day</b> path:
+      frame &amp; ground (0–30), build &amp; prove in SIT (30–60), operate in PROD (60–90), delivered by one human plus supporting agents.
+      <div class="cite"><b>Sources:</b> Product status · delivery lifecycle</div></div>
+    <button class="qbtn" onclick="ans('a5')">How do you keep humans in control?</button>
+    <div class="answer" id="a5">Every recommendation is assembled as SIGNAL → UNDERSTANDING → RECOMMENDATION → ACTION →
+      COORDINATION. The impact number is computed deterministically (never an LLM guess), and an action is only applied
+      after a human posts <b>approved-to-apply</b> — the agent refuses to self-approve.
+      <div class="cite"><b>Sources:</b> AI decision vocabulary (DC-INSIGHT) · responsible-AI rules</div></div>
+  </div>
+  <div class="rail-foot">Demo responses for the showcase. The live agent answers with mandatory citations, in DE &amp; EN, and never mutates a system.</div>
+</aside>
+
+<script>
+  function setCh(ch){
+    document.querySelectorAll('.chapter').forEach(c=>c.classList.remove('on'));
+    document.getElementById('ch-'+ch).classList.add('on');
+    document.querySelectorAll('nav.chapters button').forEach(b=>b.classList.toggle('active', b.dataset.ch===ch));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.querySelectorAll('nav.chapters button').forEach(b=>b.addEventListener('click',()=>setCh(b.dataset.ch)));
+  function go(ch,sel){ setCh(ch); if(sel){ setTimeout(()=>{const el=document.querySelector(sel); if(el) el.scrollIntoView({behavior:'smooth'});},260);} }
+  function openRail(){document.getElementById('rail').classList.add('open');document.getElementById('railMask').classList.add('open');}
+  function closeRail(){document.getElementById('rail').classList.remove('open');document.getElementById('railMask').classList.remove('open');}
+  function ans(id){document.getElementById(id).classList.toggle('show');}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeRail();});
+</script>
+</body>
+</html>
