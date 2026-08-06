@@ -391,6 +391,30 @@ export const FRONTIER_HOSPITALS = [
   },
 ] as const satisfies readonly FrontierHospital[];
 
+/**
+ * Per-hospital operating-role rows (mockup `.row-mini`): every synthetic
+ * hospital runs the same four-role shape — two human roles (bed side / ops
+ * side), the runtime agents, and the Product Owner Agent. The concrete labels
+ * differ per hospital and resolve from
+ * `start.frontier.hospitals.sites.<id>.roles.<roleId>`.
+ */
+export type FrontierHospitalRoleId = 'bedside' | 'opsside' | 'agents' | 'po';
+
+/** Visual accent family for a role row (mockup: human=navy, agent=green, po=violet). */
+export type FrontierHospitalRoleKind = 'human' | 'agent' | 'po';
+
+export interface FrontierHospitalRole {
+  roleId: FrontierHospitalRoleId;
+  kind: FrontierHospitalRoleKind;
+}
+
+export const FRONTIER_HOSPITAL_ROLES = [
+  { roleId: 'bedside', kind: 'human' },
+  { roleId: 'opsside', kind: 'human' },
+  { roleId: 'agents', kind: 'agent' },
+  { roleId: 'po', kind: 'po' },
+] as const satisfies readonly FrontierHospitalRole[];
+
 export type FrontierAgentId =
   | 'ooa-agent'
   | 'bmca-agent'

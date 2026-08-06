@@ -101,9 +101,9 @@ describe('HospitalsSection', () => {
     );
     // Hospital titles render as plain spans (not headings) because each card is
     // an interactive <button> — button content model disallows heading descendants.
-    expect(screen.getByText('CuraNova')).toBeInTheDocument();
-    expect(screen.getByText('Curalp')).toBeInTheDocument();
-    expect(screen.getByText('Vialta')).toBeInTheDocument();
+    expect(screen.getByText('Uniklinik CuraNova')).toBeInTheDocument();
+    expect(screen.getByText('Kantonsspital Curalp')).toBeInTheDocument();
+    expect(screen.getByText('Spital Vialta')).toBeInTheDocument();
     // Synthetic aggregate hard-facts row (mockup `.metarow`) renders per hospital.
     expect(screen.getAllByTestId('frontier-hospital-facts')).toHaveLength(
       FRONTIER_HOSPITALS.length,

@@ -516,29 +516,46 @@
         }
       },
       "hospitals": {
-        "title": "Trois hôpitaux",
-        "body": "Trois hôpitaux synthétiques partagent une plateforme de capacité tout en conservant des contextes opérationnels distincts.",
-        "eyebrow": "Image clé · Organisation",
+        "title": "Trois hôpitaux, chacun opérant comme une Frontier Firm",
+        "body": "L'épine dorsale organisationnelle de Curavias modélise trois archétypes d'hôpitaux suisses sur des données synthétiques sans PHI — inspirées de modèles de référence réels. Dans chacun, des employés physiques et des agents pilotent l'opération HCC (Hospital Capacity Coordination) et le flux patient de bout en bout, avec l'humain dans la boucle.",
+        "eyebrow": "Image clé 1 · Organisation",
         "sitesLabel": "Réseau hospitalier Curavias synthétique",
-        "syntheticBadge": "Profil synthétique",
         "sites": {
           "curanova": {
-            "name": "CuraNova",
-            "profile": "Hôpital universitaire urbain coordonnant des parcours aigus complexes et des services spécialisés.",
+            "name": "Uniklinik CuraNova",
+            "profile": "Hôpital central universitaire · Canton Helvetia-Nord",
             "facts": "~900 lits · 8 600 ETP · 7 centres médicaux",
-            "focus": "Priorité : flux du réseau et capacité tertiaire."
+            "focus": "Priorité : flux du réseau et capacité tertiaire.",
+            "roles": {
+              "bedside": "Direction des soins — côté lits",
+              "opsside": "CMO & équipes spécialisées — côté opérations",
+              "agents": "Agents — opération HCC + flux patient",
+              "po": "Product Owner Agent — répond aux questions difficiles"
+            }
           },
           "curalp": {
-            "name": "Curalp",
-            "profile": "Hôpital régional équilibrant la demande aiguë et l'accès de communautés dispersées.",
+            "name": "Kantonsspital Curalp",
+            "profile": "Groupe cantonal multi-sites · Canton Curalp",
             "facts": "~840 lits · 8 600 ETP · 5 sites",
-            "focus": "Priorité : couverture résiliente et transferts opportuns."
+            "focus": "Priorité : couverture résiliente et transferts opportuns.",
+            "roles": {
+              "bedside": "Gestionnaire lits/flux — côté lits",
+              "opsside": "Médecins & bloc opératoire — côté opérations",
+              "agents": "Agents — opération HCC + flux patient",
+              "po": "Product Owner Agent — répond aux questions difficiles"
+            }
           },
           "vialta": {
-            "name": "Vialta",
-            "profile": "Hôpital de rétablissement intégré reliant la sortie aiguë, la réadaptation et les soins de proximité.",
+            "name": "Spital Vialta",
+            "profile": "Soins aigus régionaux (privé, mandat public)",
             "facts": "174 lits · 1 200 ETP · urgences 24/7",
-            "focus": "Priorité : préparation des transitions et continuité."
+            "focus": "Priorité : préparation des transitions et continuité.",
+            "roles": {
+              "bedside": "Responsable des soins — côté lits",
+              "opsside": "Directions médicale & bloc — côté opérations",
+              "agents": "Agents — opération HCC + flux patient",
+              "po": "Product Owner Agent — répond aux questions difficiles"
+            }
           }
         },
         "rosterTitle": "Équipe capacité de sept agents",

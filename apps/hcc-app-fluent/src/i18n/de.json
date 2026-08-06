@@ -726,29 +726,46 @@
         }
       },
       "hospitals": {
-        "title": "Drei Spitäler",
-        "body": "Drei synthetische Spitäler teilen eine Kapazitätsplattform und behalten ihre unterschiedlichen Betriebskontexte.",
-        "eyebrow": "Schlüsselbild · Organisation",
+        "title": "Drei Spitäler, jedes als Frontier Firm geführt",
+        "body": "Das Curavias-Organisationsrückgrat modelliert drei Schweizer Spital-Archetypen auf synthetischen Daten ohne PHI — abgeleitet aus realen Referenzmustern. In jedem führen physische Mitarbeitende und Agents die HCC-Operation (Hospital Capacity Coordination) und den Patientenfluss durchgängig, mit Mensch in der Schleife.",
+        "eyebrow": "Schlüsselbild 1 · Organisation",
         "sitesLabel": "Synthetisches Curavias-Spitalnetz",
-        "syntheticBadge": "Synthetisches Profil",
         "sites": {
           "curanova": {
-            "name": "CuraNova",
-            "profile": "Städtisches Universitätsspital für komplexe Akutpfade und spezialisierte Leistungen.",
+            "name": "Uniklinik CuraNova",
+            "profile": "Universitäres Zentrumsspital · Kanton Helvetia-Nord",
             "facts": "~900 Betten · 8'600 VZÄ · 7 medizinische Zentren",
-            "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität."
+            "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität.",
+            "roles": {
+              "bedside": "Leitung Pflege — Bettenseite",
+              "opsside": "CMO & Fachteams — Betriebsseite",
+              "agents": "Agents — HCC-Operation + Patientenfluss",
+              "po": "Product Owner Agent — beantwortet die schwierigen Fragen"
+            }
           },
           "curalp": {
-            "name": "Curalp",
-            "profile": "Regionales Spital, das Akutnachfrage und Zugang in verteilten Gemeinden ausbalanciert.",
+            "name": "Kantonsspital Curalp",
+            "profile": "Kantonale Gruppe mit mehreren Standorten · Kanton Curalp",
             "facts": "~840 Betten · 8'600 VZÄ · 5 Standorte",
-            "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen."
+            "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen.",
+            "roles": {
+              "bedside": "Betten-/Flow-Manager — Bettenseite",
+              "opsside": "Ärzteschaft & OP — Betriebsseite",
+              "agents": "Agents — HCC-Operation + Patientenfluss",
+              "po": "Product Owner Agent — beantwortet die schwierigen Fragen"
+            }
           },
           "vialta": {
-            "name": "Vialta",
-            "profile": "Integriertes Erholungsspital, das Akutaustritt, Rehabilitation und gemeindenahe Versorgung verbindet.",
+            "name": "Spital Vialta",
+            "profile": "Regionale Akutversorgung (privat, öffentlicher Leistungsauftrag)",
             "facts": "174 Betten · 1'200 VZÄ · 24/7-Notfall",
-            "focus": "Fokus: Übergangsbereitschaft und Kontinuität."
+            "focus": "Fokus: Übergangsbereitschaft und Kontinuität.",
+            "roles": {
+              "bedside": "Pflegeleitung — Bettenseite",
+              "opsside": "Medizinische & OP-Leitung — Betriebsseite",
+              "agents": "Agents — HCC-Operation + Patientenfluss",
+              "po": "Product Owner Agent — beantwortet die schwierigen Fragen"
+            }
           }
         },
         "rosterTitle": "Kapazitätsteam mit sieben Agents",

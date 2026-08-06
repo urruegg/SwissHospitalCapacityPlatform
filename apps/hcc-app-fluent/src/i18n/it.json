@@ -516,29 +516,46 @@
         }
       },
       "hospitals": {
-        "title": "Tre ospedali",
-        "body": "Tre ospedali sintetici condividono una piattaforma di capacità mantenendo contesti operativi distinti.",
-        "eyebrow": "Immagine chiave · Organizzazione",
+        "title": "Tre ospedali, ciascuno operante come una Frontier Firm",
+        "body": "La spina dorsale organizzativa di Curavias modella tre archetipi di ospedali svizzeri su dati sintetici senza PHI — ispirati a modelli di riferimento reali. In ciascuno, dipendenti fisici e agent gestiscono l'operazione HCC (Hospital Capacity Coordination) e il flusso paziente end-to-end, con l'essere umano nel ciclo.",
+        "eyebrow": "Immagine chiave 1 · Organizzazione",
         "sitesLabel": "Rete ospedaliera Curavias sintetica",
-        "syntheticBadge": "Profilo sintetico",
         "sites": {
           "curanova": {
-            "name": "CuraNova",
-            "profile": "Ospedale universitario urbano che coordina percorsi acuti complessi e servizi specialistici.",
+            "name": "Uniklinik CuraNova",
+            "profile": "Ospedale centrale universitario · Cantone Helvetia-Nord",
             "facts": "~900 letti · 8.600 FTE · 7 centri medici",
-            "focus": "Focus: flusso di rete e capacità terziaria."
+            "focus": "Focus: flusso di rete e capacità terziaria.",
+            "roles": {
+              "bedside": "Direzione infermieristica — lato letti",
+              "opsside": "CMO & team specializzati — lato operazioni",
+              "agents": "Agent — operazione HCC + flusso paziente",
+              "po": "Product Owner Agent — risponde alle domande difficili"
+            }
           },
           "curalp": {
-            "name": "Curalp",
-            "profile": "Ospedale regionale che bilancia domanda acuta e accesso per comunità distribuite.",
+            "name": "Kantonsspital Curalp",
+            "profile": "Gruppo cantonale multi-sede · Cantone Curalp",
             "facts": "~840 letti · 8.600 FTE · 5 sedi",
-            "focus": "Focus: copertura resiliente e trasferimenti tempestivi."
+            "focus": "Focus: copertura resiliente e trasferimenti tempestivi.",
+            "roles": {
+              "bedside": "Responsabile letti/flusso — lato letti",
+              "opsside": "Medici & sala operatoria — lato operazioni",
+              "agents": "Agent — operazione HCC + flusso paziente",
+              "po": "Product Owner Agent — risponde alle domande difficili"
+            }
           },
           "vialta": {
-            "name": "Vialta",
-            "profile": "Ospedale integrato di recupero che collega dimissione acuta, riabilitazione e cure territoriali.",
+            "name": "Spital Vialta",
+            "profile": "Cure acute regionali (privato, mandato pubblico)",
             "facts": "174 letti · 1.200 FTE · pronto soccorso 24/7",
-            "focus": "Focus: prontezza della transizione e continuità."
+            "focus": "Focus: prontezza della transizione e continuità.",
+            "roles": {
+              "bedside": "Responsabile infermieristico — lato letti",
+              "opsside": "Direzioni medica & sala operatoria — lato operazioni",
+              "agents": "Agent — operazione HCC + flusso paziente",
+              "po": "Product Owner Agent — risponde alle domande difficili"
+            }
           }
         },
         "rosterTitle": "Team capacità di sette agenti",

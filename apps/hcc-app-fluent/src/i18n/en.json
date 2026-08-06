@@ -946,29 +946,46 @@
         }
       },
       "hospitals": {
-        "title": "Three hospitals",
-        "body": "Three synthetic hospitals share a capacity platform while retaining distinct operating contexts.",
-        "eyebrow": "Key visual · Organisation",
+        "title": "Three hospitals, each running as a Frontier Firm",
+        "body": "The Curavias org spine models three Swiss hospital archetypes on synthetic, no-PHI data — grounded on real reference patterns. In each, physical employees and agents run the HCC Operation (Hospital Capacity Coordination) and the Patient Flow end-to-end, human-in-the-loop.",
+        "eyebrow": "Key visual 1 · Organisation",
         "sitesLabel": "Synthetic Curavias hospital network",
-        "syntheticBadge": "Synthetic profile",
         "sites": {
           "curanova": {
-            "name": "CuraNova",
-            "profile": "Urban university hospital coordinating complex acute pathways and specialist services.",
+            "name": "Uniklinik CuraNova",
+            "profile": "University central hospital · Canton Helvetia-Nord",
             "facts": "~900 beds · 8,600 FTE · 7 medical centres",
-            "focus": "Focus: network-wide flow and tertiary capacity."
+            "focus": "Focus: network-wide flow and tertiary capacity.",
+            "roles": {
+              "bedside": "Head of Nursing — bed side",
+              "opsside": "CMO & specialised teams — ops side",
+              "agents": "Agents — HCC Operation + Patient Flow",
+              "po": "Product Owner Agent — answers the hard questions"
+            }
           },
           "curalp": {
-            "name": "Curalp",
-            "profile": "Regional hospital balancing acute demand with access across dispersed communities.",
+            "name": "Kantonsspital Curalp",
+            "profile": "Cantonal multi-site group · Canton Curalp",
             "facts": "~840 beds · 8,600 FTE · 5 sites",
-            "focus": "Focus: resilient coverage and timely transfers."
+            "focus": "Focus: resilient coverage and timely transfers.",
+            "roles": {
+              "bedside": "Bed / Flow Manager — bed side",
+              "opsside": "Physicians & OR — ops side",
+              "agents": "Agents — HCC Operation + Patient Flow",
+              "po": "Product Owner Agent — answers the hard questions"
+            }
           },
           "vialta": {
-            "name": "Vialta",
-            "profile": "Integrated recovery hospital connecting acute discharge with rehabilitation and community care.",
+            "name": "Spital Vialta",
+            "profile": "Regional acute (private, public mandate)",
             "facts": "174 beds · 1,200 FTE · 24/7 emergency",
-            "focus": "Focus: transition readiness and continuity."
+            "focus": "Focus: transition readiness and continuity.",
+            "roles": {
+              "bedside": "Nursing lead — bed side",
+              "opsside": "Medical & OR leads — ops side",
+              "agents": "Agents — HCC Operation + Patient Flow",
+              "po": "Product Owner Agent — answers the hard questions"
+            }
           }
         },
         "rosterTitle": "Seven-agent capacity team",
