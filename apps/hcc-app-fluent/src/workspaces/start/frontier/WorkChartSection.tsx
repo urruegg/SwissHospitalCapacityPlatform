@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useShowcaseStyles, SHOWCASE_ACCENT, type ShowcaseAccent } from '../../shared/narrative/showcase-styles';
 import { useCopilotRail } from '../../../copilot-rail/rail-context';
 import { startInsight, startReco } from './start-rail';
-import { WORK_MODES, type WorkModeId } from './start-content';
+import { WORK_MODES, WORK_CHART_FIT_ROWS, type WorkModeId } from './start-content';
 import { START_NARRATIVE_NARROW_MEDIA_QUERY } from './start-layout';
 
 // Per-mode left-accent (Frontier-Firm operating model: humans navy, agents green, on-demand violet).
@@ -64,6 +64,51 @@ const useStyles = makeStyles({
   },
   mapping: {
     fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground2,
+  },
+  fitCard: {
+    display: 'grid',
+    gap: tokens.spacingVerticalM,
+    padding: tokens.spacingHorizontalL,
+    borderRadius: tokens.borderRadiusXLarge,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    boxShadow: tokens.shadow2,
+    minWidth: 0,
+  },
+  fitHeader: {
+    display: 'grid',
+    gap: tokens.spacingVerticalXXS,
+  },
+  fitTitle: {
+    margin: 0,
+    fontSize: tokens.fontSizeBase400,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
+  },
+  fitBody: {
+    margin: 0,
+    fontSize: tokens.fontSizeBase300,
+    color: tokens.colorNeutralForeground2,
+    lineHeight: 1.5,
+  },
+  fitTable: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    fontSize: tokens.fontSizeBase200,
+  },
+  fitTh: {
+    textAlign: 'left',
+    verticalAlign: 'top',
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
+    color: tokens.colorNeutralForeground1,
+    fontWeight: tokens.fontWeightSemibold,
+  },
+  fitTd: {
+    verticalAlign: 'top',
+    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
     color: tokens.colorNeutralForeground2,
   },
 });
@@ -130,6 +175,37 @@ export function WorkChartSection() {
         <p className={styles.principleBody}>{t('start.frontier.workChart.principle.body')}</p>
         <span className={styles.mapping}>{t('start.frontier.workChart.principle.curaviasMap')}</span>
       </aside>
+
+      <section className={styles.fitCard} aria-labelledby="work-chart-fit-title">
+        <div className={styles.fitHeader}>
+          <h3 className={styles.fitTitle} id="work-chart-fit-title">
+            {t('start.frontier.workChart.fit.title')}
+          </h3>
+          <p className={styles.fitBody}>{t('start.frontier.workChart.fit.body')}</p>
+        </div>
+        <table className={styles.fitTable} aria-label={t('start.frontier.workChart.fit.title')}>
+          <thead>
+            <tr>
+              <th scope="col" className={styles.fitTh}>
+                {t('start.frontier.workChart.fit.columns.principle')}
+              </th>
+              <th scope="col" className={styles.fitTh}>
+                {t('start.frontier.workChart.fit.columns.curavias')}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {WORK_CHART_FIT_ROWS.map((row) => (
+              <tr key={row.id} data-testid="work-chart-fit-row">
+                <th scope="row" className={styles.fitTh}>
+                  {t(row.principleKey)}
+                </th>
+                <td className={styles.fitTd}>{t(row.curaviasKey)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }

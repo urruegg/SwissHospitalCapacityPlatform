@@ -311,9 +311,32 @@
       "recoveryBody": "Il percorso coordinato passa alle cure di recupero e territoriali con una responsabilità chiara.",
       "recoveryCaption": "Continuità oltre l'ospedale",
       "advisoryBadge": "Consultivo",
+      "bannersAriaLabel": "Copiloti trasversali del percorso",
       "evidenceLabel": "Segnali di fiducia del percorso paziente",
       "evidenceChip": "Basato su evidenze",
       "goldenThreadChip": "Filo conduttore",
+      "stops": {
+        "occupancy": {
+          "step": "Pronto soccorso & Ammissione",
+          "evidence": "Med A → 102% in 72h"
+        },
+        "bedManager": {
+          "step": "Assegnazione letti",
+          "evidence": "Collocare 8 + boarder"
+        },
+        "orSteering": {
+          "step": "Sala operatoria & Cura",
+          "evidence": "Riprogrammare elettivi"
+        },
+        "staffing": {
+          "step": "Bilancio del personale",
+          "evidence": "Allineare il personale"
+        },
+        "discharge": {
+          "step": "Dimissione",
+          "evidence": "Liberare 8 letti"
+        }
+      },
       "operational": {
         "occupancy": "Anticipare la domanda e la pressione sulla capacità prima che il percorso si restringa.",
         "bedManager": "Coordinare assegnazioni e flusso dei letti nel sito operativo.",
@@ -324,12 +347,20 @@
       "dataQuality": {
         "ariaLabel": "Consulenza sulla qualità dei dati",
         "title": "Qualità dei dati lungo il percorso",
-        "body": "Il Data Quality Agent verifica provenienza, aggiornamento e salute dei contratti senza lasciare il percorso."
+        "body": "Il Data Quality Agent verifica provenienza, aggiornamento e salute dei contratti senza lasciare il percorso.",
+        "bannerLabel": "Gate di qualità dei dati",
+        "bannerDot": "protegge ogni indicatore",
+        "evidence": "Indicatore affidabile",
+        "badge": "DQ"
       },
       "crisis": {
         "ariaLabel": "Consulenza sugli scenari di crisi",
         "body": "Quando la lente di ruolo lo consente, CSA copre il percorso con pianificazione degli scenari e consigli di escalation.",
-        "cta": "Apri la pianificazione consultiva"
+        "cta": "Apri la pianificazione consultiva",
+        "bannerLabel": "Crisi & Scenari",
+        "bannerDot": "copre l'intero percorso",
+        "evidence": "Testare gli shock",
+        "badge": "CSA"
       },
       "dcInsight": {
         "title": "Come risponde un agente — lo schema DC-INSIGHT",
@@ -407,6 +438,32 @@
           "badge": "Applicato a Curavias",
           "body": "Il lavoro è organizzato attorno ai risultati invece che a passaggi statici tra funzioni.",
           "curaviasMap": "Curavias applica questo principio alla capacità ospedaliera: segnali condivisi, agenti specialisti e una decisione umana a ogni confine operativo."
+        },
+        "fit": {
+          "title": "Come Curavias si allinea alla Microsoft Frontier Firm",
+          "body": "La Frontier Firm si basa su team umano–agente, persone che agiscono come agent boss e intelligenza on demand. Curavias applica esattamente questo modello alla capacità ospedaliera e al percorso del paziente.",
+          "columns": {
+            "principle": "Principio della Frontier Firm",
+            "curavias": "In Curavias"
+          },
+          "rows": {
+            "teams": {
+              "principle": "Team umano–agente",
+              "curavias": "7 agenti runtime + personale operativo"
+            },
+            "bosses": {
+              "principle": "Persone come agent boss",
+              "curavias": "Approvazione HITL « approve-to-apply »"
+            },
+            "on-demand": {
+              "principle": "Intelligenza on demand",
+              "curavias": "Previsione 72 h · copilota · simulazione"
+            },
+            "trust": {
+              "principle": "Fiducia by design",
+              "curavias": "Dati in Svizzera · nessun PHI · pienamente tracciato"
+            }
+          }
         }
       },
       "cioWhyNow": {
@@ -468,16 +525,19 @@
           "curanova": {
             "name": "CuraNova",
             "profile": "Ospedale universitario urbano che coordina percorsi acuti complessi e servizi specialistici.",
+            "facts": "~900 letti · 8.600 FTE · 7 centri medici",
             "focus": "Focus: flusso di rete e capacità terziaria."
           },
           "curalp": {
             "name": "Curalp",
             "profile": "Ospedale regionale che bilancia domanda acuta e accesso per comunità distribuite.",
+            "facts": "~840 letti · 8.600 FTE · 5 sedi",
             "focus": "Focus: copertura resiliente e trasferimenti tempestivi."
           },
           "vialta": {
             "name": "Vialta",
             "profile": "Ospedale integrato di recupero che collega dimissione acuta, riabilitazione e cure territoriali.",
+            "facts": "174 letti · 1.200 FTE · pronto soccorso 24/7",
             "focus": "Focus: prontezza della transizione e continuità."
           }
         },

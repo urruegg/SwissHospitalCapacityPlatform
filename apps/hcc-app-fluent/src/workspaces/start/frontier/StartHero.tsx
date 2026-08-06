@@ -71,6 +71,13 @@ const useStyles = makeStyles({
   valueLine: {
     color: tokens.colorNeutralForeground2,
   },
+  quote: {
+    margin: 0,
+    fontStyle: 'italic',
+    fontWeight: tokens.fontWeightSemibold,
+    // Fluent's link-foreground token keeps WCAG contrast in both themes for this accent line.
+    color: tokens.colorBrandForegroundLink,
+  },
   trustPills: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -92,7 +99,10 @@ const useStyles = makeStyles({
     alignContent: 'start',
   },
   metricValue: {
-    color: tokens.colorBrandForeground1,
+    // Curavias brand ramp resolves colorBrandForeground1 to #17b890, which fails
+    // WCAG AA (2.42:1 on the tile surface). Use the accessible green foreground
+    // token instead — keeps the positive-value semantic, meets AA for large text.
+    color: tokens.colorPaletteGreenForeground1,
     overflowWrap: 'anywhere',
   },
   metricCaption: {
@@ -281,6 +291,9 @@ export function StartHero({ mode }: StartHeroProps) {
           </Title1>
           <Body1>{t('start.mission')}</Body1>
           <Text className={styles.valueLine}>{t('start.frontier.hero.valueLine')}</Text>
+          <Text as="p" className={styles.quote} data-testid="hero-quote">
+            {t('start.frontier.hero.quote')}
+          </Text>
         </div>
 
         <div className={styles.trustPills}>

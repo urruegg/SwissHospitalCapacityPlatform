@@ -62,6 +62,17 @@ describe('WorkChartSection', () => {
       /curavias/i,
     );
   });
+
+  it('renders the Frontier Firm fit table with all four principle rows', () => {
+    renderSection(<WorkChartSection />);
+
+    const table = screen.getByRole('table', { name: /how curavias fits/i });
+    expect(within(table).getAllByRole('columnheader')).toHaveLength(2);
+    expect(within(table).getAllByTestId('work-chart-fit-row')).toHaveLength(4);
+    expect(
+      within(table).getByText('7 runtime agents + operational staff'),
+    ).toBeInTheDocument();
+  });
 });
 
 describe('CioChallengerSection', () => {
@@ -96,6 +107,11 @@ describe('HospitalsSection', () => {
     expect(screen.getByText('CuraNova')).toBeInTheDocument();
     expect(screen.getByText('Curalp')).toBeInTheDocument();
     expect(screen.getByText('Vialta')).toBeInTheDocument();
+    // Synthetic aggregate hard-facts row (mockup `.metarow`) renders per hospital.
+    expect(screen.getAllByTestId('frontier-hospital-facts')).toHaveLength(
+      FRONTIER_HOSPITALS.length,
+    );
+    expect(screen.getByText(/7 medical centres/)).toBeInTheDocument();
   });
 });
 

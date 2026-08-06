@@ -460,9 +460,32 @@
       "recoveryBody": "The coordinated path hands over to recovery and community care with accountable follow-through.",
       "recoveryCaption": "Continuity beyond the hospital",
       "advisoryBadge": "Advisory",
+      "bannersAriaLabel": "Cross-path copilots",
       "evidenceLabel": "Patient-path trust signals",
       "evidenceChip": "Evidence-backed",
       "goldenThreadChip": "Golden thread",
+      "stops": {
+        "occupancy": {
+          "step": "Emergency & Admission",
+          "evidence": "Med A → 102% in 72h"
+        },
+        "bedManager": {
+          "step": "Bed Assignment",
+          "evidence": "Place 8 + boarders"
+        },
+        "orSteering": {
+          "step": "OR & Treatment",
+          "evidence": "Reslot electives"
+        },
+        "staffing": {
+          "step": "Staffing Balance",
+          "evidence": "Match staffing"
+        },
+        "discharge": {
+          "step": "Discharge",
+          "evidence": "Free 8 beds"
+        }
+      },
       "operational": {
         "occupancy": "Anticipate demand and capacity pressure before the care journey tightens.",
         "bedManager": "Coordinate placement and bed flow across the operating site.",
@@ -473,12 +496,20 @@
       "dataQuality": {
         "ariaLabel": "Data quality advisory",
         "title": "Data quality across the path",
-        "body": "The Data Quality Agent checks provenance, freshness, and contract health without navigating away from the journey."
+        "body": "The Data Quality Agent checks provenance, freshness, and contract health without navigating away from the journey.",
+        "bannerLabel": "Data Quality Gates",
+        "bannerDot": "guards every metric",
+        "evidence": "Metric trusted",
+        "badge": "DQ"
       },
       "crisis": {
         "ariaLabel": "Crisis scenario advisory",
         "body": "When the role lens permits, CSA spans the path with scenario planning and escalation advice.",
-        "cta": "Open advisory scenario planning"
+        "cta": "Open advisory scenario planning",
+        "bannerLabel": "Crisis & Scenarios",
+        "bannerDot": "spans the whole path",
+        "evidence": "Stress-test shocks",
+        "badge": "CSA"
       },
       "dcInsight": {
         "title": "How an agent answers — the DC-INSIGHT pattern",
@@ -570,7 +601,8 @@
         "capacityLoading": "Loading site capacity…",
         "capacityErrorTitle": "Site capacity unavailable",
         "ctaPrimary": "Meet the three hospitals",
-        "ctaSecondary": "See how it was built"
+        "ctaSecondary": "See how it was built",
+        "quote": "Every patient's path, in Swiss hands."
       },
       "workChart": {
         "title": "How work changes",
@@ -597,6 +629,32 @@
           "badge": "Mapped to Curavias",
           "body": "Work is organised around outcomes instead of static hand-offs between functions.",
           "curaviasMap": "Curavias maps that principle to hospital capacity: shared signals, specialist agents, and a human decision at every operational boundary."
+        },
+        "fit": {
+          "title": "How Curavias fits the Microsoft Frontier Firm",
+          "body": "The Frontier Firm is defined by human–agent teams, humans acting as agent bosses, and intelligence on demand. Curavias applies exactly that model to hospital capacity and patient flow.",
+          "columns": {
+            "principle": "Frontier Firm principle",
+            "curavias": "In Curavias"
+          },
+          "rows": {
+            "teams": {
+              "principle": "Human–agent teams",
+              "curavias": "7 runtime agents + operational staff"
+            },
+            "bosses": {
+              "principle": "Humans as agent bosses",
+              "curavias": "HITL approve-to-apply gate"
+            },
+            "on-demand": {
+              "principle": "Intelligence on demand",
+              "curavias": "72-h forecast · copilot · simulation"
+            },
+            "trust": {
+              "principle": "Trust by design",
+              "curavias": "Swiss-resident · no PHI · fully cited"
+            }
+          }
         }
       },
       "cioWhyNow": {
@@ -658,16 +716,19 @@
           "curanova": {
             "name": "CuraNova",
             "profile": "Urban university hospital coordinating complex acute pathways and specialist services.",
+            "facts": "~900 beds · 8,600 FTE · 7 medical centres",
             "focus": "Focus: network-wide flow and tertiary capacity."
           },
           "curalp": {
             "name": "Curalp",
             "profile": "Regional hospital balancing acute demand with access across dispersed communities.",
+            "facts": "~840 beds · 8,600 FTE · 5 sites",
             "focus": "Focus: resilient coverage and timely transfers."
           },
           "vialta": {
             "name": "Vialta",
             "profile": "Integrated recovery hospital connecting acute discharge with rehabilitation and community care.",
+            "facts": "174 beds · 1,200 FTE · 24/7 emergency",
             "focus": "Focus: transition readiness and continuity."
           }
         },

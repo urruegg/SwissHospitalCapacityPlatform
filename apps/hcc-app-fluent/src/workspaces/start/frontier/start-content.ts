@@ -28,14 +28,43 @@ export const START_SECTIONS = [
 export interface PatientPathOperationalStop {
   boardKey: string;
   bodyKey: string;
+  /** Operational step name shown under the circular node (mockup `.jtitle`). */
+  stepKey: string;
+  /** Evidence chip shown on the node (mockup `.jevi`). */
+  evidenceKey: string;
 }
 
 export const PATIENT_PATH_OPERATIONAL_STOPS = [
-  { boardKey: 'occupancy', bodyKey: 'start.patientPath.operational.occupancy' },
-  { boardKey: 'bed-manager', bodyKey: 'start.patientPath.operational.bedManager' },
-  { boardKey: 'or-steering', bodyKey: 'start.patientPath.operational.orSteering' },
-  { boardKey: 'staffing', bodyKey: 'start.patientPath.operational.staffing' },
-  { boardKey: 'discharge', bodyKey: 'start.patientPath.operational.discharge' },
+  {
+    boardKey: 'occupancy',
+    bodyKey: 'start.patientPath.operational.occupancy',
+    stepKey: 'start.patientPath.stops.occupancy.step',
+    evidenceKey: 'start.patientPath.stops.occupancy.evidence',
+  },
+  {
+    boardKey: 'bed-manager',
+    bodyKey: 'start.patientPath.operational.bedManager',
+    stepKey: 'start.patientPath.stops.bedManager.step',
+    evidenceKey: 'start.patientPath.stops.bedManager.evidence',
+  },
+  {
+    boardKey: 'or-steering',
+    bodyKey: 'start.patientPath.operational.orSteering',
+    stepKey: 'start.patientPath.stops.orSteering.step',
+    evidenceKey: 'start.patientPath.stops.orSteering.evidence',
+  },
+  {
+    boardKey: 'staffing',
+    bodyKey: 'start.patientPath.operational.staffing',
+    stepKey: 'start.patientPath.stops.staffing.step',
+    evidenceKey: 'start.patientPath.stops.staffing.evidence',
+  },
+  {
+    boardKey: 'discharge',
+    bodyKey: 'start.patientPath.operational.discharge',
+    stepKey: 'start.patientPath.stops.discharge.step',
+    evidenceKey: 'start.patientPath.stops.discharge.evidence',
+  },
 ] as const satisfies readonly PatientPathOperationalStop[];
 
 export type DcInsightBeatId = 'signal' | 'understanding' | 'recommendation' | 'action' | 'coordination';
@@ -99,6 +128,40 @@ export const WORK_MODES = [
     bodyKey: 'start.frontier.workChart.modes.on-demand.body',
   },
 ] as const satisfies readonly WorkMode[];
+
+// Mockup "How Curavias fits the Microsoft Frontier Firm" fit table
+// (Frontier Firm principle -> concrete Curavias realisation). Advisory framing;
+// all four rows are qualitative, no live business metrics.
+export type WorkChartFitRowId = 'teams' | 'bosses' | 'on-demand' | 'trust';
+
+export interface WorkChartFitRow {
+  id: WorkChartFitRowId;
+  principleKey: `start.frontier.workChart.fit.rows.${WorkChartFitRowId}.principle`;
+  curaviasKey: `start.frontier.workChart.fit.rows.${WorkChartFitRowId}.curavias`;
+}
+
+export const WORK_CHART_FIT_ROWS = [
+  {
+    id: 'teams',
+    principleKey: 'start.frontier.workChart.fit.rows.teams.principle',
+    curaviasKey: 'start.frontier.workChart.fit.rows.teams.curavias',
+  },
+  {
+    id: 'bosses',
+    principleKey: 'start.frontier.workChart.fit.rows.bosses.principle',
+    curaviasKey: 'start.frontier.workChart.fit.rows.bosses.curavias',
+  },
+  {
+    id: 'on-demand',
+    principleKey: 'start.frontier.workChart.fit.rows.on-demand.principle',
+    curaviasKey: 'start.frontier.workChart.fit.rows.on-demand.curavias',
+  },
+  {
+    id: 'trust',
+    principleKey: 'start.frontier.workChart.fit.rows.trust.principle',
+    curaviasKey: 'start.frontier.workChart.fit.rows.trust.curavias',
+  },
+] as const satisfies readonly WorkChartFitRow[];
 
 export type CioDecisionId =
   | 'bed-allocation'
@@ -167,6 +230,8 @@ export interface FrontierHospital {
   id: FrontierHospitalId;
   nameKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.name`;
   profileKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.profile`;
+  /** Synthetic aggregate hard-facts row (mockup `.metarow`): beds / FTE / sites. */
+  factsKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.facts`;
   focusKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.focus`;
 }
 
@@ -175,18 +240,21 @@ export const FRONTIER_HOSPITALS = [
     id: 'curanova',
     nameKey: 'start.frontier.hospitals.sites.curanova.name',
     profileKey: 'start.frontier.hospitals.sites.curanova.profile',
+    factsKey: 'start.frontier.hospitals.sites.curanova.facts',
     focusKey: 'start.frontier.hospitals.sites.curanova.focus',
   },
   {
     id: 'curalp',
     nameKey: 'start.frontier.hospitals.sites.curalp.name',
     profileKey: 'start.frontier.hospitals.sites.curalp.profile',
+    factsKey: 'start.frontier.hospitals.sites.curalp.facts',
     focusKey: 'start.frontier.hospitals.sites.curalp.focus',
   },
   {
     id: 'vialta',
     nameKey: 'start.frontier.hospitals.sites.vialta.name',
     profileKey: 'start.frontier.hospitals.sites.vialta.profile',
+    factsKey: 'start.frontier.hospitals.sites.vialta.facts',
     focusKey: 'start.frontier.hospitals.sites.vialta.focus',
   },
 ] as const satisfies readonly FrontierHospital[];

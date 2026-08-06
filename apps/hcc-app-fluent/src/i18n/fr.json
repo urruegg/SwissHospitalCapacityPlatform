@@ -311,9 +311,32 @@
       "recoveryBody": "Le parcours coordonné transmet le suivi aux soins de rétablissement et de proximité avec une responsabilité claire.",
       "recoveryCaption": "Continuité au-delà de l'hôpital",
       "advisoryBadge": "Consultatif",
+      "bannersAriaLabel": "Copilotes transversaux du parcours",
       "evidenceLabel": "Signaux de confiance du parcours patient",
       "evidenceChip": "Étayé par des preuves",
       "goldenThreadChip": "Fil rouge",
+      "stops": {
+        "occupancy": {
+          "step": "Urgences & Admission",
+          "evidence": "Méd A → 102% en 72h"
+        },
+        "bedManager": {
+          "step": "Attribution des lits",
+          "evidence": "Placer 8 + boarders"
+        },
+        "orSteering": {
+          "step": "Bloc & Traitement",
+          "evidence": "Replanifier les électives"
+        },
+        "staffing": {
+          "step": "Équilibre du personnel",
+          "evidence": "Ajuster le personnel"
+        },
+        "discharge": {
+          "step": "Sortie",
+          "evidence": "Libérer 8 lits"
+        }
+      },
       "operational": {
         "occupancy": "Anticiper la demande et la pression de capacité avant que le parcours ne se tende.",
         "bedManager": "Coordonner l'affectation et le flux des lits sur le site opérationnel.",
@@ -324,12 +347,20 @@
       "dataQuality": {
         "ariaLabel": "Conseil sur la qualité des données",
         "title": "Qualité des données sur tout le parcours",
-        "body": "Le Data Quality Agent vérifie la provenance, la fraîcheur et la santé des contrats sans quitter le parcours."
+        "body": "Le Data Quality Agent vérifie la provenance, la fraîcheur et la santé des contrats sans quitter le parcours.",
+        "bannerLabel": "Contrôles de qualité des données",
+        "bannerDot": "protège chaque indicateur",
+        "evidence": "Indicateur fiable",
+        "badge": "DQ"
       },
       "crisis": {
         "ariaLabel": "Conseil sur les scénarios de crise",
         "body": "Lorsque la lentille de rôle le permet, CSA couvre le parcours avec la planification de scénarios et des conseils d'escalade.",
-        "cta": "Ouvrir la planification consultative"
+        "cta": "Ouvrir la planification consultative",
+        "bannerLabel": "Crises & Scénarios",
+        "bannerDot": "couvre tout le parcours",
+        "evidence": "Tester les chocs",
+        "badge": "CSA"
       },
       "dcInsight": {
         "title": "Comment un agent répond — le schéma DC-INSIGHT",
@@ -407,6 +438,32 @@
           "badge": "Appliqué à Curavias",
           "body": "Le travail s'organise autour des résultats plutôt que de transmissions statiques entre fonctions.",
           "curaviasMap": "Curavias applique ce principe à la capacité hospitalière : signaux partagés, agents spécialistes et décision humaine à chaque frontière opérationnelle."
+        },
+        "fit": {
+          "title": "Comment Curavias s'inscrit dans la Microsoft Frontier Firm",
+          "body": "La Frontier Firm repose sur des équipes humain–agent, des humains « agent bosses » et une intelligence à la demande. Curavias applique exactement ce modèle à la capacité hospitalière et au parcours patient.",
+          "columns": {
+            "principle": "Principe de la Frontier Firm",
+            "curavias": "Chez Curavias"
+          },
+          "rows": {
+            "teams": {
+              "principle": "Équipes humain–agent",
+              "curavias": "7 agents runtime + personnel opérationnel"
+            },
+            "bosses": {
+              "principle": "Humains « agent bosses »",
+              "curavias": "Validation HITL « approve-to-apply »"
+            },
+            "on-demand": {
+              "principle": "Intelligence à la demande",
+              "curavias": "Prévision 72 h · copilote · simulation"
+            },
+            "trust": {
+              "principle": "Confiance dès la conception",
+              "curavias": "Données en Suisse · sans PHI · entièrement sourcé"
+            }
+          }
         }
       },
       "cioWhyNow": {
@@ -468,16 +525,19 @@
           "curanova": {
             "name": "CuraNova",
             "profile": "Hôpital universitaire urbain coordonnant des parcours aigus complexes et des services spécialisés.",
+            "facts": "~900 lits · 8 600 ETP · 7 centres médicaux",
             "focus": "Priorité : flux du réseau et capacité tertiaire."
           },
           "curalp": {
             "name": "Curalp",
             "profile": "Hôpital régional équilibrant la demande aiguë et l'accès de communautés dispersées.",
+            "facts": "~840 lits · 8 600 ETP · 5 sites",
             "focus": "Priorité : couverture résiliente et transferts opportuns."
           },
           "vialta": {
             "name": "Vialta",
             "profile": "Hôpital de rétablissement intégré reliant la sortie aiguë, la réadaptation et les soins de proximité.",
+            "facts": "174 lits · 1 200 ETP · urgences 24/7",
             "focus": "Priorité : préparation des transitions et continuité."
           }
         },

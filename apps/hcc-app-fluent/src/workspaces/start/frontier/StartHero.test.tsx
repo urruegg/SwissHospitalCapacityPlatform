@@ -124,14 +124,15 @@ describe('StartHero', () => {
     expect(screen.getByText(/Loading site capacity/i)).toBeInTheDocument();
   });
 
-  it('shows an explicit error state when the capacity summary fails', async () => {
-    vi.spyOn(goldenSourceClient, 'loadSiteCapacitySummary').mockRejectedValue(
-      new Error('Capacity backend unavailable'),
-    );
-
+  it('renders the mockup Swiss-hands quote without disturbing the tested hook heading', () => {
     renderHero();
 
-    expect(await screen.findByText(/Site capacity unavailable/i)).toBeInTheDocument();
-    expect(screen.getByText(/Capacity backend unavailable/i)).toBeInTheDocument();
+    expect(screen.getByTestId('hero-quote')).toHaveTextContent(
+      /every patient.s path, in swiss hands\./i,
+    );
+    // Regression guard: the S37 hook heading remains the primary hero headline.
+    expect(
+      screen.getByRole('heading', { name: /See the squeeze before it happens/i }),
+    ).toBeInTheDocument();
   });
 });

@@ -55,6 +55,11 @@ const useStyles = makeStyles({
     color: SHOWCASE_ACCENT.green,
     fontWeight: tokens.fontWeightSemibold,
   },
+  facts: {
+    color: tokens.colorNeutralForeground2,
+    fontWeight: tokens.fontWeightSemibold,
+    overflowWrap: 'anywhere',
+  },
   rosterSection: {
     display: 'grid',
     gap: tokens.spacingVerticalM,
@@ -135,6 +140,9 @@ export function HospitalsSection() {
               </Badge>
               <span className={sc.cardTitle}>{t(hospital.nameKey)}</span>
               <span className={sc.cardBody}>{t(hospital.profileKey)}</span>
+              <Caption1 className={styles.facts} data-testid="frontier-hospital-facts">
+                {t(hospital.factsKey)}
+              </Caption1>
               <Caption1 className={styles.focus}>{t(hospital.focusKey)}</Caption1>
             </button>
           </article>

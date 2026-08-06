@@ -181,4 +181,38 @@ describe('PatientPathLauncher', () => {
     fireEvent.click(screen.getByRole('link', { name: /open scenario planning role board/i }));
     expect(screen.getByTestId('rail-citations')).toHaveTextContent('hcp:PatientPath:crisis');
   });
+
+  it('renders circular agent nodes with acronym badges and evidence chips for each operational stop', () => {
+    renderLauncher(['HCC.PlatformAdmin']);
+
+    const flow = screen.getByTestId('patient-path-flow');
+
+    // 5 operational stops + 1 recovery terminal = 6 circular nodes
+    expect(within(flow).getAllByTestId('patient-path-node')).toHaveLength(6);
+
+    // agent acronym badges derived from LAUNCHER_TILES agent ids
+    ['OOA', 'BMCA', 'ORSA', 'SBA', 'DCA'].forEach((acronym) => {
+      expect(within(flow).getByText(acronym)).toBeInTheDocument();
+    });
+
+    // operational step names + evidence chips from the content model
+    expect(within(flow).getByText('Emergency & Admission')).toBeInTheDocument();
+    expect(within(flow).getByText('Place 8 + boarders')).toBeInTheDocument();
+    expect(within(flow).getByText('Free 8 beds')).toBeInTheDocument();
+    expect(within(flow).getAllByTestId('patient-path-evidence')).toHaveLength(5);
+  });
+
+  it('surfaces the cross-path crisis and data-quality copilots as top banners', () => {
+    const admin = renderLauncher(['HCC.PlatformAdmin']);
+    const banners = screen.getByTestId('patient-path-banners');
+    expect(within(banners).getByText(/crisis & scenarios/i)).toBeInTheDocument();
+    expect(within(banners).getByText(/data quality gates/i)).toBeInTheDocument();
+    admin.unmount();
+
+    // the crisis banner stays gated by the CSA navigation capability
+    renderLauncher(['HCC.Viewer']);
+    const viewerBanners = screen.getByTestId('patient-path-banners');
+    expect(within(viewerBanners).queryByText(/crisis & scenarios/i)).not.toBeInTheDocument();
+    expect(within(viewerBanners).getByText(/data quality gates/i)).toBeInTheDocument();
+  });
 });

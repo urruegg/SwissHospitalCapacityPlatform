@@ -406,9 +406,32 @@
       "recoveryBody": "Der koordinierte Pfad übergibt mit klarer Verantwortung an Rehabilitation und gemeindenahe Versorgung.",
       "recoveryCaption": "Kontinuität über das Spital hinaus",
       "advisoryBadge": "Beratend",
+      "bannersAriaLabel": "Pfadübergreifende Copilots",
       "evidenceLabel": "Vertrauenssignale des Patientenpfads",
       "evidenceChip": "Evidenzgestützt",
       "goldenThreadChip": "Golden Thread",
+      "stops": {
+        "occupancy": {
+          "step": "Notfall & Aufnahme",
+          "evidence": "Med A → 102% in 72h"
+        },
+        "bedManager": {
+          "step": "Bettenzuweisung",
+          "evidence": "8 platzieren + Boarder"
+        },
+        "orSteering": {
+          "step": "OP & Behandlung",
+          "evidence": "Elektive umplanen"
+        },
+        "staffing": {
+          "step": "Personalbalance",
+          "evidence": "Personal abstimmen"
+        },
+        "discharge": {
+          "step": "Austritt",
+          "evidence": "8 Betten frei"
+        }
+      },
       "operational": {
         "occupancy": "Bedarf und Kapazitätsdruck erkennen, bevor sich der Versorgungspfad verengt.",
         "bedManager": "Platzierung und Bettenfluss über den Betriebsstandort koordinieren.",
@@ -419,12 +442,20 @@
       "dataQuality": {
         "ariaLabel": "Beratung zur Datenqualität",
         "title": "Datenqualität entlang des Pfads",
-        "body": "Der Data Quality Agent prüft Herkunft, Aktualität und Vertragszustand, ohne den Pfad zu verlassen."
+        "body": "Der Data Quality Agent prüft Herkunft, Aktualität und Vertragszustand, ohne den Pfad zu verlassen.",
+        "bannerLabel": "Datenqualitäts-Gates",
+        "bannerDot": "sichert jede Kennzahl",
+        "evidence": "Kennzahl vertrauenswürdig",
+        "badge": "DQ"
       },
       "crisis": {
         "ariaLabel": "Beratung zu Krisenszenarien",
         "body": "Wenn die Rollenberechtigung es erlaubt, spannt CSA Szenarioplanung und Eskalationsberatung über den Pfad.",
-        "cta": "Beratende Szenarioplanung öffnen"
+        "cta": "Beratende Szenarioplanung öffnen",
+        "bannerLabel": "Krisen & Szenarien",
+        "bannerDot": "spannt den ganzen Pfad",
+        "evidence": "Schocks stresstesten",
+        "badge": "CSA"
       },
       "dcInsight": {
         "title": "Wie ein Agent antwortet — das DC-INSIGHT-Muster",
@@ -514,7 +545,8 @@
         "capacityLoading": "Standortkapazität wird geladen…",
         "capacityErrorTitle": "Standortkapazität nicht verfügbar",
         "ctaPrimary": "Die drei Spitäler entdecken",
-        "ctaSecondary": "So wurde es gebaut"
+        "ctaSecondary": "So wurde es gebaut",
+        "quote": "Jeder Patientenpfad, in Schweizer Hand."
       },
       "workChart": {
         "title": "Wie sich Arbeit verändert",
@@ -541,6 +573,32 @@
           "badge": "Auf Curavias abgebildet",
           "body": "Arbeit wird um Ergebnisse statt um statische Übergaben zwischen Funktionen organisiert.",
           "curaviasMap": "Curavias überträgt dieses Prinzip auf die Spitalkapazität: gemeinsame Signale, spezialisierte Agents und ein menschlicher Entscheid an jeder betrieblichen Grenze."
+        },
+        "fit": {
+          "title": "Wie Curavias zur Microsoft Frontier Firm passt",
+          "body": "Eine Frontier Firm lebt von Mensch-Agent-Teams, Menschen als Agent-Bosses und Intelligenz auf Abruf. Curavias überträgt genau dieses Modell auf Spitalkapazität und Patientenfluss.",
+          "columns": {
+            "principle": "Frontier-Firm-Prinzip",
+            "curavias": "Bei Curavias"
+          },
+          "rows": {
+            "teams": {
+              "principle": "Mensch-Agent-Teams",
+              "curavias": "7 Runtime-Agents + operatives Personal"
+            },
+            "bosses": {
+              "principle": "Menschen als Agent-Bosses",
+              "curavias": "HITL-Freigabe „approve-to-apply“"
+            },
+            "on-demand": {
+              "principle": "Intelligenz auf Abruf",
+              "curavias": "72-h-Prognose · Copilot · Simulation"
+            },
+            "trust": {
+              "principle": "Vertrauen by Design",
+              "curavias": "Schweizer Datenhaltung · keine PHI · vollständig belegt"
+            }
+          }
         }
       },
       "cioWhyNow": {
@@ -602,16 +660,19 @@
           "curanova": {
             "name": "CuraNova",
             "profile": "Städtisches Universitätsspital für komplexe Akutpfade und spezialisierte Leistungen.",
+            "facts": "~900 Betten · 8'600 VZÄ · 7 medizinische Zentren",
             "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität."
           },
           "curalp": {
             "name": "Curalp",
             "profile": "Regionales Spital, das Akutnachfrage und Zugang in verteilten Gemeinden ausbalanciert.",
+            "facts": "~840 Betten · 8'600 VZÄ · 5 Standorte",
             "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen."
           },
           "vialta": {
             "name": "Vialta",
             "profile": "Integriertes Erholungsspital, das Akutaustritt, Rehabilitation und gemeindenahe Versorgung verbindet.",
+            "facts": "174 Betten · 1'200 VZÄ · 24/7-Notfall",
             "focus": "Fokus: Übergangsbereitschaft und Kontinuität."
           }
         },
