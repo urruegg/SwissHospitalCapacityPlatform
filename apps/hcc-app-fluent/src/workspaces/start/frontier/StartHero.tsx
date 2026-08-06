@@ -1,14 +1,14 @@
 import {
   Body1,
+  Button,
   Caption1,
   Link,
   Text,
   makeStyles,
-  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { scrollToSection } from '../../shared/narrative/NarrativeShell';
 
 const useStyles = makeStyles({
@@ -97,34 +97,6 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalS,
     alignItems: 'center',
   },
-  ctaLink: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '40px',
-    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalM}`,
-    borderRadius: tokens.borderRadiusMedium,
-    fontWeight: tokens.fontWeightSemibold,
-    textDecorationLine: 'none',
-    border: 'none',
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-    font: 'inherit',
-    ':focus-visible': {
-      outlineStyle: 'solid',
-      outlineWidth: tokens.strokeWidthThick,
-      outlineColor: tokens.colorStrokeFocus2,
-      outlineOffset: '2px',
-    },
-  },
-  ctaPrimary: {
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-  },
-  ctaSecondary: {
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    color: tokens.colorBrandForegroundLink,
-  },
   disclaimer: {
     color: tokens.colorNeutralForeground3,
     display: 'block',
@@ -134,6 +106,7 @@ const useStyles = makeStyles({
 export function StartHero() {
   const styles = useStyles();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className={styles.root}>
@@ -183,16 +156,12 @@ export function StartHero() {
       </div>
 
       <div className={styles.ctas}>
-        <button
-          type="button"
-          className={mergeClasses(styles.ctaLink, styles.ctaPrimary)}
-          onClick={() => scrollToSection('hospitals')}
-        >
+        <Button appearance="primary" onClick={() => scrollToSection('hospitals')}>
           {t('start.frontier.hero.ctaPrimary')}
-        </button>
-        <RouterLink to="/backstage" className={mergeClasses(styles.ctaLink, styles.ctaSecondary)}>
+        </Button>
+        <Button appearance="secondary" onClick={() => navigate('/backstage')}>
           {t('start.frontier.hero.ctaSecondary')}
-        </RouterLink>
+        </Button>
       </div>
 
       <Caption1 className={styles.disclaimer}>

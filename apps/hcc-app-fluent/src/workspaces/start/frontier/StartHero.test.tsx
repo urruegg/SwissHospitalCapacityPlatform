@@ -42,13 +42,14 @@ describe('StartHero', () => {
       /every patient.s path, in swiss hands\./i,
     );
 
-    // Two links: the external Journai reference in the lead + the Backstage secondary CTA.
+    // The Journai reference in the lead remains an external link.
     const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
-    expect(hrefs).toContain('/backstage');
     expect(hrefs).toContain('https://www.journai.ch/');
 
-    // Primary CTA remains a scroll button, not a link.
+    // Both CTAs use the standard Fluent Button (role=button), matching the app-wide
+    // primary/secondary button pattern: primary scrolls, secondary routes to Backstage.
     expect(screen.getByRole('button', { name: /meet the three hospitals/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /see how it was built/i })).toBeInTheDocument();
 
     // Mockup trust pills replace the legacy Fabric/advisory/PHI badges.
     expect(screen.getByText(/advisory-only/i)).toBeInTheDocument();
