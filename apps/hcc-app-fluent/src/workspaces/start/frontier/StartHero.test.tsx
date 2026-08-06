@@ -1,13 +1,9 @@
 import '../../../i18n';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import { MemoryRouter } from 'react-router-dom';
 import i18n from '../../../i18n';
-import { bvaHeadlineKpis } from '../../../data/bva/bva-evidence';
-import { setPreferredSource } from '../../../data/data-source';
-import * as goldenSourceClient from '../../../data/roleboard/golden-source-client';
-import { GOLDEN_THREAD_SCOPE } from '../../../journey/golden-thread';
 import { StartHero } from './StartHero';
 
 beforeAll(async () => {
@@ -16,90 +12,40 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await i18n.changeLanguage('en');
-  setPreferredSource('simulated');
 });
 
-afterEach(() => {
-  vi.restoreAllMocks();
-  setPreferredSource('simulated');
+afterEach(async () => {
+  await i18n.changeLanguage('en');
 });
 
-function renderHero(mode: 'demo' | 'user' = 'demo') {
+function renderHero() {
   return render(
     <MemoryRouter>
       <FluentProvider theme={webLightTheme}>
-        <StartHero mode={mode} />
+        <StartHero />
       </FluentProvider>
     </MemoryRouter>,
   );
 }
 
-function metricPattern(value: string, unit?: string) {
-  return new RegExp(unit ? `${value}\\s+${unit}` : value);
-}
-
-function selectExpectedHeroEvidence() {
-  const netValueRealized = bvaHeadlineKpis.find((payload) => payload.measure === 'Net Value Realized (3yr)');
-  const roi = bvaHeadlineKpis.find((payload) => payload.measure === 'ROI %');
-  if (!netValueRealized) {
-    throw new Error('Test fixture missing Net Value Realized (3yr) KPI');
-  }
-  if (!roi?.targetLabel) {
-    throw new Error('Test fixture missing ROI % KPI targetLabel');
-  }
-  return {
-    netValueRealized,
-    roi: { ...roi, targetLabel: roi.targetLabel },
-    figures: [
-      `${netValueRealized.value} ${netValueRealized.unit}`.trim(),
-      `${roi.value} ${roi.unit}`.trim(),
-      roi.targetLabel,
-    ],
-  };
-}
-
-function expectedHeroCaptions(
-  label: string,
-  asOfPrefix: (payload: (typeof bvaHeadlineKpis)[number]) => string,
-) {
-  const expected = selectExpectedHeroEvidence();
-  return [
-    `${label} · ${expected.netValueRealized.source} · ${asOfPrefix(expected.netValueRealized)}`,
-    `${label} · ${expected.roi.source} · ${asOfPrefix(expected.roi)}`,
-    `${label} · ${expected.roi.source} · ${asOfPrefix(expected.roi)}`,
-  ];
-}
-
 describe('StartHero', () => {
-  it('renders exactly three non-duplicated hero figures from the approved BVA evidence fields and the live site-capacity summary', async () => {
-    const summary = await goldenSourceClient.loadSiteCapacitySummary(GOLDEN_THREAD_SCOPE, 'demo');
-    const expected = selectExpectedHeroEvidence();
+  it('renders the mockup hero narrative: headline, Journai lead, Swiss-hands quote, trust pills, and CTAs', () => {
     renderHero();
 
-    expect(await screen.findByText(new RegExp(summary.peakWard, 'i'))).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /the hospital of the future is a Frontier Firm/i }),
+    ).toBeInTheDocument();
 
-    expect(screen.getByRole('heading', { name: /the hospital of the future is a Frontier Firm/i })).toBeInTheDocument();
-    expect(screen.getByText(metricPattern(expected.netValueRealized.value, expected.netValueRealized.unit))).toBeInTheDocument();
-    expect(screen.getByText(metricPattern(expected.roi.value, expected.roi.unit))).toBeInTheDocument();
-    expect(screen.getAllByTestId('hero-metric-figure').map((node) => node.textContent?.trim())).toEqual(
-      expected.figures,
-    );
-    expect(new Set(expected.figures).size).toBe(3);
-    expect(screen.getAllByText(expected.roi.targetLabel)).toHaveLength(1);
-    expect(screen.getAllByTestId('hero-metric-caption').map((node) => node.textContent?.trim())).toEqual(
-      expectedHeroCaptions('ROM estimate', (payload) => `as of ${payload.asOf.slice(0, 10)}`),
+    expect(screen.getByTestId('hero-quote')).toHaveTextContent(
+      /every patient.s path, in swiss hands\./i,
     );
 
-    expect(screen.getAllByText(new RegExp(`${summary.peakPct}%`))).not.toHaveLength(0);
-    expect(screen.getByText(new RegExp(String(Math.abs(summary.siteGapBeds))))).toBeInTheDocument();
-    expect(screen.getByText(summary.provenance === 'live' ? /live data/i : /simulated data/i)).toBeInTheDocument();
-
-    // The hero now carries two links: the Backstage secondary CTA and the
-    // external Journai reference in the lead paragraph. The primary CTA still
-    // scrolls to the hospitals section (button, not a link).
+    // Two links: the external Journai reference in the lead + the Backstage secondary CTA.
     const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
     expect(hrefs).toContain('/backstage');
     expect(hrefs).toContain('https://www.journai.ch/');
+
+    // Primary CTA remains a scroll button, not a link.
     expect(screen.getByRole('button', { name: /meet the three hospitals/i })).toBeInTheDocument();
 
     // Mockup trust pills replace the legacy Fabric/advisory/PHI badges.
@@ -108,38 +54,29 @@ describe('StartHero', () => {
     expect(screen.getByText(/switzerland north/i)).toBeInTheDocument();
   });
 
-  it('localizes the hero provenance caption', async () => {
+  it('omits the BVA value tiles and the site-capacity aside (single-column mockup hero)', () => {
+    renderHero();
+
+    // BVA value tiles (Net Value Realized / ROI % / ROM context) are gone.
+    expect(screen.queryByTestId('hero-metric-tile')).toBeNull();
+    expect(screen.queryByTestId('hero-metric-figure')).toBeNull();
+    expect(screen.queryByTestId('hero-metric-caption')).toBeNull();
+
+    // "Site capacity - next 72h" aside is gone.
+    expect(screen.queryByText(/site capacity/i)).toBeNull();
+    expect(screen.queryByText(/next 72h/i)).toBeNull();
+  });
+
+  it('localizes the hero headline and trust pills in German', async () => {
     await i18n.changeLanguage('de');
-    vi.spyOn(goldenSourceClient, 'loadSiteCapacitySummary').mockImplementation(
-      () => new Promise(() => {}),
-    );
-
     renderHero();
 
-    expect(screen.getAllByTestId('hero-metric-caption').map((node) => node.textContent?.trim())).toEqual(
-      expectedHeroCaptions('ROM-Schätzung', (payload) => `Stand ${payload.asOf.slice(0, 10)}`),
-    );
-  });
-
-  it('shows an explicit loading state while the capacity summary is pending', () => {
-    vi.spyOn(goldenSourceClient, 'loadSiteCapacitySummary').mockImplementation(
-      () => new Promise(() => {}),
-    );
-
-    renderHero();
-
-    expect(screen.getByText(/Loading site capacity/i)).toBeInTheDocument();
-  });
-
-  it('renders the mockup Swiss-hands quote without disturbing the tested hook heading', () => {
-    renderHero();
-
-    expect(screen.getByTestId('hero-quote')).toHaveTextContent(
-      /every patient.s path, in swiss hands\./i,
-    );
-    // Regression guard: the Frontier Firm headline is the primary hero heading.
     expect(
-      screen.getByRole('heading', { name: /the hospital of the future is a Frontier Firm/i }),
+      screen.getByRole('heading', { name: /Das Spital der Zukunft ist eine Frontier Firm/i }),
     ).toBeInTheDocument();
+    // Exact strings target the pill-label spans only. A loose /Nur beratend/i
+    // would also match the German disclaimer ("Nur beratend — für ...").
+    expect(screen.getByText('Nur beratend')).toBeInTheDocument();
+    expect(screen.getByText('In der Schweiz gehostet')).toBeInTheDocument();
   });
 });

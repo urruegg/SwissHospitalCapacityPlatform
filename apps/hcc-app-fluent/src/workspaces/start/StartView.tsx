@@ -55,10 +55,10 @@ function bodyKeyFor(section: StartSection) {
   return section.titleKey.replace(/\.title$/, '.body');
 }
 
-function sectionBody(id: StartSection['id'], mode: 'demo' | 'user') {
+function sectionBody(id: StartSection['id']) {
   switch (id) {
     case 'hero':
-      return <StartHero mode={mode} />;
+      return <StartHero />;
     case 'work-chart':
       return <WorkChartSection />;
     case 'cio-why-now':
@@ -113,7 +113,7 @@ export function StartView() {
     render: () => (
       <section data-start-section={section.id} data-testid={`start-${section.id}`}>
         {section.id === 'hero' ? (
-          sectionBody('hero', mode)
+          sectionBody('hero')
         ) : (
           <>
             <SectionHeader
@@ -123,7 +123,7 @@ export function StartView() {
               tagline={t(SECTION_META[section.id].eyebrowKey)}
               description={t(bodyKeyFor(section))}
             />
-            {sectionBody(section.id, mode)}
+            {sectionBody(section.id)}
           </>
         )}
       </section>
