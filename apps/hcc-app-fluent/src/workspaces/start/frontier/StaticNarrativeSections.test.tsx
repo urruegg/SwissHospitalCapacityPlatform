@@ -13,7 +13,7 @@ import { NinetyDaySection } from './NinetyDaySection';
 import { WorkChartSection } from './WorkChartSection';
 import {
   CIO_DECISIONS,
-  FRONTIER_AGENTS,
+  FRONTIER_ROSTER,
   FRONTIER_HOSPITALS,
   NINETY_DAY_PHASES,
   WORK_MODES,
@@ -84,20 +84,20 @@ describe('CioChallengerSection', () => {
 });
 
 describe('HospitalsSection', () => {
-  it('renders exactly three synthetic hospitals and seven agent roster items', () => {
+  it('renders exactly three synthetic hospitals and the eight-chip agent roster', () => {
     renderSection(<HospitalsSection />);
 
     expect(
       screen.getByRole('region', { name: 'Synthetic Curavias hospital network' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('region', { name: 'Seven-agent capacity team' }),
+      screen.getByRole('region', { name: 'The agent team behind every hospital' }),
     ).toBeInTheDocument();
     expect(screen.getAllByTestId('frontier-hospital-card')).toHaveLength(
       FRONTIER_HOSPITALS.length,
     );
     expect(screen.getAllByTestId('frontier-agent-roster-item')).toHaveLength(
-      FRONTIER_AGENTS.length,
+      FRONTIER_ROSTER.length,
     );
     // Hospital titles render as plain spans (not headings) because each card is
     // an interactive <button> — button content model disallows heading descendants.

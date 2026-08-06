@@ -988,37 +988,20 @@
             }
           }
         },
-        "rosterTitle": "Seven-agent capacity team",
-        "rosterBody": "Each agent owns a focused advisory responsibility; accountable people retain the decision.",
-        "agents": {
-          "ooa-agent": {
-            "name": "Occupancy Outlook Agent",
-            "role": "Anticipates capacity pressure and explains forecast confidence."
+        "roster": {
+          "title": "The agent team behind every hospital",
+          "tag": "7 runtime agents · live",
+          "entries": {
+            "ooa": { "abbr": "OOA", "desc": "Occupancy & 72-h forecast" },
+            "dca": { "abbr": "DCA", "desc": "Discharge coordination" },
+            "bmca": { "abbr": "BMCA", "desc": "Bed-management copilot" },
+            "csa": { "abbr": "CSA", "desc": "Capacity what-if simulation" },
+            "orsa": { "abbr": "ORSA", "desc": "OR steering" },
+            "sba": { "abbr": "SBA", "desc": "Staffing balance" },
+            "data-quality": { "abbr": "Data-Quality", "desc": "Bronze/Silver/Gold checks" },
+            "po": { "abbr": "PO Agent", "desc": "grounded Q&A rail" }
           },
-          "bmca-agent": {
-            "name": "Bed Management Copilot",
-            "role": "Coordinates placements, constraints, and site flow."
-          },
-          "dca-agent": {
-            "name": "Discharge Copilot",
-            "role": "Surfaces transition readiness and discharge barriers."
-          },
-          "orsa-agent": {
-            "name": "OR Steering Agent",
-            "role": "Connects theatre choices to downstream capacity."
-          },
-          "sba-agent": {
-            "name": "Staffing Balance Agent",
-            "role": "Aligns skill coverage with emerging operational demand."
-          },
-          "csa-agent": {
-            "name": "Crisis Scenario Agent",
-            "role": "Frames governed scenarios and resilience options."
-          },
-          "data-quality-agent": {
-            "name": "Data Quality Agent",
-            "role": "Checks provenance, freshness, and contract health."
-          }
+          "note": "All agents are advisory and human-in-the-loop, grounded on governed synthetic data, Swiss-resident, no PHI."
         }
       },
       "patientPath": {

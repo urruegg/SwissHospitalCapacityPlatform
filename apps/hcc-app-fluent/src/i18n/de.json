@@ -768,37 +768,20 @@
             }
           }
         },
-        "rosterTitle": "Kapazitätsteam mit sieben Agents",
-        "rosterBody": "Jeder Agent trägt eine fokussierte beratende Verantwortung; verantwortliche Menschen behalten den Entscheid.",
-        "agents": {
-          "ooa-agent": {
-            "name": "Occupancy Outlook Agent",
-            "role": "Antizipiert Kapazitätsdruck und erklärt die Prognosekonfidenz."
+        "roster": {
+          "title": "Das Agent-Team hinter jedem Spital",
+          "tag": "7 Laufzeit-Agents · live",
+          "entries": {
+            "ooa": { "abbr": "OOA", "desc": "Belegung & 72-h-Prognose" },
+            "dca": { "abbr": "DCA", "desc": "Austrittskoordination" },
+            "bmca": { "abbr": "BMCA", "desc": "Bettenmanagement-Copilot" },
+            "csa": { "abbr": "CSA", "desc": "Kapazitäts-Was-wäre-wenn-Simulation" },
+            "orsa": { "abbr": "ORSA", "desc": "OP-Steuerung" },
+            "sba": { "abbr": "SBA", "desc": "Personalbalance" },
+            "data-quality": { "abbr": "Data-Quality", "desc": "Bronze/Silber/Gold-Prüfungen" },
+            "po": { "abbr": "PO Agent", "desc": "verankerte Q&A-Leiste" }
           },
-          "bmca-agent": {
-            "name": "Bed Management Copilot",
-            "role": "Koordiniert Platzierungen, Einschränkungen und Standortfluss."
-          },
-          "dca-agent": {
-            "name": "Discharge Copilot",
-            "role": "Zeigt Übergangsbereitschaft und Austrittshindernisse."
-          },
-          "orsa-agent": {
-            "name": "OR Steering Agent",
-            "role": "Verbindet OP-Entscheide mit nachgelagerter Kapazität."
-          },
-          "sba-agent": {
-            "name": "Staffing Balance Agent",
-            "role": "Richtet Kompetenzabdeckung auf die entstehende betriebliche Nachfrage aus."
-          },
-          "csa-agent": {
-            "name": "Crisis Scenario Agent",
-            "role": "Rahmt gesteuerte Szenarien und Resilienzoptionen."
-          },
-          "data-quality-agent": {
-            "name": "Data Quality Agent",
-            "role": "Prüft Herkunft, Aktualität und Vertragszustand."
-          }
+          "note": "Alle Agents sind beratend und mit Mensch-in-der-Schleife, verankert auf gesteuerten synthetischen Daten, in der Schweiz gehostet, keine PHI."
         }
       },
       "patientPath": {

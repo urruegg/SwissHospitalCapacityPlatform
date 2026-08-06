@@ -558,37 +558,20 @@
             }
           }
         },
-        "rosterTitle": "Team capacità di sette agenti",
-        "rosterBody": "Ogni agente ha una responsabilità consultiva mirata; le persone responsabili mantengono la decisione.",
-        "agents": {
-          "ooa-agent": {
-            "name": "Agente prospettiva occupazione",
-            "role": "Anticipa la pressione sulla capacità e spiega la confidenza della previsione."
+        "roster": {
+          "title": "Il team di agenti dietro ogni ospedale",
+          "tag": "7 agenti di runtime · in diretta",
+          "entries": {
+            "ooa": { "abbr": "OOA", "desc": "Occupazione & previsione a 72 h" },
+            "dca": { "abbr": "DCA", "desc": "Coordinamento delle dimissioni" },
+            "bmca": { "abbr": "BMCA", "desc": "Copilota gestione letti" },
+            "csa": { "abbr": "CSA", "desc": "Simulazione di capacità what-if" },
+            "orsa": { "abbr": "ORSA", "desc": "Coordinamento sala operatoria" },
+            "sba": { "abbr": "SBA", "desc": "Equilibrio del personale" },
+            "data-quality": { "abbr": "Data-Quality", "desc": "Controlli Bronzo/Argento/Oro" },
+            "po": { "abbr": "PO Agent", "desc": "barra di domande e risposte ancorata" }
           },
-          "bmca-agent": {
-            "name": "Copilota gestione letti",
-            "role": "Coordina collocamenti, vincoli e flusso del sito."
-          },
-          "dca-agent": {
-            "name": "Copilota dimissioni",
-            "role": "Evidenzia prontezza della transizione e ostacoli alla dimissione."
-          },
-          "orsa-agent": {
-            "name": "Agente coordinamento sala operatoria",
-            "role": "Collega le scelte di sala operatoria alla capacità a valle."
-          },
-          "sba-agent": {
-            "name": "Agente equilibrio del personale",
-            "role": "Allinea la copertura delle competenze alla domanda operativa emergente."
-          },
-          "csa-agent": {
-            "name": "Agente scenari di crisi",
-            "role": "Inquadra scenari governati e opzioni di resilienza."
-          },
-          "data-quality-agent": {
-            "name": "Agente qualità dei dati",
-            "role": "Verifica provenienza, freschezza e salute dei contratti."
-          }
+          "note": "Tutti gli agenti sono consultivi e con l'umano nel ciclo, ancorati su dati sintetici governati, ospitati in Svizzera, senza PHI."
         }
       },
       "patientPath": {

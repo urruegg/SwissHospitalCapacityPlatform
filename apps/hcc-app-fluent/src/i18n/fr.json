@@ -558,37 +558,20 @@
             }
           }
         },
-        "rosterTitle": "Équipe capacité de sept agents",
-        "rosterBody": "Chaque agent porte une responsabilité consultative ciblée ; les personnes responsables gardent la décision.",
-        "agents": {
-          "ooa-agent": {
-            "name": "Agent de perspective d'occupation",
-            "role": "Anticipe la pression de capacité et explique la confiance de la prévision."
+        "roster": {
+          "title": "L'équipe d'agents derrière chaque hôpital",
+          "tag": "7 agents d'exécution · en direct",
+          "entries": {
+            "ooa": { "abbr": "OOA", "desc": "Occupation & prévision à 72 h" },
+            "dca": { "abbr": "DCA", "desc": "Coordination des sorties" },
+            "bmca": { "abbr": "BMCA", "desc": "Copilote de gestion des lits" },
+            "csa": { "abbr": "CSA", "desc": "Simulation de capacité hypothétique" },
+            "orsa": { "abbr": "ORSA", "desc": "Pilotage du bloc" },
+            "sba": { "abbr": "SBA", "desc": "Équilibre du personnel" },
+            "data-quality": { "abbr": "Data-Quality", "desc": "Contrôles Bronze/Argent/Or" },
+            "po": { "abbr": "PO Agent", "desc": "barre de questions-réponses ancrée" }
           },
-          "bmca-agent": {
-            "name": "Copilote de gestion des lits",
-            "role": "Coordonne placements, contraintes et flux du site."
-          },
-          "dca-agent": {
-            "name": "Copilote des sorties",
-            "role": "Fait ressortir la préparation des transitions et les freins à la sortie."
-          },
-          "orsa-agent": {
-            "name": "Agent de pilotage du bloc",
-            "role": "Relie les choix du bloc à la capacité en aval."
-          },
-          "sba-agent": {
-            "name": "Agent d'équilibre du personnel",
-            "role": "Aligne la couverture des compétences sur la demande opérationnelle émergente."
-          },
-          "csa-agent": {
-            "name": "Agent de scénarios de crise",
-            "role": "Cadre des scénarios gouvernés et des options de résilience."
-          },
-          "data-quality-agent": {
-            "name": "Agent de qualité des données",
-            "role": "Vérifie provenance, fraîcheur et santé des contrats."
-          }
+          "note": "Tous les agents sont consultatifs et avec l'humain dans la boucle, ancrés sur des données synthétiques gouvernées, hébergés en Suisse, sans PHI."
         }
       },
       "patientPath": {

@@ -62,4 +62,30 @@ describe('HospitalsSection', () => {
     expect(screen.getAllByTestId('frontier-hospital-facts')).toHaveLength(3);
     expect(screen.getByText(/7 medical centres/)).toBeInTheDocument();
   });
+
+  it('renders the eight-chip agent roster (seven runtime agents + the PO Agent) with icons', () => {
+    renderHospitals();
+
+    const chips = screen.getAllByTestId('frontier-agent-roster-item');
+    expect(chips).toHaveLength(8);
+    chips.forEach((chip) => expect(chip.querySelector('svg')).toBeTruthy());
+
+    // Section heading + "runtime agents" live tag.
+    expect(
+      screen.getByRole('heading', { name: 'The agent team behind every hospital' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/7 runtime agents/)).toBeInTheDocument();
+
+    // Abbreviations, including the new Product Owner Agent chip.
+    expect(screen.getByText('OOA')).toBeInTheDocument();
+    expect(screen.getByText('BMCA')).toBeInTheDocument();
+    expect(screen.getByText('PO Agent')).toBeInTheDocument();
+
+    // Short descriptions.
+    expect(screen.getByText(/Occupancy & 72-h forecast/)).toBeInTheDocument();
+    expect(screen.getByText(/grounded Q&A rail/)).toBeInTheDocument();
+
+    // Advisory / no-PHI footer note.
+    expect(screen.getByText(/advisory and human-in-the-loop/)).toBeInTheDocument();
+  });
 });

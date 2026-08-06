@@ -415,58 +415,82 @@ export const FRONTIER_HOSPITAL_ROLES = [
   { roleId: 'po', kind: 'po' },
 ] as const satisfies readonly FrontierHospitalRole[];
 
-export type FrontierAgentId =
-  | 'ooa-agent'
-  | 'bmca-agent'
-  | 'dca-agent'
-  | 'orsa-agent'
-  | 'sba-agent'
-  | 'csa-agent'
-  | 'data-quality-agent';
+/**
+ * Compact agent-roster chip (mockup "The agent team behind every hospital"):
+ * the seven runtime capacity agents plus the Product Owner Agent grounded Q&A
+ * rail. Each chip renders an icon + abbreviation + short description and
+ * resolves copy from `start.frontier.hospitals.roster.entries.<id>`.
+ */
+export type FrontierRosterId =
+  | 'ooa'
+  | 'dca'
+  | 'bmca'
+  | 'csa'
+  | 'orsa'
+  | 'sba'
+  | 'data-quality'
+  | 'po';
 
-export interface FrontierAgent {
-  id: FrontierAgentId;
-  nameKey: `start.frontier.hospitals.agents.${FrontierAgentId}.name`;
-  roleKey: `start.frontier.hospitals.agents.${FrontierAgentId}.role`;
+/** Chip accent family (mockup: runtime agents = green, PO rail = violet). */
+export type FrontierRosterKind = 'agent' | 'po';
+
+export interface FrontierRosterEntry {
+  id: FrontierRosterId;
+  kind: FrontierRosterKind;
+  abbrKey: `start.frontier.hospitals.roster.entries.${FrontierRosterId}.abbr`;
+  descKey: `start.frontier.hospitals.roster.entries.${FrontierRosterId}.desc`;
 }
 
-export const FRONTIER_AGENTS = [
+export const FRONTIER_ROSTER = [
   {
-    id: 'ooa-agent',
-    nameKey: 'start.frontier.hospitals.agents.ooa-agent.name',
-    roleKey: 'start.frontier.hospitals.agents.ooa-agent.role',
+    id: 'ooa',
+    kind: 'agent',
+    abbrKey: 'start.frontier.hospitals.roster.entries.ooa.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.ooa.desc',
   },
   {
-    id: 'bmca-agent',
-    nameKey: 'start.frontier.hospitals.agents.bmca-agent.name',
-    roleKey: 'start.frontier.hospitals.agents.bmca-agent.role',
+    id: 'dca',
+    kind: 'agent',
+    abbrKey: 'start.frontier.hospitals.roster.entries.dca.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.dca.desc',
   },
   {
-    id: 'dca-agent',
-    nameKey: 'start.frontier.hospitals.agents.dca-agent.name',
-    roleKey: 'start.frontier.hospitals.agents.dca-agent.role',
+    id: 'bmca',
+    kind: 'agent',
+    abbrKey: 'start.frontier.hospitals.roster.entries.bmca.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.bmca.desc',
   },
   {
-    id: 'orsa-agent',
-    nameKey: 'start.frontier.hospitals.agents.orsa-agent.name',
-    roleKey: 'start.frontier.hospitals.agents.orsa-agent.role',
+    id: 'csa',
+    kind: 'agent',
+    abbrKey: 'start.frontier.hospitals.roster.entries.csa.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.csa.desc',
   },
   {
-    id: 'sba-agent',
-    nameKey: 'start.frontier.hospitals.agents.sba-agent.name',
-    roleKey: 'start.frontier.hospitals.agents.sba-agent.role',
+    id: 'orsa',
+    kind: 'agent',
+    abbrKey: 'start.frontier.hospitals.roster.entries.orsa.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.orsa.desc',
   },
   {
-    id: 'csa-agent',
-    nameKey: 'start.frontier.hospitals.agents.csa-agent.name',
-    roleKey: 'start.frontier.hospitals.agents.csa-agent.role',
+    id: 'sba',
+    kind: 'agent',
+    abbrKey: 'start.frontier.hospitals.roster.entries.sba.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.sba.desc',
   },
   {
-    id: 'data-quality-agent',
-    nameKey: 'start.frontier.hospitals.agents.data-quality-agent.name',
-    roleKey: 'start.frontier.hospitals.agents.data-quality-agent.role',
+    id: 'data-quality',
+    kind: 'agent',
+    abbrKey: 'start.frontier.hospitals.roster.entries.data-quality.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.data-quality.desc',
   },
-] as const satisfies readonly FrontierAgent[];
+  {
+    id: 'po',
+    kind: 'po',
+    abbrKey: 'start.frontier.hospitals.roster.entries.po.abbr',
+    descKey: 'start.frontier.hospitals.roster.entries.po.desc',
+  },
+] as const satisfies readonly FrontierRosterEntry[];
 
 export type NinetyDayPhaseId = 'frame-ground' | 'build-prove' | 'operate-scale';
 export type NinetyDayOutcomeId =

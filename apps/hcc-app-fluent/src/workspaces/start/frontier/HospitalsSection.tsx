@@ -1,4 +1,4 @@
-import { Body1, Caption1, Text, Title3, makeStyles, tokens } from '@fluentui/react-components';
+import { Caption1, Text, Title3, makeStyles, tokens } from '@fluentui/react-components';
 import {
   BuildingBankRegular,
   BuildingHomeRegular,
@@ -7,6 +7,13 @@ import {
   ChatRegular,
   PersonHeartRegular,
   StethoscopeRegular,
+  DataTrendingRegular,
+  DoorArrowRightRegular,
+  BedRegular,
+  BeakerRegular,
+  WrenchRegular,
+  PeopleTeamRegular,
+  CheckmarkCircleRegular,
   type FluentIcon,
 } from '@fluentui/react-icons';
 import { useTranslation } from 'react-i18next';
@@ -18,10 +25,11 @@ import {
 import { useCopilotRail } from '../../../copilot-rail/rail-context';
 import { startInsight, startReco } from './start-rail';
 import {
-  FRONTIER_AGENTS,
+  FRONTIER_ROSTER,
   FRONTIER_HOSPITALS,
   FRONTIER_HOSPITAL_ROLES,
-  type FrontierAgentId,
+  type FrontierRosterId,
+  type FrontierRosterKind,
   type FrontierHospitalId,
   type FrontierHospitalRoleId,
   type FrontierHospitalRoleKind,
@@ -57,15 +65,23 @@ const ROLE_ACCENT: Record<FrontierHospitalRoleKind, ShowcaseAccent> = {
   po: 'violet',
 };
 
-// Per-agent chip accent (mockup: colored agent roster chips).
-const AGENT_ACCENT: Record<FrontierAgentId, ShowcaseAccent> = {
-  'ooa-agent': 'green',
-  'bmca-agent': 'navy',
-  'dca-agent': 'teal',
-  'orsa-agent': 'violet',
-  'sba-agent': 'amber',
-  'csa-agent': 'red',
-  'data-quality-agent': 'slate',
+// Per-roster-chip icon (mockup "The agent team behind every hospital"): one
+// Fluent glyph per runtime agent + the PO grounded Q&A rail.
+const ROSTER_ICON: Record<FrontierRosterId, FluentIcon> = {
+  ooa: DataTrendingRegular,
+  dca: DoorArrowRightRegular,
+  bmca: BedRegular,
+  csa: BeakerRegular,
+  orsa: WrenchRegular,
+  sba: PeopleTeamRegular,
+  'data-quality': CheckmarkCircleRegular,
+  po: ChatRegular,
+};
+
+// Per-roster-chip accent (mockup: runtime agents = green, PO rail = violet).
+const ROSTER_ACCENT: Record<FrontierRosterKind, ShowcaseAccent> = {
+  agent: 'green',
+  po: 'violet',
 };
 
 const useStyles = makeStyles({
@@ -147,21 +163,49 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalM,
   },
   rosterHeader: {
-    display: 'grid',
-    gap: tokens.spacingVerticalXXS,
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalS,
+  },
+  rosterTag: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS,
+    paddingTop: tokens.spacingVerticalXXS,
+    paddingBottom: tokens.spacingVerticalXXS,
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
+    borderRadius: tokens.borderRadiusCircular,
+    border: `1px solid ${SHOWCASE_ACCENT.green}`,
+    color: SHOWCASE_ACCENT.green,
+    fontSize: tokens.fontSizeBase200,
+    fontWeight: tokens.fontWeightSemibold,
+    whiteSpace: 'nowrap',
+  },
+  rosterTagDot: {
+    width: '6px',
+    height: '6px',
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: SHOWCASE_ACCENT.green,
+    flexShrink: 0,
   },
   roster: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
     gap: tokens.spacingHorizontalS,
     listStyleType: 'none',
     margin: 0,
     padding: 0,
   },
   rosterItem: {
-    display: 'grid',
-    gap: tokens.spacingVerticalXXS,
-    padding: tokens.spacingHorizontalM,
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalS,
+    paddingTop: tokens.spacingVerticalS,
+    paddingBottom: tokens.spacingVerticalS,
+    paddingLeft: tokens.spacingHorizontalM,
+    paddingRight: tokens.spacingHorizontalM,
     borderRadius: tokens.borderRadiusLarge,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderLeftWidth: '4px',
@@ -169,10 +213,24 @@ const useStyles = makeStyles({
     boxShadow: tokens.shadow2,
     minWidth: 0,
   },
-  agentName: {
-    overflowWrap: 'anywhere',
+  rosterIcon: {
+    fontSize: '18px',
+    flexShrink: 0,
+    display: 'inline-grid',
+    placeItems: 'center',
   },
-  agentRole: {
+  rosterText: {
+    display: 'inline',
+    minWidth: 0,
+    overflowWrap: 'anywhere',
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground2,
+    lineHeight: tokens.lineHeightBase200,
+  },
+  rosterAbbr: {
+    color: tokens.colorNeutralForeground1,
+  },
+  rosterNote: {
     color: tokens.colorNeutralForeground3,
   },
 });
@@ -271,25 +329,40 @@ export function HospitalsSection() {
       >
         <div className={styles.rosterHeader}>
           <Title3 as="h3" id="frontier-agent-roster-title">
-            {t('start.frontier.hospitals.rosterTitle')}
+            {t('start.frontier.hospitals.roster.title')}
           </Title3>
-          <Body1>{t('start.frontier.hospitals.rosterBody')}</Body1>
+          <span className={styles.rosterTag}>
+            <span className={styles.rosterTagDot} aria-hidden />
+            {t('start.frontier.hospitals.roster.tag')}
+          </span>
         </div>
         <ul className={styles.roster}>
-          {FRONTIER_AGENTS.map((agent) => (
-            <li
-              key={agent.id}
-              className={styles.rosterItem}
-              style={{ borderLeftColor: SHOWCASE_ACCENT[AGENT_ACCENT[agent.id]] }}
-              data-testid="frontier-agent-roster-item"
-            >
-              <Text weight="semibold" className={styles.agentName}>
-                {t(agent.nameKey)}
-              </Text>
-              <Caption1 className={styles.agentRole}>{t(agent.roleKey)}</Caption1>
-            </li>
-          ))}
+          {FRONTIER_ROSTER.map((entry) => {
+            const RosterIcon = ROSTER_ICON[entry.id];
+            const accent = SHOWCASE_ACCENT[ROSTER_ACCENT[entry.kind]];
+            return (
+              <li
+                key={entry.id}
+                className={styles.rosterItem}
+                style={{ borderLeftColor: accent }}
+                data-testid="frontier-agent-roster-item"
+              >
+                <span className={styles.rosterIcon} style={{ color: accent }}>
+                  <RosterIcon aria-hidden />
+                </span>
+                <span className={styles.rosterText}>
+                  <Text weight="semibold" className={styles.rosterAbbr}>
+                    {t(entry.abbrKey)}
+                  </Text>{' '}
+                  <span>{`\u2014 ${t(entry.descKey)}`}</span>
+                </span>
+              </li>
+            );
+          })}
         </ul>
+        <Caption1 className={styles.rosterNote}>
+          {t('start.frontier.hospitals.roster.note')}
+        </Caption1>
       </section>
     </div>
   );
