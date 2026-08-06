@@ -78,7 +78,7 @@ describe('StartHero', () => {
 
     expect(await screen.findByText(new RegExp(summary.peakWard, 'i'))).toBeInTheDocument();
 
-    expect(screen.getByRole('heading', { name: /See the squeeze before it happens/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /the hospital of the future is a Frontier Firm/i })).toBeInTheDocument();
     expect(screen.getByText(metricPattern(expected.netValueRealized.value, expected.netValueRealized.unit))).toBeInTheDocument();
     expect(screen.getByText(metricPattern(expected.roi.value, expected.roi.unit))).toBeInTheDocument();
     expect(screen.getAllByTestId('hero-metric-figure').map((node) => node.textContent?.trim())).toEqual(
@@ -94,11 +94,18 @@ describe('StartHero', () => {
     expect(screen.getByText(new RegExp(String(Math.abs(summary.siteGapBeds))))).toBeInTheDocument();
     expect(screen.getByText(summary.provenance === 'live' ? /live data/i : /simulated data/i)).toBeInTheDocument();
 
-    // Only the secondary CTA remains a real navigation link to Backstage; the
-    // primary CTA now scrolls to the hospitals section (button, not a link).
-    const backstageLinks = screen.getAllByRole('link');
-    expect(backstageLinks.every((link) => link.getAttribute('href') === '/backstage')).toBe(true);
+    // The hero now carries two links: the Backstage secondary CTA and the
+    // external Journai reference in the lead paragraph. The primary CTA still
+    // scrolls to the hospitals section (button, not a link).
+    const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
+    expect(hrefs).toContain('/backstage');
+    expect(hrefs).toContain('https://www.journai.ch/');
     expect(screen.getByRole('button', { name: /meet the three hospitals/i })).toBeInTheDocument();
+
+    // Mockup trust pills replace the legacy Fabric/advisory/PHI badges.
+    expect(screen.getByText(/advisory-only/i)).toBeInTheDocument();
+    expect(screen.getByText(/swiss-resident/i)).toBeInTheDocument();
+    expect(screen.getByText(/switzerland north/i)).toBeInTheDocument();
   });
 
   it('localizes the hero provenance caption', async () => {
@@ -130,9 +137,9 @@ describe('StartHero', () => {
     expect(screen.getByTestId('hero-quote')).toHaveTextContent(
       /every patient.s path, in swiss hands\./i,
     );
-    // Regression guard: the S37 hook heading remains the primary hero headline.
+    // Regression guard: the Frontier Firm headline is the primary hero heading.
     expect(
-      screen.getByRole('heading', { name: /See the squeeze before it happens/i }),
+      screen.getByRole('heading', { name: /the hospital of the future is a Frontier Firm/i }),
     ).toBeInTheDocument();
   });
 });

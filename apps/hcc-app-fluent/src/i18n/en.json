@@ -595,6 +595,17 @@
         "body": "Executive hero shell for the Curavias frontier narrative and evidence-backed value hook.",
         "eyebrow": "Product overview · operative capacity",
         "hook": "See the squeeze before it happens. Act before it hurts.",
+        "hookPrefix": "The hospital of the future is a ",
+        "hookAccent": "Frontier Firm",
+        "hookSuffix": ". Curavias makes it real.",
+        "leadBeforeJournai": "A Frontier Firm runs on human–agent teams: people keep judgment and accountability, digital colleagues carry the routine. Inspired by the Microsoft Frontier Firm and by ",
+        "journaiName": "Journai",
+        "leadAfterJournai": " — a Swiss company where 2 people work with 20+ AI colleagues — Curavias brings the same operating model to hospital capacity and patient flow.",
+        "pills": {
+          "advisory": { "label": "Advisory-only", "desc": "it previews & recommends — never decides or diagnoses" },
+          "swiss": { "label": "Swiss-resident", "desc": "synthetic data · not a medical device" },
+          "live": { "lead": "Live in PROD", "label": "Switzerland North", "desc": "app.curavias.ch" }
+        },
         "valueLine": "Reliable preview · Explainable recommendation · The human decides.",
         "supportingMetricLabel": "ROM context",
         "capacityTitle": "Site capacity - next 72h",

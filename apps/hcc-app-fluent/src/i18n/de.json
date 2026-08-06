@@ -539,6 +539,17 @@
         "body": "Hülle für den Hero-Bereich der Curavias-Frontier-Erzählung und das evidenzgestützte Wertversprechen.",
         "eyebrow": "Produktübersicht · operative Kapazität",
         "hook": "Den Engpass sehen, bevor er entsteht. Handeln, bevor es weh tut.",
+        "hookPrefix": "Das Spital der Zukunft ist eine ",
+        "hookAccent": "Frontier Firm",
+        "hookSuffix": ". Curavias macht es real.",
+        "leadBeforeJournai": "Ein Frontier Firm arbeitet in Mensch-Agent-Teams: Menschen behalten Urteilskraft und Verantwortung, digitale Kolleginnen und Kollegen übernehmen die Routine. Inspiriert vom Microsoft Frontier Firm und von ",
+        "journaiName": "Journai",
+        "leadAfterJournai": " — einem Schweizer Unternehmen, in dem 2 Menschen mit 20+ KI-Kolleginnen und -Kollegen arbeiten — bringt Curavias dasselbe Betriebsmodell in Spitalkapazität und Patientenfluss.",
+        "pills": {
+          "advisory": { "label": "Nur beratend", "desc": "zeigt Vorschau und Empfehlungen — entscheidet und diagnostiziert nie" },
+          "swiss": { "label": "In der Schweiz gehostet", "desc": "synthetische Daten · kein Medizinprodukt" },
+          "live": { "lead": "Live in PROD", "label": "Switzerland North", "desc": "app.curavias.ch" }
+        },
         "valueLine": "Verlässliche Vorschau · Erklärbare Empfehlung · Der Mensch entscheidet.",
         "supportingMetricLabel": "ROM-Kontext",
         "capacityTitle": "Standortkapazität - nächste 72 h",

@@ -2,6 +2,7 @@ import {
   Badge,
   Body1,
   Caption1,
+  Link,
   Text,
   Title1,
   makeStyles,
@@ -62,11 +63,20 @@ const useStyles = makeStyles({
     textTransform: 'uppercase',
   },
   hook: {
-    maxWidth: '16ch',
+    maxWidth: '18ch',
+  },
+  hookInk: {
+    color: tokens.colorNeutralForeground1,
+  },
+  hookAccent: {
     backgroundImage: 'linear-gradient(110deg, #365B7D, #17B890 78%)',
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',
     color: 'transparent',
+  },
+  lead: {
+    maxWidth: '66ch',
+    color: tokens.colorNeutralForeground2,
   },
   valueLine: {
     color: tokens.colorNeutralForeground2,
@@ -81,7 +91,28 @@ const useStyles = makeStyles({
   trustPills: {
     display: 'flex',
     flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalS,
+  },
+  pill: {
+    display: 'inline-flex',
+    alignItems: 'center',
     gap: tokens.spacingHorizontalXS,
+    padding: `${tokens.spacingVerticalXXS} ${tokens.spacingHorizontalS}`,
+    borderRadius: tokens.borderRadiusCircular,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground2,
+  },
+  pillDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: tokens.borderRadiusCircular,
+    backgroundColor: tokens.colorPaletteGreenForeground1,
+    flexShrink: 0,
+  },
+  pillLabel: {
+    color: tokens.colorNeutralForeground1,
+    fontWeight: tokens.fontWeightSemibold,
   },
   metrics: {
     display: 'grid',
@@ -287,25 +318,48 @@ export function StartHero({ mode }: StartHeroProps) {
         <div className={styles.heroColumn}>
           <Caption1 className={styles.eyebrow}>{t('start.frontier.hero.eyebrow')}</Caption1>
           <Title1 as="h2" className={styles.hook}>
-            {t('start.frontier.hero.hook')}
+            <span className={styles.hookInk}>{t('start.frontier.hero.hookPrefix')}</span>
+            <span className={styles.hookAccent}>{t('start.frontier.hero.hookAccent')}</span>
+            <span className={styles.hookInk}>{t('start.frontier.hero.hookSuffix')}</span>
           </Title1>
-          <Body1>{t('start.mission')}</Body1>
-          <Text className={styles.valueLine}>{t('start.frontier.hero.valueLine')}</Text>
+          <Body1 as="p" className={styles.lead}>
+            {t('start.frontier.hero.leadBeforeJournai')}
+            <Link href="https://www.journai.ch/" target="_blank" rel="noopener noreferrer">
+              {t('start.frontier.hero.journaiName')}
+            </Link>
+            {t('start.frontier.hero.leadAfterJournai')}
+          </Body1>
           <Text as="p" className={styles.quote} data-testid="hero-quote">
             {t('start.frontier.hero.quote')}
           </Text>
         </div>
 
         <div className={styles.trustPills}>
-          <Badge appearance="filled" color="brand">
-            {t('backstage.story.fabricFhir.title')}
-          </Badge>
-          <Badge appearance="tint" color="informative">
-            {t('start.frontier.guardrails.advisory')}
-          </Badge>
-          <Badge appearance="tint" color="warning">
-            {t('start.frontier.guardrails.noPhi')}
-          </Badge>
+          <span className={styles.pill}>
+            <span className={styles.pillDot} aria-hidden="true" />
+            <Text size={200}>
+              <span className={styles.pillLabel}>{t('start.frontier.hero.pills.advisory.label')}</span>
+              {' · '}
+              {t('start.frontier.hero.pills.advisory.desc')}
+            </Text>
+          </span>
+          <span className={styles.pill}>
+            <span aria-hidden="true">🇨🇭</span>
+            <Text size={200}>
+              <span className={styles.pillLabel}>{t('start.frontier.hero.pills.swiss.label')}</span>
+              {' · '}
+              {t('start.frontier.hero.pills.swiss.desc')}
+            </Text>
+          </span>
+          <span className={styles.pill}>
+            <span aria-hidden="true">✅</span>
+            <Text size={200}>
+              {t('start.frontier.hero.pills.live.lead')}{' '}
+              <span className={styles.pillLabel}>{t('start.frontier.hero.pills.live.label')}</span>
+              {' · '}
+              {t('start.frontier.hero.pills.live.desc')}
+            </Text>
+          </span>
         </div>
 
         <div className={styles.metrics}>
