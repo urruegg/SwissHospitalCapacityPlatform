@@ -48,6 +48,7 @@ describe('START_SECTIONS', () => {
   it('defines the approved Sprint 37 frontier section order', () => {
     expect(START_SECTIONS.map(({ id }) => id)).toEqual([
       'hero',
+      'challenger',
       'work-chart',
       'cio-why-now',
       'hospitals',

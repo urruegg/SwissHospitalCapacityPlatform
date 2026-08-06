@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { SectionHeader } from '../shared/narrative/SectionHeader';
 import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
 import { BvaDecisionSection } from './frontier/BvaDecisionSection';
+import { ChallengerSection } from './frontier/ChallengerSection';
 import { CioChallengerSection } from './frontier/CioChallengerSection';
 import { HospitalsSection } from './frontier/HospitalsSection';
 import { NinetyDaySection } from './frontier/NinetyDaySection';
@@ -14,6 +15,10 @@ import { START_SECTIONS, type StartSection } from './frontier/start-content';
 // (matches the Backstage nav-localization pattern in BackstageView.tsx).
 const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; navKey: string }> = {
   hero: { eyebrowKey: '', navKey: 'start.frontier.nav.value' },
+  challenger: {
+    eyebrowKey: 'start.frontier.challenger.eyebrow',
+    navKey: 'start.frontier.nav.challenger',
+  },
   'work-chart': {
     eyebrowKey: 'start.frontier.workChart.eyebrow',
     navKey: 'start.frontier.nav.operatingModel',
@@ -42,6 +47,8 @@ function sectionBody(id: StartSection['id']) {
   switch (id) {
     case 'hero':
       return <StartHero />;
+    case 'challenger':
+      return <ChallengerSection />;
     case 'work-chart':
       return <WorkChartSection />;
     case 'cio-why-now':

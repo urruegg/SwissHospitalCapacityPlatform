@@ -1,5 +1,6 @@
 export type StartSectionId =
   | 'hero'
+  | 'challenger'
   | 'work-chart'
   | 'cio-why-now'
   | 'hospitals'
@@ -17,6 +18,7 @@ export interface StartSection {
 
 export const START_SECTIONS = [
   { id: 'hero', titleKey: 'start.frontier.hero.title', kind: 'data' },
+  { id: 'challenger', titleKey: 'start.frontier.challenger.title', kind: 'static' },
   { id: 'work-chart', titleKey: 'start.frontier.workChart.title', kind: 'static' },
   { id: 'cio-why-now', titleKey: 'start.frontier.cioWhyNow.title', kind: 'static' },
   { id: 'hospitals', titleKey: 'start.frontier.hospitals.title', kind: 'static' },
@@ -24,6 +26,32 @@ export const START_SECTIONS = [
   { id: 'ninety-day', titleKey: 'start.frontier.ninetyDay.title', kind: 'static' },
   { id: 'bva', titleKey: 'start.frontier.bva.title', kind: 'data' },
 ] as const satisfies readonly StartSection[];
+
+/**
+ * Sprint 40 START polish — the mockup's "The room pushed back" challenger roster.
+ * Six real, dated, attributed review-session challengers, each a tab in the section.
+ * All copy is i18n-keyed under `start.frontier.challenger.personas.<id>.*`. The two
+ * German-origin quotes (CIO Furler, CISO von Buren) carry an English gloss via
+ * `hasGloss`; the authentic quotes are kept verbatim and are never machine-translated.
+ * `accent` maps to the mockup tag colour (navy for most, green for hospital operations).
+ */
+export type ChallengerPersonaId = 'coo' | 'cio' | 'cto' | 'ciso' | 'ops' | 'it';
+
+export interface ChallengerPersona {
+  id: ChallengerPersonaId;
+  accent: 'navy' | 'green';
+  /** True when the quote is German-origin and carries a separate English gloss. */
+  hasGloss: boolean;
+}
+
+export const CHALLENGER_PERSONAS = [
+  { id: 'coo', accent: 'navy', hasGloss: false },
+  { id: 'cio', accent: 'navy', hasGloss: true },
+  { id: 'cto', accent: 'navy', hasGloss: false },
+  { id: 'ciso', accent: 'navy', hasGloss: true },
+  { id: 'ops', accent: 'green', hasGloss: false },
+  { id: 'it', accent: 'navy', hasGloss: false },
+] as const satisfies readonly ChallengerPersona[];
 
 export interface PatientPathOperationalStop {
   boardKey: string;

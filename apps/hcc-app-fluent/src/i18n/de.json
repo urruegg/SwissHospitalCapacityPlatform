@@ -501,6 +501,7 @@
         "label": "Start-Bereiche",
         "overview": "Übersicht",
         "value": "Wert",
+        "challenger": "Herausforderer",
         "operatingModel": "Betriebsmodell",
         "whyNow": "Warum jetzt",
         "hospitals": "Spitäler",
@@ -558,6 +559,27 @@
         "ctaPrimary": "Die drei Spitäler entdecken",
         "ctaSecondary": "So wurde es gebaut",
         "quote": "Jeder Patientenpfad, in Schweizer Hand."
+      },
+      "challenger": {
+        "title": "Sechs Herausforderer. Sechs Fragen, die wir überstehen mussten.",
+        "body": "Bevor Curavias einen 90-Tage-Plan verdient hatte, wurde es von den Menschen herausgefordert, die ihn unterschreiben, absichern, betreiben und mit ihm leben müssten. Dies sind ihre tatsächlichen Fragen aus datierten Review-Sessions — wie wir sie beantwortet haben, welchen Wert die Antwort liefert und was sie am Produkt verändert hat. Wählen Sie den Platz, auf dem Sie sitzen.",
+        "eyebrow": "Der Raum hat widersprochen · echte Menschen, echte Fragen",
+        "tablistLabel": "Herausforderer-Rollen",
+        "headings": {
+          "addressed": "Wie wir die Herausforderungen angegangen sind",
+          "value": "Gelieferter Geschäftswert",
+          "adapted": "Was wir am Produkt angepasst haben"
+        },
+        "disclaimer": "Die Spital-Mandanten im Showcase sind synthetisch (CuraNova · Curalp · Vialta) und alle Daten sind synthetisch ohne PHI. Die Herausforderer, ihre Rollen und die Session-Daten sind real, und jede Antwort ist auf einen datierten Review-Bericht zurückführbar — siehe",
+        "disclaimerLinkLabel": "das Prüfprotokoll im Backstage",
+        "personas": {
+          "coo": { "tag": "COO", "sub": "Business Case & Akzeptanz" },
+          "cio": { "tag": "CIO", "sub": "Prognosehorizont" },
+          "cto": { "tag": "CTO", "sub": "Souveränität & Regulierung" },
+          "ciso": { "tag": "CISO / NSO", "sub": "Datenschutz & Schlüssel" },
+          "ops": { "tag": "Spitalbetrieb", "sub": "Zeit für die Patientenversorgung" },
+          "it": { "tag": "IT / Kantonal", "sub": "Cloud-Betriebsmodell" }
+        }
       },
       "workChart": {
         "title": "Wie sich Arbeit verändert",

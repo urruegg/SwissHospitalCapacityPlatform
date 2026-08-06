@@ -557,6 +557,7 @@
         "label": "Start sections",
         "overview": "Overview",
         "value": "Value",
+        "challenger": "Challengers",
         "operatingModel": "Operating model",
         "whyNow": "Why now",
         "hospitals": "Hospitals",
@@ -614,6 +615,180 @@
         "ctaPrimary": "Meet the three hospitals",
         "ctaSecondary": "See how it was built",
         "quote": "Every patient's path, in Swiss hands."
+      },
+      "challenger": {
+        "title": "Six challengers. Six questions we had to survive.",
+        "body": "Before Curavias earned a 90-day plan, it was challenged by the people who would have to sign it, secure it, run it and live with it. These are their actual questions from dated review sessions — how we addressed them, the value that answer delivers, and what it changed in the product. Pick the seat you sit in.",
+        "eyebrow": "The room pushed back · real people, real questions",
+        "tablistLabel": "Challenger personas",
+        "headings": {
+          "addressed": "How we addressed the challenges",
+          "value": "Business value delivered",
+          "adapted": "What we adapted in the product"
+        },
+        "disclaimer": "Hospital tenants in the showcase are synthetic (CuraNova · Curalp · Vialta) and all data is synthetic with no PHI. The challengers, their roles and the session dates are real, and each answer is traceable to a dated review report — see",
+        "disclaimerLinkLabel": "the review record in Backstage",
+        "personas": {
+          "coo": {
+            "tag": "COO",
+            "sub": "Business case & adoption",
+            "name": "Rebekka Hatzung",
+            "org": "Luzerner Kantonsspital",
+            "meta": "showcase interview · 24 Jul 2026 · Innovation Hub Zurich",
+            "quote": "The business case is plausible — but implementations like this fail on IT resources, cost and data quality. And will my people actually use it?",
+            "addressed": [
+              "The metadata-only, deep-link model holds: matching and planning run on metadata, patient data stays in the local KIS and is only referenced. The economics are stated openly — 3-year TCO CHF 5.05M against CHF 11.46M gross benefit, 127% ROI, payback under six months, with a ±30% ROM band and a downside case that still returns 48%.",
+              "On adoption we agreed with her, not with the technology: she named data quality and the human factor — acceptance, training, change management — as the real success-or-failure factors. Even experienced staff revert to old ways when overwhelmed. So quality became an agent's job rather than a policy, and the human kept the decision."
+            ],
+            "value": [
+              "127% ROI over three years and payback in under six months — a controlled, ROM-level investment, not an open-ended programme",
+              "CHF 11.46M gross benefit against CHF 5.05M TCO — and even the downside case returns 48%",
+              "OR utilisation ≥ 85% as the operational target she set in the session",
+              "Adoption risk designed out: advisory-only + human-in-the-loop means staff keep authority, so the system is not something done to them",
+              "Data quality becomes visible work — gaps get found and routed to an owner instead of quietly discrediting every report"
+            ],
+            "adapted": [
+              "Data Quality Agent in the runtime — proactive gap detection with owner-routed remediation",
+              "Signal triage for controlled onboarding of external golden sources",
+              "Change-management & training track written into the offering — technology is not the bottleneck",
+              "Polypoint (rostering) documented as a risk path with a fallback; Epic treated as API-first"
+            ],
+            "evidence": "Delivery shape validated in session: 2 people / 90 days, main cost being staff effort."
+          },
+          "cio": {
+            "tag": "CIO",
+            "sub": "Forecast horizon",
+            "name": "Emanuel Furler",
+            "org": "Spital Zollikerberg",
+            "meta": "challenger question anchoring the field interview · 17 Jul 2026",
+            "quote": "Welche operativen Entscheidungen könnten heute besser getroffen werden, wenn die zukünftige Kapazitäts- und Auslastungssituation 3 bis 7 Tage im Voraus mit hoher Zuverlässigkeit bekannt wäre?",
+            "gloss": "Which operational decisions could be made better today if capacity and occupancy were known 3 to 7 days ahead with high reliability?",
+            "addressed": [
+              "Honestly: today Curavias forecasts 72 hours, per ward × horizon-hour, refreshed hourly — that is what is live. Rather than answer from the architecture, we put his question to the clinical front line, and it came back confirmed: the 3–7 day preview was called a major financial and planning advantage, and the agent-based patient flow \"fundamentally accurate\".",
+              "The gap is named, not hidden. Our own North-Star review rates the horizon gap High: operational (72 h) exists, tactical (weekly) and strategic (annual / new-building) do not yet. Longer horizons are a roadmap commitment — stated as such in every review."
+            ],
+            "value": [
+              "Pressure becomes visible before it arrives — 72 hours of ward-level foresight, refreshed hourly, instead of discovering it on the morning shift",
+              "Decisions move from reactive to planned — the forecast comes with its drivers, so the \"why\" is arguable",
+              "One coordinated plan across beds, OR and staffing rather than three disconnected ones",
+              "A validated business hypothesis — the front line, not the vendor, called the preview a major financial and planning advantage"
+            ],
+            "adapted": [
+              "72-h occupancy forecast live per ward × horizon-hour with hourly refresh and driver decomposition",
+              "Decision Ontology (Sprint 26) — lifts the layer from descriptive to predictive → prescriptive → coordinated",
+              "Repositioned from point solution to Integral Capacity Management / Hospital Command Center",
+              "Governed decision cadences — daily huddle · weekly tactical · monthly/quarterly strategic"
+            ],
+            "evidence": "Horizon extension to 3–7 days is carried as an open roadmap gap (D-02, High) — not claimed as shipped."
+          },
+          "cto": {
+            "tag": "CTO",
+            "sub": "Sovereignty & regulation",
+            "name": "René Raeber",
+            "org": "Microsoft Switzerland",
+            "meta": "CTO mentor review · 9 Jun 2026",
+            "quote": "How do you ensure sovereignty and that the regulatory framework is actually enforced — not just asserted?",
+            "addressed": [
+              "The review corrected a load-bearing assumption: Swiss healthcare regulation is not uniformly enforced at federal level. KVG, nDSG and EPR are national, but implementation and enforcement are delegated to the cantons — and risk ownership ultimately rests with the implementing hospital. Compliance is therefore modelled in two authority layers: national legislative baseline, and cantonal implementation governance, each with its own control mapping.",
+              "On sovereignty the recommendation was concrete: the Sovereign Landing Zone — the pattern deployed for Swissmedic — with its four levels from data residency, through global services, to encryption at rest and in use. It is our infrastructure target, with Dev/Test/Prod landing zones already in place."
+            ],
+            "value": [
+              "The regulated surface shrinks: with no PHI in scope, data-residency obligations relax substantially — less to defend, less to pay for",
+              "Defensible in both directions — a control mapping that answers the canton and the federal baseline, instead of one generic Swiss claim that fails under scrutiny",
+              "Reuses a pattern a Swiss regulator already accepted (Swissmedic) rather than inventing a sovereignty story",
+              "Risk ownership made explicit — the hospital knows what it carries before signing, not after an audit"
+            ],
+            "adapted": [
+              "Two-layer compliance model — federal baseline plus cantonal governance, separately mapped",
+              "Dual-layer identity — AHV number restricted to authorised roles; capacity processes use internal running numbers; patient linkage only at the endpoint",
+              "Capacity-only processing scope — personally identifiable health data deliberately excluded",
+              "Dev/Test/Prod landing zones in place, with the Sovereign Landing Zone as the integration target"
+            ],
+            "evidence": "Kept open, not closed: secondary re-identification through quasi-identifiers remains a logged design risk."
+          },
+          "ciso": {
+            "tag": "CISO / NSO",
+            "sub": "Data protection & keys",
+            "name": "Daniel von Büren",
+            "org": "National Security Officer · Microsoft Switzerland",
+            "meta": "AMA Solution Design Review · 10 Jun 2026 · 38 min",
+            "quote": "Für eine Bettenplanung brauchst du im Prinzip gar keine Personen- oder Patientendaten … und damit umgehst du eigentlich so ziemlich alles, was rechtlich ein Problem darstellen könnte.",
+            "gloss": "For bed planning you fundamentally need no personal or patient data at all — and with that you sidestep just about everything that could be a legal problem.",
+            "addressed": [
+              "He validated the core doctrine and then sharpened it. The Swiss legal rule he named is narrow and clear: data of Swiss patients must not be stored unencrypted outside Switzerland. Cantonal complexity largely dissolves the moment the platform holds no personal data at all — an identifier, a ward, a count, a capacity.",
+              "His sharpest challenge was re-identification through small cohorts: pseudonymised data can be reversed when the population is thin — \"a 65-year-old in intensive care\" may be one of two people. His fix is the one we adopted: reduce to aggregates and counts, and stop there. He also flagged that Entra ID is a global service, so a blanket \"Swiss-only\" claim needs a documented exception; and raised the Canton-Zurich debate over who ultimately holds the keys — answered with customer-managed keys as a priced, ready mitigation rather than a default."
+            ],
+            "value": [
+              "Legal exposure removed at source — there is no patient data to breach, lose or be compelled to hand over",
+              "Re-identification made arithmetically impossible, not merely policy-forbidden",
+              "A shorter path to approval — the data-protection conversation starts from \"no personal data\", which is where most of it ends",
+              "A priced Plan B means a data-protection objection delays the programme instead of killing it",
+              "No residency overclaim to unwind later — global-service exceptions are documented up front"
+            ],
+            "adapted": [
+              "No-PHI doctrine hardened from a design preference into the security argument itself",
+              "Aggregation floor — thin cohorts reduced to counts so re-identification cannot be computed",
+              "Identifier translation kept local — re-identification happens in the KIS, never in the platform",
+              "Global-service exceptions documented (Entra ID) instead of an unqualified residency claim",
+              "Role-based access as the second wall — access follows the role, not the network",
+              "Planned break-points (\"Sollbruchstellen\") — ship simple, keep a priced fallback to run components locally at ≈1.5×"
+            ],
+            "evidence": "His closing verdict: nothing found that was \"strange or critical\"; on patient-context security, if anything, we had gone further than the case required."
+          },
+          "ops": {
+            "tag": "Hospital Operations",
+            "sub": "Time for patient care",
+            "name": "Dr. med. Marco Rossi · Christian Ernst · Regula Adams",
+            "org": "Luzerner Kantonsspital · Spital Zollikerberg",
+            "meta": "moderated field interview · 17 Jul 2026 · 60 min · German",
+            "quote": "How do we get a system that supports us — that gives us back time for patient care and sees what is coming early enough for us to be prepared?",
+            "addressed": [
+              "The real pain point they named was not forecasting in isolation but the coupling of OR utilisation, bed occupancy and staffing — decisions taken in three places that only work when taken together. That is precisely the chain Curavias runs: OOA → BMCA → ORSA → SBA, one coordinated plan across roles, demonstrated live as 102% → 94%.",
+              "A second insight reshaped staffing: clinical teams are so specialised that an absence cannot simply be compensated — which makes foresight worth far more than it first appears, and skill-aware staffing mandatory rather than optional. Time for patient care is the promise, and the mechanism is delegation: routine work moves to agents so clinical staff move back to patients — with the human keeping the decision."
+            ],
+            "value": [
+              "Time returned to patient care — routine coordination moves to agents, clinical judgement stays with people",
+              "One coordinated move instead of three arguments — OR, beds and staffing resolved together: 102% → 94%",
+              "Discharge blockers ranked, not listed — 8 candidates reduced to the 5 that are systemic",
+              "Specialised absences seen early, when they can still be covered — with \"no agency staff\" as the goal",
+              "Crises rehearsed before they happen — 6 shocks pressure-tested against trusted Swiss signal sources"
+            ],
+            "adapted": [
+              "Decision Ontology (Sprint 26) — triggered directly by this session: Signal → Understanding → Recommendation → Action → Coordination",
+              "Skill-aware staffing (SBA) — specialised roles matched by competency",
+              "Ranked discharge blockers (DCA) — systemic blockers surfaced instead of a flat candidate list",
+              "Crisis sparring (CSA) — shock scenarios tested against MeteoSwiss, BAG, Alertswiss and SED signals",
+              "Metadata-only integration — cloud- and locally-capable, works with Epic without breaching security standards"
+            ],
+            "evidence": "Verdict from the front line: the agent-based patient flow is \"fundamentally accurate\", and the 3–7 day preview a major planning and financial advantage."
+          },
+          "it": {
+            "tag": "IT / Cantonal",
+            "sub": "Cloud operating model",
+            "name": "Petrus Jallo",
+            "org": "Cloud Solution Architect · Canton Aargau",
+            "meta": "cantonal IT review · 8 Jun 2026",
+            "quote": "How do we establish a governance and cloud target operating model that keeps PID and PHD inside the Swiss regulatory framework — and can prove it?",
+            "addressed": [
+              "This session produced the most uncomfortable correction of the programme: federal Swiss DSG is not automatically the governing basis for cantonal entities. Canton-specific legal mapping is mandatory, and it changes residency, sovereign controls and privacy obligations. A generic Swiss baseline is not enough for a final claim.",
+              "The honest position we adopted from it: Curavias is compliance-oriented, not compliance-complete. The operating model aligns strongly on principle — Git-first delivery and infrastructure as code over click-ops, policy-based governance, Zero Trust, environment segmentation, managed identity and RBAC, observability. Evidence linkage is the part still being built, and we say so rather than claiming sign-off readiness."
+            ],
+            "value": [
+              "Every control is versioned, reviewable and reversible — governance stops depending on who clicked what",
+              "The repository is the audit trail — evidence is a by-product of delivery, not a project after it",
+              "Nothing autonomous to defend — AI stays advisory with auditable human decision authority",
+              "An honest posture that survives review — compliance-oriented, not compliance-complete, so nothing has to be unwound in front of a regulator"
+            ],
+            "adapted": [
+              "Git-first delivery and infrastructure as code replacing click-ops — declarative, versioned, rollback-capable",
+              "Policy-based governance with Zero Trust orientation and DEV/SIT/PROD segmentation",
+              "Managed identity and RBAC as the access model",
+              "Observability and auditability built into the platform rather than added for review",
+              "Advisory AI with auditable human decision authority carried as a governance requirement, not only a product principle"
+            ],
+            "evidence": "Named risk we keep visible: architecture maturity running ahead of approved governance creates audit and adoption friction in public-sector settings."
+          }
+        }
       },
       "workChart": {
         "title": "How work changes",

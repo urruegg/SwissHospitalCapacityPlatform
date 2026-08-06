@@ -148,6 +148,7 @@ describe('StartView static narrative integration', () => {
 
     const expectedOrder = [
       'start-hero',
+      'start-challenger',
       'start-work-chart',
       'start-cio-why-now',
       'start-hospitals',
@@ -187,6 +188,7 @@ describe('StartView static narrative integration', () => {
     );
 
     expect(screen.getByTestId('start-nav-hero')).toHaveTextContent('Wert');
+    expect(screen.getByTestId('start-nav-challenger')).toHaveTextContent('Herausforderer');
     expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Betriebsmodell');
     expect(screen.getByTestId('start-nav-cio-why-now')).toHaveTextContent('Warum jetzt');
     expect(screen.getByTestId('start-nav-hospitals')).toHaveTextContent('Spitäler');
