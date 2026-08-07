@@ -503,9 +503,9 @@
         "value": "Wert",
         "challenger": "Herausforderer",
         "vision": "Warum Curavias",
-        "operatingModel": "Betriebsmodell",
+        "operatingModel": "Modell",
         "whyNow": "Warum jetzt",
-        "hospitals": "Spitäler",
+        "hospitals": "Organisation",
         "carePath": "Versorgungspfad",
         "ninetyDay": "90 Tage",
         "bva": "BVA"
@@ -647,7 +647,7 @@
       "workChart": {
         "title": "Vom Organigramm zur Arbeitskarte",
         "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und Intelligenz auf Abruf in einem Betriebsmodell — angewendet dort, wo ein Spital täglich Druck spürt: Kapazität und Patientenfluss.",
-        "eyebrow": "Die Idee in einer Minute",
+        "eyebrow": "Modell",
         "flowLabel": "Curavias-Arbeitsmodi",
         "modeBadge": "Arbeitsmodus",
         "modes": {
@@ -742,15 +742,17 @@
       },
       "hospitals": {
         "title": "Drei Spitäler, jedes als Frontier Firm geführt",
-        "body": "Das Curavias-Organisationsrückgrat modelliert drei Schweizer Spital-Archetypen auf synthetischen Daten ohne PHI — abgeleitet aus realen Referenzmustern. In jedem führen physische Mitarbeitende und Agents die HCC-Operation (Hospital Capacity Coordination) und den Patientenfluss durchgängig, mit Mensch in der Schleife.",
-        "eyebrow": "Schlüsselbild 1 · Organisation",
+        "body": "Das Curavias-Organisationsrückgrat modelliert drei Schweizer Spital-Archetypen auf synthetischen Daten ohne PHI — abgeleitet aus realen Referenzmustern. In jedem führen physische Mitarbeitende und Agents die HCC-Operation (Hospital Command Center) und den Patientenfluss durchgängig, mit Mensch in der Schleife.",
+        "eyebrow": "Organisation",
         "sitesLabel": "Synthetisches Curavias-Spitalnetz",
+        "servicesLabel": "Leistungen",
         "sites": {
           "curanova": {
             "name": "Uniklinik CuraNova",
             "profile": "Universitäres Zentrumsspital · Kanton Helvetia-Nord",
             "facts": "~900 Betten · 8'600 VZÄ · 7 medizinische Zentren",
             "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität.",
+            "services": "Umfassendes Krebszentrum · Universitäres Herzzentrum",
             "roles": {
               "bedside": "Leitung Pflege — Bettenseite",
               "opsside": "CMO & Fachteams — Betriebsseite",
@@ -763,6 +765,7 @@
             "profile": "Kantonale Gruppe mit mehreren Standorten · Kanton Curalp",
             "facts": "~840 Betten · 8'600 VZÄ · 5 Standorte",
             "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen.",
+            "services": "Tumorzentrum · Neurozentrum",
             "roles": {
               "bedside": "Betten-/Flow-Manager — Bettenseite",
               "opsside": "Ärzteschaft & OP — Betriebsseite",
@@ -775,6 +778,7 @@
             "profile": "Regionale Akutversorgung (privat, öffentlicher Leistungsauftrag)",
             "facts": "174 Betten · 1'200 VZÄ · 24/7-Notfall",
             "focus": "Fokus: Übergangsbereitschaft und Kontinuität.",
+            "services": "Interdisziplinäres Notfallzentrum · Innere Medizin · Geburtshilfe · Nephrologie- und Dialysezentrum",
             "roles": {
               "bedside": "Pflegeleitung — Bettenseite",
               "opsside": "Medizinische & OP-Leitung — Betriebsseite",

@@ -60,17 +60,6 @@ describe('WorkChartSection', () => {
     modes.forEach((mode) => expect(within(mode).getByRole('button')).toBeInTheDocument());
   });
 
-  it('renders the "org chart to the work chart" sub-heading above the work modes', () => {
-    renderSection(<WorkChartSection />);
-
-    // The Operating Model section H2 is now the organisation title; the work-chart
-    // block keeps "From the org chart to the work chart" as its own level-3 sub-heading.
-    expect(
-      screen.getByRole('heading', { level: 3, name: /from the org chart to the work chart/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByTestId('work-chart-org-intro')).toBeInTheDocument();
-  });
-
   it('renders the Frontier Firm fit table with all four principle rows', () => {
     renderSection(<WorkChartSection />);
 
@@ -121,6 +110,31 @@ describe('HospitalsSection', () => {
     );
     expect(screen.getByText(/7 medical centres/)).toBeInTheDocument();
   });
+
+  it('renders up to four real service badges per hospital under the ops-side role', () => {
+    renderSection(<HospitalsSection />);
+
+    const cards = screen.getAllByTestId('frontier-hospital-card');
+    const serviceRows = screen.getAllByTestId('frontier-hospital-services');
+    // One service row per hospital card.
+    expect(serviceRows).toHaveLength(cards.length);
+
+    serviceRows.forEach((row) => {
+      const chips = within(row).getAllByTestId('frontier-hospital-service');
+      // Capped at four real services per synthetic hospital.
+      expect(chips.length).toBeGreaterThanOrEqual(1);
+      expect(chips.length).toBeLessThanOrEqual(4);
+    });
+
+    // Real, place-stripped services from the capacity master data render as chips.
+    expect(screen.getByText('Comprehensive Cancer Center')).toBeInTheDocument();
+    expect(screen.getByText('University Heart Centre')).toBeInTheDocument();
+    expect(screen.getByText('Tumour Centre')).toBeInTheDocument();
+    // Vialta (regional acute) shows its four real service centres.
+    const vialtaServices = within(cards[2]).getAllByTestId('frontier-hospital-service');
+    expect(vialtaServices).toHaveLength(4);
+    expect(within(cards[2]).getByText('Interdisciplinary Emergency Centre')).toBeInTheDocument();
+  });
 });
 
 describe('NinetyDaySection', () => {
@@ -159,6 +173,7 @@ describe('StartView static narrative integration', () => {
       'start-challenger',
       'start-vision',
       'start-work-chart',
+      'start-hospitals',
       'start-cio-why-now',
       'start-patient-path',
       'start-ninety-day',
@@ -171,7 +186,7 @@ describe('StartView static narrative integration', () => {
     );
 
     expect(wrappers.map((wrapper) => wrapper.dataset.testid)).toEqual(expectedOrder);
-    ['work-chart', 'cio-why-now', 'ninety-day'].forEach((id) => {
+    ['work-chart', 'hospitals', 'cio-why-now', 'ninety-day'].forEach((id) => {
       const sectionWrappers = screen.getAllByTestId(`start-${id}`);
       expect(sectionWrappers).toHaveLength(1);
       expect(within(sectionWrappers[0]).queryByText('Narrative section')).not.toBeInTheDocument();
@@ -180,13 +195,17 @@ describe('StartView static narrative integration', () => {
       ).not.toBeInTheDocument();
     });
 
-    // The former standalone "Hospitals" section is consolidated into the Operating
-    // Model section: the three hospital cards + eight-chip roster now render inside
-    // start-work-chart, and there is no separate start-hospitals wrapper.
-    expect(screen.queryByTestId('start-hospitals')).not.toBeInTheDocument();
-    const operatingModel = screen.getByTestId('start-work-chart');
-    expect(within(operatingModel).getAllByTestId('frontier-hospital-card')).toHaveLength(3);
-    expect(within(operatingModel).getAllByTestId('frontier-agent-roster-item')).toHaveLength(8);
+    // Sprint 40 — the Operating Model story is split into two sections: the "Model"
+    // section (start-work-chart) holds the work-chart block + Frontier Firm fit table,
+    // and the "Organisation" section (start-hospitals) holds the three hospital cards +
+    // eight-chip agent roster. The two must not collapse back into one.
+    const modelSection = screen.getByTestId('start-work-chart');
+    expect(within(modelSection).queryByTestId('frontier-hospital-card')).not.toBeInTheDocument();
+    const organisationSection = screen.getByTestId('start-hospitals');
+    expect(within(organisationSection).getAllByTestId('frontier-hospital-card')).toHaveLength(3);
+    expect(
+      within(organisationSection).getAllByTestId('frontier-agent-roster-item'),
+    ).toHaveLength(8);
   });
 
   it('localises the section nav tab labels (de) instead of hard-coded English', async () => {
@@ -206,7 +225,8 @@ describe('StartView static narrative integration', () => {
     expect(screen.getByTestId('start-nav-hero')).toHaveTextContent('Wert');
     expect(screen.getByTestId('start-nav-challenger')).toHaveTextContent('Herausforderer');
     expect(screen.getByTestId('start-nav-vision')).toHaveTextContent('Warum Curavias');
-    expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Betriebsmodell');
+    expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Modell');
+    expect(screen.getByTestId('start-nav-hospitals')).toHaveTextContent('Organisation');
     expect(screen.getByTestId('start-nav-cio-why-now')).toHaveTextContent('Warum jetzt');
     expect(screen.getByTestId('start-nav-patient-path')).toHaveTextContent('Versorgungspfad');
     expect(screen.getByTestId('start-nav-bva')).toHaveTextContent('BVA');

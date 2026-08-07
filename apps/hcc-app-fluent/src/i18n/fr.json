@@ -407,9 +407,9 @@
         "overview": "Aperçu",
         "value": "Valeur",
         "challenger": "Challengers",
-        "operatingModel": "Modèle opérationnel",
+        "operatingModel": "Modèle",
         "whyNow": "Pourquoi maintenant",
-        "hospitals": "Hôpitaux",
+        "hospitals": "Organisation",
         "carePath": "Parcours de soins",
         "ninetyDay": "90 jours",
         "bva": "BVA"
@@ -472,7 +472,7 @@
       "workChart": {
         "title": "Comment le travail évolue",
         "body": "Curavias réunit des personnes responsables, des agents spécialisés et des flux de travail à la demande dans un même modèle opérationnel.",
-        "eyebrow": "L'idée en une minute",
+        "eyebrow": "Modèle",
         "flowLabel": "Modes de travail Curavias",
         "modeBadge": "Mode de travail",
         "modes": {
@@ -573,15 +573,17 @@
       },
       "hospitals": {
         "title": "Trois hôpitaux, chacun opérant comme une Frontier Firm",
-        "body": "L'épine dorsale organisationnelle de Curavias modélise trois archétypes d'hôpitaux suisses sur des données synthétiques sans PHI — inspirées de modèles de référence réels. Dans chacun, des employés physiques et des agents pilotent l'opération HCC (Hospital Capacity Coordination) et le flux patient de bout en bout, avec l'humain dans la boucle.",
-        "eyebrow": "Image clé 1 · Organisation",
+        "body": "L'épine dorsale organisationnelle de Curavias modélise trois archétypes d'hôpitaux suisses sur des données synthétiques sans PHI — inspirées de modèles de référence réels. Dans chacun, des employés physiques et des agents pilotent l'opération HCC (Hospital Command Center) et le flux patient de bout en bout, avec l'humain dans la boucle.",
+        "eyebrow": "Organisation",
         "sitesLabel": "Réseau hospitalier Curavias synthétique",
+        "servicesLabel": "Prestations",
         "sites": {
           "curanova": {
             "name": "Uniklinik CuraNova",
             "profile": "Hôpital central universitaire · Canton Helvetia-Nord",
             "facts": "~900 lits · 8 600 ETP · 7 centres médicaux",
             "focus": "Priorité : flux du réseau et capacité tertiaire.",
+            "services": "Centre de cancérologie · Centre cardiaque universitaire",
             "roles": {
               "bedside": "Direction des soins — côté lits",
               "opsside": "CMO & équipes spécialisées — côté opérations",
@@ -594,6 +596,7 @@
             "profile": "Groupe cantonal multi-sites · Canton Curalp",
             "facts": "~840 lits · 8 600 ETP · 5 sites",
             "focus": "Priorité : couverture résiliente et transferts opportuns.",
+            "services": "Centre des tumeurs · Centre de neurologie",
             "roles": {
               "bedside": "Gestionnaire lits/flux — côté lits",
               "opsside": "Médecins & bloc opératoire — côté opérations",
@@ -606,6 +609,7 @@
             "profile": "Soins aigus régionaux (privé, mandat public)",
             "facts": "174 lits · 1 200 ETP · urgences 24/7",
             "focus": "Priorité : préparation des transitions et continuité.",
+            "services": "Centre d'urgences interdisciplinaire · Médecine interne · Obstétrique · Centre de néphrologie et dialyse",
             "roles": {
               "bedside": "Responsable des soins — côté lits",
               "opsside": "Directions médicale & bloc — côté opérations",

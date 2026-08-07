@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { tokens } from '@fluentui/react-components';
 import { SectionHeader } from '../shared/narrative/SectionHeader';
 import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
 import { BvaDecisionSection } from './frontier/BvaDecisionSection';
@@ -26,8 +25,12 @@ const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; navKey: str
     navKey: 'start.frontier.nav.vision',
   },
   'work-chart': {
-    eyebrowKey: 'start.frontier.hospitals.eyebrow',
+    eyebrowKey: 'start.frontier.workChart.eyebrow',
     navKey: 'start.frontier.nav.operatingModel',
+  },
+  hospitals: {
+    eyebrowKey: 'start.frontier.hospitals.eyebrow',
+    navKey: 'start.frontier.nav.hospitals',
   },
   'cio-why-now': {
     eyebrowKey: 'start.frontier.cioWhyNow.eyebrow',
@@ -57,16 +60,11 @@ function sectionBody(id: StartSection['id']) {
     case 'vision':
       return <WhyCuraviasSection />;
     case 'work-chart':
-      // Sprint 40 — the Operating Model section is the whole organisation story: the
-      // org->work-chart block + Frontier Firm principle table (WorkChartSection) followed
-      // by the three hospital examples + agent roster (HospitalsSection). The section
-      // H2/description come from the `hospitals` i18n block via START_SECTIONS/SECTION_META.
-      return (
-        <div style={{ display: 'grid', gap: tokens.spacingVerticalXL }}>
-          <WorkChartSection />
-          <HospitalsSection />
-        </div>
-      );
+      // Sprint 40 — "Model": the org->work-chart block + Frontier Firm principle table.
+      return <WorkChartSection />;
+    case 'hospitals':
+      // Sprint 40 — "Organisation": the three Swiss hospital archetypes + agent roster.
+      return <HospitalsSection />;
     case 'cio-why-now':
       return <CioChallengerSection />;
     case 'patient-path':

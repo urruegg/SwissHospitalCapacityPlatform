@@ -45,16 +45,6 @@ const useStyles = makeStyles({
     boxShadow: tokens.shadow2,
     minWidth: 0,
   },
-  fitHeader: {
-    display: 'grid',
-    gap: tokens.spacingVerticalXXS,
-  },
-  fitTitle: {
-    margin: 0,
-    fontSize: tokens.fontSizeBase400,
-    fontWeight: tokens.fontWeightSemibold,
-    color: tokens.colorNeutralForeground1,
-  },
   fitBody: {
     margin: 0,
     fontSize: tokens.fontSizeBase300,
@@ -96,15 +86,6 @@ export function WorkChartSection() {
 
   return (
     <div className={styles.root}>
-      <div className={styles.fitHeader}>
-        <h3 className={styles.fitTitle} id="work-chart-org-title">
-          {t('start.frontier.workChart.title')}
-        </h3>
-        <p className={styles.fitBody} data-testid="work-chart-org-intro">
-          {t('start.frontier.workChart.body')}
-        </p>
-      </div>
-
       <ol className={styles.flow} aria-label={t('start.frontier.workChart.flowLabel')}>
         {WORK_MODES.map((mode) => {
           const accent = SHOWCASE_ACCENT[MODE_ACCENT[mode.id]];
@@ -139,13 +120,8 @@ export function WorkChartSection() {
         })}
       </ol>
 
-      <section className={styles.fitCard} aria-labelledby="work-chart-fit-title">
-        <div className={styles.fitHeader}>
-          <h3 className={styles.fitTitle} id="work-chart-fit-title">
-            {t('start.frontier.workChart.fit.title')}
-          </h3>
-          <p className={styles.fitBody}>{t('start.frontier.workChart.fit.body')}</p>
-        </div>
+      <section className={styles.fitCard} aria-label={t('start.frontier.workChart.fit.title')}>
+        <p className={styles.fitBody}>{t('start.frontier.workChart.fit.body')}</p>
         <table className={styles.fitTable} aria-label={t('start.frontier.workChart.fit.title')}>
           <thead>
             <tr>

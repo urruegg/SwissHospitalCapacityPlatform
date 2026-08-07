@@ -407,9 +407,9 @@
         "overview": "Panoramica",
         "value": "Valore",
         "challenger": "Challenger",
-        "operatingModel": "Modello operativo",
+        "operatingModel": "Modello",
         "whyNow": "Perché ora",
-        "hospitals": "Ospedali",
+        "hospitals": "Organizzazione",
         "carePath": "Percorso di cura",
         "ninetyDay": "90 giorni",
         "bva": "BVA"
@@ -472,7 +472,7 @@
       "workChart": {
         "title": "Come cambia il lavoro",
         "body": "Curavias riunisce persone responsabili, agenti specializzati e flussi di lavoro su richiesta in un unico modello operativo.",
-        "eyebrow": "L'idea in un minuto",
+        "eyebrow": "Modello",
         "flowLabel": "Modalità di lavoro Curavias",
         "modeBadge": "Modalità di lavoro",
         "modes": {
@@ -573,15 +573,17 @@
       },
       "hospitals": {
         "title": "Tre ospedali, ciascuno operante come una Frontier Firm",
-        "body": "La spina dorsale organizzativa di Curavias modella tre archetipi di ospedali svizzeri su dati sintetici senza PHI — ispirati a modelli di riferimento reali. In ciascuno, dipendenti fisici e agent gestiscono l'operazione HCC (Hospital Capacity Coordination) e il flusso paziente end-to-end, con l'essere umano nel ciclo.",
-        "eyebrow": "Immagine chiave 1 · Organizzazione",
+        "body": "La spina dorsale organizzativa di Curavias modella tre archetipi di ospedali svizzeri su dati sintetici senza PHI — ispirati a modelli di riferimento reali. In ciascuno, dipendenti fisici e agent gestiscono l'operazione HCC (Hospital Command Center) e il flusso paziente end-to-end, con l'essere umano nel ciclo.",
+        "eyebrow": "Organizzazione",
         "sitesLabel": "Rete ospedaliera Curavias sintetica",
+        "servicesLabel": "Prestazioni",
         "sites": {
           "curanova": {
             "name": "Uniklinik CuraNova",
             "profile": "Ospedale centrale universitario · Cantone Helvetia-Nord",
             "facts": "~900 letti · 8.600 FTE · 7 centri medici",
             "focus": "Focus: flusso di rete e capacità terziaria.",
+            "services": "Centro oncologico completo · Centro cardiaco universitario",
             "roles": {
               "bedside": "Direzione infermieristica — lato letti",
               "opsside": "CMO & team specializzati — lato operazioni",
@@ -594,6 +596,7 @@
             "profile": "Gruppo cantonale multi-sede · Cantone Curalp",
             "facts": "~840 letti · 8.600 FTE · 5 sedi",
             "focus": "Focus: copertura resiliente e trasferimenti tempestivi.",
+            "services": "Centro tumori · Centro neurologico",
             "roles": {
               "bedside": "Responsabile letti/flusso — lato letti",
               "opsside": "Medici & sala operatoria — lato operazioni",
@@ -606,6 +609,7 @@
             "profile": "Cure acute regionali (privato, mandato pubblico)",
             "facts": "174 letti · 1.200 FTE · pronto soccorso 24/7",
             "focus": "Focus: prontezza della transizione e continuità.",
+            "services": "Centro di emergenza interdisciplinare · Medicina interna · Ostetricia · Centro di nefrologia e dialisi",
             "roles": {
               "bedside": "Responsabile infermieristico — lato letti",
               "opsside": "Direzioni medica & sala operatoria — lato operazioni",

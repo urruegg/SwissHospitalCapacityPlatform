@@ -51,6 +51,7 @@ describe('START_SECTIONS', () => {
       'challenger',
       'vision',
       'work-chart',
+      'hospitals',
       'cio-why-now',
       'patient-path',
       'ninety-day',

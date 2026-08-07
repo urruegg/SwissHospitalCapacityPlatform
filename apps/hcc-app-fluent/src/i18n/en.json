@@ -559,9 +559,9 @@
         "value": "Value",
         "challenger": "Challengers",
         "vision": "Why Curavias",
-        "operatingModel": "Operating model",
+        "operatingModel": "Model",
         "whyNow": "Why now",
-        "hospitals": "Hospitals",
+        "hospitals": "Organisation",
         "carePath": "Care path",
         "ninetyDay": "90-day",
         "bva": "BVA"
@@ -868,7 +868,7 @@
       "workChart": {
         "title": "From the org chart to the work chart",
         "body": "Curavias combines accountable people, specialised agents, and on-demand intelligence in one operating model — applied to where a hospital feels pressure every day: capacity and patient flow.",
-        "eyebrow": "The idea in one minute",
+        "eyebrow": "Model",
         "flowLabel": "Curavias work modes",
         "modeBadge": "Work mode",
         "modes": {
@@ -963,15 +963,17 @@
       },
       "hospitals": {
         "title": "Three hospitals, each running as a Frontier Firm",
-        "body": "The Curavias org spine models three Swiss hospital archetypes on synthetic, no-PHI data — grounded on real reference patterns. In each, physical employees and agents run the HCC Operation (Hospital Capacity Coordination) and the Patient Flow end-to-end, human-in-the-loop.",
-        "eyebrow": "Key visual 1 · Organisation",
+        "body": "The Curavias org spine models three Swiss hospital archetypes on synthetic, no-PHI data — grounded on real reference patterns. In each, physical employees and agents run the HCC Operation (Hospital Command Center) and the Patient Flow end-to-end, human-in-the-loop.",
+        "eyebrow": "Organisation",
         "sitesLabel": "Synthetic Curavias hospital network",
+        "servicesLabel": "Services",
         "sites": {
           "curanova": {
             "name": "Uniklinik CuraNova",
             "profile": "University central hospital · Canton Helvetia-Nord",
             "facts": "~900 beds · 8,600 FTE · 7 medical centres",
             "focus": "Focus: network-wide flow and tertiary capacity.",
+            "services": "Comprehensive Cancer Center · University Heart Centre",
             "roles": {
               "bedside": "Head of Nursing — bed side",
               "opsside": "CMO & specialised teams — ops side",
@@ -984,6 +986,7 @@
             "profile": "Cantonal multi-site group · Canton Curalp",
             "facts": "~840 beds · 8,600 FTE · 5 sites",
             "focus": "Focus: resilient coverage and timely transfers.",
+            "services": "Tumour Centre · Neuro Centre",
             "roles": {
               "bedside": "Bed / Flow Manager — bed side",
               "opsside": "Physicians & OR — ops side",
@@ -996,6 +999,7 @@
             "profile": "Regional acute (private, public mandate)",
             "facts": "174 beds · 1,200 FTE · 24/7 emergency",
             "focus": "Focus: transition readiness and continuity.",
+            "services": "Interdisciplinary Emergency Centre · Internal Medicine · Obstetrics · Nephrology & Dialysis Centre",
             "roles": {
               "bedside": "Nursing lead — bed side",
               "opsside": "Medical & OR leads — ops side",

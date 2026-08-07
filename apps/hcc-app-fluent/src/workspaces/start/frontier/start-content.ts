@@ -11,6 +11,7 @@ export type StartSectionId =
   | 'challenger'
   | 'vision'
   | 'work-chart'
+  | 'hospitals'
   | 'cio-why-now'
   | 'patient-path'
   | 'ninety-day'
@@ -28,11 +29,12 @@ export const START_SECTIONS = [
   { id: 'hero', titleKey: 'start.frontier.hero.title', kind: 'data' },
   { id: 'challenger', titleKey: 'start.frontier.challenger.title', kind: 'static' },
   { id: 'vision', titleKey: 'start.frontier.vision.title', kind: 'static' },
-  // Sprint 40 — the Operating Model section now hosts the whole organisation story
-  // (mockup `#the3`): its H2/description come from the `hospitals` block, and it renders
-  // the org->work-chart block, the Frontier Firm principle table and the three hospital
-  // examples in one section. The former standalone `hospitals` section is folded in here.
-  { id: 'work-chart', titleKey: 'start.frontier.hospitals.title', kind: 'static' },
+  // Sprint 40 — the operating story is split into two sections. "Model" (work-chart)
+  // carries the org->work-chart block + Frontier Firm principle table; "Organisation"
+  // (hospitals) carries the three Swiss hospital archetypes + the eight-chip agent
+  // roster. Each has its own eyebrow (Model / Organisation) and key-visual separator.
+  { id: 'work-chart', titleKey: 'start.frontier.workChart.title', kind: 'static' },
+  { id: 'hospitals', titleKey: 'start.frontier.hospitals.title', kind: 'static' },
   { id: 'cio-why-now', titleKey: 'start.frontier.cioWhyNow.title', kind: 'static' },
   { id: 'patient-path', titleKey: 'start.frontier.patientPath.title', kind: 'launcher' },
   { id: 'ninety-day', titleKey: 'start.frontier.ninetyDay.title', kind: 'static' },
@@ -480,6 +482,14 @@ export interface FrontierHospital {
   /** Synthetic aggregate hard-facts row (mockup `.metarow`): beds / FTE / sites. */
   factsKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.facts`;
   focusKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.focus`;
+  /**
+   * Middot-separated real service names (capped at four) drawn from the capacity
+   * master data (`data/master-data/capacity/03_dim_hospital_service.csv`) for the
+   * reference hospital this synthetic archetype is calibrated on. Place/brand tokens
+   * are stripped so the centres read under the synthetic identity. Rendered as chips
+   * under the ops-side ("CMO & specialised teams") role.
+   */
+  servicesKey: `start.frontier.hospitals.sites.${FrontierHospitalId}.services`;
 }
 
 export const FRONTIER_HOSPITALS = [
@@ -489,6 +499,7 @@ export const FRONTIER_HOSPITALS = [
     profileKey: 'start.frontier.hospitals.sites.curanova.profile',
     factsKey: 'start.frontier.hospitals.sites.curanova.facts',
     focusKey: 'start.frontier.hospitals.sites.curanova.focus',
+    servicesKey: 'start.frontier.hospitals.sites.curanova.services',
   },
   {
     id: 'curalp',
@@ -496,6 +507,7 @@ export const FRONTIER_HOSPITALS = [
     profileKey: 'start.frontier.hospitals.sites.curalp.profile',
     factsKey: 'start.frontier.hospitals.sites.curalp.facts',
     focusKey: 'start.frontier.hospitals.sites.curalp.focus',
+    servicesKey: 'start.frontier.hospitals.sites.curalp.services',
   },
   {
     id: 'vialta',
@@ -503,6 +515,7 @@ export const FRONTIER_HOSPITALS = [
     profileKey: 'start.frontier.hospitals.sites.vialta.profile',
     factsKey: 'start.frontier.hospitals.sites.vialta.facts',
     focusKey: 'start.frontier.hospitals.sites.vialta.focus',
+    servicesKey: 'start.frontier.hospitals.sites.vialta.services',
   },
 ] as const satisfies readonly FrontierHospital[];
 

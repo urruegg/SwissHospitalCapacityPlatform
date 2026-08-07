@@ -136,6 +136,34 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalXS,
     marginTop: tokens.spacingVerticalXS,
   },
+  roleGroup: {
+    display: 'grid',
+    gap: tokens.spacingVerticalXS,
+    minWidth: 0,
+  },
+  services: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalXS,
+    paddingLeft: tokens.spacingHorizontalXL,
+    minWidth: 0,
+  },
+  serviceChip: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    paddingTop: tokens.spacingVerticalXXS,
+    paddingBottom: tokens.spacingVerticalXXS,
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
+    borderRadius: tokens.borderRadiusCircular,
+    border: `1px solid ${SHOWCASE_ACCENT.navy}`,
+    color: SHOWCASE_ACCENT.navy,
+    backgroundColor: tokens.colorNeutralBackground1,
+    fontSize: tokens.fontSizeBase100,
+    fontWeight: tokens.fontWeightSemibold,
+    lineHeight: tokens.lineHeightBase100,
+    overflowWrap: 'anywhere',
+  },
   roleRow: {
     display: 'flex',
     alignItems: 'center',
@@ -297,22 +325,49 @@ export function HospitalsSection() {
                 <span className={styles.roleRows}>
                   {FRONTIER_HOSPITAL_ROLES.map((role) => {
                     const RoleIcon = ROLE_ICON[role.roleId];
+                    const services =
+                      role.roleId === 'opsside'
+                        ? t(hospital.servicesKey)
+                            .split(/\s*\u00b7\s*/)
+                            .filter(Boolean)
+                            .slice(0, 4)
+                        : [];
                     return (
-                      <span
-                        key={role.roleId}
-                        className={styles.roleRow}
-                        style={{ borderLeftColor: SHOWCASE_ACCENT[ROLE_ACCENT[role.kind]] }}
-                        data-testid="frontier-hospital-role"
-                      >
+                      <span key={role.roleId} className={styles.roleGroup}>
                         <span
-                          className={styles.roleIcon}
-                          style={{ color: SHOWCASE_ACCENT[ROLE_ACCENT[role.kind]] }}
+                          className={styles.roleRow}
+                          style={{ borderLeftColor: SHOWCASE_ACCENT[ROLE_ACCENT[role.kind]] }}
+                          data-testid="frontier-hospital-role"
                         >
-                          <RoleIcon aria-hidden />
+                          <span
+                            className={styles.roleIcon}
+                            style={{ color: SHOWCASE_ACCENT[ROLE_ACCENT[role.kind]] }}
+                          >
+                            <RoleIcon aria-hidden />
+                          </span>
+                          <span className={styles.roleLabel}>
+                            {t(
+                              `start.frontier.hospitals.sites.${hospital.id}.roles.${role.roleId}`,
+                            )}
+                          </span>
                         </span>
-                        <span className={styles.roleLabel}>
-                          {t(`start.frontier.hospitals.sites.${hospital.id}.roles.${role.roleId}`)}
-                        </span>
+                        {services.length > 0 ? (
+                          <span
+                            className={styles.services}
+                            data-testid="frontier-hospital-services"
+                            aria-label={t('start.frontier.hospitals.servicesLabel')}
+                          >
+                            {services.map((service) => (
+                              <span
+                                key={service}
+                                className={styles.serviceChip}
+                                data-testid="frontier-hospital-service"
+                              >
+                                {service}
+                              </span>
+                            ))}
+                          </span>
+                        ) : null}
                       </span>
                     );
                   })}
