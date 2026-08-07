@@ -648,7 +648,7 @@
       },
       "patientPath": {
         "title": "Parcours patient",
-        "accent": "Parcours patient",
+        "accent": "humains et agents ensemble",
         "body": "Parcours opérationnel guidé par le RBAC, de la pression de capacité jusqu'au rétablissement, avec des signaux consultatifs tout au long du parcours.",
         "eyebrow": "Le parcours patient Curavias"
       },

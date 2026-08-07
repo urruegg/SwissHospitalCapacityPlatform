@@ -815,7 +815,7 @@
       },
       "patientPath": {
         "title": "Patientenpfad",
-        "accent": "Patientenpfad",
+        "accent": "Menschen und Agenten gemeinsam",
         "body": "RBAC-geführter operativer Pfad vom Kapazitätsdruck bis zur Nachversorgung, ergänzt durch beratende Signale.",
         "eyebrow": "Der Curavias-Patientenpfad"
       },
