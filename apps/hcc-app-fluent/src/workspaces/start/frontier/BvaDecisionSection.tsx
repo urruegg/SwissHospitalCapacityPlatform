@@ -81,7 +81,10 @@ const useStyles = makeStyles({
     minWidth: 0,
   },
   metricValue: {
-    color: tokens.colorBrandForeground1,
+    // Deep, theme-adaptive green (AA on both light card + dark surface).
+    // colorBrandForeground1 (#17b890) only reaches 2.53:1 on white, below the
+    // 3:1 large-text threshold; colorPaletteGreenForeground1 clears it.
+    color: tokens.colorPaletteGreenForeground1,
     overflowWrap: 'anywhere',
   },
   muted: {
