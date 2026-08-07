@@ -132,7 +132,7 @@ export function StartHero() {
         <Button appearance="primary" onClick={() => scrollToSection('challenger')}>
           {t('start.frontier.hero.ctaPrimary')}
         </Button>
-        <Button appearance="secondary" onClick={() => scrollToSection('hospitals')}>
+        <Button appearance="secondary" onClick={() => scrollToSection('work-chart')}>
           {t('start.frontier.hero.ctaHospitals')}
         </Button>
         <Button appearance="secondary" onClick={() => navigate('/backstage')}>

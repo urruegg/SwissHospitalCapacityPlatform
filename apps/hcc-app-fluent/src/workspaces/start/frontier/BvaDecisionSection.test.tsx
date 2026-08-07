@@ -200,7 +200,6 @@ describe('StartView BVA integration', () => {
       'start-vision',
       'start-work-chart',
       'start-cio-why-now',
-      'start-hospitals',
       'start-patient-path',
       'start-ninety-day',
       'start-bva',

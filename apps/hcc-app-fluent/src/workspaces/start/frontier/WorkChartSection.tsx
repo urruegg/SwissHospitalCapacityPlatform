@@ -96,6 +96,15 @@ export function WorkChartSection() {
 
   return (
     <div className={styles.root}>
+      <div className={styles.fitHeader}>
+        <h3 className={styles.fitTitle} id="work-chart-org-title">
+          {t('start.frontier.workChart.title')}
+        </h3>
+        <p className={styles.fitBody} data-testid="work-chart-org-intro">
+          {t('start.frontier.workChart.body')}
+        </p>
+      </div>
+
       <ol className={styles.flow} aria-label={t('start.frontier.workChart.flowLabel')}>
         {WORK_MODES.map((mode) => {
           const accent = SHOWCASE_ACCENT[MODE_ACCENT[mode.id]];

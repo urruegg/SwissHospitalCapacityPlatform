@@ -60,6 +60,17 @@ describe('WorkChartSection', () => {
     modes.forEach((mode) => expect(within(mode).getByRole('button')).toBeInTheDocument());
   });
 
+  it('renders the "org chart to the work chart" sub-heading above the work modes', () => {
+    renderSection(<WorkChartSection />);
+
+    // The Operating Model section H2 is now the organisation title; the work-chart
+    // block keeps "From the org chart to the work chart" as its own level-3 sub-heading.
+    expect(
+      screen.getByRole('heading', { level: 3, name: /from the org chart to the work chart/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('work-chart-org-intro')).toBeInTheDocument();
+  });
+
   it('renders the Frontier Firm fit table with all four principle rows', () => {
     renderSection(<WorkChartSection />);
 
@@ -149,7 +160,6 @@ describe('StartView static narrative integration', () => {
       'start-vision',
       'start-work-chart',
       'start-cio-why-now',
-      'start-hospitals',
       'start-patient-path',
       'start-ninety-day',
       'start-bva',
@@ -161,7 +171,7 @@ describe('StartView static narrative integration', () => {
     );
 
     expect(wrappers.map((wrapper) => wrapper.dataset.testid)).toEqual(expectedOrder);
-    ['work-chart', 'cio-why-now', 'hospitals', 'ninety-day'].forEach((id) => {
+    ['work-chart', 'cio-why-now', 'ninety-day'].forEach((id) => {
       const sectionWrappers = screen.getAllByTestId(`start-${id}`);
       expect(sectionWrappers).toHaveLength(1);
       expect(within(sectionWrappers[0]).queryByText('Narrative section')).not.toBeInTheDocument();
@@ -169,6 +179,14 @@ describe('StartView static narrative integration', () => {
         within(sectionWrappers[0]).queryByText(/narrative copy and visuals land/i),
       ).not.toBeInTheDocument();
     });
+
+    // The former standalone "Hospitals" section is consolidated into the Operating
+    // Model section: the three hospital cards + eight-chip roster now render inside
+    // start-work-chart, and there is no separate start-hospitals wrapper.
+    expect(screen.queryByTestId('start-hospitals')).not.toBeInTheDocument();
+    const operatingModel = screen.getByTestId('start-work-chart');
+    expect(within(operatingModel).getAllByTestId('frontier-hospital-card')).toHaveLength(3);
+    expect(within(operatingModel).getAllByTestId('frontier-agent-roster-item')).toHaveLength(8);
   });
 
   it('localises the section nav tab labels (de) instead of hard-coded English', async () => {
@@ -190,7 +208,6 @@ describe('StartView static narrative integration', () => {
     expect(screen.getByTestId('start-nav-vision')).toHaveTextContent('Warum Curavias');
     expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Betriebsmodell');
     expect(screen.getByTestId('start-nav-cio-why-now')).toHaveTextContent('Warum jetzt');
-    expect(screen.getByTestId('start-nav-hospitals')).toHaveTextContent('Spitäler');
     expect(screen.getByTestId('start-nav-patient-path')).toHaveTextContent('Versorgungspfad');
     expect(screen.getByTestId('start-nav-bva')).toHaveTextContent('BVA');
     // Regression guard: the German tab strip must not fall back to English labels.
