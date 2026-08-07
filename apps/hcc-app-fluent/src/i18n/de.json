@@ -828,10 +828,10 @@
         }
       },
       "patientPath": {
-        "title": "Patientenpfad",
+        "title": "Ein Patient, ein Fluss — Menschen und Agenten gemeinsam",
         "accent": "Menschen und Agenten gemeinsam",
-        "body": "RBAC-geführter operativer Pfad vom Kapazitätsdruck bis zur Nachversorgung, ergänzt durch beratende Signale.",
-        "eyebrow": "Der Curavias-Patientenpfad"
+        "body": "Bei jedem Schritt behält ein Mensch die Kontrolle. Agenten machen das Signal sichtbar, erklären es, empfehlen einen Hebel und bereiten die Koordination vor — ein Mensch genehmigt, bevor etwas angewendet wird.",
+        "eyebrow": "Patientenreise"
       },
       "ninetyDay": {
         "title": "90-Tage-Roadmap",

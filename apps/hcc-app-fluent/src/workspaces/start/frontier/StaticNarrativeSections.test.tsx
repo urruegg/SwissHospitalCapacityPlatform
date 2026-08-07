@@ -240,6 +240,32 @@ describe('StartView static narrative integration', () => {
     expect(within(heading).getByText('work chart').getAttribute('data-tone')).toBe('accent');
   });
 
+  it('renders the mockup patient-journey eyebrow and colour-coded title', () => {
+    render(
+      <MemoryRouter initialEntries={['/start']}>
+        <FluentProvider theme={webLightTheme}>
+          <RoleProvider testRoles={['HCC.PlatformAdmin']} testHomeSite="usz">
+            <ModeProvider>
+              <StartView />
+            </ModeProvider>
+          </RoleProvider>
+        </FluentProvider>
+      </MemoryRouter>,
+    );
+
+    // Sprint 40 change 4 — the patient-journey section adopts the mockup copy. The
+    // eyebrow is the semantic kicker "Patient journey" (the mockup's "Key visual 2 ·"
+    // prefix is dropped, matching the Model / Organisation / Why Curavias exists pattern).
+    expect(screen.getByText('Patient journey')).toBeInTheDocument();
+    // The mockup h2, with its trailing clause colour-coded within a single heading node.
+    const heading = screen.getByRole('heading', {
+      name: /One patient, one flow.*humans and agents together/i,
+    });
+    expect(
+      within(heading).getByText('humans and agents together').getAttribute('data-tone'),
+    ).toBe('accent');
+  });
+
   it('localises the section nav tab labels (de) instead of hard-coded English', async () => {
     await i18n.changeLanguage('de');
     render(

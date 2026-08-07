@@ -1049,10 +1049,10 @@
         }
       },
       "patientPath": {
-        "title": "Patient path",
+        "title": "One patient, one flow — humans and agents together",
         "accent": "humans and agents together",
-        "body": "RBAC-guided operational journey from capacity pressure to recovery, with advisory signals across the path.",
-        "eyebrow": "The Curavias patient path"
+        "body": "Every step keeps a person in charge. Agents surface the signal, explain it, recommend a lever and prepare the coordination — a human approves before anything is applied.",
+        "eyebrow": "Patient journey"
       },
       "ninetyDay": {
         "title": "90-day roadmap",

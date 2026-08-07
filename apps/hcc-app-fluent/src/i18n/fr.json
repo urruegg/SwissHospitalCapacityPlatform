@@ -661,10 +661,10 @@
         }
       },
       "patientPath": {
-        "title": "Parcours patient",
+        "title": "Un patient, un flux — humains et agents ensemble",
         "accent": "humains et agents ensemble",
-        "body": "Parcours opérationnel guidé par le RBAC, de la pression de capacité jusqu'au rétablissement, avec des signaux consultatifs tout au long du parcours.",
-        "eyebrow": "Le parcours patient Curavias"
+        "body": "À chaque étape, une personne garde le contrôle. Les agents font émerger le signal, l'expliquent, recommandent un levier et préparent la coordination — un humain approuve avant toute application.",
+        "eyebrow": "Parcours patient"
       },
       "ninetyDay": {
         "title": "Feuille de route sur 90 jours",
