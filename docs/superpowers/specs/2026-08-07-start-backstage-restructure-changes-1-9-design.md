@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-08-07 |
 | **Author** | Urs Rueegg |
-| **Status** | Proposed (agent-reviewed; pending user approval before implementation) |
-| **Previous Version** | - (initial design) |
+| **Status** | Approved (decisions D1-D4 locked by user 2026-08-07); ready for writing-plans |
+| **Previous Version** | 1.0.0 (initial agent-reviewed design with 4 open decisions) |
 
 > Brainstormed 2026-08-07 (Superpowers `brainstorming`). References: the
 > marketing-approved mockup
@@ -79,13 +79,11 @@ Why-now / BVA / 90-day):
   `StartView.tsx`. Keep `CioChallengerSection.tsx` (Why-now body) and its i18n
   block on disk as reversible dead data (no registry reference).
 - **Agent review (ux + marketing, both approve)**: Do **not** keep it as a nav
-  item. But **preserve a small urgency signal** in START so a first-time reader
-  does not lose the "why this matters now" thread - fold it into Hero or
-  Challenger.
-- **Resulting decision**: Add one short urgency line to the Challenger lead (or
-  Hero sub-line) sourced from the strongest Why-now point, plus a one-line copy
-  bridge to Backstage (see 3.2). Exact string chosen at implementation time from
-  existing approved copy; no new claims.
+  item. Both suggested preserving a small urgency signal in START.
+- **USER DECISION (D3, locked)**: Remove Why-now and **add nothing** to the other
+  sections - no urgency signpost, no copy bridge. The `cio-why-now` section is
+  dropped from the registry and its body/i18n stay on disk as reversible dead
+  data; no other section copy changes for this change.
 
 #### 3.2 Change 2 - move BVA to Backstage (first part)
 
@@ -104,8 +102,11 @@ Why-now / BVA / 90-day):
   "Current evidence snapshot / data-bound (with as-of provenance)" - and let the
   PO rail reconcile them rather than silently choosing one.
 - **Resulting decision**: Keep the app's data-bound figures (no regression to
-  mockup ROM). Add a short label distinguishing decision-case vs evidence-snapshot
-  framing in copy only. BVA disclaimer travels with the section.
+  mockup ROM). **USER DECISION (D4, locked)**: adapt/keep the **real data-bound**
+  numbers; the mockup ROM figures are not introduced. The BVA + ROI will be
+  refreshed with additional facts in a **separate later follow-up** (out of scope
+  here). Because only the data-bound figures are shown, the dual-number labeling
+  risk is moot; the BVA disclaimer still travels with the section.
 
 #### 3.3 Change 3 - move 90-day to Backstage (last part)
 
@@ -220,7 +221,7 @@ Mockup BACKSTAGE parts vs app parts:
 | BVA ("BVA on ourselves") | none (was START) | **Add** (change 2) |
 | Success Framework | `success-framework` | keep |
 | DevSecOps ("built & shipped") | `devsecops-loop` | keep |
-| Six lanes, one governed platform | `solution-design` (IQ planes) - **not** the same framing | **OPEN DECISION** (below) |
+| Six lanes, one governed platform | `solution-design` (IQ planes) - different framing | **KEEP as-is (D1)** - do not add |
 | Review sessions ("real people") | `review-sessions` | keep |
 | Product Owner Agent ("hard questions") | `po-classes` | keep |
 | 90-day ("first frontier") | none (was START) | **Add** (change 3) |
@@ -229,28 +230,22 @@ Mockup BACKSTAGE parts vs app parts:
 
 - **My initial finding**: `solution-design` already covers "one governed platform",
   so no six-lane gap.
-- **Agent review (ux) OVERRIDES this**: the app's `solution-design` models the
-  **Microsoft IQ planes** (work / process / foundry / fabric / gov / sec), which
-  is a different framing from the mockup's **six delivery lanes** (governance /
-  platform-control / infrastructure / data / AI / experience). Recommendation: add
-  a **concise six-lane orientation section** rather than overloading the richer IQ
-  model. Marketing also lists "Six lanes, one governed platform" as a real
-  backstage title with keyword emphasis, consistent with adding it.
-- **OPEN DECISION for user (D1)**: Add a concise six-lane orientation part
-  (placed after `devsecops-loop`, before `review-sessions`, per mockup order),
-  or treat `solution-design` as sufficient and skip it? **Recommendation: add the
-  concise orientation part** (both agents lean this way; it is additive and does
-  not touch existing content). If added, it becomes new content - so it needs its
-  own approved copy, which the mockup provides.
+- **Agent review (ux)**: the app's `solution-design` models the **Microsoft IQ
+  planes** (work / process / foundry / fabric / gov / sec), a different framing
+  from the mockup's **six delivery lanes**; ux suggested adding a concise six-lane
+  orientation section.
+- **USER DECISION (D1, locked)**: **Keep the existing Frontier Architecture
+  (`solution-design`) exactly as-is; do NOT add a six-lane section.** The only
+  net-new BACKSTAGE parts are BVA (change 2) and 90-day (change 3). No existing
+  BACKSTAGE content or charts are touched.
 
 **Resulting proposed BACKSTAGE order**:
 `company(intro) -> bva -> success-framework -> feedback-loop -> solution-design
--> devsecops-loop -> [six-lanes?] -> review-sessions -> po-classes -> ninety-day`.
+-> devsecops-loop -> review-sessions -> po-classes -> ninety-day`.
 
-- **OPEN DECISION for user (D2)**: Confirm the 90-day placement at the very end
-  (mockup order) rather than immediately after BVA. **Recommendation: end**, per
-  mockup and both agents (natural CTA).
-- **Watch-out (ux)**: The Backstage sub-nav grows to 8-9 tabs - validate overflow,
+- **USER DECISION (D2, locked)**: 90-day placed at the very **end** of BACKSTAGE
+  (mockup order; natural CTA).
+- **Watch-out (ux)**: The Backstage sub-nav grows to 8 tabs - validate overflow,
   keyboard tabbing, and localized label widths.
 
 ### Workstream D - context-ask story-typing (change 9, DOC ONLY)
@@ -353,24 +348,22 @@ guarantee).
 1. Workstream B first (changes 6 + 7) - the shared spacing + header kit both
    planes depend on, lowest-risk, highest-leverage.
 2. Workstream A (changes 1-4) - START restructure on top of the new kit.
-3. Workstream C (change 8) - Backstage adds (BVA + 90-day wrappers; six-lanes if
-   D1 = add).
+3. Workstream C (change 8) - Backstage adds (BVA + 90-day wrappers only; the
+   existing Frontier Architecture / `solution-design` is kept as-is per D1).
 4. Change 5 (i18n) folded into each step as strings move, then a final coverage
    sweep.
 5. Change 9 - written to a separate story backlog; no code this sprint.
 
-## 7. Open decisions for the user
+## 7. Decisions (resolved by user 2026-08-07)
 
-- **D1 - six-lane Backstage section**: Add a concise "Six lanes, one governed
-  platform" orientation part (recommended by both ux + marketing; additive), or
-  rely on the existing `solution-design`? **Recommendation: add.**
-- **D2 - 90-day placement**: End of Backstage (mockup order, recommended) vs
-  right after BVA. **Recommendation: end.**
-- **D3 - Start urgency signpost**: Fold the retained Why-now urgency line into
-  Challenger lead (recommended) vs Hero sub-line?
-- **D4 - BVA number framing**: Confirm keeping the app's data-bound 212% / CHF
-  4.2M with an added "decision-case ROM vs evidence-snapshot" label, rather than
-  regressing to the mockup's 127% ROM. **Recommendation: keep data-bound + label.**
+- **D1 - six-lane Backstage section**: **Rejected.** Keep the existing Frontier
+  Architecture (`solution-design`) as-is; do not add a six-lane section.
+- **D2 - 90-day placement**: **End of Backstage** (mockup order).
+- **D3 - Start urgency signpost**: **None.** Remove Why-now and add nothing to
+  the other sections.
+- **D4 - BVA number framing**: **Keep the real data-bound figures** (no mockup
+  ROM regression); BVA + ROI additional-facts refresh is a separate later
+  follow-up.
 
 ## 8. Risks
 
