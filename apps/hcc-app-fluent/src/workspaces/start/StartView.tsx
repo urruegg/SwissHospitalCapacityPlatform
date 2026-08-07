@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { makeStyles, tokens } from '@fluentui/react-components';
 import { SectionHeader } from '../shared/narrative/SectionHeader';
 import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
 import { BvaDecisionSection } from './frontier/BvaDecisionSection';
@@ -47,6 +48,14 @@ const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; navKey: str
   bva: { eyebrowKey: 'start.frontier.bva.eyebrow', navKey: 'start.frontier.nav.bva' },
 };
 
+const useStyles = makeStyles({
+  sectionStack: {
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: tokens.spacingVerticalXXL,
+  },
+});
+
 function bodyKeyFor(section: StartSection) {
   return section.titleKey.replace(/\.title$/, '.body');
 }
@@ -85,12 +94,17 @@ function sectionBody(id: StartSection['id']) {
  */
 export function StartView() {
   const { t } = useTranslation();
+  const styles = useStyles();
 
   const sections: NarrativeSection[] = START_SECTIONS.map((section) => ({
     key: section.id,
     label: t(SECTION_META[section.id].navKey),
     render: () => (
-      <section data-start-section={section.id} data-testid={`start-${section.id}`}>
+      <section
+        data-start-section={section.id}
+        data-testid={`start-${section.id}`}
+        className={styles.sectionStack}
+      >
         {section.id === 'hero' ? (
           sectionBody('hero')
         ) : (

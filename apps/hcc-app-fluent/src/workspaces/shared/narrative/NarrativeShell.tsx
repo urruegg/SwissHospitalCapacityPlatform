@@ -7,6 +7,7 @@ export interface NarrativeSection {
   key: string;
   label: string;
   render: () => ReactNode;
+  full?: boolean;
 }
 
 interface NarrativeShellProps {
@@ -74,13 +75,13 @@ const useStyles = makeStyles({
     scrollMarginTop: '88px',
   },
   sectionFull: {
-    minHeight: 'calc(100vh - 150px)',
+    minHeight: 'calc(100svh - 150px)',
   },
   leadGroup: {
+    minHeight: 'calc(100svh - 120px)',
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalXXL,
-    minHeight: 'calc(100vh - 120px)',
+    justifyContent: 'center',
   },
 });
 
@@ -180,7 +181,8 @@ export function NarrativeShell({
               <section
                 key={section.key}
                 id={section.key}
-                className={mergeClasses(s.section, s.sectionFull)}
+                data-full={section.full ? 'true' : undefined}
+                className={mergeClasses(s.section, section.full ? s.sectionFull : undefined)}
                 data-testid={`widget-${section.key}`}
               >
                 {section.render()}

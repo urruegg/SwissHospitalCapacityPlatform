@@ -208,6 +208,22 @@ describe('StartView static narrative integration', () => {
     ).toHaveLength(8);
   });
 
+  it('does not force full-height on ordinary Start sections', () => {
+    renderSection(
+      <RoleProvider testRoles={['HCC.PlatformAdmin']} testHomeSite="usz">
+        <ModeProvider>
+          <StartView />
+        </ModeProvider>
+      </RoleProvider>,
+    );
+    const hospitals = screen.getByTestId('start-hospitals');
+    // The opt-in flag is observable via data-full; ordinary sections must not set it.
+    expect(hospitals.closest('[data-full="true"]')).toBeNull();
+    expect(hospitals.closest('[data-testid="widget-hospitals"]')).not.toHaveStyle({
+      minHeight: 'calc(100vh - 150px)',
+    });
+  });
+
   it('localises the section nav tab labels (de) instead of hard-coded English', async () => {
     await i18n.changeLanguage('de');
     render(
