@@ -595,27 +595,20 @@
       "hero": {
         "title": "Hero",
         "body": "Executive hero shell for the Curavias frontier narrative and evidence-backed value hook.",
-        "eyebrow": "Product overview · operative capacity",
-        "hook": "See the squeeze before it happens. Act before it hurts.",
-        "hookPrefix": "The hospital of the future is a ",
-        "hookAccent": "Frontier Firm",
-        "hookSuffix": ". Curavias makes it real.",
-        "leadBeforeJournai": "A Frontier Firm runs on human–agent teams: people keep judgment and accountability, digital colleagues carry the routine. Inspired by the Microsoft Frontier Firm and by ",
-        "journaiName": "Journai",
-        "leadAfterJournai": " — a Swiss company where 2 people work with 20+ AI colleagues — Curavias brings the same operating model to hospital capacity and patient flow.",
-        "pills": {
-          "advisory": { "label": "Advisory-only", "desc": "it previews & recommends — never decides or diagnoses" },
-          "swiss": { "label": "Swiss-resident", "desc": "synthetic data · not a medical device" },
-          "live": { "lead": "Live in PROD", "label": "Switzerland North", "desc": "app.curavias.ch" }
+        "eyebrow": "Start · solution envisioning · for C-level & hospital operations · 5–10 min",
+        "hookPrefix": "You told us capacity forecasting is where it hurts. ",
+        "hookAccent": "Here is what it looks like solved.",
+        "leadPrefix": "This is an ",
+        "leadEmphasis": "art-of-the-possible showcase",
+        "leadSuffix": " — not a demo of a product you can buy today. We took the challenges you and your peers described, built them into a working Frontier Firm, and let real hospital practitioners attack it. What follows is what we understood, what we built, and what it would take to make it yours.",
+        "quote": "Every patient's path, in Swiss hands.",
+        "framebox": {
+          "title": "Before we start — what is real and what is not.",
+          "body": "The <b>pattern is real</b>: the platform runs live in PROD Switzerland North (app.curavias.ch) with 7 agents serving — advisory-only, never deciding or diagnosing. The <b>hospitals are synthetic</b> and every number you will see is <b>illustrative, on synthetic data with no PHI</b>. To make that realistic rather than invented, we built an <b>Epic core-system simulator</b> that generates all the relevant core-system signals — admissions, transfers and discharges, bed state, OR schedule and staffing — so the agents are driven by the same event patterns a real KIS would emit, without a single patient record. The <b>challenges and the people who tested them are real</b>, from dated review sessions with Swiss hospitals."
         },
-        "valueLine": "Reliable preview · Explainable recommendation · The human decides.",
-        "supportingMetricLabel": "ROM context",
-        "capacityTitle": "Site capacity - next 72h",
-        "capacityLoading": "Loading site capacity…",
-        "capacityErrorTitle": "Site capacity unavailable",
-        "ctaPrimary": "Meet the three hospitals",
-        "ctaSecondary": "See how it was built",
-        "quote": "Every patient's path, in Swiss hands."
+        "ctaPrimary": "Start with what you told us →",
+        "ctaHospitals": "Meet the three hospitals",
+        "ctaBackstage": "See how it was built"
       },
       "challenger": {
         "title": "Six challengers. Six questions we had to survive.",

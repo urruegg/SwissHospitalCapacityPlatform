@@ -29,59 +29,86 @@ function renderHero() {
 }
 
 describe('StartHero', () => {
-  it('renders the mockup hero narrative: headline, Journai lead, Swiss-hands quote, trust pills, and CTAs', () => {
+  it('renders the marketing-approved hero: headline, art-of-the-possible lead, quote, and framebox', () => {
     renderHero();
 
+    // Headline = ink prefix + green accent, one heading node (spaces inserted between spans).
     expect(
       screen.getByRole('heading', {
-        name: /the hospital of the future is a Frontier Firm\s*\.\s*Curavias makes it real\./i,
+        name: /capacity forecasting is where it hurts\.\s*Here is what it looks like solved\./i,
       }),
     ).toBeInTheDocument();
 
+    // Lead emphasis phrase + closing clause.
+    expect(screen.getByText(/art-of-the-possible showcase/i)).toBeInTheDocument();
+    expect(screen.getByText(/what it would take to make it yours/i)).toBeInTheDocument();
+
+    // Swiss-hands brand quote is retained.
     expect(screen.getByTestId('hero-quote')).toHaveTextContent(
       /every patient.s path, in swiss hands\./i,
     );
 
-    // The Journai reference in the lead remains an external link.
-    const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
-    expect(hrefs).toContain('https://www.journai.ch/');
+    // "Before we start" framebox carries the reality/synthetic/no-PHI framing.
+    const framebox = screen.getByTestId('hero-framebox');
+    expect(framebox).toHaveTextContent(/before we start/i);
+    expect(framebox).toHaveTextContent(/Switzerland North/i);
+    expect(framebox).toHaveTextContent(/advisory-only, never deciding or diagnosing/i);
+    expect(framebox).toHaveTextContent(/no PHI/i);
+    expect(framebox).toHaveTextContent(/Epic core-system simulator/i);
+  });
 
-    // Both CTAs use the standard Fluent Button (role=button), matching the app-wide
-    // primary/secondary button pattern: primary scrolls, secondary routes to Backstage.
+  it('renders the three mockup CTAs and drops the legacy Journai lead + trust pills', () => {
+    renderHero();
+
+    // Three CTAs: primary (challenger) + two ghost (hospitals, backstage).
+    expect(
+      screen.getByRole('button', { name: /start with what you told us/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /meet the three hospitals/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /see how it was built/i })).toBeInTheDocument();
 
-    // Mockup trust pills replace the legacy Fabric/advisory/PHI badges.
-    expect(screen.getByText(/advisory-only/i)).toBeInTheDocument();
-    expect(screen.getByText(/swiss-resident/i)).toBeInTheDocument();
-    expect(screen.getByText(/switzerland north/i)).toBeInTheDocument();
-  });
+    // No Journai external link any more (that narrative relocated to Backstage).
+    const hrefs = screen.queryAllByRole('link').map((link) => link.getAttribute('href') ?? '');
+    expect(hrefs.some((href) => href.includes('journai'))).toBe(false);
 
-  it('omits the BVA value tiles and the site-capacity aside (single-column mockup hero)', () => {
-    renderHero();
-
-    // BVA value tiles (Net Value Realized / ROI % / ROM context) are gone.
+    // Legacy trust pills are gone (their info now lives in the framebox).
+    expect(screen.queryByText(/swiss-resident/i)).toBeNull();
+    // BVA value tiles and the site-capacity aside stay removed.
     expect(screen.queryByTestId('hero-metric-tile')).toBeNull();
-    expect(screen.queryByTestId('hero-metric-figure')).toBeNull();
-    expect(screen.queryByTestId('hero-metric-caption')).toBeNull();
-
-    // "Site capacity - next 72h" aside is gone.
     expect(screen.queryByText(/site capacity/i)).toBeNull();
-    expect(screen.queryByText(/next 72h/i)).toBeNull();
   });
 
-  it('localizes the hero headline and trust pills in German', async () => {
+  it('localizes the hero headline and framebox in German', async () => {
     await i18n.changeLanguage('de');
     renderHero();
 
     expect(
       screen.getByRole('heading', {
-        name: /Das Spital der Zukunft ist eine Frontier Firm\s*\.\s*Curavias macht es real\./i,
+        name: /Kapazitätsprognose ist der wunde Punkt\.\s*So sieht die Lösung aus\./i,
       }),
     ).toBeInTheDocument();
-    // Exact strings target the pill-label spans only. A loose /Nur beratend/i
-    // would also match the German disclaimer ("Nur beratend — für ...").
-    expect(screen.getByText('Nur beratend')).toBeInTheDocument();
-    expect(screen.getByText('In der Schweiz gehostet')).toBeInTheDocument();
+
+    const framebox = screen.getByTestId('hero-framebox');
+    expect(framebox).toHaveTextContent(/Bevor wir beginnen/i);
+    expect(framebox).toHaveTextContent(/nur beratend, nie entscheidend/i);
+  });
+
+  it('localizes the hero headline in French and Italian', async () => {
+    await i18n.changeLanguage('fr');
+    const fr = renderHero();
+    expect(
+      screen.getByRole('heading', {
+        name: /Voici à quoi ressemble la solution\./i,
+      }),
+    ).toBeInTheDocument();
+    fr.unmount();
+
+    await i18n.changeLanguage('it');
+    renderHero();
+    expect(
+      screen.getByRole('heading', {
+        name: /Ecco come appare la soluzione\./i,
+      }),
+    ).toBeInTheDocument();
   });
 });

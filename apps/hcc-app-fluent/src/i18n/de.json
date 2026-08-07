@@ -539,27 +539,20 @@
       "hero": {
         "title": "Hero-Bereich",
         "body": "Hülle für den Hero-Bereich der Curavias-Frontier-Erzählung und das evidenzgestützte Wertversprechen.",
-        "eyebrow": "Produktübersicht · operative Kapazität",
-        "hook": "Den Engpass sehen, bevor er entsteht. Handeln, bevor es weh tut.",
-        "hookPrefix": "Das Spital der Zukunft ist eine ",
-        "hookAccent": "Frontier Firm",
-        "hookSuffix": ". Curavias macht es real.",
-        "leadBeforeJournai": "Ein Frontier Firm arbeitet in Mensch-Agent-Teams: Menschen behalten Urteilskraft und Verantwortung, digitale Kolleginnen und Kollegen übernehmen die Routine. Inspiriert vom Microsoft Frontier Firm und von ",
-        "journaiName": "Journai",
-        "leadAfterJournai": " — einem Schweizer Unternehmen, in dem 2 Menschen mit 20+ KI-Kolleginnen und -Kollegen arbeiten — bringt Curavias dasselbe Betriebsmodell in Spitalkapazität und Patientenfluss.",
-        "pills": {
-          "advisory": { "label": "Nur beratend", "desc": "zeigt Vorschau und Empfehlungen — entscheidet und diagnostiziert nie" },
-          "swiss": { "label": "In der Schweiz gehostet", "desc": "synthetische Daten · kein Medizinprodukt" },
-          "live": { "lead": "Live in PROD", "label": "Switzerland North", "desc": "app.curavias.ch" }
+        "eyebrow": "Start · Lösungs-Envisioning · für C-Level & Spitalbetrieb · 5–10 Min",
+        "hookPrefix": "Sie haben uns gesagt: Kapazitätsprognose ist der wunde Punkt. ",
+        "hookAccent": "So sieht die Lösung aus.",
+        "leadPrefix": "Dies ist ein ",
+        "leadEmphasis": "Art-of-the-Possible-Showcase",
+        "leadSuffix": " — keine Demo eines Produkts, das Sie heute kaufen können. Wir haben die Herausforderungen aufgenommen, die Sie und Ihre Kolleginnen und Kollegen beschrieben haben, sie in eine funktionierende Frontier Firm gebaut und echte Spitalpraktikerinnen und -praktiker darauf ansetzen lassen. Was folgt, ist das, was wir verstanden haben, was wir gebaut haben und was es braucht, um es zu Ihrem zu machen.",
+        "quote": "Jeder Patientenpfad, in Schweizer Hand.",
+        "framebox": {
+          "title": "Bevor wir beginnen — was echt ist und was nicht.",
+          "body": "Das <b>Muster ist echt</b>: Die Plattform läuft live in PROD Switzerland North (app.curavias.ch) mit 7 Agenten im Einsatz — nur beratend, nie entscheidend oder diagnostizierend. Die <b>Spitäler sind synthetisch</b> und jede Zahl, die Sie sehen, ist <b>illustrativ, auf synthetischen Daten ohne PHI</b>. Um das realistisch statt erfunden zu machen, haben wir einen <b>Epic-Kernsystem-Simulator</b> gebaut, der alle relevanten Kernsystem-Signale erzeugt — Aufnahmen, Verlegungen und Entlassungen, Bettenstatus, OP-Plan und Personal — sodass die Agenten von denselben Ereignismustern angetrieben werden, die ein echtes KIS aussenden würde, ohne einen einzigen Patientendatensatz. Die <b>Herausforderungen und die Menschen, die sie getestet haben, sind echt</b>, aus datierten Review-Sessions mit Schweizer Spitälern."
         },
-        "valueLine": "Verlässliche Vorschau · Erklärbare Empfehlung · Der Mensch entscheidet.",
-        "supportingMetricLabel": "ROM-Kontext",
-        "capacityTitle": "Standortkapazität - nächste 72 h",
-        "capacityLoading": "Standortkapazität wird geladen…",
-        "capacityErrorTitle": "Standortkapazität nicht verfügbar",
-        "ctaPrimary": "Die drei Spitäler entdecken",
-        "ctaSecondary": "So wurde es gebaut",
-        "quote": "Jeder Patientenpfad, in Schweizer Hand."
+        "ctaPrimary": "Mit dem beginnen, was Sie uns gesagt haben →",
+        "ctaHospitals": "Die drei Spitäler entdecken",
+        "ctaBackstage": "So wurde es gebaut"
       },
       "challenger": {
         "title": "Sechs Herausforderer. Sechs Fragen, die wir überstehen mussten.",

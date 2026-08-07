@@ -414,6 +414,24 @@
         "ninetyDay": "90 giorni",
         "bva": "BVA"
       },
+      "hero": {
+        "title": "Hero",
+        "body": "Contenitore del hero esecutivo per la narrazione frontiera di Curavias e l'aggancio di valore supportato dalle evidenze.",
+        "eyebrow": "Start · envisioning della soluzione · per la direzione & le operazioni ospedaliere · 5–10 min",
+        "hookPrefix": "Ci avete detto che la previsione della capacità è il punto dolente. ",
+        "hookAccent": "Ecco come appare la soluzione.",
+        "leadPrefix": "Questa è una ",
+        "leadEmphasis": "dimostrazione dell'arte del possibile",
+        "leadSuffix": " — non la demo di un prodotto che potete acquistare oggi. Abbiamo preso le sfide che voi e i vostri colleghi avete descritto, le abbiamo trasformate in una Frontier Firm funzionante e abbiamo lasciato che veri professionisti ospedalieri la mettessero alla prova. Ciò che segue è quello che abbiamo capito, quello che abbiamo costruito e quello che servirebbe per renderlo vostro.",
+        "quote": "Il percorso di ogni paziente, in mani svizzere.",
+        "framebox": {
+          "title": "Prima di iniziare — cosa è reale e cosa no.",
+          "body": "Il <b>modello è reale</b>: la piattaforma è attiva in PROD Switzerland North (app.curavias.ch) con 7 agenti in servizio — solo consultivi, non decidono né diagnosticano mai. Gli <b>ospedali sono sintetici</b> e ogni numero che vedrete è <b>illustrativo, su dati sintetici senza PHI</b>. Per renderlo realistico anziché inventato, abbiamo costruito un <b>simulatore del sistema centrale Epic</b> che genera tutti i segnali rilevanti del sistema centrale — ricoveri, trasferimenti e dimissioni, stato dei letti, programma della sala operatoria e personale — così che gli agenti siano guidati dagli stessi schemi di eventi che un vero KIS emetterebbe, senza un solo record paziente. Le <b>sfide e le persone che le hanno messe alla prova sono reali</b>, da sessioni di revisione datate con ospedali svizzeri."
+        },
+        "ctaPrimary": "Iniziare da ciò che ci avete detto →",
+        "ctaHospitals": "Scopri i tre ospedali",
+        "ctaBackstage": "Guarda com'è stato costruito"
+      },
       "challenger": {
         "title": "Sei challenger. Sei domande a cui dovevamo sopravvivere.",
         "body": "Prima che Curavias meritasse un piano a 90 giorni, è stato messo alla prova dalle persone che avrebbero dovuto firmarlo, proteggerlo, gestirlo e conviverci. Queste sono le loro domande reali, tratte da sessioni di revisione datate — come le abbiamo affrontate, il valore che quella risposta offre e cosa ha cambiato nel prodotto. Scegli il posto che occupi.",

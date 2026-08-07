@@ -414,6 +414,24 @@
         "ninetyDay": "90 jours",
         "bva": "BVA"
       },
+      "hero": {
+        "title": "Hero",
+        "body": "Hôte du hero exécutif pour le récit frontière de Curavias et l'accroche de valeur étayée par les preuves.",
+        "eyebrow": "Start · envisioning de la solution · pour la direction & les opérations hospitalières · 5–10 min",
+        "hookPrefix": "Vous nous avez dit que la prévision des capacités est le point sensible. ",
+        "hookAccent": "Voici à quoi ressemble la solution.",
+        "leadPrefix": "Ceci est une ",
+        "leadEmphasis": "démonstration de l'art du possible",
+        "leadSuffix": " — pas la démo d'un produit que vous pouvez acheter aujourd'hui. Nous avons pris les défis que vous et vos pairs avez décrits, les avons intégrés dans une Frontier Firm opérationnelle et avons laissé de vrais praticiens hospitaliers l'éprouver. Ce qui suit, c'est ce que nous avons compris, ce que nous avons construit et ce qu'il faudrait pour en faire le vôtre.",
+        "quote": "Le parcours de chaque patient, entre des mains suisses.",
+        "framebox": {
+          "title": "Avant de commencer — ce qui est réel et ce qui ne l'est pas.",
+          "body": "Le <b>modèle est réel</b> : la plateforme fonctionne en direct en PROD Switzerland North (app.curavias.ch) avec 7 agents en service — uniquement consultatifs, ne décidant ni ne diagnostiquant jamais. Les <b>hôpitaux sont synthétiques</b> et chaque chiffre que vous verrez est <b>illustratif, sur des données synthétiques sans PHI</b>. Pour rendre cela réaliste plutôt qu'inventé, nous avons construit un <b>simulateur du système central Epic</b> qui génère tous les signaux pertinents du système central — admissions, transferts et sorties, état des lits, programme du bloc opératoire et personnel — afin que les agents soient pilotés par les mêmes schémas d'événements qu'un véritable SIH émettrait, sans un seul dossier patient. Les <b>défis et les personnes qui les ont éprouvés sont réels</b>, issus de sessions de revue datées avec des hôpitaux suisses."
+        },
+        "ctaPrimary": "Commencer par ce que vous nous avez dit →",
+        "ctaHospitals": "Découvrir les trois hôpitaux",
+        "ctaBackstage": "Voir comment cela a été construit"
+      },
       "challenger": {
         "title": "Six challengers. Six questions auxquelles nous devions survivre.",
         "body": "Avant que Curavias ne mérite un plan à 90 jours, il a été mis à l'épreuve par les personnes qui devraient le signer, le sécuriser, l'exploiter et vivre avec. Voici leurs vraies questions, issues de sessions de revue datées — comment nous y avons répondu, la valeur que cette réponse apporte et ce qu'elle a changé dans le produit. Choisissez le siège que vous occupez.",
