@@ -55,6 +55,10 @@ describe('StartHero', () => {
     expect(framebox).toHaveTextContent(/advisory-only, never deciding or diagnosing/i);
     expect(framebox).toHaveTextContent(/no PHI/i);
     expect(framebox).toHaveTextContent(/Epic core-system simulator/i);
+    // The baseline provenance: calibrated on published Swiss capacity data.
+    expect(framebox).toHaveTextContent(/published capacity data/i);
+    expect(framebox).toHaveTextContent(/Klinik Hirslanden/i);
+    expect(framebox).toHaveTextContent(/No confidential provider data was used/i);
   });
 
   it('renders the three mockup CTAs and drops the legacy Journai lead + trust pills', () => {
