@@ -44,6 +44,12 @@
       "tab": "Story",
       "title": "Wie Curavias gebaut ist",
       "lead": "Eine einfache C-Level-Sicht auf die Plattformgrundlagen hinter der Showcase-App.",
+      "narrative": {
+        "success": { "accent": "Success Framework" },
+        "devsecops": { "accent": "built and shipped" },
+        "reviews": { "accent": "real people" },
+        "poClasses": { "accent": "hard questions" }
+      },
       "agents": {
         "title": "Von Agenten gebaut",
         "body": "GitHub Copilot Coding Agents planen, bauen und prüfen die Plattform über gesteuerte MCP-Tools."
@@ -556,6 +562,7 @@
       },
       "challenger": {
         "title": "Was Sie uns gesagt haben — und was wir daraus gemacht haben.",
+        "accent": "was wir daraus gemacht haben.",
         "body": "Wir sind nicht von einer Produktidee ausgegangen. Wir sind von den Herausforderungen ausgegangen, die Sie und Ihre Kolleginnen und Kollegen uns gestellt haben — und haben sie von genau den Menschen auf die Probe stellen lassen, die das Ergebnis unterschreiben, absichern, betreiben und damit leben müssten. Fünf Rollen, fünf echte Sessions. Jeder Sitz unten zeigt die Frage, wie sie gestellt wurde, wie wir sie angegangen sind, den gelieferten Wert und was sich am Produkt geändert hat.",
         "eyebrow": "Was wir gehört haben · echte Menschen, echte Sessions",
         "reviewBy": "Geprüft am",
@@ -593,6 +600,7 @@
       },
       "vision": {
         "title": "Der Name ist das Versprechen: cura + via",
+        "accent": "cura + via",
         "body": "Curavias ist Latein. cura — Sorge. via — Weg. Zusammen: \"der Versorgungspfad.\" Kein Kapazitätswerkzeug, das zufällig in einem Spital steht, sondern der Weg, den ein Patient durch es nimmt — weshalb der Claim lautet \"Jeder Patientenpfad, in Schweizer Hand.\"",
         "eyebrow": "Warum es Curavias gibt",
         "brand": {
@@ -646,6 +654,7 @@
       },
       "workChart": {
         "title": "Vom Organigramm zur Arbeitskarte",
+        "accent": "Arbeitskarte",
         "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und Intelligenz auf Abruf in einem Betriebsmodell — angewendet dort, wo ein Spital täglich Druck spürt: Kapazität und Patientenfluss.",
         "eyebrow": "Modell",
         "flowLabel": "Curavias-Arbeitsmodi",
@@ -742,6 +751,7 @@
       },
       "hospitals": {
         "title": "Drei Spitäler, jedes als Frontier Firm geführt",
+        "accent": "Frontier Firm",
         "body": "Das Curavias-Organisationsrückgrat modelliert drei Schweizer Spital-Archetypen auf synthetischen Daten ohne PHI — abgeleitet aus realen Referenzmustern. In jedem führen physische Mitarbeitende und Agents die HCC-Operation (Hospital Command Center) und den Patientenfluss durchgängig, mit Mensch in der Schleife.",
         "eyebrow": "Organisation",
         "sitesLabel": "Synthetisches Curavias-Spitalnetz",
@@ -805,6 +815,7 @@
       },
       "patientPath": {
         "title": "Patientenpfad",
+        "accent": "Patientenpfad",
         "body": "RBAC-geführter operativer Pfad vom Kapazitätsdruck bis zur Nachversorgung, ergänzt durch beratende Signale.",
         "eyebrow": "Der Curavias-Patientenpfad"
       },

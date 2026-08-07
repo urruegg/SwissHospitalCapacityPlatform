@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { makeStyles, tokens } from '@fluentui/react-components';
-import { SectionHeader } from '../shared/narrative/SectionHeader';
+import { SectionHeader, type SectionTitlePart } from '../shared/narrative/SectionHeader';
 import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
 import { BvaDecisionSection } from './frontier/BvaDecisionSection';
 import { ChallengerSection } from './frontier/ChallengerSection';
@@ -15,23 +15,30 @@ import { START_SECTIONS, type StartSection } from './frontier/start-content';
 
 // Per-section eyebrow kicker + nav label — both i18n keys, localized en/de/fr/it
 // (matches the Backstage nav-localization pattern in BackstageView.tsx).
-const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; navKey: string }> = {
+const SECTION_META: Record<
+  StartSection['id'],
+  { eyebrowKey: string; navKey: string; accentKey?: string }
+> = {
   hero: { eyebrowKey: '', navKey: 'start.frontier.nav.value' },
   challenger: {
     eyebrowKey: 'start.frontier.challenger.eyebrow',
     navKey: 'start.frontier.nav.challenger',
+    accentKey: 'start.frontier.challenger.accent',
   },
   vision: {
     eyebrowKey: 'start.frontier.vision.eyebrow',
     navKey: 'start.frontier.nav.vision',
+    accentKey: 'start.frontier.vision.accent',
   },
   'work-chart': {
     eyebrowKey: 'start.frontier.workChart.eyebrow',
     navKey: 'start.frontier.nav.operatingModel',
+    accentKey: 'start.frontier.workChart.accent',
   },
   hospitals: {
     eyebrowKey: 'start.frontier.hospitals.eyebrow',
     navKey: 'start.frontier.nav.hospitals',
+    accentKey: 'start.frontier.hospitals.accent',
   },
   'cio-why-now': {
     eyebrowKey: 'start.frontier.cioWhyNow.eyebrow',
@@ -40,6 +47,7 @@ const SECTION_META: Record<StartSection['id'], { eyebrowKey: string; navKey: str
   'patient-path': {
     eyebrowKey: 'start.frontier.patientPath.eyebrow',
     navKey: 'start.frontier.nav.carePath',
+    accentKey: 'start.frontier.patientPath.accent',
   },
   'ninety-day': {
     eyebrowKey: 'start.frontier.ninetyDay.eyebrow',
@@ -58,6 +66,16 @@ const useStyles = makeStyles({
 
 function bodyKeyFor(section: StartSection) {
   return section.titleKey.replace(/\.title$/, '.body');
+}
+
+function toTitleParts(title: string, accent?: string): SectionTitlePart[] | undefined {
+  if (!accent || !title.includes(accent)) return undefined;
+  const i = title.indexOf(accent);
+  return [
+    { text: title.slice(0, i) },
+    { text: accent, tone: 'accent' as const },
+    { text: title.slice(i + accent.length) },
+  ].filter((part) => part.text.length > 0);
 }
 
 function sectionBody(id: StartSection['id']) {
@@ -96,32 +114,39 @@ export function StartView() {
   const { t } = useTranslation();
   const styles = useStyles();
 
-  const sections: NarrativeSection[] = START_SECTIONS.map((section) => ({
-    key: section.id,
-    label: t(SECTION_META[section.id].navKey),
-    render: () => (
-      <section
-        data-start-section={section.id}
-        data-testid={`start-${section.id}`}
-        className={styles.sectionStack}
-      >
-        {section.id === 'hero' ? (
-          sectionBody('hero')
-        ) : (
-          <>
-            <SectionHeader
-              id={section.id}
-              variant="eyebrow"
-              header={t(section.titleKey)}
-              tagline={t(SECTION_META[section.id].eyebrowKey)}
-              description={t(bodyKeyFor(section))}
-            />
-            {sectionBody(section.id)}
-          </>
-        )}
-      </section>
-    ),
-  }));
+  const sections: NarrativeSection[] = START_SECTIONS.map((section) => {
+    const meta = SECTION_META[section.id];
+    const title = t(section.titleKey);
+    const accent = meta.accentKey ? t(meta.accentKey) : undefined;
+    const titleParts = toTitleParts(title, accent);
+
+    return {
+      key: section.id,
+      label: t(meta.navKey),
+      render: () => (
+        <section
+          data-start-section={section.id}
+          data-testid={`start-${section.id}`}
+          className={styles.sectionStack}
+        >
+          {section.id === 'hero' ? (
+            sectionBody('hero')
+          ) : (
+            <>
+              <SectionHeader
+                id={section.id}
+                variant="eyebrow"
+                tagline={t(meta.eyebrowKey)}
+                {...(titleParts ? { titleParts } : { header: title })}
+                description={t(bodyKeyFor(section))}
+              />
+              {sectionBody(section.id)}
+            </>
+          )}
+        </section>
+      ),
+    };
+  });
 
   return (
     <div data-testid="start-view">

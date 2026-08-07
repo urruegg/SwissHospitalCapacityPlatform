@@ -224,6 +224,25 @@ describe('StartView static narrative integration', () => {
     });
   });
 
+  it('colour-codes the work-chart accent clause within a single heading', () => {
+    render(
+      <MemoryRouter initialEntries={['/start']}>
+        <FluentProvider theme={webLightTheme}>
+          <RoleProvider testRoles={['HCC.PlatformAdmin']} testHomeSite="usz">
+            <ModeProvider>
+              <StartView />
+            </ModeProvider>
+          </RoleProvider>
+        </FluentProvider>
+      </MemoryRouter>,
+    );
+
+    const heading = screen.getByRole('heading', {
+      name: /From the org chart to the\s*work chart/i,
+    });
+    expect(within(heading).getByText('work chart').getAttribute('data-tone')).toBe('accent');
+  });
+
   it('localises the section nav tab labels (de) instead of hard-coded English', async () => {
     await i18n.changeLanguage('de');
     render(

@@ -44,6 +44,12 @@
       "tab": "Histoire",
       "title": "Comment Curavias est construit",
       "lead": "Une vue exécutive simple des fondations de plateforme derrière la vitrine.",
+      "narrative": {
+        "success": { "accent": "Success Framework" },
+        "devsecops": { "accent": "built and shipped" },
+        "reviews": { "accent": "real people" },
+        "poClasses": { "accent": "hard questions" }
+      },
       "agents": {
         "title": "Construit par des agents",
         "body": "Les agents de codage GitHub Copilot planifient, construisent et relisent la plateforme via des outils MCP gouvernés."
@@ -434,6 +440,7 @@
       },
       "challenger": {
         "title": "Ce que vous nous avez dit — et ce que nous en avons fait.",
+        "accent": "ce que nous en avons fait.",
         "body": "Nous ne sommes pas partis d'une idée de produit. Nous sommes partis des défis que vous et vos pairs nous avez soumis — puis les avons soumis à l'épreuve des personnes qui devraient signer, sécuriser, exploiter et vivre avec le résultat. Cinq rôles, cinq sessions réelles. Chaque siège ci-dessous montre la question telle qu'elle a été posée, comment nous l'avons traitée, la valeur qu'elle apporte et ce qu'elle a changé dans le produit.",
         "eyebrow": "Ce que nous avons entendu · de vraies personnes, de vraies sessions",
         "reviewBy": "Revu le",
@@ -469,8 +476,12 @@
           "it": { "tag": "IT / cantonal", "sub": "Modèle opérationnel cloud" }
         }
       },
+      "vision": {
+        "accent": "cura + via"
+      },
       "workChart": {
         "title": "Comment le travail évolue",
+        "accent": "travail",
         "body": "Curavias réunit des personnes responsables, des agents spécialisés et des flux de travail à la demande dans un même modèle opérationnel.",
         "eyebrow": "Modèle",
         "flowLabel": "Modes de travail Curavias",
@@ -573,6 +584,7 @@
       },
       "hospitals": {
         "title": "Trois hôpitaux, chacun opérant comme une Frontier Firm",
+        "accent": "Frontier Firm",
         "body": "L'épine dorsale organisationnelle de Curavias modélise trois archétypes d'hôpitaux suisses sur des données synthétiques sans PHI — inspirées de modèles de référence réels. Dans chacun, des employés physiques et des agents pilotent l'opération HCC (Hospital Command Center) et le flux patient de bout en bout, avec l'humain dans la boucle.",
         "eyebrow": "Organisation",
         "sitesLabel": "Réseau hospitalier Curavias synthétique",
@@ -636,6 +648,7 @@
       },
       "patientPath": {
         "title": "Parcours patient",
+        "accent": "Parcours patient",
         "body": "Parcours opérationnel guidé par le RBAC, de la pression de capacité jusqu'au rétablissement, avec des signaux consultatifs tout au long du parcours.",
         "eyebrow": "Le parcours patient Curavias"
       },

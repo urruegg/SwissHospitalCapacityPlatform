@@ -50,6 +50,12 @@
       "tab": "Story",
       "title": "How Curavias is built",
       "lead": "A simple executive view of the platform foundations behind the showcase.",
+      "narrative": {
+        "success": { "accent": "Success Framework" },
+        "devsecops": { "accent": "built and shipped" },
+        "reviews": { "accent": "real people" },
+        "poClasses": { "accent": "hard questions" }
+      },
       "agents": {
         "title": "Built by agents",
         "body": "GitHub Copilot coding agents plan, build, and review the platform through governed MCP tools."
@@ -612,6 +618,7 @@
       },
       "challenger": {
         "title": "What you told us — and what we did about it.",
+        "accent": "and what we did about it.",
         "body": "We did not start from a product idea. We started from the challenges you and your peers put in front of us — then had them stress-tested by the people who would have to sign, secure, run and live with the result. Five roles, five real sessions. Each seat below shows the question as it was asked, how we addressed it, the value it delivers, and what it changed in the product.",
         "eyebrow": "What we heard · real people, real sessions",
         "reviewBy": "Review by",
@@ -802,6 +809,7 @@
       },
       "vision": {
         "title": "The name is the promise: cura + via",
+        "accent": "cura + via",
         "body": "Curavias is Latin. cura — care. via — path. Together: \"the care pathway.\" Not a capacity tool that happens to sit in a hospital, but the path a patient takes through it — which is why the tagline is \"Every patient's path, in Swiss hands.\"",
         "eyebrow": "Why Curavias exists",
         "brand": {
@@ -867,6 +875,7 @@
       },
       "workChart": {
         "title": "From the org chart to the work chart",
+        "accent": "work chart",
         "body": "Curavias combines accountable people, specialised agents, and on-demand intelligence in one operating model — applied to where a hospital feels pressure every day: capacity and patient flow.",
         "eyebrow": "Model",
         "flowLabel": "Curavias work modes",
@@ -963,6 +972,7 @@
       },
       "hospitals": {
         "title": "Three hospitals, each running as a Frontier Firm",
+        "accent": "Frontier Firm",
         "body": "The Curavias org spine models three Swiss hospital archetypes on synthetic, no-PHI data — grounded on real reference patterns. In each, physical employees and agents run the HCC Operation (Hospital Command Center) and the Patient Flow end-to-end, human-in-the-loop.",
         "eyebrow": "Organisation",
         "sitesLabel": "Synthetic Curavias hospital network",
@@ -1026,6 +1036,7 @@
       },
       "patientPath": {
         "title": "Patient path",
+        "accent": "Patient path",
         "body": "RBAC-guided operational journey from capacity pressure to recovery, with advisory signals across the path.",
         "eyebrow": "The Curavias patient path"
       },
