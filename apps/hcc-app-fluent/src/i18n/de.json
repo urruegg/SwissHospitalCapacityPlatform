@@ -621,7 +621,7 @@
       "challenger": {
         "title": "Was Sie uns gesagt haben — und was wir daraus gemacht haben.",
         "accent": "was wir daraus gemacht haben.",
-        "body": "Wir sind nicht von einer Produktidee ausgegangen. Wir sind von den Herausforderungen ausgegangen, die Sie und Ihre Kolleginnen und Kollegen uns gestellt haben — und haben sie von genau den Menschen auf die Probe stellen lassen, die das Ergebnis unterschreiben, absichern, betreiben und damit leben müssten. Fünf Rollen, fünf echte Sessions. Jeder Sitz unten zeigt die Frage, wie sie gestellt wurde, wie wir sie angegangen sind, den gelieferten Wert und was sich am Produkt geändert hat.",
+        "body": "Wir sind nicht von einer Produktidee ausgegangen. Wir sind von den Herausforderungen ausgegangen, die Sie und Ihre Kolleginnen und Kollegen uns gestellt haben — und haben sie von genau den Menschen auf die Probe stellen lassen, die das Ergebnis unterschreiben, absichern, betreiben und damit leben müssten. Sechs Rollen, sechs echte Sessions. Jeder Sitz unten zeigt die Frage, wie sie gestellt wurde, wie wir sie angegangen sind, den gelieferten Wert und was sich am Produkt geändert hat.",
         "eyebrow": "Was wir gehört haben · echte Menschen, echte Sessions",
         "reviewBy": "Geprüft am",
         "pickSeat": "Wählen Sie den Sitz, auf dem Sie sitzen.",
@@ -662,7 +662,7 @@
         "body": "Curavias ist Latein. cura — Sorge. via — Weg. Zusammen: \"der Versorgungspfad.\" Kein Kapazitätswerkzeug, das zufällig in einem Spital steht, sondern der Weg, den ein Patient durch es nimmt — weshalb der Claim lautet \"Jeder Patientenpfad, in Schweizer Hand.\"",
         "eyebrow": "Warum es Curavias gibt",
         "brand": {
-          "desc": "Schweizer Spitalkapazitäts-Copilot",
+          "desc": "Swiss Hospital Command Center powered by Copilot",
           "tag": "Jeder Patientenpfad, in Schweizer Hand.",
           "symbolLabel": "Curavias-Zeichen — ein Patientenpfad, der vom Start über die Versorgung zum Erfolg aufsteigt"
         },
@@ -703,12 +703,20 @@
         },
         "vmHeading": "Unsere Vision & Mission",
         "vision": {
-          "tag": "Vision"
+          "tag": "Vision",
+          "text": "Ein Schweizer Gesundheitswesen, in dem nie die Kapazität entscheidet, wer warten muss."
         },
         "mission": {
-          "tag": "Mission"
+          "tag": "Mission",
+          "text": "Jedes Behandlungsteam in jedem Schweizer Spital befähigen, für jeden Patienten Behandlungserfolg – und Zeit – zu erreichen."
         },
-        "pillRowLabel": "Curavias-Zusagen"
+        "timeCurrency": "Zeit ist die Währung der Kapazität. Jede Stunde, die Curavias zurückgibt, ist eine Stunde Versorgung – der Patient früher behandelt, das Team mit Zeit zum Geben, das Bett frei für die nächste Person, die es braucht.",
+        "pillRowLabel": "Curavias-Zusagen",
+        "pills": {
+          "advisory": { "label": "Beratend, nie autonom" },
+          "human": { "label": "Der Mensch entscheidet, immer" },
+          "swiss": { "label": "Schweizer Daten, Schweizer Hosting, keine Patientendaten" }
+        }
       },
       "workChart": {
         "title": "Vom Organigramm zur Arbeitskarte",
@@ -817,7 +825,7 @@
         "sites": {
           "curanova": {
             "name": "Uniklinik CuraNova",
-            "profile": "Universitäres Zentrumsspital · Kanton Helvetia-Nord",
+            "profile": "Universitäres Zentrumsspital · Kanton Zürich",
             "facts": "~900 Betten · 8'600 VZÄ · 7 medizinische Zentren",
             "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität.",
             "services": "Umfassendes Krebszentrum · Universitäres Herzzentrum",
@@ -830,7 +838,7 @@
           },
           "curalp": {
             "name": "Kantonsspital Curalp",
-            "profile": "Kantonale Gruppe mit mehreren Standorten · Kanton Curalp",
+            "profile": "Kantonale Gruppe mit mehreren Standorten · Kanton Luzern",
             "facts": "~840 Betten · 8'600 VZÄ · 5 Standorte",
             "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen.",
             "services": "Tumorzentrum · Neurozentrum",
@@ -843,7 +851,7 @@
           },
           "vialta": {
             "name": "Spital Vialta",
-            "profile": "Regionale Akutversorgung (privat, öffentlicher Leistungsauftrag)",
+            "profile": "Regionale Akutversorgung (privat, öffentlicher Leistungsauftrag) · Kanton Zürich",
             "facts": "174 Betten · 1'200 VZÄ · 24/7-Notfall",
             "focus": "Fokus: Übergangsbereitschaft und Kontinuität.",
             "services": "Interdisziplinäres Notfallzentrum · Innere Medizin · Geburtshilfe · Nephrologie- und Dialysezentrum",

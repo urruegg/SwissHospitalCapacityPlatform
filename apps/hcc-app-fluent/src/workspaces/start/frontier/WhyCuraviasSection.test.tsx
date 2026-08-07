@@ -31,7 +31,7 @@ describe('WhyCuraviasSection', () => {
 
     const lock = screen.getByTestId('vision-brandlock');
     expect(within(lock).getByText('Curavias')).toBeInTheDocument();
-    expect(within(lock).getByText('Swiss Hospital Capacity Copilot')).toBeInTheDocument();
+    expect(within(lock).getByText('Swiss Hospital Command Center powered by Copilot')).toBeInTheDocument();
     expect(within(lock).getByText(/Every patient's path, in Swiss hands\./)).toBeInTheDocument();
     // The rising-path mark renders inline as an accessible image.
     expect(within(lock).getByRole('img', { name: /Curavias symbol/i })).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe('WhyCuraviasSection', () => {
     expect(start).not.toHaveAttribute('aria-current');
   });
 
-  it('renders vision + mission as bilingual brand statements (EN primary + DE echo)', () => {
+  it('renders vision + mission statements in the selected language (en) — no bilingual echo', () => {
     renderVision();
 
     const vision = screen.getByTestId('vision-statement');
@@ -82,9 +82,8 @@ describe('WhyCuraviasSection', () => {
     expect(
       within(vision).getByText('A Swiss healthcare system where capacity never decides who waits.'),
     ).toBeInTheDocument();
-    expect(
-      within(vision).getByText(/Ein Schweizer Gesundheitswesen, in dem nie die Kapazität/),
-    ).toBeInTheDocument();
+    // No German echo line renders under en.
+    expect(within(vision).queryByText(/Ein Schweizer Gesundheitswesen/)).not.toBeInTheDocument();
 
     const mission = screen.getByTestId('mission-statement');
     expect(within(mission).getByText('Mission')).toBeInTheDocument();
@@ -92,11 +91,11 @@ describe('WhyCuraviasSection', () => {
       within(mission).getByText(/Empower every care team in every Swiss hospital/),
     ).toBeInTheDocument();
     expect(
-      within(mission).getByText(/Jedes Behandlungsteam in jedem Schweizer Spital/),
-    ).toBeInTheDocument();
+      within(mission).queryByText(/Jedes Behandlungsteam in jedem Schweizer Spital/),
+    ).not.toBeInTheDocument();
   });
 
-  it('renders the time-currency line and the three advisory/human/swiss guarantee pills', () => {
+  it('renders the time-currency line and the three guarantee pills (single language)', () => {
     renderVision();
 
     const timeCurrency = screen.getByTestId('vision-time-currency');
@@ -105,20 +104,29 @@ describe('WhyCuraviasSection', () => {
     const pills = screen.getAllByTestId('vision-pill');
     expect(pills).toHaveLength(VISION_PILLS.length);
     expect(screen.getByText('Advisory, never autonomous')).toBeInTheDocument();
-    expect(screen.getByText('Beratend, nie autonom')).toBeInTheDocument();
+    expect(screen.getByText('The human decides, always')).toBeInTheDocument();
     expect(screen.getByText('Swiss data, Swiss hosting, no patient data')).toBeInTheDocument();
+    // The German echo copy is gone under en.
+    expect(screen.queryByText('Beratend, nie autonom')).not.toBeInTheDocument();
   });
 
-  it('localises the section chrome (de) while keeping the bilingual brand statements', async () => {
+  it('localises the vision/mission statements and pills in de (no English fallback)', async () => {
     await i18n.changeLanguage('de');
     renderVision();
 
     // Chrome (headings) localises...
     expect(screen.getByText('Das Wort')).toBeInTheDocument();
     expect(screen.getByText('Unsere Vision & Mission')).toBeInTheDocument();
-    // ...while the deliberate bilingual brand statement stays identical in every locale.
+    // ...and the vision statement now renders in German, not English.
     expect(
-      screen.getByText('A Swiss healthcare system where capacity never decides who waits.'),
+      screen.getByText(
+        'Ein Schweizer Gesundheitswesen, in dem nie die Kapazität entscheidet, wer warten muss.',
+      ),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText('A Swiss healthcare system where capacity never decides who waits.'),
+    ).not.toBeInTheDocument();
+    // Guarantee pill localises too.
+    expect(screen.getByText('Beratend, nie autonom')).toBeInTheDocument();
   });
 });

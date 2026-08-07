@@ -633,7 +633,7 @@
       "challenger": {
         "title": "What you told us — and what we did about it.",
         "accent": "and what we did about it.",
-        "body": "We did not start from a product idea. We started from the challenges you and your peers put in front of us — then had them stress-tested by the people who would have to sign, secure, run and live with the result. Five roles, five real sessions. Each seat below shows the question as it was asked, how we addressed it, the value it delivers, and what it changed in the product.",
+        "body": "We did not start from a product idea. We started from the challenges you and your peers put in front of us — then had them stress-tested by the people who would have to sign, secure, run and live with the result. Six roles, six real sessions. Each seat below shows the question as it was asked, how we addressed it, the value it delivers, and what it changed in the product.",
         "eyebrow": "What we heard · real people, real sessions",
         "reviewBy": "Review by",
         "pickSeat": "Pick the seat you sit in.",
@@ -688,7 +688,7 @@
           },
           "cio": {
             "tag": "CIO",
-            "sub": "Forecast horizon",
+            "sub": "Foresight horizon & data readiness",
             "name": "Emanuel Furler",
             "org": "Spital Zollikerberg",
             "meta": "challenger question anchoring the field interview · 17 Jul 2026",
@@ -828,7 +828,7 @@
         "eyebrow": "Why Curavias exists",
         "brand": {
           "name": "Curavias",
-          "desc": "Swiss Hospital Capacity Copilot",
+          "desc": "Swiss Hospital Command Center powered by Copilot",
           "tag": "Every patient's path, in Swiss hands.",
           "symbolLabel": "Curavias symbol — a patient's path rising from start, through care, to success"
         },
@@ -870,21 +870,18 @@
         "vmHeading": "Our vision & mission",
         "vision": {
           "tag": "Vision",
-          "primary": "A Swiss healthcare system where capacity never decides who waits.",
-          "echo": "Ein Schweizer Gesundheitswesen, in dem nie die Kapazität entscheidet, wer warten muss."
+          "text": "A Swiss healthcare system where capacity never decides who waits."
         },
         "mission": {
           "tag": "Mission",
-          "primary": "Empower every care team in every Swiss hospital to achieve health success — and time — for every patient.",
-          "echo": "Jedes Behandlungsteam in jedem Schweizer Spital befähigen, für jeden Patienten Behandlungserfolg – und Zeit – zu erreichen."
+          "text": "Empower every care team in every Swiss hospital to achieve health success — and time — for every patient."
         },
         "timeCurrency": "Time is the currency of capacity. Every hour Curavias gives back is an hour of care — the patient treated sooner, the team with time to give, the bed free for the next person who needs it.",
-        "timeCurrencyEcho": "Zeit ist die Währung der Kapazität.",
         "pillRowLabel": "Curavias guarantees",
         "pills": {
-          "advisory": { "label": "Advisory, never autonomous", "echo": "Beratend, nie autonom" },
-          "human": { "label": "The human decides, always", "echo": "Der Mensch entscheidet, immer" },
-          "swiss": { "label": "Swiss data, Swiss hosting, no patient data", "echo": "Schweizer Daten, Schweizer Hosting, keine Patientendaten" }
+          "advisory": { "label": "Advisory, never autonomous" },
+          "human": { "label": "The human decides, always" },
+          "swiss": { "label": "Swiss data, Swiss hosting, no patient data" }
         }
       },
       "workChart": {
@@ -994,7 +991,7 @@
         "sites": {
           "curanova": {
             "name": "Uniklinik CuraNova",
-            "profile": "University central hospital · Canton Helvetia-Nord",
+            "profile": "University central hospital · Canton Zurich",
             "facts": "~900 beds · 8,600 FTE · 7 medical centres",
             "focus": "Focus: network-wide flow and tertiary capacity.",
             "services": "Comprehensive Cancer Center · University Heart Centre",
@@ -1007,7 +1004,7 @@
           },
           "curalp": {
             "name": "Kantonsspital Curalp",
-            "profile": "Cantonal multi-site group · Canton Curalp",
+            "profile": "Cantonal multi-site group · Canton Luzern",
             "facts": "~840 beds · 8,600 FTE · 5 sites",
             "focus": "Focus: resilient coverage and timely transfers.",
             "services": "Tumour Centre · Neuro Centre",
@@ -1020,7 +1017,7 @@
           },
           "vialta": {
             "name": "Spital Vialta",
-            "profile": "Regional acute (private, public mandate)",
+            "profile": "Regional acute (private, public mandate) · Canton Zurich",
             "facts": "174 beds · 1,200 FTE · 24/7 emergency",
             "focus": "Focus: transition readiness and continuity.",
             "services": "Interdisciplinary Emergency Centre · Internal Medicine · Obstetrics · Nephrology & Dialysis Centre",

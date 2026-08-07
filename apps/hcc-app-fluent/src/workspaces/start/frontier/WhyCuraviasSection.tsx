@@ -103,13 +103,6 @@ const useStyles = makeStyles({
     lineHeight: 1.4,
     color: tokens.colorNeutralForeground1,
   },
-  statementEcho: {
-    margin: 0,
-    fontSize: tokens.fontSizeBase200,
-    fontStyle: 'italic',
-    lineHeight: 1.45,
-    color: tokens.colorNeutralForeground3,
-  },
 
   timeCurrency: {
     display: 'flex',
@@ -119,7 +112,6 @@ const useStyles = makeStyles({
     borderLeft: `3px solid ${SHOWCASE_ACCENT.green}`,
   },
   timeCurrencyPrimary: { margin: 0, fontSize: tokens.fontSizeBase300, lineHeight: 1.5, color: tokens.colorNeutralForeground2 },
-  timeCurrencyEcho: { margin: 0, fontSize: tokens.fontSizeBase200, fontStyle: 'italic', color: tokens.colorNeutralForeground3 },
 
   pillRow: {
     display: 'flex',
@@ -140,8 +132,6 @@ const useStyles = makeStyles({
     fontSize: tokens.fontSizeBase200,
   },
   pillLabel: { color: tokens.colorNeutralForeground1, fontWeight: tokens.fontWeightSemibold },
-  pillSep: { color: tokens.colorNeutralForeground4 },
-  pillEcho: { color: tokens.colorNeutralForeground3 },
 });
 
 /**
@@ -151,11 +141,11 @@ const useStyles = makeStyles({
  * mark (word/mark split), the "Our vision & mission" statements, the time-currency line,
  * and the three advisory / human / Swiss guarantee pills.
  *
- * Localisation follows the challenger's Approach B: the chrome (headings, column labels,
- * captions) localises en/de, while the vision statement, mission statement, time-currency
- * line and pills are deliberate EN|DE bilingual brand copy — carried as identical
- * `{primary,echo}` / `{label,echo}` keys that render the same in every locale (de omits
- * those leaf keys so they fall back to the shared English brand copy).
+ * Localisation: every beat renders in the user's selected language. The chrome
+ * (headings, column labels, captions), the vision & mission statements, the
+ * time-currency line and the three guarantee pills are all localised per locale
+ * (en/de/fr/it) — no bilingual echo copy. The brand wordmark ("Curavias") and the
+ * brand descriptor tagline stay constant across locales by design.
  */
 export function WhyCuraviasSection() {
   const styles = useStyles();
@@ -231,19 +221,16 @@ export function WhyCuraviasSection() {
       <div className={sc.split}>
         <div className={sc.staticCard} style={{ borderLeftColor: SHOWCASE_ACCENT.navy }} data-testid="vision-statement">
           <span className={styles.statementTag} style={{ color: SHOWCASE_ACCENT.navy }}>{t(`${base}.vision.tag`)}</span>
-          <p className={styles.statementPrimary}>{t(`${base}.vision.primary`)}</p>
-          <p className={styles.statementEcho}>{t(`${base}.vision.echo`)}</p>
+          <p className={styles.statementPrimary}>{t(`${base}.vision.text`)}</p>
         </div>
         <div className={sc.staticCard} style={{ borderLeftColor: SHOWCASE_ACCENT.green }} data-testid="mission-statement">
           <span className={styles.statementTag} style={{ color: SHOWCASE_ACCENT.green }}>{t(`${base}.mission.tag`)}</span>
-          <p className={styles.statementPrimary}>{t(`${base}.mission.primary`)}</p>
-          <p className={styles.statementEcho}>{t(`${base}.mission.echo`)}</p>
+          <p className={styles.statementPrimary}>{t(`${base}.mission.text`)}</p>
         </div>
       </div>
 
       <div className={styles.timeCurrency} data-testid="vision-time-currency">
         <p className={styles.timeCurrencyPrimary}>{t(`${base}.timeCurrency`)}</p>
-        <p className={styles.timeCurrencyEcho}>{t(`${base}.timeCurrencyEcho`)}</p>
       </div>
 
       <ul className={styles.pillRow} aria-label={t(`${base}.pillRowLabel`)}>
@@ -251,8 +238,6 @@ export function WhyCuraviasSection() {
           <li key={pill.id} className={styles.pill} data-testid="vision-pill">
             {pill.flag && <span aria-hidden="true">🇨🇭</span>}
             <span className={styles.pillLabel}>{t(pill.labelKey)}</span>
-            <span className={styles.pillSep} aria-hidden="true">·</span>
-            <span className={styles.pillEcho}>{t(pill.echoKey)}</span>
           </li>
         ))}
       </ul>

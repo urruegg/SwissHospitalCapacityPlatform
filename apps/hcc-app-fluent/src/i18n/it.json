@@ -461,7 +461,7 @@
       "challenger": {
         "title": "Ciò che ci avete detto — e cosa ne abbiamo fatto.",
         "accent": "cosa ne abbiamo fatto.",
-        "body": "Non siamo partiti da un'idea di prodotto. Siamo partiti dalle sfide che voi e i vostri colleghi ci avete posto — per poi metterle alla prova delle persone che avrebbero dovuto firmare, mettere in sicurezza, gestire e convivere con il risultato. Cinque ruoli, cinque sessioni reali. Ogni posto qui sotto mostra la domanda così come è stata posta, come l'abbiamo affrontata, il valore che offre e cosa ha cambiato nel prodotto.",
+        "body": "Non siamo partiti da un'idea di prodotto. Siamo partiti dalle sfide che voi e i vostri colleghi ci avete posto — per poi metterle alla prova delle persone che avrebbero dovuto firmare, mettere in sicurezza, gestire e convivere con il risultato. Sei ruoli, sei sessioni reali. Ogni posto qui sotto mostra la domanda così come è stata posta, come l'abbiamo affrontata, il valore che offre e cosa ha cambiato nel prodotto.",
         "eyebrow": "Ciò che abbiamo sentito · persone reali, sessioni reali",
         "reviewBy": "Revisione del",
         "pickSeat": "Scegli il posto in cui ti siedi.",
@@ -489,7 +489,7 @@
         "disclaimerLinkLabel": "il verbale di revisione in Backstage",
         "personas": {
           "coo": { "tag": "COO", "sub": "Business case & adozione" },
-          "cio": { "tag": "CIO", "sub": "Orizzonte di previsione" },
+          "cio": { "tag": "CIO", "sub": "Orizzonte di previsione e prontezza dei dati" },
           "cto": { "tag": "CTO", "sub": "Sovranità e regolamentazione" },
           "ciso": { "tag": "CISO / NSO", "sub": "Protezione dei dati e chiavi" },
           "ops": { "tag": "Operazioni ospedaliere", "sub": "Tempo per la cura del paziente" },
@@ -502,7 +502,7 @@
         "body": "Curavias viene dal latino. cura — la cura. via — il cammino. Insieme: «il percorso di cura». Non uno strumento di capacità che si trova per caso in un ospedale, ma il cammino che un paziente percorre attraverso di esso — per questo il claim è «Ogni percorso del paziente, in mani svizzere.»",
         "eyebrow": "Perché Curavias esiste",
         "brand": {
-          "desc": "Copilot svizzero per la capacità ospedaliera",
+          "desc": "Swiss Hospital Command Center powered by Copilot",
           "tag": "Ogni percorso del paziente, in mani svizzere.",
           "symbolLabel": "Simbolo Curavias — un percorso del paziente che si eleva dall'inizio, attraverso la cura, fino al successo"
         },
@@ -552,12 +552,20 @@
         },
         "vmHeading": "La nostra vision & mission",
         "vision": {
-          "tag": "Vision"
+          "tag": "Vision",
+          "text": "Un sistema sanitario svizzero in cui la capacità non decide mai chi deve aspettare."
         },
         "mission": {
-          "tag": "Mission"
+          "tag": "Mission",
+          "text": "Mettere ogni team di cura di ogni ospedale svizzero nelle condizioni di raggiungere il successo terapeutico – e il tempo – per ogni paziente."
         },
-        "pillRowLabel": "Le garanzie di Curavias"
+        "timeCurrency": "Il tempo è la moneta della capacità. Ogni ora che Curavias restituisce è un'ora di cura – il paziente trattato prima, il team con tempo da dare, il letto libero per la prossima persona che ne ha bisogno.",
+        "pillRowLabel": "Le garanzie di Curavias",
+        "pills": {
+          "advisory": { "label": "Consultivo, mai autonomo" },
+          "human": { "label": "L'essere umano decide, sempre" },
+          "swiss": { "label": "Dati svizzeri, hosting svizzero, nessun dato dei pazienti" }
+        }
       },
       "workChart": {
         "title": "Come cambia il lavoro",
@@ -672,7 +680,7 @@
         "sites": {
           "curanova": {
             "name": "Uniklinik CuraNova",
-            "profile": "Ospedale centrale universitario · Cantone Helvetia-Nord",
+            "profile": "Ospedale centrale universitario · Cantone Zurigo",
             "facts": "~900 letti · 8.600 FTE · 7 centri medici",
             "focus": "Focus: flusso di rete e capacità terziaria.",
             "services": "Centro oncologico completo · Centro cardiaco universitario",
@@ -685,7 +693,7 @@
           },
           "curalp": {
             "name": "Kantonsspital Curalp",
-            "profile": "Gruppo cantonale multi-sede · Cantone Curalp",
+            "profile": "Gruppo cantonale multi-sede · Cantone Lucerna",
             "facts": "~840 letti · 8.600 FTE · 5 sedi",
             "focus": "Focus: copertura resiliente e trasferimenti tempestivi.",
             "services": "Centro tumori · Centro neurologico",
@@ -698,7 +706,7 @@
           },
           "vialta": {
             "name": "Spital Vialta",
-            "profile": "Cure acute regionali (privato, mandato pubblico)",
+            "profile": "Cure acute regionali (privato, mandato pubblico) · Cantone Zurigo",
             "facts": "174 letti · 1.200 FTE · pronto soccorso 24/7",
             "focus": "Focus: prontezza della transizione e continuità.",
             "services": "Centro di emergenza interdisciplinare · Medicina interna · Ostetricia · Centro di nefrologia e dialisi",

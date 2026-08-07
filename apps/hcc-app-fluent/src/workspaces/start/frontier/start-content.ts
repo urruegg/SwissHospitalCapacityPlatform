@@ -5,6 +5,7 @@ import marcoRossi from '../../../assets/reviewers/marco-rossi.jpg';
 import reneRaeber from '../../../assets/reviewers/rene-raeber.jpg';
 import danielVonBueren from '../../../assets/reviewers/daniel-von-bueren.jpg';
 import petrusJallo from '../../../assets/reviewers/petrus-jallo.jpg';
+import emanuelFurler from '../../../assets/reviewers/emanuel-furler.jpg';
 
 export type StartSectionId =
   | 'hero'
@@ -37,15 +38,14 @@ export const START_SECTIONS = [
 
 /**
  * Sprint 40 START polish — the mockup's "The room pushed back" challenger roster.
- * Five real, dated review-session seats — COO, Hospital Operations (three reviewers),
+ * Six real, dated review-session seats — COO, CIO, Hospital Operations (three reviewers),
  * CTO, CISO and IT / Cantonal — each a tab in the section. Persona chrome (tag, sub) is
  * i18n-keyed under `start.frontier.challenger.personas.<id>.*`; the reviewer facts (name,
  * external profile link, role title, org, review date and photo) are factual proper nouns
- * carried here so the four locales stay in sync automatically. The German-origin CISO quote
- * (von Bueren) carries an English gloss via `hasGloss`; authentic quotes are never
- * machine-translated. `accent` maps to the mockup tag colour (navy for most seats, green
- * for hospital operations). The `cio` id is retained in the union as reversible data (its
- * forecast-horizon point folded into operations) but is not rendered as a standalone tab.
+ * carried here so the four locales stay in sync automatically. The German-origin CIO
+ * (Furler) and CISO (von Bueren) quotes carry an English gloss via `hasGloss`; authentic
+ * quotes are never machine-translated. `accent` maps to the mockup tag colour (navy for
+ * most seats, green for hospital operations).
  */
 export type ChallengerPersonaId = 'coo' | 'cio' | 'cto' | 'ciso' | 'ops' | 'it';
 
@@ -85,6 +85,21 @@ export const CHALLENGER_PERSONAS = [
         role: 'Chief Operation Officer / Stv. CEO',
         org: 'LUKS Luzern',
         reviewDate: '24.07.2026',
+      },
+    ],
+  },
+  {
+    id: 'cio',
+    accent: 'navy',
+    hasGloss: true,
+    reviewers: [
+      {
+        name: 'Emanuel Furler',
+        photo: emanuelFurler,
+        link: 'https://spitalzollikerberg.ch/de/team/emanuel-furler',
+        role: 'CIO, Leiter Informatik · Spitalleitung',
+        org: 'Spital Zollikerberg',
+        reviewDate: '17.07.2026',
       },
     ],
   },
@@ -242,7 +257,6 @@ export type VisionPillId = 'advisory' | 'human' | 'swiss';
 export interface VisionPill {
   id: VisionPillId;
   labelKey: `start.frontier.vision.pills.${VisionPillId}.label`;
-  echoKey: `start.frontier.vision.pills.${VisionPillId}.echo`;
   /** True for the Swiss-residency pill (mockup CH flag prefix). */
   flag: boolean;
 }
@@ -251,19 +265,16 @@ export const VISION_PILLS = [
   {
     id: 'advisory',
     labelKey: 'start.frontier.vision.pills.advisory.label',
-    echoKey: 'start.frontier.vision.pills.advisory.echo',
     flag: false,
   },
   {
     id: 'human',
     labelKey: 'start.frontier.vision.pills.human.label',
-    echoKey: 'start.frontier.vision.pills.human.echo',
     flag: false,
   },
   {
     id: 'swiss',
     labelKey: 'start.frontier.vision.pills.swiss.label',
-    echoKey: 'start.frontier.vision.pills.swiss.echo',
     flag: true,
   },
 ] as const satisfies readonly VisionPill[];

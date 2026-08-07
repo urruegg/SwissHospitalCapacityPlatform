@@ -184,7 +184,8 @@ const useStyles = makeStyles({
 export function ChallengerSection() {
   const styles = useStyles();
   const sc = useShowcaseStyles();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const uiBase = (i18n.language || 'en').split('-')[0];
   const [selected, setSelected] = useState<ChallengerPersonaId>('coo');
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -362,8 +363,17 @@ export function ChallengerSection() {
               </span>
             </div>
           )}
-          <blockquote className={styles.quote}>{t(`${base}.quote`)}</blockquote>
-          {persona.hasGloss && <p className={styles.gloss}>{t(`${base}.gloss`)}</p>}
+          {persona.hasGloss && uiBase !== 'de' ? (
+            <>
+              <blockquote className={styles.quote}>{t(`${base}.gloss`)}</blockquote>
+              <p className={styles.gloss}>{t(`${base}.quote`)}</p>
+            </>
+          ) : (
+            <>
+              <blockquote className={styles.quote}>{t(`${base}.quote`)}</blockquote>
+              {persona.hasGloss && <p className={styles.gloss}>{t(`${base}.gloss`)}</p>}
+            </>
+          )}
           <h4 className={styles.heading}>{t('start.frontier.challenger.headings.addressed')}</h4>
           {list('addressed').map((paragraph, index) => (
             <p key={index} className={styles.para}>

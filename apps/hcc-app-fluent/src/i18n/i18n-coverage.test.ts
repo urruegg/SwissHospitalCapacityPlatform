@@ -17,10 +17,11 @@ function keys(obj: unknown, prefix = ''): string[] {
  * Two governance-documented EN-fallback exceptions are excluded from every
  * locale comparison (they intentionally resolve via i18next `fallbackLng='en'`):
  *
- * 1. Bilingual brand copy in the vision block — the vision/mission statements,
- *    the time-currency line, the three guarantee pills, and the "Curavias"
- *    brand name carry an identical EN|DE value everywhere, so de/fr/it omit
- *    those leaves on purpose (VISION_BILINGUAL).
+ * 1. The "Curavias" brand wordmark — a constant proper noun that is identical
+ *    in every locale, so de/fr/it omit that single leaf on purpose
+ *    (VISION_BILINGUAL). The vision/mission statements, the time-currency line
+ *    and the three guarantee pills are now fully localised per locale and are
+ *    therefore asserted, not exempted.
  * 2. Challenger persona deep-narrative — verbatim dated review-session quotes
  *    and reviewer proper nouns (name/org/meta/quote/gloss/addressed/value/
  *    adapted/evidence) are never translated; only each persona's `tag`/`sub`
@@ -28,18 +29,6 @@ function keys(obj: unknown, prefix = ''): string[] {
  */
 const VISION_BILINGUAL = new Set<string>([
   'start.frontier.vision.brand.name',
-  'start.frontier.vision.vision.primary',
-  'start.frontier.vision.vision.echo',
-  'start.frontier.vision.mission.primary',
-  'start.frontier.vision.mission.echo',
-  'start.frontier.vision.timeCurrency',
-  'start.frontier.vision.timeCurrencyEcho',
-  'start.frontier.vision.pills.advisory.label',
-  'start.frontier.vision.pills.advisory.echo',
-  'start.frontier.vision.pills.human.label',
-  'start.frontier.vision.pills.human.echo',
-  'start.frontier.vision.pills.swiss.label',
-  'start.frontier.vision.pills.swiss.echo',
 ]);
 
 const isChallengerDeepProse = (k: string): boolean =>

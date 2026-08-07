@@ -31,12 +31,12 @@ describe('ChallengerSection', () => {
 
     const tabs = screen.getAllByRole('tab');
     expect(tabs).toHaveLength(CHALLENGER_PERSONAS.length);
-    expect(CHALLENGER_PERSONAS.map((p) => p.id)).toEqual(['coo', 'ops', 'cto', 'ciso', 'it']);
+    expect(CHALLENGER_PERSONAS.map((p) => p.id)).toEqual(['coo', 'cio', 'ops', 'cto', 'ciso', 'it']);
     CHALLENGER_PERSONAS.forEach((persona) => {
       expect(screen.getByTestId(`challenger-tab-${persona.id}`)).toBeInTheDocument();
     });
-    // The dropped CIO seat is retained as reversible data but never rendered as a tab.
-    expect(screen.queryByTestId('challenger-tab-cio')).not.toBeInTheDocument();
+    // The CIO seat (Emanuel Furler) is now rendered as tab #2, matching the updated mockup.
+    expect(screen.getByTestId('challenger-tab-cio')).toBeInTheDocument();
   });
 
   it('shows the COO pane by default with photo, linked name, role chip and review date', () => {
@@ -105,6 +105,51 @@ describe('ChallengerSection', () => {
     expect(within(pane).getByText(/Für eine Bettenplanung/)).toBeInTheDocument();
     expect(within(pane).getByText(/no personal or patient data/i)).toBeInTheDocument();
     expect(screen.queryByTestId('challenger-pane-coo')).not.toBeInTheDocument();
+  });
+
+  it('renders the CIO pane with the linked reviewer and the English gloss as the primary quote under en', () => {
+    renderChallenger();
+
+    fireEvent.click(screen.getByTestId('challenger-tab-cio'));
+
+    const pane = screen.getByTestId('challenger-pane-cio');
+    expect(within(pane).getByAltText('Emanuel Furler')).toBeInTheDocument();
+    const nameLink = within(pane).getByRole('link', { name: 'Emanuel Furler' });
+    expect(nameLink).toHaveAttribute(
+      'href',
+      'https://spitalzollikerberg.ch/de/team/emanuel-furler',
+    );
+    expect(within(pane).getByText('CIO')).toBeInTheDocument();
+    // Selected language (en) is primary: the English gloss sits in the blockquote.
+    expect(
+      within(pane).getByText(/Which operational decisions could be made better today/i, {
+        selector: 'blockquote',
+      }),
+    ).toBeInTheDocument();
+    // The authentic German original is retained verbatim beneath.
+    expect(within(pane).getByText(/Welche operativen Entscheidungen/)).toBeInTheDocument();
+  });
+
+  it('promotes the selected-language quote to the primary blockquote for German-origin seats', async () => {
+    // en: the English gloss is the primary blockquote for the CISO seat.
+    const en = renderChallenger();
+    fireEvent.click(screen.getByTestId('challenger-tab-ciso'));
+    expect(
+      within(screen.getByTestId('challenger-pane-ciso')).getByText(/no personal or patient data/i, {
+        selector: 'blockquote',
+      }),
+    ).toBeInTheDocument();
+    en.unmount();
+
+    // de: the authentic German quote becomes the primary blockquote.
+    await i18n.changeLanguage('de');
+    renderChallenger();
+    fireEvent.click(screen.getByTestId('challenger-tab-ciso'));
+    expect(
+      within(screen.getByTestId('challenger-pane-ciso')).getByText(/Für eine Bettenplanung/, {
+        selector: 'blockquote',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('renders the closing synthetic-tenant disclaimer with a Backstage link', () => {

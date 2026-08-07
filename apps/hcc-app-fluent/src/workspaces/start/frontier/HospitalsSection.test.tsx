@@ -32,9 +32,9 @@ describe('HospitalsSection', () => {
     expect(screen.getByText('Kantonsspital Curalp')).toBeInTheDocument();
     expect(screen.getByText('Spital Vialta')).toBeInTheDocument();
 
-    expect(screen.getByText(/University central hospital/)).toBeInTheDocument();
-    expect(screen.getByText(/Cantonal multi-site group/)).toBeInTheDocument();
-    expect(screen.getByText(/Regional acute/)).toBeInTheDocument();
+    expect(screen.getByText(/University central hospital · Canton Zurich/)).toBeInTheDocument();
+    expect(screen.getByText(/Cantonal multi-site group · Canton Luzern/)).toBeInTheDocument();
+    expect(screen.getByText(/Regional acute.*Canton Zurich/)).toBeInTheDocument();
   });
 
   it('renders four role rows per hospital (bed side, ops side, agents, product owner)', () => {
