@@ -804,6 +804,12 @@
         "title": "The name is the promise: cura + via",
         "body": "Curavias is Latin. cura — care. via — path. Together: \"the care pathway.\" Not a capacity tool that happens to sit in a hospital, but the path a patient takes through it — which is why the tagline is \"Every patient's path, in Swiss hands.\"",
         "eyebrow": "Why Curavias exists",
+        "brand": {
+          "name": "Curavias",
+          "desc": "Swiss Hospital Capacity Copilot",
+          "tag": "Every patient's path, in Swiss hands.",
+          "symbolLabel": "Curavias symbol — a patient's path rising from start, through care, to success"
+        },
         "word": {
           "heading": "The word",
           "label": "Curavias etymology",
@@ -831,6 +837,7 @@
           "heading": "The mark",
           "intro": "The logo is the same idea as one glyph — a three-step patient journey rising to success:",
           "label": "Curavias logo journey",
+          "glyphLabel": "Curavias mark — Start, Care, Success",
           "steps": {
             "start": { "label": "Start", "caption": "entry into care" },
             "care": { "label": "Care", "caption": "the Swiss medical cross" },

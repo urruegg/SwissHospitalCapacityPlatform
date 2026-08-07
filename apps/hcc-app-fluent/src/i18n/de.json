@@ -595,6 +595,11 @@
         "title": "Der Name ist das Versprechen: cura + via",
         "body": "Curavias ist Latein. cura — Sorge. via — Weg. Zusammen: \"der Versorgungspfad.\" Kein Kapazitätswerkzeug, das zufällig in einem Spital steht, sondern der Weg, den ein Patient durch es nimmt — weshalb der Claim lautet \"Jeder Patientenpfad, in Schweizer Hand.\"",
         "eyebrow": "Warum es Curavias gibt",
+        "brand": {
+          "desc": "Schweizer Spitalkapazitäts-Copilot",
+          "tag": "Jeder Patientenpfad, in Schweizer Hand.",
+          "symbolLabel": "Curavias-Zeichen — ein Patientenpfad, der vom Start über die Versorgung zum Erfolg aufsteigt"
+        },
         "word": {
           "heading": "Das Wort",
           "label": "Curavias-Etymologie",
@@ -622,6 +627,7 @@
           "heading": "Das Zeichen",
           "intro": "Das Logo ist dieselbe Idee als ein Glyph — eine dreistufige Patientenreise, die zum Erfolg aufsteigt:",
           "label": "Curavias-Logoreise",
+          "glyphLabel": "Curavias-Zeichen — Start, Care, Success",
           "steps": {
             "start": { "label": "Start", "caption": "Eintritt in die Versorgung" },
             "care": { "label": "Care", "caption": "das Schweizer Medizinkreuz" },

@@ -1,12 +1,45 @@
 import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { SHOWCASE_ACCENT, useShowcaseStyles } from '../../shared/narrative/showcase-styles';
+import { CuraviasMark } from './CuraviasMark';
 import { VISION_MARK_STEPS, VISION_PILLS, VISION_WORD_ROWS } from './start-content';
 
 const useStyles = makeStyles({
   root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL, minWidth: 0 },
+
+  // Brandlock — the mark symbol + wordmark + descriptor + tagline lockup.
+  brandlock: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalL,
+    padding: tokens.spacingHorizontalL,
+    borderRadius: tokens.borderRadiusLarge,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    backgroundColor: tokens.colorNeutralBackground2,
+  },
+  blSym: { width: '64px', height: 'auto', flexShrink: 0 },
+  blWords: { display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 },
+  blName: {
+    fontSize: tokens.fontSizeBase600,
+    fontWeight: tokens.fontWeightBold,
+    lineHeight: 1.1,
+    color: tokens.colorNeutralForeground1,
+  },
+  blDesc: { fontSize: tokens.fontSizeBase300, color: tokens.colorNeutralForeground2 },
+  blTag: { fontSize: tokens.fontSizeBase200, fontStyle: 'italic', color: SHOWCASE_ACCENT.green },
+
   // Etymology term cell (cura / via / curavias) — a proper noun rendered verbatim.
   term: { color: tokens.colorNeutralForeground1, fontWeight: tokens.fontWeightSemibold, fontStyle: 'italic' },
+
+  // Mark visual — the inline glyph beside the accessible step legend.
+  markViz: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalL,
+    margin: `${tokens.spacingVerticalXS} 0`,
+  },
+  markGlyph: { width: '104px', height: 'auto', flexShrink: 0 },
 
   // Logo journey (Start -> Care -> Success).
   markSteps: {
@@ -15,8 +48,11 @@ const useStyles = makeStyles({
     alignItems: 'stretch',
     gap: tokens.spacingHorizontalM,
     listStyleType: 'none',
-    margin: `${tokens.spacingVerticalXS} 0`,
+    margin: 0,
     padding: 0,
+    flexGrow: 1,
+    flexBasis: '200px',
+    minWidth: 0,
   },
   markStep: {
     position: 'relative',
@@ -129,6 +165,15 @@ export function WhyCuraviasSection() {
 
   return (
     <div className={styles.root}>
+      <div className={styles.brandlock} data-testid="vision-brandlock">
+        <CuraviasMark title={t(`${base}.brand.symbolLabel`)} className={styles.blSym} />
+        <div className={styles.blWords}>
+          <span className={styles.blName}>{t(`${base}.brand.name`)}</span>
+          <span className={styles.blDesc}>{t(`${base}.brand.desc`)}</span>
+          <span className={styles.blTag}>{t(`${base}.brand.tag`)}</span>
+        </div>
+      </div>
+
       <div className={sc.split}>
         <div className={sc.staticCard} style={{ borderLeftColor: SHOWCASE_ACCENT.navy }}>
           <h3 className={sc.cardTitle}>{t(`${base}.word.heading`)}</h3>
@@ -155,21 +200,28 @@ export function WhyCuraviasSection() {
         <div className={sc.staticCard} style={{ borderLeftColor: SHOWCASE_ACCENT.green }}>
           <h3 className={sc.cardTitle}>{t(`${base}.mark.heading`)}</h3>
           <p className={sc.cardBody}>{t(`${base}.mark.intro`)}</p>
-          <ol className={styles.markSteps} data-testid="vision-mark" aria-label={t(`${base}.mark.label`)}>
-            {VISION_MARK_STEPS.map((step) => (
-              <li
-                key={step.id}
-                data-testid={`vision-mark-step-${step.id}`}
-                aria-current={step.highlighted ? 'step' : undefined}
-                className={mergeClasses(styles.markStep, step.highlighted && styles.markStepOn)}
-              >
-                <span className={mergeClasses(styles.markStepLabel, step.highlighted && styles.markStepLabelOn)}>
-                  {t(step.labelKey)}
-                </span>
-                <span className={styles.markStepCaption}>{t(step.captionKey)}</span>
-              </li>
-            ))}
-          </ol>
+          <div className={styles.markViz}>
+            <CuraviasMark
+              title={t(`${base}.mark.glyphLabel`)}
+              className={styles.markGlyph}
+              testId="vision-mark-glyph"
+            />
+            <ol className={styles.markSteps} data-testid="vision-mark" aria-label={t(`${base}.mark.label`)}>
+              {VISION_MARK_STEPS.map((step) => (
+                <li
+                  key={step.id}
+                  data-testid={`vision-mark-step-${step.id}`}
+                  aria-current={step.highlighted ? 'step' : undefined}
+                  className={mergeClasses(styles.markStep, step.highlighted && styles.markStepOn)}
+                >
+                  <span className={mergeClasses(styles.markStepLabel, step.highlighted && styles.markStepLabelOn)}>
+                    {t(step.labelKey)}
+                  </span>
+                  <span className={styles.markStepCaption}>{t(step.captionKey)}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
           <p className={sc.note}>{t(`${base}.mark.note`)}</p>
         </div>
       </div>

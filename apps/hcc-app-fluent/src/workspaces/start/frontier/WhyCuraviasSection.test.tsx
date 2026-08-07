@@ -26,6 +26,26 @@ afterEach(async () => {
 });
 
 describe('WhyCuraviasSection', () => {
+  it('renders the Curavias brandlock (mark symbol + wordmark + descriptor + tagline)', () => {
+    renderVision();
+
+    const lock = screen.getByTestId('vision-brandlock');
+    expect(within(lock).getByText('Curavias')).toBeInTheDocument();
+    expect(within(lock).getByText('Swiss Hospital Capacity Copilot')).toBeInTheDocument();
+    expect(within(lock).getByText(/Every patient's path, in Swiss hands\./)).toBeInTheDocument();
+    // The rising-path mark renders inline as an accessible image.
+    expect(within(lock).getByRole('img', { name: /Curavias symbol/i })).toBeInTheDocument();
+  });
+
+  it('renders the Curavias mark glyph inside the mark card', () => {
+    renderVision();
+
+    const glyph = screen.getByTestId('vision-mark-glyph');
+    expect(glyph).toBeInTheDocument();
+    // Accessible name comes from the SVG aria-label.
+    expect(screen.getByRole('img', { name: /Curavias mark/i })).toBeInTheDocument();
+  });
+
   it('renders the cura + via + curavias etymology table (3 rows)', () => {
     renderVision();
 
