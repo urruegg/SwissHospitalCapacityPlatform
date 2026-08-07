@@ -40,7 +40,12 @@
       "bva": "Business case",
       "ninetyDay": "Roadmap di 90 giorni",
       "feedbackLoop": "Ciclo di feedback digitale",
-      "opportunities": "Opportunita"
+      "opportunities": "Opportunita",
+      "successFramework": "Framework di successo",
+      "solutionDesign": "Progettazione della soluzione",
+      "devsecops": "Ciclo DevSecOps",
+      "reviews": "Sessioni di revisione",
+      "poClasses": "Agente Product Owner"
     },
     "story": {
       "tab": "Storia",

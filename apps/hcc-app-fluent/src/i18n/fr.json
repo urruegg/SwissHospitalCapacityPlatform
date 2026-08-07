@@ -40,7 +40,12 @@
       "bva": "Cas d'affaires",
       "ninetyDay": "Feuille de route 90 jours",
       "feedbackLoop": "Boucle de retroaction numerique",
-      "opportunities": "Opportunites"
+      "opportunities": "Opportunites",
+      "successFramework": "Cadre de réussite",
+      "solutionDesign": "Conception de la solution",
+      "devsecops": "Boucle DevSecOps",
+      "reviews": "Sessions de revue",
+      "poClasses": "Agent Product Owner"
     },
     "story": {
       "tab": "Histoire",
