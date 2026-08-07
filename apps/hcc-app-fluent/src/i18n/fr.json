@@ -38,6 +38,7 @@
     "nav": {
       "label": "Sections des coulisses",
       "bva": "Cas d'affaires",
+      "ninetyDay": "Feuille de route 90 jours",
       "feedbackLoop": "Boucle de retroaction numerique",
       "opportunities": "Opportunites"
     },
@@ -50,6 +51,12 @@
         "title": "Nous avons mené une BVA sur nous-mêmes avant d'écrire une ligne de code",
         "accent": "BVA sur nous-mêmes",
         "lead": "Avant d'écrire une ligne de code, Curavias a mené une évaluation de valeur métier sur lui-même — la même discipline qu'il apporte à un hôpital."
+      },
+      "ninetyDay": {
+        "eyebrow": "Coulisses · la première frontière",
+        "title": "Votre première frontière : prévision de capacité en 90 jours",
+        "accent": "90 jours",
+        "lead": "Le chemin reproductible suivi par un nouveau prestataire — des décisions alignées à une prévision gouvernée et en direct."
       },
       "narrative": {
         "success": { "accent": "Success Framework" },

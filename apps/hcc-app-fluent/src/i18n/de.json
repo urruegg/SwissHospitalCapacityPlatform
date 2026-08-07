@@ -38,6 +38,7 @@
     "nav": {
       "label": "Backstage-Bereiche",
       "bva": "Business Case",
+      "ninetyDay": "90-Tage-Roadmap",
       "feedbackLoop": "Digitaler Feedback-Loop",
       "opportunities": "Opportunities"
     },
@@ -50,6 +51,12 @@
         "title": "Wir führten eine BVA über uns selbst durch, bevor wir eine Zeile Code schrieben",
         "accent": "BVA über uns selbst",
         "lead": "Vor der ersten Codezeile führte Curavias ein Business Value Assessment für sich selbst durch — mit derselben Disziplin, die es in ein Spital bringt."
+      },
+      "ninetyDay": {
+        "eyebrow": "Backstage · die erste Frontier",
+        "title": "Ihre erste Frontier: Kapazitätsprognose in 90 Tagen",
+        "accent": "90 Tagen",
+        "lead": "Der wiederholbare Weg für einen neuen Leistungserbringer — von abgestimmten Entscheidungen bis zu einer governanten, live geschalteten Prognose."
       },
       "narrative": {
         "success": { "accent": "Success Framework" },

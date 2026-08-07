@@ -38,6 +38,7 @@
     "nav": {
       "label": "Backstage sections",
       "bva": "Business case",
+      "ninetyDay": "90-day roadmap",
       "feedbackLoop": "Digital Feedback Loop",
       "opportunities": "Opportunities",
       "company": "Company",
@@ -56,6 +57,12 @@
         "title": "We ran a BVA on ourselves before writing a line of code",
         "accent": "BVA on ourselves",
         "lead": "Before a line of code, Curavias ran a business value assessment on itself — the same discipline it brings to a hospital."
+      },
+      "ninetyDay": {
+        "eyebrow": "Backstage · the first frontier",
+        "title": "Your first frontier: capacity forecast in 90 days",
+        "accent": "90 days",
+        "lead": "The repeatable path a new provider follows — from aligned decisions to a governed, live forecast."
       },
       "narrative": {
         "success": { "accent": "Success Framework" },

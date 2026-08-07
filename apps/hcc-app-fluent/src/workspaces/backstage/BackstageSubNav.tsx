@@ -17,6 +17,7 @@ export const BACKSTAGE_PARTS = [
   { key: 'devsecops-loop', labelKey: 'backstage.nav.devsecops' },
   { key: 'review-sessions', labelKey: 'backstage.nav.reviews' },
   { key: 'po-classes', labelKey: 'backstage.nav.poClasses' },
+  { key: 'ninety-day', labelKey: 'backstage.nav.ninetyDay' },
 ] as const;
 
 export const DEFAULT_BACKSTAGE_PART = BACKSTAGE_PARTS[0].key;

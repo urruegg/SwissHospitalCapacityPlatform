@@ -260,7 +260,8 @@ describe('StartView static narrative integration', () => {
     expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Modell');
     expect(screen.getByTestId('start-nav-hospitals')).toHaveTextContent('Organisation');
     expect(screen.getByTestId('start-nav-patient-path')).toHaveTextContent('Versorgungspfad');
-    expect(screen.getByTestId('start-nav-bva')).toHaveTextContent('BVA');
+    // Regression guard: BVA moved to Backstage (changes 1-9) — it must not surface as a Start nav tab.
+    expect(screen.queryByTestId('start-nav-bva')).toBeNull();
     // Regression guard: the German tab strip must not fall back to English labels.
     expect(screen.getByTestId('start-nav-work-chart')).not.toHaveTextContent('Operating model');
   });

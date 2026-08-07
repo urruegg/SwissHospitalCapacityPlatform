@@ -4,7 +4,6 @@ import { SectionHeader, type SectionTitlePart } from '../shared/narrative/Sectio
 import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
 import { ChallengerSection } from './frontier/ChallengerSection';
 import { HospitalsSection } from './frontier/HospitalsSection';
-import { NinetyDaySection } from './frontier/NinetyDaySection';
 import { PatientPathLauncher } from './frontier/PatientPathLauncher';
 import { StartHero } from './frontier/StartHero';
 import { WhyCuraviasSection } from './frontier/WhyCuraviasSection';
@@ -42,10 +41,6 @@ const SECTION_META: Record<
     eyebrowKey: 'start.frontier.patientPath.eyebrow',
     navKey: 'start.frontier.nav.carePath',
     accentKey: 'start.frontier.patientPath.accent',
-  },
-  'ninety-day': {
-    eyebrowKey: 'start.frontier.ninetyDay.eyebrow',
-    navKey: 'start.frontier.nav.ninetyDay',
   },
 };
 
@@ -87,8 +82,6 @@ function sectionBody(id: StartSection['id']) {
       return <HospitalsSection />;
     case 'patient-path':
       return <PatientPathLauncher />;
-    case 'ninety-day':
-      return <NinetyDaySection />;
   }
 }
 

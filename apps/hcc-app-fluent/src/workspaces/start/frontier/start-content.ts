@@ -12,8 +12,7 @@ export type StartSectionId =
   | 'vision'
   | 'work-chart'
   | 'hospitals'
-  | 'patient-path'
-  | 'ninety-day';
+  | 'patient-path';
 
 export type StartSectionKind = 'static' | 'data' | 'launcher';
 
@@ -34,7 +33,6 @@ export const START_SECTIONS = [
   { id: 'work-chart', titleKey: 'start.frontier.workChart.title', kind: 'static' },
   { id: 'hospitals', titleKey: 'start.frontier.hospitals.title', kind: 'static' },
   { id: 'patient-path', titleKey: 'start.frontier.patientPath.title', kind: 'launcher' },
-  { id: 'ninety-day', titleKey: 'start.frontier.ninetyDay.title', kind: 'static' },
 ] as const satisfies readonly StartSection[];
 
 /**

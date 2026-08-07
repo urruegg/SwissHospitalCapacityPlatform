@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { DigitalFeedbackLoopSection } from './tabs/story/feedback-loop/DigitalFeedbackLoopSection';
 import { SolutionDesignSection } from './tabs/story/solution-design/SolutionDesignSection';
 import { BackstageBvaSection } from './tabs/story/moved/BackstageBvaSection';
+import { BackstageNinetyDaySection } from './tabs/story/moved/BackstageNinetyDaySection';
 import {
   SuccessFrameworkSection,
   DevSecOpsLoopSection,
@@ -29,6 +30,7 @@ const RENDERERS: Record<string, () => JSX.Element> = {
   'devsecops-loop': () => <DevSecOpsLoopSection />,
   'review-sessions': () => <ReviewSessionsSection />,
   'po-classes': () => <PoKnowledgeClassesSection />,
+  'ninety-day': () => <BackstageNinetyDaySection />,
 };
 
 export function BackstageView() {
