@@ -37,6 +37,7 @@
     "opportunities": "Opportunità",
     "nav": {
       "label": "Sezioni backstage",
+      "bva": "Business case",
       "feedbackLoop": "Ciclo di feedback digitale",
       "opportunities": "Opportunita"
     },
@@ -44,6 +45,12 @@
       "tab": "Storia",
       "title": "Come è costruito Curavias",
       "lead": "Una vista esecutiva semplice sulle fondamenta della piattaforma dietro la vetrina.",
+      "bva": {
+        "eyebrow": "Backstage · il business case",
+        "title": "Abbiamo condotto una BVA su noi stessi prima di scrivere una riga di codice",
+        "accent": "BVA su noi stessi",
+        "lead": "Prima di una riga di codice, Curavias ha condotto su se stessa una valutazione del valore aziendale — la stessa disciplina che porta in un ospedale."
+      },
       "narrative": {
         "success": { "accent": "Success Framework" },
         "devsecops": { "accent": "built and shipped" },

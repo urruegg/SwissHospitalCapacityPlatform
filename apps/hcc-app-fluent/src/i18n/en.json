@@ -37,6 +37,7 @@
     "opportunities": "Opportunities",
     "nav": {
       "label": "Backstage sections",
+      "bva": "Business case",
       "feedbackLoop": "Digital Feedback Loop",
       "opportunities": "Opportunities",
       "company": "Company",
@@ -50,6 +51,12 @@
       "tab": "Story",
       "title": "How Curavias is built",
       "lead": "A simple executive view of the platform foundations behind the showcase.",
+      "bva": {
+        "eyebrow": "Backstage · the business case",
+        "title": "We ran a BVA on ourselves before writing a line of code",
+        "accent": "BVA on ourselves",
+        "lead": "Before a line of code, Curavias ran a business value assessment on itself — the same discipline it brings to a hospital."
+      },
       "narrative": {
         "success": { "accent": "Success Framework" },
         "devsecops": { "accent": "built and shipped" },

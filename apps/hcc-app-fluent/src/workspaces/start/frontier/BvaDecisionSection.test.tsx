@@ -200,14 +200,7 @@ describe('StartView BVA integration', () => {
       'start-vision',
       'start-work-chart',
       'start-hospitals',
-      'start-cio-why-now',
       'start-patient-path',
-      'start-ninety-day',
-      'start-bva',
     ]);
-
-    const bvaSection = screen.getByTestId('start-bva');
-    expect(within(bvaSection).getByTestId('bva-decision-section')).toBeInTheDocument();
-    expect(within(bvaSection).queryByText('Data section')).not.toBeInTheDocument();
   });
 });

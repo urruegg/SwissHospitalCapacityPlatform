@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
  * additional parts are added here as they land ("more to come").
  */
 export const BACKSTAGE_PARTS = [
+  { key: 'bva', labelKey: 'backstage.nav.bva' },
   { key: 'success-framework', labelKey: 'backstage.nav.successFramework' },
   { key: 'feedback-loop', labelKey: 'backstage.nav.feedbackLoop' },
   { key: 'solution-design', labelKey: 'backstage.nav.solutionDesign' },

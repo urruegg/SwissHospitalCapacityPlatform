@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DigitalFeedbackLoopSection } from './tabs/story/feedback-loop/DigitalFeedbackLoopSection';
 import { SolutionDesignSection } from './tabs/story/solution-design/SolutionDesignSection';
+import { BackstageBvaSection } from './tabs/story/moved/BackstageBvaSection';
 import {
   SuccessFrameworkSection,
   DevSecOpsLoopSection,
@@ -21,6 +22,7 @@ import { BACKSTAGE_PARTS } from './BackstageSubNav';
  * section on mount.
  */
 const RENDERERS: Record<string, () => JSX.Element> = {
+  bva: () => <BackstageBvaSection />,
   'success-framework': () => <SuccessFrameworkSection />,
   'feedback-loop': () => <DigitalFeedbackLoopSection />,
   'solution-design': () => <SolutionDesignSection />,

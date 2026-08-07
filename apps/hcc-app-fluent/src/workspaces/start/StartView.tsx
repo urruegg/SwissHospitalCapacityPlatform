@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { SectionHeader, type SectionTitlePart } from '../shared/narrative/SectionHeader';
 import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
-import { BvaDecisionSection } from './frontier/BvaDecisionSection';
 import { ChallengerSection } from './frontier/ChallengerSection';
 import { HospitalsSection } from './frontier/HospitalsSection';
 import { NinetyDaySection } from './frontier/NinetyDaySection';
@@ -48,7 +47,6 @@ const SECTION_META: Record<
     eyebrowKey: 'start.frontier.ninetyDay.eyebrow',
     navKey: 'start.frontier.nav.ninetyDay',
   },
-  bva: { eyebrowKey: 'start.frontier.bva.eyebrow', navKey: 'start.frontier.nav.bva' },
 };
 
 const useStyles = makeStyles({
@@ -91,8 +89,6 @@ function sectionBody(id: StartSection['id']) {
       return <PatientPathLauncher />;
     case 'ninety-day':
       return <NinetyDaySection />;
-    case 'bva':
-      return <BvaDecisionSection />;
   }
 }
 

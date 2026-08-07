@@ -37,6 +37,7 @@
     "opportunities": "Opportunités",
     "nav": {
       "label": "Sections des coulisses",
+      "bva": "Cas d'affaires",
       "feedbackLoop": "Boucle de retroaction numerique",
       "opportunities": "Opportunites"
     },
@@ -44,6 +45,12 @@
       "tab": "Histoire",
       "title": "Comment Curavias est construit",
       "lead": "Une vue exécutive simple des fondations de plateforme derrière la vitrine.",
+      "bva": {
+        "eyebrow": "Coulisses · le cas d'affaires",
+        "title": "Nous avons mené une BVA sur nous-mêmes avant d'écrire une ligne de code",
+        "accent": "BVA sur nous-mêmes",
+        "lead": "Avant d'écrire une ligne de code, Curavias a mené une évaluation de valeur métier sur lui-même — la même discipline qu'il apporte à un hôpital."
+      },
       "narrative": {
         "success": { "accent": "Success Framework" },
         "devsecops": { "accent": "built and shipped" },
