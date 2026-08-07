@@ -97,4 +97,27 @@ describe('ChallengerSection', () => {
       screen.getByText(/Welche operativen Entscheidungen könnten heute besser/),
     ).toBeInTheDocument();
   });
+
+  it('localises the challenger role tabs in fr and it (never falls back to English)', async () => {
+    await i18n.changeLanguage('fr');
+    const fr = renderChallenger();
+    expect(
+      within(screen.getByTestId('challenger-tab-coo')).getByText(
+        'Analyse de rentabilité & adoption',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByTestId('challenger-tab-ops')).getByText('Exploitation hospitalière'),
+    ).toBeInTheDocument();
+    fr.unmount();
+
+    await i18n.changeLanguage('it');
+    renderChallenger();
+    expect(
+      within(screen.getByTestId('challenger-tab-coo')).getByText('Business case & adozione'),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByTestId('challenger-tab-ops')).getByText('Operazioni ospedaliere'),
+    ).toBeInTheDocument();
+  });
 });

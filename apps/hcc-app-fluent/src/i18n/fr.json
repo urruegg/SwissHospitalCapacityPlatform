@@ -406,12 +406,34 @@
         "label": "Sections de démarrage",
         "overview": "Aperçu",
         "value": "Valeur",
+        "challenger": "Challengers",
         "operatingModel": "Modèle opérationnel",
         "whyNow": "Pourquoi maintenant",
         "hospitals": "Hôpitaux",
         "carePath": "Parcours de soins",
         "ninetyDay": "90 jours",
         "bva": "BVA"
+      },
+      "challenger": {
+        "title": "Six challengers. Six questions auxquelles nous devions survivre.",
+        "body": "Avant que Curavias ne mérite un plan à 90 jours, il a été mis à l'épreuve par les personnes qui devraient le signer, le sécuriser, l'exploiter et vivre avec. Voici leurs vraies questions, issues de sessions de revue datées — comment nous y avons répondu, la valeur que cette réponse apporte et ce qu'elle a changé dans le produit. Choisissez le siège que vous occupez.",
+        "eyebrow": "La salle a réagi · de vraies personnes, de vraies questions",
+        "tablistLabel": "Rôles des challengers",
+        "headings": {
+          "addressed": "Comment nous avons relevé les défis",
+          "value": "Valeur métier délivrée",
+          "adapted": "Ce que nous avons adapté dans le produit"
+        },
+        "disclaimer": "Les mandants hospitaliers du showcase sont synthétiques (CuraNova · Curalp · Vialta) et toutes les données sont synthétiques, sans PHI. Les challengers, leurs rôles et les dates des sessions sont réels, et chaque réponse est traçable jusqu'à un rapport de revue daté — voir",
+        "disclaimerLinkLabel": "le dossier de revue dans Backstage",
+        "personas": {
+          "coo": { "tag": "COO", "sub": "Analyse de rentabilité & adoption" },
+          "cio": { "tag": "CIO", "sub": "Horizon de prévision" },
+          "cto": { "tag": "CTO", "sub": "Souveraineté & réglementation" },
+          "ciso": { "tag": "CISO / NSO", "sub": "Protection des données & clés" },
+          "ops": { "tag": "Exploitation hospitalière", "sub": "Du temps pour les soins" },
+          "it": { "tag": "IT / cantonal", "sub": "Modèle opérationnel cloud" }
+        }
       },
       "workChart": {
         "title": "Comment le travail évolue",

@@ -11,6 +11,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexWrap: 'wrap',
     gap: tokens.spacingHorizontalL,
+    marginTop: tokens.spacingVerticalL,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   tab: {

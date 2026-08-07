@@ -406,12 +406,34 @@
         "label": "Sezioni iniziali",
         "overview": "Panoramica",
         "value": "Valore",
+        "challenger": "Challenger",
         "operatingModel": "Modello operativo",
         "whyNow": "Perché ora",
         "hospitals": "Ospedali",
         "carePath": "Percorso di cura",
         "ninetyDay": "90 giorni",
         "bva": "BVA"
+      },
+      "challenger": {
+        "title": "Sei challenger. Sei domande a cui dovevamo sopravvivere.",
+        "body": "Prima che Curavias meritasse un piano a 90 giorni, è stato messo alla prova dalle persone che avrebbero dovuto firmarlo, proteggerlo, gestirlo e conviverci. Queste sono le loro domande reali, tratte da sessioni di revisione datate — come le abbiamo affrontate, il valore che quella risposta offre e cosa ha cambiato nel prodotto. Scegli il posto che occupi.",
+        "eyebrow": "La sala ha reagito · persone reali, domande reali",
+        "tablistLabel": "Ruoli dei challenger",
+        "headings": {
+          "addressed": "Come abbiamo affrontato le sfide",
+          "value": "Valore aziendale fornito",
+          "adapted": "Cosa abbiamo adattato nel prodotto"
+        },
+        "disclaimer": "I mandanti ospedalieri nello showcase sono sintetici (CuraNova · Curalp · Vialta) e tutti i dati sono sintetici, senza PHI. I challenger, i loro ruoli e le date delle sessioni sono reali, e ogni risposta è tracciabile fino a un rapporto di revisione datato — vedi",
+        "disclaimerLinkLabel": "il verbale di revisione in Backstage",
+        "personas": {
+          "coo": { "tag": "COO", "sub": "Business case & adozione" },
+          "cio": { "tag": "CIO", "sub": "Orizzonte di previsione" },
+          "cto": { "tag": "CTO", "sub": "Sovranità e regolamentazione" },
+          "ciso": { "tag": "CISO / NSO", "sub": "Protezione dei dati e chiavi" },
+          "ops": { "tag": "Operazioni ospedaliere", "sub": "Tempo per la cura del paziente" },
+          "it": { "tag": "IT / cantonale", "sub": "Modello operativo cloud" }
+        }
       },
       "workChart": {
         "title": "Come cambia il lavoro",
