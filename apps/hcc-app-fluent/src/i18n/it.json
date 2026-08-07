@@ -433,9 +433,25 @@
         "ctaBackstage": "Guarda com'è stato costruito"
       },
       "challenger": {
-        "title": "Sei challenger. Sei domande a cui dovevamo sopravvivere.",
-        "body": "Prima che Curavias meritasse un piano a 90 giorni, è stato messo alla prova dalle persone che avrebbero dovuto firmarlo, proteggerlo, gestirlo e conviverci. Queste sono le loro domande reali, tratte da sessioni di revisione datate — come le abbiamo affrontate, il valore che quella risposta offre e cosa ha cambiato nel prodotto. Scegli il posto che occupi.",
-        "eyebrow": "La sala ha reagito · persone reali, domande reali",
+        "title": "Ciò che ci avete detto — e cosa ne abbiamo fatto.",
+        "body": "Non siamo partiti da un'idea di prodotto. Siamo partiti dalle sfide che voi e i vostri colleghi ci avete posto — per poi metterle alla prova delle persone che avrebbero dovuto firmare, mettere in sicurezza, gestire e convivere con il risultato. Cinque ruoli, cinque sessioni reali. Ogni posto qui sotto mostra la domanda così come è stata posta, come l'abbiamo affrontata, il valore che offre e cosa ha cambiato nel prodotto.",
+        "eyebrow": "Ciò che abbiamo sentito · persone reali, sessioni reali",
+        "reviewBy": "Revisione del",
+        "pickSeat": "Scegli il posto in cui ti siedi.",
+        "patterns": [
+          {
+            "title": "La tecnologia non è mai stata l'obiezione.",
+            "desc": "Lo erano la qualità dei dati, l'adozione e la governance — in ogni sessione."
+          },
+          {
+            "title": "«Nessun dato del paziente» rispondeva alla maggior parte.",
+            "desc": "Senza PHI, gli argomenti legali, cantonali e di sicurezza si dissolvono in gran parte."
+          },
+          {
+            "title": "L'essere umano deve mantenere il controllo.",
+            "desc": "Ogni ruolo è arrivato indipendentemente al solo consultivo, con un controllo umano."
+          }
+        ],
         "tablistLabel": "Ruoli dei challenger",
         "headings": {
           "addressed": "Come abbiamo affrontato le sfide",

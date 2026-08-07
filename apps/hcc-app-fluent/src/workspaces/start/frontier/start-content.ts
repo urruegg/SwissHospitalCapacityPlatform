@@ -1,3 +1,11 @@
+import rebekkaHatzung from '../../../assets/reviewers/rebekka-hatzung.jpg';
+import christianErnst from '../../../assets/reviewers/christian-ernst.jpg';
+import regulaAdams from '../../../assets/reviewers/regula-adams.jpg';
+import marcoRossi from '../../../assets/reviewers/marco-rossi.jpg';
+import reneRaeber from '../../../assets/reviewers/rene-raeber.jpg';
+import danielVonBueren from '../../../assets/reviewers/daniel-von-bueren.jpg';
+import petrusJallo from '../../../assets/reviewers/petrus-jallo.jpg';
+
 export type StartSectionId =
   | 'hero'
   | 'challenger'
@@ -31,28 +39,133 @@ export const START_SECTIONS = [
 
 /**
  * Sprint 40 START polish — the mockup's "The room pushed back" challenger roster.
- * Six real, dated, attributed review-session challengers, each a tab in the section.
- * All copy is i18n-keyed under `start.frontier.challenger.personas.<id>.*`. The two
- * German-origin quotes (CIO Furler, CISO von Buren) carry an English gloss via
- * `hasGloss`; the authentic quotes are kept verbatim and are never machine-translated.
- * `accent` maps to the mockup tag colour (navy for most, green for hospital operations).
+ * Five real, dated review-session seats — COO, Hospital Operations (three reviewers),
+ * CTO, CISO and IT / Cantonal — each a tab in the section. Persona chrome (tag, sub) is
+ * i18n-keyed under `start.frontier.challenger.personas.<id>.*`; the reviewer facts (name,
+ * external profile link, role title, org, review date and photo) are factual proper nouns
+ * carried here so the four locales stay in sync automatically. The German-origin CISO quote
+ * (von Bueren) carries an English gloss via `hasGloss`; authentic quotes are never
+ * machine-translated. `accent` maps to the mockup tag colour (navy for most seats, green
+ * for hospital operations). The `cio` id is retained in the union as reversible data (its
+ * forecast-horizon point folded into operations) but is not rendered as a standalone tab.
  */
 export type ChallengerPersonaId = 'coo' | 'cio' | 'cto' | 'ciso' | 'ops' | 'it';
+
+/** A real, attributed review-session participant behind a challenger seat. */
+export interface ChallengerReviewer {
+  name: string;
+  /** Bundled avatar asset (Vite resolves the import to a URL string). */
+  photo: string;
+  /** External professional profile the name links out to. */
+  link: string;
+  /** Job title as shown in the review record (proper noun, not translated). */
+  role: string;
+  org: string;
+  /** Review date in DD.MM.YYYY form, as recorded in the dated session. */
+  reviewDate: string;
+}
 
 export interface ChallengerPersona {
   id: ChallengerPersonaId;
   accent: 'navy' | 'green';
   /** True when the quote is German-origin and carries a separate English gloss. */
   hasGloss: boolean;
+  /** One or more attributed reviewers (operations bundles three). */
+  reviewers: readonly ChallengerReviewer[];
 }
 
 export const CHALLENGER_PERSONAS = [
-  { id: 'coo', accent: 'navy', hasGloss: false },
-  { id: 'cio', accent: 'navy', hasGloss: true },
-  { id: 'cto', accent: 'navy', hasGloss: false },
-  { id: 'ciso', accent: 'navy', hasGloss: true },
-  { id: 'ops', accent: 'green', hasGloss: false },
-  { id: 'it', accent: 'navy', hasGloss: false },
+  {
+    id: 'coo',
+    accent: 'navy',
+    hasGloss: false,
+    reviewers: [
+      {
+        name: 'Rebekka Hatzung',
+        photo: rebekkaHatzung,
+        link: 'https://www.luks.ch/spezialisten/rebekka-hatzung',
+        role: 'Chief Operation Officer / Stv. CEO',
+        org: 'LUKS Luzern',
+        reviewDate: '24.07.2026',
+      },
+    ],
+  },
+  {
+    id: 'ops',
+    accent: 'green',
+    hasGloss: false,
+    reviewers: [
+      {
+        name: 'Christian Ernst',
+        photo: christianErnst,
+        link: 'https://spitalzollikerberg.ch/de/team/christian-ernst',
+        role: 'Leiter Departement Notfall- und Akutmedizin · Spitalleitung',
+        org: 'Spital Zollikerberg',
+        reviewDate: '17.07.2026',
+      },
+      {
+        name: 'Dr. Regula Adams',
+        photo: regulaAdams,
+        link: 'https://spitalzollikerberg.ch/de/team/regula-adams',
+        role: 'Fachverantwortliche Organisationsentwicklung',
+        org: 'Spital Zollikerberg',
+        reviewDate: '17.07.2026',
+      },
+      {
+        name: 'Dr. med. Marco Rossi',
+        photo: marcoRossi,
+        link: 'https://www.luks.ch/newsroom/dr-med-marco-rossi-die-meisten-menschen-erholen-sich-wieder',
+        role: 'Infektiologe und ehem. Chefarzt',
+        org: 'LUKS Luzern',
+        reviewDate: '17.07.2026',
+      },
+    ],
+  },
+  {
+    id: 'cto',
+    accent: 'navy',
+    hasGloss: false,
+    reviewers: [
+      {
+        name: 'René Raeber',
+        photo: reneRaeber,
+        link: 'https://www.linkedin.com/in/rraeber/',
+        role: 'CTO',
+        org: 'Microsoft Switzerland',
+        reviewDate: '09.06.2026',
+      },
+    ],
+  },
+  {
+    id: 'ciso',
+    accent: 'navy',
+    hasGloss: true,
+    reviewers: [
+      {
+        name: 'Daniel von Büren',
+        photo: danielVonBueren,
+        link: 'https://www.linkedin.com/in/dvonbueren/',
+        role: 'Swiss Security Officer & Solution Engineer',
+        org: 'Microsoft Switzerland',
+        reviewDate: '10.06.2026',
+      },
+    ],
+  },
+  {
+    id: 'it',
+    accent: 'navy',
+    hasGloss: false,
+    reviewers: [
+      {
+        name: 'Petrus Jallo',
+        photo: petrusJallo,
+        link: 'https://www.linkedin.com/in/petrus-jallo/',
+        role: 'Cloud Solution Architect & Microsoft Technology Advisor',
+        org: 'Canton Aargau',
+        reviewDate: '08.06.2026',
+      },
+    ],
+  },
 ] as const satisfies readonly ChallengerPersona[];
 
 /**

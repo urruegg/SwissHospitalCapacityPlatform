@@ -31,24 +31,29 @@ describe('ChallengerSection', () => {
 
     const tabs = screen.getAllByRole('tab');
     expect(tabs).toHaveLength(CHALLENGER_PERSONAS.length);
-    expect(CHALLENGER_PERSONAS.map((p) => p.id)).toEqual([
-      'coo',
-      'cio',
-      'cto',
-      'ciso',
-      'ops',
-      'it',
-    ]);
+    expect(CHALLENGER_PERSONAS.map((p) => p.id)).toEqual(['coo', 'ops', 'cto', 'ciso', 'it']);
     CHALLENGER_PERSONAS.forEach((persona) => {
       expect(screen.getByTestId(`challenger-tab-${persona.id}`)).toBeInTheDocument();
     });
+    // The dropped CIO seat is retained as reversible data but never rendered as a tab.
+    expect(screen.queryByTestId('challenger-tab-cio')).not.toBeInTheDocument();
   });
 
-  it('shows the COO pane by default with quote, addressed, value and adapted content', () => {
+  it('shows the COO pane by default with photo, linked name, role chip and review date', () => {
     renderChallenger();
 
     const pane = screen.getByTestId('challenger-pane-coo');
-    expect(within(pane).getByText(/Rebekka Hatzung/)).toBeInTheDocument();
+    // Avatar photo carries the reviewer name as alt text (a11y).
+    expect(within(pane).getByAltText('Rebekka Hatzung')).toBeInTheDocument();
+    // Name links out to the real professional profile in a new tab.
+    const nameLink = within(pane).getByRole('link', { name: 'Rebekka Hatzung' });
+    expect(nameLink).toHaveAttribute('href', 'https://www.luks.ch/spezialisten/rebekka-hatzung');
+    expect(nameLink).toHaveAttribute('target', '_blank');
+    expect(nameLink).toHaveAttribute('rel', expect.stringContaining('noopener'));
+    // Role chip + dated review provenance.
+    expect(within(pane).getByText('COO')).toBeInTheDocument();
+    expect(within(pane).getByText(/Review by 24\.07\.2026/)).toBeInTheDocument();
+
     expect(within(pane).getByText(/business case is plausible/i)).toBeInTheDocument();
     expect(within(pane).getByText('How we addressed the challenges')).toBeInTheDocument();
     expect(within(pane).getByText('Business value delivered')).toBeInTheDocument();
@@ -58,13 +63,44 @@ describe('ChallengerSection', () => {
     expect(screen.queryByTestId('challenger-pane-ciso')).not.toBeInTheDocument();
   });
 
+  it('renders the three Hospital Operations reviewers as a linked people grid', () => {
+    renderChallenger();
+
+    fireEvent.click(screen.getByTestId('challenger-tab-ops'));
+
+    const pane = screen.getByTestId('challenger-pane-ops');
+    // Green "Hospital Operations" chip + shared review date.
+    expect(within(pane).getByText('Hospital Operations')).toBeInTheDocument();
+    expect(within(pane).getByText(/Review by 17\.07\.2026/)).toBeInTheDocument();
+    // Three overlapping avatars, one per reviewer.
+    expect(within(pane).getAllByRole('img')).toHaveLength(3);
+    // Each reviewer name links out to their real profile.
+    expect(within(pane).getByRole('link', { name: 'Christian Ernst' })).toHaveAttribute(
+      'href',
+      'https://spitalzollikerberg.ch/de/team/christian-ernst',
+    );
+    expect(within(pane).getByRole('link', { name: 'Dr. Regula Adams' })).toBeInTheDocument();
+    expect(within(pane).getByRole('link', { name: 'Dr. med. Marco Rossi' })).toBeInTheDocument();
+  });
+
+  it('renders the three challenger insight patterns and the pick-a-seat cue', () => {
+    renderChallenger();
+
+    const section = screen.getByTestId('challenger-patterns');
+    expect(within(section).getByText(/technology was never the objection/i)).toBeInTheDocument();
+    expect(within(section).getByText(/no patient data/i)).toBeInTheDocument();
+    expect(within(section).getByText(/human must stay in charge/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pick the seat you sit in/i)).toBeInTheDocument();
+  });
+
   it('switches to another persona pane on tab select and keeps the quote verbatim', () => {
     renderChallenger();
 
     fireEvent.click(screen.getByTestId('challenger-tab-ciso'));
 
     const pane = screen.getByTestId('challenger-pane-ciso');
-    expect(within(pane).getByText(/Daniel von B/)).toBeInTheDocument();
+    expect(within(pane).getByAltText('Daniel von Büren')).toBeInTheDocument();
+    expect(within(pane).getByRole('link', { name: 'Daniel von Büren' })).toBeInTheDocument();
     // German-origin quote stays verbatim (with its English gloss beneath).
     expect(within(pane).getByText(/Für eine Bettenplanung/)).toBeInTheDocument();
     expect(within(pane).getByText(/no personal or patient data/i)).toBeInTheDocument();
@@ -91,11 +127,9 @@ describe('ChallengerSection', () => {
     expect(within(pane).getByText('Gelieferter Geschäftswert')).toBeInTheDocument();
     expect(within(pane).getByText('Was wir am Produkt angepasst haben')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('challenger-tab-cio'));
+    fireEvent.click(screen.getByTestId('challenger-tab-ciso'));
     // Real attributed German quote is never machine-translated.
-    expect(
-      screen.getByText(/Welche operativen Entscheidungen könnten heute besser/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Für eine Bettenplanung/)).toBeInTheDocument();
   });
 
   it('localises the challenger role tabs in fr and it (never falls back to English)', async () => {

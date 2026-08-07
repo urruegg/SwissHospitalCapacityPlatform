@@ -611,9 +611,25 @@
         "ctaBackstage": "See how it was built"
       },
       "challenger": {
-        "title": "Six challengers. Six questions we had to survive.",
-        "body": "Before Curavias earned a 90-day plan, it was challenged by the people who would have to sign it, secure it, run it and live with it. These are their actual questions from dated review sessions — how we addressed them, the value that answer delivers, and what it changed in the product. Pick the seat you sit in.",
-        "eyebrow": "The room pushed back · real people, real questions",
+        "title": "What you told us — and what we did about it.",
+        "body": "We did not start from a product idea. We started from the challenges you and your peers put in front of us — then had them stress-tested by the people who would have to sign, secure, run and live with the result. Five roles, five real sessions. Each seat below shows the question as it was asked, how we addressed it, the value it delivers, and what it changed in the product.",
+        "eyebrow": "What we heard · real people, real sessions",
+        "reviewBy": "Review by",
+        "pickSeat": "Pick the seat you sit in.",
+        "patterns": [
+          {
+            "title": "The technology was never the objection.",
+            "desc": "Data quality, adoption and governance were — in every single session."
+          },
+          {
+            "title": "\"No patient data\" answered most of it.",
+            "desc": "Remove PHI and the legal, cantonal and security arguments largely dissolve."
+          },
+          {
+            "title": "The human must stay in charge.",
+            "desc": "Every role independently landed on advisory-only with a human gate."
+          }
+        ],
         "tablistLabel": "Challenger personas",
         "headings": {
           "addressed": "How we addressed the challenges",

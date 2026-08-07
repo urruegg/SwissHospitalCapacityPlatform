@@ -555,9 +555,25 @@
         "ctaBackstage": "So wurde es gebaut"
       },
       "challenger": {
-        "title": "Sechs Herausforderer. Sechs Fragen, die wir überstehen mussten.",
-        "body": "Bevor Curavias einen 90-Tage-Plan verdient hatte, wurde es von den Menschen herausgefordert, die ihn unterschreiben, absichern, betreiben und mit ihm leben müssten. Dies sind ihre tatsächlichen Fragen aus datierten Review-Sessions — wie wir sie beantwortet haben, welchen Wert die Antwort liefert und was sie am Produkt verändert hat. Wählen Sie den Platz, auf dem Sie sitzen.",
-        "eyebrow": "Der Raum hat widersprochen · echte Menschen, echte Fragen",
+        "title": "Was Sie uns gesagt haben — und was wir daraus gemacht haben.",
+        "body": "Wir sind nicht von einer Produktidee ausgegangen. Wir sind von den Herausforderungen ausgegangen, die Sie und Ihre Kolleginnen und Kollegen uns gestellt haben — und haben sie von genau den Menschen auf die Probe stellen lassen, die das Ergebnis unterschreiben, absichern, betreiben und damit leben müssten. Fünf Rollen, fünf echte Sessions. Jeder Sitz unten zeigt die Frage, wie sie gestellt wurde, wie wir sie angegangen sind, den gelieferten Wert und was sich am Produkt geändert hat.",
+        "eyebrow": "Was wir gehört haben · echte Menschen, echte Sessions",
+        "reviewBy": "Geprüft am",
+        "pickSeat": "Wählen Sie den Sitz, auf dem Sie sitzen.",
+        "patterns": [
+          {
+            "title": "Die Technologie war nie der Einwand.",
+            "desc": "Datenqualität, Akzeptanz und Governance waren es — in jeder einzelnen Session."
+          },
+          {
+            "title": "\"Keine Patientendaten\" hat das meiste beantwortet.",
+            "desc": "Ohne PHI lösen sich die rechtlichen, kantonalen und sicherheitsbezogenen Argumente weitgehend auf."
+          },
+          {
+            "title": "Der Mensch muss die Kontrolle behalten.",
+            "desc": "Jede Rolle kam unabhängig auf beratend-only mit einem menschlichen Freigabeschritt."
+          }
+        ],
         "tablistLabel": "Herausforderer-Rollen",
         "headings": {
           "addressed": "Wie wir die Herausforderungen angegangen sind",

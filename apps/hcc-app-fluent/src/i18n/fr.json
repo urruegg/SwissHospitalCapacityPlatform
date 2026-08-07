@@ -433,9 +433,25 @@
         "ctaBackstage": "Voir comment cela a été construit"
       },
       "challenger": {
-        "title": "Six challengers. Six questions auxquelles nous devions survivre.",
-        "body": "Avant que Curavias ne mérite un plan à 90 jours, il a été mis à l'épreuve par les personnes qui devraient le signer, le sécuriser, l'exploiter et vivre avec. Voici leurs vraies questions, issues de sessions de revue datées — comment nous y avons répondu, la valeur que cette réponse apporte et ce qu'elle a changé dans le produit. Choisissez le siège que vous occupez.",
-        "eyebrow": "La salle a réagi · de vraies personnes, de vraies questions",
+        "title": "Ce que vous nous avez dit — et ce que nous en avons fait.",
+        "body": "Nous ne sommes pas partis d'une idée de produit. Nous sommes partis des défis que vous et vos pairs nous avez soumis — puis les avons soumis à l'épreuve des personnes qui devraient signer, sécuriser, exploiter et vivre avec le résultat. Cinq rôles, cinq sessions réelles. Chaque siège ci-dessous montre la question telle qu'elle a été posée, comment nous l'avons traitée, la valeur qu'elle apporte et ce qu'elle a changé dans le produit.",
+        "eyebrow": "Ce que nous avons entendu · de vraies personnes, de vraies sessions",
+        "reviewBy": "Revu le",
+        "pickSeat": "Choisissez le siège qui est le vôtre.",
+        "patterns": [
+          {
+            "title": "La technologie n'a jamais été l'objection.",
+            "desc": "La qualité des données, l'adoption et la gouvernance l'étaient — à chaque session."
+          },
+          {
+            "title": "« Aucune donnée patient » répondait à l'essentiel.",
+            "desc": "Sans PHI, les arguments juridiques, cantonaux et de sécurité disparaissent en grande partie."
+          },
+          {
+            "title": "L'humain doit garder le contrôle.",
+            "desc": "Chaque rôle a indépendamment abouti au conseil uniquement, avec un contrôle humain."
+          }
+        ],
         "tablistLabel": "Rôles des challengers",
         "headings": {
           "addressed": "Comment nous avons relevé les défis",
