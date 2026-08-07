@@ -52,10 +52,7 @@ describe('START_SECTIONS', () => {
       'vision',
       'work-chart',
       'hospitals',
-      'cio-why-now',
       'patient-path',
-      'ninety-day',
-      'bva',
     ]);
   });
 

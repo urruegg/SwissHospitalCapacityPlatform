@@ -4,7 +4,6 @@ import { SectionHeader, type SectionTitlePart } from '../shared/narrative/Sectio
 import { NarrativeShell, type NarrativeSection } from '../shared/narrative/NarrativeShell';
 import { BvaDecisionSection } from './frontier/BvaDecisionSection';
 import { ChallengerSection } from './frontier/ChallengerSection';
-import { CioChallengerSection } from './frontier/CioChallengerSection';
 import { HospitalsSection } from './frontier/HospitalsSection';
 import { NinetyDaySection } from './frontier/NinetyDaySection';
 import { PatientPathLauncher } from './frontier/PatientPathLauncher';
@@ -39,10 +38,6 @@ const SECTION_META: Record<
     eyebrowKey: 'start.frontier.hospitals.eyebrow',
     navKey: 'start.frontier.nav.hospitals',
     accentKey: 'start.frontier.hospitals.accent',
-  },
-  'cio-why-now': {
-    eyebrowKey: 'start.frontier.cioWhyNow.eyebrow',
-    navKey: 'start.frontier.nav.whyNow',
   },
   'patient-path': {
     eyebrowKey: 'start.frontier.patientPath.eyebrow',
@@ -92,8 +87,6 @@ function sectionBody(id: StartSection['id']) {
     case 'hospitals':
       // Sprint 40 — "Organisation": the three Swiss hospital archetypes + agent roster.
       return <HospitalsSection />;
-    case 'cio-why-now':
-      return <CioChallengerSection />;
     case 'patient-path':
       return <PatientPathLauncher />;
     case 'ninety-day':

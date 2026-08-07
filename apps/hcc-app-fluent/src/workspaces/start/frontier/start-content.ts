@@ -12,7 +12,6 @@ export type StartSectionId =
   | 'vision'
   | 'work-chart'
   | 'hospitals'
-  | 'cio-why-now'
   | 'patient-path'
   | 'ninety-day'
   | 'bva';
@@ -35,7 +34,6 @@ export const START_SECTIONS = [
   // roster. Each has its own eyebrow (Model / Organisation) and key-visual separator.
   { id: 'work-chart', titleKey: 'start.frontier.workChart.title', kind: 'static' },
   { id: 'hospitals', titleKey: 'start.frontier.hospitals.title', kind: 'static' },
-  { id: 'cio-why-now', titleKey: 'start.frontier.cioWhyNow.title', kind: 'static' },
   { id: 'patient-path', titleKey: 'start.frontier.patientPath.title', kind: 'launcher' },
   { id: 'ninety-day', titleKey: 'start.frontier.ninetyDay.title', kind: 'static' },
   { id: 'bva', titleKey: 'start.frontier.bva.title', kind: 'data' },

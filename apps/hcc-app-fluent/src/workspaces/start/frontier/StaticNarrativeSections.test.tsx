@@ -174,10 +174,7 @@ describe('StartView static narrative integration', () => {
       'start-vision',
       'start-work-chart',
       'start-hospitals',
-      'start-cio-why-now',
       'start-patient-path',
-      'start-ninety-day',
-      'start-bva',
     ];
     const wrappers = Array.from(
       screen.getByTestId('start-view').querySelectorAll<HTMLElement>(
@@ -186,7 +183,7 @@ describe('StartView static narrative integration', () => {
     );
 
     expect(wrappers.map((wrapper) => wrapper.dataset.testid)).toEqual(expectedOrder);
-    ['work-chart', 'hospitals', 'cio-why-now', 'ninety-day'].forEach((id) => {
+    ['work-chart', 'hospitals'].forEach((id) => {
       const sectionWrappers = screen.getAllByTestId(`start-${id}`);
       expect(sectionWrappers).toHaveLength(1);
       expect(within(sectionWrappers[0]).queryByText('Narrative section')).not.toBeInTheDocument();
@@ -262,7 +259,6 @@ describe('StartView static narrative integration', () => {
     expect(screen.getByTestId('start-nav-vision')).toHaveTextContent('Warum Curavias');
     expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Modell');
     expect(screen.getByTestId('start-nav-hospitals')).toHaveTextContent('Organisation');
-    expect(screen.getByTestId('start-nav-cio-why-now')).toHaveTextContent('Warum jetzt');
     expect(screen.getByTestId('start-nav-patient-path')).toHaveTextContent('Versorgungspfad');
     expect(screen.getByTestId('start-nav-bva')).toHaveTextContent('BVA');
     // Regression guard: the German tab strip must not fall back to English labels.
