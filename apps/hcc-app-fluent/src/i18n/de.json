@@ -135,27 +135,42 @@
           "care-ecosystem": {
             "curavias": "Versorgungsnetz einbinden",
             "microsoft": "Kunden einbinden",
-            "group": "Versorgungsökosystem"
+            "group": "Versorgungsökosystem",
+            "signalText": "Zuweisungsbedarf · Partnerkapazität · Erfahrungsrückmeldungen",
+            "actionText": "Platzierung koordinieren · nächste Versorgungsstufe anbinden",
+            "loopBack": "Kontinuität, Zugang und Erfahrung werden zu neuen Nachweisen"
           },
           "command-center": {
             "curavias": "Patientenfluss optimieren",
             "microsoft": "Abläufe optimieren",
-            "group": "Command Center"
+            "group": "Command Center",
+            "signalText": "Belegung · 72-Stunden-Bedarf · Notfallzugänge · geprüfte Gefahren",
+            "actionText": "Betten neu ausbalancieren · Szenario vorbereiten · Austritt koordinieren",
+            "loopBack": "Wartezeit, Auslastung und vermiedene Verzögerung speisen die Schleife"
           },
           "frontier-workforce": {
             "curavias": "Pflegeteams befähigen",
             "microsoft": "Mitarbeitende befähigen",
-            "group": "Frontier Workforce"
+            "group": "Frontier Workforce",
+            "signalText": "Personalbesetzung · Arbeitslast · Kompetenzen · Zertifizierungen",
+            "actionText": "Dienstplan ausbalancieren · qualifizierte Kapazität mobilisieren",
+            "loopBack": "Arbeitslast, Akzeptanz und Entscheidungsfeedback verfeinern die Unterstützung"
           },
           "care-innovation": {
             "curavias": "Versorgung weiterentwickeln",
             "microsoft": "Produkte transformieren",
-            "group": "Versorgungsinnovation"
+            "group": "Versorgungsinnovation",
+            "signalText": "Ergebnisse · Pfadlücken · Agenten- und Service-Telemetrie",
+            "actionText": "Versorgungspfad · Wissen · Agentenführung verbessern",
+            "loopBack": "Qualitäts- und Akzeptanzmessungen starten den nächsten Zyklus"
           }
         },
         "iqCore": {
           "caption": "Microsoft-IQ-Kern",
-          "title": "Work + Foundry + Fabric + Process + Governance IQ"
+          "title": "Work + Foundry + Fabric + Process + Governance IQ",
+          "name": "Microsoft IQ",
+          "sub": "Daten · Wissen · Kontext · Entscheidungen",
+          "hitl": "Menschliche Freigabe vor jeder Aktion"
         },
         "iq": {
           "work": "Work IQ",
@@ -208,6 +223,30 @@
         "empty": {
           "title": "Digitaler Rückkopplungskreis nicht verfügbar",
           "body": "Für diese Ansicht sind keine Feedback-Loop-Domänen konfiguriert."
+        },
+        "section": {
+          "header": "Vertrauenswürdige Signale werden über Microsoft IQ zu gesteuerter Aktion",
+          "tagline": "Backstage · Der digitale Rückkopplungskreis",
+          "description": "Jede Domäne sendet Signale an Microsoft IQ, erhält eine vorgeschlagene Aktion zurück und liefert ein gemessenes Ergebnis – wobei ein Mensch freigibt, bevor etwas ausgeführt wird. Wählen Sie eine Domäne, um den Product-Owner-Agent nach begründeten, belegten Details zu fragen."
+        },
+        "journey": {
+          "dataPoints": "Datenpunkte",
+          "iq": "Microsoft IQ",
+          "actionPacket": "Aktionspaket",
+          "approval": "Menschliche Freigabe",
+          "outcome": "Gemessenes Ergebnis"
+        },
+        "note": {
+          "label": "Animationsverhalten:",
+          "body": "Cyanfarbene Kreise sind eingehende Signalbeobachtungen; das grüne Paket ist eine vorgeschlagene Aktion, die Microsoft IQ verlässt; der bernsteinfarbene Punkt liefert das gemessene Ergebnis zurück. Die Bewegung stoppt, wenn Sie pausieren oder reduzierte Bewegung anfordern."
+        },
+        "poAgent": {
+          "phase": {
+            "signal": "Signalpakete treffen ein",
+            "iq": "Microsoft IQ ordnet ein",
+            "action": "Aktion kommt zurück",
+            "outcome": "Ergebnis schliesst die Schleife"
+          }
         }
       },
       "roster": {

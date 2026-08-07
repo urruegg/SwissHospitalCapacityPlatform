@@ -432,6 +432,7 @@
         "overview": "Aperçu",
         "value": "Valeur",
         "challenger": "Challengers",
+        "vision": "Pourquoi Curavias",
         "operatingModel": "Modèle",
         "whyNow": "Pourquoi maintenant",
         "hospitals": "Organisation",
@@ -496,7 +497,67 @@
         }
       },
       "vision": {
-        "accent": "cura + via"
+        "title": "Le nom est la promesse : cura + via",
+        "accent": "cura + via",
+        "body": "Curavias vient du latin. cura — le soin. via — le chemin. Ensemble : « le parcours de soins ». Non pas un outil de capacité posé par hasard dans un hôpital, mais le chemin qu'un patient y parcourt — d'où la signature « Chaque parcours patient, en mains suisses. »",
+        "eyebrow": "Pourquoi Curavias existe",
+        "brand": {
+          "desc": "Copilote de capacité hospitalière suisse",
+          "tag": "Chaque parcours patient, en mains suisses.",
+          "symbolLabel": "Symbole Curavias — un parcours patient qui s'élève du départ, à travers le soin, jusqu'au succès"
+        },
+        "word": {
+          "heading": "Le mot",
+          "label": "Étymologie de Curavias",
+          "columns": {
+            "latin": "Latin",
+            "meaning": "Signification",
+            "product": "Dans le produit"
+          },
+          "rows": {
+            "cura": {
+              "meaning": "soin, sollicitude, guérison",
+              "product": "Le résultat clinique pour lequel nous existons"
+            },
+            "via": {
+              "meaning": "chemin, voie, route",
+              "product": "Le trajet à travers lits, bloc, personnel et sortie"
+            },
+            "curavias": {
+              "meaning": "le parcours de soins",
+              "product": "Les deux à la fois — le soin le long d'un chemin"
+            }
+          }
+        },
+        "mark": {
+          "heading": "Le signe",
+          "intro": "Le logo est la même idée en un seul glyphe — un parcours patient en trois étapes qui s'élève vers le succès :",
+          "label": "Parcours du logo Curavias",
+          "glyphLabel": "Signe Curavias — Start, Care, Success",
+          "steps": {
+            "start": {
+              "label": "Start",
+              "caption": "entrée dans le soin"
+            },
+            "care": {
+              "label": "Care",
+              "caption": "la croix médicale suisse"
+            },
+            "success": {
+              "label": "Success",
+              "caption": "le patient rétabli"
+            }
+          },
+          "note": "L'identité suisse est délibérée : la partition diagonale blanc et bleu fédéral, et la croix — le langage visuel auquel les institutions suisses font déjà confiance."
+        },
+        "vmHeading": "Notre vision & mission",
+        "vision": {
+          "tag": "Vision"
+        },
+        "mission": {
+          "tag": "Mission"
+        },
+        "pillRowLabel": "Les garanties de Curavias"
       },
       "workChart": {
         "title": "Comment le travail évolue",
