@@ -1,6 +1,7 @@
 # Repo-root .dockerignore
 # Applies to any docker build with context = repo root.
-# Currently: apps/sim-capacity/Dockerfile AND apps/hcc-agent-host/Dockerfile.
+# Currently: apps/sim-capacity/Dockerfile, apps/hcc-agent-host/Dockerfile, AND
+# data-platform/scripts/po-agent/corpus/Dockerfile.
 # apps/hcc-app-fluent/Dockerfile builds from apps/hcc-app-fluent/ context, so
 # this file does not apply to that build.
 #
@@ -35,3 +36,26 @@ data-platform/decision/**/*.pyc
 # Golden-source capacity CSVs consumed by calibration modules at runtime
 # (moved from docs/reviews/2026-06-29-ama-capacity-metadata-review/ in Sprint 22 P1a)
 !data/master-data/capacity/*.csv
+
+# po-agent corpus-refresh image build (data-platform/scripts/po-agent/corpus/Dockerfile,
+# built by .github/workflows/po-agent-corpus-build.yml)
+!data-platform/scripts/po-agent/corpus/
+data-platform/scripts/po-agent/corpus/**/__pycache__
+data-platform/scripts/po-agent/corpus/**/*.pyc
+data-platform/scripts/po-agent/corpus/.pytest_cache
+data-platform/scripts/po-agent/corpus/tests
+
+# docs/ corpus source tree baked into the po-agent corpus-refresh image.
+# snapshot.py's snapshot_tree() only globs docs/**/*.md, so keep every .md
+# file but drop the non-.md binary bulk it never reads: screenshots,
+# prototype HTML/assets and photos under superpowers/ideas/**, logos/icons
+# under brandkit/**, and review attachments under reviews/**.
+!docs/
+docs/superpowers/ideas/
+!docs/superpowers/ideas/**/*.md
+docs/brandkit/
+!docs/brandkit/**/*.md
+docs/reviews/**/*.xlsx
+docs/reviews/**/*.png
+docs/reviews/**/*.pdf
+docs/reviews/**/*.docx
