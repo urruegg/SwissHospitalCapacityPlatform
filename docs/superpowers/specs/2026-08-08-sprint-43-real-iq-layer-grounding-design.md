@@ -1,9 +1,9 @@
 ---
-Version: 1.2.0
+Version: 1.3.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.1.0 (added §2.1 WS-1 implementation + live SIT verification evidence, including the instructions/tool_choice contract corrections found post-spike)
+Previous Version: 1.2.0 (added §2.1 WS-1 implementation + live SIT verification evidence, including the instructions/tool_choice contract corrections found post-spike)
 ---
 
 # Sprint 43 — Real Foundry IQ + Fabric IQ Grounding — Design
@@ -181,17 +181,50 @@ by asserting `"instructions" not in captured["json"]`. All 175
 
 ### WS-2 — Real Fabric grounding (replace `FabricAdapter`'s hardcoded dict)
 
-Wire a live `query_fn` into `FabricAdapter` for every manifest's grounding
-tables (`gold.or_schedule`, `gold.staff_schedule`, `gold.discharge_candidates`,
-`gold.crisis_signals`, `gold.fact_occupancy_forecast`, etc. — not just the
-3 currently hardcoded). Two candidate mechanisms, both already proven
-elsewhere in this repo:
-- Extend the existing Fabric Data Agent binding (already real, already
-  working) to cover every manifest, not just `groundingAgent: primary`
-  ones — mirrors exactly how Sprint 42 wired Class A/D for the PO agent.
-- Or a direct Fabric SQL/KQL query surface (`fabric-mcp`'s own `query`
-  tool, already the documented contract `FabricAdapter.invoke()` expects)
-  if a Data Agent binding per-table proves too heavy.
+**Decision, confirmed by a live spike (2026-08-08):** direct OneLake Delta
+reads via the `deltalake` Python package — the same mechanism already
+proven in `data-platform/scripts/fabric/read_gold_evidence.py`. No new
+Fabric Data Agent involvement needed (that binding stays scoped to
+`ooa-agent`'s existing `groundingAgent: primary` case).
+
+**Confirmed live contract:**
+- URI: `abfss://{workspace_id}@onelake.dfs.fabric.microsoft.com/{lakehouse_id}/Tables/{schema}/{name}`
+  (table name `gold.bed_assignment` splits into schema `gold`, name `bed_assignment`).
+- Auth: Bearer token, scope `https://storage.azure.com/.default`.
+- Read: `DeltaTable(uri, storage_options={"bearer_token": token, "use_fabric_endpoint": "true"})`,
+  then `.to_pyarrow_table().to_pydict()` transposed into row dicts.
+- RBAC: **already granted** — `id-ca-agent-host-ihzhhpf-sit` (the
+  agent-host MI) already holds the Fabric workspace **Viewer** role on
+  `ws-ihzhhpf-sit-data` (`f3af9733-9503-4e92-98f9-a901d96f1c87`), confirmed
+  live via `GET /v1/workspaces/{id}/roleAssignments`. No new grant needed.
+
+**Scope, per-manifest inventory (confirmed via `manifests/loader.py`'s
+parsing — only dict entries with a `table:` key become `grounding_tables`;
+bare strings like `cosmos:scenarios` or `module:`/`source:` entries do
+not):**
+
+| Agent | Tables in manifest | Live in lakehouse? |
+| ----- | ------------------ | ------------------- |
+| `bmca-agent` | `gold.bed_assignment`, `gold.fact_capacity_baseline`, `gold.discharge_score` | ✅ all 3 |
+| `dca-agent` | `gold.discharge_score`, `gold.discharge_recommendation`, `gold.encounter` | ✅ all 3 |
+| `ooa-agent` | `gold.encounter`, `gold.bed_assignment`, `gold.seasonality` | ⚠️ 2/3 — `gold.seasonality` does not exist yet (fallback path only; this agent's primary grounding is the Fabric Data Agent) |
+| `orsa-agent` | `gold.or_schedule`, `gold.anaesthesia_status`, `gold.staff_availability` | ⚠️ 1/3 — only `gold.or_schedule` exists |
+| `sba-agent` | `gold.shift_roster`, `gold.shift_plan`, `gold.forecast_output` | ⚠️ 1/3 — only `gold.forecast_output` exists |
+
+`csa-agent` (`cosmos:*`/`fabric:gold-capacity` grounding keys),
+`data-quality-agent` (`module:`-based deterministic Python + one
+`status: pending` table that doesn't exist in the medallion yet), and
+`onboarding-agent` (`runtime: workflow`, not loaded by the agent-host at
+all) are **out of scope for this fix** — none of their grounding entries
+flow through `FabricAdapter.query()` today.
+
+**Design implication:** the missing-table cases are not implementation
+bugs — they're genuine upstream data gaps. `FabricDeltaClient.query()`
+must catch `TableNotFoundError` and return `[]` (matching
+`FabricAdapter`'s existing `samples.get(table, [])` graceful-miss
+behavior for unknown tables today), not raise. `orsa-agent` and
+`sba-agent` will get **partial** real grounding until their missing gold
+tables are populated (tracked separately, not blocking this workstream).
 
 This workstream **should land before or alongside WS-1**, not after: a
 real chat model summarizing the same hardcoded rows is not the improvement
@@ -256,9 +289,13 @@ the end.
   call (`instructions` field vs. embedding in `input`) — to be resolved
   in the WS-1 implementation plan, not a re-open of the options
   comparison.
-- **Per-agent grounding table coverage (WS-2) is not yet fully inventoried**
-  — this design lists the tables observed during live testing; a full
-  per-manifest audit of `grounding_tables` is needed as WS-2's first task.
+- **Per-agent grounding table coverage (WS-2) is now fully inventoried**
+  (see §2, WS-2) — 12 unique tables across 5 agents, 6 of which do not
+  yet exist in the live lakehouse (`orsa-agent` and `sba-agent` are the
+  most affected, each with only 1 of 3 tables live). This is a genuine
+  upstream data gap, not a WS-2 implementation blocker — `FabricDeltaClient`
+  degrades to `[]` per-table, matching today's behavior for any
+  unrecognized table.
 - **RBAC for WS-1 Option A was already granted** — `Foundry User` on
   `ai-ihzhhpf-sit-eastus2` for agent-host's MI, confirmed pre-existing
   since 2026-07-26 (idempotent `az role assignment create` check, no new
