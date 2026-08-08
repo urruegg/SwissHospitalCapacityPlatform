@@ -1,4 +1,7 @@
-from refresh_job import build_grounded_chunks, document_id
+import pytest
+
+import snapshot
+from refresh_job import build_grounded_chunks, document_id, main
 
 
 def test_build_grounded_chunks_from_snapshot_docs():
@@ -46,3 +49,14 @@ def test_document_id_falls_back_to_text_hash_when_anchor_missing():
     id_1 = document_id(citation, text="first chunk of README")
     id_2 = document_id(citation, text="second chunk of README")
     assert id_1 != id_2
+
+
+def test_main_raises_runtime_error_when_snapshot_tree_is_empty(monkeypatch):
+    """A bad CORPUS_REPO_ROOT mount (or repo not checked out) must fail loudly
+    instead of silently "succeeding" with 0 uploaded chunks and a stale index."""
+    monkeypatch.setenv("CORPUS_REPO_ROOT", "/app/repo")
+    monkeypatch.setattr(snapshot, "get_commit", lambda repo_root: "abc1234")
+    monkeypatch.setattr(snapshot, "snapshot_tree", lambda repo_root, commit: [])
+
+    with pytest.raises(RuntimeError, match="snapshot_tree found 0 documents"):
+        main()

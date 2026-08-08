@@ -30,7 +30,6 @@ from __future__ import annotations
 import hashlib
 import os
 from pathlib import Path
-from typing import Any
 
 import chunk_tag
 import publish
@@ -117,6 +116,11 @@ def main() -> int:
     repo_root = Path(os.environ.get("CORPUS_REPO_ROOT", "/app/repo"))
     commit = snapshot.get_commit(repo_root)
     docs = snapshot.snapshot_tree(repo_root, commit)
+    if not docs:
+        raise RuntimeError(
+            f"refresh_job: snapshot_tree found 0 documents under {repo_root} - "
+            "check CORPUS_REPO_ROOT is correctly mounted before retrying."
+        )
     chunks = build_grounded_chunks(docs, commit)
 
     endpoint = os.environ["AZURE_SEARCH_ENDPOINT"]
