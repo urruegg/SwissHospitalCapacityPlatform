@@ -205,7 +205,12 @@ param enableCsaCosmosModule = true
 // agents when FOUNDRY_PROJECT_ENDPOINT/NAME are set). The env vars alone
 // (added in this same PR) are inert without this image bump -- the running
 // 540ddd3 image predates _build_chat_model() entirely. approved-to-apply by @urruegg.
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:0a52bcb'
+// Hotfixed 0a52bcb -> e2fed1f: the live SIT test found the real Foundry
+// Responses API rejects `instructions` once agent_reference is set (400
+// invalid_payload), and tool_choice defaults to "auto" so the model can
+// return a function_call (the agent's unrelated decision_tier_coordination_*
+// tool) instead of a text answer. approved-to-apply by @urruegg.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:e2fed1f'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
