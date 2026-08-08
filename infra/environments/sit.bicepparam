@@ -233,6 +233,13 @@ param fabricDataAgentEndpoint = 'https://api.fabric.microsoft.com/v1/workspaces/
 param fabricWorkspaceId = 'f3af9733-9503-4e92-98f9-a901d96f1c87'
 param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 
+// Sprint 43 WS-1 — real Foundry Agent Service chat model (Option A). Same
+// eastus2 project already used by the decision-tier apply job and the
+// Foundry-hosted runtime agents (ADR-0032); the agent-host MI already holds
+// `Foundry User` on this account (granted 2026-07-26, confirmed idempotent).
+param foundryProjectEndpoint = 'https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com'
+param foundryProjectName = 'ai-ihzhhpf-sit-eastus2-project'
+
 // Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image tag is bumped as a deliberate manual review step after

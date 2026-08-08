@@ -25,6 +25,12 @@ param fabricWorkspaceId string = ''
 @description('Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback.')
 param fabricDataAgentId string = ''
 
+@description('Sprint 43 WS-1 -- Foundry Agent Service project account root. Empty string keeps the agent-host on the deterministic MockChatModel.')
+param foundryProjectEndpoint string = ''
+
+@description('Sprint 43 WS-1 -- Foundry Agent Service project name. Empty string keeps the agent-host on the deterministic MockChatModel.')
+param foundryProjectName string = ''
+
 @description('#424 M4 — RLS provider for the structured golden read (`simulated` default | `fabric-data-agent`). See the M4 design spec + #510. Config, not code.')
 param rlsProvider string = 'simulated'
 
@@ -105,6 +111,8 @@ module containerApp 'container-app.bicep' = {
     fabricDataAgentEndpoint: fabricDataAgentEndpoint
     fabricWorkspaceId: fabricWorkspaceId
     fabricDataAgentId: fabricDataAgentId
+    foundryProjectEndpoint: foundryProjectEndpoint
+    foundryProjectName: foundryProjectName
     rlsProvider: rlsProvider
     oboEnabled: oboEnabled
     redisHostName: enableRedisModule ? redis!.outputs.redisHostName : ''
