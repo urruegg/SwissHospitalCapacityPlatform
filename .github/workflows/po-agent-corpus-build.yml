@@ -1,0 +1,98 @@
+name: po-agent-corpus-build
+
+# Sprint 42 ST-3 - build + push the po-agent corpus-refresh container image
+# on `data-platform/scripts/po-agent/corpus/**` or `docs/**` changes (the
+# image bakes in a snapshot of docs/** as the corpus content - see the
+# Dockerfile's `COPY docs/ /app/repo/docs/` step).
+#
+# Scope: build + push only. Bumping `caj-po-refresh-*`'s image is a manual,
+# reviewed `az containerapp job update` step (mirrors how Sprint 41 bumped
+# the runtime service), not an automatic deploy from this workflow.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data-platform/scripts/po-agent/corpus/**'
+      - 'docs/**'
+      - '.github/workflows/po-agent-corpus-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  ACR_LOGIN_SERVER: 'cri75lbu5sj4hza.azurecr.io'
+  IMAGE_NAME: 'po-agent-corpus-refresh'
+
+jobs:
+  build-and-push:
+    name: Build + push po-agent-corpus-refresh image
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ACR login
+        shell: bash
+        run: |
+          set -euo pipefail
+          registry_name="${ACR_LOGIN_SERVER%.azurecr.io}"
+          az acr login --name "$registry_name"
+
+      - name: Compute image tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          short_sha="${GITHUB_SHA::7}"
+          {
+            echo "sha_tag=$short_sha"
+            echo "full_sha=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${short_sha}"
+            echo "full_latest=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Docker build
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            -f data-platform/scripts/po-agent/corpus/Dockerfile \
+            -t "${{ steps.tags.outputs.full_sha }}" \
+            -t "${{ steps.tags.outputs.full_latest }}" \
+            .
+
+      - name: Docker push
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker push "${{ steps.tags.outputs.full_sha }}"
+          docker push "${{ steps.tags.outputs.full_latest }}"
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## po-agent-corpus-refresh image build"
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Commit: ${{ github.sha }} (short: ${{ steps.tags.outputs.sha_tag }})"
+            echo "- Tags pushed:"
+            echo "  - \`${{ steps.tags.outputs.full_sha }}\`"
+            echo "  - \`${{ steps.tags.outputs.full_latest }}\`"
+            echo "- Status: ${{ job.status }}"
+            echo ""
+            echo "Bump caj-po-refresh-ihzhhpf-sit via: az containerapp job update -g rg-ihzhhpf-sit -n caj-po-refresh-ihzhhpf-sit --image ${{ steps.tags.outputs.full_sha }} (approval-gated per AGENTS.md Section 4)."
+          } >> "$GITHUB_STEP_SUMMARY"
