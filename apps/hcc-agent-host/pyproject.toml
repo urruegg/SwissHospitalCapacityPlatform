@@ -22,6 +22,7 @@ runtime = [
   "redis>=5.1,<6",
   "openai>=1.55,<2",
   "azure-monitor-opentelemetry>=1.6,<2",
+  "deltalake>=0.20,<2",
 ]
 dev = [
   "pytest>=8.0",

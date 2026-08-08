@@ -28,6 +28,7 @@ from pydantic import BaseModel
 from manifests.loader import AgentManifest, load_agent_host_manifests
 from orchestrator.dispatch import Orchestrator
 from orchestrator.mock_model import MockChatModel
+from tools.fabric_adapter import FabricAdapter
 from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 from golden.rls import build_rls_provider
 from golden.service import GoldenScopeError, UnknownResourceError, load_golden
@@ -114,6 +115,28 @@ def _build_chat_model():
     return FoundryResponsesChatModel(project_endpoint=endpoint, project_name=project)
 
 
+def _build_fabric_query_fn():
+    """Return a live FabricDeltaClient.query callable when env is configured, else None.
+
+    Sprint 43 WS-2 -- reuses FABRIC_WORKSPACE_ID (already set for the Fabric
+    Data Agent binding, same workspace) plus the new FABRIC_LAKEHOUSE_ID.
+    """
+    workspace = os.environ.get("FABRIC_WORKSPACE_ID")
+    lakehouse = os.environ.get("FABRIC_LAKEHOUSE_ID")
+    provided = [bool(workspace), bool(lakehouse)]
+    if not all(provided):
+        if any(provided):
+            logger.warning(
+                "FABRIC_WORKSPACE_ID/FABRIC_LAKEHOUSE_ID partially configured "
+                "(%d/2 set); FabricAdapter stays on synthetic fallback",
+                sum(provided),
+            )
+        return None
+    from tools.fabric_delta_client import FabricDeltaClient
+
+    return FabricDeltaClient(workspace_id=workspace, lakehouse_id=lakehouse).query
+
+
 def _system_prompt_for(manifest: AgentManifest, agents_root: Path) -> str:
     ref = manifest.system_prompt_ref.split("#", 1)[0].lstrip("./")
     prompt_path = agents_root / manifest.agent / ref
@@ -131,6 +154,12 @@ class HostState:
         # MVO ontology (hcp:* citations) and propagate its PHI refusals. Without a
         # live client the adapter answers synthetically (no PHI, ADR-0016); a live
         # Fabric Data Agent client is injected here once the endpoint is provisioned.
+        # Sprint 43 WS-2 -- live Fabric Gold table reads (replaces
+        # FabricAdapter's hardcoded 3-row dict). Unset env keeps the
+        # synthetic fallback (dev/CI default).
+        fabric_query_fn = _build_fabric_query_fn()
+        self.fabric = FabricAdapter(query_fn=fabric_query_fn)
+
         live = _build_live_data_agent()
         self._live_data_agent = live
         adapter = FabricDataAgentAdapter(ask_fn=(live.ask if live is not None else None))
@@ -141,6 +170,7 @@ class HostState:
         live_chat_model = _build_chat_model()
         self.orchestrator = Orchestrator(
             chat_model=live_chat_model if live_chat_model is not None else MockChatModel(),
+            fabric=self.fabric,
             data_agent=adapter,
         )
         # #424 M3 — server-side (userOid x agent) -> threadId map. Shares the
