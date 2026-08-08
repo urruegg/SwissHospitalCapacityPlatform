@@ -1,5 +1,6 @@
 import type { Provenance } from '../journey/RoleBoard';
 import type { ContextEnvelope } from '../context/context-envelope';
+import type { GroundedReco } from '../copilot-rail/reco';
 import { getAgentHostUrl, getGoldenSourceUrl, getAgentHostScope } from '../config/runtime-config';
 
 /**
@@ -191,6 +192,30 @@ export async function iqAgentList<T>(): Promise<T> {
   const res = await fetch(`${agentHostBaseUrl()}/agents`);
   if (!res.ok) throw new Error(`agent list failed: ${res.status}`);
   return (await res.json()) as T;
+}
+
+/** Request body for the dedicated po-agent-service's frozen `/answer` contract (Sprint 41 WS-FE). */
+export interface PoAgentAnswerRequest {
+  question: string;
+  caller: { persona: string; tier: string };
+  language: string;
+}
+
+/**
+ * POST `${baseUrl}/answer` on the dedicated po-agent-service — the frozen HTTP
+ * contract in docs/superpowers/specs/2026-07-25-sprint-28-po-agent-contracts.md
+ * §6. The response body is itself a `GroundedReco`. Throws loud on transport /
+ * HTTP error so the caller can fall back. Only call when `getPoAgentUrl()`
+ * (config/runtime-config) is non-empty; `baseUrl` is that resolved value.
+ */
+export async function iqPoAgentAnswer(baseUrl: string, req: PoAgentAnswerRequest): Promise<GroundedReco> {
+  const res = await fetch(`${baseUrl}/answer`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new Error(`po-agent answer failed: ${res.status}`);
+  return (await res.json()) as GroundedReco;
 }
 
 /** A user-interaction event on a captured agent turn (Sprint 30 M2; DC-AGENT-INTERACTION-v1.userEvents). */
