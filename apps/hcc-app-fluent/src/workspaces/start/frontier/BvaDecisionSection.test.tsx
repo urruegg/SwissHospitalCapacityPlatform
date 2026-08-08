@@ -7,7 +7,6 @@ import i18n from '../../../i18n';
 import {
   bvaHeadlineKpis,
   bvaPlanVsActual,
-  bvaProofPoints,
   bvaSensitivityScenarios,
   bvaTrend,
   bvaValueLevers,
@@ -142,28 +141,11 @@ describe('BvaDecisionSection', () => {
     expect(screen.getByText(conservative.comment)).toBeInTheDocument();
   });
 
-  it('renders distinct proof/evidence entries (trend + bvaProofPoints), not a duplicate of KPI/TCO figures', () => {
+  it('does not render the removed Proof & evidence card', () => {
     renderSection(<BvaDecisionSection />);
     const section = screen.getByTestId('bva-decision-section');
 
-    const evidenceList = within(section).getByTestId('bva-proof-list');
-
-    const latestTrendPoint = bvaTrend.points[bvaTrend.points.length - 1];
-    expect(within(evidenceList).getByText(new RegExp(bvaTrend.measure, 'i'))).toBeInTheDocument();
-    expect(within(evidenceList).getByText(new RegExp(latestTrendPoint.label, 'i'))).toBeInTheDocument();
-
-    bvaProofPoints.forEach((payload) => {
-      const claimNode = within(evidenceList).getByText(payload.claim);
-      const item = claimNode.closest('li');
-      expect(item).not.toBeNull();
-      expect(within(item as HTMLElement).getByText(new RegExp(payload.target, 'i'))).toBeInTheDocument();
-    });
-
-    // Regression guard: proof list must not merely re-list headline KPI measures or the TCO measure.
-    bvaHeadlineKpis.forEach((payload) => {
-      expect(within(evidenceList).queryByText(payload.measure)).not.toBeInTheDocument();
-    });
-    expect(within(evidenceList).queryByText(bvaPlanVsActual.measure)).not.toBeInTheDocument();
+    expect(within(section).queryByTestId('bva-proof-list')).not.toBeInTheDocument();
   });
 
   it('does not render the removed Executive-decision card', () => {

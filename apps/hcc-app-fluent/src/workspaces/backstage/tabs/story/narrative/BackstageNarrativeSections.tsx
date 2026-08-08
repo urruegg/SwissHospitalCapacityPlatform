@@ -285,8 +285,8 @@ const SF_PRINCIPLES = [
 
 const SF_STATS = [
   { value: '1', sub: 'human orchestrating the build', color: '#12765F' },
-  { value: '29', sub: 'sprints delivered end-to-end', color: undefined },
-  { value: 'SIT\u2192PROD', sub: 'approval-gated promotion', color: undefined },
+  { value: '39', sub: 'sprints delivered end-to-end', color: undefined },
+  { value: '398', sub: 'PRs approved and merged', color: undefined },
   { value: '100%', sub: 'PRs human-merged, CI-gated', color: undefined },
 ] as const;
 
@@ -294,7 +294,7 @@ export function SuccessFrameworkSection() {
   const s = useStyles();
   const { t } = useTranslation();
   const rail = useRail();
-  const header = t('backstage.story.narrative.success.header', '\u201cWe have organized our own transformation against the Success Framework.\u201d');
+  const header = t('backstage.story.narrative.success.header', 'We have organized our own transformation against the Success Framework.');
   const titleParts = toTitleParts(
     header,
     t('backstage.story.narrative.success.accent', 'Success Framework'),
@@ -304,7 +304,7 @@ export function SuccessFrameworkSection() {
       { id: 'backstage-success-framework', label: 'Success Framework', context: { source: 'backstage-narrative', topic: 'success-framework' } },
       reco(
         'Success Framework',
-        'Curavias was built on four transformation principles - organize around outcomes, human-agent teams, trust and governance by design, and evidence-first - delivered by one human agent-boss across 29 sprints through enterprise ALM, with 100% human-merged pull requests.',
+        'Curavias was built on four transformation principles - organize around outcomes, human-agent teams, trust and governance by design, and evidence-first - delivered by one human agent-boss across 39 sprints through enterprise ALM, with 100% human-merged pull requests.',
         SF_PRINCIPLES.map((p) => p.title),
         ['docs/PRD.md', 'docs/ALM_PLAN.md', 'docs/adr/0002-runtime-is-github-copilot-coding-agent.md'],
         t,
@@ -317,7 +317,7 @@ export function SuccessFrameworkSection() {
         variant="eyebrow"
         {...(titleParts ? { titleParts } : { header })}
         tagline={t('backstage.story.narrative.success.tagline', 'Backstage \u00b7 Frontier Firm')}
-        description={t('backstage.story.narrative.success.description', 'Curavias was built the way we ask hospitals to work: one human orchestrating a team of agents. The whole platform, spanning 29 sprints of requirements, architecture, code, infrastructure and compliance evidence, was delivered by a single person acting as an agent boss, with GitHub and Foundry agents doing the build.')}
+        description={t('backstage.story.narrative.success.description', 'Curavias was built the way we ask hospitals to work: one human orchestrating a team of agents. The whole platform, spanning 39 sprints of requirements, architecture, code, infrastructure and compliance evidence, was delivered by a single person acting as an agent boss, with GitHub and Foundry agents doing the build.')}
       />
       <div className={s.split}>
         <div className={s.sfRows}>

@@ -1,9 +1,9 @@
 ---
-Version: 1.2.0
+Version: 1.3.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Implemented
-Previous Version: 1.1.0 (marked Implemented, added §5 progress log with post-restart verification evidence)
+Previous Version: 1.2.0 (corrected the stale Marco Weber initials-fallback note; appended the 7-item live-review-fixes progress log entry)
 ---
 
 # Backstage-plane alignment + BVA v2.0.0 re-baseline — design & assumptions
@@ -132,3 +132,25 @@ wcag2aa 0 serious+critical on the backstage narrative sections; visual check at
   `src/data/bva src/workspaces/backstage src/workspaces/start/frontier` = 15
   files / 85 tests passed; mojibake 0; axe wcag2aa 0 serious/critical on
   `/start` + `/backstage`; visual verified on `localhost:5173/backstage`.
+- **2026-08-08 — live-review fixes, round 2 (4 items).** Further user review of
+  the running app requested: (1) remove the "Proof & evidence" card from the
+  Business case section and widen "Value levers" to the full section width -
+  `BvaDecisionSection`'s panel grid restructured (TCO + Sensitivity as a row,
+  Value levers spanning `gridColumn: 1 / -1`); the dead `bvaTrend`/`bvaProofPoints`
+  rendering path (`proofEntries`, `EvidenceEntry`, `formatTrendValue`) removed
+  from the component (the underlying `bva-evidence.ts` data/tests are
+  untouched - only the UI panel is gone); (2) remove the curly quote marks
+  around the Frontier Firm section title ("We have organized our own
+  transformation against the Success Framework."); (3)/(4) "Our
+  transformation, in numbers" - the `29` sprints-delivered stat corrected to
+  `39` (the highest sprint fully merged to `main` as of today; verified via
+  `git log main` - Sprint 39 P1+P2 merged, Sprint 40 confirmed branch-only per
+  `docs/superpowers/plans/2026-08-07-start-backstage-restructure-changes-1-9.md`)
+  and the two other hardcoded "29 sprints" body-copy mentions in the same
+  section aligned to `39`; the `SIT→PROD` stat replaced with `398` "PRs
+  approved and merged" (verified via `gh pr list --state merged --json number
+  --jq length` against this repo). Gates: `tsc --noEmit` exit 0; `vitest` on
+  `src/data/bva src/workspaces/backstage src/workspaces/start/frontier` = 15
+  files / 85 tests passed; mojibake 0; axe wcag2aa 0 serious/critical on
+  `/backstage`; visual + DOM verified on `localhost:5173/backstage` (Proof &
+  evidence testid absent; Value levers table ~958px vs TCO ~554px width).

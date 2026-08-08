@@ -8,19 +8,16 @@ import {
   mergeClasses,
   tokens,
 } from '@fluentui/react-components';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   bvaHeadlineKpis,
   bvaPlanVsActual,
-  bvaProofPoints,
   bvaSensitivityScenarios,
-  bvaTrend,
   bvaValueLevers,
   type BvaHeadlineKpiPayload,
   type BvaProvenance,
   type BvaSensitivityScenarioPayload,
-  type BvaTrendPoint,
 } from '../../../data/bva/bva-evidence';
 import { useShowcaseStyles } from '../../shared/narrative/showcase-styles';
 
@@ -42,10 +39,8 @@ const useStyles = makeStyles({
       gridTemplateColumns: '1fr',
     },
   },
-  column: {
-    display: 'grid',
-    gap: tokens.spacingVerticalM,
-    alignContent: 'start',
+  panelFull: {
+    gridColumn: '1 / -1',
   },
   panel: {
     display: 'grid',
@@ -92,24 +87,7 @@ const useStyles = makeStyles({
   pillButton: {
     borderRadius: tokens.borderRadiusCircular,
   },
-  evidenceList: {
-    margin: 0,
-    paddingLeft: tokens.spacingHorizontalL,
-    display: 'grid',
-    gap: tokens.spacingVerticalXS,
-  },
-  evidenceItem: {
-    display: 'grid',
-    gap: tokens.spacingVerticalXXS,
-  },
 });
-
-interface EvidenceEntry {
-  id: string;
-  title: string;
-  summary: string;
-  provenance: BvaProvenance;
-}
 
 function formatHeadlineValue(payload: BvaHeadlineKpiPayload) {
   return payload.unit ? `${payload.value} ${payload.unit}` : payload.value;
@@ -121,13 +99,6 @@ function formatCurrency(value: number, currency: string) {
 
 function formatVariance(value: number) {
   return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
-}
-
-function formatTrendValue(value: number, unit?: string) {
-  return `${new Intl.NumberFormat('de-CH', {
-    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(value)}${unit ? ` ${unit}` : ''}`;
 }
 
 function romCaption(
@@ -150,32 +121,6 @@ function selectedScenarioSummary(
   });
 }
 
-/**
- * Distinct proof/evidence entries for the "Proof & evidence" panel: the
- * latest `bvaTrend` reading plus the qualitative `bvaProofPoints` governance
- * claims. Deliberately excludes `bvaHeadlineKpis` / `bvaPlanVsActual` — those
- * already have their own panels (KPI tiles, TCO table) and must not be
- * duplicated here.
- */
-function proofEntries(
-  latestTrendPoint: BvaTrendPoint,
-): EvidenceEntry[] {
-  return [
-    {
-      id: bvaTrend.measure,
-      title: bvaTrend.measure,
-      summary: `${latestTrendPoint.label} · ${formatTrendValue(latestTrendPoint.value, bvaTrend.unit)}`,
-      provenance: bvaTrend,
-    },
-    ...bvaProofPoints.map((payload) => ({
-      id: payload.id,
-      title: payload.claim,
-      summary: `${payload.target} · ${payload.cadence}`,
-      provenance: payload,
-    })),
-  ];
-}
-
 export function BvaDecisionSection() {
   const styles = useStyles();
   const sc = useShowcaseStyles();
@@ -186,14 +131,8 @@ export function BvaDecisionSection() {
   const [selectedScenarioId, setSelectedScenarioId] = useState(defaultScenario?.id ?? '');
   const selectedScenario =
     bvaSensitivityScenarios.find((scenario) => scenario.id === selectedScenarioId) ?? defaultScenario;
-  const latestTrendPoint = bvaTrend.points[bvaTrend.points.length - 1];
 
-  const evidence = useMemo(
-    () => (latestTrendPoint ? proofEntries(latestTrendPoint) : []),
-    [latestTrendPoint],
-  );
-
-  if (!selectedScenario || !latestTrendPoint) {
+  if (!selectedScenario) {
     return null;
   }
 
@@ -215,117 +154,90 @@ export function BvaDecisionSection() {
       </div>
 
       <div className={styles.panelGrid}>
-        <div className={styles.column}>
-          <section className={styles.panel}>
-            <Title3 as="h3" className={styles.panelTitle}>
-              {t('start.frontier.bva.tcoTitle')}
-            </Title3>
-            <table className={mergeClasses(sc.table, styles.table)} data-testid="bva-tco-table">
-              <thead>
-                <tr>
-                  <th className={sc.th}>{t('start.frontier.bva.columns.figure')}</th>
-                  <th className={sc.th}>{t('start.frontier.bva.columns.value')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className={sc.td}>{bvaPlanVsActual.measure}</td>
-                  <td className={sc.td}>{formatCurrency(bvaPlanVsActual.plan, bvaPlanVsActual.currency)}</td>
-                </tr>
-                <tr>
-                  <td className={sc.td}>{t('start.frontier.bva.tcoActual')}</td>
-                  <td className={sc.td}>{formatCurrency(bvaPlanVsActual.actual, bvaPlanVsActual.currency)}</td>
-                </tr>
-                <tr>
-                  <td className={sc.td}>{t('start.frontier.bva.tcoVariance')}</td>
-                  <td className={sc.td}>{formatVariance(bvaPlanVsActual.variancePct)}</td>
-                </tr>
-              </tbody>
-            </table>
-            <Caption1 className={styles.muted} data-testid="bva-rom-caption">
-              {romCaption(t, bvaPlanVsActual)}
-            </Caption1>
-          </section>
+        <section className={styles.panel}>
+          <Title3 as="h3" className={styles.panelTitle}>
+            {t('start.frontier.bva.tcoTitle')}
+          </Title3>
+          <table className={mergeClasses(sc.table, styles.table)} data-testid="bva-tco-table">
+            <thead>
+              <tr>
+                <th className={sc.th}>{t('start.frontier.bva.columns.figure')}</th>
+                <th className={sc.th}>{t('start.frontier.bva.columns.value')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className={sc.td}>{bvaPlanVsActual.measure}</td>
+                <td className={sc.td}>{formatCurrency(bvaPlanVsActual.plan, bvaPlanVsActual.currency)}</td>
+              </tr>
+              <tr>
+                <td className={sc.td}>{t('start.frontier.bva.tcoActual')}</td>
+                <td className={sc.td}>{formatCurrency(bvaPlanVsActual.actual, bvaPlanVsActual.currency)}</td>
+              </tr>
+              <tr>
+                <td className={sc.td}>{t('start.frontier.bva.tcoVariance')}</td>
+                <td className={sc.td}>{formatVariance(bvaPlanVsActual.variancePct)}</td>
+              </tr>
+            </tbody>
+          </table>
+          <Caption1 className={styles.muted} data-testid="bva-rom-caption">
+            {romCaption(t, bvaPlanVsActual)}
+          </Caption1>
+        </section>
 
-          <section className={styles.panel}>
-            <Title3 as="h3" className={styles.panelTitle}>
-              {t('start.frontier.bva.valueLeversTitle')}
-            </Title3>
-            <table className={mergeClasses(sc.table, styles.table)} data-testid="bva-value-levers-table">
-              <thead>
-                <tr>
-                  <th className={sc.th}>{t('start.frontier.bva.columns.lever')}</th>
-                  <th className={sc.th}>{t('start.frontier.bva.columns.annualBenefit')}</th>
-                  <th className={sc.th}>{t('start.frontier.bva.columns.valueLogic')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bvaValueLevers.map((payload) => (
-                  <tr key={payload.id}>
-                    <td className={sc.td}>{payload.lever}</td>
-                    <td className={sc.td}>{formatCurrency(payload.annualBenefit, payload.currency)}</td>
-                    <td className={sc.td}>{payload.valueLogic}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <Caption1 className={styles.muted} data-testid="bva-rom-caption">
-              {romCaption(t, bvaValueLevers[0])}
-            </Caption1>
-          </section>
-        </div>
+        <section className={styles.panel}>
+          <Title3 as="h3" className={styles.panelTitle}>
+            {t('start.frontier.bva.sensitivityTitle')}
+          </Title3>
+          <div className={styles.pills} data-testid="bva-sensitivity-controls">
+            {bvaSensitivityScenarios.map((scenario) => (
+              <Button
+                key={scenario.id}
+                className={styles.pillButton}
+                appearance={scenario.id === selectedScenario.id ? 'primary' : 'secondary'}
+                size="small"
+                aria-pressed={scenario.id === selectedScenario.id}
+                onClick={() => setSelectedScenarioId(scenario.id)}
+              >
+                {scenario.scenario}
+              </Button>
+            ))}
+          </div>
+          <Text data-testid="bva-sensitivity-value">
+            {selectedScenarioSummary(t, selectedScenario)}
+          </Text>
+          <Body1>{selectedScenario.comment}</Body1>
+          <Caption1 className={styles.muted} data-testid="bva-rom-caption">
+            {romCaption(t, selectedScenario)}
+          </Caption1>
+        </section>
 
-        <div className={styles.column}>
-          <section className={styles.panel}>
-            <Title3 as="h3" className={styles.panelTitle}>
-              {t('start.frontier.bva.sensitivityTitle')}
-            </Title3>
-            <div className={styles.pills} data-testid="bva-sensitivity-controls">
-              {bvaSensitivityScenarios.map((scenario) => (
-                <Button
-                  key={scenario.id}
-                  className={styles.pillButton}
-                  appearance={scenario.id === selectedScenario.id ? 'primary' : 'secondary'}
-                  size="small"
-                  aria-pressed={scenario.id === selectedScenario.id}
-                  onClick={() => setSelectedScenarioId(scenario.id)}
-                >
-                  {scenario.scenario}
-                </Button>
+        <section className={mergeClasses(styles.panel, styles.panelFull)}>
+          <Title3 as="h3" className={styles.panelTitle}>
+            {t('start.frontier.bva.valueLeversTitle')}
+          </Title3>
+          <table className={mergeClasses(sc.table, styles.table)} data-testid="bva-value-levers-table">
+            <thead>
+              <tr>
+                <th className={sc.th}>{t('start.frontier.bva.columns.lever')}</th>
+                <th className={sc.th}>{t('start.frontier.bva.columns.annualBenefit')}</th>
+                <th className={sc.th}>{t('start.frontier.bva.columns.valueLogic')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bvaValueLevers.map((payload) => (
+                <tr key={payload.id}>
+                  <td className={sc.td}>{payload.lever}</td>
+                  <td className={sc.td}>{formatCurrency(payload.annualBenefit, payload.currency)}</td>
+                  <td className={sc.td}>{payload.valueLogic}</td>
+                </tr>
               ))}
-            </div>
-            <Text data-testid="bva-sensitivity-value">
-              {selectedScenarioSummary(t, selectedScenario)}
-            </Text>
-            <Body1>{selectedScenario.comment}</Body1>
-            <Caption1 className={styles.muted} data-testid="bva-rom-caption">
-              {romCaption(t, selectedScenario)}
-            </Caption1>
-          </section>
-
-          <section className={styles.panel}>
-            <Title3 as="h3" className={styles.panelTitle}>
-              {t('start.frontier.bva.proofTitle')}
-            </Title3>
-            <ul className={styles.evidenceList} data-testid="bva-proof-list">
-              {evidence.map((entry) => (
-                <li key={entry.id} className={styles.evidenceItem}>
-                  <Text weight="semibold">{entry.title}</Text>
-                  <Body1>{entry.summary}</Body1>
-                  <Caption1 className={styles.muted}>
-                    {entry.provenance.source} · {t('start.capacityTeaser.asOf', { time: entry.provenance.asOf.slice(0, 10) })}
-                    {entry.provenance.powerBiEmbedFallback
-                      ? ` · ${t('start.frontier.bva.proofFallback')}`
-                      : ''}
-                  </Caption1>
-                </li>
-              ))}
-            </ul>
-            <Caption1 className={styles.muted} data-testid="bva-rom-caption">
-              {romCaption(t, bvaTrend)}
-            </Caption1>
-          </section>
-        </div>
+            </tbody>
+          </table>
+          <Caption1 className={styles.muted} data-testid="bva-rom-caption">
+            {romCaption(t, bvaValueLevers[0])}
+          </Caption1>
+        </section>
       </div>
     </div>
   );
