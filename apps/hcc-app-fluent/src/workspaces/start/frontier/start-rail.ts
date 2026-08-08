@@ -1,5 +1,7 @@
 import type { ContextInsight } from '../../../journey/RoleBoard';
 import type { GroundedReco } from '../../../copilot-rail/reco';
+import type { CopilotRailValue } from '../../../copilot-rail/rail-context';
+import { invokeAgent } from '../../../copilot-drawer/agent-manifest';
 
 /**
  * Sprint 40 START polish — P17 rail helpers. Each polished START card becomes a
@@ -25,4 +27,21 @@ export function startReco(
     citations,
     provenance: 'simulated',
   };
+}
+
+/**
+ * Sprint 41 WS-FE — progressive-enhancement live enrichment. Fire-and-forget:
+ * asks the Product Owner Agent the same question behind the static reco, and
+ * swaps in the live-grounded answer via `rail.updateActiveReco` once it
+ * resolves. Never throws into the caller's click handler; a failed live call
+ * simply leaves the static reco visible.
+ */
+export async function enrichWithLiveAnswer(
+  question: string,
+  rail: Pick<CopilotRailValue, 'updateActiveReco'>,
+): Promise<void> {
+  const reply = await invokeAgent('product-owner-agent', question);
+  if (reply.reco) {
+    rail.updateActiveReco(reply.reco);
+  }
 }

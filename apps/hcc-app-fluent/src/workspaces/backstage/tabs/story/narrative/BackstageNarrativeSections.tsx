@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useCopilotRail } from '../../../../../copilot-rail/rail-context';
 import type { GroundedReco } from '../../../../../copilot-rail/reco';
+import { enrichWithLiveAnswer } from '../../../../start/frontier/start-rail';
 import { SectionHeader, type SectionTitlePart } from '../../../../shared/narrative/SectionHeader';
 import rebekkaHatzung from '../../../../../assets/reviewers/rebekka-hatzung.jpg';
 import emanuelFurler from '../../../../../assets/reviewers/emanuel-furler.jpg';
@@ -299,17 +300,24 @@ export function SuccessFrameworkSection() {
     header,
     t('backstage.story.narrative.success.accent', 'Success Framework'),
   );
-  const ask = () =>
-    rail?.openWithReco(
+  const ask = () => {
+    if (!rail) return;
+    const read =
+      'Curavias was built on four transformation principles - organize around outcomes, human-agent teams, trust and governance by design, and evidence-first - delivered by one human agent-boss across 39 sprints through enterprise ALM, with 100% human-merged pull requests.';
+    rail.openWithReco(
       { id: 'backstage-success-framework', label: 'Success Framework', context: { source: 'backstage-narrative', topic: 'success-framework' } },
       reco(
         'Success Framework',
-        'Curavias was built on four transformation principles - organize around outcomes, human-agent teams, trust and governance by design, and evidence-first - delivered by one human agent-boss across 39 sprints through enterprise ALM, with 100% human-merged pull requests.',
+        read,
         SF_PRINCIPLES.map((p) => p.title),
         ['docs/PRD.md', 'docs/ALM_PLAN.md', 'docs/adr/0002-runtime-is-github-copilot-coding-agent.md'],
         t,
       ),
     );
+    void enrichWithLiveAnswer(read, rail).catch((error) => {
+      console.error('PO agent live enrichment failed', error);
+    });
+  };
   return (
     <section className={s.root} data-testid="success-framework-section" aria-labelledby="success-framework-title">
       <SectionHeader
@@ -357,17 +365,24 @@ export function DevSecOpsLoopSection() {
     header,
     t('backstage.story.narrative.devsecops.accent', 'built and shipped'),
   );
-  const ask = () =>
-    rail?.openWithReco(
+  const ask = () => {
+    if (!rail) return;
+    const read =
+      'A product team of agents builds the platform through a governed DEV-OPS loop: plan, code, build and test on the DEV side; release, deploy, operate and monitor on the OPS side; with a Human-in-the-Loop gate (PR + Issue + approved-to-apply) at the centre and delivery promoted DEV to SIT to PROD behind an approval gate.';
+    rail.openWithReco(
       { id: 'backstage-devsecops', label: 'DevSecOps loop', context: { source: 'backstage-narrative', topic: 'devsecops' } },
       reco(
         'DevSecOps loop',
-        'A product team of agents builds the platform through a governed DEV-OPS loop: plan, code, build and test on the DEV side; release, deploy, operate and monitor on the OPS side; with a Human-in-the-Loop gate (PR + Issue + approved-to-apply) at the centre and delivery promoted DEV to SIT to PROD behind an approval gate.',
+        read,
         ['Human-in-the-loop gate (PR + Issue)', 'DEV to SIT to PROD promotion', 'Governance and security bands', 'GitHub + Copilot foundation'],
         ['docs/ALM_PLAN.md', 'docs/SECURITY.md'],
         t,
       ),
     );
+    void enrichWithLiveAnswer(read, rail).catch((error) => {
+      console.error('PO agent live enrichment failed', error);
+    });
+  };
   return (
     <section className={s.root} data-testid="devsecops-loop-section" aria-labelledby="devsecops-loop-title">
       <SectionHeader
@@ -556,17 +571,24 @@ export function PoKnowledgeClassesSection() {
     header,
     t('backstage.story.narrative.poClasses.accent', 'hard questions'),
   );
-  const ask = () =>
-    rail?.openWithReco(
+  const ask = () => {
+    if (!rail) return;
+    const read =
+      'The docked Product Owner Agent grounds every answer on four knowledge classes: A corpus, B live-proof, C cost, and D ontology. Every answer is advisory-only, cited, in German and English, and never mutates a system.';
+    rail.openWithReco(
       { id: 'backstage-po-classes', label: 'Product Owner Agent knowledge', context: { source: 'backstage-narrative', topic: 'po-classes' } },
       reco(
         'Product Owner Agent',
-        'The docked Product Owner Agent grounds every answer on four knowledge classes: A corpus, B live-proof, C cost, and D ontology. Every answer is advisory-only, cited, in German and English, and never mutates a system.',
+        read,
         PO_CLASSES.map((c) => `${c.id} - ${c.name}`),
         ['docs/adr/0043-product-owner-agent-foundry-iq-domain.md', 'docs/AI.md'],
         t,
       ),
     );
+    void enrichWithLiveAnswer(read, rail).catch((error) => {
+      console.error('PO agent live enrichment failed', error);
+    });
+  };
   return (
     <section className={s.root} data-testid="po-classes-section" aria-labelledby="po-classes-title">
       <SectionHeader
