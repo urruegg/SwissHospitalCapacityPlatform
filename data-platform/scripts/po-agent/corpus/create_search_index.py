@@ -4,12 +4,22 @@
 Turns Step 1 of
 ``infra/modules/knowledge-layer/foundry-iq-knowledge-base/knowledge-base-rest.md``
 into an idempotent script (a PUT with the same name updates in place) instead
-of a manually-run curl command. Field schema mirrors the frozen GroundedChunk
-contract (``data/synthetic/schema/grounded-chunk-v1.schema.json``) exactly,
+of a manually-run curl command. Field schema mirrors the Class A subset of the
+frozen GroundedChunk contract (``data/synthetic/schema/grounded-chunk-v1.schema.json``),
 including a nested ``citation`` complex field (``sourceRef``/``anchor``),
 matching what ``search_client.py``'s ``query_corpus`` already reads back
 unchanged (``hit.get("citation") or {}``) — no changes needed to that
 already-tested file.
+
+Scope decision (explicit, not silent): this index is keyword-only for
+Sprint 42. The runbook's vector/semantic fields (``text_vector``,
+``vectorSearch``, ``semantic`` config) and the frozen contract's
+``citation.conceptRef``/``citation.goldBinding`` (Class D only) are
+deliberately deferred to a future sprint — vector search requires an
+embedding model plus a re-ingestion pipeline that this sprint doesn't build,
+even though the provisioned AI Search service already has
+``semanticSearch: 'standard'`` enabled. ``query_corpus``'s current plain-text
+search is compatible with this narrower, keyword-only schema.
 """
 from __future__ import annotations
 
@@ -75,7 +85,7 @@ def put_index(
 
 def main() -> int:
     endpoint = os.environ["AZURE_SEARCH_ENDPOINT"]
-    index_name = os.environ.get("AZURE_SEARCH_INDEX", "idx-curavias-corpus-sit")
+    index_name = os.environ["AZURE_SEARCH_INDEX"]
     put_index(endpoint, index_name)
     print(f"create_search_index: PUT {index_name} on {endpoint} — ok")
     return 0

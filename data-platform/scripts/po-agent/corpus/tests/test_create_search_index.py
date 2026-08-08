@@ -1,9 +1,3 @@
-import json
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
 from create_search_index import build_index_definition, put_index
 
 
@@ -37,6 +31,7 @@ def test_put_index_calls_expected_url():
         calls["method"] = method
         calls["url"] = url
         calls["json"] = json
+        calls["headers"] = headers
         return _FakeResponse(201)
 
     put_index(
@@ -50,3 +45,6 @@ def test_put_index_calls_expected_url():
         "https://srch-ihzhhpf-sit.search.windows.net/indexes/idx-curavias-corpus-sit"
         "?api-version=2024-05-01-preview"
     )
+    assert calls["json"] == build_index_definition("idx-curavias-corpus-sit")
+    assert calls["headers"]["Authorization"] == "Bearer fake-token"
+    assert calls["headers"]["Content-Type"] == "application/json"
