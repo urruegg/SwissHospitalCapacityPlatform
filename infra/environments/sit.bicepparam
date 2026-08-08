@@ -250,6 +250,13 @@ param fabricDataAgentId = 'b2e53c23-182a-452d-9321-e63f6009e80b'
 param foundryProjectEndpoint = 'https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com'
 param foundryProjectName = 'ai-ihzhhpf-sit-eastus2-project'
 
+// Sprint 43 WS-2 — real Fabric Gold table reads (replaces FabricAdapter's
+// hardcoded 3-row dict). Same lakehouse already referenced in
+// data-platform/fabric/environments.yml (SIT). The agent-host MI already
+// holds Fabric workspace Viewer on ws-ihzhhpf-sit-data (confirmed live via
+// GET /v1/workspaces/{id}/roleAssignments 2026-08-08) — no new grant needed.
+param fabricLakehouseId = '30594c20-46ba-40ea-91fa-4701b105e0b9'
+
 // Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image tag is bumped as a deliberate manual review step after

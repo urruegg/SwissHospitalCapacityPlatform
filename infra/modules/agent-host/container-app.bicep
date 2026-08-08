@@ -35,6 +35,9 @@ param foundryProjectEndpoint string = ''
 @description('Sprint 43 WS-1 -- Foundry Agent Service project name (e.g. ai-ihzhhpf-sit-eastus2-project). Empty string keeps the agent-host on the deterministic MockChatModel.')
 param foundryProjectName string = ''
 
+@description('Sprint 43 WS-2 -- Fabric lakehouse ID for direct OneLake Gold table reads (reuses fabricWorkspaceId for the workspace half). Empty string keeps FabricAdapter on its synthetic 3-row fallback.')
+param fabricLakehouseId string = ''
+
 @description('#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code.')
 param rlsProvider string = 'simulated'
 
@@ -111,6 +114,10 @@ var baseEnv = [
   {
     name: 'FOUNDRY_PROJECT_NAME'
     value: foundryProjectName
+  }
+  {
+    name: 'FABRIC_LAKEHOUSE_ID'
+    value: fabricLakehouseId
   }
   {
     name: 'RLS_PROVIDER'

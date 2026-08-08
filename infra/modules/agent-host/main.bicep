@@ -31,6 +31,9 @@ param foundryProjectEndpoint string = ''
 @description('Sprint 43 WS-1 -- Foundry Agent Service project name. Empty string keeps the agent-host on the deterministic MockChatModel.')
 param foundryProjectName string = ''
 
+@description('Sprint 43 WS-2 -- Fabric lakehouse ID for direct OneLake Gold table reads. Empty string keeps FabricAdapter on its synthetic fallback.')
+param fabricLakehouseId string = ''
+
 @description('#424 M4 — RLS provider for the structured golden read (`simulated` default | `fabric-data-agent`). See the M4 design spec + #510. Config, not code.')
 param rlsProvider string = 'simulated'
 
@@ -113,6 +116,7 @@ module containerApp 'container-app.bicep' = {
     fabricDataAgentId: fabricDataAgentId
     foundryProjectEndpoint: foundryProjectEndpoint
     foundryProjectName: foundryProjectName
+    fabricLakehouseId: fabricLakehouseId
     rlsProvider: rlsProvider
     oboEnabled: oboEnabled
     redisHostName: enableRedisModule ? redis!.outputs.redisHostName : ''

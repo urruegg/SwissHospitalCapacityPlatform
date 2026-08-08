@@ -303,6 +303,9 @@ param foundryProjectEndpoint string = ''
 @description('Sprint 43 WS-1 — Foundry Agent Service project name (e.g. ai-ihzhhpf-sit-eastus2-project). Empty string keeps the agent-host on the deterministic MockChatModel.')
 param foundryProjectName string = ''
 
+@description('Sprint 43 WS-2 — Fabric lakehouse ID for direct OneLake Gold table reads. Empty string keeps FabricAdapter on its synthetic fallback.')
+param fabricLakehouseId string = ''
+
 @description('#424 M4 — agent-host RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process; `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code.')
 param agentHostRlsProvider string = 'simulated'
 
@@ -716,6 +719,7 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     fabricDataAgentId: fabricDataAgentId
     foundryProjectEndpoint: foundryProjectEndpoint
     foundryProjectName: foundryProjectName
+    fabricLakehouseId: fabricLakehouseId
     rlsProvider: agentHostRlsProvider
     oboEnabled: agentHostOboEnabled
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
