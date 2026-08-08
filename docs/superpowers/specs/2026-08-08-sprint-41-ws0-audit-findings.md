@@ -1,9 +1,9 @@
 ---
-Version: 2.0.0
+Version: 2.1.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
-Status: Complete - real findings from live SIT tenant
-Previous Version: 1.0.0 (blocked, no Azure access)
+Status: Complete - SIT deployed and live-tested
+Previous Version: 2.0.0 (real audit findings from live SIT tenant, deploy not yet attempted)
 ---
 
 # Sprint 41 WS-0 audit findings
@@ -124,3 +124,79 @@ and approved.
    re-check the index document count (Class A).
 4. Re-run this audit after 1-3 land; only then does a live end-to-end
    answer have real data behind every class.
+
+## SIT deployment + live smoke-test (same day, `approved-to-apply` confirmed by user)
+
+**Image build:** `az acr build --registry cri75lbu5sj4hza --image
+po-agent-service:sit-manual-20260808 --file
+data-platform/scripts/po-agent/runtime/Dockerfile
+data-platform/scripts/po-agent` - built and pushed successfully
+(`cri75lbu5sj4hza.azurecr.io/po-agent-service:sit-manual-20260808`).
+
+**Deployment method - deviated from the plan's `az deployment group create`
+on purpose:** a full `az deployment group what-if` against `main.bicep` +
+`sit.bicepparam` (with only `poAgentContainerImage` overridden) surfaced a
+large amount of **pre-existing, unrelated drift** across this resource
+group - Cosmos DB `enableAutomaticFailover`/indexing-policy defaults, ACR
+encryption/auth-policy defaults, Cognitive Services identity flags,
+Container App environment Dapr peer-authentication settings, and more -
+none of it caused by this sprint. Applying the full template would have
+touched all of that, a far bigger blast radius than the approved scope
+("bump the PO agent's container image"). Used a surgical
+`az containerapp update -g rg-ihzhhpf-sit -n ca-po-ihzhhpf-sit --image
+cri75lbu5sj4hza.azurecr.io/po-agent-service:sit-manual-20260808` instead -
+`provisioningState: Succeeded`, `runningStatus: Running`, only the one
+container's image changed.
+
+**Live smoke-test:**
+
+- `GET /healthz` -> `200 {"status":"ok"}`, `server: uvicorn` - genuinely the
+  real FastAPI app, not a placeholder.
+- `POST /answer` with a real CEO-persona question ->
+
+  ```json
+  {
+    "agentLabel": "product-owner-agent",
+    "contextChip": { "subject": "CEO", "tone": "signal" },
+    "read": "Advisory only. This is a partial, transparently-degraded answer: insufficient high-confidence grounded sources were available.",
+    "levers": [],
+    "citations": [],
+    "provenance": "live",
+    "refused": true
+  }
+  ```
+
+  **This is the correct, safe result given the findings above - not a bug.**
+  The service is live, the wire contract is exactly right, and the
+  zero-hallucination doctrine holds: with no class actually able to
+  retrieve real chunks yet, it refuses rather than fabricates.
+
+**New finding while verifying - env var contract mismatch:** the deployed
+Container App's configured env vars are `AZURE_CLIENT_ID`, `SEARCH_ENDPOINT`,
+`SEARCH_API_VERSION`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT`,
+`COSMOS_ENDPOINT`, `KEY_VAULT_URI`, `DEMO_SCOPE` - **none of which match**
+what WS-RET's `get_tools()` actually reads (`AZURE_SEARCH_ENDPOINT` /
+`AZURE_SEARCH_INDEX`, `AZURE_SUBSCRIPTION_ID`, `FABRIC_DATA_AGENT_ENDPOINT` /
+`FABRIC_WORKSPACE_ID` / `FABRIC_DATA_AGENT_ID`). The infra module's env-var
+contract was defined before WS-RET's real implementation names were settled
+and was never reconciled. Every class's `try/except` correctly catches the
+resulting `KeyError`/missing-env and omits that class rather than crashing -
+which is exactly why the live test above safely refused instead of erroring.
+
+**Updated follow-up list (supersedes the numbered list above) - all still
+need their own separate approval, none applied yet:**
+
+1. Reconcile the Container App's env var names/values with what the code
+   reads (rename or add: `AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_INDEX`,
+   `AZURE_SUBSCRIPTION_ID`, `FABRIC_DATA_AGENT_ENDPOINT`,
+   `FABRIC_WORKSPACE_ID`, `FABRIC_DATA_AGENT_ID`, `FOUNDRY_PROJECT_ENDPOINT`,
+   `FOUNDRY_PROJECT_NAME`) - a Bicep change to the runtime module, not a
+   one-off manual `containerapp update`.
+2. Grant the PO agent MI (`cf4a8863-f671-47f7-b25a-9ed63c86c8da`) `Reader`
+   at subscription scope (Class B) and `Cost Management Reader` at
+   subscription scope (Class C).
+3. Grant the PO agent MI a read role on `ai-ihzhhpf-sit-eastus2` (Class D).
+4. Build and deploy a real image for `caj-po-refresh-ihzhhpf-sit`, trigger a
+   manual run, re-check the index document count (Class A).
+5. Re-run the live smoke-test after 1-4 land and confirm `refused: false`
+   with real citations on at least one class.
