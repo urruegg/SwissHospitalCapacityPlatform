@@ -129,6 +129,9 @@ param logAnalyticsWorkspaceId string = ''
 @description('When true, the deployment is scoped to the demo path (synthetic data only, ADR-0013). Emits a demoScope tag for provenance.')
 param demoScope bool = false
 
+@description('When true, grants the runtime MI subscription-scope Reader + Cost Management Reader (Class B/C). Default true; set false only for a narrower test deployment.')
+param grantSubscriptionScopeRoles bool = true
+
 var effectiveTags = union(tags, {
   demoScope: demoScope ? 'true' : 'false'
 })
@@ -145,6 +148,10 @@ var searchIndexDataReaderRoleId = '1407120a-92aa-4202-b7e9-c0e197c71c8f'
 var cognitiveServicesOpenAiUserRoleId = '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+// Class B (live-proof, Resource Graph) + Class C (cost) — both are
+// subscription-scoped services with no narrower ARM scope.
+var readerRoleId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+var costManagementReaderRoleId = '72fafb9e-0641-4937-9268-a91bfd8191a3'
 // Class D: prefer the explicit fabricWorkspaceId param (same value agent-host
 // already receives as a plain pass-through); fall back to parsing it out of
 // fabricDataAgentEndpoint's /workspaces/{id}/ path segment only if that's not set.
@@ -323,6 +330,20 @@ resource searchReaderRole 'Microsoft.Authorization/roleAssignments@2022-04-01' =
     principalId: identity.properties.principalId
     principalType: 'ServicePrincipal'
     description: 'Sprint 28 WS-INF (#377) — PO Agent runtime MI queries the corpus index (Class A retrieval, keyless).'
+  }
+}
+
+// Subscription-scope role assignments cannot be declared directly in a
+// resourceGroup-scoped file (BCP139) — nested module w/ targetScope =
+// 'subscription' is the standard Bicep pattern for elevating scope.
+module subscriptionRoles 'subscription-roles.bicep' = if (grantSubscriptionScopeRoles) {
+  name: 'po-agent-subscription-roles-${nameSuffix}'
+  scope: subscription()
+  params: {
+    principalId: identity.properties.principalId
+    identityResourceId: identity.id
+    readerRoleId: readerRoleId
+    costManagementReaderRoleId: costManagementReaderRoleId
   }
 }
 
