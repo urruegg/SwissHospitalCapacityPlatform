@@ -208,8 +208,11 @@ param enablePoAgentCorpusLandingModule bool = false
 @description('Enable the Sprint 28 PO Agent runtime module (Container App + scheduled corpus-refresh job + Cosmos audit + Azure OpenAI + Key Vault). Requires enablePoAgentCorpusLandingModule for the Storage RBAC grant and enablePoAgentSearchModule for the Search reader grant.')
 param enablePoAgentRuntimeModule bool = false
 
-@description('Container image the PO Agent runtime app + corpus-refresh job run. Placeholder until the PO Agent CI workflow pushes a real image to ACR.')
+@description('Container image the PO Agent runtime app runs. Placeholder until po-agent-runtime-build.yml pushes a real image to ACR.')
 param poAgentContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Container image the PO Agent corpus-refresh job runs (Sprint 42 fix - separate from poAgentContainerImage since the runtime app and refresh job are different programs). Placeholder until po-agent-corpus-build.yml pushes a real image to ACR.')
+param poAgentCorpusRefreshContainerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 
 @description('Resource ID of the Log Analytics workspace for PO Agent Search/Cosmos/Key Vault diagnostics. Empty = diagnostics skipped (SIT). Populated in PROD.')
 param poAgentLogAnalyticsWorkspaceId string = ''
@@ -579,6 +582,7 @@ module poAgentRuntime './modules/experience-hosting/po-agent-runtime/main.bicep'
     containerAppEnvironmentName: 'cae-po-${resourceSuffix}'
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
     containerImage: poAgentContainerImage
+    corpusRefreshContainerImage: poAgentCorpusRefreshContainerImage
     // Reuse the sim-capacity ACR params — same registry serves all Container Apps.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

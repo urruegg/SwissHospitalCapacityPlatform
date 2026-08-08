@@ -45,8 +45,11 @@ param containerAppEnvironmentName string = 'cae-po-${nameSuffix}'
 @description('Optional Log Analytics workspace resource ID for the managed environment. Ignored when containerAppEnvironmentId is provided.')
 param logAnalyticsWorkspaceResourceId string = ''
 
-@description('Container image the runtime app + refresh job run. Defaults to a placeholder; the real PO Agent image is published by a follow-up CI workflow.')
+@description('Container image the runtime app runs. Defaults to a placeholder; the real PO Agent image is published by po-agent-runtime-build.yml.')
 param containerImage string = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+
+@description('Container image the corpus-refresh job runs. Separate from containerImage (Sprint 42 fix) - the runtime app and the refresh job are different programs (uvicorn web service vs. a batch CLI) and must not share one image. Defaults to containerImage for backward compatibility when unset; the real corpus-refresh image is published by po-agent-corpus-build.yml.')
+param corpusRefreshContainerImage string = containerImage
 
 @description('Optional ACR login server the runtime/job pull containerImage from. Set together with containerRegistryResourceId to wire MI-based pull (no admin creds, no secrets).')
 param containerRegistryLoginServer string = ''
@@ -489,7 +492,7 @@ resource refreshJob 'Microsoft.App/jobs@2024-03-01' = {
       containers: [
         {
           name: 'po-corpus-refresh'
-          image: containerImage
+          image: corpusRefreshContainerImage
           resources: {
             cpu: json('0.25')
             memory: '0.5Gi'
