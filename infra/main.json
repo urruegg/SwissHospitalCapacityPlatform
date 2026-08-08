@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.46.1.21595",
-      "templateHash": "4463037026034871064"
+      "templateHash": "4272289047864802630"
     }
   },
   "parameters": {
@@ -4183,6 +4183,18 @@
           "searchEndpoint": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.searchEndpoint.value), createObject('value', ''))]",
           "searchServiceId": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.searchServiceId.value), createObject('value', ''))]",
           "searchRestApiVersion": "[if(parameters('enablePoAgentSearchModule'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', format('po-agent-search-{0}', parameters('environmentName'))), '2025-04-01').outputs.pinnedSearchRestApiVersion.value), createObject('value', '2024-05-01-preview'))]",
+          "searchIndexName": {
+            "value": "[format('idx-curavias-corpus-{0}', variables('resourceSuffix'))]"
+          },
+          "fabricDataAgentEndpoint": {
+            "value": "[parameters('fabricDataAgentEndpoint')]"
+          },
+          "fabricWorkspaceId": {
+            "value": "[parameters('fabricWorkspaceId')]"
+          },
+          "fabricDataAgentId": {
+            "value": "[parameters('fabricDataAgentId')]"
+          },
           "corpusStorageAccountName": {
             "value": "[variables('poCorpusStorageName')]"
           },
@@ -4203,7 +4215,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.46.1.21595",
-              "templateHash": "7824645466430162025"
+              "templateHash": "4700206690821230900"
             }
           },
           "parameters": {
@@ -4279,7 +4291,7 @@
               "type": "string",
               "defaultValue": "",
               "metadata": {
-                "description": "Query endpoint of the Azure AI Search service (ai-search module output). Threaded to the runtime as SEARCH_ENDPOINT."
+                "description": "Query endpoint of the Azure AI Search service (ai-search module output). Threaded to the runtime as AZURE_SEARCH_ENDPOINT."
               }
             },
             "searchServiceId": {
@@ -4294,6 +4306,48 @@
               "defaultValue": "2024-05-01-preview",
               "metadata": {
                 "description": "Pinned data-plane Search REST api-version (ai-search module output). Threaded to the runtime as SEARCH_API_VERSION."
+              }
+            },
+            "searchIndexName": {
+              "type": "string",
+              "defaultValue": "[format('idx-curavias-corpus-{0}', parameters('nameSuffix'))]",
+              "metadata": {
+                "description": "Name of the Azure AI Search index the runtime queries for Class A corpus retrieval. Threaded as AZURE_SEARCH_INDEX."
+              }
+            },
+            "fabricDataAgentEndpoint": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Published Fabric Data Agent consumption endpoint (Class D ontology). Empty skips Class D wiring — same fabricDataAgentEndpoint value already used by the agent-host module (infra/main.bicep)."
+              }
+            },
+            "fabricWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Fabric workspace ID hosting the Data Agent (Class D). Parsed by convention from fabricDataAgentEndpoint's /workspaces/{id}/ path segment when not overridden."
+              }
+            },
+            "fabricDataAgentId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Fabric Data Agent artifact ID (Class D). Same fabricDataAgentId value already used by the agent-host module."
+              }
+            },
+            "foundryProjectEndpoint": {
+              "type": "string",
+              "defaultValue": "https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com",
+              "metadata": {
+                "description": "Foundry project endpoint (Class B live-proof + Class C cost reconciliation). Defaults to the ADR-0032 SIT project; override per environment."
+              }
+            },
+            "foundryProjectName": {
+              "type": "string",
+              "defaultValue": "ai-ihzhhpf-sit-eastus2-project",
+              "metadata": {
+                "description": "Foundry project name (Class B/C). Defaults to the ADR-0032 SIT project."
               }
             },
             "corpusStorageAccountName": {
@@ -4395,6 +4449,13 @@
               "metadata": {
                 "description": "When true, the deployment is scoped to the demo path (synthetic data only, ADR-0013). Emits a demoScope tag for provenance."
               }
+            },
+            "grantSubscriptionScopeRoles": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "When true, grants the runtime MI subscription-scope Reader + Cost Management Reader (Class B/C). Default true; set false only for a narrower test deployment."
+              }
             }
           },
           "variables": {
@@ -4408,6 +4469,9 @@
             "cognitiveServicesOpenAiUserRoleId": "5e0bd9bd-7b93-4f28-af87-19fc36ad61bd",
             "keyVaultSecretsUserRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
             "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+            "readerRoleId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
+            "costManagementReaderRoleId": "72fafb9e-0641-4937-9268-a91bfd8191a3",
+            "effectiveFabricWorkspaceId": "[if(not(empty(parameters('fabricWorkspaceId'))), parameters('fabricWorkspaceId'), if(contains(parameters('fabricDataAgentEndpoint'), '/workspaces/'), split(split(parameters('fabricDataAgentEndpoint'), '/workspaces/')[1], '/')[0], ''))]",
             "cosmosDataContributorRoleId": "00000000-0000-0000-0000-000000000002",
             "effectiveEnvironmentId": "[if(not(empty(parameters('containerAppEnvironmentId'))), parameters('containerAppEnvironmentId'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')))]",
             "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]"
@@ -4641,12 +4705,40 @@
                           "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
                         },
                         {
-                          "name": "SEARCH_ENDPOINT",
+                          "name": "AZURE_SUBSCRIPTION_ID",
+                          "value": "[subscription().subscriptionId]"
+                        },
+                        {
+                          "name": "AZURE_SEARCH_ENDPOINT",
                           "value": "[parameters('searchEndpoint')]"
+                        },
+                        {
+                          "name": "AZURE_SEARCH_INDEX",
+                          "value": "[parameters('searchIndexName')]"
                         },
                         {
                           "name": "SEARCH_API_VERSION",
                           "value": "[parameters('searchRestApiVersion')]"
+                        },
+                        {
+                          "name": "FABRIC_DATA_AGENT_ENDPOINT",
+                          "value": "[parameters('fabricDataAgentEndpoint')]"
+                        },
+                        {
+                          "name": "FABRIC_WORKSPACE_ID",
+                          "value": "[variables('effectiveFabricWorkspaceId')]"
+                        },
+                        {
+                          "name": "FABRIC_DATA_AGENT_ID",
+                          "value": "[parameters('fabricDataAgentId')]"
+                        },
+                        {
+                          "name": "FOUNDRY_PROJECT_ENDPOINT",
+                          "value": "[parameters('foundryProjectEndpoint')]"
+                        },
+                        {
+                          "name": "FOUNDRY_PROJECT_NAME",
+                          "value": "[parameters('foundryProjectName')]"
                         },
                         {
                           "name": "AZURE_OPENAI_ENDPOINT",
@@ -4814,6 +4906,98 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('grantSubscriptionScopeRoles')]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "[format('po-agent-subscription-roles-{0}', parameters('nameSuffix'))]",
+              "subscriptionId": "[subscription().subscriptionId]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "principalId": {
+                    "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+                  },
+                  "identityResourceId": {
+                    "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
+                  },
+                  "readerRoleId": {
+                    "value": "[variables('readerRoleId')]"
+                  },
+                  "costManagementReaderRoleId": {
+                    "value": "[variables('costManagementReaderRoleId')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.46.1.21595",
+                      "templateHash": "13172989089085823142"
+                    }
+                  },
+                  "parameters": {
+                    "principalId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "principalId of the po-agent-runtime managed identity."
+                      }
+                    },
+                    "identityResourceId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource ID of the po-agent-runtime managed identity, used only for guid() name uniqueness."
+                      }
+                    },
+                    "readerRoleId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Built-in \"Reader\" role definition ID."
+                      }
+                    },
+                    "costManagementReaderRoleId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Built-in \"Cost Management Reader\" role definition ID."
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "name": "[guid(subscription().id, parameters('identityResourceId'), parameters('readerRoleId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('readerRoleId'))]",
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 42 — PO Agent runtime MI queries Azure Resource Graph (Class B live-proof, keyless)."
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2022-04-01",
+                      "name": "[guid(subscription().id, parameters('identityResourceId'), parameters('costManagementReaderRoleId'))]",
+                      "properties": {
+                        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('costManagementReaderRoleId'))]",
+                        "principalId": "[parameters('principalId')]",
+                        "principalType": "ServicePrincipal",
+                        "description": "Sprint 42 — PO Agent runtime MI queries Cost Management (Class C cost reconciliation, keyless)."
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-po-{0}', parameters('nameSuffix')))]"
               ]
             }
           ],
