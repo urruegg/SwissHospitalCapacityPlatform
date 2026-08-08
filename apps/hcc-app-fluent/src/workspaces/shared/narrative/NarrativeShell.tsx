@@ -82,6 +82,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    gap: tokens.spacingVerticalXXL,
   },
 });
 

@@ -39,9 +39,9 @@ describe('BackstageSubNav', () => {
       'Erfolgsframework',
     );
     expect(screen.getByTestId('backstage-nav-solution-design')).toHaveTextContent('Lösungsdesign');
-    expect(screen.getByTestId('backstage-nav-devsecops-loop')).toHaveTextContent('DevSecOps-Loop');
-    expect(screen.getByTestId('backstage-nav-review-sessions')).toHaveTextContent('Review-Sessions');
-    expect(screen.getByTestId('backstage-nav-po-classes')).toHaveTextContent('Product-Owner-Agent');
+    expect(screen.getByTestId('backstage-nav-devsecops-loop')).toHaveTextContent('DevSecOps');
+    expect(screen.getByTestId('backstage-nav-review-sessions')).toHaveTextContent('Review');
+    expect(screen.getByTestId('backstage-nav-po-classes')).toHaveTextContent('Product Owner');
     // Guard: the previously-missing de keys must not surface the English fallback label.
     expect(screen.getByTestId('backstage-nav-success-framework')).not.toHaveTextContent(
       'Success Framework',

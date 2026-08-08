@@ -38,15 +38,15 @@
     "nav": {
       "label": "Backstage sections",
       "bva": "Business case",
-      "ninetyDay": "90-day roadmap",
-      "feedbackLoop": "Digital Feedback Loop",
+      "ninetyDay": "Roadmap",
+      "feedbackLoop": "Feedback Loop",
       "opportunities": "Opportunities",
       "company": "Company",
       "successFramework": "Success Framework",
       "solutionDesign": "Solution design",
-      "devsecops": "DevSecOps loop",
-      "reviews": "Review sessions",
-      "poClasses": "Product Owner Agent"
+      "devsecops": "DevSecOps",
+      "reviews": "Review",
+      "poClasses": "Product Owner"
     },
     "story": {
       "tab": "Story",
@@ -67,7 +67,27 @@
       "narrative": {
         "success": { "accent": "Success Framework" },
         "devsecops": { "accent": "built and shipped" },
-        "reviews": { "accent": "real people" },
+        "reviews": {
+          "accent": "real people",
+          "header": "Pressure-tested with real people, in real review sessions",
+          "tagline": "Backstage \u00b7 this was a real exercise",
+          "description": "Curavias was challenged across a documented series of expert reviews and a named hospital field interview, each producing governance evidence.",
+          "tableTitle": "Review sessions on record",
+          "colSession": "Session",
+          "colDate": "Date",
+          "colPerspective": "Perspective challenged",
+          "tableNote": "Held at the Microsoft Innovation Hub, Zurich, and with hospital teams directly.",
+          "peopleTitle": "The real practitioners who took part",
+          "attribution": "Attribution note: named sessions and hospital references are drawn from the Curavias review record. Role-based challenge stances summarise what the sessions surfaced; several sessions recorded participants by role only. Named practitioners are shown with their consent to be credited.",
+          "sessions": {
+            "coo": { "name": "COO showcase", "persp": "Business case & adoption" },
+            "cio": { "name": "CIO review", "persp": "Foresight horizon & data readiness" },
+            "ops": { "name": "Hospital operations field interview", "persp": "Time for patient care" },
+            "cto": { "name": "CTO-mentor review", "persp": "Sovereignty & regulation" },
+            "ciso": { "name": "CISO / security review", "persp": "Data protection & keys" },
+            "it": { "name": "Cantonal IT review", "persp": "Cloud operating model" }
+          }
+        },
         "poClasses": { "accent": "hard questions" }
       },
       "agents": {
@@ -576,7 +596,7 @@
       "nav": {
         "label": "Start sections",
         "overview": "Overview",
-        "value": "Value",
+        "value": "Stage",
         "challenger": "Challengers",
         "vision": "Why Curavias",
         "operatingModel": "Model",
@@ -668,12 +688,12 @@
             "meta": "showcase interview · 24 Jul 2026 · Innovation Hub Zurich",
             "quote": "The business case is plausible — but implementations like this fail on IT resources, cost and data quality. And will my people actually use it?",
             "addressed": [
-              "The metadata-only, deep-link model holds: matching and planning run on metadata, patient data stays in the local KIS and is only referenced. The economics are stated openly — 3-year TCO CHF 5.05M against CHF 11.46M gross benefit, 127% ROI, payback under six months, with a ±30% ROM band and a downside case that still returns 48%.",
+              "The metadata-only, deep-link model holds: matching and planning run on metadata, patient data stays in the local KIS and is only referenced. The economics are stated openly — 3-year TCO CHF 4.53M against CHF 11.46M gross benefit, 153% ROI, payback under four months, with a Frontier-informed sensitivity band and a conservative case that still returns 60%.",
               "On adoption we agreed with her, not with the technology: she named data quality and the human factor — acceptance, training, change management — as the real success-or-failure factors. Even experienced staff revert to old ways when overwhelmed. So quality became an agent's job rather than a policy, and the human kept the decision."
             ],
             "value": [
-              "127% ROI over three years and payback in under six months — a controlled, ROM-level investment, not an open-ended programme",
-              "CHF 11.46M gross benefit against CHF 5.05M TCO — and even the downside case returns 48%",
+              "153% ROI over three years and payback in under four months — a controlled, evidence-calibrated investment, not an open-ended programme",
+              "CHF 11.46M gross benefit against CHF 4.53M TCO — and even the conservative case returns 60%",
               "OR utilisation ≥ 85% as the operational target she set in the session",
               "Adoption risk designed out: advisory-only + human-in-the-loop means staff keep authority, so the system is not something done to them",
               "Data quality becomes visible work — gaps get found and routed to an owner instead of quietly discrediting every report"
@@ -1092,13 +1112,13 @@
         "title": "BVA decision",
         "body": "ROM-bound Business Value Assessment decision surface with KPI, TCO, sensitivity, and Product Owner handoff.",
         "eyebrow": "The decision · Business Value Assessment",
-        "tcoTitle": "Annualised TCO",
+        "tcoTitle": "3-year TCO",
         "valueLeversTitle": "Value levers",
         "sensitivityTitle": "Sensitivity",
         "proofTitle": "Proof & evidence",
         "finalTitle": "Executive decision",
         "finalBadge": "Advisory handoff",
-        "tcoActual": "Actual",
+        "tcoActual": "Frontier-informed",
         "tcoVariance": "Variance",
         "sensitivitySummary": "{{benefit}} annual benefit · {{tco}} 3-yr TCO · {{roi}} 3-yr ROI",
         "proofFallback": "Power BI embed fallback",

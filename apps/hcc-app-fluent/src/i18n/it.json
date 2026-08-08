@@ -38,14 +38,14 @@
     "nav": {
       "label": "Sezioni backstage",
       "bva": "Business case",
-      "ninetyDay": "Roadmap di 90 giorni",
-      "feedbackLoop": "Ciclo di feedback digitale",
+      "ninetyDay": "Roadmap",
+      "feedbackLoop": "Ciclo feedback",
       "opportunities": "Opportunita",
       "successFramework": "Framework di successo",
       "solutionDesign": "Progettazione della soluzione",
-      "devsecops": "Ciclo DevSecOps",
-      "reviews": "Sessioni di revisione",
-      "poClasses": "Agente Product Owner"
+      "devsecops": "DevSecOps",
+      "reviews": "Revisione",
+      "poClasses": "Product Owner"
     },
     "story": {
       "tab": "Storia",
@@ -430,7 +430,7 @@
       "nav": {
         "label": "Sezioni iniziali",
         "overview": "Panoramica",
-        "value": "Valore",
+        "value": "Scena",
         "challenger": "Challenger",
         "vision": "Perché Curavias",
         "operatingModel": "Modello",

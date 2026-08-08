@@ -1,5 +1,4 @@
 import {
-  Badge,
   Body1,
   Button,
   Caption1,
@@ -23,11 +22,7 @@ import {
   type BvaSensitivityScenarioPayload,
   type BvaTrendPoint,
 } from '../../../data/bva/bva-evidence';
-import { useCopilotRail } from '../../../copilot-rail/rail-context';
-import type { GroundedReco } from '../../../copilot-rail/reco';
-import type { ContextInsight } from '../../../journey/RoleBoard';
 import { useShowcaseStyles } from '../../shared/narrative/showcase-styles';
-import { scrollToSection } from '../../shared/narrative/NarrativeShell';
 
 const useStyles = makeStyles({
   root: {
@@ -61,11 +56,6 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     boxShadow: tokens.shadow2,
     minWidth: 0,
-  },
-  // Final decision card: green left accent (mockup / backstage decision surface).
-  finalCard: {
-    borderLeftWidth: '4px',
-    borderLeftColor: '#17B890',
   },
   panelTitle: {
     overflowWrap: 'anywhere',
@@ -110,23 +100,6 @@ const useStyles = makeStyles({
   evidenceItem: {
     display: 'grid',
     gap: tokens.spacingVerticalXXS,
-  },
-  decisionCard: {
-    display: 'grid',
-    gap: tokens.spacingVerticalM,
-  },
-  decisionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: tokens.spacingHorizontalS,
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  ctaRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: tokens.spacingHorizontalS,
-    alignItems: 'center',
   },
 });
 
@@ -176,62 +149,6 @@ function selectedScenarioSummary(
   });
 }
 
-function buildInsight(title: string, selectedScenarioName: string): ContextInsight {
-  return {
-    id: 'start-bva-decision',
-    label: title,
-    context: {
-      source: 'start-bva-decision-section',
-      headlineMeasures: bvaHeadlineKpis.map((payload) => payload.measure),
-      tcoMeasure: bvaPlanVsActual.measure,
-      valueLevers: bvaValueLevers.map((lever) => lever.lever),
-      selectedSensitivityScenario: selectedScenarioName,
-    },
-  };
-}
-
-function buildReco(
-  t: ReturnType<typeof useTranslation>['t'],
-  latestTrendPoint: BvaTrendPoint,
-  selectedScenario: BvaSensitivityScenarioPayload,
-): GroundedReco {
-  return {
-    agentLabel: 'product-owner-agent',
-    contextChip: {
-      subject: t('start.frontier.bva.title'),
-      qualifiers: [selectedScenario.scenario],
-      status: t('start.frontier.guardrails.advisory'),
-      tone: 'signal',
-    },
-    read: t('start.frontier.bva.railRead', {
-      netValue: formatHeadlineValue(bvaHeadlineKpis[0]),
-      roi: formatHeadlineValue(bvaHeadlineKpis[1]),
-      tcoMeasure: bvaPlanVsActual.measure,
-      trend: `${latestTrendPoint.label} ${formatTrendValue(latestTrendPoint.value, bvaTrend.unit)}`,
-    }),
-    levers: [
-      {
-        text: t('start.frontier.bva.cta'),
-        impact: { label: t('start.valueTiles.romLabel'), tone: 'trust' },
-      },
-    ],
-    citations: Array.from(
-      new Set([
-        bvaHeadlineKpis[0].source,
-        bvaPlanVsActual.source,
-        selectedScenario.source,
-        bvaTrend.source,
-      ]),
-    ),
-    provenance: 'simulated',
-    followUps: [
-      t('start.frontier.bva.followUps.provenance'),
-      t('start.frontier.bva.followUps.budget'),
-      t('start.frontier.bva.followUps.sensitivity'),
-    ],
-  };
-}
-
 /**
  * Distinct proof/evidence entries for the "Proof & evidence" panel: the
  * latest `bvaTrend` reading plus the qualitative `bvaProofPoints` governance
@@ -263,19 +180,12 @@ export function BvaDecisionSection() {
   const sc = useShowcaseStyles();
   const { t } = useTranslation();
   const defaultScenario =
-    bvaSensitivityScenarios.find((scenario) => scenario.scenario === 'Base ROM') ??
+    bvaSensitivityScenarios.find((scenario) => scenario.id === 'base-rom') ??
     bvaSensitivityScenarios[0];
   const [selectedScenarioId, setSelectedScenarioId] = useState(defaultScenario?.id ?? '');
   const selectedScenario =
     bvaSensitivityScenarios.find((scenario) => scenario.id === selectedScenarioId) ?? defaultScenario;
   const latestTrendPoint = bvaTrend.points[bvaTrend.points.length - 1];
-
-  let rail: ReturnType<typeof useCopilotRail> | null = null;
-  try {
-    rail = useCopilotRail();
-  } catch {
-    rail = null;
-  }
 
   const evidence = useMemo(
     () => (latestTrendPoint ? proofEntries(latestTrendPoint) : []),
@@ -413,53 +323,6 @@ export function BvaDecisionSection() {
             <Caption1 className={styles.muted} data-testid="bva-rom-caption">
               {romCaption(t, bvaTrend)}
             </Caption1>
-          </section>
-
-          <section className={`${styles.panel} ${styles.finalCard}`} data-testid="bva-final-card">
-            <div className={styles.decisionCard}>
-              <div className={styles.decisionHeader}>
-                <Title3 as="h3" className={styles.panelTitle}>
-                  {t('start.frontier.bva.finalTitle')}
-                </Title3>
-                <Badge appearance="tint" color="informative">
-                  {t('start.frontier.bva.finalBadge')}
-                </Badge>
-              </div>
-              <Body1>
-                {t('start.frontier.bva.finalRead', {
-                  netValue: formatHeadlineValue(bvaHeadlineKpis[0]),
-                  roi: formatHeadlineValue(bvaHeadlineKpis[1]),
-                  budget: `${formatCurrency(bvaPlanVsActual.actual, bvaPlanVsActual.currency)} (${formatVariance(
-                    bvaPlanVsActual.variancePct,
-                  )})`,
-                  trend: `${latestTrendPoint.label} ${formatTrendValue(latestTrendPoint.value, bvaTrend.unit)}`,
-                })}
-              </Body1>
-              <div className={styles.ctaRow}>
-                <Button
-                  appearance="primary"
-                  data-testid="bva-launch-cta"
-                  onClick={() => scrollToSection('ninety-day')}
-                >
-                  {t('start.frontier.bva.launchCta')}
-                </Button>
-                <Button
-                  appearance="secondary"
-                  data-testid="bva-decision-cta"
-                  onClick={() =>
-                    rail?.openWithReco(
-                      buildInsight(t('start.frontier.bva.title'), selectedScenario.scenario),
-                      buildReco(t, latestTrendPoint, selectedScenario),
-                    )
-                  }
-                >
-                  {t('start.frontier.bva.cta')}
-                </Button>
-              </div>
-              <Caption1 className={styles.muted} data-testid="bva-rom-caption">
-                {romCaption(t, bvaPlanVsActual)}
-              </Caption1>
-            </div>
           </section>
         </div>
       </div>

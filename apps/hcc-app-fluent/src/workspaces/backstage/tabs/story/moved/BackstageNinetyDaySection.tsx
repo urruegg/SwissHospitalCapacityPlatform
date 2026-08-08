@@ -1,9 +1,15 @@
+import { makeStyles, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { SectionHeader } from '../../../../shared/narrative/SectionHeader';
 import { NinetyDaySection } from '../../../../start/frontier/NinetyDaySection';
 
+const useStyles = makeStyles({
+  root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL },
+});
+
 export function BackstageNinetyDaySection() {
   const { t } = useTranslation();
+  const styles = useStyles();
   const title = t(
     'backstage.story.ninetyDay.title',
     'Your first frontier: capacity forecast in 90 days',
@@ -18,7 +24,7 @@ export function BackstageNinetyDaySection() {
     : [{ text: title }];
 
   return (
-    <section data-testid="backstage-ninety-day-section" aria-labelledby="ninety-day-title">
+    <section data-testid="backstage-ninety-day-section" className={styles.root} aria-labelledby="ninety-day-title">
       <SectionHeader
         id="ninety-day"
         variant="eyebrow"

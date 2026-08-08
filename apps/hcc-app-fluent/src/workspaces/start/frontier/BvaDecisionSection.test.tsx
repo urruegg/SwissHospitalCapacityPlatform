@@ -166,19 +166,14 @@ describe('BvaDecisionSection', () => {
     expect(within(evidenceList).queryByText(bvaPlanVsActual.measure)).not.toBeInTheDocument();
   });
 
-  it('keeps the decision card bound to headline KPIs, TCO, and the latest trend point; opens the Product Owner rail', () => {
+  it('does not render the removed Executive-decision card', () => {
     renderSection(<BvaDecisionSection />);
+    const section = screen.getByTestId('bva-decision-section');
 
-    expect(screen.getByTestId('rail-open')).toHaveTextContent('false');
-
-    fireEvent.click(screen.getByTestId('bva-decision-cta'));
-
-    expect(screen.getByTestId('rail-open')).toHaveTextContent('true');
-    expect(screen.getByTestId('rail-read')).toHaveTextContent(bvaPlanVsActual.measure);
-    expect(screen.getByTestId('rail-citations')).toHaveTextContent(bvaTrend.source);
-    // Base ROM is the default selected scenario; its source must be cited once selected.
-    const baseRom = bvaSensitivityScenarios.find((s) => s.scenario === 'Base ROM')!;
-    expect(screen.getByTestId('rail-citations')).toHaveTextContent(baseRom.source);
+    // Sprint 40 — the "Executive decision" surface (launch + rail CTAs) was removed.
+    expect(within(section).queryByTestId('bva-final-card')).not.toBeInTheDocument();
+    expect(within(section).queryByTestId('bva-decision-cta')).not.toBeInTheDocument();
+    expect(within(section).queryByTestId('bva-launch-cta')).not.toBeInTheDocument();
   });
 });
 
