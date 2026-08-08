@@ -1,9 +1,9 @@
 ---
-Version: 1.3.0
+Version: 1.4.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.2.0 (added §2.1 WS-1 implementation + live SIT verification evidence, including the instructions/tool_choice contract corrections found post-spike)
+Previous Version: 1.3.0 (confirmed WS-2 spike outcome -- OneLake Delta direct read via deltalake, with the full 12-table per-agent inventory and live-existence check)
 ---
 
 # Sprint 43 — Real Foundry IQ + Fabric IQ Grounding — Design
@@ -230,6 +230,62 @@ This workstream **should land before or alongside WS-1**, not after: a
 real chat model summarizing the same hardcoded rows is not the improvement
 the user asked for.
 
+### 2.2 WS-2 implementation + live verification (2026-08-08)
+
+Implemented per
+[`2026-08-08-sprint-43-ws2-fabric-delta-client.md`](../plans/2026-08-08-sprint-43-ws2-fabric-delta-client.md),
+deployed to SIT (image `16d5345`), and live-verified. **The code is
+correct and deployed; a Fabric tenant-level setting is blocking the data
+plane from actually returning rows to the agent-host's managed identity.**
+
+**Live evidence:**
+- `az containerapp exec` into the running container and reproduced
+  `FabricDeltaClient`'s exact call using the container's own
+  `DefaultAzureCredential()` (resolves to `id-ca-agent-host-ihzhhpf-sit`
+  via `AZURE_CLIENT_ID`). Result: `OSError` — `403 Forbidden`, `"User is
+  not authorized to perform current operation for workspace
+  'f3af9733-9503-4e92-98f9-a901d96f1c87', artifact
+  '30594c20-46ba-40ea-91fa-4701b105e0b9'."`, at
+  `https://onelake.blob.fabric.microsoft.com/...` (the OneLake blob-API
+  data plane, distinct from the Fabric workspace-role control plane).
+- Raw HTTP to `bmca-agent` in this state: `refused: false`, but the model
+  asks for the missing occupancy figures — an honest degraded answer, not
+  a fabrication. Container logs confirm the designed graceful path:
+  `Fabric Gold table 'gold.bed_assignment' unavailable; returning no
+  grounding` for all 3 of `bmca-agent`'s tables.
+
+**Root cause (confirmed via Microsoft Learn documentation):** Fabric
+workspace roles (the `Viewer` role already granted, confirmed via
+`GET /v1/workspaces/{id}/roleAssignments`) govern the **control plane**
+(listing/reading Fabric items through the Fabric REST API). OneLake's
+**data plane** (the ADLS Gen2/blob-compatible API that `deltalake` uses,
+`onelake.blob.fabric.microsoft.com`) is gated by a separate,
+tenant-level Developer setting: **"Service principals can call Fabric
+public APIs"** (Fabric Admin Portal → Tenant settings → Developer
+settings). This setting is off by default and must be enabled tenant-wide
+or for a security group containing the agent-host's service principal —
+see
+[Connect to Microsoft Fabric OneLake — Enable the service principal in
+the Fabric tenant](https://learn.microsoft.com/dynamics365/customer-insights/data/connect-fabric-onelake#add-customer-insights---data-service-principal-to-the-fabric-workspace)
+for the exact steps (a different vendor's connector, same underlying
+Fabric tenant-setting requirement). The related **"Users can access data
+stored in OneLake with apps external to Fabric"** OneLake setting may
+also need to be on; both are tenant-admin-only settings — attempting to
+read them via `GET https://api.fabric.microsoft.com/v1/admin/tenantsettings`
+with a non-Fabric-Administrator identity itself returns `403`, confirming
+this cannot be self-served or worked around from the agent-host's current
+permissions.
+
+**Status:** WS-2's code, tests, and infra wiring are complete and
+deployed. The workstream is **blocked on a Fabric-tenant-admin action**
+(enabling the above Developer setting for the agent-host's service
+principal) before it can return real Gold rows instead of gracefully
+degrading. This does not block WS-3/WS-4 from being implemented — WS-3
+reuses the same `FabricDeltaClient` and will degrade the same honest way
+until the tenant setting lands; WS-4's Playwright suite explicitly
+accepts an honestly-disclosed degraded state as a passing outcome (see
+§4 WS-4).
+
 ### WS-3 — Real board data (`/golden/{resource}` → live Fabric-backed RLS)
 
 Complete the already-designed `#424 M4` seam: swap `SimulatedRlsProvider`
@@ -280,6 +336,19 @@ the end.
 
 ## 7. Risks / open items
 
+- **BLOCKING for real data (not for code): a Fabric tenant-admin setting.**
+  WS-2 is implemented, deployed, and live-verified to degrade honestly,
+  but cannot return real Gold rows until a Fabric Administrator enables
+  **"Service principals can call Fabric public APIs"** (Developer settings
+  in the Fabric Admin Portal) for the agent-host's service principal —
+  see §2.2 for the full root-cause evidence (a live `403 Forbidden` at the
+  OneLake data plane, reproduced via `az containerapp exec`). This is a
+  tenant-wide admin action outside this agent's permissions (confirmed:
+  reading tenant settings itself 403s without the Fabric Administrator
+  role). WS-3 will hit the identical wall since it reuses the same
+  connection — plan and implement it anyway; both workstreams are ready
+  to "go live" the moment the tenant setting is enabled, with no further
+  code changes needed.
 - **WS-1's approach is confirmed (Option A)** — the Task 0 spike was
   executed live against real SIT infrastructure (see §2, WS-1) and
   succeeded: a real, non-mock GPT-5 response was returned via
