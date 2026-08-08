@@ -1,14 +1,18 @@
-"""Sprint 41 WS-SVC: thin HTTP wrapper around the existing orchestrator.
+"""Sprint 41 WS-SVC/WS-RET: thin HTTP wrapper around the existing orchestrator.
 
 No business logic lives here. This module only (1) parses the frozen
 request shape, (2) calls the already-tested `orchestrator.answer()`, and
 (3) maps its output onto the frontend's frozen `GroundedReco` TypeScript
-shape. Real Class A-D tool wiring is injected via `get_tools()`, which
-WS-RET replaces; until then it returns empty tools (every answer refuses,
-never fabricates).
+shape. Real Class A-D tool wiring is injected via `get_tools()` (WS-RET):
+each class's real client lives in its own sibling module
+(corpus/liveproof/cost/ontology) and is wired in independently, so a
+missing/misconfigured class degrades to a grounded refusal for that class
+only, never a crashed request.
 """
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
@@ -18,6 +22,27 @@ import orchestrator
 from authz import CallerContext
 
 app = FastAPI(title="po-agent-service", version="1.0.0")
+
+_APP_DIR = Path(__file__).resolve().parent
+_PO_AGENT_ROOT = _APP_DIR.parent
+_CLASS_MODULE_DIRS = ("corpus", "liveproof", "cost", "ontology")
+
+
+def _ensure_class_module_paths() -> None:
+    """Put the Class A-D sibling modules on sys.path.
+
+    The Dockerfile copies corpus/liveproof/cost/ontology flat next to
+    app.py in the container image, but in the repo tree they live one
+    level up (siblings of runtime/, not of app.py) - support both
+    layouts so this works identically in dev/test and in the built image.
+    """
+    for base in (_APP_DIR, _PO_AGENT_ROOT):
+        for name in _CLASS_MODULE_DIRS:
+            candidate = base / name
+            if candidate.is_dir():
+                path_str = str(candidate)
+                if path_str not in sys.path:
+                    sys.path.insert(0, path_str)
 
 
 class Caller(BaseModel):
@@ -32,9 +57,24 @@ class AnswerRequest(BaseModel):
 
 
 def get_tools() -> dict[str, Any]:
-    """Real Class A-D tools. Replaced by WS-RET; empty here means every
-    answer degrades to a transparent refusal - never a fabricated one."""
-    return {}
+    """Real Class A-D tools (WS-RET). Each class is wired independently
+    and degrades on its own if unconfigured/unreachable: a missing key
+    just means `orchestrator.answer()` skips that class (never crashes
+    the whole request), matching the pre-WS-RET "empty means refusal,
+    never fabrication" doctrine this function used to implement wholesale.
+    """
+    _ensure_class_module_paths()
+    tools: dict[str, Any] = {}
+
+    try:
+        from data_agent import build_production_client as build_data_agent_client, ontologyQuery
+
+        data_agent_client = build_data_agent_client()
+        tools["D"] = lambda q: ontologyQuery(q, data_agent_client=data_agent_client)
+    except Exception:
+        pass
+
+    return tools
 
 
 @app.get("/healthz")
