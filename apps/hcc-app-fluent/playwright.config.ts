@@ -17,5 +17,22 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      // Sprint 43 WS-4 -- runs against the real deployed SIT environment,
+      // no webServer, no response stubbing. Opt-in via `npm run test:live`
+      // (never part of the default `npm test`/CI run, since it depends on
+      // live infrastructure being up and reachable).
+      name: 'live',
+      testDir: './tests/e2e-live',
+      testMatch: ['**/*.spec.ts'],
+      timeout: 60_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'https://appsit.curavias.ch',
+        trace: 'on-first-retry',
+      },
+    },
+  ],
 });

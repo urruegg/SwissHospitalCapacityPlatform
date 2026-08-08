@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:live": "playwright test --project=live",
     "test:a11y": "playwright test tests/e2e/a11y.spec.ts"
   },
   "dependencies": {
