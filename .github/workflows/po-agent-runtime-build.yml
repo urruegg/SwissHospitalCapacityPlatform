@@ -55,6 +55,12 @@ jobs:
           set -euo pipefail
           python -m pip install --upgrade pip
           pip install pytest requests azure-identity fastapi pydantic uvicorn
+          # azure-cli ships with bicep on ubuntu-latest runners; ensure it's
+          # available (matches ci.yml's bicep-build job) since the guardrail
+          # test shells out to `az bicep build`.
+          if ! az bicep version >/dev/null 2>&1; then
+            az bicep install
+          fi
 
       - name: Run po-agent test suite
         shell: bash
