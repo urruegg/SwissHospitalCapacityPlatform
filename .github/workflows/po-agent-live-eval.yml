@@ -1,0 +1,55 @@
+name: po-agent-live-eval
+
+# Sprint 41 WS-EVAL Task EVAL.3 — scheduled/manual live evaluation run of the
+# Product Owner Agent golden-question suite against the real po-agent-service
+# (SIT). Never a push-time/PR gate: workflow_dispatch + weekly schedule only,
+# matching the non-blocking pattern of adoption-refresh.yml /
+# bva-sim-refresh.yml. Azure OIDC login step + trigger shape copied from
+# bva-sim-refresh.yml (schedule + workflow_dispatch, environment: sit,
+# azure/login@v2 with allow-no-subscriptions).
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 6 * * 1' # weekly Monday 06:00 UTC
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: po-agent-live-eval
+  cancel-in-progress: false
+
+jobs:
+  live-eval:
+    name: Run PO agent live eval against SIT
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install eval dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          pip install --quiet pyyaml requests
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Run live eval against SIT
+        env:
+          PO_AGENT_SERVICE_URL: ${{ vars.PO_AGENT_SIT_URL }}
+        run: python evals/product-owner-agent/run_evals.py --live
