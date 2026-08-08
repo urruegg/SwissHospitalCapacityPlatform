@@ -11,6 +11,7 @@ only, never a crashed request.
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -79,6 +80,16 @@ def get_tools() -> dict[str, Any]:
 
         data_agent_client = build_data_agent_client()
         tools["D"] = lambda q: ontologyQuery(q, data_agent_client=data_agent_client)
+    except Exception:
+        pass
+
+    try:
+        from azure_clients import build_production_clients
+        from probes import liveProof
+
+        subscription_id = os.environ["AZURE_SUBSCRIPTION_ID"]
+        live_clients = build_production_clients(subscription_id=subscription_id)
+        tools["B"] = lambda q: liveProof(q, subscription_id, clients=live_clients)
     except Exception:
         pass
 
