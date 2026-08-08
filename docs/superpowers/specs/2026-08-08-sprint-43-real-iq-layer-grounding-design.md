@@ -1,9 +1,9 @@
 ---
-Version: 1.4.0
+Version: 1.5.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.3.0 (confirmed WS-2 spike outcome -- OneLake Delta direct read via deltalake, with the full 12-table per-agent inventory and live-existence check)
+Previous Version: 1.4.0 (recorded WS-2 live verification: implemented + deployed, blocked on a Fabric tenant-admin setting, not code)
 ---
 
 # Sprint 43 — Real Foundry IQ + Fabric IQ Grounding — Design
@@ -280,19 +280,50 @@ permissions.
 deployed. The workstream is **blocked on a Fabric-tenant-admin action**
 (enabling the above Developer setting for the agent-host's service
 principal) before it can return real Gold rows instead of gracefully
-degrading. This does not block WS-3/WS-4 from being implemented — WS-3
-reuses the same `FabricDeltaClient` and will degrade the same honest way
-until the tenant setting lands; WS-4's Playwright suite explicitly
-accepts an honestly-disclosed degraded state as a passing outcome (see
-§4 WS-4).
+degrading. WS-3 (see below, revised after investigation) turned out to
+need a data-modeling step of its own before it can reuse this connection
+meaningfully; WS-4's Playwright suite explicitly accepts an
+honestly-disclosed degraded state as a passing outcome (see §4 WS-4), so
+it is unaffected by this blocker.
 
 ### WS-3 — Real board data (`/golden/{resource}` → live Fabric-backed RLS)
 
-Complete the already-designed `#424 M4` seam: swap `SimulatedRlsProvider`
-(reads `golden/data/*.json`) for a live provider that queries real Fabric
-Gold tables through the same connection WS-2 establishes, preserving the
-existing RLS/deny-by-default contract and the `_rls` provenance metadata
-every board already reads.
+**Investigated 2026-08-08; scope revised from the original one-liner.**
+The original framing ("swap `SimulatedRlsProvider` for a live provider")
+understated the work: `golden/service.py`'s `load_golden()` always loads
+`golden/data/{resource}.json` first, and routes only the top-level *lists*
+in that payload through `RlsProvider.scope()` for row filtering — the
+provider never generates row values, it only filters ones already read
+from the static fixture. Inspecting the actual fixture shapes confirmed
+these are **rich, bespoke synthetic scenarios**, not raw Gold-table dumps:
+
+- `bed-manager.json`: `bedsShort`, `bedsReallocated`, a `reallocations`
+  list (`fromWard`/`toWard`/`beds`), a `placements` queue
+  (`status: PLACED|WAITING|BLOCKED`, `barrier` text), and a ranked
+  `barriers` list — none of this is a mechanical read of
+  `gold.bed_assignment`; it encodes a specific *operational scenario*.
+- `network.json`: closer to a simple per-site aggregate
+  (`occupancyPct`, `bedsFree`, `status`) and is the **one** resource
+  `_scope_payload()` actually RLS-filters today (the others are
+  single-site, so the filter is a no-op) — the most plausible near-term
+  candidate for a genuine live swap.
+
+**Revised recommendation:** a correct live implementation for the
+scenario-shaped boards (`bed-manager`, `or-steering`, `crisis`, etc.)
+requires a **new data-modeling spec** — which Gold tables + what
+aggregation/business rules reproduce each field — that does not exist
+today. Inventing that mapping without a spec risks encoding *incorrect*
+clinical-capacity logic under the label "live," which is a worse outcome
+than the current, honestly-labeled `provenance: simulated`. Following the
+same discipline this codebase already applies to `FabricDataAgentRlsProvider`
+(refuse rather than approximate real per-user RLS before OBO/M5 land),
+**WS-3 should not be implemented in this sprint.** It is re-scoped as a
+follow-up: (1) a design spec for the `network` resource's per-site
+aggregation (the one clean candidate), gated on the same WS-2 Fabric
+tenant-setting fix; (2) a separate, larger design spec for the
+scenario-shaped boards, likely owned by whoever defines the operational
+semantics (product/clinical stakeholder input, not a code-only task).
+No code changes made under this heading in Sprint 43.
 
 ### WS-4 — End-to-end click-to-answer UI test (closes the loop)
 
@@ -311,18 +342,21 @@ A real Playwright test suite (per the repo's existing pattern in
    working after Sprint 42 + the `PO_AGENT_URL` fix) as the regression
    baseline every other agent is measured against.
 
-This is the acceptance test for WS-1/2/3 together — it does not pass
-until all three land for a given agent.
+This is the acceptance test for WS-1/2 (and WS-3 once its own follow-up
+spec lands) together — it does not pass until each has landed for a given
+agent; where WS-3 hasn't landed yet, the board's `_rls.provenance` staying
+honestly `simulated` is a pass, not a failure.
 
 ## 5. Sequencing recommendation
 
 WS-2 (real grounding) first or in parallel with WS-1 (real synthesis) —
 synthesis without real grounding doesn't deliver the goal. WS-3 (board
-data) can run in parallel with WS-1/2 since it's a separate read path
-(`/golden/*` vs. the chat grounding path), though it converges on the same
-underlying Fabric connection. WS-4 runs last per agent, as each of the
-other three lands for that agent, and again as a full regression pass at
-the end.
+data) is **re-scoped to a follow-up** (see §2, WS-3) — it needs its own
+data-modeling spec before implementation, not just the Fabric connection
+WS-2 established. WS-4 runs against whatever of WS-1/WS-2/WS-3 has landed
+for a given agent/board, accepting an honest degraded state as a pass
+where a workstream hasn't landed yet, and again as a full regression pass
+at the end.
 
 ## 6. Verification gates
 
@@ -345,10 +379,15 @@ the end.
   OneLake data plane, reproduced via `az containerapp exec`). This is a
   tenant-wide admin action outside this agent's permissions (confirmed:
   reading tenant settings itself 403s without the Fabric Administrator
-  role). WS-3 will hit the identical wall since it reuses the same
-  connection — plan and implement it anyway; both workstreams are ready
-  to "go live" the moment the tenant setting is enabled, with no further
-  code changes needed.
+  role).
+- **WS-3 needs a data-modeling spec, not just a data-source swap.** The
+  board fixtures (`golden/data/*.json`) are bespoke synthetic scenarios
+  (placement queues, barriers, reallocations), not raw Gold-table dumps —
+  see §2, WS-3 for the investigation. Implementing a "live" version
+  without a spec risks encoding incorrect clinical-capacity logic under an
+  honest-sounding label, which is worse than the current, correctly
+  labeled `provenance: simulated`. Re-scoped as a follow-up initiative,
+  not attempted in Sprint 43.
 - **WS-1's approach is confirmed (Option A)** — the Task 0 spike was
   executed live against real SIT infrastructure (see §2, WS-1) and
   succeeded: a real, non-mock GPT-5 response was returned via
