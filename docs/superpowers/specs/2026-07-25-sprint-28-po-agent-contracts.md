@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 1.0.0 |
-| **Date** | 2026-07-25 |
+| **Version** | 1.1.0 |
+| **Date** | 2026-08-08 |
 | **Author** | Urs Rueegg (with Copilot) |
 | **Status** | Frozen |
-| **Previous Version** | n/a (initial version) |
+| **Previous Version** | 1.0.0 (initial version, WS-G0 task G0.2); this bump adds §6 the Sprint 41 HTTP service contract (WS-0 task 0.2) |
 | **Sprint** | Sprint 28 - Curavias Product Owner Agent full build |
 | **Issue** | [#377](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/377) |
 | **Owned by** | WS-G0 (task G0.2) |
@@ -106,6 +106,55 @@ Contract:
 - Answers in **DE or EN** with source-language transparency (`FR-POA-008`).
 - Logs the full bundle (question -> chunks -> citations -> confidence -> caller)
   to the Cosmos audit store (`NFR-POA-002`).
+
+## 6. HTTP service contract (Sprint 41, WS-0 task 0.2)
+
+`po-agent-service` (the FastAPI wrapper around `orchestrator.answer()`,
+Sprint 41 WS-SVC) exposes exactly two routes. No other routes exist; no
+mutation is possible over this contract.
+
+### `POST /answer`
+
+Request body:
+
+```json
+{
+  "question": "string",
+  "caller": { "persona": "string", "tier": "internal" },
+  "language": "en"
+}
+```
+
+- `caller.tier` is `"internal"` or `"partner"` and drives the existing
+  `authz.filter_chunks` partner-tier redaction unchanged - the HTTP layer
+  must not bypass it.
+- `language` is `"en"` or `"de"`.
+
+Response body - the frozen frontend `GroundedReco` shape
+(`apps/hcc-app-fluent/src/copilot-rail/reco.ts`), field-for-field:
+
+```json
+{
+  "agentLabel": "product-owner-agent",
+  "contextChip": { "subject": "string", "tone": "signal" },
+  "read": "string",
+  "levers": [],
+  "citations": ["string"],
+  "provenance": "live",
+  "refused": false
+}
+```
+
+`refused: true` on the grounded-refusal path (fewer than `N` chunks cleared
+the confidence threshold) - the response still carries `read` as the
+transparent-partial text per the existing orchestrator contract; it never
+omits the field.
+
+### `GET /healthz`
+
+`{"status": "ok"}`, no authentication, used by the Container App health
+probe only. Carries no grounded content and is not rate-limited by the
+authz layer.
 
 ## 5. Requirement traceability
 

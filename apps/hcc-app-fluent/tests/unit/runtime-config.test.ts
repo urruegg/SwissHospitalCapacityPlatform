@@ -4,6 +4,7 @@ import {
   getGoldenSourceUrl,
   getFoundryThreadsEnabled,
   getAgentHostScope,
+  getPoAgentUrl,
 } from '../../src/config/runtime-config';
 
 /**
@@ -131,5 +132,42 @@ describe('runtime-config getAgentHostScope', () => {
   it('returns an empty string when neither runtime nor build-time value is set', () => {
     vi.stubEnv('VITE_AGENT_HOST_SCOPE', '');
     expect(getAgentHostScope()).toBe('');
+  });
+});
+
+/**
+ * Sprint 41 FE.1 — the dedicated Product Owner Agent service URL follows the
+ * same runtime-injection contract as the other agent-host config values, so
+ * `invokeAgent` can route `product-owner-agent` to the real service in a
+ * given environment without a rebuild.
+ */
+describe('runtime-config getPoAgentUrl', () => {
+  afterEach(() => {
+    delete (window as { __ENV__?: unknown }).__ENV__;
+    vi.unstubAllEnvs();
+  });
+
+  it('prefers window.__ENV__.PO_AGENT_URL over the build-time fallback', () => {
+    vi.stubEnv('VITE_PO_AGENT_URL', 'https://sit.example/po');
+    (window as { __ENV__?: { PO_AGENT_URL?: string } }).__ENV__ = {
+      PO_AGENT_URL: 'https://prod.example/po',
+    };
+    expect(getPoAgentUrl()).toBe('https://prod.example/po');
+  });
+
+  it('falls back to import.meta.env.VITE_PO_AGENT_URL when the runtime value is absent', () => {
+    vi.stubEnv('VITE_PO_AGENT_URL', 'https://fallback.example/po');
+    expect(getPoAgentUrl()).toBe('https://fallback.example/po');
+  });
+
+  it('falls back to the build-time value when the runtime value is empty', () => {
+    vi.stubEnv('VITE_PO_AGENT_URL', 'https://fallback.example/po');
+    (window as { __ENV__?: { PO_AGENT_URL?: string } }).__ENV__ = { PO_AGENT_URL: '' };
+    expect(getPoAgentUrl()).toBe('https://fallback.example/po');
+  });
+
+  it('returns an empty string when neither runtime nor build-time value is set', () => {
+    vi.stubEnv('VITE_PO_AGENT_URL', '');
+    expect(getPoAgentUrl()).toBe('');
   });
 });

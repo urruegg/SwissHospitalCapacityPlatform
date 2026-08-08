@@ -3,7 +3,17 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useCopilotRail } from '../../../../../copilot-rail/rail-context';
 import type { GroundedReco } from '../../../../../copilot-rail/reco';
+import { enrichWithLiveAnswer } from '../../../../start/frontier/start-rail';
 import { SectionHeader, type SectionTitlePart } from '../../../../shared/narrative/SectionHeader';
+import rebekkaHatzung from '../../../../../assets/reviewers/rebekka-hatzung.jpg';
+import emanuelFurler from '../../../../../assets/reviewers/emanuel-furler.jpg';
+import christianErnst from '../../../../../assets/reviewers/christian-ernst.jpg';
+import regulaAdams from '../../../../../assets/reviewers/regula-adams.jpg';
+import marcoRossi from '../../../../../assets/reviewers/marco-rossi.jpg';
+import petrusJallo from '../../../../../assets/reviewers/petrus-jallo.jpg';
+import reneRaeber from '../../../../../assets/reviewers/rene-raeber.jpg';
+import danielVonBueren from '../../../../../assets/reviewers/daniel-von-bueren.jpg';
+import marcoWeber from '../../../../../assets/reviewers/marco-weber.jpg';
 
 // Sprint 36 intake (B2, B3, B5, B6) — Frontier-Firm Backstage narrative sections.
 
@@ -174,6 +184,13 @@ const useStyles = makeStyles({
     boxShadow: tokens.shadow2,
   },
   personName: { fontWeight: tokens.fontWeightSemibold, color: tokens.colorNeutralForeground1 },
+  personPhoto: {
+    width: '38px',
+    height: '38px',
+    borderRadius: tokens.borderRadiusCircular,
+    objectFit: 'cover',
+    display: 'block',
+  },
   lk: {
     fontSize: tokens.fontSizeBase200,
     color: tokens.colorBrandForeground1,
@@ -269,8 +286,8 @@ const SF_PRINCIPLES = [
 
 const SF_STATS = [
   { value: '1', sub: 'human orchestrating the build', color: '#12765F' },
-  { value: '29', sub: 'sprints delivered end-to-end', color: undefined },
-  { value: 'SIT\u2192PROD', sub: 'approval-gated promotion', color: undefined },
+  { value: '39', sub: 'sprints delivered end-to-end', color: undefined },
+  { value: '398', sub: 'PRs approved and merged', color: undefined },
   { value: '100%', sub: 'PRs human-merged, CI-gated', color: undefined },
 ] as const;
 
@@ -278,22 +295,29 @@ export function SuccessFrameworkSection() {
   const s = useStyles();
   const { t } = useTranslation();
   const rail = useRail();
-  const header = t('backstage.story.narrative.success.header', '\u201cWe have organized our own transformation against the Success Framework.\u201d');
+  const header = t('backstage.story.narrative.success.header', 'We have organized our own transformation against the Success Framework.');
   const titleParts = toTitleParts(
     header,
     t('backstage.story.narrative.success.accent', 'Success Framework'),
   );
-  const ask = () =>
-    rail?.openWithReco(
+  const ask = () => {
+    if (!rail) return;
+    const read =
+      'Curavias was built on four transformation principles - organize around outcomes, human-agent teams, trust and governance by design, and evidence-first - delivered by one human agent-boss across 39 sprints through enterprise ALM, with 100% human-merged pull requests.';
+    rail.openWithReco(
       { id: 'backstage-success-framework', label: 'Success Framework', context: { source: 'backstage-narrative', topic: 'success-framework' } },
       reco(
         'Success Framework',
-        'Curavias was built on four transformation principles - organize around outcomes, human-agent teams, trust and governance by design, and evidence-first - delivered by one human agent-boss across 29 sprints through enterprise ALM, with 100% human-merged pull requests.',
+        read,
         SF_PRINCIPLES.map((p) => p.title),
         ['docs/PRD.md', 'docs/ALM_PLAN.md', 'docs/adr/0002-runtime-is-github-copilot-coding-agent.md'],
         t,
       ),
     );
+    void enrichWithLiveAnswer(read, rail).catch((error) => {
+      console.error('PO agent live enrichment failed', error);
+    });
+  };
   return (
     <section className={s.root} data-testid="success-framework-section" aria-labelledby="success-framework-title">
       <SectionHeader
@@ -301,7 +325,7 @@ export function SuccessFrameworkSection() {
         variant="eyebrow"
         {...(titleParts ? { titleParts } : { header })}
         tagline={t('backstage.story.narrative.success.tagline', 'Backstage \u00b7 Frontier Firm')}
-        description={t('backstage.story.narrative.success.description', 'Curavias was built the way we ask hospitals to work: one human orchestrating a team of agents. The whole platform, spanning 29 sprints of requirements, architecture, code, infrastructure and compliance evidence, was delivered by a single person acting as an agent boss, with GitHub and Foundry agents doing the build.')}
+        description={t('backstage.story.narrative.success.description', 'Curavias was built the way we ask hospitals to work: one human orchestrating a team of agents. The whole platform, spanning 39 sprints of requirements, architecture, code, infrastructure and compliance evidence, was delivered by a single person acting as an agent boss, with GitHub and Foundry agents doing the build.')}
       />
       <div className={s.split}>
         <div className={s.sfRows}>
@@ -341,17 +365,24 @@ export function DevSecOpsLoopSection() {
     header,
     t('backstage.story.narrative.devsecops.accent', 'built and shipped'),
   );
-  const ask = () =>
-    rail?.openWithReco(
+  const ask = () => {
+    if (!rail) return;
+    const read =
+      'A product team of agents builds the platform through a governed DEV-OPS loop: plan, code, build and test on the DEV side; release, deploy, operate and monitor on the OPS side; with a Human-in-the-Loop gate (PR + Issue + approved-to-apply) at the centre and delivery promoted DEV to SIT to PROD behind an approval gate.';
+    rail.openWithReco(
       { id: 'backstage-devsecops', label: 'DevSecOps loop', context: { source: 'backstage-narrative', topic: 'devsecops' } },
       reco(
         'DevSecOps loop',
-        'A product team of agents builds the platform through a governed DEV-OPS loop: plan, code, build and test on the DEV side; release, deploy, operate and monitor on the OPS side; with a Human-in-the-Loop gate (PR + Issue + approved-to-apply) at the centre and delivery promoted DEV to SIT to PROD behind an approval gate.',
+        read,
         ['Human-in-the-loop gate (PR + Issue)', 'DEV to SIT to PROD promotion', 'Governance and security bands', 'GitHub + Copilot foundation'],
         ['docs/ALM_PLAN.md', 'docs/SECURITY.md'],
         t,
       ),
     );
+    void enrichWithLiveAnswer(read, rail).catch((error) => {
+      console.error('PO agent live enrichment failed', error);
+    });
+  };
   return (
     <section className={s.root} data-testid="devsecops-loop-section" aria-labelledby="devsecops-loop-title">
       <SectionHeader
@@ -426,20 +457,13 @@ export function DevSecOpsLoopSection() {
   );
 }
 
-const FOCUS_DOMAINS = [
-  { id: 'bed', avatar: 'B', color: '#365B7D', title: 'Bed / Flow - nursing (bed side)', comp: 'Competency: live bed-state and discharge readiness', chal: 'Challenge: "Show me the driver and the source - I won\'t act on a black box."' },
-  { id: 'or', avatar: 'O', color: '#17B890', title: 'Physician / OR & acute (ops side)', comp: 'Competency: clinical prioritisation and coupled OP/bed/staff steering', chal: 'Challenge: "The impact number has to be reproducible, not an AI guess."' },
-  { id: 'gov', avatar: 'G', color: '#5A6CF0', title: 'Governance / compliance & cantonal', comp: 'Competency: Swiss DSG/KVG, residency, auditability', chal: 'Challenge: "Prove no PHI leaves Switzerland - and that every answer is cited."' },
-] as const;
-
 const REVIEW_SESSIONS = [
-  { name: 'Cantonal IT / CSA', date: '2026-06-08', persp: 'Cantonal governance and Zero Trust (Canton Aargau)' },
-  { name: 'CTO-mentor review', date: '2026-06-09', persp: 'Sovereign landing zone, 24/7 hybrid, cantonal law' },
-  { name: 'Capacity-metadata review', date: '2026-06-29', persp: '4-layer master data, no-PHI episode model' },
-  { name: 'HCC & North-Star review', date: '2026-07-01', persp: 'Integral capacity, ontology, ORSA/CSA/SBA' },
-  { name: 'Hospital ops field interview', date: '2026-07-17', persp: 'Spital Zollikerberg - patient-flow reality check' },
-  { name: 'Trusted-signals review', date: '2026-07-17', persp: 'Hospital data-scientist - proactive CSA triggers' },
-  { name: 'COO showcase', date: '2026-07-24', persp: 'Data quality and adoption as the critical path' },
+  { id: 'coo', date: '2026-07-24' },
+  { id: 'cio', date: '2026-07-17' },
+  { id: 'ops', date: '2026-07-17' },
+  { id: 'cto', date: '2026-06-09' },
+  { id: 'ciso', date: '2026-06-10' },
+  { id: 'it', date: '2026-06-08' },
 ] as const;
 
 const PRACTITIONERS: {
@@ -447,42 +471,29 @@ const PRACTITIONERS: {
   color: string;
   name: string;
   role: string;
-  contrib: string;
   href?: string;
   label?: string;
+  photo?: string;
 }[] = [
-  { initials: 'CE', color: '#365B7D', name: 'Christian Ernst', role: 'Emergency & Acute Medicine \u00b7 Spital Zollikerberg', contrib: 'Confirmed the 3-7 day capacity foresight as a major planning and financial advantage and validated the agent-based patient flow.' },
-  { initials: 'RA', color: '#17B890', name: 'Regula Adams', role: 'Organizational Development \u00b7 Spital Zollikerberg', contrib: 'Partnered on the operational reality-check for coupled OP / bed / staffing steering.', href: 'https://www.linkedin.com/in/regula-adams9988/', label: 'LinkedIn' },
-  { initials: 'MR', color: '#1FA9D6', name: 'Dr. med. Marco Rossi', role: 'Physician \u00b7 Luzerner Kantonsspital (reference for Kantonsspital Curalp)', contrib: 'Clinical perspective on capacity and patient flow.', href: 'https://www.luks.ch/newsroom/dr-med-marco-rossi-die-meisten-menschen-erholen-sich-wieder', label: 'Profile' },
-  { initials: 'PJ', color: '#5A6CF0', name: 'Petrus Jallo', role: 'Cloud Solution Architect \u00b7 Canton Aargau', contrib: 'Led the cantonal governance and Zero-Trust review, flagged federal-vs-cantonal legal mapping.', href: 'https://www.linkedin.com/in/petrus-jallo/', label: 'LinkedIn' },
-  { initials: 'RR', color: '#1FA9D6', name: 'Ren\u00e9 Raeber', role: 'Director, Solution Engineering \u00b7 review and mentoring', contrib: 'Programme mentoring and architecture-maturity review across the sprints.', href: 'https://www.linkedin.com/in/rraeber/', label: 'LinkedIn' },
-  { initials: 'MW', color: '#17B890', name: 'Marco Weber', role: 'Full-Stack Developer \u00b7 product build (DevSecOps)', contrib: 'Hands-on engineering on the Curavias app and delivery pipeline.', href: 'https://www.linkedin.com/in/marco-weber-ch/', label: 'LinkedIn' },
-  { initials: 'RH', color: '#365B7D', name: 'Rebekka Hatzung', role: 'Review and advisory contributor', contrib: 'Contributed to the Curavias review program.', href: 'https://www.linkedin.com/in/rebekka-hatzung-48ab181/', label: 'LinkedIn' },
-  { initials: 'MD', color: '#1FA9D6', name: 'Michael D\u00f6ring-Wermelinger', role: 'Review and advisory contributor', contrib: 'Contributed to the Curavias review program.', href: 'https://www.linkedin.com/in/michael-d%C3%B6ring-wermelinger-81077412b/', label: 'LinkedIn' },
-  { initials: 'EF', color: '#17B890', name: 'Emanuel Furler', role: 'Review and advisory contributor', contrib: 'Contributed to the Curavias review program.', href: 'https://www.linkedin.com/in/efurler/', label: 'LinkedIn' },
-  { initials: '+', color: '#6B7A88', name: 'AMA review panel', role: 'Architecture, governance, healthcare-domain, data-science and executive perspectives.', contrib: 'Multiple named and role-based reviewers across the sessions above.' },
+  { initials: 'RH', color: '#365B7D', name: 'Rebekka Hatzung', role: 'Chief Operation Officer / Stv. CEO, LUKS Luzern', href: 'https://www.luks.ch/spezialisten/rebekka-hatzung', label: 'Profile', photo: rebekkaHatzung },
+  { initials: 'EF', color: '#17B890', name: 'Emanuel Furler', role: 'CIO, Leiter Informatik, Spitalleitung', href: 'https://spitalzollikerberg.ch/de/team/emanuel-furler', label: 'Profile', photo: emanuelFurler },
+  { initials: 'CE', color: '#1FA9D6', name: 'Christian Ernst', role: 'Leiter Departement Notfall- und Akutmedizin, Spitalleitung', href: 'https://spitalzollikerberg.ch/de/team/christian-ernst', label: 'Profile', photo: christianErnst },
+  { initials: 'RA', color: '#5A6CF0', name: 'Dr. Regula Adams', role: 'Senior Projektleiterin und Fachverantwortliche Organisationsentwicklung, Departement Notfall- und Akutmedizin', href: 'https://spitalzollikerberg.ch/de/team/regula-adams', label: 'Profile', photo: regulaAdams },
+  { initials: 'MR', color: '#365B7D', name: 'Dr. med. Marco Rossi', role: 'Infektiologe und ehemaliger Chefarzt LUKS Luzern', href: 'https://www.luks.ch/newsroom/dr-med-marco-rossi-die-meisten-menschen-erholen-sich-wieder', label: 'Profile', photo: marcoRossi },
+  { initials: 'PJ', color: '#17B890', name: 'Petrus Jallo', role: 'Cloud Solution Architect & Microsoft Technology Advisor', href: 'https://www.linkedin.com/in/petrus-jallo/', label: 'LinkedIn', photo: petrusJallo },
+  { initials: 'RR', color: '#1FA9D6', name: 'Ren\u00e9 Raeber', role: 'CTO Microsoft Switzerland', href: 'https://www.linkedin.com/in/rraeber/', label: 'LinkedIn', photo: reneRaeber },
+  { initials: 'DB', color: '#5A6CF0', name: 'Daniel von B\u00fcren', role: 'Swiss Security Officer & Solution Engineer, Microsoft Switzerland', href: 'https://www.linkedin.com/in/dvonbueren/', label: 'LinkedIn', photo: danielVonBueren },
+  { initials: 'MW', color: '#17B890', name: 'Marco Weber', role: 'Cloud & AI Solution Engineer, Full-Stack Developer advisory', href: 'https://www.linkedin.com/in/marco-weber-ch/', label: 'LinkedIn', photo: marcoWeber },
 ];
 
 export function ReviewSessionsSection() {
   const s = useStyles();
   const { t } = useTranslation();
-  const rail = useRail();
   const header = t('backstage.story.narrative.reviews.header', 'Pressure-tested with real people, in real review sessions');
   const titleParts = toTitleParts(
     header,
     t('backstage.story.narrative.reviews.accent', 'real people'),
   );
-  const ask = (subject: string, topic: string) => () =>
-    rail?.openWithReco(
-      { id: `backstage-review-${topic}`, label: subject, context: { source: 'backstage-narrative', topic: `review-${topic}` } },
-      reco(
-        'Review sessions & people',
-        'Curavias was pressure-tested across a documented series of expert reviews (2026-06 to 2026-07) and a named hospital field interview, each producing governance evidence (FR-GOV-004).',
-        FOCUS_DOMAINS.map((d) => d.title),
-        ['docs/reviews', 'docs/COMPLIANCE.md'],
-        t,
-      ),
-    );
   return (
     <section className={s.root} data-testid="review-sessions-section" aria-labelledby="review-sessions-title">
       <SectionHeader
@@ -492,52 +503,44 @@ export function ReviewSessionsSection() {
         tagline={t('backstage.story.narrative.reviews.tagline', 'Backstage \u00b7 this was a real exercise')}
         description={t('backstage.story.narrative.reviews.description', 'Curavias was challenged across a documented series of expert reviews and a named hospital field interview, each producing governance evidence.')}
       />
-      <div className={s.split}>
-        <div className={s.panel}>
-          <h3 className={s.panelTitle}>{t('backstage.story.narrative.reviews.tableTitle', 'Review sessions on record')}</h3>
-          <table className={s.table}>
-            <thead>
-              <tr>
-                <th className={s.th}>{t('backstage.story.narrative.reviews.colSession', 'Session')}</th>
-                <th className={s.th}>{t('backstage.story.narrative.reviews.colPerspective', 'Perspective challenged')}</th>
+      <div className={s.panel}>
+        <h3 className={s.panelTitle}>{t('backstage.story.narrative.reviews.tableTitle', 'Review sessions on record')}</h3>
+        <table className={s.table}>
+          <thead>
+            <tr>
+              <th className={s.th}>{t('backstage.story.narrative.reviews.colSession', 'Session')}</th>
+              <th className={s.th}>{t('backstage.story.narrative.reviews.colDate', 'Date')}</th>
+              <th className={s.th}>{t('backstage.story.narrative.reviews.colPerspective', 'Perspective challenged')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REVIEW_SESSIONS.map((r) => (
+              <tr key={r.id}>
+                <td className={s.td}>
+                  <span className={s.tdName}>{t(`backstage.story.narrative.reviews.sessions.${r.id}.name`)}</span>
+                </td>
+                <td className={s.td}>
+                  <span className={s.tdDate}>{r.date}</span>
+                </td>
+                <td className={s.td}>{t(`backstage.story.narrative.reviews.sessions.${r.id}.persp`)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {REVIEW_SESSIONS.map((r) => (
-                <tr key={r.name}>
-                  <td className={s.td}>
-                    <span className={s.tdName}>{r.name}</span>
-                    <span className={s.tdDate}>{r.date}</span>
-                  </td>
-                  <td className={s.td}>{r.persp}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className={s.note}>{t('backstage.story.narrative.reviews.tableNote', 'Held at the Microsoft Technology Center (Innovation Hub), Zurich, and with hospital teams directly.')}</p>
-        </div>
-        <div className={s.roleStack}>
-          {FOCUS_DOMAINS.map((d) => (
-            <button key={d.id} type="button" className={s.roleCard} onClick={ask(d.title, d.id)}>
-              <span className={s.avatar} style={{ backgroundColor: d.color }}>{d.avatar}</span>
-              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span className={s.roleTitle}>{d.title}</span>
-                <span className={s.comp}>{d.comp}</span>
-                <span className={s.chal}>{d.chal}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+            ))}
+          </tbody>
+        </table>
+        <p className={s.note}>{t('backstage.story.narrative.reviews.tableNote', 'Held at the Microsoft Innovation Hub, Zurich, and with hospital teams directly.')}</p>
       </div>
       <h3 className={s.subhead}>{t('backstage.story.narrative.reviews.peopleTitle', 'The real practitioners who took part')}</h3>
       <div className={s.peopleGrid}>
         {PRACTITIONERS.map((p) => (
           <div key={p.name} className={s.personCard}>
-            <span className={s.avatar} style={{ backgroundColor: p.color }}>{p.initials}</span>
+            {p.photo ? (
+              <img className={s.personPhoto} src={p.photo} alt={p.name} width={38} height={38} />
+            ) : (
+              <span className={s.avatar} style={{ backgroundColor: p.color }}>{p.initials}</span>
+            )}
             <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
               <span className={s.personName}>{p.name}</span>
               <span className={s.comp}>{p.role}</span>
-              <span className={s.classBody}>{p.contrib}</span>
               {p.href && (
                 <a className={s.lk} href={p.href} target="_blank" rel="noopener noreferrer">
                   {p.label}
@@ -568,17 +571,24 @@ export function PoKnowledgeClassesSection() {
     header,
     t('backstage.story.narrative.poClasses.accent', 'hard questions'),
   );
-  const ask = () =>
-    rail?.openWithReco(
+  const ask = () => {
+    if (!rail) return;
+    const read =
+      'The docked Product Owner Agent grounds every answer on four knowledge classes: A corpus, B live-proof, C cost, and D ontology. Every answer is advisory-only, cited, in German and English, and never mutates a system.';
+    rail.openWithReco(
       { id: 'backstage-po-classes', label: 'Product Owner Agent knowledge', context: { source: 'backstage-narrative', topic: 'po-classes' } },
       reco(
         'Product Owner Agent',
-        'The docked Product Owner Agent grounds every answer on four knowledge classes: A corpus, B live-proof, C cost, and D ontology. Every answer is advisory-only, cited, in German and English, and never mutates a system.',
+        read,
         PO_CLASSES.map((c) => `${c.id} - ${c.name}`),
         ['docs/adr/0043-product-owner-agent-foundry-iq-domain.md', 'docs/AI.md'],
         t,
       ),
     );
+    void enrichWithLiveAnswer(read, rail).catch((error) => {
+      console.error('PO agent live enrichment failed', error);
+    });
+  };
   return (
     <section className={s.root} data-testid="po-classes-section" aria-labelledby="po-classes-title">
       <SectionHeader

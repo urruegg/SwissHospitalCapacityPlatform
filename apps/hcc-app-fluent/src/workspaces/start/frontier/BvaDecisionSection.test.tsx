@@ -7,7 +7,6 @@ import i18n from '../../../i18n';
 import {
   bvaHeadlineKpis,
   bvaPlanVsActual,
-  bvaProofPoints,
   bvaSensitivityScenarios,
   bvaTrend,
   bvaValueLevers,
@@ -142,43 +141,21 @@ describe('BvaDecisionSection', () => {
     expect(screen.getByText(conservative.comment)).toBeInTheDocument();
   });
 
-  it('renders distinct proof/evidence entries (trend + bvaProofPoints), not a duplicate of KPI/TCO figures', () => {
+  it('does not render the removed Proof & evidence card', () => {
     renderSection(<BvaDecisionSection />);
     const section = screen.getByTestId('bva-decision-section');
 
-    const evidenceList = within(section).getByTestId('bva-proof-list');
-
-    const latestTrendPoint = bvaTrend.points[bvaTrend.points.length - 1];
-    expect(within(evidenceList).getByText(new RegExp(bvaTrend.measure, 'i'))).toBeInTheDocument();
-    expect(within(evidenceList).getByText(new RegExp(latestTrendPoint.label, 'i'))).toBeInTheDocument();
-
-    bvaProofPoints.forEach((payload) => {
-      const claimNode = within(evidenceList).getByText(payload.claim);
-      const item = claimNode.closest('li');
-      expect(item).not.toBeNull();
-      expect(within(item as HTMLElement).getByText(new RegExp(payload.target, 'i'))).toBeInTheDocument();
-    });
-
-    // Regression guard: proof list must not merely re-list headline KPI measures or the TCO measure.
-    bvaHeadlineKpis.forEach((payload) => {
-      expect(within(evidenceList).queryByText(payload.measure)).not.toBeInTheDocument();
-    });
-    expect(within(evidenceList).queryByText(bvaPlanVsActual.measure)).not.toBeInTheDocument();
+    expect(within(section).queryByTestId('bva-proof-list')).not.toBeInTheDocument();
   });
 
-  it('keeps the decision card bound to headline KPIs, TCO, and the latest trend point; opens the Product Owner rail', () => {
+  it('does not render the removed Executive-decision card', () => {
     renderSection(<BvaDecisionSection />);
+    const section = screen.getByTestId('bva-decision-section');
 
-    expect(screen.getByTestId('rail-open')).toHaveTextContent('false');
-
-    fireEvent.click(screen.getByTestId('bva-decision-cta'));
-
-    expect(screen.getByTestId('rail-open')).toHaveTextContent('true');
-    expect(screen.getByTestId('rail-read')).toHaveTextContent(bvaPlanVsActual.measure);
-    expect(screen.getByTestId('rail-citations')).toHaveTextContent(bvaTrend.source);
-    // Base ROM is the default selected scenario; its source must be cited once selected.
-    const baseRom = bvaSensitivityScenarios.find((s) => s.scenario === 'Base ROM')!;
-    expect(screen.getByTestId('rail-citations')).toHaveTextContent(baseRom.source);
+    // Sprint 40 — the "Executive decision" surface (launch + rail CTAs) was removed.
+    expect(within(section).queryByTestId('bva-final-card')).not.toBeInTheDocument();
+    expect(within(section).queryByTestId('bva-decision-cta')).not.toBeInTheDocument();
+    expect(within(section).queryByTestId('bva-launch-cta')).not.toBeInTheDocument();
   });
 });
 

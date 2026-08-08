@@ -26,6 +26,11 @@ const reco: GroundedReco = {
   provenance: 'simulated',
 };
 
+const liveReco: GroundedReco = {
+  ...reco,
+  contextChip: { subject: 'Medicine A (live)', tone: 'over' },
+};
+
 function RecoProbe() {
   const rail = useCopilotRail();
   return (
@@ -36,6 +41,7 @@ function RecoProbe() {
       <button onClick={() => rail.showDefault(reco)}>seed</button>
       <button onClick={() => rail.openWithReco({ id: 'med-a', label: 'Medicine A', context: {} }, reco)}>open</button>
       <button onClick={() => rail.backToDefault()}>back</button>
+      <button onClick={() => rail.updateActiveReco(liveReco)}>update</button>
     </div>
   );
 }
@@ -55,6 +61,30 @@ describe('copilot rail reco state', () => {
     act(() => screen.getByText('back').click());
     expect(screen.getByTestId('reco').textContent).toBe('none');
     expect(screen.getByTestId('open').textContent).toBe('true');
+  });
+
+  it('updateActiveReco replaces the active reco in place without closing the rail', () => {
+    render(
+      <CopilotRailProvider>
+        <RecoProbe />
+      </CopilotRailProvider>,
+    );
+    act(() => screen.getByText('open').click());
+    expect(screen.getByTestId('reco').textContent).toBe('Medicine A');
+    act(() => screen.getByText('update').click());
+    expect(screen.getByTestId('reco').textContent).toBe('Medicine A (live)');
+    expect(screen.getByTestId('open').textContent).toBe('true');
+  });
+
+  it('updateActiveReco is a no-op when the rail has no active reco', () => {
+    render(
+      <CopilotRailProvider>
+        <RecoProbe />
+      </CopilotRailProvider>,
+    );
+    expect(screen.getByTestId('reco').textContent).toBe('none');
+    act(() => screen.getByText('update').click());
+    expect(screen.getByTestId('reco').textContent).toBe('none');
   });
 });
 

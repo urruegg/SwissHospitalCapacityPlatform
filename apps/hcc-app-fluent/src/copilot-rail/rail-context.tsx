@@ -11,7 +11,7 @@ import type { DecisionOutcome } from '../data/iq-client';
  */
 export type DecisionHandler = (decision: 'accept' | 'deny') => Promise<DecisionOutcome>;
 
-interface CopilotRailValue {
+export interface CopilotRailValue {
   open: boolean;
   activeContext: ContextInsight | null;
   activeReco: GroundedReco | null;
@@ -20,6 +20,12 @@ interface CopilotRailValue {
   onDecision: DecisionHandler | null;
   openWithContext: (insight: ContextInsight) => void;
   openWithReco: (insight: ContextInsight, reco: GroundedReco) => void;
+  /**
+   * Sprint 41 WS-FE — progressive-enhancement swap-in. Replaces `activeReco`
+   * in place with a live-grounded reco once it resolves; a no-op if the rail
+   * has since moved on (no reco active). Never touches `open`/`activeContext`.
+   */
+  updateActiveReco: (reco: GroundedReco) => void;
   showDefault: (reco: GroundedReco) => void;
   backToDefault: () => void;
   resetReco: () => void;
@@ -62,6 +68,9 @@ export function CopilotRailProvider({ children }: { children: ReactNode }) {
         setActiveContext(insight);
         setActiveReco(reco);
         setOpen(true);
+      },
+      updateActiveReco: (reco: GroundedReco) => {
+        setActiveReco((current) => (current ? reco : current));
       },
       showDefault: (reco: GroundedReco) => {
         setDefaultReco(reco);

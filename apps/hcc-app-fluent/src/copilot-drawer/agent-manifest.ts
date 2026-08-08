@@ -8,10 +8,12 @@
  * endpoint or `fetch` of its own.
  */
 import type { GroundedReco } from '../copilot-rail/reco';
+import { getPoAgentUrl } from '../config/runtime-config';
 import {
   isAgentHostConfigured,
   iqAgentChat,
   iqAgentList,
+  iqPoAgentAnswer,
   postInteractionEvent,
   type AgentChatOptions,
 } from '../data/iq-client';
@@ -251,12 +253,33 @@ function refusalReco(agent: string, prompt: string): GroundedReco {
  * (dev/CI), returns a deterministic grounded mock so the drawer demonstrates the
  * wiring end-to-end without a live backend. A destructive/PHI ask returns a
  * verbatim guardrail refusal (A11) instead of a recommendation.
+ *
+ * Sprint 41 WS-FE — `product-owner-agent` routes to its own dedicated
+ * `po-agent-service` (frozen `/answer` contract) instead of the shared
+ * agent-host, whenever `getPoAgentUrl()` is configured. Falls through to the
+ * existing mock / agent-host paths unchanged for every other case.
  */
 export async function invokeAgent(
   agent: string,
   prompt: string,
   opts?: AgentChatOptions,
 ): Promise<GroundedReply> {
+  const poAgentUrl = getPoAgentUrl();
+  if (agent === 'product-owner-agent' && poAgentUrl.length > 0) {
+    // Placeholder caller identity until real persona/tier threading exists.
+    const reco = await iqPoAgentAnswer(poAgentUrl, {
+      question: prompt,
+      caller: { persona: 'Developer', tier: 'internal' },
+      language: 'en',
+    });
+    return {
+      answer: reco.read,
+      citations: reco.citations,
+      refused: reco.refused ?? false,
+      reco,
+      interactionId: mockInteractionId(),
+    };
+  }
   if (!isAgentHostConfigured()) {
     const reco =
       REFUSAL_TRIGGER.test(prompt) || PHI_TRIGGER.test(prompt)

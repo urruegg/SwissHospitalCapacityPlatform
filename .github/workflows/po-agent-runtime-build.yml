@@ -1,0 +1,98 @@
+name: po-agent-runtime-build
+
+# Sprint 41 WS-INF Task INF.1 — build + push the po-agent-service container
+# image on `data-platform/scripts/po-agent/**` changes.
+#
+# Scope: build + push only. The Bicep param `poAgentContainerImage` in
+# `infra/environments/sit.bicepparam` is NOT bumped by this workflow — image
+# tag bumps are a deliberate manual review step, then the standard
+# `cd-infra-deploy-sit.yml` picks up the new tag (approval-gated per
+# AGENTS.md §4).
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data-platform/scripts/po-agent/**'
+      - '.github/workflows/po-agent-runtime-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  ACR_LOGIN_SERVER: 'cri75lbu5sj4hza.azurecr.io'
+  IMAGE_NAME: 'po-agent-service'
+
+jobs:
+  build-and-push:
+    name: Build + push po-agent-service image
+    runs-on: ubuntu-latest
+    environment:
+      name: sit
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ACR login
+        shell: bash
+        run: |
+          set -euo pipefail
+          registry_name="${ACR_LOGIN_SERVER%.azurecr.io}"
+          az acr login --name "$registry_name"
+
+      - name: Compute image tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          short_sha="${GITHUB_SHA::7}"
+          {
+            echo "sha_tag=$short_sha"
+            echo "full_sha=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${short_sha}"
+            echo "full_latest=${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Docker build
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            -f data-platform/scripts/po-agent/runtime/Dockerfile \
+            -t "${{ steps.tags.outputs.full_sha }}" \
+            -t "${{ steps.tags.outputs.full_latest }}" \
+            data-platform/scripts/po-agent
+
+      - name: Docker push
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker push "${{ steps.tags.outputs.full_sha }}"
+          docker push "${{ steps.tags.outputs.full_latest }}"
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## po-agent-service image build"
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Commit: ${{ github.sha }} (short: ${{ steps.tags.outputs.sha_tag }})"
+            echo "- Registry: ${ACR_LOGIN_SERVER}"
+            echo "- Tags pushed:"
+            echo "  - \`${{ steps.tags.outputs.full_sha }}\`"
+            echo "  - \`${{ steps.tags.outputs.full_latest }}\`"
+            echo "- Status: ${{ job.status }}"
+            echo ""
+            echo "Bump \`poAgentContainerImage\` in \`infra/environments/sit.bicepparam\` to \`${{ steps.tags.outputs.full_sha }}\` and merge to trigger \`cd-infra-deploy-sit.yml\` (approval-gated per AGENTS.md §4)."
+          } >> "$GITHUB_STEP_SUMMARY"

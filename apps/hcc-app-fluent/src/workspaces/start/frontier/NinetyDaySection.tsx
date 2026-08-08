@@ -12,7 +12,7 @@ import {
   type ShowcaseAccent,
 } from '../../shared/narrative/showcase-styles';
 import { useCopilotRail } from '../../../copilot-rail/rail-context';
-import { startInsight, startReco } from './start-rail';
+import { enrichWithLiveAnswer, startInsight, startReco } from './start-rail';
 import { NINETY_DAY_PHASES, type NinetyDayPhaseId } from './start-content';
 import { START_NARRATIVE_NARROW_MEDIA_QUERY } from './start-layout';
 
@@ -65,9 +65,6 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     gap: tokens.spacingHorizontalXS,
   },
-  rom: {
-    color: tokens.colorNeutralForeground3,
-  },
   disclaimer: {
     color: tokens.colorNeutralForeground3,
   },
@@ -94,7 +91,7 @@ export function NinetyDaySection() {
               type="button"
               className={sc.accentCard}
               style={{ borderLeftColor: SHOWCASE_ACCENT[PHASE_ACCENT[phase.id]] }}
-              onClick={() =>
+              onClick={() => {
                 rail?.openWithReco(
                   startInsight(`ninety-day-${phase.id}`, t(phase.titleKey)),
                   startReco(
@@ -103,8 +100,13 @@ export function NinetyDaySection() {
                     phase.outcomeKeys.map((outcomeKey) => t(outcomeKey)),
                     ['hcp:NinetyDayRoadmap'],
                   ),
-                )
-              }
+                );
+                if (rail) {
+                  void enrichWithLiveAnswer(t(phase.bodyKey), rail).catch((error) => {
+                    console.error('PO agent live enrichment failed', error);
+                  });
+                }
+              }}
             >
               <div className={styles.phaseBand}>
                 <span className={sc.cardTitle}>{t(phase.titleKey)}</span>
@@ -121,9 +123,6 @@ export function NinetyDaySection() {
                   </span>
                 ))}
               </div>
-              <Caption1 className={styles.rom}>
-                {t('start.frontier.ninetyDay.romLabel')}
-              </Caption1>
             </button>
           </li>
         ))}

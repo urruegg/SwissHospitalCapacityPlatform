@@ -38,14 +38,14 @@
     "nav": {
       "label": "Backstage-Bereiche",
       "bva": "Business Case",
-      "ninetyDay": "90-Tage-Roadmap",
-      "feedbackLoop": "Digitaler Feedback-Loop",
+      "ninetyDay": "Roadmap",
+      "feedbackLoop": "Feedback-Loop",
       "opportunities": "Opportunities",
       "successFramework": "Erfolgsframework",
       "solutionDesign": "Lösungsdesign",
-      "devsecops": "DevSecOps-Loop",
-      "reviews": "Review-Sessions",
-      "poClasses": "Product-Owner-Agent"
+      "devsecops": "DevSecOps",
+      "reviews": "Review",
+      "poClasses": "Product Owner"
     },
     "story": {
       "tab": "Story",
@@ -66,7 +66,27 @@
       "narrative": {
         "success": { "accent": "Success Framework" },
         "devsecops": { "accent": "built and shipped" },
-        "reviews": { "accent": "real people" },
+        "reviews": {
+          "accent": "echte Menschen",
+          "header": "Mit echten Menschen getestet, in echten Review-Sitzungen",
+          "tagline": "Backstage \u00b7 das war eine echte \u00dcbung",
+          "description": "Curavias wurde in einer dokumentierten Reihe von Experten-Reviews und einem namentlich gef\u00fchrten Spital-Feldinterview herausgefordert, jeweils mit Governance-Nachweis.",
+          "tableTitle": "Dokumentierte Review-Sitzungen",
+          "colSession": "Sitzung",
+          "colDate": "Datum",
+          "colPerspective": "Herausgeforderte Perspektive",
+          "tableNote": "Durchgef\u00fchrt im Microsoft Innovation Hub, Z\u00fcrich, und direkt mit Spital-Teams.",
+          "peopleTitle": "Die echten Fachleute, die teilgenommen haben",
+          "attribution": "Zuschreibungshinweis: Genannte Sitzungen und Spital-Referenzen stammen aus dem Curavias-Review-Protokoll. Rollenbasierte Challenge-Positionen fassen zusammen, was die Sitzungen zutage f\u00f6rderten; mehrere Sitzungen erfassten Teilnehmende nur nach Rolle. Genannte Fachleute werden mit ihrer Zustimmung zur Nennung gezeigt.",
+          "sessions": {
+            "coo": { "name": "COO-Showcase", "persp": "Business Case & Akzeptanz" },
+            "cio": { "name": "CIO-Review", "persp": "Prognosehorizont & Datenreife" },
+            "ops": { "name": "Spital-Betrieb Feldinterview", "persp": "Zeit f\u00fcr die Patientenversorgung" },
+            "cto": { "name": "CTO-Mentor-Review", "persp": "Souver\u00e4nit\u00e4t & Regulierung" },
+            "ciso": { "name": "CISO- / Security-Review", "persp": "Datenschutz & Schl\u00fcssel" },
+            "it": { "name": "Kantonales IT-Review", "persp": "Cloud-Betriebsmodell" }
+          }
+        },
         "poClasses": { "accent": "hard questions" }
       },
       "agents": {
@@ -564,7 +584,7 @@
       "nav": {
         "label": "Start-Bereiche",
         "overview": "Übersicht",
-        "value": "Wert",
+        "value": "Bühne",
         "challenger": "Herausforderer",
         "vision": "Warum Curavias",
         "operatingModel": "Modell",
@@ -926,13 +946,13 @@
         "title": "BVA-Entscheid",
         "body": "ROM-gebundene BVA-Entscheidungsfläche mit KPI, TCO, Sensitivität und Handoff an den Product Owner Agent.",
         "eyebrow": "Der Entscheid · Business Value Assessment",
-        "tcoTitle": "Annualisierte TCO",
+        "tcoTitle": "3-Jahres-TCO",
         "valueLeversTitle": "Werthebel",
         "sensitivityTitle": "Sensitivität",
         "proofTitle": "Nachweis & Evidenz",
         "finalTitle": "Executive-Entscheid",
         "finalBadge": "Beratender Handoff",
-        "tcoActual": "Ist",
+        "tcoActual": "Frontier-informiert",
         "tcoVariance": "Abweichung",
         "sensitivitySummary": "{{benefit}} jährlicher Nutzen · {{tco}} 3-Jahres-TCO · {{roi}} 3-Jahres-ROI",
         "proofFallback": "Power BI Embed Fallback",

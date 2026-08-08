@@ -64,9 +64,10 @@ describe('bva-evidence · distinct typed groups (Sprint 37 T3)', () => {
     // docs/BVA.md "Total Gross Annual Benefit" = 3820000, matching the Base ROM scenario.
     expect(totalLeverBenefit).toBe(3820000);
 
-    const baseRom = bvaSensitivityScenarios.find((s) => s.scenario === 'Base ROM');
+    const baseRom = bvaSensitivityScenarios.find((s) => s.scenario === 'Base (Frontier-informed)');
     expect(baseRom?.annualBenefit).toBe(totalLeverBenefit);
-    expect(baseRom?.threeYearRoiPct).toBe(127);
+    // docs/BVA.md v2.0.0 §7.2 — Frontier-informed base scenario 3-year ROI = 153%.
+    expect(baseRom?.threeYearRoiPct).toBe(153);
 
     const conservative = bvaSensitivityScenarios.find((s) => s.scenario === 'Conservative');
     const upside = bvaSensitivityScenarios.find((s) => s.scenario === 'Upside');
@@ -106,5 +107,23 @@ describe('bva-evidence · distinct typed groups (Sprint 37 T3)', () => {
   it('contains no PHI-shaped content across the new evidence groups', () => {
     const serialized = JSON.stringify([bvaValueLevers, bvaSensitivityScenarios, bvaProofPoints]).toLowerCase();
     expect(serialized).not.toMatch(PHI_PATTERN);
+  });
+
+  it('re-baselines headline KPIs + TCO to the docs/BVA.md v2.0.0 Frontier-informed model', () => {
+    // Headline tiles: net value (3-year) + 3-year ROI, both Frontier-informed.
+    const netValue = bvaHeadlineKpis.find((k) => k.measure.toLowerCase().includes('net value'));
+    const roi = bvaHeadlineKpis.find((k) => k.measure.toLowerCase().includes('roi'));
+    expect(netValue?.value).toBe('6.93M');
+    expect(roi?.value).toBe('153');
+    expect(roi?.targetLabel).toContain('2.57M');
+
+    // TCO plan-vs-actual: ROM 3-year TCO baseline vs Frontier-informed, ~-10.3% under budget.
+    expect(bvaPlanVsActual.plan).toBe(5_050_000);
+    expect(bvaPlanVsActual.actual).toBe(4_530_000);
+    expect(bvaPlanVsActual.variancePct).toBe(-10.3);
+
+    // Base sensitivity scenario TCO tracks the Frontier-informed model.
+    const baseRom = bvaSensitivityScenarios.find((s) => s.scenario === 'Base (Frontier-informed)');
+    expect(baseRom?.threeYearTco).toBe(4_530_000);
   });
 });

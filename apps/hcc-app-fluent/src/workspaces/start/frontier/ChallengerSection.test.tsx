@@ -58,7 +58,7 @@ describe('ChallengerSection', () => {
     expect(within(pane).getByText('How we addressed the challenges')).toBeInTheDocument();
     expect(within(pane).getByText('Business value delivered')).toBeInTheDocument();
     expect(within(pane).getByText('What we adapted in the product')).toBeInTheDocument();
-    expect(within(pane).getByText(/127% ROI over three years/)).toBeInTheDocument();
+    expect(within(pane).getByText(/153% ROI over three years/)).toBeInTheDocument();
     // Only the selected persona pane is mounted.
     expect(screen.queryByTestId('challenger-pane-ciso')).not.toBeInTheDocument();
   });

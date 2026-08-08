@@ -15,10 +15,31 @@
  * decision section (`workspaces/start/frontier/BvaDecisionSection.tsx`):
  * `bvaValueLevers` (value/ROI drivers), `bvaSensitivityScenarios` (named
  * what-if ranges), and `bvaProofPoints` (qualitative governance targets).
- * These are grounded in `docs/BVA.md` (the reviewed ROM BVA document) and are
+ * These are grounded in `docs/BVA.md` (the reviewed BVA document) and are
  * intentionally distinct from `bvaHeadlineKpis` (headline KPI tiles) and
  * `bvaTrend` (a month-over-month trend) — never rebrand one group as another.
+ *
+ * Sprint 40 — re-baselined to **docs/BVA.md v2.0.0 (Frontier-informed)**. Every
+ * figure now flows from the canonical constants in `./bva-figures.ts`, so a
+ * later sprint can bind them to Fabric gold tables (`gold.bva_fact_*`) in one
+ * place. No PHI.
  */
+
+import {
+  BVA_COST_PER_COPILOT_TURN_CHF,
+  BVA_CURRENCY,
+  BVA_MODEL_VERSION,
+  BVA_NET_ANNUAL_BENEFIT,
+  BVA_NET_VALUE_3YR_FRONTIER,
+  BVA_PAYBACK_MONTHS_FRONTIER,
+  BVA_ROI_3YR_FRONTIER_PCT,
+  BVA_SCENARIOS,
+  BVA_TCO_3YR_FRONTIER,
+  BVA_TCO_3YR_ROM,
+  BVA_TCO_VARIANCE_PCT,
+  BVA_VALUE_LEVERS,
+  toMillionsLabel,
+} from './bva-figures';
 
 export interface BvaProvenance {
   /** Human-readable source of the figure (Gold table / semantic model). */
@@ -108,22 +129,19 @@ export interface BvaProofPointPayload extends BvaProvenance {
   cadence: string;
 }
 
-const SEMANTIC_MODEL = 'capacity-dashboard.SemanticModel · bva_measures';
-const AS_OF = '2026-06-30T02:00:00Z';
-
 /** `docs/BVA.md` is the governance-reviewed ROM document (no live gold table
  * backs value levers, sensitivity scenarios, or governance targets yet), so
- * these are cited straight from the doc rather than through the Power BI
- * embed-fallback semantic model path `stamp()` uses. */
-const BVA_DOC = 'docs/BVA.md';
-const BVA_DOC_AS_OF = '2026-07-28T00:00:00Z';
-
-function stamp(source: string): BvaProvenance {
-  return { source, asOf: AS_OF, powerBiEmbedFallback: true };
-}
+ * these are cited straight from the doc. */
+const BVA_DOC = `docs/BVA.md ${BVA_MODEL_VERSION}`;
+const BVA_DOC_AS_OF = '2026-08-07T00:00:00Z';
 
 function docStamp(section: string): BvaProvenance {
   return { source: `${BVA_DOC} · ${section}`, asOf: BVA_DOC_AS_OF, powerBiEmbedFallback: false };
+}
+
+/** Canonical annual benefit for a value lever id (docs/BVA.md §6 / bva-figures). */
+function leverBenefit(id: string): number {
+  return BVA_VALUE_LEVERS.find((lever) => lever.id === id)?.annualBenefit ?? 0;
 }
 
 /** Variance % → RAG: under/near budget good, mild over neutral, big over bad. */
@@ -136,42 +154,38 @@ export function budgetRag(variancePct: number): Rag {
 /** Deterministic mock BVA evidence for the presenter whiteboard demo. */
 export const bvaHeadlineKpis: BvaHeadlineKpiPayload[] = [
   {
-    measure: 'Net Value Realized (3yr)',
-    value: '4.2M',
-    unit: 'CHF',
+    measure: 'Net value (3-year)',
+    value: toMillionsLabel(BVA_NET_VALUE_3YR_FRONTIER),
+    unit: BVA_CURRENCY,
     rag: 'good',
-    targetLabel: 'Benefit realization 78%',
-    ...stamp(`${SEMANTIC_MODEL} · gold.bva_fact_value_realization`),
+    targetLabel: `Frontier-informed · payback ~${BVA_PAYBACK_MONTHS_FRONTIER} mo`,
+    ...docStamp('§7.1 ROI and Payback'),
   },
   {
-    measure: 'ROI %',
-    value: '212',
+    measure: '3-year ROI',
+    value: String(BVA_ROI_3YR_FRONTIER_PCT),
     unit: '%',
     rag: 'good',
-    targetLabel: 'Net annual benefit CHF 1.4M',
-    ...stamp(`${SEMANTIC_MODEL} · gold.bva_fact_value_realization`),
+    targetLabel: `Net annual benefit ${BVA_CURRENCY} ${toMillionsLabel(BVA_NET_ANNUAL_BENEFIT)}`,
+    ...docStamp('§7.1 ROI and Payback'),
   },
 ];
 
 export const bvaPlanVsActual: BvaPlanVsActualPayload = {
-  measure: 'Actual TCO (Annualized) vs Budget',
-  plan: 760000,
-  actual: 738000,
-  variancePct: -2.9,
-  currency: 'CHF',
-  ...stamp(`${SEMANTIC_MODEL} · gold.bva_fact_budget`),
+  measure: 'ROM plan (v1.0.1)',
+  plan: BVA_TCO_3YR_ROM,
+  actual: BVA_TCO_3YR_FRONTIER,
+  variancePct: BVA_TCO_VARIANCE_PCT,
+  currency: BVA_CURRENCY,
+  ...docStamp('§7.1 ROI and Payback'),
 };
 
 export const bvaTrend: BvaTrendPayload = {
   measure: 'Cost per Copilot Turn',
   unit: 'CHF',
   desiredDirection: 'down',
-  points: [
-    { label: 'Apr', value: 0.42 },
-    { label: 'May', value: 0.38 },
-    { label: 'Jun', value: 0.34 },
-  ],
-  ...stamp(`${SEMANTIC_MODEL} · gold.bva_fact_azure_consumption`),
+  points: [{ label: 'Current', value: BVA_COST_PER_COPILOT_TURN_CHF }],
+  ...docStamp('§2 Demand Baseline · §5 Recurring Annual Cost'),
 };
 
 /**
@@ -184,88 +198,74 @@ export const bvaValueLevers: BvaValueLeverPayload[] = [
   {
     id: 'bed-day-discharge-throughput',
     lever: 'Reduced avoidable bed-day blocking and discharge delay',
-    annualBenefit: 1650000,
-    currency: 'CHF',
+    annualBenefit: leverBenefit('bed-day-discharge-throughput'),
+    currency: BVA_CURRENCY,
     valueLogic:
       'Faster coordination and discharge readiness decisions increase effective bed turnover',
-    ...docStamp('Value Levers and Annual Benefit Assumptions'),
+    ...docStamp('§6 Business Value Model'),
   },
   {
     id: 'command-center-productivity',
     lever: 'Improved command-center productivity',
-    annualBenefit: 980000,
-    currency: 'CHF',
+    annualBenefit: leverBenefit('command-center-productivity'),
+    currency: BVA_CURRENCY,
     valueLogic: '120 peak users with reduced manual triage and faster decisions',
-    ...docStamp('Value Levers and Annual Benefit Assumptions'),
+    ...docStamp('§6 Business Value Model'),
   },
   {
     id: 'staffing-overtime-reduction',
     lever: 'Reduced overtime and agency premium through better demand visibility',
-    annualBenefit: 620000,
-    currency: 'CHF',
+    annualBenefit: leverBenefit('staffing-overtime-reduction'),
+    currency: BVA_CURRENCY,
     valueLogic: 'Forecast-informed planning reduces expensive reactive staffing',
-    ...docStamp('Value Levers and Annual Benefit Assumptions'),
+    ...docStamp('§6 Business Value Model'),
   },
   {
     id: 'integration-reliability',
     lever: 'Lower integration and coordination failure cost',
-    annualBenefit: 350000,
-    currency: 'CHF',
+    annualBenefit: leverBenefit('integration-reliability'),
+    currency: BVA_CURRENCY,
     valueLogic: 'Better outbound/inbound workflow reliability and fewer manual recoveries',
-    ...docStamp('Value Levers and Annual Benefit Assumptions'),
+    ...docStamp('§6 Business Value Model'),
   },
   {
     id: 'compliance-audit-efficiency',
     lever: 'Compliance and audit preparation efficiency gain',
-    annualBenefit: 220000,
-    currency: 'CHF',
+    annualBenefit: leverBenefit('compliance-audit-efficiency'),
+    currency: BVA_CURRENCY,
     valueLogic: 'Evidence-ready controls reduce recurring compliance and audit effort',
-    ...docStamp('Value Levers and Annual Benefit Assumptions'),
+    ...docStamp('§6 Business Value Model'),
   },
 ];
 
 /**
- * Distinct sensitivity-scenario evidence — `docs/BVA.md` §"Sensitivity
- * Analysis". Three named what-if ranges (Conservative / Base ROM / Upside),
- * each carrying its own benefit, run cost, 3-year TCO, and 3-year ROI. Do not
- * reuse `bvaTrend.points` (a month-over-month trend) for a "sensitivity" UI —
- * they are a different evidence group with different semantics.
+ * Distinct sensitivity-scenario evidence — `docs/BVA.md` §7.2 "Sensitivity —
+ * Frontier-informed model". Three named what-if ranges (Conservative / Base
+ * (Frontier-informed) / Upside), each carrying its own benefit, run cost,
+ * 3-year TCO, and 3-year ROI, built from the canonical `BVA_SCENARIOS`
+ * constants. Do not reuse `bvaTrend.points` (a month-over-month trend) for a
+ * "sensitivity" UI — they are a different evidence group with different
+ * semantics.
  */
-export const bvaSensitivityScenarios: BvaSensitivityScenarioPayload[] = [
-  {
-    id: 'conservative',
-    scenario: 'Conservative',
-    annualBenefit: 2600000,
-    annualRunCost: 1320000,
-    threeYearTco: 5260000,
-    threeYearRoiPct: 48,
-    currency: 'CHF',
-    comment: 'Lower operational uptake and slower process adoption',
-    ...docStamp('Sensitivity Analysis'),
-  },
-  {
-    id: 'base-rom',
-    scenario: 'Base ROM',
-    annualBenefit: 3820000,
-    annualRunCost: 1250000,
-    threeYearTco: 5050000,
-    threeYearRoiPct: 127,
-    currency: 'CHF',
-    comment: 'Balanced adoption and expected improvement profile',
-    ...docStamp('Sensitivity Analysis'),
-  },
-  {
-    id: 'upside',
-    scenario: 'Upside',
-    annualBenefit: 5000000,
-    annualRunCost: 1230000,
-    threeYearTco: 4990000,
-    threeYearRoiPct: 201,
-    currency: 'CHF',
-    comment: 'Strong adoption and larger throughput gains',
-    ...docStamp('Sensitivity Analysis'),
-  },
-];
+const SCENARIO_COMMENTS: Record<string, string> = {
+  conservative: 'Lower operational uptake and slower process adoption',
+  'base-rom': 'Frontier-informed base case — measured build cost, balanced adoption',
+  upside: 'Strong adoption and larger throughput gains',
+};
+
+export const bvaSensitivityScenarios: BvaSensitivityScenarioPayload[] = BVA_SCENARIOS.map(
+  (scenario) => ({
+    id: scenario.id,
+    scenario: scenario.label,
+    annualBenefit: scenario.annualBenefit,
+    annualRunCost: scenario.annualRunCost,
+    threeYearTco: scenario.threeYearTco,
+    threeYearRoiPct: scenario.threeYearRoiPct,
+    currency: BVA_CURRENCY,
+    comment: SCENARIO_COMMENTS[scenario.id] ?? '',
+    ...docStamp('§7.2 Sensitivity — Frontier-informed model'),
+  }),
+);
 
 /**
  * Distinct proof/evidence claims — `docs/BVA.md` §"Governance and Risk KPIs".
