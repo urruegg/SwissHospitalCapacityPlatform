@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+import sys
 import urllib.error
 import urllib.request
 
@@ -86,4 +87,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry
-    raise SystemExit(main())
+    try:
+        sys.exit(main())
+    except urllib.error.HTTPError as e:
+        print(f"HTTP {e.code}: {e.read().decode(errors='replace')}", file=sys.stderr)
+        sys.exit(2)
