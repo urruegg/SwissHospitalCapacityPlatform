@@ -4,13 +4,28 @@ Invokes a registered Foundry Agent (Agent Service "prompt" kind, e.g.
 ``bmca-agent``) via the Responses API and normalises the reply into the plain
 string the ``ChatModel`` protocol expects (see ``orchestrator/dispatch.py``).
 
-Confirmed live contract (Sprint 43 WS-1 Task 0 spike, 2026-08-08):
+Confirmed live contract (Sprint 43 WS-1 Task 0 spike, 2026-08-08; corrected
+after the first live SIT test found two issues the spike missed):
   POST {project_endpoint}/api/projects/{project_name}/openai/v1/responses
   Body: {"agent_reference": {"name": "<agent>", "type": "agent_reference"},
-         "instructions": "<system prompt>", "input": "<grounded question>"}
+         "input": "<system prompt + grounding + question>", "tool_choice": "none"}
   Auth: Bearer token, scope https://ai.azure.com/.default (Foundry User role)
   No api-version query param on /v1 paths (returns 400 if present).
   Synchronous -- "status": "completed" in the same response, no polling.
+
+  ``instructions`` is REJECTED (400 invalid_payload, param=instructions,
+  "Not allowed when agent is specified") once an ``agent_reference`` is set
+  -- the registered Agent's own baked-in instructions apply and cannot be
+  overridden this way. The manifest's system_prompt is instead prepended to
+  ``input``.
+
+  ``tool_choice`` defaults to "auto", and every registered agent carries a
+  ``decision_tier_coordination_<role>`` function tool (an unrelated feature,
+  registered by data-platform/decision/foundry/live_factory.py). With
+  "auto" the model may respond with a ``function_call`` output item instead
+  of a ``message`` -- no text answer at all. This chat model is plain Q&A
+  synthesis, not the decision-tier workflow, so ``tool_choice: "none"``
+  forces a text-only reply and avoids exercising that unrelated tool.
 
 One instance serves every agent-host manifest: the Foundry Agent name is
 passed per-call (``agent_name``), not bound at construction, because
@@ -50,6 +65,14 @@ def _format_grounding(grounding: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _build_input(system_prompt: str, user_prompt: str, grounding: list[dict[str, Any]]) -> str:
+    return (
+        f"Additional context (system): {system_prompt}\n\n"
+        f"{_format_grounding(grounding)}\n\n"
+        f"Question: {user_prompt}"
+    )
+
+
 class FoundryResponsesChatModel:
     """``ChatModel`` that invokes a registered Foundry Agent via the Responses API."""
 
@@ -82,8 +105,11 @@ class FoundryResponsesChatModel:
         }
         body = {
             "agent_reference": {"name": agent_name, "type": "agent_reference"},
-            "instructions": system_prompt,
-            "input": f"{_format_grounding(grounding)}\n\nQuestion: {user_prompt}",
+            "input": _build_input(system_prompt, user_prompt, grounding),
+            # See module docstring: "auto" (the default) lets the model call the
+            # agent's unrelated decision_tier_coordination_* tool instead of
+            # answering in text. "none" forces a plain-text reply.
+            "tool_choice": "none",
         }
         resp = self._http_request(
             "POST", self._url, headers=headers, json=body, timeout=self._timeout

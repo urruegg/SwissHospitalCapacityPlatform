@@ -74,7 +74,9 @@ def test_complete_posts_agent_reference_and_returns_text():
         "name": "bmca-agent",
         "type": "agent_reference",
     }
-    assert captured["json"]["instructions"] == "You are bmca-agent."
+    assert "instructions" not in captured["json"]  # rejected by the API (invalid_payload)
+    assert captured["json"]["tool_choice"] == "none"
+    assert "You are bmca-agent." in captured["json"]["input"]
     assert "Wie ist die Auslastung?" in captured["json"]["input"]
     assert "occupied" in captured["json"]["input"]
 
@@ -105,6 +107,30 @@ def test_complete_extracts_first_message_text_skipping_reasoning():
 def test_complete_returns_empty_string_when_no_message_output():
     def fake_http(method, url, headers=None, json=None, timeout=None):
         return _FakeResponse({"status": "completed", "output": [{"type": "reasoning", "content": []}]})
+
+    answer = _model(fake_http).complete("sys", "q", [], agent_name="bmca-agent")
+    assert answer == ""
+
+
+def test_complete_sends_tool_choice_none_to_avoid_decision_tier_function_calls():
+    # Regression: without tool_choice="none", the agent's own registered
+    # decision_tier_coordination_* function tool can win over a text answer,
+    # returning a function_call output item instead of a message (observed
+    # live in SIT). Assert the real response shape (reasoning + function_call,
+    # no message) still yields "" rather than raising.
+    def fake_http(method, url, headers=None, json=None, timeout=None):
+        assert json["tool_choice"] == "none"
+        return _FakeResponse({
+            "status": "completed",
+            "output": [
+                {"type": "reasoning", "content": []},
+                {
+                    "type": "function_call",
+                    "name": "decision_tier_coordination_bmca",
+                    "arguments": '{"operation":"open_plan"}',
+                },
+            ],
+        })
 
     answer = _model(fake_http).complete("sys", "q", [], agent_name="bmca-agent")
     assert answer == ""
