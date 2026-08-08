@@ -14,7 +14,7 @@ import { useCopilotRail } from '../../../copilot-rail/rail-context';
 import { useRoleLens } from '../../../context/role-context';
 import { useShowcaseStyles, SHOWCASE_ACCENT, type ShowcaseAccent } from '../../shared/narrative/showcase-styles';
 import { LAUNCHER_TILES, type LauncherTile } from '../role-launcher';
-import { startInsight, startReco } from './start-rail';
+import { enrichWithLiveAnswer, startInsight, startReco } from './start-rail';
 import { DC_INSIGHT_BEATS, PATIENT_PATH_OPERATIONAL_STOPS, type DcInsightBeatId } from './start-content';
 
 const PATIENT_PATH_JOURNEY_STOP_COUNT = PATIENT_PATH_OPERATIONAL_STOPS.length + 1;
@@ -398,7 +398,7 @@ export function PatientPathLauncher() {
                 className={styles.bannerLink}
                 to={crisisTile.route}
                 aria-label={t('start.patientPath.openRoleBoard', { role: t(crisisTile.labelKey) })}
-                onClick={() =>
+                onClick={() => {
                   rail?.openWithReco(
                     startInsight('patient-path-crisis', t(crisisTile.labelKey)),
                     startReco(
@@ -407,8 +407,13 @@ export function PatientPathLauncher() {
                       [crisisTile.agent, crisisTile.ceiling],
                       ['hcp:PatientPath:crisis'],
                     ),
-                  )
-                }
+                  );
+                  if (rail) {
+                    void enrichWithLiveAnswer(t('start.patientPath.crisis.body'), rail).catch((error) => {
+                      console.error('PO agent live enrichment failed', error);
+                    });
+                  }
+                }}
               >
                 {t('start.patientPath.crisis.cta')}
               </Link>
@@ -434,7 +439,7 @@ export function PatientPathLauncher() {
               type="button"
               className={styles.bannerTriggerButton}
               data-testid="patient-path-data-quality-trigger"
-              onClick={() =>
+              onClick={() => {
                 rail?.openWithReco(
                   startInsight('patient-path-data-quality', t('start.patientPath.dataQuality.title')),
                   startReco(
@@ -443,8 +448,13 @@ export function PatientPathLauncher() {
                     [],
                     ['hcp:DataQuality'],
                   ),
-                )
-              }
+                );
+                if (rail) {
+                  void enrichWithLiveAnswer(t('start.patientPath.dataQuality.body'), rail).catch((error) => {
+                    console.error('PO agent live enrichment failed', error);
+                  });
+                }
+              }}
             >
               {t('start.patientPath.dataQuality.bannerLabel')}
             </button>
@@ -503,14 +513,19 @@ export function PatientPathLauncher() {
                   className={styles.stopLink}
                   to={tile.route}
                   aria-label={t('start.patientPath.openRoleBoard', { role: t(tile.labelKey) })}
-                  onClick={() =>
+                  onClick={() => {
                     rail?.openWithReco(
                       startInsight(`patient-path-${tile.boardKey}`, t(tile.labelKey)),
                       startReco(t(tile.labelKey), t(bodyKey), [tile.agent, tile.ceiling], [
                         `hcp:PatientPath:${tile.boardKey}`,
                       ]),
-                    )
-                  }
+                    );
+                    if (rail) {
+                      void enrichWithLiveAnswer(t(bodyKey), rail).catch((error) => {
+                        console.error('PO agent live enrichment failed', error);
+                      });
+                    }
+                  }}
                 >
                   <span
                     className={styles.node}
@@ -560,7 +575,7 @@ export function PatientPathLauncher() {
           className={sc.accentCard}
           style={{ borderLeftColor: SHOWCASE_ACCENT.teal }}
           data-testid="patient-path-dc-insight-card"
-          onClick={() =>
+          onClick={() => {
             rail?.openWithReco(
               startInsight('patient-path-dc-insight', t('start.patientPath.dcInsight.title')),
               startReco(
@@ -569,8 +584,13 @@ export function PatientPathLauncher() {
                 DC_INSIGHT_BEATS.map((beat) => `${t(beat.labelKey)} — ${t(beat.bodyKey)}`),
                 ['hcp:DcInsightPattern'],
               ),
-            )
-          }
+            );
+            if (rail) {
+              void enrichWithLiveAnswer(t('start.patientPath.dcInsight.beats.signal.body'), rail).catch((error) => {
+                console.error('PO agent live enrichment failed', error);
+              });
+            }
+          }}
         >
           <span className={sc.cardTitle}>{t('start.patientPath.dcInsight.title')}</span>
           <div className={styles.beatList}>
@@ -596,7 +616,7 @@ export function PatientPathLauncher() {
           className={sc.accentCard}
           style={{ borderLeftColor: SHOWCASE_ACCENT.green }}
           data-testid="patient-path-worked-example-card"
-          onClick={() =>
+          onClick={() => {
             rail?.openWithReco(
               startInsight('patient-path-worked-example', t('start.patientPath.workedExample.eyebrow')),
               startReco(
@@ -608,8 +628,13 @@ export function PatientPathLauncher() {
                 ],
                 ['hcp:CapacityForecast'],
               ),
-            )
-          }
+            );
+            if (rail) {
+              void enrichWithLiveAnswer(t('start.patientPath.workedExample.sub'), rail).catch((error) => {
+                console.error('PO agent live enrichment failed', error);
+              });
+            }
+          }}
         >
           <Caption1>{t('start.patientPath.workedExample.eyebrow')}</Caption1>
           <div className={styles.kpiRow}>

@@ -23,7 +23,7 @@ import {
   type ShowcaseAccent,
 } from '../../shared/narrative/showcase-styles';
 import { useCopilotRail } from '../../../copilot-rail/rail-context';
-import { startInsight, startReco } from './start-rail';
+import { enrichWithLiveAnswer, startInsight, startReco } from './start-rail';
 import {
   FRONTIER_ROSTER,
   FRONTIER_HOSPITALS,
@@ -294,7 +294,7 @@ export function HospitalsSection() {
                 type="button"
                 className={sc.accentCard}
                 style={{ borderLeftColor: accentHex }}
-                onClick={() =>
+                onClick={() => {
                   rail?.openWithReco(
                     startInsight(`hospitals-${hospital.id}`, t(hospital.nameKey)),
                     startReco(
@@ -303,8 +303,13 @@ export function HospitalsSection() {
                       [t(hospital.focusKey)],
                       ['hcp:HospitalNetwork'],
                     ),
-                  )
-                }
+                  );
+                  if (rail) {
+                    void enrichWithLiveAnswer(t(hospital.profileKey), rail).catch((error) => {
+                      console.error('PO agent live enrichment failed', error);
+                    });
+                  }
+                }}
               >
                 <span className={styles.cardHead}>
                   <span className={styles.headText}>

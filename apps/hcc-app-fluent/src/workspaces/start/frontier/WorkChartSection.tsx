@@ -2,7 +2,7 @@ import { Badge, makeStyles, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { useShowcaseStyles, SHOWCASE_ACCENT, type ShowcaseAccent } from '../../shared/narrative/showcase-styles';
 import { useCopilotRail } from '../../../copilot-rail/rail-context';
-import { startInsight, startReco } from './start-rail';
+import { enrichWithLiveAnswer, startInsight, startReco } from './start-rail';
 import { WORK_MODES, WORK_CHART_FIT_ROWS, type WorkModeId } from './start-content';
 import { START_NARRATIVE_NARROW_MEDIA_QUERY } from './start-layout';
 
@@ -95,7 +95,7 @@ export function WorkChartSection() {
                 type="button"
                 className={sc.accentCard}
                 style={{ borderLeftColor: accent }}
-                onClick={() =>
+                onClick={() => {
                   rail?.openWithReco(
                     startInsight(`work-chart-${mode.id}`, t(mode.titleKey)),
                     startReco(
@@ -104,8 +104,13 @@ export function WorkChartSection() {
                       [t('start.frontier.workChart.fit.title')],
                       ['hcp:OperatingModel'],
                     ),
-                  )
-                }
+                  );
+                  if (rail) {
+                    void enrichWithLiveAnswer(t(mode.bodyKey), rail).catch((error) => {
+                      console.error('PO agent live enrichment failed', error);
+                    });
+                  }
+                }}
               >
                 <Badge className={styles.badge} appearance="tint" color="brand">
                   {t('start.frontier.workChart.modeBadge')}

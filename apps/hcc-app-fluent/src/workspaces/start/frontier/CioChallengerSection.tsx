@@ -2,7 +2,7 @@ import { Caption1, makeStyles, mergeClasses, tokens } from '@fluentui/react-comp
 import { useTranslation } from 'react-i18next';
 import { useShowcaseStyles } from '../../shared/narrative/showcase-styles';
 import { useCopilotRail } from '../../../copilot-rail/rail-context';
-import { startInsight, startReco } from './start-rail';
+import { enrichWithLiveAnswer, startInsight, startReco } from './start-rail';
 import { CIO_DECISIONS } from './start-content';
 
 const useStyles = makeStyles({
@@ -95,7 +95,7 @@ export function CioChallengerSection() {
                       type="button"
                       className={styles.rowButton}
                       data-testid="cio-decision-row-trigger"
-                      onClick={() =>
+                      onClick={() => {
                         rail?.openWithReco(
                           startInsight(`cio-${decision.id}`, t(decision.decisionKey)),
                           startReco(
@@ -104,8 +104,13 @@ export function CioChallengerSection() {
                             [t(decision.todayKey)],
                             ['hcp:CioWhyNow'],
                           ),
-                        )
-                      }
+                        );
+                        if (rail) {
+                          void enrichWithLiveAnswer(t(decision.previewKey), rail).catch((error) => {
+                            console.error('PO agent live enrichment failed', error);
+                          });
+                        }
+                      }}
                     >
                       {t(decision.decisionKey)}
                     </button>
