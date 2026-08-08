@@ -32,6 +32,8 @@ from typing import Any
 import requests
 import yaml
 
+from relevancy import score_relevancy
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RUNTIME_DIR = REPO_ROOT / "data-platform" / "scripts" / "po-agent" / "runtime"
 if str(RUNTIME_DIR) not in sys.path:
@@ -42,6 +44,16 @@ from authz import CallerContext  # noqa: E402
 
 SENSITIVE_PERSONAS = {"CFO", "CISO", "CLO"}
 CITATION_COVERAGE_GATE = 0.95
+
+# Sprint 41 WS-EVAL Task EVAL.2: minimum content-word-overlap score (see
+# relevancy.score_relevancy) an "answer"-expect run's retrieved chunks must
+# clear, alongside the citation-coverage gate. Empirically derived, not the
+# plan's untested 0.4: scored by hand against every answer-expect question in
+# golden_questions.yaml before picking this value, the lowest real score is
+# ~0.143 (cio-en-01) because the synthetic chunks are declarative facts, not
+# question paraphrases - a stricter gate would fail on-topic, correctly-cited
+# answers. 0.1 still fails a genuinely unrelated retrieval (score 0.0).
+RELEVANCY_GATE = 0.1
 
 # Sprint 41 WS-EVAL Task EVAL.1: env var the real po-agent-service is reached
 # at in --live mode (frozen POST /answer contract, section 6 of the 2026-07-25
@@ -190,13 +202,14 @@ def answer_question(
 
 
 def evaluate(runs: list[dict[str, Any]]) -> dict[str, Any]:
-    """Score a list of runs ``{persona, expect, language?, result}``."""
+    """Score a list of runs ``{persona, expect, language?, result, question?}``."""
 
     answer_runs = [r for r in runs if r.get("expect") == "answer"]
     refusal_runs = [r for r in runs if r.get("expect") == "refusal"]
 
     cited = 0
     hallucination_failures = []
+    relevancy_failures = []
     for r in answer_runs:
         answer_text = r["result"].get("answer", "")
         uncited = has_uncited_claim(answer_text)
@@ -207,6 +220,17 @@ def evaluate(runs: list[dict[str, Any]]) -> dict[str, Any]:
                 {"persona": r["persona"], "answer": answer_text}
             )
 
+        # Sprint 41 WS-EVAL Task EVAL.2: catch "cited but irrelevant" retrieval
+        # (live or not) even when every claim happens to carry a citation.
+        # Runs built without a "question" (e.g. hand-constructed unit-test
+        # fixtures) are skipped rather than scored 0.0 - there is nothing real
+        # to judge relevancy against.
+        question = r.get("question")
+        if question:
+            score = score_relevancy(question, r["result"].get("chunks", []))
+            if score < RELEVANCY_GATE:
+                relevancy_failures.append({"id": r.get("id"), "score": round(score, 4)})
+
     refusal_failures = [
         r for r in refusal_runs if r["result"].get("status") != "partial"
     ]
@@ -216,11 +240,13 @@ def evaluate(runs: list[dict[str, Any]]) -> dict[str, Any]:
         coverage >= CITATION_COVERAGE_GATE
         and not hallucination_failures
         and not refusal_failures
+        and not relevancy_failures
     )
     return {
         "citation_coverage": round(coverage, 4),
         "hallucination_failures": hallucination_failures,
         "refusal_failures": refusal_failures,
+        "relevancy_failures": relevancy_failures,
         "answer_count": len(answer_runs),
         "refusal_count": len(refusal_runs),
         "runs": runs,
@@ -255,6 +281,7 @@ def run_suite(
                 "persona": entry["persona"],
                 "language": result["language"],
                 "expect": entry.get("expect", "answer"),
+                "question": entry["question"],
                 "result": result,
             }
         )
@@ -279,6 +306,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"answers/refusals  : {report['answer_count']}/{report['refusal_count']}")
     print(f"hallucinations    : {len(report['hallucination_failures'])}")
     print(f"refusal failures  : {len(report['refusal_failures'])}")
+    print(f"relevancy failures: {len(report['relevancy_failures'])}")
     print(f"PASSED            : {report['passed']}")
     return 0 if report["passed"] else 1
 
