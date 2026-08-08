@@ -21,9 +21,10 @@ msal_tenant_id="${MSAL_TENANT_ID:-}"
 msal_redirect_uri="${MSAL_REDIRECT_URI:-}"
 app_env="${APP_ENV:-}"
 app_home_hospital="${APP_HOME_HOSPITAL:-}"
+po_agent_url="${PO_AGENT_URL:-}"
 
 cat > "${target}" <<EOF
-// Generated at container start by docker-entrypoint.d/30-env-config.sh (#447, #424 M2, #424 M3, Sprint A).
+// Generated at container start by docker-entrypoint.d/30-env-config.sh (#447, #424 M2, #424 M3, Sprint A, Sprint 41).
 window.__ENV__ = Object.assign(window.__ENV__ || {}, {
   AGENT_HOST_URL: "${agent_host_url}",
   GOLDEN_SOURCE_URL: "${golden_source_url}",
@@ -32,7 +33,8 @@ window.__ENV__ = Object.assign(window.__ENV__ || {}, {
   MSAL_TENANT_ID: "${msal_tenant_id}",
   MSAL_REDIRECT_URI: "${msal_redirect_uri}",
   APP_ENV: "${app_env}",
-  APP_HOME_HOSPITAL: "${app_home_hospital}"
+  APP_HOME_HOSPITAL: "${app_home_hospital}",
+  PO_AGENT_URL: "${po_agent_url}"
 });
 EOF
 

@@ -33,6 +33,8 @@ export interface RuntimeEnv {
   APP_ENV?: string;
   /** Sprint A — home hospital (usz|luks|zollikerberg|aggregated) used when the token omits `hospital`. */
   APP_HOME_HOSPITAL?: string;
+  /** Sprint 41 — dedicated Product Owner Agent service URL; empty = mock fallback. */
+  PO_AGENT_URL?: string;
 }
 
 declare global {
@@ -151,4 +153,18 @@ export function getHomeHospital(): string {
     return runtime;
   }
   return import.meta.env.VITE_APP_HOME_HOSPITAL ?? '';
+}
+
+/**
+ * Resolve the dedicated po-agent-service base URL: runtime-injected value
+ * first, then the build-time `VITE_PO_AGENT_URL` fallback, then empty
+ * (=> invokeAgent keeps using the deterministic mock for product-owner-agent).
+ * Sprint 41.
+ */
+export function getPoAgentUrl(): string {
+  const runtime = runtimeEnv().PO_AGENT_URL;
+  if (runtime && runtime.length > 0) {
+    return runtime;
+  }
+  return import.meta.env.VITE_PO_AGENT_URL ?? '';
 }
