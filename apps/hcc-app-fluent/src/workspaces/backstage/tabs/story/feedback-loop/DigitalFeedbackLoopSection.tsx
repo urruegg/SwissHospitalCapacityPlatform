@@ -1,6 +1,7 @@
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { useCopilotRail } from '../../../../../copilot-rail/rail-context';
+import { enrichWithLiveAnswer } from '../../../../start/frontier/start-rail';
 import { SectionHeader } from '../../../../shared/narrative/SectionHeader';
 import { DigitalFeedbackLoop } from './DigitalFeedbackLoop';
 import { FEEDBACK_LOOP_DOMAINS, type FeedbackLoopDomain } from './feedback-loop-model';
@@ -29,7 +30,13 @@ export function DigitalFeedbackLoopSection() {
     const mapped = FEEDBACK_LOOP_DOMAINS.find((candidate) => candidate.id === domain.id);
     if (!mapped) return;
     const label = t(mapped.curaviasLabelKey);
-    rail?.openWithReco(buildInsight(mapped, label), buildReco(mapped, label, t));
+    const domainReco = buildReco(mapped, label, t);
+    rail?.openWithReco(buildInsight(mapped, label), domainReco);
+    if (rail) {
+      void enrichWithLiveAnswer(domainReco.read, rail).catch((error) => {
+        console.error('PO agent live enrichment failed', error);
+      });
+    }
   };
 
   return (

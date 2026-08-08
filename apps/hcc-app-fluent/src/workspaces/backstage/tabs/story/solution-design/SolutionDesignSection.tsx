@@ -3,6 +3,7 @@ import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import { CheckmarkCircleRegular } from '@fluentui/react-icons';
 import { useTranslation } from 'react-i18next';
 import { useCopilotRail } from '../../../../../copilot-rail/rail-context';
+import { enrichWithLiveAnswer } from '../../../../start/frontier/start-rail';
 import { SectionHeader } from '../../../../shared/narrative/SectionHeader';
 import {
   IQ_PLANES,
@@ -147,7 +148,13 @@ export function SolutionDesignSection() {
     };
     setSelected({ scope: plane.id, kind: ctx.kind, capabilityId: capability?.id });
     const label = capability ? `${plane.label} - ${capability.label}` : plane.label;
-    rail?.openWithReco(buildSolutionDesignInsight(ctx, label), buildSolutionDesignReco(plane, ctx, t));
+    const planeReco = buildSolutionDesignReco(plane, ctx, t);
+    rail?.openWithReco(buildSolutionDesignInsight(ctx, label), planeReco);
+    if (rail) {
+      void enrichWithLiveAnswer(planeReco.read, rail).catch((error) => {
+        console.error('PO agent live enrichment failed', error);
+      });
+    }
   };
 
   const layers = IQ_PLANES.filter((p) => p.kind === 'layer');
