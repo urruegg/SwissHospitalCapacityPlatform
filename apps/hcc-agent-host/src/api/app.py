@@ -92,6 +92,28 @@ def _build_live_data_agent():
     return FabricDataAgentClient(endpoint=endpoint, workspace_id=workspace, data_agent_id=agent_id)
 
 
+def _build_chat_model():
+    """Return a live FoundryResponsesChatModel when env is configured, else None.
+
+    A single instance serves every agent-host manifest -- the Foundry Agent
+    name is supplied per-call as ``agent_name`` (manifest.agent), not bound at
+    construction (Sprint 43 WS-1).
+    """
+    endpoint = os.environ.get("FOUNDRY_PROJECT_ENDPOINT")
+    project = os.environ.get("FOUNDRY_PROJECT_NAME")
+    provided = [bool(endpoint), bool(project)]
+    if not all(provided):
+        if any(provided):
+            logger.warning(
+                "FOUNDRY_PROJECT_* partially configured (%d/2 set); using MockChatModel",
+                sum(provided),
+            )
+        return None
+    from orchestrator.foundry_chat_model import FoundryResponsesChatModel
+
+    return FoundryResponsesChatModel(project_endpoint=endpoint, project_name=project)
+
+
 def _system_prompt_for(manifest: AgentManifest, agents_root: Path) -> str:
     ref = manifest.system_prompt_ref.split("#", 1)[0].lstrip("./")
     prompt_path = agents_root / manifest.agent / ref
@@ -112,8 +134,13 @@ class HostState:
         live = _build_live_data_agent()
         self._live_data_agent = live
         adapter = FabricDataAgentAdapter(ask_fn=(live.ask if live is not None else None))
+        # Sprint 43 WS-1 -- live Foundry Agent Service chat model (Option A).
+        # FOUNDRY_PROJECT_ENDPOINT/FOUNDRY_PROJECT_NAME unset (dev/CI default)
+        # keeps the deterministic MockChatModel; both set (SIT/PROD) invokes
+        # the real registered agents via FoundryResponsesChatModel.
+        live_chat_model = _build_chat_model()
         self.orchestrator = Orchestrator(
-            chat_model=MockChatModel(),
+            chat_model=live_chat_model if live_chat_model is not None else MockChatModel(),
             data_agent=adapter,
         )
         # #424 M3 — server-side (userOid x agent) -> threadId map. Shares the
