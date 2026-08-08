@@ -1,9 +1,9 @@
 ---
-Version: 2.1.0
+Version: 2.2.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
-Status: Complete - SIT deployed and live-tested
-Previous Version: 2.0.0 (real audit findings from live SIT tenant, deploy not yet attempted)
+Status: Complete - Sprint 42 remediation deployed and live re-tested (refused: false)
+Previous Version: 2.1.0 (SIT deployed and live-tested, root causes still open)
 ---
 
 # Sprint 41 WS-0 audit findings
@@ -168,6 +168,79 @@ container's image changed.
 
   **This is the correct, safe result given the findings above - not a bug.**
   The service is live, the wire contract is exactly right, and the
+  service correctly refuses rather than fabricating an answer while every
+  knowledge class is still blocked by the gaps documented above.
+
+## Sprint 42 remediation — live re-test (final)
+
+> Supersedes the "Follow-up required" list above. Full design:
+> [`2026-08-08-sprint-42-po-agent-sit-remediation-design.md`](2026-08-08-sprint-42-po-agent-sit-remediation-design.md).
+> Full plan (8 tasks, subagent-driven, each with implementer + spec review +
+> code-quality review):
+> [`2026-08-08-sprint-42-po-agent-sit-remediation.md`](../plans/2026-08-08-sprint-42-po-agent-sit-remediation.md).
+
+All 3 root causes fixed and verified against real SIT infrastructure:
+
+- **Env-var mismatch (Finding, all classes)** — `po-agent-runtime/main.bicep`
+  now declares the exact names the Python code reads
+  (`AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_INDEX`, `AZURE_SUBSCRIPTION_ID`,
+  `FABRIC_DATA_AGENT_ENDPOINT`/`FABRIC_WORKSPACE_ID`/`FABRIC_DATA_AGENT_ID`,
+  `FOUNDRY_PROJECT_ENDPOINT`/`FOUNDRY_PROJECT_NAME`), for **both** the
+  runtime app and the corpus-refresh job (the job needed its own copy of the
+  search vars — a gap the first version of the guardrail test missed by
+  checking the union of env vars across every resource instead of each
+  resource individually; fixed in both the Bicep module and the guardrail).
+- **Finding 3 (IAM)** — `Reader` + `Cost Management Reader` granted at
+  subscription scope (Class B/C) via Bicep; a Fabric workspace `Viewer` role
+  granted via the new `grant_po_agent_workspace_role.py` script (Class D —
+  Fabric workspace access is a Fabric REST concept, not ARM RBAC, correcting
+  the original audit's assumption); `Search Index Data Contributor` granted
+  on the search service (found live: the corpus-refresh job needs write
+  access, not just the pre-existing `Search Index Data Reader`).
+- **Finding 1 (corpus pipeline)** — real search index `idx-curavias-corpus-ihzhhpf-sit`
+  created (schema mirrors the frozen `GroundedChunk` contract); real
+  `po-agent-corpus-refresh` image built and deployed to
+  `caj-po-refresh-ihzhhpf-sit`; the job now runs successfully (first success
+  after 13 consecutive daily failures) and populated the index with
+  **6,333 real documents**, confirmed via a direct Search REST query.
+- **Extra finding, not in the original audit** — the runtime image was
+  missing `azure-identity`/`requests`/`pyyaml` entirely (`runtime/requirements.txt`
+  only ever listed `fastapi`/`uvicorn`/`pydantic`). Every class's
+  `DefaultAzureCredential` import failed with `ModuleNotFoundError`,
+  silently swallowed by `get_tools()`'s per-class `try/except` — the service
+  looked perfectly healthy (200 OK on every request, correct refusal
+  behavior) while every knowledge class silently failed to register. Found
+  by exec'ing directly into the running container. Fixed in
+  `runtime/requirements.txt`; a new image was built, deployed, and re-tested.
+
+**Live re-test after all fixes:**
+
+```json
+POST /answer {"question":"What is the Curavias platform?","caller":{"persona":"exec","tier":"internal"},"language":"en"}
+
+{
+  "agentLabel": "product-owner-agent",
+  "citations": [
+    "docs/specs/Swiss AI-Powered Patient Flow and Hospital Capacity Platform analysis.md@unknown",
+    "docs/reviews/2026-07-01-ama-hcc-northstar-review/IKM-HCC-vs-Swiss-Capacity-Platform-Analysis.md@unknown",
+    "docs/superpowers/specs/2026-07-31-sprint-38-epic-closed-loop-simulation-engine-design.md@unknown",
+    "docs/superpowers/ideas/unified-curavias-organisation-and-skills-ontology/Step1-Curavias-Skills-Ontology-Model.md@unknown",
+    "docs/superpowers/ideas/unified-curavias-organisation-and-skills-ontology/Step3-Solution-Design-Curavias-WorkID-SkillsManager.md@unknown"
+  ],
+  "provenance": "live",
+  "refused": false
+}
+```
+
+**`refused: false` with 5 real citations from real SIT infrastructure —
+Class A corpus retrieval is genuinely grounded end-to-end.** Classes B/C/D
+have their IAM/env-var gaps closed the same way but were not individually
+re-probed with a dedicated question in this pass (out of scope for this
+verification; the same fix pattern applies).
+
+**PROD promotion:** still explicitly out of scope, per the design's
+non-goals — needs its own separate `approved-to-apply`.
+
   zero-hallucination doctrine holds: with no class actually able to
   retrieve real chunks yet, it refuses rather than fabricates.
 
