@@ -11,6 +11,7 @@ only, never a crashed request.
 """
 from __future__ import annotations
 
+import datetime as _dt
 import os
 import sys
 from pathlib import Path
@@ -90,6 +91,45 @@ def get_tools() -> dict[str, Any]:
         subscription_id = os.environ["AZURE_SUBSCRIPTION_ID"]
         live_clients = build_production_clients(subscription_id=subscription_id)
         tools["B"] = lambda q: liveProof(q, subscription_id, clients=live_clients)
+    except Exception:
+        pass
+
+    try:
+        from azure_cost import build_production_client as build_cost_client, get_effective_prod_cost
+        from copilot_cost import build_production_client as build_copilot_client, get_copilot_cost
+        from reconcile_bva import CostObservation, combined_run_rate, reconcile_bva
+
+        subscription_id = os.environ["AZURE_SUBSCRIPTION_ID"]
+        cost_client = build_cost_client(subscription_id=subscription_id)
+        copilot_client = build_copilot_client()
+        repo_root = _PO_AGENT_ROOT.parents[2]
+
+        def _class_c(q: str) -> list[dict[str, Any]]:
+            window_end = _dt.date.today()
+            window_start = window_end - _dt.timedelta(days=30)
+            start, end = window_start.isoformat(), window_end.isoformat()
+            try:
+                azure_amount = get_effective_prod_cost(
+                    cost_client, cost_client.default_scope, start, end
+                ).amount
+                copilot_amount = get_copilot_cost(copilot_client, start, end).amount
+                # docs/BVA.md's documented USD->CHF rate (figures are all CHF).
+                observation = combined_run_rate(
+                    azure_amount, copilot_amount * 0.88, "CHF", start, end, end
+                )
+            except Exception:  # any live feed failure degrades to snapshot, never raises
+                observation = CostObservation(
+                    amount=0.0,
+                    currency="CHF",
+                    window_start=start,
+                    window_end=end,
+                    feed="Azure Cost Management + GitHub Copilot usage",
+                    as_of=end,
+                    ok=False,
+                )
+            return [reconcile_bva(observation, repo_root=repo_root)]
+
+        tools["C"] = _class_c
     except Exception:
         pass
 
