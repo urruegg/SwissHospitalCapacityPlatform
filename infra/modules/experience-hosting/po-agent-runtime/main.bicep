@@ -148,6 +148,9 @@ var refreshJobName = 'caj-po-refresh-${nameSuffix}'
 
 // Built-in role IDs (verified against Azure RBAC docs).
 var searchIndexDataReaderRoleId = '1407120a-92aa-4202-b7e9-c0e197c71c8f'
+// Sprint 42 fix: the corpus-refresh job uploads documents (write), while the
+// runtime app only queries (read) - both share one MI, so it needs both roles.
+var searchIndexDataContributorRoleId = '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
 var cognitiveServicesOpenAiUserRoleId = '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
@@ -336,6 +339,17 @@ resource searchReaderRole 'Microsoft.Authorization/roleAssignments@2022-04-01' =
   }
 }
 
+resource searchContributorRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(searchServiceId)) {
+  name: guid(searchServiceId, identity.id, searchIndexDataContributorRoleId)
+  scope: existingSearch
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', searchIndexDataContributorRoleId)
+    principalId: identity.properties.principalId
+    principalType: 'ServicePrincipal'
+    description: 'Sprint 42 — PO Agent corpus-refresh job MI uploads documents into the corpus index (Class A write, keyless).'
+  }
+}
+
 // Subscription-scope role assignments cannot be declared directly in a
 // resourceGroup-scoped file (BCP139) — nested module w/ targetScope =
 // 'subscription' is the standard Bicep pattern for elevating scope.
@@ -513,6 +527,14 @@ resource refreshJob 'Microsoft.App/jobs@2024-03-01' = {
             {
               name: 'CORPUS_PREFIX'
               value: corpusPrefix
+            }
+            {
+              name: 'AZURE_SEARCH_ENDPOINT'
+              value: searchEndpoint
+            }
+            {
+              name: 'AZURE_SEARCH_INDEX'
+              value: searchIndexName
             }
             {
               name: 'DEMO_SCOPE'
