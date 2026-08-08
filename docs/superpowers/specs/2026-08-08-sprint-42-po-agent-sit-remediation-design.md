@@ -1,9 +1,9 @@
 ---
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: n/a
+Previous Version: 1.0.0 (corrected ST-3 mechanism from a hypothesised Bicep `Microsoft.Search/indexes` child resource to the repo's existing REST-script convention, found while grounding the implementation plan)
 ---
 
 # Sprint 42 — Product Owner Agent SIT Root-Cause Remediation — Design
@@ -109,24 +109,29 @@ never a push-time gate" convention seen elsewhere).
 
 ### ST-3 — Class A pipeline
 
+**Correction found while grounding the plan:** this repo already has a
+documented convention for this exact resource
+(`infra/modules/knowledge-layer/foundry-iq-knowledge-base/knowledge-base-rest.md`):
+Azure AI Search indexes here are **REST-script-provisioned, not a Bicep
+child resource** (no ARM sub-resource type is used for this in the
+existing pattern). ST-3 turns that runbook's manual curl steps into an
+idempotent script instead, rather than inventing a new Bicep resource.
+
 **Files:**
-- `infra/modules/knowledge-layer/ai-search/main.bicep` — add a
-  `Microsoft.Search/indexes` child resource, schema derived field-for-field
-  from `data/synthetic/schema/grounded-chunk-v1.schema.json` (the same
-  frozen `GroundedChunk` contract every class already emits/consumes) so
-  there is one schema of record, not two hand-maintained copies.
-- `data-platform/scripts/po-agent/corpus/index_writer.py` (new) — a thin
-  real Azure AI Search client (`azure-search-documents` if installed,
-  else the same raw-REST pattern `search_client.py`/`azure_clients.py`
-  already established) that takes `publish.py`'s `GroundedChunk` list and
-  upserts it into the index.
+- `data-platform/scripts/po-agent/corpus/create_search_index.py` (new) — a
+  real, idempotent (`PUT` = create-or-update) script implementing the
+  runbook's Step 1, with a field schema mirroring the frozen `GroundedChunk`
+  contract (`data/synthetic/schema/grounded-chunk-v1.schema.json`) exactly,
+  including a nested `citation` complex field so `search_client.py`'s
+  `query_corpus` (already tested, unchanged) reads it back correctly.
 - `data-platform/scripts/po-agent/corpus/refresh_job.py` (new) — the CLI
   entrypoint the Container Apps Job actually runs: reads the corpus landing
-  storage, calls the existing `chunk_tag.py`/`phi_gate.py`/`publish.py`
-  pipeline, then `index_writer.py` to push the result.
-- `data-platform/scripts/po-agent/runtime/Dockerfile`-style new
-  `corpus/Dockerfile` + `.github/workflows/po-agent-corpus-build.yml`
-  (mirrors `po-agent-runtime-build.yml` exactly).
+  storage via `snapshot.py`, tags via `chunk_tag.py`, PHI-gates + maps to
+  `GroundedChunk` via `publish.py` (all pre-existing, tested), then uploads
+  into the real index.
+- `data-platform/scripts/po-agent/corpus/Dockerfile` +
+  `.github/workflows/po-agent-corpus-build.yml` (mirrors
+  `po-agent-runtime-build.yml` exactly).
 - Bump `caj-po-refresh-ihzhhpf-sit`'s image the same **surgical**
   way Sprint 41 bumped the runtime service (`az containerapp job update`,
   not a full Bicep deploy) — same drift-avoidance reasoning applies.
