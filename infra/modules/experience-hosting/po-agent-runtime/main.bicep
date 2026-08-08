@@ -63,6 +63,24 @@ param searchServiceId string = ''
 @description('Pinned data-plane Search REST api-version (ai-search module output). Threaded to the runtime as SEARCH_API_VERSION.')
 param searchRestApiVersion string = '2024-05-01-preview'
 
+@description('Name of the Azure AI Search index the runtime queries for Class A corpus retrieval. Threaded as AZURE_SEARCH_INDEX.')
+param searchIndexName string = 'idx-curavias-corpus-${nameSuffix}'
+
+@description('Published Fabric Data Agent consumption endpoint (Class D ontology). Empty skips Class D wiring — same fabricDataAgentEndpoint value already used by the agent-host module (infra/main.bicep).')
+param fabricDataAgentEndpoint string = ''
+
+@description('Fabric workspace ID hosting the Data Agent (Class D). Parsed by convention from fabricDataAgentEndpoint\'s /workspaces/{id}/ path segment when not overridden.')
+param fabricWorkspaceId string = ''
+
+@description('Fabric Data Agent artifact ID (Class D). Same fabricDataAgentId value already used by the agent-host module.')
+param fabricDataAgentId string = ''
+
+@description('Foundry project endpoint (Class B live-proof + Class C cost reconciliation). Defaults to the ADR-0032 SIT project; override per environment.')
+param foundryProjectEndpoint string = 'https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com'
+
+@description('Foundry project name (Class B/C). Defaults to the ADR-0032 SIT project.')
+param foundryProjectName string = 'ai-ihzhhpf-sit-eastus2-project'
+
 @description('Name of the corpus landing storage account (corpus-landing module output). Threaded to the refresh job as CORPUS_STORAGE_ACCOUNT.')
 param corpusStorageAccountName string = ''
 
@@ -127,6 +145,9 @@ var searchIndexDataReaderRoleId = '1407120a-92aa-4202-b7e9-c0e197c71c8f'
 var cognitiveServicesOpenAiUserRoleId = '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+// Class D: workspace id is the path segment between /workspaces/ and /aiskills/
+// in fabricDataAgentEndpoint (matches infra/modules/agent-host's own convention).
+var effectiveFabricWorkspaceId = !empty(fabricWorkspaceId) ? fabricWorkspaceId : (!empty(fabricDataAgentEndpoint) ? split(split(fabricDataAgentEndpoint, '/workspaces/')[1], '/')[0] : '')
 // Cosmos DB built-in data-plane role: "Cosmos DB Built-in Data Contributor".
 var cosmosDataContributorRoleId = '00000000-0000-0000-0000-000000000002'
 
@@ -347,12 +368,40 @@ resource runtimeApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: identity.properties.clientId
             }
             {
-              name: 'SEARCH_ENDPOINT'
+              name: 'AZURE_SUBSCRIPTION_ID'
+              value: subscription().subscriptionId
+            }
+            {
+              name: 'AZURE_SEARCH_ENDPOINT'
               value: searchEndpoint
+            }
+            {
+              name: 'AZURE_SEARCH_INDEX'
+              value: searchIndexName
             }
             {
               name: 'SEARCH_API_VERSION'
               value: searchRestApiVersion
+            }
+            {
+              name: 'FABRIC_DATA_AGENT_ENDPOINT'
+              value: fabricDataAgentEndpoint
+            }
+            {
+              name: 'FABRIC_WORKSPACE_ID'
+              value: effectiveFabricWorkspaceId
+            }
+            {
+              name: 'FABRIC_DATA_AGENT_ID'
+              value: fabricDataAgentId
+            }
+            {
+              name: 'FOUNDRY_PROJECT_ENDPOINT'
+              value: foundryProjectEndpoint
+            }
+            {
+              name: 'FOUNDRY_PROJECT_NAME'
+              value: foundryProjectName
             }
             {
               name: 'AZURE_OPENAI_ENDPOINT'
