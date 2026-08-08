@@ -31,9 +31,23 @@ logger = logging.getLogger(__name__)
 
 
 class ChatModel(Protocol):
-    """Foundry chat-completion surface (ADR-0008)."""
+    """Foundry chat-completion surface (ADR-0008).
 
-    def complete(self, system_prompt: str, user_prompt: str, grounding: list[dict[str, Any]]) -> str:
+    ``agent_name`` (Sprint 43 WS-1) identifies which registered Foundry Agent
+    to invoke -- always ``manifest.agent`` (AGENTS.md naming convention: the
+    manifest's ``agent`` field is identical to the registered Foundry Agent
+    name). A single ``ChatModel`` instance serves every agent-host manifest;
+    routing happens per-call, not per-instance.
+    """
+
+    def complete(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        grounding: list[dict[str, Any]],
+        *,
+        agent_name: str = "",
+    ) -> str:
         ...
 
 
@@ -164,7 +178,9 @@ class Orchestrator:
             with self.tracer.span(
                 "agent.model", agent=manifest.agent, model=type(self.chat_model).__name__
             ):
-                raw_answer = self.chat_model.complete(system_prompt, user_prompt, grounding)
+                raw_answer = self.chat_model.complete(
+                    system_prompt, user_prompt, grounding, agent_name=manifest.agent
+                )
             if degraded:
                 raw_answer = (
                     "[grounding degraded: Fabric Data Agent unavailable, answered from "

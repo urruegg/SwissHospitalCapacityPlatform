@@ -8,7 +8,7 @@ from tools.fabric_data_agent_adapter import FabricDataAgentAdapter
 
 
 class _EchoModel:
-    def complete(self, system_prompt, user_prompt, grounding):
+    def complete(self, system_prompt, user_prompt, grounding, *, agent_name=""):
         return f"answer using {len(grounding)} grounding item(s)"
 
 

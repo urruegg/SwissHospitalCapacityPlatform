@@ -12,7 +12,12 @@ from typing import Any
 
 class MockChatModel:
     def complete(
-        self, system_prompt: str, user_prompt: str, grounding: list[dict[str, Any]]
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        grounding: list[dict[str, Any]],
+        *,
+        agent_name: str = "",
     ) -> str:
         # Summarise ward occupancy from the grounding rows if present.
         occupied = next(

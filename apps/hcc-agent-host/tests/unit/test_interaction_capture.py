@@ -47,7 +47,7 @@ from orchestrator.dispatch import Orchestrator
 
 
 class _StubModel:
-    def complete(self, system_prompt, user_prompt, grounding):
+    def complete(self, system_prompt, user_prompt, grounding, *, agent_name=""):
         return "Auslastung Station B: 92%."
 
 
