@@ -47,7 +47,7 @@ def build_grounded_chunks(docs: list[dict], commit: str) -> list[dict]:
         source_path = doc.get("source_path", doc.get("path"))
         doc_chunks = chunk_tag.chunk_document(source_path, doc["text"], commit)
         for chunk in doc_chunks:
-            chunk.setdefault("date", doc.get("date"))
+            chunk["date"] = chunk.get("date") or doc.get("date")
         tagged.extend(doc_chunks)
     return publish.publish(tagged)
 
