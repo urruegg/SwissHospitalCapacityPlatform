@@ -587,6 +587,7 @@ module poAgentRuntime './modules/experience-hosting/po-agent-runtime/main.bicep'
     searchRestApiVersion: enablePoAgentSearchModule ? poAgentSearch!.outputs.pinnedSearchRestApiVersion : '2024-05-01-preview'
     searchIndexName: 'idx-curavias-corpus-${resourceSuffix}'
     fabricDataAgentEndpoint: fabricDataAgentEndpoint
+    fabricWorkspaceId: fabricWorkspaceId
     fabricDataAgentId: fabricDataAgentId
     corpusStorageAccountName: poCorpusStorageName
     openAiLocation: poAgentOpenAiLocation

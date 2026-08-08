@@ -54,7 +54,7 @@ param containerRegistryLoginServer string = ''
 @description('Optional resource ID of the ACR that hosts containerImage. Required together with containerRegistryLoginServer.')
 param containerRegistryResourceId string = ''
 
-@description('Query endpoint of the Azure AI Search service (ai-search module output). Threaded to the runtime as SEARCH_ENDPOINT.')
+@description('Query endpoint of the Azure AI Search service (ai-search module output). Threaded to the runtime as AZURE_SEARCH_ENDPOINT.')
 param searchEndpoint string = ''
 
 @description('Resource ID of the Azure AI Search service. When set, the runtime MI is granted Search Index Data Reader scoped to it. Empty string skips the grant.')
@@ -145,9 +145,10 @@ var searchIndexDataReaderRoleId = '1407120a-92aa-4202-b7e9-c0e197c71c8f'
 var cognitiveServicesOpenAiUserRoleId = '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-// Class D: workspace id is the path segment between /workspaces/ and /aiskills/
-// in fabricDataAgentEndpoint (matches infra/modules/agent-host's own convention).
-var effectiveFabricWorkspaceId = !empty(fabricWorkspaceId) ? fabricWorkspaceId : (!empty(fabricDataAgentEndpoint) ? split(split(fabricDataAgentEndpoint, '/workspaces/')[1], '/')[0] : '')
+// Class D: prefer the explicit fabricWorkspaceId param (same value agent-host
+// already receives as a plain pass-through); fall back to parsing it out of
+// fabricDataAgentEndpoint's /workspaces/{id}/ path segment only if that's not set.
+var effectiveFabricWorkspaceId = !empty(fabricWorkspaceId) ? fabricWorkspaceId : (contains(fabricDataAgentEndpoint, '/workspaces/') ? split(split(fabricDataAgentEndpoint, '/workspaces/')[1], '/')[0] : '')
 // Cosmos DB built-in data-plane role: "Cosmos DB Built-in Data Contributor".
 var cosmosDataContributorRoleId = '00000000-0000-0000-0000-000000000002'
 
