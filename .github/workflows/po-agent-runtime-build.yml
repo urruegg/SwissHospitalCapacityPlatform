@@ -54,7 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          pip install pytest requests azure-identity fastapi pydantic uvicorn pyyaml httpx
+          pip install pytest requests azure-identity fastapi pydantic uvicorn pyyaml httpx jsonschema
           # azure-cli ships with bicep on ubuntu-latest runners; ensure it's
           # available (matches ci.yml's bicep-build job) since the guardrail
           # test shells out to `az bicep build`.
