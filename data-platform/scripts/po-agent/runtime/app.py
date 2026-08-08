@@ -22,6 +22,7 @@ from pydantic import BaseModel
 
 import orchestrator
 from authz import CallerContext
+from env_contract import REQUIRED_ENV_VARS
 
 app = FastAPI(title="po-agent-service", version="1.0.0")
 
