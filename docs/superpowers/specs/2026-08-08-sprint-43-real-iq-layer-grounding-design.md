@@ -1,9 +1,9 @@
 ---
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: n/a
+Previous Version: 1.0.0 (WS-1 Task 0 spike executed live against SIT; Option A confirmed with real endpoint/body contract, replacing the deferred 3-option comparison)
 ---
 
 # Sprint 43 — Real Foundry IQ + Fabric IQ Grounding — Design
@@ -78,36 +78,41 @@ are both in scope, together.
 
 ### WS-1 — Real chat/synthesis (replace `MockChatModel`)
 
-**Decision deliberately deferred** (user's explicit instruction) — three
-approaches are documented in full; WS-1's first task is a short, timeboxed
-decision spike, not a fresh design debate.
+**Decision: Option A, confirmed by a real spike (not deferred anymore).**
+User's stated preference was A; the WS-1 Task 0 spike below was executed
+live against real SIT infrastructure and succeeded, so A is adopted for
+all 8 agents.
 
 | | **A — Invoke the registered Foundry Agents** | **B — Direct Azure OpenAI chat completions** | **C — Hybrid (Assistants-style run loop against the registered Agents)** |
 | - | - | - | - |
-| Mechanism | `POST .../projects/.../agents/{name}` create-thread → run → poll (Foundry Agent Service, `2025-05-15-preview`) | Single synchronous `POST .../openai/deployments/{model}/chat/completions` on `ai-ihzhhpf-sit-eastus2.openai.azure.com` | Same create-thread/run/poll shape as `fabric_data_agent_client.py`, pointed at the registered Agents instead of a plain deployment |
-| RBAC | **New grant needed**: `Foundry User` or `Foundry Project Manager` on `ai-ihzhhpf-sit-eastus2` (confirmed via `live_factory.py`'s own docstring: `Cognitive Services User` returns 401 on this API) | **None** — agent-host's MI already has `Cognitive Services User` on this account (confirmed, `sit-evidence-2026-07-17.md`) | Same new-grant requirement as A |
-| New code | A full invocation client (create/run/poll) — none exists today, only *registration* code (`live_factory.py`) does | Reuses the exact client shape already built + live-tested for `po-agent-service` this session | Reuses `fabric_data_agent_client.py`'s proven poll loop shape, re-pointed |
-| Uses the 8 registered Agent objects as first-class entities | Yes | No — the registration's own metadata (a `decision_tier_coordination` function tool + role tag) isn't needed for plain Q&A; `hcc-agent-host` already assembles system prompt + grounding client-side per manifest | Yes |
-| Latency | Slower (thread + run + poll) | Fastest (single call) | Slower (thread + run + poll) |
-| Risk | New RBAC + new untested protocol code | Lowest — proven pattern, proven RBAC | New RBAC; untested protocol code, uncertain payoff vs. A |
+| Mechanism | `POST {project_endpoint}/openai/v1/responses` with `agent_reference: {name, type: "agent_reference"}` + `input` — **the Responses API**, confirmed live | Single synchronous `POST .../openai/deployments/{model}/chat/completions` on `ai-ihzhhpf-sit-eastus2.openai.azure.com` | Classic Assistants-style thread/run/poll — **confirmed dead end**: the project's `/assistants` list is empty (0 objects), so there is no `asst_...` id for `assistant_id` to reference; the 8 registered `/agents` objects are not invokable through `/threads/.../runs` at all |
+| RBAC | `Foundry User` on `ai-ihzhhpf-sit-eastus2` — **already granted** to agent-host's MI (confirmed via `az role assignment create`'s idempotent response: granted 2026-07-26, predates this sprint) | None — agent-host's MI already has `Cognitive Services User` on this account | Same RBAC as A, but the mechanism itself doesn't work (see above) |
+| New code | A single synchronous REST call — simpler than originally scoped (no polling) | Reuses the exact client shape already built + live-tested for `po-agent-service` this session | N/A — ruled out |
+| Uses the 8 registered Agent objects as first-class entities | **Yes, confirmed** — the live spike response even echoes back `"agent_reference": {"name": "bmca-agent", "version": "3"}` and the agent's own registered `decision_tier_coordination_bmca` function tool in the response's `tools` array | No | N/A |
+| Latency | Single call, synchronous, `status: "completed"` in the same response — no polling | Fastest (single call) | N/A |
+| Risk | **De-risked** — spike proved it end-to-end with a real GPT-5 answer (asked clarifying questions for missing grounding, exactly as a real, non-mock model would) | Lowest — proven pattern, proven RBAC | N/A |
 
-**User's stated preference:** A — the concern with B is that it mirrors
-the Product Owner Agent's own pattern too closely, which is itself
-Foundry-IQ-search-centric (Class A corpus) with the Fabric-grounded slice
-(BVA/Class C reconciliation) not yet proven end-to-end either. A exercises
-the platform's actual registered multi-agent surface, which is the part of
-the story this sprint needs to prove.
+**Spike evidence (real, live, SIT):** a bare `input` with no grounding
+context produced a genuine, reasoned GPT-5 response (asking for bed-state
+figures, defining pressure bands, proposing a projection formula) —
+categorically different from `MockChatModel`'s hardcoded template
+matching. This is the confirmation the Task 0 spike was designed to
+produce.
 
-**WS-1 Task 0 (decision spike, timeboxed):** grant `Foundry User` to
-agent-host's MI on `ai-ihzhhpf-sit-eastus2`; build a minimal `create
-thread → post message → run → poll → read response` script against one
-registered agent (e.g. `bmca-agent`) mirroring `fabric_data_agent_client.py`'s
-proven shape; confirm it returns a real, non-mock answer. If this works
-within the timebox, proceed with **A** for all 8 agents. If it doesn't
-(auth issue, protocol mismatch, agent definition doesn't behave as
-expected for plain Q&A), fall back to **B**, already de-risked. Document
-the outcome as a short ADR-style decision record before continuing WS-1's
-remaining tasks.
+**Remaining WS-1 design questions for the implementation plan:**
+- How system prompt + grounding rows (currently assembled client-side in
+  `Orchestrator._grounding()`/`_system_prompt_for()`) get attached to the
+  Responses API call — likely via the `instructions` field (system
+  prompt) and grounding serialized into `input` (or a structured content
+  block), preserving the existing manifest-driven assembly logic
+  unchanged.
+- Whether to pass `conversation` for multi-turn continuity (matching the
+  existing `(userOid x agent)` thread-map concept already in
+  `hcc-app-fluent`) or keep each call stateless, matching today's
+  behavior.
+- Redaction (`orchestrator/redaction.py`) applies to the real model's
+  `output[].content[].text` the same way it applies to `MockChatModel`'s
+  return value today — no change expected, but must be verified.
 
 ### WS-2 — Real Fabric grounding (replace `FabricAdapter`'s hardcoded dict)
 
@@ -177,16 +182,23 @@ the end.
 
 ## 7. Risks / open items
 
-- **WS-1's approach decision is explicitly open** — this design documents
-  all 3 options with enough detail to execute the Task 0 spike, but does
-  not commit to one. The spike's outcome must be recorded before WS-1's
-  remaining tasks are planned in detail.
+- **WS-1's approach is confirmed (Option A)** — the Task 0 spike was
+  executed live against real SIT infrastructure (see §2, WS-1) and
+  succeeded: a real, non-mock GPT-5 response was returned via
+  `POST {project_endpoint}/openai/v1/responses` with an `agent_reference`
+  body. The remaining open design question is how the existing
+  manifest-driven system prompt + grounding assembly attaches to this
+  call (`instructions` field vs. embedding in `input`) — to be resolved
+  in the WS-1 implementation plan, not a re-open of the options
+  comparison.
 - **Per-agent grounding table coverage (WS-2) is not yet fully inventoried**
   — this design lists the tables observed during live testing; a full
   per-manifest audit of `grounding_tables` is needed as WS-2's first task.
-- **RBAC for WS-1 Option A** is a real, not-yet-granted permission — needs
-  the same `approved-to-apply` discipline as every other IAM change this
-  session.
+- **RBAC for WS-1 Option A was already granted** — `Foundry User` on
+  `ai-ihzhhpf-sit-eastus2` for agent-host's MI, confirmed pre-existing
+  since 2026-07-26 (idempotent `az role assignment create` check, no new
+  grant needed, no fresh `approved-to-apply` required for this specific
+  permission).
 - **Scope is large.** Four workstreams, at least 8 agents, 7 boards. This
   design deliberately keeps them as one coherent initiative (they share
   the same root cause and the same Fabric connection) but the
