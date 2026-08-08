@@ -1,9 +1,9 @@
 ---
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
-Status: Draft
-Previous Version: n/a
+Status: Code-complete, deploy-blocked
+Previous Version: 1.0.0 (initial brainstorming-skill design)
 ---
 
 # Sprint 41 — Product Owner Agent End-to-End Grounding (Start + Backstage) — Design
@@ -280,3 +280,74 @@ anyone writes wiring code against a wrong assumption:
   (advisory + drafts only); no change to its MCP allow-list entries.
 - ADR-0043 (Foundry IQ Knowledge-Layer domain #1) — this sprint is the
   concrete realisation of that ADR's decision, not a revision of it.
+
+## 9. Progress log
+
+**2026-08-08 — all six workstreams code-complete, executed via
+Subagent-Driven delegation per the implementation plan.** Every workstream
+found and corrected wrong assumptions in the plan's inline code samples by
+reading the real existing code first (documented per-commit) — the same
+diligence bar was held throughout.
+
+- **WS-0** — `docs/superpowers/specs/2026-08-08-sprint-41-ws0-audit-findings.md`
+  (audit) + contracts doc §6 (frozen HTTP contract). The three live-read
+  audit items (corpus index doc count, job run history, MI role
+  assignments) are **BLOCKED**: this session has no live Azure/MCP access
+  to the Curavias tenant (confirmed via `az account show` and an empty
+  Azure Resource Graph query against `rg-ihzhhpf-sit`). Documented as an
+  explicit follow-up, not fabricated.
+- **WS-SVC** — `po-agent-service` FastAPI app + Dockerfile
+  (`data-platform/scripts/po-agent/runtime/{app.py,Dockerfile}`). Commits
+  `1566243f`, `1e2d095c`.
+- **WS-RET** — all four classes wired to real (non-fake) client-builder
+  code behind their existing injectable seams: Class A Azure AI Search
+  (`corpus/search_client.py`, commit `e7625f90`), Class D the shared
+  `da_hospital_capacity` Fabric Data Agent connection reused byte-for-byte
+  from `agent-host`'s proven `ooa-agent` wiring (`ontology/data_agent.py`,
+  commit `725215e4`), Class B read-only Resource Graph/Fabric/Foundry-list
+  clients (`liveproof/azure_clients.py`, commit `9cd71dda`), Class C real
+  Cost Management + GitHub Billing Usage API clients
+  (`cost/{azure_cost,copilot_cost}.py`, commit `99f263c2`).
+- **WS-FE** — `PO_AGENT_URL` runtime config (`6e36a38f`), `invokeAgent`
+  routing via a new `iqPoAgentAnswer()` in `iq-client.ts` — **not** a direct
+  `fetch` in `agent-manifest.ts`, because `tests/unit/iq-ingress-guard.test.ts`
+  enforces a single-fetch-ingress architectural rule this sprint had to
+  respect (`90e6210f`), `rail.updateActiveReco` + progressive-enhancement
+  wiring into `BackstageNarrativeSections.tsx` (`61dc5fd2`), and — closing a
+  gap the plan under-scoped — into every remaining Start-plane and
+  Backstage `openWithReco` call site so the whole surface gets live
+  enrichment, not just the 3 sites the plan named (`2fe17b45`, `5aee36ee`).
+- **WS-EVAL** — `--live` eval mode (`17aca039`), relevancy/groundedness gate
+  beyond citation-presence (`0164db92`), Foundry evaluation dataset loader +
+  weekly-scheduled live-eval CI workflow (`5f1b1ee3`).
+- **WS-INF** — Task INF.1 CI image-publish workflow only
+  (`.github/workflows/po-agent-runtime-build.yml`, commit `b80fcc7e`,
+  matching the real `ci-build-agent-host.yml` docker-build/push pattern,
+  not the plan's hypothetical `az acr build` sketch). **Task INF.2 (the
+  actual SIT deploy) is intentionally NOT executed** — it needs a human
+  `approved-to-apply` comment per `AGENTS.md` §4 and this session has no
+  Azure credentials to run the `what-if` in the first place.
+- **PROD**: **not attempted.** No credentials, and PROD promotion needs its
+  own separate `approved-to-apply` gate regardless per this sprint's own
+  §7 risk callout.
+
+**Verification (code-level, all green):**
+`python -m pytest data-platform/scripts/po-agent/ evals/product-owner-agent/ -v`
+= 88 passed, 7 failed (the 7 are pre-existing, unrelated to this sprint —
+caused by a still-uncommitted `docs/BVA.md` v2.0.0 draft already in the
+working tree before this sprint started, which reformatted a table row
+`reconcile_bva.py`'s regex depends on; not touched, not this sprint's to
+fix). `cd apps/hcc-app-fluent; npx tsc --noEmit` exit 0;
+`npx vitest run src/copilot-rail src/copilot-drawer src/config
+src/workspaces/backstage src/workspaces/start/frontier` = 15 files / 83
+tests passed.
+
+**Follow-up required before any SIT/PROD claim can be made:**
+1. Someone with Curavias-tenant Azure access runs the three WS-0 audit
+   commands and updates the findings doc.
+2. A human posts `approved-to-apply` on the PR/issue for the SIT
+   `poAgentContainerImage` bump (Task INF.2).
+3. After SIT deploy, run `evals/product-owner-agent/run_evals.py --live`
+   against it and record the result.
+4. Only then does a PROD promotion request make sense, and it needs its
+   own separate `approved-to-apply`.
