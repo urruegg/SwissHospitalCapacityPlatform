@@ -67,6 +67,14 @@ def get_tools() -> dict[str, Any]:
     tools: dict[str, Any] = {}
 
     try:
+        from search_client import build_production_client as build_search_client, query_corpus
+
+        search_client = build_search_client()
+        tools["A"] = lambda q: query_corpus(q, client=search_client)
+    except Exception:
+        pass
+
+    try:
         from data_agent import build_production_client as build_data_agent_client, ontologyQuery
 
         data_agent_client = build_data_agent_client()
