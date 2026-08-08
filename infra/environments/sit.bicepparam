@@ -157,7 +157,7 @@ param enablePoAgentCorpusLandingModule = true
 // cleanly in PROD (live oai-poihzhhpfprod runs gpt-5 GlobalStandard). eastus2 quota
 // OpenAI.GlobalStandard.gpt-5 is 110/1000 used, so the cap-10 SIT deployment fits.
 param enablePoAgentRuntimeModule = true
-param poAgentContainerImage = 'cri75lbu5sj4hza.azurecr.io/po-agent-service:sit-manual-20260808'
+param poAgentContainerImage = 'cri75lbu5sj4hza.azurecr.io/po-agent-service:5a80ab1'
 param poAgentCorpusRefreshContainerImage = 'cri75lbu5sj4hza.azurecr.io/po-agent-corpus-refresh:c7029d6'
 param poAgentLogAnalyticsWorkspaceId = ''
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
