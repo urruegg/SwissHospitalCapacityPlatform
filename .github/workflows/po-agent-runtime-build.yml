@@ -44,6 +44,24 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install pytest requests azure-identity fastapi pydantic uvicorn
+
+      - name: Run po-agent test suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest data-platform/scripts/po-agent -v
+
       - name: ACR login
         shell: bash
         run: |

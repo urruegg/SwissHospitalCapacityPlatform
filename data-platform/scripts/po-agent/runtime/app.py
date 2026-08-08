@@ -22,7 +22,7 @@ from pydantic import BaseModel
 
 import orchestrator
 from authz import CallerContext
-from env_contract import REQUIRED_ENV_VARS
+from env_contract import REQUIRED_ENV_VARS  # noqa: F401 - proves env_contract is a real sibling module of app.py
 
 app = FastAPI(title="po-agent-service", version="1.0.0")
 
