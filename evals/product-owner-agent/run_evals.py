@@ -23,10 +23,13 @@ Usage::
 
 from __future__ import annotations
 
+import argparse
+import os
 import sys
 from pathlib import Path
 from typing import Any
 
+import requests
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -39,6 +42,11 @@ from authz import CallerContext  # noqa: E402
 
 SENSITIVE_PERSONAS = {"CFO", "CISO", "CLO"}
 CITATION_COVERAGE_GATE = 0.95
+
+# Sprint 41 WS-EVAL Task EVAL.1: env var the real po-agent-service is reached
+# at in --live mode (frozen POST /answer contract, section 6 of the 2026-07-25
+# PO Agent contracts spec).
+PO_AGENT_SERVICE_URL_ENV = "PO_AGENT_SERVICE_URL"
 
 # Boilerplate the orchestrator prepends/appends; stripped before checking
 # whether an answer still makes an *uncited* substantive claim.
@@ -102,6 +110,85 @@ def load_questions(path: Path) -> list[dict[str, Any]]:
     return data.get("questions", [])
 
 
+def _answer_live(
+    question: str,
+    persona: str,
+    tier: str,
+    language: str,
+    service_url: str | None = None,
+) -> dict[str, Any]:
+    """POST to the real po-agent-service and map its response onto the same
+    shape ``orchestrator.answer()`` returns, so ``evaluate()`` scores both
+    paths identically.
+
+    The frozen ``POST /answer`` contract (section 6) returns only
+    ``read``/``citations``/``refused`` - no raw chunk text - so the
+    synthesised ``read`` text (which the orchestrator builds by concatenating
+    each grounded chunk's text inline, e.g. ``"<text> [<sourceRef>]"``) is the
+    best available stand-in for chunk content when scoring relevancy.
+    """
+
+    url = (service_url or os.environ.get(PO_AGENT_SERVICE_URL_ENV, "")).rstrip("/")
+    if not url:
+        raise RuntimeError(
+            f"{PO_AGENT_SERVICE_URL_ENV} must be set (or service_url passed) "
+            "for --live mode"
+        )
+    response = requests.post(
+        f"{url}/answer",
+        json={
+            "question": question,
+            "caller": {"persona": persona, "tier": tier},
+            "language": language,
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+    data = response.json()
+
+    citations = data.get("citations", []) or []
+    refused = bool(data.get("refused", False))
+    answer_text = data.get("read", "")
+    chunks = [
+        {"citation": {"sourceRef": ref}, "text": answer_text} for ref in citations
+    ]
+    return {
+        "answer": answer_text,
+        "chunks": chunks,
+        "status": "partial" if refused else "verified",
+        "confidence": 0.0 if refused else 1.0,
+        "language": language,
+        "citations": citations,
+    }
+
+
+def answer_question(
+    question: str,
+    persona: str,
+    tier: str = "internal",
+    *,
+    language: str = "en",
+    chunks: list[dict[str, Any]] | None = None,
+    live: bool = False,
+    service_url: str | None = None,
+) -> dict[str, Any]:
+    """Answer one golden question.
+
+    ``live=False`` (default) feeds ``chunks`` (the question's yaml-declared
+    synthetic grounded chunks) straight to ``orchestrator.answer()`` - EXACT
+    current behaviour, no network I/O. ``live=True`` POSTs to
+    ``PO_AGENT_SERVICE_URL`` instead (see :func:`_answer_live`). Both paths
+    return a dict compatible with :func:`evaluate` (``answer``/``chunks``/
+    ``status``/``language``).
+    """
+
+    if live:
+        return _answer_live(question, persona, tier, language, service_url)
+
+    caller = CallerContext(identity=f"{persona.lower()}@eval", tier=tier, language=language)
+    return orchestrator.answer(question, caller, tools=_tools_for({"chunks": chunks or []}))
+
+
 def evaluate(runs: list[dict[str, Any]]) -> dict[str, Any]:
     """Score a list of runs ``{persona, expect, language?, result}``."""
 
@@ -141,18 +228,26 @@ def evaluate(runs: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def run_suite(questions_path: Path, repo_root: Path = REPO_ROOT) -> dict[str, Any]:
-    """Run every golden question through the orchestrator and score it."""
+def run_suite(
+    questions_path: Path, repo_root: Path = REPO_ROOT, live: bool = False
+) -> dict[str, Any]:
+    """Run every golden question and score it.
+
+    ``live=False`` (default) feeds each question's yaml-declared chunks
+    straight to the orchestrator - unchanged behaviour. ``live=True`` runs
+    every question against the real po-agent-service instead (see
+    :func:`answer_question`).
+    """
 
     runs = []
     for entry in load_questions(questions_path):
-        caller = CallerContext(
-            identity=f"{entry['persona'].lower()}@eval",
-            tier=entry.get("tier", "internal"),
+        result = answer_question(
+            entry["question"],
+            entry["persona"],
+            entry.get("tier", "internal"),
             language=entry.get("language", "en"),
-        )
-        result = orchestrator.answer(
-            entry["question"], caller, tools=_tools_for(entry)
+            chunks=entry.get("chunks", []),
+            live=live,
         )
         runs.append(
             {
@@ -166,8 +261,20 @@ def run_suite(questions_path: Path, repo_root: Path = REPO_ROOT) -> dict[str, An
     return evaluate(runs)
 
 
-def main() -> int:
-    report = run_suite(REPO_ROOT / "evals" / "product-owner-agent" / "golden_questions.yaml")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help=f"Run against the real po-agent-service ({PO_AGENT_SERVICE_URL_ENV}) "
+        "instead of the yaml-declared synthetic chunks.",
+    )
+    args = parser.parse_args(argv if argv is not None else sys.argv[1:])
+
+    report = run_suite(
+        REPO_ROOT / "evals" / "product-owner-agent" / "golden_questions.yaml",
+        live=args.live,
+    )
     print(f"citation coverage : {report['citation_coverage']:.2%}")
     print(f"answers/refusals  : {report['answer_count']}/{report['refusal_count']}")
     print(f"hallucinations    : {len(report['hallucination_failures'])}")
