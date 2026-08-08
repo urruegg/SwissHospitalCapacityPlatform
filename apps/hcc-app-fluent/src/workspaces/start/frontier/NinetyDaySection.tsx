@@ -65,9 +65,6 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     gap: tokens.spacingHorizontalXS,
   },
-  rom: {
-    color: tokens.colorNeutralForeground3,
-  },
   disclaimer: {
     color: tokens.colorNeutralForeground3,
   },
@@ -121,9 +118,6 @@ export function NinetyDaySection() {
                   </span>
                 ))}
               </div>
-              <Caption1 className={styles.rom}>
-                {t('start.frontier.ninetyDay.romLabel')}
-              </Caption1>
             </button>
           </li>
         ))}

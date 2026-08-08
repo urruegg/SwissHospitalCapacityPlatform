@@ -1,9 +1,9 @@
 ---
-Version: 1.1.0
+Version: 1.2.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Implemented
-Previous Version: 1.0.1 (reviews section: seat-keyed sessions with translated name/persp, not English-only records)
+Previous Version: 1.1.0 (marked Implemented, added §5 progress log with post-restart verification evidence)
 ---
 
 # Backstage-plane alignment + BVA v2.0.0 re-baseline — design & assumptions
@@ -74,11 +74,12 @@ SIT/PROD deploy.
   to en). Column headers, the venue note and section chrome are i18n. New key
   `reviews.colDate`; the table is 3 columns (Session / Date / Perspective
   challenged). Dates stay ISO literal data in the component.
-- **9-person roster.** The 8 start-plane challenger reviewers (Rebekka Hatzung,
-  Emanuel Furler, Christian Ernst, Dr. Regula Adams, Dr. med. Marco Rossi, Petrus
-  Jallo, Rene Raeber, Daniel von Bueren) render with their existing photo assets;
-  Marco Weber (Cloud & AI Solution Engineer) has no photo -> initials fallback.
-  Michael Doring-Wermelinger, Rebekka's old placeholder role, and the "AMA review
+- **9-person roster.** All nine reviewers (Rebekka Hatzung, Emanuel Furler,
+  Christian Ernst, Dr. Regula Adams, Dr. med. Marco Rossi, Petrus Jallo, Rene
+  Raeber, Daniel von Bueren, Marco Weber) render with a real photo (Marco
+  Weber's added 2026-08-08 from the reviewer-photos source set, superseding the
+  initials-fallback in the original draft of this spec). Michael
+  Doring-Wermelinger, Rebekka's old placeholder role, and the "AMA review
   panel" tile are removed.
 - **Translation scope (item 6).** Fully translate the nav renames + all touched
   review/BVA chrome across en/de/fr/it. The large set of pre-existing hardcoded
@@ -106,3 +107,28 @@ wcag2aa 0 serious+critical on the backstage narrative sections; visual check at
   confirms the renamed sub-nav labels and the re-baselined BVA figures render
   as designed. Push bypassed branch-protection required status checks
   (bypass rights on this repo) — CI has not independently gated this push.
+- **2026-08-08 — live-review fixes (7 items).** User reviewed the running app
+  and requested: (1) BVA citations still read §2026-07-28£ / no version -
+  `BVA_DOC`/`BVA_DOC_AS_OF` now read `docs/BVA.md v2.0.0` · `2026-08-07`; (2)
+  footer app version stuck at `0.1.0` - `package.json` bumped to `1.0.0`
+  (first tagged app version; going forward bump per the Conventional Commits
+  table in `copilot-instructions.md` §6, same discipline as doc versioning);
+  (3) unused space above the TCO/Value-levers/Sensitivity/Proof-and-evidence
+  card titles - `BvaDecisionSection`'s local `panelTitle` style was missing
+  `margin: 0` (the shared `showcase-styles.ts` convention), now fixed; (4)
+  "Cost per Copilot Turn" (Jun · 0.34 CHF) was an ungrounded Sprint 15 mock
+  trend - replaced with a single grounded reading `BVA_COST_PER_COPILOT_TURN_CHF`
+  = annual run cost / (turns/day × 365) = CHF 0.43, cited to `docs/BVA.md §2
+  Demand Baseline · §5 Recurring Annual Cost`; dead `stamp()`/`SEMANTIC_MODEL`
+  helper removed; (5) the three FOCUS_DOMAINS role cards beside "Review
+  sessions on record" removed so the table runs full width; (6) Marco Weber's
+  photo added (see §3 update above) plus ", Full-Stack Developer advisory"
+  appended to his role; (7) the "Illustrative ROM" caption removed from the
+  three 90-day roadmap cards (`start.frontier.ninetyDay.romLabel` no longer
+  rendered). Also fixed a pre-existing failing test unrelated to this pass
+  (`StaticNarrativeSections.test.tsx` still expected the pre-rename German nav
+  label `Wert` instead of `Bühne` from the Value->Stage rename in the same
+  79c66944 commit). Gates: `tsc --noEmit` exit 0; `vitest` on
+  `src/data/bva src/workspaces/backstage src/workspaces/start/frontier` = 15
+  files / 85 tests passed; mojibake 0; axe wcag2aa 0 serious/critical on
+  `/start` + `/backstage`; visual verified on `localhost:5173/backstage`.

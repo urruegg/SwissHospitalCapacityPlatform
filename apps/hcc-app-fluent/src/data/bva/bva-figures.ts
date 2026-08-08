@@ -28,6 +28,14 @@ export const BVA_ONE_TIME_ROM = 1_300_000;
 // --- Annual run cost (identical in both models, docs/BVA.md §7.1) ---
 export const BVA_ANNUAL_RUN_COST = 1_250_000;
 
+// --- Operational Copilot demand (docs/BVA.md §2 Demand Baseline) ---
+export const BVA_COPILOT_TURNS_PER_DAY = 8_000;
+
+/** Current cost per Copilot turn = annual run cost / annual turns (docs/BVA.md §2, §5). */
+export const BVA_COST_PER_COPILOT_TURN_CHF = Number(
+  (BVA_ANNUAL_RUN_COST / (BVA_COPILOT_TURNS_PER_DAY * 365)).toFixed(2),
+);
+
 // --- Annual benefit (docs/BVA.md §6) ---
 export const BVA_GROSS_ANNUAL_BENEFIT = 3_820_000;
 export const BVA_NET_ANNUAL_BENEFIT = 2_570_000;

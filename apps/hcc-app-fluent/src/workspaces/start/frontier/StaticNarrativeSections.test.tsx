@@ -150,7 +150,7 @@ describe('NinetyDaySection', () => {
       expect.stringContaining('Build & Prove'),
       expect.stringContaining('Operate & Scale'),
     ]);
-    phases.forEach((phase) => expect(phase).toHaveTextContent(/illustrative ROM/i));
+    phases.forEach((phase) => expect(phase).not.toHaveTextContent(/illustrative ROM/i));
   });
 });
 
@@ -280,7 +280,7 @@ describe('StartView static narrative integration', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('start-nav-hero')).toHaveTextContent('Wert');
+    expect(screen.getByTestId('start-nav-hero')).toHaveTextContent('Bühne');
     expect(screen.getByTestId('start-nav-challenger')).toHaveTextContent('Herausforderer');
     expect(screen.getByTestId('start-nav-vision')).toHaveTextContent('Warum Curavias');
     expect(screen.getByTestId('start-nav-work-chart')).toHaveTextContent('Modell');

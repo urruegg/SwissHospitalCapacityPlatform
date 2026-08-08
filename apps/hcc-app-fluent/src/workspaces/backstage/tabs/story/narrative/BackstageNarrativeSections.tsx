@@ -12,6 +12,7 @@ import marcoRossi from '../../../../../assets/reviewers/marco-rossi.jpg';
 import petrusJallo from '../../../../../assets/reviewers/petrus-jallo.jpg';
 import reneRaeber from '../../../../../assets/reviewers/rene-raeber.jpg';
 import danielVonBueren from '../../../../../assets/reviewers/daniel-von-bueren.jpg';
+import marcoWeber from '../../../../../assets/reviewers/marco-weber.jpg';
 
 // Sprint 36 intake (B2, B3, B5, B6) — Frontier-Firm Backstage narrative sections.
 
@@ -441,12 +442,6 @@ export function DevSecOpsLoopSection() {
   );
 }
 
-const FOCUS_DOMAINS = [
-  { id: 'bed', avatar: 'B', color: '#365B7D', title: 'Bed / Flow - nursing (bed side)', comp: 'Competency: live bed-state and discharge readiness', chal: 'Challenge: "Show me the driver and the source - I won\'t act on a black box."' },
-  { id: 'or', avatar: 'O', color: '#17B890', title: 'Physician / OR & acute (ops side)', comp: 'Competency: clinical prioritisation and coupled OP/bed/staff steering', chal: 'Challenge: "The impact number has to be reproducible, not an AI guess."' },
-  { id: 'gov', avatar: 'G', color: '#5A6CF0', title: 'Governance / compliance & cantonal', comp: 'Competency: Swiss DSG/KVG, residency, auditability', chal: 'Challenge: "Prove no PHI leaves Switzerland - and that every answer is cited."' },
-] as const;
-
 const REVIEW_SESSIONS = [
   { id: 'coo', date: '2026-07-24' },
   { id: 'cio', date: '2026-07-17' },
@@ -473,29 +468,17 @@ const PRACTITIONERS: {
   { initials: 'PJ', color: '#17B890', name: 'Petrus Jallo', role: 'Cloud Solution Architect & Microsoft Technology Advisor', href: 'https://www.linkedin.com/in/petrus-jallo/', label: 'LinkedIn', photo: petrusJallo },
   { initials: 'RR', color: '#1FA9D6', name: 'Ren\u00e9 Raeber', role: 'CTO Microsoft Switzerland', href: 'https://www.linkedin.com/in/rraeber/', label: 'LinkedIn', photo: reneRaeber },
   { initials: 'DB', color: '#5A6CF0', name: 'Daniel von B\u00fcren', role: 'Swiss Security Officer & Solution Engineer, Microsoft Switzerland', href: 'https://www.linkedin.com/in/dvonbueren/', label: 'LinkedIn', photo: danielVonBueren },
-  { initials: 'MW', color: '#17B890', name: 'Marco Weber', role: 'Cloud & AI Solution Engineer', href: 'https://www.linkedin.com/in/marco-weber-ch/', label: 'LinkedIn' },
+  { initials: 'MW', color: '#17B890', name: 'Marco Weber', role: 'Cloud & AI Solution Engineer, Full-Stack Developer advisory', href: 'https://www.linkedin.com/in/marco-weber-ch/', label: 'LinkedIn', photo: marcoWeber },
 ];
 
 export function ReviewSessionsSection() {
   const s = useStyles();
   const { t } = useTranslation();
-  const rail = useRail();
   const header = t('backstage.story.narrative.reviews.header', 'Pressure-tested with real people, in real review sessions');
   const titleParts = toTitleParts(
     header,
     t('backstage.story.narrative.reviews.accent', 'real people'),
   );
-  const ask = (subject: string, topic: string) => () =>
-    rail?.openWithReco(
-      { id: `backstage-review-${topic}`, label: subject, context: { source: 'backstage-narrative', topic: `review-${topic}` } },
-      reco(
-        'Review sessions & people',
-        'Curavias was pressure-tested across a documented series of expert reviews (2026-06 to 2026-07) and a named hospital field interview, each producing governance evidence (FR-GOV-004).',
-        FOCUS_DOMAINS.map((d) => d.title),
-        ['docs/reviews', 'docs/COMPLIANCE.md'],
-        t,
-      ),
-    );
   return (
     <section className={s.root} data-testid="review-sessions-section" aria-labelledby="review-sessions-title">
       <SectionHeader
@@ -505,45 +488,31 @@ export function ReviewSessionsSection() {
         tagline={t('backstage.story.narrative.reviews.tagline', 'Backstage \u00b7 this was a real exercise')}
         description={t('backstage.story.narrative.reviews.description', 'Curavias was challenged across a documented series of expert reviews and a named hospital field interview, each producing governance evidence.')}
       />
-      <div className={s.split}>
-        <div className={s.panel}>
-          <h3 className={s.panelTitle}>{t('backstage.story.narrative.reviews.tableTitle', 'Review sessions on record')}</h3>
-          <table className={s.table}>
-            <thead>
-              <tr>
-                <th className={s.th}>{t('backstage.story.narrative.reviews.colSession', 'Session')}</th>
-                <th className={s.th}>{t('backstage.story.narrative.reviews.colDate', 'Date')}</th>
-                <th className={s.th}>{t('backstage.story.narrative.reviews.colPerspective', 'Perspective challenged')}</th>
+      <div className={s.panel}>
+        <h3 className={s.panelTitle}>{t('backstage.story.narrative.reviews.tableTitle', 'Review sessions on record')}</h3>
+        <table className={s.table}>
+          <thead>
+            <tr>
+              <th className={s.th}>{t('backstage.story.narrative.reviews.colSession', 'Session')}</th>
+              <th className={s.th}>{t('backstage.story.narrative.reviews.colDate', 'Date')}</th>
+              <th className={s.th}>{t('backstage.story.narrative.reviews.colPerspective', 'Perspective challenged')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REVIEW_SESSIONS.map((r) => (
+              <tr key={r.id}>
+                <td className={s.td}>
+                  <span className={s.tdName}>{t(`backstage.story.narrative.reviews.sessions.${r.id}.name`)}</span>
+                </td>
+                <td className={s.td}>
+                  <span className={s.tdDate}>{r.date}</span>
+                </td>
+                <td className={s.td}>{t(`backstage.story.narrative.reviews.sessions.${r.id}.persp`)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {REVIEW_SESSIONS.map((r) => (
-                <tr key={r.id}>
-                  <td className={s.td}>
-                    <span className={s.tdName}>{t(`backstage.story.narrative.reviews.sessions.${r.id}.name`)}</span>
-                  </td>
-                  <td className={s.td}>
-                    <span className={s.tdDate}>{r.date}</span>
-                  </td>
-                  <td className={s.td}>{t(`backstage.story.narrative.reviews.sessions.${r.id}.persp`)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className={s.note}>{t('backstage.story.narrative.reviews.tableNote', 'Held at the Microsoft Innovation Hub, Zurich, and with hospital teams directly.')}</p>
-        </div>
-        <div className={s.roleStack}>
-          {FOCUS_DOMAINS.map((d) => (
-            <button key={d.id} type="button" className={s.roleCard} onClick={ask(d.title, d.id)}>
-              <span className={s.avatar} style={{ backgroundColor: d.color }}>{d.avatar}</span>
-              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span className={s.roleTitle}>{d.title}</span>
-                <span className={s.comp}>{d.comp}</span>
-                <span className={s.chal}>{d.chal}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+            ))}
+          </tbody>
+        </table>
+        <p className={s.note}>{t('backstage.story.narrative.reviews.tableNote', 'Held at the Microsoft Innovation Hub, Zurich, and with hospital teams directly.')}</p>
       </div>
       <h3 className={s.subhead}>{t('backstage.story.narrative.reviews.peopleTitle', 'The real practitioners who took part')}</h3>
       <div className={s.peopleGrid}>

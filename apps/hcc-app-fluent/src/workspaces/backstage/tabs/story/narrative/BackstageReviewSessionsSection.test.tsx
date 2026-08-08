@@ -69,10 +69,9 @@ describe('ReviewSessionsSection', () => {
     roster.forEach((name) => {
       expect(within(section).getByText(name)).toBeInTheDocument();
     });
-    // Eight of nine ship a real photo; Marco Weber falls back to initials.
+    // All nine ship a real photo.
     const photos = within(section).getAllByRole('img');
-    expect(photos.length).toBeGreaterThanOrEqual(8);
-    expect(within(section).getByText('MW')).toBeInTheDocument();
+    expect(photos.length).toBeGreaterThanOrEqual(9);
     // Removed non-roster reviewers.
     expect(within(section).queryByText(/Döring-Wermelinger/i)).not.toBeInTheDocument();
     expect(within(section).queryByText(/AMA review panel/i)).not.toBeInTheDocument();

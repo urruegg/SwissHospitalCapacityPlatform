@@ -26,7 +26,9 @@
  */
 
 import {
+  BVA_COST_PER_COPILOT_TURN_CHF,
   BVA_CURRENCY,
+  BVA_MODEL_VERSION,
   BVA_NET_ANNUAL_BENEFIT,
   BVA_NET_VALUE_3YR_FRONTIER,
   BVA_PAYBACK_MONTHS_FRONTIER,
@@ -127,19 +129,11 @@ export interface BvaProofPointPayload extends BvaProvenance {
   cadence: string;
 }
 
-const SEMANTIC_MODEL = 'capacity-dashboard.SemanticModel · bva_measures';
-const AS_OF = '2026-06-30T02:00:00Z';
-
 /** `docs/BVA.md` is the governance-reviewed ROM document (no live gold table
  * backs value levers, sensitivity scenarios, or governance targets yet), so
- * these are cited straight from the doc rather than through the Power BI
- * embed-fallback semantic model path `stamp()` uses. */
-const BVA_DOC = 'docs/BVA.md';
-const BVA_DOC_AS_OF = '2026-07-28T00:00:00Z';
-
-function stamp(source: string): BvaProvenance {
-  return { source, asOf: AS_OF, powerBiEmbedFallback: true };
-}
+ * these are cited straight from the doc. */
+const BVA_DOC = `docs/BVA.md ${BVA_MODEL_VERSION}`;
+const BVA_DOC_AS_OF = '2026-08-07T00:00:00Z';
 
 function docStamp(section: string): BvaProvenance {
   return { source: `${BVA_DOC} · ${section}`, asOf: BVA_DOC_AS_OF, powerBiEmbedFallback: false };
@@ -190,12 +184,8 @@ export const bvaTrend: BvaTrendPayload = {
   measure: 'Cost per Copilot Turn',
   unit: 'CHF',
   desiredDirection: 'down',
-  points: [
-    { label: 'Apr', value: 0.42 },
-    { label: 'May', value: 0.38 },
-    { label: 'Jun', value: 0.34 },
-  ],
-  ...stamp(`${SEMANTIC_MODEL} · gold.bva_fact_azure_consumption`),
+  points: [{ label: 'Current', value: BVA_COST_PER_COPILOT_TURN_CHF }],
+  ...docStamp('§2 Demand Baseline · §5 Recurring Annual Cost'),
 };
 
 /**

@@ -58,6 +58,7 @@ const useStyles = makeStyles({
     minWidth: 0,
   },
   panelTitle: {
+    margin: 0,
     overflowWrap: 'anywhere',
   },
   metricTile: {
