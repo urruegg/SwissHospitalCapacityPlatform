@@ -33,6 +33,14 @@ config:
 
 ignores:
   # Skills are imported verbatim from external repositories
-  # (microsoft/skills-for-fabric, PBI-Guy/Power-BI-Optimization-Skill).
-  # They must not be modified for style compliance; exclude from linting.
+  # (microsoft/skills-for-fabric, PBI-Guy/Power-BI-Optimization-Skill,
+  # github/awesome-copilot). They must not be modified for style compliance;
+  # exclude from linting.
   - ".github/skills/**"
+  # Custom agent personas (.agent.md) and canvas extensions imported verbatim
+  # from github/awesome-copilot -- same "don't rewrite external content" rule
+  # as skills above. This repo's own README.md wrappers for these folders
+  # still lint normally.
+  - ".github/agents/*.agent.md"
+  - ".github/extensions/**/*.mjs"
+  - ".github/extensions/**/README.md"

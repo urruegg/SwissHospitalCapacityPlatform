@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ------- | ------- |
-| **Version** | 2.14.0 |
-| **Date** | 2026-07-29 |
+| **Version** | 2.15.0 |
+| **Date** | 2026-08-08 |
 | **Author** | Urs Rueegg |
 | **Status** | Draft |
-| **Previous Version** | 2.13.0 (added the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent, issues #489, #501); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical agent-topology diagram (Sprint 34 WS-4) |
+| **Previous Version** | 2.14.0 (added the `bva-agent` registry row for the Sprint 33 Business Value Assessment Agent, issues #489, #501); this bump rebrands the doc to the Curavias customer-ready template - anchored title, product anchor, executive summary, and embedded canonical agent-topology diagram (Sprint 34 WS-4); adds the awesome-copilot-sourced agents/skills/extension intake table + updates the skill-discovery order |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -151,6 +151,46 @@ git diff --stat .github/skills/
 
 Diff any changes and PR them like normal repo edits.
 
+## Workspace-scoped agents, skills, and extensions (v2.15.0, 2026-08-08)
+
+Five items intake-approved from [github/awesome-copilot](https://github.com/github/awesome-copilot) after a review triggered by user request (issue-free, direct ask). All git-tracked, workspace-scoped. See [`.github/agents/README.md`](.github/agents/README.md) for the distinction between these VS Code custom-agent personas and this file's own `agents/<name>/AGENT.md` registry.
+
+| Item | Kind | Location | Trigger examples | When to use |
+| ---- | ---- | -------- | ----------------- | ----------- |
+| `research-technical-spike` | Custom agent | [`.github/agents/research-technical-spike.agent.md`](.github/agents/research-technical-spike.agent.md) | "spike this", "validate this technical unknown", "timeboxed research" | Exhaustive, documented research before a design decision — mirrors the Sprint 42/43 spike pattern already used in `docs/superpowers/specs/` |
+| `playwright-tester` | Custom agent | [`.github/agents/playwright-tester.agent.md`](.github/agents/playwright-tester.agent.md) | "write a Playwright test", "explore this page and test it" | Building/maintaining the Sprint 43 WS-4 Playwright E2E suite; complements `ux-design-agent`'s existing Playwright usage |
+| `azure-verified-modules-bicep` | Custom agent | [`.github/agents/azure-verified-modules-bicep.agent.md`](.github/agents/azure-verified-modules-bicep.agent.md) | "use an AVM module", "review this Bicep for AVM adoption" | Reviewing `infra/modules/**` for Azure Verified Modules opportunities |
+| `create-technical-spike` | Skill | [`.github/skills/create-technical-spike/SKILL.md`](.github/skills/create-technical-spike/SKILL.md) | "create a spike doc", "document this technical unknown" | Scaffolds a timeboxed spike doc under `docs/spikes/` — pairs with `research-technical-spike` |
+| `playwright-explore-website` | Skill | [`.github/skills/playwright-explore-website/SKILL.md`](.github/skills/playwright-explore-website/SKILL.md) | "explore this website", "map the user flows on this page" | Playwright-MCP-driven site exploration before generating tests — feeds WS-4 |
+| `playwright-generate-test` | Skill | [`.github/skills/playwright-generate-test/SKILL.md`](.github/skills/playwright-generate-test/SKILL.md) | "generate a Playwright test for this scenario" | Turns an explored scenario into a real `@playwright/test` TypeScript file — feeds WS-4 |
+| `ai-prompt-engineering-safety-review` | Skill | [`.github/skills/ai-prompt-engineering-safety-review/SKILL.md`](.github/skills/ai-prompt-engineering-safety-review/SKILL.md) | "review this prompt for safety", "audit this agent's system prompt" | Periodic safety/bias/security audit of `agents/<name>/AGENT.md` system prompts |
+| `repo-actions-hub` | Copilot canvas extension | [`.github/extensions/repo-actions-hub/`](.github/extensions/repo-actions-hub/) | "show me recent workflow runs", "trigger the SIT deploy from the canvas" | Browse/inspect/trigger `workflow_dispatch` runs without manual `gh run list`/`watch` — needs `npm install` in-folder + a Copilot client with canvas-extension support (not yet verified to activate in this workspace) |
+
+Explicitly **not** intake'd (redundant with mandatory Superpowers skills or already-installed capability, evaluated the same session):
+
+- `tdd-red` / `tdd-green` / `tdd-refactor`, `debug`, `plan` / `planner` / `task-planner` / `implementation-plan` (awesome-copilot `testing-automation`/`project-planning` plugins) — superseded by the mandatory Superpowers `test-driven-development` and `systematic-debugging` skills; installing these would create a competing process.
+- `power-bi-data-modeling-expert`, `power-bi-dax-expert`, `power-bi-performance-expert`, `power-bi-visualization-expert` (awesome-copilot `power-bi-development` plugin) — overlaps the already-installed `powerbi-optimization` (PBI-Guy) + `powerbi-report-authoring`/`fabric-semantic-model-authoring` skills.
+- `azure-principal-architect`, `/azure-resource-health-diagnose` (awesome-copilot `devops-oncall`/`azure-cloud-development` plugins) — overlaps the existing `azure-diagnostics` skill and the already-available `cloud-solution-architect` agent.
+- `azure-saas-architect`, `terraform-azure-planning`, `terraform-azure-implement`, `azure-verified-modules-terraform` (awesome-copilot `azure-cloud-development` plugin) — not applicable (no multi-tenant SaaS billing; this repo is Bicep-only, no Terraform).
+- `project-documenter` (awesome-copilot plugin) — generates draw.io diagrams + a Word doc; this repo's convention is Mermaid-in-Markdown (see the canonical diagram above) plus the bespoke `knowledge-agent` doc-versioning system. Would introduce a second, inconsistent diagram format.
+
+Refresh procedure:
+
+```powershell
+$base = "https://raw.githubusercontent.com/github/awesome-copilot/main"
+Invoke-WebRequest -Uri "$base/agents/research-technical-spike.agent.md" -OutFile ".github/agents/research-technical-spike.agent.md"
+Invoke-WebRequest -Uri "$base/agents/playwright-tester.agent.md" -OutFile ".github/agents/playwright-tester.agent.md"
+Invoke-WebRequest -Uri "$base/agents/azure-verified-modules-bicep.agent.md" -OutFile ".github/agents/azure-verified-modules-bicep.agent.md"
+Invoke-WebRequest -Uri "$base/skills/create-technical-spike/SKILL.md" -OutFile ".github/skills/create-technical-spike/SKILL.md"
+Invoke-WebRequest -Uri "$base/skills/playwright-explore-website/SKILL.md" -OutFile ".github/skills/playwright-explore-website/SKILL.md"
+Invoke-WebRequest -Uri "$base/skills/playwright-generate-test/SKILL.md" -OutFile ".github/skills/playwright-generate-test/SKILL.md"
+Invoke-WebRequest -Uri "$base/skills/ai-prompt-engineering-safety-review/SKILL.md" -OutFile ".github/skills/ai-prompt-engineering-safety-review/SKILL.md"
+Invoke-WebRequest -Uri "$base/extensions/repo-actions-hub/extension.mjs" -OutFile ".github/extensions/repo-actions-hub/extension.mjs"
+git diff --stat .github/agents/ .github/skills/ .github/extensions/
+```
+
+Diff any changes and PR them like normal repo edits.
+
 ## Skill discovery — rule of engagement (v1.14.0, 2026-07-08)
 
 When the agent hits a task poorly covered by the workspace skills catalog above (or by user-scoped Superpowers skills), the agent **discovers and proposes new skills** rather than reinventing patterns. New skills are never auto-installed — every install goes through a user-reviewed PR.
@@ -166,9 +206,10 @@ When the agent hits a task poorly covered by the workspace skills catalog above 
 
 1. [`microsoft/skills-for-fabric`](https://github.com/microsoft/skills-for-fabric) — Fabric + Power BI + Real-Time Intelligence + Data Engineering
 2. [`PBI-Guy/Power-BI-Optimization-Skill`](https://github.com/PBI-Guy/Power-BI-Optimization-Skill) — DAX + model + report + Power Query + RLS deep dive
-3. User global skills at `~/.agents/skills/` and Superpowers marketplace at `~/.copilot/installed-plugins/superpowers-marketplace/superpowers/skills/`
-4. Microsoft's [`skills-for-*`](https://github.com/microsoft?q=skills-for) naming pattern on GitHub for additional catalogs
-5. Bundled agent-rule files in target repos (`.cursorrules`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) that may reference skills we haven't loaded
+3. [`github/awesome-copilot`](https://github.com/github/awesome-copilot) — general-purpose custom agents, skills, and plugins (Bicep/AVM, Playwright, technical spikes, security review, CI/CD); check the *Explicitly not intake'd* list above first to avoid re-proposing redundant items
+4. User global skills at `~/.agents/skills/` and Superpowers marketplace at `~/.copilot/installed-plugins/superpowers-marketplace/superpowers/skills/`
+5. Microsoft's [`skills-for-*`](https://github.com/microsoft?q=skills-for) naming pattern on GitHub for additional catalogs
+6. Bundled agent-rule files in target repos (`.cursorrules`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) that may reference skills we haven't loaded
 
 ### Evaluation checklist (before proposing install)
 
