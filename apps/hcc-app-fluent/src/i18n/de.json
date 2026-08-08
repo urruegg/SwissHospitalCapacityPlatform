@@ -37,13 +37,38 @@
     "opportunities": "Opportunities",
     "nav": {
       "label": "Backstage-Bereiche",
+      "bva": "Business Case",
+      "ninetyDay": "90-Tage-Roadmap",
       "feedbackLoop": "Digitaler Feedback-Loop",
-      "opportunities": "Opportunities"
+      "opportunities": "Opportunities",
+      "successFramework": "Erfolgsframework",
+      "solutionDesign": "Lösungsdesign",
+      "devsecops": "DevSecOps-Loop",
+      "reviews": "Review-Sessions",
+      "poClasses": "Product-Owner-Agent"
     },
     "story": {
       "tab": "Story",
       "title": "Wie Curavias gebaut ist",
       "lead": "Eine einfache C-Level-Sicht auf die Plattformgrundlagen hinter der Showcase-App.",
+      "bva": {
+        "eyebrow": "Backstage · der Business Case",
+        "title": "Wir führten eine BVA über uns selbst durch, bevor wir eine Zeile Code schrieben",
+        "accent": "BVA über uns selbst",
+        "lead": "Vor der ersten Codezeile führte Curavias ein Business Value Assessment für sich selbst durch — mit derselben Disziplin, die es in ein Spital bringt."
+      },
+      "ninetyDay": {
+        "eyebrow": "Backstage · die erste Frontier",
+        "title": "Ihre erste Frontier: Kapazitätsprognose in 90 Tagen",
+        "accent": "90 Tagen",
+        "lead": "Der wiederholbare Weg für einen neuen Leistungserbringer — von abgestimmten Entscheidungen bis zu einer governanten, live geschalteten Prognose."
+      },
+      "narrative": {
+        "success": { "accent": "Success Framework" },
+        "devsecops": { "accent": "built and shipped" },
+        "reviews": { "accent": "real people" },
+        "poClasses": { "accent": "hard questions" }
+      },
       "agents": {
         "title": "Von Agenten gebaut",
         "body": "GitHub Copilot Coding Agents planen, bauen und prüfen die Plattform über gesteuerte MCP-Tools."
@@ -110,27 +135,42 @@
           "care-ecosystem": {
             "curavias": "Versorgungsnetz einbinden",
             "microsoft": "Kunden einbinden",
-            "group": "Versorgungsökosystem"
+            "group": "Versorgungsökosystem",
+            "signalText": "Zuweisungsbedarf · Partnerkapazität · Erfahrungsrückmeldungen",
+            "actionText": "Platzierung koordinieren · nächste Versorgungsstufe anbinden",
+            "loopBack": "Kontinuität, Zugang und Erfahrung werden zu neuen Nachweisen"
           },
           "command-center": {
             "curavias": "Patientenfluss optimieren",
             "microsoft": "Abläufe optimieren",
-            "group": "Command Center"
+            "group": "Command Center",
+            "signalText": "Belegung · 72-Stunden-Bedarf · Notfallzugänge · geprüfte Gefahren",
+            "actionText": "Betten neu ausbalancieren · Szenario vorbereiten · Austritt koordinieren",
+            "loopBack": "Wartezeit, Auslastung und vermiedene Verzögerung speisen die Schleife"
           },
           "frontier-workforce": {
             "curavias": "Pflegeteams befähigen",
             "microsoft": "Mitarbeitende befähigen",
-            "group": "Frontier Workforce"
+            "group": "Frontier Workforce",
+            "signalText": "Personalbesetzung · Arbeitslast · Kompetenzen · Zertifizierungen",
+            "actionText": "Dienstplan ausbalancieren · qualifizierte Kapazität mobilisieren",
+            "loopBack": "Arbeitslast, Akzeptanz und Entscheidungsfeedback verfeinern die Unterstützung"
           },
           "care-innovation": {
             "curavias": "Versorgung weiterentwickeln",
             "microsoft": "Produkte transformieren",
-            "group": "Versorgungsinnovation"
+            "group": "Versorgungsinnovation",
+            "signalText": "Ergebnisse · Pfadlücken · Agenten- und Service-Telemetrie",
+            "actionText": "Versorgungspfad · Wissen · Agentenführung verbessern",
+            "loopBack": "Qualitäts- und Akzeptanzmessungen starten den nächsten Zyklus"
           }
         },
         "iqCore": {
           "caption": "Microsoft-IQ-Kern",
-          "title": "Work + Foundry + Fabric + Process + Governance IQ"
+          "title": "Work + Foundry + Fabric + Process + Governance IQ",
+          "name": "Microsoft IQ",
+          "sub": "Daten · Wissen · Kontext · Entscheidungen",
+          "hitl": "Menschliche Freigabe vor jeder Aktion"
         },
         "iq": {
           "work": "Work IQ",
@@ -183,6 +223,30 @@
         "empty": {
           "title": "Digitaler Rückkopplungskreis nicht verfügbar",
           "body": "Für diese Ansicht sind keine Feedback-Loop-Domänen konfiguriert."
+        },
+        "section": {
+          "header": "Vertrauenswürdige Signale werden über Microsoft IQ zu gesteuerter Aktion",
+          "tagline": "Backstage · Der digitale Rückkopplungskreis",
+          "description": "Jede Domäne sendet Signale an Microsoft IQ, erhält eine vorgeschlagene Aktion zurück und liefert ein gemessenes Ergebnis – wobei ein Mensch freigibt, bevor etwas ausgeführt wird. Wählen Sie eine Domäne, um den Product-Owner-Agent nach begründeten, belegten Details zu fragen."
+        },
+        "journey": {
+          "dataPoints": "Datenpunkte",
+          "iq": "Microsoft IQ",
+          "actionPacket": "Aktionspaket",
+          "approval": "Menschliche Freigabe",
+          "outcome": "Gemessenes Ergebnis"
+        },
+        "note": {
+          "label": "Animationsverhalten:",
+          "body": "Cyanfarbene Kreise sind eingehende Signalbeobachtungen; das grüne Paket ist eine vorgeschlagene Aktion, die Microsoft IQ verlässt; der bernsteinfarbene Punkt liefert das gemessene Ergebnis zurück. Die Bewegung stoppt, wenn Sie pausieren oder reduzierte Bewegung anfordern."
+        },
+        "poAgent": {
+          "phase": {
+            "signal": "Signalpakete treffen ein",
+            "iq": "Microsoft IQ ordnet ein",
+            "action": "Aktion kommt zurück",
+            "outcome": "Ergebnis schliesst die Schleife"
+          }
         }
       },
       "roster": {
@@ -406,9 +470,32 @@
       "recoveryBody": "Der koordinierte Pfad übergibt mit klarer Verantwortung an Rehabilitation und gemeindenahe Versorgung.",
       "recoveryCaption": "Kontinuität über das Spital hinaus",
       "advisoryBadge": "Beratend",
+      "bannersAriaLabel": "Pfadübergreifende Copilots",
       "evidenceLabel": "Vertrauenssignale des Patientenpfads",
       "evidenceChip": "Evidenzgestützt",
       "goldenThreadChip": "Golden Thread",
+      "stops": {
+        "occupancy": {
+          "step": "Notfall & Aufnahme",
+          "evidence": "Med A → 102% in 72h"
+        },
+        "bedManager": {
+          "step": "Bettenzuweisung",
+          "evidence": "8 platzieren + Boarder"
+        },
+        "orSteering": {
+          "step": "OP & Behandlung",
+          "evidence": "Elektive umplanen"
+        },
+        "staffing": {
+          "step": "Personalbalance",
+          "evidence": "Personal abstimmen"
+        },
+        "discharge": {
+          "step": "Austritt",
+          "evidence": "8 Betten frei"
+        }
+      },
       "operational": {
         "occupancy": "Bedarf und Kapazitätsdruck erkennen, bevor sich der Versorgungspfad verengt.",
         "bedManager": "Platzierung und Bettenfluss über den Betriebsstandort koordinieren.",
@@ -419,12 +506,53 @@
       "dataQuality": {
         "ariaLabel": "Beratung zur Datenqualität",
         "title": "Datenqualität entlang des Pfads",
-        "body": "Der Data Quality Agent prüft Herkunft, Aktualität und Vertragszustand, ohne den Pfad zu verlassen."
+        "body": "Der Data Quality Agent prüft Herkunft, Aktualität und Vertragszustand, ohne den Pfad zu verlassen.",
+        "bannerLabel": "Datenqualitäts-Gates",
+        "bannerDot": "sichert jede Kennzahl",
+        "evidence": "Kennzahl vertrauenswürdig",
+        "badge": "DQ"
       },
       "crisis": {
         "ariaLabel": "Beratung zu Krisenszenarien",
         "body": "Wenn die Rollenberechtigung es erlaubt, spannt CSA Szenarioplanung und Eskalationsberatung über den Pfad.",
-        "cta": "Beratende Szenarioplanung öffnen"
+        "cta": "Beratende Szenarioplanung öffnen",
+        "bannerLabel": "Krisen & Szenarien",
+        "bannerDot": "spannt den ganzen Pfad",
+        "evidence": "Schocks stresstesten",
+        "badge": "CSA"
+      },
+      "dcInsight": {
+        "title": "Wie ein Agent antwortet — das DC-INSIGHT-Muster",
+        "beats": {
+          "signal": {
+            "label": "SIGNAL",
+            "body": "Medizin A wird voraussichtlich überschreiten: Belegung 102 %."
+          },
+          "understanding": {
+            "label": "VERSTÄNDNIS",
+            "body": "Treiber, Quellvertrauen und Konfidenz, alle mit Beleg."
+          },
+          "recommendation": {
+            "label": "EMPFEHLUNG",
+            "body": "Priorisierte Hebel mit deterministischer Wirkung — nie eine LLM-Vermutung."
+          },
+          "action": {
+            "label": "AKTION",
+            "body": "Nur vorgeschlagen; angewendet, nachdem ein Mensch „approved-to-apply“ bestätigt hat."
+          },
+          "coordination": {
+            "label": "KOORDINATION",
+            "body": "Rollenübergreifender Plan und OOA→DCA-Übergabe."
+          }
+        }
+      },
+      "workedExample": {
+        "eyebrow": "Durchgerechnetes Beispiel",
+        "kpiFrom": "102 %",
+        "kpiTo": "94 %",
+        "sub": "Prognostizierte Belegung von Medizin A, nachdem ein Mensch den empfohlenen Hebel genehmigt hat — deterministisch neu berechnet für die betroffene Station.",
+        "pillAdvisory": "Beratend · Mensch im Kreislauf",
+        "pillAuditable": "Auditierbar · jede Zahl nachvollziehbar"
       },
       "humanDecision": {
         "ariaLabel": "Menschlicher Entscheid",
@@ -433,6 +561,19 @@
       }
     },
     "frontier": {
+      "nav": {
+        "label": "Start-Bereiche",
+        "overview": "Übersicht",
+        "value": "Wert",
+        "challenger": "Herausforderer",
+        "vision": "Warum Curavias",
+        "operatingModel": "Modell",
+        "whyNow": "Warum jetzt",
+        "hospitals": "Organisation",
+        "carePath": "Versorgungspfad",
+        "ninetyDay": "90 Tage",
+        "bva": "BVA"
+      },
       "page": {
         "title": "Curavias Start",
         "lead": "Frontier-Hülle für die siebenteilige Curavias-Startansicht für Führungskräfte.",
@@ -462,45 +603,173 @@
       "hero": {
         "title": "Hero-Bereich",
         "body": "Hülle für den Hero-Bereich der Curavias-Frontier-Erzählung und das evidenzgestützte Wertversprechen.",
-        "eyebrow": "Produktübersicht · operative Kapazität",
-        "hook": "Den Engpass sehen, bevor er entsteht. Handeln, bevor es weh tut.",
-        "valueLine": "Verlässliche Vorschau · Erklärbare Empfehlung · Der Mensch entscheidet.",
-        "supportingMetricLabel": "ROM-Kontext",
-        "capacityTitle": "Standortkapazität - nächste 72 h",
-        "capacityLoading": "Standortkapazität wird geladen…",
-        "capacityErrorTitle": "Standortkapazität nicht verfügbar",
-        "ctaPrimary": "Backstage öffnen",
-        "ctaSecondary": "Die Plattformgeschichte ansehen"
+        "eyebrow": "Start · Lösungs-Envisioning · für C-Level & Spitalbetrieb · 5–10 Min",
+        "hookPrefix": "Sie haben uns gesagt: Kapazitätsprognose ist der wunde Punkt. ",
+        "hookAccent": "So sieht die Lösung aus.",
+        "leadPrefix": "Dies ist ein ",
+        "leadEmphasis": "Art-of-the-Possible-Showcase",
+        "leadSuffix": " — keine Demo eines Produkts, das Sie heute kaufen können. Wir haben die Herausforderungen aufgenommen, die Sie und Ihre Kolleginnen und Kollegen beschrieben haben, sie in eine funktionierende Frontier Firm gebaut und echte Spitalpraktikerinnen und -praktiker darauf ansetzen lassen. Was folgt, ist das, was wir verstanden haben, was wir gebaut haben und was es braucht, um es zu Ihrem zu machen.",
+        "quote": "Jeder Patientenpfad, in Schweizer Hand.",
+        "framebox": {
+          "title": "Bevor wir beginnen — was echt ist und was nicht.",
+          "body": "Das <b>Muster ist echt</b>: Die Plattform läuft live in PROD Switzerland North (app.curavias.ch) mit 7 Agenten im Einsatz — nur beratend, nie entscheidend oder diagnostizierend. Die <b>Spitäler sind synthetisch</b> und jede Zahl, die Sie sehen, ist <b>illustrativ, auf synthetischen Daten ohne PHI</b>. Um das realistisch statt erfunden zu machen, haben wir einen <b>Epic-Kernsystem-Simulator</b> gebaut, der alle relevanten Kernsystem-Signale erzeugt — Aufnahmen, Verlegungen und Entlassungen, Bettenstatus, OP-Plan und Personal — sodass die Agenten von denselben Ereignismustern angetrieben werden, die ein echtes KIS aussenden würde, ohne einen einzigen Patientendatensatz. Die <b>Baseline ist echt</b>: Die synthetischen Spitäler und der Business Case sind auf <b>veröffentlichten Kapazitätsdaten</b> von vier Schweizer Leistungserbringern kalibriert — <b>USZ</b>, <b>LUKS</b>, <b>Klinik Hirslanden</b> und <b>Spital Zollikerberg</b> — neben den Statistiken des Bundes (BFS) und des Kantons (LUSTAT). Es wurden keine vertraulichen Leistungserbringer-Daten verwendet. Die <b>Herausforderungen und die Menschen, die sie getestet haben, sind echt</b>, aus datierten Review-Sessions mit Schweizer Spitälern."
+        },
+        "ctaPrimary": "Mit dem beginnen, was Sie uns gesagt haben →",
+        "ctaHospitals": "Die drei Spitäler entdecken",
+        "ctaBackstage": "So wurde es gebaut"
+      },
+      "challenger": {
+        "title": "Was Sie uns gesagt haben — und was wir daraus gemacht haben.",
+        "accent": "was wir daraus gemacht haben.",
+        "body": "Wir sind nicht von einer Produktidee ausgegangen. Wir sind von den Herausforderungen ausgegangen, die Sie und Ihre Kolleginnen und Kollegen uns gestellt haben — und haben sie von genau den Menschen auf die Probe stellen lassen, die das Ergebnis unterschreiben, absichern, betreiben und damit leben müssten. Sechs Rollen, sechs echte Sessions. Jeder Sitz unten zeigt die Frage, wie sie gestellt wurde, wie wir sie angegangen sind, den gelieferten Wert und was sich am Produkt geändert hat.",
+        "eyebrow": "Was wir gehört haben · echte Menschen, echte Sessions",
+        "reviewBy": "Geprüft am",
+        "pickSeat": "Wählen Sie den Sitz, auf dem Sie sitzen.",
+        "patterns": [
+          {
+            "title": "Die Technologie war nie der Einwand.",
+            "desc": "Datenqualität, Akzeptanz und Governance waren es — in jeder einzelnen Session."
+          },
+          {
+            "title": "\"Keine Patientendaten\" hat das meiste beantwortet.",
+            "desc": "Ohne PHI lösen sich die rechtlichen, kantonalen und sicherheitsbezogenen Argumente weitgehend auf."
+          },
+          {
+            "title": "Der Mensch muss die Kontrolle behalten.",
+            "desc": "Jede Rolle kam unabhängig auf beratend-only mit einem menschlichen Freigabeschritt."
+          }
+        ],
+        "tablistLabel": "Herausforderer-Rollen",
+        "headings": {
+          "addressed": "Wie wir die Herausforderungen angegangen sind",
+          "value": "Gelieferter Geschäftswert",
+          "adapted": "Was wir am Produkt angepasst haben"
+        },
+        "disclaimer": "Die Spital-Mandanten im Showcase sind synthetisch (CuraNova · Curalp · Vialta) und alle Daten sind synthetisch ohne PHI. Die Herausforderer, ihre Rollen und die Session-Daten sind real, und jede Antwort ist auf einen datierten Review-Bericht zurückführbar — siehe",
+        "disclaimerLinkLabel": "das Prüfprotokoll im Backstage",
+        "personas": {
+          "coo": { "tag": "COO", "sub": "Business Case & Akzeptanz" },
+          "cio": { "tag": "CIO", "sub": "Prognosehorizont" },
+          "cto": { "tag": "CTO", "sub": "Souveränität & Regulierung" },
+          "ciso": { "tag": "CISO / NSO", "sub": "Datenschutz & Schlüssel" },
+          "ops": { "tag": "Spitalbetrieb", "sub": "Zeit für die Patientenversorgung" },
+          "it": { "tag": "IT / Kantonal", "sub": "Cloud-Betriebsmodell" }
+        }
+      },
+      "vision": {
+        "title": "Der Name ist das Versprechen: cura + via",
+        "accent": "cura + via",
+        "body": "Curavias ist Latein. cura — Sorge. via — Weg. Zusammen: \"der Versorgungspfad.\" Kein Kapazitätswerkzeug, das zufällig in einem Spital steht, sondern der Weg, den ein Patient durch es nimmt — weshalb der Claim lautet \"Jeder Patientenpfad, in Schweizer Hand.\"",
+        "eyebrow": "Warum es Curavias gibt",
+        "brand": {
+          "desc": "Swiss Hospital Command Center powered by Copilot",
+          "tag": "Jeder Patientenpfad, in Schweizer Hand.",
+          "symbolLabel": "Curavias-Zeichen — ein Patientenpfad, der vom Start über die Versorgung zum Erfolg aufsteigt"
+        },
+        "word": {
+          "heading": "Das Wort",
+          "label": "Curavias-Etymologie",
+          "columns": {
+            "latin": "Latein",
+            "meaning": "Bedeutung",
+            "product": "Im Produkt"
+          },
+          "rows": {
+            "cura": {
+              "meaning": "Sorge, Fürsorge, Heilung",
+              "product": "Das klinische Ergebnis, für das wir da sind"
+            },
+            "via": {
+              "meaning": "Pfad, Weg, Strasse",
+              "product": "Der Weg durch Betten, OP, Personal und Austritt"
+            },
+            "curavias": {
+              "meaning": "der Versorgungspfad",
+              "product": "Beides zugleich — Versorgung entlang eines Pfades"
+            }
+          }
+        },
+        "mark": {
+          "heading": "Das Zeichen",
+          "intro": "Das Logo ist dieselbe Idee als ein Glyph — eine dreistufige Patientenreise, die zum Erfolg aufsteigt:",
+          "label": "Curavias-Logoreise",
+          "glyphLabel": "Curavias-Zeichen — Start, Care, Success",
+          "steps": {
+            "start": { "label": "Start", "caption": "Eintritt in die Versorgung" },
+            "care": { "label": "Care", "caption": "das Schweizer Medizinkreuz" },
+            "success": { "label": "Success", "caption": "der genesene Patient" }
+          },
+          "note": "Die Schweizer Prägung ist bewusst: die diagonale Weiss-Blau-Teilung und das Kreuz — die visuelle Sprache, der Schweizer Institutionen bereits vertrauen."
+        },
+        "vmHeading": "Unsere Vision & Mission",
+        "vision": {
+          "tag": "Vision",
+          "text": "Ein Schweizer Gesundheitswesen, in dem nie die Kapazität entscheidet, wer warten muss."
+        },
+        "mission": {
+          "tag": "Mission",
+          "text": "Jedes Behandlungsteam in jedem Schweizer Spital befähigen, für jeden Patienten Behandlungserfolg – und Zeit – zu erreichen."
+        },
+        "timeCurrency": "Zeit ist die Währung der Kapazität. Jede Stunde, die Curavias zurückgibt, ist eine Stunde Versorgung – der Patient früher behandelt, das Team mit Zeit zum Geben, das Bett frei für die nächste Person, die es braucht.",
+        "pillRowLabel": "Curavias-Zusagen",
+        "pills": {
+          "advisory": { "label": "Beratend, nie autonom" },
+          "human": { "label": "Der Mensch entscheidet, immer" },
+          "swiss": { "label": "Schweizer Daten, Schweizer Hosting, keine Patientendaten" }
+        }
       },
       "workChart": {
-        "title": "Wie sich Arbeit verändert",
-        "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und bedarfsgerechte Arbeitsabläufe in einem Betriebsmodell.",
+        "title": "Vom Organigramm zur Arbeitskarte",
+        "accent": "Arbeitskarte",
+        "body": "Curavias verbindet verantwortliche Menschen, spezialisierte Agents und Intelligenz auf Abruf in einem Betriebsmodell — angewendet dort, wo ein Spital täglich Druck spürt: Kapazität und Patientenfluss.",
+        "eyebrow": "Modell",
         "flowLabel": "Curavias-Arbeitsmodi",
         "modeBadge": "Arbeitsmodus",
         "modes": {
           "humans": {
             "title": "Menschen",
-            "body": "Führungskräfte setzen die Absicht, beurteilen Zielkonflikte und bleiben für betriebliche Entscheide verantwortlich."
+            "body": "Bettenmanager, Pflegende, Ärztinnen und Planer bleiben eingebunden und in Verantwortung — jede Empfehlung braucht eine menschliche Freigabe \"approved-to-apply\", bevor sich etwas bewegt."
           },
           "agents": {
             "title": "Agents",
-            "body": "Spezialisierte Copilots überwachen Signale, erklären Optionen und bereiten evidenzgestützte Empfehlungen vor."
+            "body": "Digitale Kolleginnen prognostizieren die Nachfrage, priorisieren Austritte, steuern den OP und beantworten Fragen — auf Abruf, 24×7, stets belegt und zitiert."
           },
           "on-demand": {
-            "title": "Arbeit nach Bedarf",
-            "body": "Funktionsübergreifende Abläufe formieren sich um den Entscheid und geben die Kontrolle danach an das verantwortliche Team zurück."
+            "title": "Intelligenz auf Abruf",
+            "body": "Kapazitätseinblick ist kein Wochenbericht mehr. Er ist ein lebendiger, abfragbarer Dienst, den Ihre Teams in Sekunden fragen, hinterfragen und umsetzen können."
           }
         },
-        "principle": {
-          "title": "Frontier-Firm-Prinzip",
-          "badge": "Auf Curavias abgebildet",
-          "body": "Arbeit wird um Ergebnisse statt um statische Übergaben zwischen Funktionen organisiert.",
-          "curaviasMap": "Curavias überträgt dieses Prinzip auf die Spitalkapazität: gemeinsame Signale, spezialisierte Agents und ein menschlicher Entscheid an jeder betrieblichen Grenze."
+        "fit": {
+          "title": "Wie Curavias zur Microsoft Frontier Firm passt",
+          "body": "Eine Frontier Firm lebt von Mensch-Agent-Teams, Menschen als Agent-Bosses und Intelligenz auf Abruf. Curavias überträgt genau dieses Modell auf Spitalkapazität und Patientenfluss.",
+          "columns": {
+            "principle": "Frontier-Firm-Prinzip",
+            "curavias": "Bei Curavias"
+          },
+          "rows": {
+            "teams": {
+              "principle": "Mensch-Agent-Teams",
+              "curavias": "7 Runtime-Agents + operatives Personal"
+            },
+            "bosses": {
+              "principle": "Menschen als Agent-Bosses",
+              "curavias": "HITL-Freigabe „approve-to-apply“"
+            },
+            "on-demand": {
+              "principle": "Intelligenz auf Abruf",
+              "curavias": "72-h-Prognose · Copilot · Simulation"
+            },
+            "trust": {
+              "principle": "Vertrauen by Design",
+              "curavias": "Schweizer Datenhaltung · keine PHI · vollständig belegt"
+            }
+          }
         }
       },
       "cioWhyNow": {
         "title": "CIO-Challenger: Warum jetzt?",
         "body": "Sieben wiederkehrende Betriebsentscheide zeigen, wo fragmentierte Koordination zu einer gesteuerten Curavias-Vorschau werden kann.",
+        "eyebrow": "Die CIO-Herausforderung · warum jetzt",
         "tableLabel": "Betriebsentscheide: Heute im Vergleich zur Curavias-Vorschau",
         "caption": "Illustrativer qualitativer Vergleich — keine Live-Geschäftskennzahlen.",
         "columns": {
@@ -547,69 +816,82 @@
         }
       },
       "hospitals": {
-        "title": "Drei Spitäler",
-        "body": "Drei synthetische Spitäler teilen eine Kapazitätsplattform und behalten ihre unterschiedlichen Betriebskontexte.",
+        "title": "Drei Spitäler, jedes als Frontier Firm geführt",
+        "accent": "Frontier Firm",
+        "body": "Das Curavias-Organisationsrückgrat modelliert drei Schweizer Spital-Archetypen auf synthetischen Daten ohne PHI — abgeleitet aus realen Referenzmustern. In jedem führen physische Mitarbeitende und Agents die HCC-Operation (Hospital Command Center) und den Patientenfluss durchgängig, mit Mensch in der Schleife.",
+        "eyebrow": "Organisation",
         "sitesLabel": "Synthetisches Curavias-Spitalnetz",
-        "syntheticBadge": "Synthetisches Profil",
+        "servicesLabel": "Leistungen",
         "sites": {
           "curanova": {
-            "name": "CuraNova",
-            "profile": "Städtisches Universitätsspital für komplexe Akutpfade und spezialisierte Leistungen.",
-            "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität."
+            "name": "Uniklinik CuraNova",
+            "profile": "Universitäres Zentrumsspital · Kanton Zürich",
+            "facts": "~900 Betten · 8'600 VZÄ · 7 medizinische Zentren",
+            "focus": "Fokus: netzweiter Fluss und tertiäre Kapazität.",
+            "services": "Umfassendes Krebszentrum · Universitäres Herzzentrum",
+            "roles": {
+              "bedside": "Leitung Pflege — Bettenseite",
+              "opsside": "CMO & Fachteams — Betriebsseite",
+              "agents": "Agents — HCC-Operation + Patientenfluss",
+              "po": "Product Owner Agent — beantwortet die schwierigen Fragen"
+            }
           },
           "curalp": {
-            "name": "Curalp",
-            "profile": "Regionales Spital, das Akutnachfrage und Zugang in verteilten Gemeinden ausbalanciert.",
-            "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen."
+            "name": "Kantonsspital Curalp",
+            "profile": "Kantonale Gruppe mit mehreren Standorten · Kanton Luzern",
+            "facts": "~840 Betten · 8'600 VZÄ · 5 Standorte",
+            "focus": "Fokus: resiliente Abdeckung und rechtzeitige Verlegungen.",
+            "services": "Tumorzentrum · Neurozentrum",
+            "roles": {
+              "bedside": "Betten-/Flow-Manager — Bettenseite",
+              "opsside": "Ärzteschaft & OP — Betriebsseite",
+              "agents": "Agents — HCC-Operation + Patientenfluss",
+              "po": "Product Owner Agent — beantwortet die schwierigen Fragen"
+            }
           },
           "vialta": {
-            "name": "Vialta",
-            "profile": "Integriertes Erholungsspital, das Akutaustritt, Rehabilitation und gemeindenahe Versorgung verbindet.",
-            "focus": "Fokus: Übergangsbereitschaft und Kontinuität."
+            "name": "Spital Vialta",
+            "profile": "Regionale Akutversorgung (privat, öffentlicher Leistungsauftrag) · Kanton Zürich",
+            "facts": "174 Betten · 1'200 VZÄ · 24/7-Notfall",
+            "focus": "Fokus: Übergangsbereitschaft und Kontinuität.",
+            "services": "Interdisziplinäres Notfallzentrum · Innere Medizin · Geburtshilfe · Nephrologie- und Dialysezentrum",
+            "roles": {
+              "bedside": "Pflegeleitung — Bettenseite",
+              "opsside": "Medizinische & OP-Leitung — Betriebsseite",
+              "agents": "Agents — HCC-Operation + Patientenfluss",
+              "po": "Product Owner Agent — beantwortet die schwierigen Fragen"
+            }
           }
         },
-        "rosterTitle": "Kapazitätsteam mit sieben Agents",
-        "rosterBody": "Jeder Agent trägt eine fokussierte beratende Verantwortung; verantwortliche Menschen behalten den Entscheid.",
-        "agents": {
-          "ooa-agent": {
-            "name": "Occupancy Outlook Agent",
-            "role": "Antizipiert Kapazitätsdruck und erklärt die Prognosekonfidenz."
+        "roster": {
+          "title": "Das Agent-Team hinter jedem Spital",
+          "tag": "7 Laufzeit-Agents · live",
+          "entries": {
+            "ooa": { "abbr": "OOA", "desc": "Belegung & 72-h-Prognose" },
+            "dca": { "abbr": "DCA", "desc": "Austrittskoordination" },
+            "bmca": { "abbr": "BMCA", "desc": "Bettenmanagement-Copilot" },
+            "csa": { "abbr": "CSA", "desc": "Kapazitäts-Was-wäre-wenn-Simulation" },
+            "orsa": { "abbr": "ORSA", "desc": "OP-Steuerung" },
+            "sba": { "abbr": "SBA", "desc": "Personalbalance" },
+            "data-quality": { "abbr": "Data-Quality", "desc": "Bronze/Silber/Gold-Prüfungen" },
+            "po": { "abbr": "PO Agent", "desc": "verankerte Q&A-Leiste" }
           },
-          "bmca-agent": {
-            "name": "Bed Management Copilot",
-            "role": "Koordiniert Platzierungen, Einschränkungen und Standortfluss."
-          },
-          "dca-agent": {
-            "name": "Discharge Copilot",
-            "role": "Zeigt Übergangsbereitschaft und Austrittshindernisse."
-          },
-          "orsa-agent": {
-            "name": "OR Steering Agent",
-            "role": "Verbindet OP-Entscheide mit nachgelagerter Kapazität."
-          },
-          "sba-agent": {
-            "name": "Staffing Balance Agent",
-            "role": "Richtet Kompetenzabdeckung auf die entstehende betriebliche Nachfrage aus."
-          },
-          "csa-agent": {
-            "name": "Crisis Scenario Agent",
-            "role": "Rahmt gesteuerte Szenarien und Resilienzoptionen."
-          },
-          "data-quality-agent": {
-            "name": "Data Quality Agent",
-            "role": "Prüft Herkunft, Aktualität und Vertragszustand."
-          }
+          "note": "Alle Agents sind beratend und mit Mensch-in-der-Schleife, verankert auf gesteuerten synthetischen Daten, in der Schweiz gehostet, keine PHI."
         }
       },
       "patientPath": {
-        "title": "Patientenpfad",
-        "body": "RBAC-geführter operativer Pfad vom Kapazitätsdruck bis zur Nachversorgung, ergänzt durch beratende Signale."
+        "title": "Ein Patient, ein Fluss — Menschen und Agenten gemeinsam",
+        "accent": "Menschen und Agenten gemeinsam",
+        "body": "Bei jedem Schritt behält ein Mensch die Kontrolle. Agenten machen das Signal sichtbar, erklären es, empfehlen einen Hebel und bereiten die Koordination vor — ein Mensch genehmigt, bevor etwas angewendet wird.",
+        "eyebrow": "Patientenreise"
       },
       "ninetyDay": {
         "title": "90-Tage-Roadmap",
         "body": "Eine illustrative ROM-Abfolge führt von abgestimmten Entscheiden zu erprobten Abläufen und gesteuerter Skalierung.",
+        "eyebrow": "Die erste Frontier · 90 Tage",
         "roadmapLabel": "Illustrative 90-Tage-Roadmap für Curavias",
         "romLabel": "Illustrative ROM",
+        "disclaimer": "Umgesetztes Muster, kein Versprechen: Der Prognose-Agent (OOA) läuft bereits produktiv in PROD Switzerland North auf synthetischen Daten. Der 90-Tage-Rahmen ist der wiederholbare Weg für einen neuen Anbieter.",
         "phases": {
           "frame-ground": {
             "title": "Rahmen & Verankern",
@@ -643,6 +925,7 @@
       "bva": {
         "title": "BVA-Entscheid",
         "body": "ROM-gebundene BVA-Entscheidungsfläche mit KPI, TCO, Sensitivität und Handoff an den Product Owner Agent.",
+        "eyebrow": "Der Entscheid · Business Value Assessment",
         "tcoTitle": "Annualisierte TCO",
         "valueLeversTitle": "Werthebel",
         "sensitivityTitle": "Sensitivität",
@@ -656,6 +939,7 @@
         "finalRead": "ROM-Schätzung zur Prüfung: {{netValue}} realisierter Nettowert, {{roi}} ROI, {{budget}} annualisierte TCO vs. Budget und {{trend}} pro Copilot-Turn.",
         "railRead": "Prüfe diesen BVA-Entscheid: {{netValue}} realisierter Nettowert, {{roi}} ROI, {{tcoMeasure}} und {{trend}}.",
         "cta": "Product Owner Agent fragen",
+        "launchCta": "Die 90-Tage-Frontier starten",
         "columns": {
           "figure": "Kennzahl",
           "value": "Wert",

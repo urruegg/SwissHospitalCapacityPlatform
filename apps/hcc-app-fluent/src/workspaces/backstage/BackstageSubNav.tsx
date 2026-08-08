@@ -10,12 +10,14 @@ import { useTranslation } from 'react-i18next';
  * additional parts are added here as they land ("more to come").
  */
 export const BACKSTAGE_PARTS = [
+  { key: 'bva', labelKey: 'backstage.nav.bva' },
   { key: 'success-framework', labelKey: 'backstage.nav.successFramework' },
   { key: 'feedback-loop', labelKey: 'backstage.nav.feedbackLoop' },
   { key: 'solution-design', labelKey: 'backstage.nav.solutionDesign' },
   { key: 'devsecops-loop', labelKey: 'backstage.nav.devsecops' },
   { key: 'review-sessions', labelKey: 'backstage.nav.reviews' },
   { key: 'po-classes', labelKey: 'backstage.nav.poClasses' },
+  { key: 'ninety-day', labelKey: 'backstage.nav.ninetyDay' },
 ] as const;
 
 export const DEFAULT_BACKSTAGE_PART = BACKSTAGE_PARTS[0].key;

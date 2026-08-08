@@ -6,6 +6,7 @@ import {
   Text,
   Title3,
   makeStyles,
+  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
 import { useMemo, useState } from 'react';
@@ -25,6 +26,8 @@ import {
 import { useCopilotRail } from '../../../copilot-rail/rail-context';
 import type { GroundedReco } from '../../../copilot-rail/reco';
 import type { ContextInsight } from '../../../journey/RoleBoard';
+import { useShowcaseStyles } from '../../shared/narrative/showcase-styles';
+import { scrollToSection } from '../../shared/narrative/NarrativeShell';
 
 const useStyles = makeStyles({
   root: {
@@ -54,9 +57,15 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalS,
     padding: tokens.spacingHorizontalL,
     borderRadius: tokens.borderRadiusXLarge,
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: tokens.colorNeutralBackground1,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
+    boxShadow: tokens.shadow2,
     minWidth: 0,
+  },
+  // Final decision card: green left accent (mockup / backstage decision surface).
+  finalCard: {
+    borderLeftWidth: '4px',
+    borderLeftColor: '#17B890',
   },
   panelTitle: {
     overflowWrap: 'anywhere',
@@ -66,36 +75,23 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalXS,
     padding: tokens.spacingHorizontalM,
     borderRadius: tokens.borderRadiusLarge,
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: tokens.colorNeutralBackground1,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
+    boxShadow: tokens.shadow2,
     minWidth: 0,
   },
   metricValue: {
-    color: tokens.colorBrandForeground1,
+    // Deep, theme-adaptive green (AA on both light card + dark surface).
+    // colorBrandForeground1 (#17b890) only reaches 2.53:1 on white, below the
+    // 3:1 large-text threshold; colorPaletteGreenForeground1 clears it.
+    color: tokens.colorPaletteGreenForeground1,
     overflowWrap: 'anywhere',
   },
   muted: {
     color: tokens.colorNeutralForeground3,
   },
   table: {
-    width: '100%',
-    borderCollapse: 'collapse',
     tableLayout: 'fixed',
-  },
-  th: {
-    textAlign: 'left',
-    padding: tokens.spacingVerticalXS,
-    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    color: tokens.colorNeutralForeground3,
-    fontWeight: tokens.fontWeightSemibold,
-    verticalAlign: 'top',
-    overflowWrap: 'anywhere',
-  },
-  td: {
-    padding: tokens.spacingVerticalXS,
-    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    verticalAlign: 'top',
-    overflowWrap: 'anywhere',
   },
   pills: {
     display: 'flex',
@@ -264,6 +260,7 @@ function proofEntries(
 
 export function BvaDecisionSection() {
   const styles = useStyles();
+  const sc = useShowcaseStyles();
   const { t } = useTranslation();
   const defaultScenario =
     bvaSensitivityScenarios.find((scenario) => scenario.scenario === 'Base ROM') ??
@@ -312,25 +309,25 @@ export function BvaDecisionSection() {
             <Title3 as="h3" className={styles.panelTitle}>
               {t('start.frontier.bva.tcoTitle')}
             </Title3>
-            <table className={styles.table} data-testid="bva-tco-table">
+            <table className={mergeClasses(sc.table, styles.table)} data-testid="bva-tco-table">
               <thead>
                 <tr>
-                  <th className={styles.th}>{t('start.frontier.bva.columns.figure')}</th>
-                  <th className={styles.th}>{t('start.frontier.bva.columns.value')}</th>
+                  <th className={sc.th}>{t('start.frontier.bva.columns.figure')}</th>
+                  <th className={sc.th}>{t('start.frontier.bva.columns.value')}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td className={styles.td}>{bvaPlanVsActual.measure}</td>
-                  <td className={styles.td}>{formatCurrency(bvaPlanVsActual.plan, bvaPlanVsActual.currency)}</td>
+                  <td className={sc.td}>{bvaPlanVsActual.measure}</td>
+                  <td className={sc.td}>{formatCurrency(bvaPlanVsActual.plan, bvaPlanVsActual.currency)}</td>
                 </tr>
                 <tr>
-                  <td className={styles.td}>{t('start.frontier.bva.tcoActual')}</td>
-                  <td className={styles.td}>{formatCurrency(bvaPlanVsActual.actual, bvaPlanVsActual.currency)}</td>
+                  <td className={sc.td}>{t('start.frontier.bva.tcoActual')}</td>
+                  <td className={sc.td}>{formatCurrency(bvaPlanVsActual.actual, bvaPlanVsActual.currency)}</td>
                 </tr>
                 <tr>
-                  <td className={styles.td}>{t('start.frontier.bva.tcoVariance')}</td>
-                  <td className={styles.td}>{formatVariance(bvaPlanVsActual.variancePct)}</td>
+                  <td className={sc.td}>{t('start.frontier.bva.tcoVariance')}</td>
+                  <td className={sc.td}>{formatVariance(bvaPlanVsActual.variancePct)}</td>
                 </tr>
               </tbody>
             </table>
@@ -343,20 +340,20 @@ export function BvaDecisionSection() {
             <Title3 as="h3" className={styles.panelTitle}>
               {t('start.frontier.bva.valueLeversTitle')}
             </Title3>
-            <table className={styles.table} data-testid="bva-value-levers-table">
+            <table className={mergeClasses(sc.table, styles.table)} data-testid="bva-value-levers-table">
               <thead>
                 <tr>
-                  <th className={styles.th}>{t('start.frontier.bva.columns.lever')}</th>
-                  <th className={styles.th}>{t('start.frontier.bva.columns.annualBenefit')}</th>
-                  <th className={styles.th}>{t('start.frontier.bva.columns.valueLogic')}</th>
+                  <th className={sc.th}>{t('start.frontier.bva.columns.lever')}</th>
+                  <th className={sc.th}>{t('start.frontier.bva.columns.annualBenefit')}</th>
+                  <th className={sc.th}>{t('start.frontier.bva.columns.valueLogic')}</th>
                 </tr>
               </thead>
               <tbody>
                 {bvaValueLevers.map((payload) => (
                   <tr key={payload.id}>
-                    <td className={styles.td}>{payload.lever}</td>
-                    <td className={styles.td}>{formatCurrency(payload.annualBenefit, payload.currency)}</td>
-                    <td className={styles.td}>{payload.valueLogic}</td>
+                    <td className={sc.td}>{payload.lever}</td>
+                    <td className={sc.td}>{formatCurrency(payload.annualBenefit, payload.currency)}</td>
+                    <td className={sc.td}>{payload.valueLogic}</td>
                   </tr>
                 ))}
               </tbody>
@@ -418,7 +415,7 @@ export function BvaDecisionSection() {
             </Caption1>
           </section>
 
-          <section className={styles.panel} data-testid="bva-final-card">
+          <section className={`${styles.panel} ${styles.finalCard}`} data-testid="bva-final-card">
             <div className={styles.decisionCard}>
               <div className={styles.decisionHeader}>
                 <Title3 as="h3" className={styles.panelTitle}>
@@ -441,6 +438,13 @@ export function BvaDecisionSection() {
               <div className={styles.ctaRow}>
                 <Button
                   appearance="primary"
+                  data-testid="bva-launch-cta"
+                  onClick={() => scrollToSection('ninety-day')}
+                >
+                  {t('start.frontier.bva.launchCta')}
+                </Button>
+                <Button
+                  appearance="secondary"
                   data-testid="bva-decision-cta"
                   onClick={() =>
                     rail?.openWithReco(

@@ -37,13 +37,38 @@
     "opportunities": "Opportunités",
     "nav": {
       "label": "Sections des coulisses",
+      "bva": "Cas d'affaires",
+      "ninetyDay": "Feuille de route 90 jours",
       "feedbackLoop": "Boucle de retroaction numerique",
-      "opportunities": "Opportunites"
+      "opportunities": "Opportunites",
+      "successFramework": "Cadre de réussite",
+      "solutionDesign": "Conception de la solution",
+      "devsecops": "Boucle DevSecOps",
+      "reviews": "Sessions de revue",
+      "poClasses": "Agent Product Owner"
     },
     "story": {
       "tab": "Histoire",
       "title": "Comment Curavias est construit",
       "lead": "Une vue exécutive simple des fondations de plateforme derrière la vitrine.",
+      "bva": {
+        "eyebrow": "Coulisses · le cas d'affaires",
+        "title": "Nous avons mené une BVA sur nous-mêmes avant d'écrire une ligne de code",
+        "accent": "BVA sur nous-mêmes",
+        "lead": "Avant d'écrire une ligne de code, Curavias a mené une évaluation de valeur métier sur lui-même — la même discipline qu'il apporte à un hôpital."
+      },
+      "ninetyDay": {
+        "eyebrow": "Coulisses · la première frontière",
+        "title": "Votre première frontière : prévision de capacité en 90 jours",
+        "accent": "90 jours",
+        "lead": "Le chemin reproductible suivi par un nouveau prestataire — des décisions alignées à une prévision gouvernée et en direct."
+      },
+      "narrative": {
+        "success": { "accent": "Success Framework" },
+        "devsecops": { "accent": "built and shipped" },
+        "reviews": { "accent": "real people" },
+        "poClasses": { "accent": "hard questions" }
+      },
       "agents": {
         "title": "Construit par des agents",
         "body": "Les agents de codage GitHub Copilot planifient, construisent et relisent la plateforme via des outils MCP gouvernés."
@@ -311,9 +336,32 @@
       "recoveryBody": "Le parcours coordonné transmet le suivi aux soins de rétablissement et de proximité avec une responsabilité claire.",
       "recoveryCaption": "Continuité au-delà de l'hôpital",
       "advisoryBadge": "Consultatif",
+      "bannersAriaLabel": "Copilotes transversaux du parcours",
       "evidenceLabel": "Signaux de confiance du parcours patient",
       "evidenceChip": "Étayé par des preuves",
       "goldenThreadChip": "Fil rouge",
+      "stops": {
+        "occupancy": {
+          "step": "Urgences & Admission",
+          "evidence": "Méd A → 102% en 72h"
+        },
+        "bedManager": {
+          "step": "Attribution des lits",
+          "evidence": "Placer 8 + boarders"
+        },
+        "orSteering": {
+          "step": "Bloc & Traitement",
+          "evidence": "Replanifier les électives"
+        },
+        "staffing": {
+          "step": "Équilibre du personnel",
+          "evidence": "Ajuster le personnel"
+        },
+        "discharge": {
+          "step": "Sortie",
+          "evidence": "Libérer 8 lits"
+        }
+      },
       "operational": {
         "occupancy": "Anticiper la demande et la pression de capacité avant que le parcours ne se tende.",
         "bedManager": "Coordonner l'affectation et le flux des lits sur le site opérationnel.",
@@ -324,12 +372,53 @@
       "dataQuality": {
         "ariaLabel": "Conseil sur la qualité des données",
         "title": "Qualité des données sur tout le parcours",
-        "body": "Le Data Quality Agent vérifie la provenance, la fraîcheur et la santé des contrats sans quitter le parcours."
+        "body": "Le Data Quality Agent vérifie la provenance, la fraîcheur et la santé des contrats sans quitter le parcours.",
+        "bannerLabel": "Contrôles de qualité des données",
+        "bannerDot": "protège chaque indicateur",
+        "evidence": "Indicateur fiable",
+        "badge": "DQ"
       },
       "crisis": {
         "ariaLabel": "Conseil sur les scénarios de crise",
         "body": "Lorsque la lentille de rôle le permet, CSA couvre le parcours avec la planification de scénarios et des conseils d'escalade.",
-        "cta": "Ouvrir la planification consultative"
+        "cta": "Ouvrir la planification consultative",
+        "bannerLabel": "Crises & Scénarios",
+        "bannerDot": "couvre tout le parcours",
+        "evidence": "Tester les chocs",
+        "badge": "CSA"
+      },
+      "dcInsight": {
+        "title": "Comment un agent répond — le schéma DC-INSIGHT",
+        "beats": {
+          "signal": {
+            "label": "SIGNAL",
+            "body": "Médecine A devrait dépasser le seuil : occupation 102 %."
+          },
+          "understanding": {
+            "label": "COMPRÉHENSION",
+            "body": "Facteurs, fiabilité des sources et confiance, tous cités."
+          },
+          "recommendation": {
+            "label": "RECOMMANDATION",
+            "body": "Leviers classés avec un impact déterministe — jamais une estimation du LLM."
+          },
+          "action": {
+            "label": "ACTION",
+            "body": "Proposée uniquement ; appliquée après qu'un humain a validé « approved-to-apply »."
+          },
+          "coordination": {
+            "label": "COORDINATION",
+            "body": "Plan interrôles et transmission OOA→DCA."
+          }
+        }
+      },
+      "workedExample": {
+        "eyebrow": "Exemple chiffré",
+        "kpiFrom": "102 %",
+        "kpiTo": "94 %",
+        "sub": "Occupation prévue de Médecine A après qu'un humain a approuvé le levier recommandé — recalculée de façon déterministe pour l'unité concernée.",
+        "pillAdvisory": "Consultatif · humain dans la boucle",
+        "pillAuditable": "Auditable · chaque chiffre traçable"
       },
       "humanDecision": {
         "ariaLabel": "Décision humaine",
@@ -338,9 +427,151 @@
       }
     },
     "frontier": {
+      "nav": {
+        "label": "Sections de démarrage",
+        "overview": "Aperçu",
+        "value": "Valeur",
+        "challenger": "Challengers",
+        "vision": "Pourquoi Curavias",
+        "operatingModel": "Modèle",
+        "whyNow": "Pourquoi maintenant",
+        "hospitals": "Organisation",
+        "carePath": "Parcours de soins",
+        "ninetyDay": "90 jours",
+        "bva": "BVA"
+      },
+      "hero": {
+        "title": "Hero",
+        "body": "Hôte du hero exécutif pour le récit frontière de Curavias et l'accroche de valeur étayée par les preuves.",
+        "eyebrow": "Start · envisioning de la solution · pour la direction & les opérations hospitalières · 5–10 min",
+        "hookPrefix": "Vous nous avez dit que la prévision des capacités est le point sensible. ",
+        "hookAccent": "Voici à quoi ressemble la solution.",
+        "leadPrefix": "Ceci est une ",
+        "leadEmphasis": "démonstration de l'art du possible",
+        "leadSuffix": " — pas la démo d'un produit que vous pouvez acheter aujourd'hui. Nous avons pris les défis que vous et vos pairs avez décrits, les avons intégrés dans une Frontier Firm opérationnelle et avons laissé de vrais praticiens hospitaliers l'éprouver. Ce qui suit, c'est ce que nous avons compris, ce que nous avons construit et ce qu'il faudrait pour en faire le vôtre.",
+        "quote": "Le parcours de chaque patient, entre des mains suisses.",
+        "framebox": {
+          "title": "Avant de commencer — ce qui est réel et ce qui ne l'est pas.",
+          "body": "Le <b>modèle est réel</b> : la plateforme fonctionne en direct en PROD Switzerland North (app.curavias.ch) avec 7 agents en service — uniquement consultatifs, ne décidant ni ne diagnostiquant jamais. Les <b>hôpitaux sont synthétiques</b> et chaque chiffre que vous verrez est <b>illustratif, sur des données synthétiques sans PHI</b>. Pour rendre cela réaliste plutôt qu'inventé, nous avons construit un <b>simulateur du système central Epic</b> qui génère tous les signaux pertinents du système central — admissions, transferts et sorties, état des lits, programme du bloc opératoire et personnel — afin que les agents soient pilotés par les mêmes schémas d'événements qu'un véritable SIH émettrait, sans un seul dossier patient. La <b>base de référence est réelle</b> : les hôpitaux synthétiques et l'analyse de rentabilité sont calibrés sur des <b>données de capacité publiées</b> par quatre prestataires suisses — <b>USZ</b>, <b>LUKS</b>, <b>Klinik Hirslanden</b> et <b>Spital Zollikerberg</b> — ainsi que sur les statistiques fédérales (OFS) et cantonales (LUSTAT). Aucune donnée confidentielle de prestataire n'a été utilisée. Les <b>défis et les personnes qui les ont éprouvés sont réels</b>, issus de sessions de revue datées avec des hôpitaux suisses."
+        },
+        "ctaPrimary": "Commencer par ce que vous nous avez dit →",
+        "ctaHospitals": "Découvrir les trois hôpitaux",
+        "ctaBackstage": "Voir comment cela a été construit"
+      },
+      "challenger": {
+        "title": "Ce que vous nous avez dit — et ce que nous en avons fait.",
+        "accent": "ce que nous en avons fait.",
+        "body": "Nous ne sommes pas partis d'une idée de produit. Nous sommes partis des défis que vous et vos pairs nous avez soumis — puis les avons soumis à l'épreuve des personnes qui devraient signer, sécuriser, exploiter et vivre avec le résultat. Six rôles, six sessions réelles. Chaque siège ci-dessous montre la question telle qu'elle a été posée, comment nous l'avons traitée, la valeur qu'elle apporte et ce qu'elle a changé dans le produit.",
+        "eyebrow": "Ce que nous avons entendu · de vraies personnes, de vraies sessions",
+        "reviewBy": "Revu le",
+        "pickSeat": "Choisissez le siège qui est le vôtre.",
+        "patterns": [
+          {
+            "title": "La technologie n'a jamais été l'objection.",
+            "desc": "La qualité des données, l'adoption et la gouvernance l'étaient — à chaque session."
+          },
+          {
+            "title": "« Aucune donnée patient » répondait à l'essentiel.",
+            "desc": "Sans PHI, les arguments juridiques, cantonaux et de sécurité disparaissent en grande partie."
+          },
+          {
+            "title": "L'humain doit garder le contrôle.",
+            "desc": "Chaque rôle a indépendamment abouti au conseil uniquement, avec un contrôle humain."
+          }
+        ],
+        "tablistLabel": "Rôles des challengers",
+        "headings": {
+          "addressed": "Comment nous avons relevé les défis",
+          "value": "Valeur métier délivrée",
+          "adapted": "Ce que nous avons adapté dans le produit"
+        },
+        "disclaimer": "Les mandants hospitaliers du showcase sont synthétiques (CuraNova · Curalp · Vialta) et toutes les données sont synthétiques, sans PHI. Les challengers, leurs rôles et les dates des sessions sont réels, et chaque réponse est traçable jusqu'à un rapport de revue daté — voir",
+        "disclaimerLinkLabel": "le dossier de revue dans Backstage",
+        "personas": {
+          "coo": { "tag": "COO", "sub": "Analyse de rentabilité & adoption" },
+          "cio": { "tag": "CIO", "sub": "Horizon de prévision et préparation des données" },
+          "cto": { "tag": "CTO", "sub": "Souveraineté & réglementation" },
+          "ciso": { "tag": "CISO / NSO", "sub": "Protection des données & clés" },
+          "ops": { "tag": "Exploitation hospitalière", "sub": "Du temps pour les soins" },
+          "it": { "tag": "IT / cantonal", "sub": "Modèle opérationnel cloud" }
+        }
+      },
+      "vision": {
+        "title": "Le nom est la promesse : cura + via",
+        "accent": "cura + via",
+        "body": "Curavias vient du latin. cura — le soin. via — le chemin. Ensemble : « le parcours de soins ». Non pas un outil de capacité posé par hasard dans un hôpital, mais le chemin qu'un patient y parcourt — d'où la signature « Chaque parcours patient, en mains suisses. »",
+        "eyebrow": "Pourquoi Curavias existe",
+        "brand": {
+          "desc": "Swiss Hospital Command Center powered by Copilot",
+          "tag": "Chaque parcours patient, en mains suisses.",
+          "symbolLabel": "Symbole Curavias — un parcours patient qui s'élève du départ, à travers le soin, jusqu'au succès"
+        },
+        "word": {
+          "heading": "Le mot",
+          "label": "Étymologie de Curavias",
+          "columns": {
+            "latin": "Latin",
+            "meaning": "Signification",
+            "product": "Dans le produit"
+          },
+          "rows": {
+            "cura": {
+              "meaning": "soin, sollicitude, guérison",
+              "product": "Le résultat clinique pour lequel nous existons"
+            },
+            "via": {
+              "meaning": "chemin, voie, route",
+              "product": "Le trajet à travers lits, bloc, personnel et sortie"
+            },
+            "curavias": {
+              "meaning": "le parcours de soins",
+              "product": "Les deux à la fois — le soin le long d'un chemin"
+            }
+          }
+        },
+        "mark": {
+          "heading": "Le signe",
+          "intro": "Le logo est la même idée en un seul glyphe — un parcours patient en trois étapes qui s'élève vers le succès :",
+          "label": "Parcours du logo Curavias",
+          "glyphLabel": "Signe Curavias — Start, Care, Success",
+          "steps": {
+            "start": {
+              "label": "Start",
+              "caption": "entrée dans le soin"
+            },
+            "care": {
+              "label": "Care",
+              "caption": "la croix médicale suisse"
+            },
+            "success": {
+              "label": "Success",
+              "caption": "le patient rétabli"
+            }
+          },
+          "note": "L'identité suisse est délibérée : la partition diagonale blanc et bleu fédéral, et la croix — le langage visuel auquel les institutions suisses font déjà confiance."
+        },
+        "vmHeading": "Notre vision & mission",
+        "vision": {
+          "tag": "Vision",
+          "text": "Un système de santé suisse où la capacité ne décide jamais qui doit attendre."
+        },
+        "mission": {
+          "tag": "Mission",
+          "text": "Donner à chaque équipe soignante de chaque hôpital suisse les moyens d'obtenir le succès thérapeutique – et du temps – pour chaque patient."
+        },
+        "timeCurrency": "Le temps est la monnaie de la capacité. Chaque heure que Curavias restitue est une heure de soins – le patient traité plus tôt, l'équipe qui a du temps à donner, le lit libre pour la prochaine personne qui en a besoin.",
+        "pillRowLabel": "Les garanties de Curavias",
+        "pills": {
+          "advisory": { "label": "Consultatif, jamais autonome" },
+          "human": { "label": "L'humain décide, toujours" },
+          "swiss": { "label": "Données suisses, hébergement suisse, aucune donnée patient" }
+        }
+      },
       "workChart": {
         "title": "Comment le travail évolue",
+        "accent": "travail",
         "body": "Curavias réunit des personnes responsables, des agents spécialisés et des flux de travail à la demande dans un même modèle opérationnel.",
+        "eyebrow": "Modèle",
         "flowLabel": "Modes de travail Curavias",
         "modeBadge": "Mode de travail",
         "modes": {
@@ -362,11 +593,38 @@
           "badge": "Appliqué à Curavias",
           "body": "Le travail s'organise autour des résultats plutôt que de transmissions statiques entre fonctions.",
           "curaviasMap": "Curavias applique ce principe à la capacité hospitalière : signaux partagés, agents spécialistes et décision humaine à chaque frontière opérationnelle."
+        },
+        "fit": {
+          "title": "Comment Curavias s'inscrit dans la Microsoft Frontier Firm",
+          "body": "La Frontier Firm repose sur des équipes humain–agent, des humains « agent bosses » et une intelligence à la demande. Curavias applique exactement ce modèle à la capacité hospitalière et au parcours patient.",
+          "columns": {
+            "principle": "Principe de la Frontier Firm",
+            "curavias": "Chez Curavias"
+          },
+          "rows": {
+            "teams": {
+              "principle": "Équipes humain–agent",
+              "curavias": "7 agents runtime + personnel opérationnel"
+            },
+            "bosses": {
+              "principle": "Humains « agent bosses »",
+              "curavias": "Validation HITL « approve-to-apply »"
+            },
+            "on-demand": {
+              "principle": "Intelligence à la demande",
+              "curavias": "Prévision 72 h · copilote · simulation"
+            },
+            "trust": {
+              "principle": "Confiance dès la conception",
+              "curavias": "Données en Suisse · sans PHI · entièrement sourcé"
+            }
+          }
         }
       },
       "cioWhyNow": {
         "title": "Défi CIO : pourquoi maintenant ?",
         "body": "Sept décisions opérationnelles récurrentes montrent comment une coordination fragmentée peut devenir une prévisualisation Curavias gouvernée.",
+        "eyebrow": "Le défi du CIO · pourquoi maintenant",
         "tableLabel": "Décisions opérationnelles : Aujourd'hui comparé à la prévisualisation Curavias",
         "caption": "Comparaison qualitative illustrative — aucune métrique métier en direct.",
         "columns": {
@@ -413,65 +671,82 @@
         }
       },
       "hospitals": {
-        "title": "Trois hôpitaux",
-        "body": "Trois hôpitaux synthétiques partagent une plateforme de capacité tout en conservant des contextes opérationnels distincts.",
+        "title": "Trois hôpitaux, chacun opérant comme une Frontier Firm",
+        "accent": "Frontier Firm",
+        "body": "L'épine dorsale organisationnelle de Curavias modélise trois archétypes d'hôpitaux suisses sur des données synthétiques sans PHI — inspirées de modèles de référence réels. Dans chacun, des employés physiques et des agents pilotent l'opération HCC (Hospital Command Center) et le flux patient de bout en bout, avec l'humain dans la boucle.",
+        "eyebrow": "Organisation",
         "sitesLabel": "Réseau hospitalier Curavias synthétique",
-        "syntheticBadge": "Profil synthétique",
+        "servicesLabel": "Prestations",
         "sites": {
           "curanova": {
-            "name": "CuraNova",
-            "profile": "Hôpital universitaire urbain coordonnant des parcours aigus complexes et des services spécialisés.",
-            "focus": "Priorité : flux du réseau et capacité tertiaire."
+            "name": "Uniklinik CuraNova",
+            "profile": "Hôpital central universitaire · Canton Zurich",
+            "facts": "~900 lits · 8 600 ETP · 7 centres médicaux",
+            "focus": "Priorité : flux du réseau et capacité tertiaire.",
+            "services": "Centre de cancérologie · Centre cardiaque universitaire",
+            "roles": {
+              "bedside": "Direction des soins — côté lits",
+              "opsside": "CMO & équipes spécialisées — côté opérations",
+              "agents": "Agents — opération HCC + flux patient",
+              "po": "Product Owner Agent — répond aux questions difficiles"
+            }
           },
           "curalp": {
-            "name": "Curalp",
-            "profile": "Hôpital régional équilibrant la demande aiguë et l'accès de communautés dispersées.",
-            "focus": "Priorité : couverture résiliente et transferts opportuns."
+            "name": "Kantonsspital Curalp",
+            "profile": "Groupe cantonal multi-sites · Canton Lucerne",
+            "facts": "~840 lits · 8 600 ETP · 5 sites",
+            "focus": "Priorité : couverture résiliente et transferts opportuns.",
+            "services": "Centre des tumeurs · Centre de neurologie",
+            "roles": {
+              "bedside": "Gestionnaire lits/flux — côté lits",
+              "opsside": "Médecins & bloc opératoire — côté opérations",
+              "agents": "Agents — opération HCC + flux patient",
+              "po": "Product Owner Agent — répond aux questions difficiles"
+            }
           },
           "vialta": {
-            "name": "Vialta",
-            "profile": "Hôpital de rétablissement intégré reliant la sortie aiguë, la réadaptation et les soins de proximité.",
-            "focus": "Priorité : préparation des transitions et continuité."
+            "name": "Spital Vialta",
+            "profile": "Soins aigus régionaux (privé, mandat public) · Canton Zurich",
+            "facts": "174 lits · 1 200 ETP · urgences 24/7",
+            "focus": "Priorité : préparation des transitions et continuité.",
+            "services": "Centre d'urgences interdisciplinaire · Médecine interne · Obstétrique · Centre de néphrologie et dialyse",
+            "roles": {
+              "bedside": "Responsable des soins — côté lits",
+              "opsside": "Directions médicale & bloc — côté opérations",
+              "agents": "Agents — opération HCC + flux patient",
+              "po": "Product Owner Agent — répond aux questions difficiles"
+            }
           }
         },
-        "rosterTitle": "Équipe capacité de sept agents",
-        "rosterBody": "Chaque agent porte une responsabilité consultative ciblée ; les personnes responsables gardent la décision.",
-        "agents": {
-          "ooa-agent": {
-            "name": "Agent de perspective d'occupation",
-            "role": "Anticipe la pression de capacité et explique la confiance de la prévision."
+        "roster": {
+          "title": "L'équipe d'agents derrière chaque hôpital",
+          "tag": "7 agents d'exécution · en direct",
+          "entries": {
+            "ooa": { "abbr": "OOA", "desc": "Occupation & prévision à 72 h" },
+            "dca": { "abbr": "DCA", "desc": "Coordination des sorties" },
+            "bmca": { "abbr": "BMCA", "desc": "Copilote de gestion des lits" },
+            "csa": { "abbr": "CSA", "desc": "Simulation de capacité hypothétique" },
+            "orsa": { "abbr": "ORSA", "desc": "Pilotage du bloc" },
+            "sba": { "abbr": "SBA", "desc": "Équilibre du personnel" },
+            "data-quality": { "abbr": "Data-Quality", "desc": "Contrôles Bronze/Argent/Or" },
+            "po": { "abbr": "PO Agent", "desc": "barre de questions-réponses ancrée" }
           },
-          "bmca-agent": {
-            "name": "Copilote de gestion des lits",
-            "role": "Coordonne placements, contraintes et flux du site."
-          },
-          "dca-agent": {
-            "name": "Copilote des sorties",
-            "role": "Fait ressortir la préparation des transitions et les freins à la sortie."
-          },
-          "orsa-agent": {
-            "name": "Agent de pilotage du bloc",
-            "role": "Relie les choix du bloc à la capacité en aval."
-          },
-          "sba-agent": {
-            "name": "Agent d'équilibre du personnel",
-            "role": "Aligne la couverture des compétences sur la demande opérationnelle émergente."
-          },
-          "csa-agent": {
-            "name": "Agent de scénarios de crise",
-            "role": "Cadre des scénarios gouvernés et des options de résilience."
-          },
-          "data-quality-agent": {
-            "name": "Agent de qualité des données",
-            "role": "Vérifie provenance, fraîcheur et santé des contrats."
-          }
+          "note": "Tous les agents sont consultatifs et avec l'humain dans la boucle, ancrés sur des données synthétiques gouvernées, hébergés en Suisse, sans PHI."
         }
+      },
+      "patientPath": {
+        "title": "Un patient, un flux — humains et agents ensemble",
+        "accent": "humains et agents ensemble",
+        "body": "À chaque étape, une personne garde le contrôle. Les agents font émerger le signal, l'expliquent, recommandent un levier et préparent la coordination — un humain approuve avant toute application.",
+        "eyebrow": "Parcours patient"
       },
       "ninetyDay": {
         "title": "Feuille de route sur 90 jours",
         "body": "Une séquence ROM illustrative va de décisions alignées à des flux éprouvés puis à une mise à l'échelle gouvernée.",
+        "eyebrow": "La première frontière · 90 jours",
         "roadmapLabel": "Feuille de route Curavias illustrative sur quatre-vingt-dix jours",
         "romLabel": "ROM illustrative",
+        "disclaimer": "Un schéma déjà mis en œuvre, pas une promesse : l'agent de prévision (OOA) est déjà en production dans PROD Switzerland North sur des données synthétiques. Le cadre de 90 jours est la voie reproductible pour un nouveau fournisseur.",
         "phases": {
           "frame-ground": {
             "title": "Cadrer & Ancrer",
@@ -501,6 +776,9 @@
             }
           }
         }
+      },
+      "bva": {
+        "eyebrow": "La décision · Business Value Assessment"
       }
     }
   },

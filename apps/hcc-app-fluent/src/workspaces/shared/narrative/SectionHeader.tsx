@@ -36,6 +36,16 @@ const useStyles = makeStyles({
     fontWeight: tokens.fontWeightSemibold,
     color: tokens.colorNeutralForeground1,
   },
+  accent: {
+    backgroundImage: 'linear-gradient(90deg, #365B7D, #17B890)',
+    WebkitBackgroundClip: 'text',
+    backgroundClip: 'text',
+    color: 'transparent',
+    '@media (forced-colors: active)': {
+      color: 'LinkText',
+      backgroundImage: 'none',
+    },
+  },
   eyebrow: {
     display: 'inline-flex',
     alignItems: 'center',
@@ -68,22 +78,53 @@ const useStyles = makeStyles({
   },
 });
 
+export interface SectionTitlePart {
+  text: string;
+  tone?: 'default' | 'accent';
+}
+
 interface SectionHeaderProps {
   /** Anchor id — the scrollspy target and `TabList` value. */
   id: string;
-  header: string;
+  header?: string;
+  titleParts?: SectionTitlePart[];
   tagline: string;
   description: string;
   /** 'eyebrow' renders the tagline as an uppercase kicker above the title (Backstage). */
   variant?: 'default' | 'eyebrow';
+  headingLevel?: 1 | 2;
   /** Optional right-aligned controls (e.g. the DFL play/pause + mode toggle). */
   tools?: ReactNode;
 }
 
 /** Self-describing header for a vertical-narrative section: header + tagline + description. */
-export function SectionHeader({ id, header, tagline, description, tools, variant = 'default' }: SectionHeaderProps) {
+export function SectionHeader({
+  id,
+  header,
+  titleParts,
+  tagline,
+  description,
+  tools,
+  variant = 'default',
+  headingLevel = 2,
+}: SectionHeaderProps) {
   const s = useStyles();
   const isEyebrow = variant === 'eyebrow';
+  const Heading = (headingLevel === 1 ? 'h1' : 'h2') as 'h1' | 'h2';
+  const titleContent = titleParts
+    ? titleParts.map((part, index) =>
+        part.tone === 'accent' ? (
+          <span key={index} className={s.accent} data-tone="accent">
+            {part.text}
+          </span>
+        ) : (
+          <span key={index} data-tone="default">
+            {part.text}
+          </span>
+        ),
+      )
+    : header;
+
   return (
     <div className={s.root} data-testid={`section-header-${id}`}>
       <div className={s.headRow}>
@@ -91,7 +132,9 @@ export function SectionHeader({ id, header, tagline, description, tools, variant
           {isEyebrow ? (
             <>
               <span className={s.eyebrow}>{tagline}</span>
-              <h2 id={`${id}-title`} className={s.headerLg}>{header}</h2>
+              <Heading id={`${id}-title`} className={s.headerLg}>
+                {titleContent}
+              </Heading>
             </>
           ) : (
             <>

@@ -6,7 +6,7 @@ import itLocale from '../../../i18n/it.json';
 import { agentForRoute } from '../../../shell/planes/agent-context-map';
 import {
   CIO_DECISIONS,
-  FRONTIER_AGENTS,
+  FRONTIER_ROSTER,
   FRONTIER_HOSPITALS,
   NINETY_DAY_PHASES,
   START_SECTIONS,
@@ -35,7 +35,7 @@ function staticFrontierLocale(locale: unknown) {
           cioWhyNow?: { decisions?: Record<string, unknown> };
           hospitals?: {
             sites?: Record<string, unknown>;
-            agents?: Record<string, unknown>;
+            roster?: { entries?: Record<string, unknown> };
           };
           ninetyDay?: { phases?: Record<string, unknown> };
         };
@@ -48,12 +48,11 @@ describe('START_SECTIONS', () => {
   it('defines the approved Sprint 37 frontier section order', () => {
     expect(START_SECTIONS.map(({ id }) => id)).toEqual([
       'hero',
+      'challenger',
+      'vision',
       'work-chart',
-      'cio-why-now',
       'hospitals',
       'patient-path',
-      'ninety-day',
-      'bva',
     ]);
   });
 
@@ -96,14 +95,15 @@ describe('START_SECTIONS', () => {
       'curalp',
       'vialta',
     ]);
-    expect(Object.keys(frontier?.hospitals?.agents ?? {})).toEqual([
-      'ooa-agent',
-      'bmca-agent',
-      'dca-agent',
-      'orsa-agent',
-      'sba-agent',
-      'csa-agent',
-      'data-quality-agent',
+    expect(Object.keys(frontier?.hospitals?.roster?.entries ?? {})).toEqual([
+      'ooa',
+      'dca',
+      'bmca',
+      'csa',
+      'orsa',
+      'sba',
+      'data-quality',
+      'po',
     ]);
     expect(Object.keys(frontier?.ninetyDay?.phases ?? {})).toEqual([
       'frame-ground',
@@ -116,14 +116,14 @@ describe('START_SECTIONS', () => {
     expect(WORK_MODES).toHaveLength(3);
     expect(CIO_DECISIONS).toHaveLength(7);
     expect(FRONTIER_HOSPITALS).toHaveLength(3);
-    expect(FRONTIER_AGENTS).toHaveLength(7);
+    expect(FRONTIER_ROSTER).toHaveLength(8);
     expect(NINETY_DAY_PHASES).toHaveLength(3);
     expect(
       JSON.stringify({
         workModes: WORK_MODES,
         cioDecisions: CIO_DECISIONS,
         hospitals: FRONTIER_HOSPITALS,
-        agents: FRONTIER_AGENTS,
+        roster: FRONTIER_ROSTER,
         roadmap: NINETY_DAY_PHASES,
       }),
     ).not.toMatch(/patient name|date of birth|birth date|mrn|ssn/i);
@@ -157,9 +157,9 @@ describe('START_SECTIONS', () => {
         ({ id }) => `start.frontier.hospitals.sites.${id}.name`,
       ),
     );
-    expect(FRONTIER_AGENTS.map(({ nameKey }) => nameKey)).toEqual(
-      FRONTIER_AGENTS.map(
-        ({ id }) => `start.frontier.hospitals.agents.${id}.name`,
+    expect(FRONTIER_ROSTER.map(({ abbrKey }) => abbrKey)).toEqual(
+      FRONTIER_ROSTER.map(
+        ({ id }) => `start.frontier.hospitals.roster.entries.${id}.abbr`,
       ),
     );
     expect(NINETY_DAY_PHASES.map(({ titleKey }) => titleKey)).toEqual(

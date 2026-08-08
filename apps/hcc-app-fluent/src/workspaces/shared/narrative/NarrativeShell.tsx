@@ -7,11 +7,13 @@ export interface NarrativeSection {
   key: string;
   label: string;
   render: () => ReactNode;
+  full?: boolean;
 }
 
 interface NarrativeShellProps {
-  introTitle: string;
-  introDescription: string;
+  /** Intro title. Omit (with introDescription) to render no intro section — the shell starts at the first `sections` entry. */
+  introTitle?: string;
+  introDescription?: string;
   sections: NarrativeSection[];
   /** Deep-link target (route param / hash) scrolled to on mount. */
   initialKey?: string;
@@ -73,13 +75,13 @@ const useStyles = makeStyles({
     scrollMarginTop: '88px',
   },
   sectionFull: {
-    minHeight: 'calc(100vh - 150px)',
+    minHeight: 'calc(100svh - 150px)',
   },
   leadGroup: {
+    minHeight: 'calc(100svh - 120px)',
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalXXL,
-    minHeight: 'calc(100vh - 120px)',
+    justifyContent: 'center',
   },
 });
 
@@ -88,7 +90,7 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function scrollToSection(key: string) {
+export function scrollToSection(key: string) {
   if (typeof document === 'undefined') return;
   const el = document.getElementById(key);
   el?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
@@ -117,15 +119,15 @@ export function NarrativeShell({
         <SectionHeader
           id={introKey}
           variant="eyebrow"
-          header={introTitle}
+          header={introTitle ?? ''}
           tagline={introEyebrow ?? ''}
-          description={introDescription}
+          description={introDescription ?? ''}
         />
         {introExtra && <div className={s.introExtra}>{introExtra}</div>}
       </>
     ),
   };
-  const allSections = [introSection, ...sections];
+  const allSections = introTitle ? [introSection, ...sections] : sections;
   const ids = allSections.map((section) => section.key);
   const active = useScrollSpy(ids);
   const selected = active || ids[0];
@@ -179,7 +181,8 @@ export function NarrativeShell({
               <section
                 key={section.key}
                 id={section.key}
-                className={mergeClasses(s.section, s.sectionFull)}
+                data-full={section.full ? 'true' : undefined}
+                className={mergeClasses(s.section, section.full ? s.sectionFull : undefined)}
                 data-testid={`widget-${section.key}`}
               >
                 {section.render()}

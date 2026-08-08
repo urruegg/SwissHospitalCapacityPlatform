@@ -1,97 +1,88 @@
 import {
-  Badge,
   Body1,
-  Caption1,
+  Button,
   Text,
-  Title1,
   makeStyles,
-  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
-import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
-import { bvaHeadlineKpis, type BvaHeadlineKpiPayload } from '../../../data/bva/bva-evidence';
-import { loadSiteCapacitySummary } from '../../../data/roleboard/golden-source-client';
-import type { SiteCapacitySummary } from '../../../data/roleboard/occupancy-data';
-import { GOLDEN_THREAD_SCOPE } from '../../../journey/golden-thread';
-import type { Mode, Provenance } from '../../../journey/RoleBoard';
-import { useStateStyles, useSurfaceStyles } from '../../../theme/design-system/recipes';
-
-interface StartHeroProps {
-  mode: Mode;
-}
-
-interface HeroMetric {
-  id: string;
-  label: string;
-  value: string;
-  note?: string;
-  provenance: BvaHeadlineKpiPayload;
-}
-
-interface StartHeroEvidenceSelection {
-  netValueRealized: BvaHeadlineKpiPayload;
-  roi: BvaHeadlineKpiPayload & { targetLabel: string };
-}
-
-type CapacityState =
-  | { status: 'loading' }
-  | { status: 'ready'; summary: SiteCapacitySummary }
-  | { status: 'error'; error: Error };
+import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { scrollToSection } from '../../shared/narrative/NarrativeShell';
+import { SHOWCASE_ACCENT, useShowcaseStyles } from '../../shared/narrative/showcase-styles';
 
 const useStyles = makeStyles({
   root: {
-    display: 'grid',
-    gap: tokens.spacingVerticalL,
-    gridTemplateColumns: 'minmax(0, 1.35fr) minmax(280px, 1fr)',
-    '@media (max-width: 900px)': {
-      gridTemplateColumns: '1fr',
-    },
-  },
-  heroColumn: {
     display: 'grid',
     gap: tokens.spacingVerticalM,
     alignContent: 'start',
   },
   eyebrow: {
-    // Fluent's link-foreground token is intentional for non-link text: it preserves WCAG contrast in both themes.
-    color: tokens.colorBrandForegroundLink,
-    letterSpacing: '0.04em',
+    // Backstage SectionHeader eyebrow pattern: uppercase kicker + green lead bar.
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: tokens.fontSizeBase200,
+    fontWeight: tokens.fontWeightBold,
+    letterSpacing: '0.08em',
     textTransform: 'uppercase',
+    color: '#12765F',
+    '::before': {
+      content: '""',
+      width: '22px',
+      height: '3px',
+      borderRadius: '2px',
+      backgroundColor: '#17B890',
+    },
   },
   hook: {
-    maxWidth: '16ch',
+    // Match the Backstage hero headline (SectionHeader headerLg): base600 on a plain
+    // h2, no width cap, so the title fills the column on one line instead of a narrow stack.
+    margin: 0,
+    fontSize: tokens.fontSizeBase600,
+    lineHeight: tokens.lineHeightBase600,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
   },
-  valueLine: {
+  hookInk: {
+    color: tokens.colorNeutralForeground1,
+  },
+  hookAccent: {
+    backgroundImage: 'linear-gradient(110deg, #365B7D, #17B890 78%)',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
+  },
+  lead: {
+    // No width cap — matches the Backstage SectionHeader description, so the lead flows
+    // the full column width rather than being squeezed into a narrow left measure.
     color: tokens.colorNeutralForeground2,
   },
-  trustPills: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: tokens.spacingHorizontalXS,
+  leadEmphasis: {
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
   },
-  metrics: {
-    display: 'grid',
-    gap: tokens.spacingHorizontalM,
-    gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+  quote: {
+    margin: 0,
+    fontStyle: 'italic',
+    fontWeight: tokens.fontWeightSemibold,
+    // Fluent's link-foreground token keeps WCAG contrast in both themes for this accent line.
+    color: tokens.colorBrandForegroundLink,
   },
-  metricTile: {
-    display: 'grid',
-    gap: tokens.spacingVerticalXS,
-    padding: tokens.spacingHorizontalM,
-    borderRadius: tokens.borderRadiusLarge,
-    backgroundColor: tokens.colorNeutralBackground2,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    minHeight: '156px',
-    alignContent: 'start',
+  frameTitle: {
+    margin: 0,
+    fontSize: tokens.fontSizeBase300,
+    fontWeight: tokens.fontWeightBold,
+    color: SHOWCASE_ACCENT.navy,
   },
-  metricValue: {
-    color: tokens.colorBrandForeground1,
-    overflowWrap: 'anywhere',
+  frameBody: {
+    margin: 0,
+    fontSize: tokens.fontSizeBase200,
+    lineHeight: 1.5,
+    color: tokens.colorNeutralForeground2,
   },
-  metricCaption: {
-    color: tokens.colorNeutralForeground3,
+  frameEmph: {
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
   },
   ctas: {
     display: 'flex',
@@ -99,276 +90,55 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalS,
     alignItems: 'center',
   },
-  ctaLink: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '40px',
-    padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalM}`,
-    borderRadius: tokens.borderRadiusMedium,
-    fontWeight: tokens.fontWeightSemibold,
-    textDecorationLine: 'none',
-    ':focus-visible': {
-      outlineStyle: 'solid',
-      outlineWidth: tokens.strokeWidthThick,
-      outlineColor: tokens.colorStrokeFocus2,
-      outlineOffset: '2px',
-    },
-  },
-  ctaPrimary: {
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-  },
-  ctaSecondary: {
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    color: tokens.colorBrandForegroundLink,
-  },
-  disclaimer: {
-    color: tokens.colorNeutralForeground3,
-    display: 'block',
-  },
-  squeezeCard: {
-    display: 'grid',
-    gap: tokens.spacingVerticalM,
-    padding: tokens.spacingHorizontalL,
-    borderRadius: tokens.borderRadiusXLarge,
-    background: `linear-gradient(135deg, ${tokens.colorBrandBackground2} 0%, ${tokens.colorNeutralBackground1} 62%)`,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    alignContent: 'start',
-  },
-  squeezeHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: tokens.spacingHorizontalS,
-    flexWrap: 'wrap',
-  },
-  squeezeBig: {
-    display: 'grid',
-    gap: tokens.spacingVerticalXXS,
-  },
-  squeezePeak: {
-    color: tokens.colorPaletteRedForeground1,
-  },
-  squeezeMeta: {
-    display: 'grid',
-    gap: tokens.spacingVerticalXXS,
-  },
 });
 
-function metricDisplay(payload: BvaHeadlineKpiPayload): string {
-  return payload.unit ? `${payload.value} ${payload.unit}` : payload.value;
-}
-
-function invariant(condition: unknown, message: string): asserts condition {
-  if (!condition) {
-    throw new Error(message);
-  }
-}
-
-function selectHeroEvidence(kpis: readonly BvaHeadlineKpiPayload[]): StartHeroEvidenceSelection {
-  const netValueRealized = kpis.find((payload) => payload.measure === 'Net Value Realized (3yr)');
-  const roi = kpis.find((payload) => payload.measure === 'ROI %');
-
-  invariant(
-    netValueRealized,
-    'StartHero requires the "Net Value Realized (3yr)" headline KPI to render the hero tiles.',
-  );
-  invariant(roi, 'StartHero requires the "ROI %" headline KPI to render the hero tiles.');
-  invariant(
-    roi.targetLabel,
-    'StartHero requires the "ROI %" headline KPI targetLabel to render the third hero tile.',
-  );
-
-  return { netValueRealized, roi: { ...roi, targetLabel: roi.targetLabel } };
-}
-
-function metricTiles(t: (key: string, options?: Record<string, string | number>) => string): HeroMetric[] {
-  const { netValueRealized, roi } = selectHeroEvidence(bvaHeadlineKpis);
-  const tiles: HeroMetric[] = [
-    {
-      id: 'headline-net-value-realized',
-      label: netValueRealized.measure,
-      value: metricDisplay(netValueRealized),
-      note: netValueRealized.targetLabel,
-      provenance: netValueRealized,
-    },
-    {
-      id: 'headline-roi',
-      label: roi.measure,
-      value: metricDisplay(roi),
-      provenance: roi,
-    },
-    {
-      id: 'headline-rom-context',
-      label: t('start.frontier.hero.supportingMetricLabel'),
-      value: roi.targetLabel,
-      provenance: roi,
-    },
-  ];
-
-  const figures = tiles.map((tile) => tile.value);
-  invariant(figures.length === 3, 'StartHero must render exactly three hero metric figures.');
-  invariant(
-    new Set(figures).size === figures.length,
-    'StartHero hero metric figures must remain distinct.',
-  );
-  invariant(
-    !tiles.some((tile) => tile.note && figures.includes(tile.note)),
-    'StartHero hero metric notes must not duplicate another displayed figure.',
-  );
-
-  return tiles;
-}
-
-function formatAsOf(asOf: string): string {
-  return `${new Date(asOf).toISOString().slice(0, 16).replace('T', ' ')}Z`;
-}
-
-function provenanceLabel(t: (key: string) => string, provenance: Provenance): string {
-  return provenance === 'live' ? t('badge.liveData') : t('badge.simulatedData');
-}
-
-export function StartHero({ mode }: StartHeroProps) {
+export function StartHero() {
   const styles = useStyles();
-  const surface = useSurfaceStyles();
-  const stateStyles = useStateStyles();
+  const showcase = useShowcaseStyles();
   const { t } = useTranslation();
-  const [capacityState, setCapacityState] = useState<CapacityState>({ status: 'loading' });
-
-  const scope = useMemo(
-    () => (mode === 'demo' ? GOLDEN_THREAD_SCOPE : { ...GOLDEN_THREAD_SCOPE, pinned: false }),
-    [mode],
-  );
-  const metrics = useMemo(() => metricTiles(t), [t]);
-
-  useEffect(() => {
-    let cancelled = false;
-    setCapacityState({ status: 'loading' });
-    loadSiteCapacitySummary(scope, mode)
-      .then((summary) => {
-        if (!cancelled) setCapacityState({ status: 'ready', summary });
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setCapacityState({
-            status: 'error',
-            error: error instanceof Error ? error : new Error(String(error)),
-          });
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [mode, scope]);
+  const navigate = useNavigate();
 
   return (
     <div className={styles.root}>
-      <div className={styles.heroColumn}>
-        <div className={styles.heroColumn}>
-          <Caption1 className={styles.eyebrow}>{t('start.frontier.hero.eyebrow')}</Caption1>
-          <Title1 as="h2" className={styles.hook}>
-            {t('start.frontier.hero.hook')}
-          </Title1>
-          <Body1>{t('start.mission')}</Body1>
-          <Text className={styles.valueLine}>{t('start.frontier.hero.valueLine')}</Text>
-        </div>
+      <span className={styles.eyebrow}>{t('start.frontier.hero.eyebrow')}</span>
+      <h2 className={styles.hook}>
+        <span className={styles.hookInk}>{t('start.frontier.hero.hookPrefix')}</span>
+        <span className={styles.hookAccent}>{t('start.frontier.hero.hookAccent')}</span>
+      </h2>
+      <Body1 as="p" className={styles.lead}>
+        {t('start.frontier.hero.leadPrefix')}
+        <span className={styles.leadEmphasis}>{t('start.frontier.hero.leadEmphasis')}</span>
+        {t('start.frontier.hero.leadSuffix')}
+      </Body1>
+      <Text as="p" className={styles.quote} data-testid="hero-quote">
+        {t('start.frontier.hero.quote')}
+      </Text>
 
-        <div className={styles.trustPills}>
-          <Badge appearance="filled" color="brand">
-            {t('backstage.story.fabricFhir.title')}
-          </Badge>
-          <Badge appearance="tint" color="informative">
-            {t('start.frontier.guardrails.advisory')}
-          </Badge>
-          <Badge appearance="tint" color="warning">
-            {t('start.frontier.guardrails.noPhi')}
-          </Badge>
-        </div>
-
-        <div className={styles.metrics}>
-          {metrics.map((metric) => (
-            <div key={metric.id} className={styles.metricTile} data-testid="hero-metric-tile">
-              <Text weight="semibold">{metric.label}</Text>
-              <Title1 as="span" className={styles.metricValue} data-testid="hero-metric-figure">
-                {metric.value}
-              </Title1>
-              {metric.note ? <Body1>{metric.note}</Body1> : null}
-              <Caption1 className={styles.metricCaption} data-testid="hero-metric-caption">
-                {t('start.valueTiles.romLabel')} · {metric.provenance.source} ·{' '}
-                {t('start.capacityTeaser.asOf', { time: metric.provenance.asOf.slice(0, 10) })}
-              </Caption1>
-            </div>
-          ))}
-        </div>
-
-        <div className={styles.ctas}>
-          <RouterLink
-            to="/backstage"
-            className={mergeClasses(styles.ctaLink, styles.ctaPrimary)}
-          >
-            {t('start.frontier.hero.ctaPrimary')}
-          </RouterLink>
-          <RouterLink
-            to="/backstage"
-            className={mergeClasses(styles.ctaLink, styles.ctaSecondary)}
-          >
-            {t('start.frontier.hero.ctaSecondary')}
-          </RouterLink>
-        </div>
-
-        <Caption1 className={styles.disclaimer}>
-          {t('start.frontier.guardrails.synthetic')} {t('start.frontier.guardrails.advisory')}
-        </Caption1>
+      <div
+        className={showcase.staticCard}
+        style={{ borderLeftColor: SHOWCASE_ACCENT.navy }}
+        data-testid="hero-framebox"
+      >
+        <p className={styles.frameTitle}>{t('start.frontier.hero.framebox.title')}</p>
+        <p className={styles.frameBody}>
+          <Trans
+            i18nKey="start.frontier.hero.framebox.body"
+            components={{ b: <span className={styles.frameEmph} /> }}
+          />
+        </p>
       </div>
 
-      <aside className={mergeClasses(surface.surfaceCard, styles.squeezeCard)} aria-live="polite">
-        <div className={styles.squeezeHeader}>
-          <Caption1>{t('start.frontier.hero.capacityTitle')}</Caption1>
-          {capacityState.status === 'ready' ? (
-            <Badge
-              appearance="tint"
-              color={capacityState.summary.provenance === 'live' ? 'success' : 'warning'}
-            >
-              {provenanceLabel(t, capacityState.summary.provenance)}
-            </Badge>
-          ) : null}
-        </div>
-
-        {capacityState.status === 'loading' ? (
-          <div className={stateStyles.loadingState}>
-            <Text>{t('start.frontier.hero.capacityLoading')}</Text>
-          </div>
-        ) : null}
-
-        {capacityState.status === 'error' ? (
-          <div className={stateStyles.errorState}>
-            <Text weight="semibold">{t('start.frontier.hero.capacityErrorTitle')}</Text>
-            <Body1>{capacityState.error.message}</Body1>
-          </div>
-        ) : null}
-
-        {capacityState.status === 'ready' ? (
-          <>
-            <div className={styles.squeezeBig}>
-              <Text>{t('start.capacityTeaser.peakWard', { ward: capacityState.summary.peakWard, pct: capacityState.summary.peakPct })}</Text>
-              <Title1 as="span" className={styles.squeezePeak}>
-                {capacityState.summary.peakPct}%
-              </Title1>
-            </div>
-            <Body1>
-              {capacityState.summary.siteGapBeds < 0
-                ? t('start.capacityTeaser.siteGapDeficit', { beds: Math.abs(capacityState.summary.siteGapBeds) })
-                : t('start.capacityTeaser.siteGapSurplus', { beds: capacityState.summary.siteGapBeds })}
-            </Body1>
-            <div className={styles.squeezeMeta}>
-              <Caption1>{t('start.capacityTeaser.breachEta', { hours: capacityState.summary.breachEtaHours })}</Caption1>
-              <Caption1>{t('start.capacityTeaser.firstSurfacedBy', { agent: capacityState.summary.firstSurfacedBy })}</Caption1>
-              <Caption1>{t('start.capacityTeaser.asOf', { time: formatAsOf(capacityState.summary.asOf) })}</Caption1>
-            </div>
-          </>
-        ) : null}
-      </aside>
+      <div className={styles.ctas}>
+        <Button appearance="primary" onClick={() => scrollToSection('challenger')}>
+          {t('start.frontier.hero.ctaPrimary')}
+        </Button>
+        <Button appearance="secondary" onClick={() => scrollToSection('work-chart')}>
+          {t('start.frontier.hero.ctaHospitals')}
+        </Button>
+        <Button appearance="secondary" onClick={() => navigate('/backstage')}>
+          {t('start.frontier.hero.ctaBackstage')}
+        </Button>
+      </div>
     </div>
   );
 }

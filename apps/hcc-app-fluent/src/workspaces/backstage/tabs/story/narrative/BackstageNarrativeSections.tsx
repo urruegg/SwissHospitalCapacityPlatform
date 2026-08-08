@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useCopilotRail } from '../../../../../copilot-rail/rail-context';
 import type { GroundedReco } from '../../../../../copilot-rail/reco';
-import { SectionHeader } from '../../../../shared/narrative/SectionHeader';
+import { SectionHeader, type SectionTitlePart } from '../../../../shared/narrative/SectionHeader';
 
 // Sprint 36 intake (B2, B3, B5, B6) — Frontier-Firm Backstage narrative sections.
 
@@ -250,6 +250,16 @@ function reco(subject: string, read: string, levers: string[], citations: string
   };
 }
 
+function toTitleParts(title: string, accent?: string): SectionTitlePart[] | undefined {
+  if (!accent || !title.includes(accent)) return undefined;
+  const i = title.indexOf(accent);
+  return [
+    { text: title.slice(0, i) },
+    { text: accent, tone: 'accent' as const },
+    { text: title.slice(i + accent.length) },
+  ].filter((part) => part.text.length > 0);
+}
+
 const SF_PRINCIPLES = [
   { n: 1, accent: '#17B890', title: 'Organize around outcomes, not roles', body: 'Every sprint is one tracker issue, small vertical slices, squash PRs. GitHub is the single control plane.' },
   { n: 2, accent: '#1FA9D6', title: 'Human-agent teams', body: 'Agents open, update and green pull requests in parallel worktrees; a human merges every PR, agents never self-merge.' },
@@ -268,6 +278,11 @@ export function SuccessFrameworkSection() {
   const s = useStyles();
   const { t } = useTranslation();
   const rail = useRail();
+  const header = t('backstage.story.narrative.success.header', '\u201cWe have organized our own transformation against the Success Framework.\u201d');
+  const titleParts = toTitleParts(
+    header,
+    t('backstage.story.narrative.success.accent', 'Success Framework'),
+  );
   const ask = () =>
     rail?.openWithReco(
       { id: 'backstage-success-framework', label: 'Success Framework', context: { source: 'backstage-narrative', topic: 'success-framework' } },
@@ -284,7 +299,7 @@ export function SuccessFrameworkSection() {
       <SectionHeader
         id="success-framework"
         variant="eyebrow"
-        header={t('backstage.story.narrative.success.header', '\u201cWe have organized our own transformation against the Success Framework.\u201d')}
+        {...(titleParts ? { titleParts } : { header })}
         tagline={t('backstage.story.narrative.success.tagline', 'Backstage \u00b7 Frontier Firm')}
         description={t('backstage.story.narrative.success.description', 'Curavias was built the way we ask hospitals to work: one human orchestrating a team of agents. The whole platform, spanning 29 sprints of requirements, architecture, code, infrastructure and compliance evidence, was delivered by a single person acting as an agent boss, with GitHub and Foundry agents doing the build.')}
       />
@@ -321,6 +336,11 @@ export function DevSecOpsLoopSection() {
   const s = useStyles();
   const { t } = useTranslation();
   const rail = useRail();
+  const header = t('backstage.story.narrative.devsecops.header', 'How the product is built and shipped');
+  const titleParts = toTitleParts(
+    header,
+    t('backstage.story.narrative.devsecops.accent', 'built and shipped'),
+  );
   const ask = () =>
     rail?.openWithReco(
       { id: 'backstage-devsecops', label: 'DevSecOps loop', context: { source: 'backstage-narrative', topic: 'devsecops' } },
@@ -337,7 +357,7 @@ export function DevSecOpsLoopSection() {
       <SectionHeader
         id="devsecops-loop"
         variant="eyebrow"
-        header={t('backstage.story.narrative.devsecops.header', 'How the product is built and shipped')}
+        {...(titleParts ? { titleParts } : { header })}
         tagline={t('backstage.story.narrative.devsecops.tagline', 'Backstage \u00b7 The Product Team (DevSecOps)')}
         description={t('backstage.story.narrative.devsecops.description', 'The DevSecOps team runs a governed DevOps loop. Superpowers turn an idea into a spec; security and compliance gates guard every change; a Human-in-the-Loop gate (PR + Issue) sits at the centre; delivery flows DEV to SIT to PROD behind an approval gate, all on a GitHub and Copilot foundation.')}
       />
@@ -447,6 +467,11 @@ export function ReviewSessionsSection() {
   const s = useStyles();
   const { t } = useTranslation();
   const rail = useRail();
+  const header = t('backstage.story.narrative.reviews.header', 'Pressure-tested with real people, in real review sessions');
+  const titleParts = toTitleParts(
+    header,
+    t('backstage.story.narrative.reviews.accent', 'real people'),
+  );
   const ask = (subject: string, topic: string) => () =>
     rail?.openWithReco(
       { id: `backstage-review-${topic}`, label: subject, context: { source: 'backstage-narrative', topic: `review-${topic}` } },
@@ -463,7 +488,7 @@ export function ReviewSessionsSection() {
       <SectionHeader
         id="review-sessions"
         variant="eyebrow"
-        header={t('backstage.story.narrative.reviews.header', 'Pressure-tested with real people, in real review sessions')}
+        {...(titleParts ? { titleParts } : { header })}
         tagline={t('backstage.story.narrative.reviews.tagline', 'Backstage \u00b7 this was a real exercise')}
         description={t('backstage.story.narrative.reviews.description', 'Curavias was challenged across a documented series of expert reviews and a named hospital field interview, each producing governance evidence.')}
       />
@@ -538,6 +563,11 @@ export function PoKnowledgeClassesSection() {
   const s = useStyles();
   const { t } = useTranslation();
   const rail = useRail();
+  const header = t('backstage.story.narrative.poClasses.header', 'The Product Owner Agent handles the hard questions');
+  const titleParts = toTitleParts(
+    header,
+    t('backstage.story.narrative.poClasses.accent', 'hard questions'),
+  );
   const ask = () =>
     rail?.openWithReco(
       { id: 'backstage-po-classes', label: 'Product Owner Agent knowledge', context: { source: 'backstage-narrative', topic: 'po-classes' } },
@@ -554,7 +584,7 @@ export function PoKnowledgeClassesSection() {
       <SectionHeader
         id="po-classes"
         variant="eyebrow"
-        header={t('backstage.story.narrative.poClasses.header', 'The Product Owner Agent handles the hard questions')}
+        {...(titleParts ? { titleParts } : { header })}
         tagline={t('backstage.story.narrative.poClasses.tagline', 'Backstage \u00b7 answers on demand')}
         description={t('backstage.story.narrative.poClasses.description', 'Embedded as a Copilot rail on the Start and Backstage surfaces, the PO Agent answers grounded on four knowledge classes, with mandatory citations, in German and English, advisory-only, and it never mutates a system.')}
       />
