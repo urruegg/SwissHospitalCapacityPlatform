@@ -273,6 +273,10 @@ param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:914d470'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
+// Sprint 42 — runtime po-agent-service URL (per-env), injected into
+// window.__ENV__.PO_AGENT_URL so the product-owner-agent chat rail calls the
+// real dedicated service instead of falling through to the (unaware) agent-host.
+param appFluentPoAgentUrl = 'https://ca-po-ihzhhpf-sit.whitesmoke-66ac2850.westus2.azurecontainerapps.io'
 // #424 M2 — golden-source URL. Left unset so the module auto-derives
 // `${appFluentAgentHostUrl}/golden` (Option 1: the agent-host serves the RLS-scoped
 // golden surface). Set explicitly only for a future divergent (Fabric-backed) source.

@@ -313,6 +313,9 @@ param appFluentImage string = 'nginxinc/nginx-unprivileged:1.27-alpine'
 @description('#447 — Foundry agent-host base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.AGENT_HOST_URL). Set per-env to the environment-local agent-host FQDN (SIT vs PROD) so the app calls its own region\'s agent-host. Empty keeps the built-in mock. Replaces the former build-time VITE_AGENT_HOST_URL bake so one image is env-agnostic.')
 param appFluentAgentHostUrl string = ''
 
+@description('Sprint 42 — dedicated Product Owner Agent (po-agent-service) base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.PO_AGENT_URL). Without this, the product-owner-agent chat rail falls through to the shared agent-host, which does not register that agent id and 404s. Empty keeps the built-in deterministic mock.')
+param appFluentPoAgentUrl string = ''
+
 @description('#424 M2 — golden-source base URL injected into the hcc-app-fluent at container start (runtime window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <url>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host.')
 param appFluentGoldenSourceUrl string = ''
 
@@ -795,6 +798,8 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', platformFoundation.outputs.logAnalyticsWorkspaceName)
     // #447 runtime agent-host URL (per-env), injected into window.__ENV__ at container start.
     agentHostUrl: appFluentAgentHostUrl
+    // Sprint 42 runtime po-agent-service URL (per-env), injected into window.__ENV__ at container start.
+    poAgentUrl: appFluentPoAgentUrl
     // #424 M2 golden-source URL (per-env); empty auto-derives `${agentHostUrl}/golden`.
     goldenSourceUrl: appFluentGoldenSourceUrl
     // #424 M3 live per-agent thread minting gate (native provider until M5/OBO).

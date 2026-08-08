@@ -40,6 +40,9 @@ param targetPort int = 8080
 @description('#447 — Foundry agent-host base URL injected into the app at container start (window.__ENV__.AGENT_HOST_URL). Per-env value (SIT vs PROD agent-host FQDN); empty keeps the built-in mock. Runtime injection replaces the former build-time VITE_AGENT_HOST_URL bake so a single image is env-agnostic.')
 param agentHostUrl string = ''
 
+@description('Sprint 42 — dedicated Product Owner Agent (po-agent-service) base URL injected at container start (window.__ENV__.PO_AGENT_URL). Without this, invokeAgent falls through to the shared agent-host for the product-owner-agent id, which does not register that agent and 404s. Empty keeps the built-in deterministic mock (agent-manifest.ts).')
+param poAgentUrl string = ''
+
 @description('#424 M2 — golden-source base URL injected into the app at container start (window.__ENV__.GOLDEN_SOURCE_URL). The app reads live board payloads from GET <goldenSourceUrl>/{resource}. Leave empty to auto-derive the agent-host URL suffixed with /golden (Option 1: the agent-host serves the RLS-scoped golden surface); set explicitly only when the golden source diverges from the agent-host (e.g. a future Fabric-backed endpoint). Empty + empty agentHostUrl keeps the built-in mock.')
 param goldenSourceUrl string = ''
 
@@ -210,6 +213,10 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'AGENT_HOST_URL'
               value: agentHostUrl
+            }
+            {
+              name: 'PO_AGENT_URL'
+              value: poAgentUrl
             }
             {
               // #424 M2 — auto-derive from the agent-host FQDN (Option 1) unless
