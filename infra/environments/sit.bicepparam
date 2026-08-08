@@ -210,7 +210,11 @@ param enableCsaCosmosModule = true
 // invalid_payload), and tool_choice defaults to "auto" so the model can
 // return a function_call (the agent's unrelated decision_tier_coordination_*
 // tool) instead of a text answer. approved-to-apply by @urruegg.
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:e2fed1f'
+// Sprint 43 WS-2 (2026-08-08): bumped e2fed1f -> 16d5345 - ships
+// FabricDeltaClient (replaces FabricAdapter's hardcoded 3-row dict with
+// real OneLake Gold table reads for bmca/dca/ooa/orsa/sba-agent).
+// approved-to-apply by @urruegg.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:16d5345'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
