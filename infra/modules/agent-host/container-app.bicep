@@ -44,6 +44,28 @@ param rlsProvider string = 'simulated'
 @description('#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity with M4). `true` requires a valid caller bearer on the golden read and exchanges it downstream. See ADR-0057. Config, not code.')
 param oboEnabled bool = false
 
+@description('Sprint 43 WS-6 — tenant ID for the OBO On-Behalf-Of exchange (agent-host confidential client).')
+param oboTenantId string = ''
+
+@description('Sprint 43 WS-6 — client ID of the hcc-agent-host app registration used for the OBO exchange.')
+param oboClientId string = ''
+
+@description('Sprint 43 WS-6 — Key Vault secret URI for the agent-host app registration client secret.')
+@secure()
+param oboClientSecret string = ''
+
+@description('Sprint 43 WS-6 — JWKS URL used to validate the caller bearer (tenant discovery keys endpoint).')
+param oboJwksUrl string = ''
+
+@description('Sprint 43 WS-6 — expected audience on the caller bearer token (api://<agent-host-app-id>).')
+param oboAudience string = ''
+
+@description('Sprint 43 WS-6 — expected issuer on the caller bearer token.')
+param oboIssuer string = ''
+
+@description('Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead.')
+param oboFabricScope string = 'https://storage.azure.com/.default'
+
 @description('Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope).')
 param redisHostName string = ''
 
@@ -127,6 +149,34 @@ var baseEnv = [
     name: 'OBO_ENABLED'
     value: oboEnabled ? 'true' : 'false'
   }
+  {
+    name: 'OBO_TENANT_ID'
+    value: oboTenantId
+  }
+  {
+    name: 'OBO_CLIENT_ID'
+    value: oboClientId
+  }
+  {
+    name: 'OBO_CLIENT_SECRET'
+    secretRef: 'obo-client-secret'
+  }
+  {
+    name: 'OBO_JWKS_URL'
+    value: oboJwksUrl
+  }
+  {
+    name: 'OBO_AUDIENCE'
+    value: oboAudience
+  }
+  {
+    name: 'OBO_ISSUER'
+    value: oboIssuer
+  }
+  {
+    name: 'OBO_FABRIC_SCOPE'
+    value: oboFabricScope
+  }
 ]
 
 var redisEnv = empty(redisHostName) ? [] : [
@@ -203,6 +253,14 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
   properties: {
     managedEnvironmentId: managedEnvironment.id
     configuration: {
+      // Sprint 43 WS-6 — OBO client secret, referenced by the container env
+      // entry below via secretRef (never a plain env var value).
+      secrets: [
+        {
+          name: 'obo-client-secret'
+          value: oboClientSecret
+        }
+      ]
       ingress: {
         external: true
         targetPort: targetPort

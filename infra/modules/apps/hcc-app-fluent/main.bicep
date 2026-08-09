@@ -64,6 +64,9 @@ param appEnv string = ''
 @description('Sprint A — home hospital (usz|luks|zollikerberg|aggregated) injected as window.__ENV__.APP_HOME_HOSPITAL; used for own-site role scope when the ID token omits the hospital claim.')
 param homeHospital string = ''
 
+@description('Sprint 43 WS-6 — the agent-host API scope the SPA requests via MSAL for OBO-forwarded chat grounding (window.__ENV__.AGENT_HOST_SCOPE). Empty (default) keeps the app on OIDC-only sign-in (no Authorization header forwarded).')
+param agentHostScope string = ''
+
 @description('Public custom hostname for the CA ingress (e.g. appsit.curavias.ch, app.curavias.ch). Empty string leaves the CA on its default *.azurecontainerapps.io hostname. See ADR-0030.')
 param customHostname string = ''
 
@@ -249,6 +252,11 @@ resource appFluent 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'APP_HOME_HOSPITAL'
               value: homeHospital
+            }
+            {
+              // Sprint 43 WS-6 — OBO-forwarded chat grounding scope (empty keeps OIDC-only sign-in).
+              name: 'AGENT_HOST_SCOPE'
+              value: agentHostScope
             }
           ]
         }

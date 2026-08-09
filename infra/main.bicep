@@ -312,6 +312,28 @@ param agentHostRlsProvider string = 'simulated'
 @description('#424 M5 — enable the on-behalf-of (OBO) ingress seam on the agent-host golden read. `false` (default) keeps SIT on the simulated/native path (byte-parity with M4). `true` requires a valid caller bearer and exchanges it for a downstream Fabric token; go-live additionally needs OBO_TENANT_ID/CLIENT_ID/CLIENT_SECRET, RLS_PROVIDER=fabric-data-agent, THREAD_PROVIDER=foundry, and #510 (dynamic-RLS TMDL) per ADR-0057. Config, not code.')
 param agentHostOboEnabled bool = false
 
+@description('Sprint 43 WS-6 — tenant ID for the OBO On-Behalf-Of exchange (agent-host confidential client).')
+param agentHostOboTenantId string = ''
+
+@description('Sprint 43 WS-6 — client ID of the hcc-agent-host app registration used for the OBO exchange.')
+param agentHostOboClientId string = ''
+
+@description('Sprint 43 WS-6 — Key Vault secret URI for the agent-host app registration client secret.')
+@secure()
+param agentHostOboClientSecret string = ''
+
+@description('Sprint 43 WS-6 — JWKS URL used to validate the caller bearer (tenant discovery keys endpoint).')
+param agentHostOboJwksUrl string = ''
+
+@description('Sprint 43 WS-6 — expected audience on the caller bearer token (api://<agent-host-app-id>).')
+param agentHostOboAudience string = ''
+
+@description('Sprint 43 WS-6 — expected issuer on the caller bearer token.')
+param agentHostOboIssuer string = ''
+
+@description('Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead.')
+param agentHostOboFabricScope string = 'https://storage.azure.com/.default'
+
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
 @description('Enable the Sprint 13 hcc-app-fluent Container App module.')
 param enableAppFluentModule bool = false
@@ -345,6 +367,9 @@ param appFluentAppEnv string = ''
 
 @description('Sprint A — home hospital for the hcc-app-fluent (window.__ENV__.APP_HOME_HOSPITAL); own-site role scope when the token omits the hospital claim.')
 param appFluentHomeHospital string = ''
+
+@description('Sprint 43 WS-6 — the agent-host API scope the SPA requests via MSAL for OBO-forwarded chat grounding (window.__ENV__.AGENT_HOST_SCOPE). Empty (default) keeps the app on OIDC-only sign-in (no Authorization header forwarded).')
+param appFluentAgentHostScope string = ''
 
 // Sprint 13.1 T-DNS — curavias.ch public custom hostname for the Fluent app (ADR-0030).
 @description('Public custom hostname for the hcc-app-fluent CA ingress. Empty string keeps the CA on its default *.azurecontainerapps.io hostname. Set to appsit.curavias.ch in SIT and app.curavias.ch in PROD per ADR-0030.')
@@ -722,6 +747,13 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     fabricLakehouseId: fabricLakehouseId
     rlsProvider: agentHostRlsProvider
     oboEnabled: agentHostOboEnabled
+    oboTenantId: agentHostOboTenantId
+    oboClientId: agentHostOboClientId
+    oboClientSecret: agentHostOboClientSecret
+    oboJwksUrl: agentHostOboJwksUrl
+    oboAudience: agentHostOboAudience
+    oboIssuer: agentHostOboIssuer
+    oboFabricScope: agentHostOboFabricScope
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId
@@ -822,6 +854,8 @@ module appFluent './modules/apps/hcc-app-fluent/main.bicep' = if (enableAppFluen
     msalRedirectUri: appFluentMsalRedirectUri
     appEnv: appFluentAppEnv
     homeHospital: appFluentHomeHospital
+    // Sprint 43 WS-6 — OBO-forwarded chat grounding scope.
+    agentHostScope: appFluentAgentHostScope
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

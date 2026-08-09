@@ -267,6 +267,33 @@ param foundryProjectName = 'ai-ihzhhpf-sit-eastus2-project'
 // GET /v1/workspaces/{id}/roleAssignments 2026-08-08) — no new grant needed.
 param fabricLakehouseId = '30594c20-46ba-40ea-91fa-4701b105e0b9'
 
+// Sprint 43 WS-6 — flips on the OBO seam for chat-grounding only (board-data
+// RLS stays simulated per WS-3's re-scoping). Self-service Entra provisioning
+// (app registration b7608e39-e23a-4576-8489-e092ba5f726b, tenant
+// 1337187a-4c41-4da9-8fca-731bba7a4329), validated live 2026-08-09 — no
+// Fabric/Power BI/Global Administrator involved. See
+// docs/superpowers/specs/2026-08-09-obo-self-service-fabric-grounding-design.md §4.1.
+//
+// *** STAGED — NOT YET DEPLOYABLE. DO NOT RUN `az deployment ... create` OR
+// `azd up` AGAINST THIS FILE UNTIL agentHostOboClientSecret BELOW IS A REAL
+// KEY VAULT REFERENCE. *** Task 4 Step 4 (create the
+// `agent-host-obo-client-secret` secret in the SIT Key Vault) has NOT been
+// executed yet — it requires a network path that can reach the
+// private-endpoint-only SIT Key Vault, which this session does not have.
+// Deploying with the placeholder value below would start the agent-host
+// container with an invalid OBO client secret and every OBO token exchange
+// would fail. Once the secret exists, replace the placeholder with the real
+// Key Vault reference, get an `approved-to-apply` comment per AGENTS.md §4,
+// and only then redeploy.
+param agentHostOboEnabled = true
+param agentHostOboTenantId = '1337187a-4c41-4da9-8fca-731bba7a4329'
+param agentHostOboClientId = 'b7608e39-e23a-4576-8489-e092ba5f726b'
+param agentHostOboClientSecret = '<Key Vault reference to agent-host-obo-client-secret, generated in Task 4 Step 4 — match this file\'s existing secret-reference pattern>'
+param agentHostOboJwksUrl = 'https://login.microsoftonline.com/1337187a-4c41-4da9-8fca-731bba7a4329/discovery/v2.0/keys'
+param agentHostOboAudience = 'api://b7608e39-e23a-4576-8489-e092ba5f726b'
+param agentHostOboIssuer = 'https://login.microsoftonline.com/1337187a-4c41-4da9-8fca-731bba7a4329/v2.0'
+param agentHostOboFabricScope = 'https://storage.azure.com/.default'
+
 // Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image tag is bumped as a deliberate manual review step after
@@ -329,6 +356,13 @@ param appFluentMsalTenantId = '1337187a-4c41-4da9-8fca-731bba7a4329'
 param appFluentMsalRedirectUri = 'https://appsit.curavias.ch'
 param appFluentAppEnv = 'sit'
 param appFluentHomeHospital = 'usz'
+
+// Sprint 43 WS-6 — the agent-host API scope the SPA requests via MSAL for
+// OBO-forwarded chat grounding (window.__ENV__.AGENT_HOST_SCOPE). Matches the
+// hcc-agent-host app registration's exposed scope (Task 4). This value alone
+// is harmless without a signed-in MSAL session; it only takes effect once
+// the frontend (Task 6) actually requests and forwards the token.
+param appFluentAgentHostScope = 'api://b7608e39-e23a-4576-8489-e092ba5f726b/access_as_user'
 
 // Sprint 13.1 T-DNS (ADR-0030) — public custom hostname on curavias.ch.
 // Deploy sequence:

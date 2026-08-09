@@ -40,6 +40,28 @@ param rlsProvider string = 'simulated'
 @description('#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity). See ADR-0057. Config, not code.')
 param oboEnabled bool = false
 
+@description('Sprint 43 WS-6 — tenant ID for the OBO On-Behalf-Of exchange (agent-host confidential client).')
+param oboTenantId string = ''
+
+@description('Sprint 43 WS-6 — client ID of the hcc-agent-host app registration used for the OBO exchange.')
+param oboClientId string = ''
+
+@description('Sprint 43 WS-6 — Key Vault secret URI for the agent-host app registration client secret.')
+@secure()
+param oboClientSecret string = ''
+
+@description('Sprint 43 WS-6 — JWKS URL used to validate the caller bearer (tenant discovery keys endpoint).')
+param oboJwksUrl string = ''
+
+@description('Sprint 43 WS-6 — expected audience on the caller bearer token (api://<agent-host-app-id>).')
+param oboAudience string = ''
+
+@description('Sprint 43 WS-6 — expected issuer on the caller bearer token.')
+param oboIssuer string = ''
+
+@description('Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead.')
+param oboFabricScope string = 'https://storage.azure.com/.default'
+
 @description('Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable Entra-MI-based pull once real images land in ACR.')
 param containerRegistryLoginServer string = ''
 
@@ -119,6 +141,13 @@ module containerApp 'container-app.bicep' = {
     fabricLakehouseId: fabricLakehouseId
     rlsProvider: rlsProvider
     oboEnabled: oboEnabled
+    oboTenantId: oboTenantId
+    oboClientId: oboClientId
+    oboClientSecret: oboClientSecret
+    oboJwksUrl: oboJwksUrl
+    oboAudience: oboAudience
+    oboIssuer: oboIssuer
+    oboFabricScope: oboFabricScope
     redisHostName: enableRedisModule ? redis!.outputs.redisHostName : ''
     redisPort: enableRedisModule ? redis!.outputs.redisPort : 0
     containerRegistryLoginServer: containerRegistryLoginServer
