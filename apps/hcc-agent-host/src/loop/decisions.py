@@ -13,6 +13,7 @@ from closedloop.sim_state import SimState
 from coordination import plan_runtime
 from coordination.store import InMemoryStore
 
+from .role_levers import ROLE_LEVERS
 from .ward_scope import require_single_ward, ward_of
 
 _NOW = "1970-01-01T00:00:00Z"
@@ -88,6 +89,34 @@ def decide(
     # Single-ward MVP (see loop/ward_scope) + validate any caller-supplied ward so
     # an unknown ward is a 400, never an unhandled KeyError 500 at the mutation.
     require_single_ward(sim)
+
+    lever = ROLE_LEVERS.get(role)
+    if lever is not None and not lever.has_effect:
+        # ooa/bmca: real, catalog-grounded math (Sprint 26 WS-B), but no
+        # `effect:` mapping exists yet -- a real, tracked decision on a real
+        # number, honestly never applied to SimState.
+        if plan_runtime._is_bot_approver(approver):
+            raise PermissionError(f"bot approver refused: {approver!r}")
+        ward = params.get("ward") or ward_of(sim)
+        if ward not in sim.wards:
+            raise ValueError(f"unknown ward {ward!r}")
+        if provenance is None:
+            provenance = _provenance_of(state, sim)
+        from .worklist import build_worklist  # reuse the same grounded math
+
+        reco = build_worklist(role, sim, provenance=provenance)["recommendation"]
+        plan_id = f"plan-decide-{sim.hospital_id}-{role}"
+        return {
+            "contract": "DC-SIM-OUTCOME-v1", "cosmos_id": None, "plan_id": plan_id,
+            "golden_thread": f"gt-{plan_id}", "lever_id": lever.lever_id, "applied_ts": _NOW,
+            "predicted_impact": reco["predicted_impact"],
+            "realised_impact": {"metric": reco["predicted_impact"]["metric"], "value": 0},
+            "state_delta": {"beds_freed": [], "patients_discharged": [], "patients_promoted": []},
+            "divergence": 0.0, "provenance": provenance, "applied": False,
+            "applyReason": "actuation_not_modeled_for_lever",
+            "branch": decision, "decision": decision, "approver": approver,
+        }
+
     barrier_type = params.get("barrier_type", _BARRIER_TYPE)
     ward = params.get("ward") or ward_of(sim)
     if ward not in sim.wards:

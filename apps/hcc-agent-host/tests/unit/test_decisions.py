@@ -74,3 +74,27 @@ def test_accept_with_no_open_barriers_is_a_safe_noop():
     out = decide("dca", "accept", approver="clinician@usz.ch", state=None, sim=sim, params={})
     assert out["realised_impact"]["value"] == 0
     assert out["applied"] is False
+
+
+def test_ooa_decide_accept_is_tracked_but_not_applied():
+    sim = seed_sim_state_from_gold(_GOLD)
+    out = decide("ooa", "accept", approver="clinician@usz.ch", state=None, sim=sim, params={})
+    assert out["lever_id"] == "OOA-EXPEDITE-DISCHARGE"
+    assert out["applied"] is False
+    assert out["decision"] == "accept"
+    assert out["approver"] == "clinician@usz.ch"
+    assert out["applyReason"] == "actuation_not_modeled_for_lever"
+
+
+def test_bmca_decide_deny_is_tracked_but_not_applied():
+    sim = seed_sim_state_from_gold(_GOLD)
+    out = decide("bmca", "deny", approver="clinician@usz.ch", state=None, sim=sim, params={})
+    assert out["lever_id"] == "BMCA-REBALANCE-CENSUS"
+    assert out["applied"] is False
+    assert out["decision"] == "deny"
+
+
+def test_ooa_decide_bot_approver_still_refused():
+    sim = seed_sim_state_from_gold(_GOLD)
+    with pytest.raises(PermissionError):
+        decide("ooa", "accept", approver="dependabot[bot]", state=None, sim=sim, params={})

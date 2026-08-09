@@ -97,3 +97,26 @@ def test_dca_worklist_no_fabric_means_no_live_citations_key_change():
     state = _seeded_state()
     wl = build_worklist("dca", state, provenance="simulated")
     assert wl["recommendation"]["liveGroundingCitations"] == []
+
+
+def test_ooa_worklist_uses_real_formula_registry():
+    state = _seeded_state()
+    wl = build_worklist("ooa", state, provenance="simulated")
+    assert wl["recommendation"]["lever_id"] == "OOA-EXPEDITE-DISCHARGE"
+    assert wl["recommendation"]["predicted_impact"]["value"] >= 0
+    assert wl["recommendation"]["params"]["before"] == "end-of-shift"
+
+
+def test_bmca_worklist_uses_real_formula_registry():
+    state = _seeded_state()
+    wl = build_worklist("bmca", state, provenance="simulated")
+    assert wl["recommendation"]["lever_id"] == "BMCA-REBALANCE-CENSUS"
+    assert wl["recommendation"]["params"]["to_ward"] == "Medicine B"
+
+
+def test_orsa_and_sba_worklist_are_unchanged_placeholder():
+    state = _seeded_state()
+    for role in ("orsa", "sba"):
+        wl = build_worklist(role, state, provenance="simulated")
+        assert wl["recommendation"]["lever_id"] is None
+        assert "pending" in wl["recommendation"]["insight_text"]

@@ -10,6 +10,7 @@ from typing import Any, Dict
 from closedloop.sim_state import SimState, Stage
 from impact.compute_expected_impact import compute_expected_impact
 
+from .role_levers import ASSUMED_EXPEDITE_DEADLINE, ASSUMED_SISTER_WARD, ROLE_LEVERS
 from .ward_scope import require_single_ward, ward_of
 
 _CATALOG = [{"lever_id": "DCA-UNBLOCK-BARRIER", "owner_role": "dca", "impact_formula_ref": "unblock_barrier_beds"}]
@@ -72,6 +73,77 @@ def build_worklist(
             "citations": _CITATIONS,
             "liveGroundingCitations": live_citations,
         }
+        return {"role": role, "ward": ward, "observations": observations,
+                "recommendation": recommendation, "provenance": provenance}
+    if role == "ooa":
+        ready = sorted(p.patient_id for p in state.patients_in_stage(Stage.DISCHARGE_READY))
+        observations = [
+            {"patient": p, "ward": ward, "readiness": "READY", "provenance": provenance}
+            for p in ready
+        ]
+        n = len(ready)
+        lever_id = ROLE_LEVERS["ooa"].lever_id
+        live_citations = _live_citations(fabric, _CITATIONS[0])
+        if n == 0:
+            recommendation = {
+                "lever_id": lever_id,
+                "params": {"n": 0, "before": ASSUMED_EXPEDITE_DEADLINE, "ward": ward},
+                "predicted_impact": {"metric": "beds", "value": 0},
+                "insight_text": f"No discharge-ready patients on {ward} to expedite",
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
+        else:
+            gold_impact = {"forecast": [{"wardId": ward, "horizonH": 72,
+                                         "bedCapacity": state.ward(ward).staffed_capacity,
+                                         "forecastOccupiedBeds": state.occupancy(ward)}]}
+            params = {"n": n, "before": ASSUMED_EXPEDITE_DEADLINE, "ward": ward}
+            impact = compute_expected_impact(lever_id, params, gold_impact)
+            recommendation = {
+                "lever_id": lever_id, "params": params,
+                "predicted_impact": {"metric": impact["metric"], "value": impact["delta"]},
+                "insight_text": (
+                    f"Expedite {n} discharge-ready patients on {ward} before "
+                    f"{ASSUMED_EXPEDITE_DEADLINE} to free {impact['delta']} beds"
+                ),
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
+        return {"role": role, "ward": ward, "observations": observations,
+                "recommendation": recommendation, "provenance": provenance}
+    if role == "bmca":
+        capacity = state.ward(ward).staffed_capacity
+        occupied = state.occupancy(ward)
+        threshold_beds = round(capacity * 0.90)
+        n = max(0, occupied - threshold_beds)
+        observations = [{
+            "ward": ward, "occupied": occupied, "capacity": capacity,
+            "occupancy_pct": round(100 * occupied / capacity) if capacity else 0,
+            "provenance": provenance,
+        }]
+        lever_id = ROLE_LEVERS["bmca"].lever_id
+        live_citations = _live_citations(fabric, _CITATIONS[0])
+        if n == 0:
+            recommendation = {
+                "lever_id": lever_id,
+                "params": {"n": 0, "to_ward": ASSUMED_SISTER_WARD, "ward": ward},
+                "predicted_impact": {"metric": "beds", "value": 0},
+                "insight_text": f"{ward} is within its 90% target; no census rebalance needed",
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
+        else:
+            gold_impact = {"forecast": [{"wardId": ward, "horizonH": 72,
+                                         "bedCapacity": capacity,
+                                         "forecastOccupiedBeds": occupied}]}
+            params = {"n": n, "to_ward": ASSUMED_SISTER_WARD, "ward": ward}
+            impact = compute_expected_impact(lever_id, params, gold_impact)
+            recommendation = {
+                "lever_id": lever_id, "params": params,
+                "predicted_impact": {"metric": impact["metric"], "value": impact["delta"]},
+                "insight_text": (
+                    f"Transfer {n} patients from {ward} to {ASSUMED_SISTER_WARD} "
+                    f"to rebalance census (target 90%)"
+                ),
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
         return {"role": role, "ward": ward, "observations": observations,
                 "recommendation": recommendation, "provenance": provenance}
     # Non-DCA roles: observations + advisory placeholder (full effect is follow-on).
