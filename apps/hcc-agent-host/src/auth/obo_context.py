@@ -7,9 +7,12 @@ agent-host, so the M4 ``FabricDataAgentRlsProvider`` and M3 ``FoundryThreadProvi
 flip to per-user by **configuration** (``OBO_ENABLED`` + ``OBO_*``), not code
 (ADR-0057, M5 design spec §4.2).
 
-Deny-by-default: when OBO is enabled, a missing/invalid bearer or a failed
-exchange raises :class:`~auth.token_validator.TokenValidationError` (HTTP 401 at
-the endpoint) rather than silently downgrading to a wide read.
+Deny-by-default for anyone who actually attempts auth: when OBO is enabled, a
+bearer that IS presented but is invalid, or a failed exchange, raises
+:class:`~auth.token_validator.TokenValidationError` (HTTP 401 at the endpoint)
+rather than silently downgrading to a wide read. A request with no bearer at
+all is Demo-mode traffic (no sign-in attempted) and falls back to ``None``
+(unchanged simulated/native path), exactly like OBO being off.
 
 Decode + exchange are injectable so the flow is unit-tested without a live Entra
 tenant; the default decode performs real JWKS-backed validation (guarded import),
@@ -37,6 +40,8 @@ class OboContext:
 
     user_oid: str
     obo_token: str
+    roles: tuple[str, ...] = ()
+    hospital: str = "aggregated"
 
 
 def obo_enabled() -> bool:
@@ -92,17 +97,23 @@ def build_obo_context(
 ) -> OboContext | None:
     """Build an :class:`OboContext` from the ``Authorization`` header.
 
-    - OBO disabled → ``None`` (unchanged simulated/native path).
-    - OBO enabled + missing/empty bearer → raises (deny-by-default, 401).
-    - OBO enabled + bearer → decode, validate claims (aud/iss/exp/oid), exchange
-      on-behalf-of, return the context. Any failure raises.
+    - OBO disabled -> ``None`` (unchanged simulated/native path).
+    - OBO enabled + no bearer presented at all -> ``None``. This is Demo-mode
+      traffic (no sign-in was attempted), not a failed auth attempt, and must
+      not be refused just because the subsystem is configured.
+    - OBO enabled + a bearer WAS presented but is invalid -> raises
+      (deny-by-default: anyone who actually attempted auth gets a hard 401).
+    - OBO enabled + a valid bearer -> decode, validate claims (aud/iss/exp/oid/
+      roles/hospital), exchange on-behalf-of, return the context.
     """
     if not obo_enabled():
         return None
 
     token = _strip_bearer(authorization)
     if not token:
-        raise TokenValidationError("OBO enabled but no bearer token was presented")
+        # No bearer at all under OBO_ENABLED=true is Demo-mode/anonymous
+        # traffic, not an attempted-and-failed auth -- fall back, don't deny.
+        return None
 
     claims = (decode or _default_decode)(token)
     caller = validate_claims(
@@ -112,4 +123,9 @@ def build_obo_context(
     )
     scope = os.getenv("OBO_FABRIC_SCOPE", _DEFAULT_OBO_SCOPE)
     obo_token = (exchange or acquire_obo_token)(token, scope)
-    return OboContext(user_oid=caller.oid, obo_token=obo_token)
+    return OboContext(
+        user_oid=caller.oid,
+        obo_token=obo_token,
+        roles=caller.roles,
+        hospital=caller.hospital,
+    )

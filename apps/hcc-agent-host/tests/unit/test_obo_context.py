@@ -19,6 +19,7 @@ _CLAIMS = {
     "exp": 9_999_999_999,
     "oid": "user-oid-123",
     "hospital": "hospital-usz",
+    "roles": ["HCC.DischargeCoordinator", "HCC.BedManager"],
 }
 
 
@@ -57,16 +58,17 @@ def test_obo_enabled_builds_context(monkeypatch):
     assert seen["assertion"] == "raw-jwt"
 
 
-def test_obo_enabled_missing_bearer_denies(monkeypatch):
+def test_obo_enabled_missing_bearer_falls_back_to_none(monkeypatch):
+    # A missing/absent Authorization header under OBO_ENABLED=true is Demo-mode
+    # traffic (no sign-in attempted), not an attempted-and-failed auth. Falls
+    # back to the unchanged simulated/native path, exactly like OBO being off.
     _enabled(monkeypatch)
-    with pytest.raises(TokenValidationError):
-        build_obo_context("", decode=lambda t: dict(_CLAIMS), exchange=lambda a, s: "x")
+    assert build_obo_context("", decode=lambda t: dict(_CLAIMS), exchange=lambda a, s: "x") is None
 
 
-def test_obo_enabled_empty_after_scheme_denies(monkeypatch):
+def test_obo_enabled_empty_after_scheme_falls_back_to_none(monkeypatch):
     _enabled(monkeypatch)
-    with pytest.raises(TokenValidationError):
-        build_obo_context("Bearer   ", decode=lambda t: dict(_CLAIMS), exchange=lambda a, s: "x")
+    assert build_obo_context("Bearer   ", decode=lambda t: dict(_CLAIMS), exchange=lambda a, s: "x") is None
 
 
 def test_obo_enabled_bad_audience_denies(monkeypatch):
@@ -85,3 +87,14 @@ def test_obo_accepts_bare_token_without_scheme(monkeypatch):
     )
     assert ctx is not None
     assert ctx.obo_token == "obo-token-xyz"
+
+
+def test_obo_enabled_builds_context_with_roles_and_hospital(monkeypatch):
+    _enabled(monkeypatch)
+    ctx = build_obo_context(
+        "Bearer raw-jwt",
+        decode=lambda t: dict(_CLAIMS),
+        exchange=lambda a, s: "obo-token-xyz",
+    )
+    assert ctx.roles == ("HCC.DischargeCoordinator", "HCC.BedManager")
+    assert ctx.hospital == "hospital-usz"

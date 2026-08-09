@@ -36,3 +36,16 @@ def test_chat_with_obo_enabled_and_invalid_bearer_denies(monkeypatch):
         headers={"Authorization": "Bearer not-a-real-jwt"},
     )
     assert resp.status_code == 401
+
+
+def test_chat_obo_enabled_no_bearer_falls_back_to_unchanged(monkeypatch):
+    monkeypatch.setenv("OBO_ENABLED", "true")
+    monkeypatch.setenv("OBO_AUDIENCE", "api://agent-host")
+    monkeypatch.setenv("OBO_ISSUER", "https://sts.windows.net/tenant-abc/")
+    monkeypatch.setenv("OBO_JWKS_URL", "https://example.invalid/keys")
+    client = TestClient(create_app())
+    resp = client.post(
+        "/agents/bmca-agent/chat",
+        json={"prompt": "Station B ist fast voll", "conversationId": "c1"},
+    )
+    assert resp.status_code == 200

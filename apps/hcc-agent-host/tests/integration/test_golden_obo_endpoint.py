@@ -40,6 +40,17 @@ def test_obo_disabled_golden_parity(monkeypatch):
     assert resp.json()["_rls"]["provider"] == "simulated"
 
 
+def test_obo_enabled_no_bearer_falls_back_to_simulated(monkeypatch):
+    # Demo mode: OBO_ENABLED=true tenant-wide, but this caller never signed in
+    # (no Authorization header at all) -> unchanged simulated behavior, not 401.
+    monkeypatch.setenv("OBO_ENABLED", "true")
+    monkeypatch.setenv("OBO_AUDIENCE", "api://agent-host")
+    monkeypatch.setenv("OBO_ISSUER", "https://sts.windows.net/tenant-abc/")
+    resp = _client().get("/golden/network", headers=_SCOPED)
+    assert resp.status_code == 200
+    assert resp.json()["_rls"]["provider"] == "simulated"
+
+
 def test_obo_enabled_invalid_bearer_denies(monkeypatch):
     # OBO on + a bearer the seam rejects → 401 (deny-by-default), never served.
     def _reject(_authorization: str) -> None:
