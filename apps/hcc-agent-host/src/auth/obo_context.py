@@ -68,14 +68,20 @@ def _default_decode(token: str) -> dict[str, Any]:
         raise TokenValidationError(
             "OBO decode requires OBO_JWKS_URL, OBO_AUDIENCE and OBO_ISSUER"
         )
-    signing_key = PyJWKClient(jwks_url).get_signing_key_from_jwt(token).key
-    return jwt.decode(
-        token,
-        signing_key,
-        algorithms=["RS256"],
-        audience=audience,
-        issuer=issuer,
-    )
+    try:
+        signing_key = PyJWKClient(jwks_url).get_signing_key_from_jwt(token).key
+        return jwt.decode(
+            token,
+            signing_key,
+            algorithms=["RS256"],
+            audience=audience,
+            issuer=issuer,
+        )
+    except jwt.exceptions.PyJWTError as exc:
+        # Malformed token, JWKS lookup/connection failure, bad signature,
+        # expired/wrong aud-iss — all fold into the same deny-by-default 401,
+        # never an unhandled 500.
+        raise TokenValidationError(f"invalid bearer token: {exc}") from exc
 
 
 def build_obo_context(

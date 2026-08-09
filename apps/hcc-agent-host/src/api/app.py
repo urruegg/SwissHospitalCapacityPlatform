@@ -386,20 +386,37 @@ def create_app() -> FastAPI:
         return {"threadId": ref.thread_id, "provenance": ref.provenance}
 
     @app.post("/agents/{name}/chat")
-    def chat(name: str, req: ChatRequest, x_user_oid: str = Header(default="")) -> dict[str, Any]:
+    def chat(
+        name: str,
+        req: ChatRequest,
+        authorization: str = Header(default=""),
+        x_user_oid: str = Header(default=""),
+    ) -> dict[str, Any]:
         state = get_state()
         manifest = state.require(name)
         system_prompt = _system_prompt_for(manifest, state.agents_root)
         # #424 M3 — thread-scoped when a threadId is supplied; identity header
         # (OBO oid) overrides the demo caller default when present.
         conversation_id = req.threadId or req.conversationId
-        caller_oid = x_user_oid or req.callerObjectId
+        # Sprint 43 WS-6 — when OBO is enabled and a valid bearer is presented,
+        # grounding runs on-behalf-of the signed-in user (real Fabric reads,
+        # bypassing the service-principal restriction the startup managed
+        # identity hits); otherwise unchanged (OBO off is the SIT default).
+        # Deny-by-default: an invalid bearer under OBO is a 401, mirrored
+        # from the /golden read path.
+        try:
+            obo = build_obo_context(authorization)
+        except TokenValidationError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
+        caller_oid = (obo.user_oid if obo else x_user_oid) or req.callerObjectId
+        fabric_override = state.fabric_for(obo.obo_token) if obo else None
         reply = state.orchestrator.dispatch(
             manifest,
             system_prompt,
             req.prompt,
             conversation_id=conversation_id,
             caller_oid=caller_oid,
+            fabric_override=fabric_override,
         )
         return {
             "answer": reply.answer,
