@@ -864,6 +864,24 @@ git commit -m "feat(infra): wire OBO client config + VITE_AGENT_HOST_SCOPE for r
 
 ## Task 6: Frontend — request the new scope and forward the bearer token
 
+> **Status: already satisfied — no new production code needed.** Investigation
+> (2026-08-09) found this exact mechanism was already built under a prior
+> effort (`#424 M5`, ADR-0057), predating this plan:
+> `apps/hcc-app-fluent/src/data/iq-client.ts`'s `bearerHeader()` already reads
+> `AGENT_HOST_SCOPE` via `runtime-config.ts`'s `getAgentHostScope()` and calls
+> `msalInstance.acquireTokenSilent({ scopes: [scope], account })`; `iqAgentChat()`
+> (used by `invokeAgent`) already attaches the resulting `Authorization: Bearer`
+> header whenever a scope is configured. Task 5 (already committed) wires
+> `appFluentAgentHostScope` into `window.__ENV__.AGENT_HOST_SCOPE` on the SIT
+> container, which is exactly what this existing code reads. Adding a second,
+> parallel `getBearerToken` parameter to `invokeAgent` (the plan's original
+> Steps 4/6/7 below) would have duplicated/conflicted with this working
+> mechanism — do not do that. The only real gap found was test coverage (no
+> test exercised the positive path — a real token actually attached), closed
+> by `apps/hcc-app-fluent/tests/unit/agent-manifest-capture.test.ts`
+> (commit `d4005ebe`, local, unpushed). **Skip Steps 4, 6, and 7 below** —
+> kept here only for historical context on what was originally planned.
+
 **Files:**
 - Modify: `apps/hcc-app-fluent/src/auth/msal-provider.ts`
 - Modify: `apps/hcc-app-fluent/src/copilot-drawer/agent-manifest.ts`
