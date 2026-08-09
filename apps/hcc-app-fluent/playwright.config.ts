@@ -27,7 +27,10 @@ export default defineConfig({
       name: 'live',
       testDir: './tests/e2e-live',
       testMatch: ['**/*.spec.ts'],
-      timeout: 60_000,
+      // Sprint 43 WS-5 -- a live GPT-5 reply can take up to ~30s (measured:
+      // ooa-agent 22.8s via raw HTTP); 90s gives headroom over the 60s
+      // conversation-growth poll in helpers/live-agent.ts.
+      timeout: 90_000,
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'https://appsit.curavias.ch',
