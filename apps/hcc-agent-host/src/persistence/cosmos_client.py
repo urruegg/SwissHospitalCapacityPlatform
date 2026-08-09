@@ -103,7 +103,7 @@ class LiveCosmosPersistence:
             self._container_for(container).query_items(
                 query="SELECT * FROM c WHERE c.correlationId = @cid",
                 parameters=[{"name": "@cid", "value": correlation_id}],
-                enable_cross_partition_query=True,
+                partition_key=correlation_id,
             )
         )
 

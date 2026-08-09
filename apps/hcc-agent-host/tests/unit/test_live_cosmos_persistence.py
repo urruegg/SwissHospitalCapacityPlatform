@@ -23,7 +23,7 @@ class _FakeContainer:
     def read_all_items(self):
         return list(self.items)
 
-    def query_items(self, query, parameters, enable_cross_partition_query=True):
+    def query_items(self, query, parameters, enable_cross_partition_query=False, partition_key=None):
         # Minimal fake: only supports the two equality queries this module issues.
         field = "correlationId" if "correlationId" in query else "interactionId"
         value = parameters[0]["value"]

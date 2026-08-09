@@ -121,3 +121,26 @@ def test_decision_outcome_is_persisted_to_approval_events():
     records = state.persistence.query_by_correlation("approval-events", resp.json()["golden_thread"])
     assert len(records) == 1
     assert records[0]["decision"] == "deny"
+
+
+def test_decision_outcome_survives_persistence_write_failure(monkeypatch):
+    # Best-effort audit durability: a Cosmos write hiccup must never mask an
+    # already-applied decision as a client-visible error (Task 7 review follow-up).
+    client = _client()
+    state = get_state()
+
+    def _raise(*_args, **_kwargs):
+        raise RuntimeError("simulated Cosmos write failure")
+
+    monkeypatch.setattr(state.persistence, "write", _raise)
+
+    resp = client.post(
+        "/agents/dca/decisions",
+        json={"decision": "accept", "hospital": "USZ", "params": {}},
+        headers=_OID,
+    )
+    assert resp.status_code == 200
+    out = resp.json()
+    assert out["decision"] == "accept"
+    assert out["applied"] is True
+

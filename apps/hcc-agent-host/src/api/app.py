@@ -568,9 +568,19 @@ def create_app() -> FastAPI:
         except (ValueError, KeyError) as exc:
             # Unvalidated params (e.g. unknown ward) or a multi-ward snapshot -> 400.
             raise HTTPException(status_code=400, detail=str(exc))
-        state.persistence.write(
-            "approval-events", {**outcome, "correlationId": outcome["golden_thread"]}
-        )
+        try:
+            state.persistence.write(
+                "approval-events", {**outcome, "correlationId": outcome["golden_thread"]}
+            )
+        except Exception:
+            # Best-effort audit durability: the decision is already applied to
+            # the live SimState, so a Cosmos write hiccup must never mask a
+            # successful accept/deny as a client-visible error.
+            logger.warning(
+                "approval-events write failed for correlationId '%s'; decision was still applied",
+                outcome["golden_thread"],
+                exc_info=True,
+            )
         return outcome
 
     @app.get("/agents/{name}/evidence")
