@@ -1,9 +1,9 @@
 ---
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-09
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: n/a (initial brainstormed design)
+Previous Version: 1.0.0 (initial brainstormed design; added bmca real lever to scope, explicit Cosmos-as-agent-memory framing, and a new CSA/PO agent alignment section per user feedback)
 ---
 
 # OBO as the Preferred End-to-End Pattern: Context-Sensitive Boards + Role-Agent Decisions with a Tracked Audit Trail — Design
@@ -88,11 +88,16 @@ surface this design needs:
   client-side simulated switcher) drive which board and which role-agent
   recommendation the demo shows — "context sensitive" end to end, including
   on the **backend**, not just the frontend badge.
-- Let a demo user ask a role agent (starting with `dca-agent`, which already
-  has a real lever) for its actionable recommendation, see the golden-sourced
-  citations behind it, and **Accept** or **Deny** it.
+- Let a demo user ask a role agent (`dca-agent`, plus **`bmca-agent`** — see
+  the updated Non-goals below) for its actionable recommendation, see the
+  golden-sourced citations behind it, and **Accept** or **Deny** it. Two real
+  levers (not one) prove the accept/deny pattern generalizes across roles,
+  which is the actual thing end-to-end testing needs to validate.
 - Make that Accept/Deny decision produce a **durably persisted**, identity-
-  verified audit record — not just a well-shaped in-memory response.
+  verified audit record — not just a well-shaped in-memory response. This
+  reuses the same live Cosmos wiring (Task 5) that also durably persists
+  **every other agent-memory write** this app already makes (`conversations`,
+  `agent_interactions`, `audit`) — see §4 item 6's expanded framing.
 - Do all of this using **OBO as the standard, always-preferred auth pattern**
   for any authenticated ("User mode") request, while **Demo mode** (no
   sign-in) continues to work unchanged — fixing the actual bug that broke it
@@ -116,9 +121,15 @@ surface this design needs:
   **real, live-grounded citation** alongside the (still honestly-labeled
   simulated) recommendation math, rather than rewriting the engine. Flagged
   as a Phase 2 stretch, not core.
-- **The other 4 role agents' real levers** (`bmca`, `ooa`, `orsa`, `sba`) —
-  each returns an honest placeholder today; giving them real levers is
-  separate, larger, per-role work.
+- **`ooa`/`orsa`/`sba`'s real levers** — `SimState` (`apps/sim-capacity/src/closedloop/sim_state.py`)
+  has no OR-case or staffing/shift domain concept at all, so these three can't
+  reuse the existing `DischargeBarrier`/`Bed` effect shapes without either (a)
+  inventing a simplified lever on the existing `Patient`/`Bed`/`Ward` fields, or
+  (b) new domain modeling. Deferred pending a concrete per-role lever choice
+  (candidates to be drafted in a follow-up once §2 Goals' `bmca` addition is
+  live and the generalized pattern is proven). **`bmca` is now in scope** (see
+  §2 Goals) — its lever reuses an already-modeled-but-unused `Bed.state`
+  value (`blocked`), the same shape as DCA's barrier-clear.
 - **B2B guest onboarding** — already captured as its own deferred track in
   `docs/superpowers/ideas/2026-08-02-signin-followups-b2b-guest-and-obo-rls.md`.
 - **Custom `hospital` claim per user** — no per-user hospital custom claim is
@@ -173,13 +184,21 @@ step:
    honestly-labeled `liveGroundingCitations` alongside the existing
    simulated-engine `citations` — not a replacement for the deterministic
    math (see §3 non-goals), just real evidence sitting next to it.
-6. **Implement a live `CosmosPersistence`** and wire `/agents/{name}/decisions`
-   to write its outcome into the `approval-events` container. **Re-verified
+6. **Implement a live `CosmosPersistence`** — this is deliberately framed as
+   **Cosmos DB as Agent Memory**, not narrowly as "decisions audit trail":
+   `Orchestrator` uses **one** `persistence` instance for every write it
+   makes (`conversations`, `agent_interactions` — i.e. real chat/turn history
+   already flows through it today, just to the in-memory stand-in), so wiring
+   a single live client makes **all four containers** durable at once,
+   matching this repo's own Cosmos DB guidance (chat history, user context,
+   multi-user isolation — see the always-applied `azurecosmosdb.instructions.md`).
+   `/agents/{name}/decisions` additionally writes its outcome into
+   `approval-events` (the tracked audit trail specifically). **Re-verified
    live during this brainstorm: the infra for this already exists and is
    already deployed** — `infra/modules/agent-host/cosmos.bicep` provisions a
    **dedicated** `cosmos-ihzhhpf-sit` account (confirmed live via `az
-   cosmosdb list`), its `agenthost` database already has the
-   `approval-events` container (confirmed live via `az cosmosdb sql container
+   cosmosdb list`), its `agenthost` database already has all four containers
+   including `approval-events` (confirmed live via `az cosmosdb sql container
    list`), `COSMOS_ENDPOINT` is already injected into the running container
    (`container-app.bicep`), and `Cosmos DB Built-in Data Contributor` is
    already granted to the agent-host's managed identity
@@ -303,6 +322,11 @@ sequenceDiagram
    `caller_oid`/`approver` from `obo.user_oid` when present; unit tests.
 5. Live grounding citation in `build_worklist` (optional `fabric` param);
    unit tests with a fake `FabricAdapter`.
+5a. Generalize `loop/decisions.py`/`loop/worklist.py` beyond `dca`-only
+    constants into a small per-role lever catalog, and add `bmca-agent`'s real
+    lever (`applies_to: "Bed"`, `mutation: "set_state"`, `blocked ->
+    available`, a new branch in `apps/sim-capacity/src/closedloop/effect.py`).
+    Proves the accept/deny pattern generalizes across roles, not just `dca`.
 6. Implement `LiveCosmosPersistence` (config-gated on `COSMOS_ENDPOINT`,
    already deployed and injected — no new Bicep) and wire `/decisions` to
    write outcomes to `approval-events`; unit tests with the existing
@@ -310,15 +334,80 @@ sequenceDiagram
    `_build_chat_model`'s pattern.
 7. Flip `agentHostOboEnabled=true` in `sit.bicepparam` (the only remaining
    Bicep change).
-8. Live verification: sign in as `admin@`, narrow to `HCC.DischargeCoordinator`,
-   confirm the worklist shows a real corroborating citation, Accept a
-   recommendation, confirm the outcome is queryable from Cosmos with the
-   verified oid as approver. Confirm Demo mode (no sign-in) is unaffected
-   throughout.
+8. Live verification: sign in as `admin@`, narrow to `HCC.DischargeCoordinator`
+   and separately to `HCC.BedManager`, confirm each worklist shows a real
+   corroborating citation, Accept a recommendation on both, confirm both
+   outcomes are queryable from Cosmos with the verified oid as approver.
+   Confirm Demo mode (no sign-in) is unaffected throughout.
 9. Update issue #567 with the live evidence; close #569 in favour of this
    design's item (1).
 
-## 8. Traceability
+## 8. Aligning `csa-agent` and `product-owner-agent` into this pattern
+
+Both agents were reviewed for whether they can join the same OBO + real-role +
+golden-sources pattern. They are in very different positions:
+
+### 8.1 `csa-agent` — architecturally close, one gap
+
+`agents/csa-agent/manifest.yaml` declares `runtime: agent-host` — **the same
+`hcc-agent-host` FastAPI app** the 5 role agents run on. Concretely:
+
+- Its `/agents/csa-agent/chat` calls go through the **same** `chat()` handler
+  Task 1-3 fix — the bearer-presence fix and server-side role validation
+  apply to it automatically, no extra work.
+- Its `fabric:gold-capacity` grounding source can use the **same**
+  `state.fabric_for(obo_token)` per-request adapter Task 4 builds, if CSA's
+  own tool-invocation code path calls into the same `HostState.fabric`/
+  `fabric_for` seam (not yet verified in this brainstorm — a quick follow-up
+  check, not a redesign).
+- The one real gap: CSA's HITL model is **different** from the role-agents'
+  `/decisions` accept/deny — it uses `hitl/gate_enforcer.py`'s
+  `enforce_gates()` via `/agents/{name}/tools/{tool}` (HITL-01 gates the
+  Fabric simulation-run trigger, HITL-04 gates the recommendation draft PR).
+  That endpoint's `ToolRequest` carries only `params`/`hitlEvidence` today —
+  **no identity at all**, verified or otherwise. Aligning CSA into "a tracked,
+  identity-verified audit trail" needs the same treatment Task 3 gives
+  `/worklist`/`/decisions`: read the `authorization` header, build an OBO
+  context, and record the verified `obo.user_oid` as the gate-approval
+  identity (currently `enforce_gates` has no approver field to attach it to
+  — a small, additive schema change, same shape as `loop/decisions.py`'s
+  `approver` field).
+- Its own dedicated `cosmos-csa-ihzhhpf-sit` account is unaffected by this
+  design's Task 5 (which targets the separate `cosmos-ihzhhpf-sit` account) —
+  no conflict, just a note that CSA's audit records would land in a
+  *different* account than the role-agents' `approval-events`, which may or
+  may not be the intended long-term shape (worth a follow-up decision, not
+  blocking).
+
+**Recommendation:** a small additional task — extend `/agents/{name}/tools/{tool}`
+with the same OBO-derived approver pattern as Task 3 — is in reach of this
+same plan. Verifying CSA's Fabric-grounding call path is a quick follow-up
+check.
+
+### 8.2 `product-owner-agent` — a separate runtime, needs its own investigation
+
+`agents/product-owner-agent/manifest.yaml` declares
+`runtime: copilot-coding-agent` for its control-plane identity (the
+`@product-owner-agent`-mentioned GitHub issue responder) — **not**
+`hcc-agent-host`. Its "in-app Copilot rail" (the actual user-facing surface
+this design cares about) is a **wholly separate, dedicated Container App**:
+`infra/modules/experience-hosting/po-agent-runtime/main.bicep` provisions its
+own Container App (`ca-po-*`), its own Cosmos account (`cosmos-po-*`,
+confirmed live via `az cosmosdb list`), its own Azure OpenAI deployment, and
+its own Key Vault — a completely different codebase from `hcc-agent-host`
+(the real image is built by a separate `po-agent-runtime-build.yml`, not
+found or inspected in this brainstorm).
+
+**This cannot be scoped responsibly without first locating and reading that
+runtime's actual source** (whatever repo/folder `po-agent-runtime-build.yml`
+builds from) to see whether it has any bearer/role-validation/Fabric-grounding
+plumbing today. Folding it into *this* plan would be guessing. **Open
+question for you:** should this brainstorm continue now into a dedicated
+investigation of the PO agent runtime (locate its source, assess the gap),
+or should that become its own separately-scoped follow-up spec, given it's a
+different codebase/hosting model than everything else in this design?
+
+## 9. Traceability
 
 Extends [ADR-0057](../../adr/0057-obo-seam-completion-defer-live-provisioning.md)'s
 OBO seam to two endpoints it doesn't yet cover (`/worklist`, `/decisions`) and
