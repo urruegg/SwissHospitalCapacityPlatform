@@ -214,7 +214,13 @@ param enableCsaCosmosModule = true
 // FabricDeltaClient (replaces FabricAdapter's hardcoded 3-row dict with
 // real OneLake Gold table reads for bmca/dca/ooa/orsa/sba-agent).
 // approved-to-apply by @urruegg.
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:16d5345'
+// Sprint 43 WS-5 (2026-08-09): bumped 16d5345 -> 0cfac41 - citations no
+// longer list a grounding table that returned zero rows (found via live
+// Playwright verification across all board agents while WS-2's real Fabric
+// read is blocked; see docs/superpowers/specs/2026-08-08-sprint-43-real-iq-layer-grounding-design.md
+// §2.3). approved-to-apply by @urruegg (routine SIT deploy, standing
+// deployment approval this session).
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:0cfac41'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
