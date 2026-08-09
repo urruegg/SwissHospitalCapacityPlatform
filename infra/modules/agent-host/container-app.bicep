@@ -158,10 +158,6 @@ var baseEnv = [
     value: oboClientId
   }
   {
-    name: 'OBO_CLIENT_SECRET'
-    secretRef: 'obo-client-secret'
-  }
-  {
     name: 'OBO_JWKS_URL'
     value: oboJwksUrl
   }
@@ -189,6 +185,18 @@ var redisEnv = empty(redisHostName) ? [] : [
     value: string(redisPort)
   }
 ]
+
+// Sprint 43 WS-6 — conditional, like redisEnv above: an empty oboClientSecret
+// (OBO disabled, or the Key Vault secret not yet resolved) must not produce a
+// Container App secret with an empty value -- ARM rejects that outright
+// ("value or keyVaultUrl and identity should be provided"), found live
+// 2026-08-09 while reverting agentHostOboEnabled back to false.
+var oboSecretEnv = !empty(oboClientSecret) ? [
+  {
+    name: 'OBO_CLIENT_SECRET'
+    secretRef: 'obo-client-secret'
+  }
+] : []
 
 resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: 'cae-${nameSuffix}'
@@ -254,13 +262,15 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
     managedEnvironmentId: managedEnvironment.id
     configuration: {
       // Sprint 43 WS-6 — OBO client secret, referenced by the container env
-      // entry below via secretRef (never a plain env var value).
-      secrets: [
+      // entry below via secretRef (never a plain env var value). Conditional:
+      // an empty oboClientSecret must produce an empty secrets array, not a
+      // secret with an empty value (ARM rejects that).
+      secrets: !empty(oboClientSecret) ? [
         {
           name: 'obo-client-secret'
           value: oboClientSecret
         }
-      ]
+      ] : []
       ingress: {
         external: true
         targetPort: targetPort
@@ -283,7 +293,7 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: concat(baseEnv, redisEnv)
+          env: concat(baseEnv, redisEnv, oboSecretEnv)
         }
       ]
       scale: {
