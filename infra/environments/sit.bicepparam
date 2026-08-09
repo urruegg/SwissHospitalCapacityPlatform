@@ -220,7 +220,12 @@ param enableCsaCosmosModule = true
 // read is blocked; see docs/superpowers/specs/2026-08-08-sprint-43-real-iq-layer-grounding-design.md
 // §2.3). approved-to-apply by @urruegg (routine SIT deploy, standing
 // deployment approval this session).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:0cfac41'
+// Sprint 43 WS-6 (2026-08-09): bumped 0cfac41 -> d97fa11 - ships the OBO
+// chat-grounding wiring (HostState.fabric_for, Orchestrator fabric_override
+// + per-user cache key, /agents/{name}/chat OBO context). See
+// docs/superpowers/plans/2026-08-09-obo-self-service-fabric-grounding-plan.md.
+// approved-to-apply by @urruegg (2026-08-09).
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:d97fa11'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
