@@ -84,3 +84,26 @@ def test_unknown_ward_is_refused_400():
         headers=_OID,
     )
     assert resp.status_code == 400
+
+
+def test_decision_approver_comes_from_obo_oid_not_header(monkeypatch):
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "obo-approver-oid"
+        obo_token = ""
+        roles = ("HCC.DischargeCoordinator",)
+        hospital = "aggregated"
+
+    # monkeypatch (not importlib.reload) — reload mutates api.app's shared
+    # __globals__ in place, which other already-imported test modules' route
+    # closures resolve `get_state` against at call time, corrupting their state.
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    client = _client()
+    resp = client.post(
+        "/agents/dca/decisions",
+        json={"decision": "deny", "hospital": "USZ", "params": {}},
+        headers={"Authorization": "Bearer ok", "X-User-Oid": "header-oid-should-be-ignored"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["approver"] == "obo-approver-oid"

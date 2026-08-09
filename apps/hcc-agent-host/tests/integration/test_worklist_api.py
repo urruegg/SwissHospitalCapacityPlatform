@@ -28,3 +28,20 @@ def test_dca_worklist_endpoint_returns_observations_and_reco():
     # The fixture is provenance "simulated"; every observation is badged honestly.
     assert body["provenance"] == "simulated"
     assert all(o["provenance"] == "simulated" for o in body["observations"])
+
+
+def test_worklist_obo_oid_overrides_x_user_oid(monkeypatch):
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "obo-oid-999"
+        obo_token = ""
+        roles = ("HCC.DischargeCoordinator",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().get(
+        "/agents/dca/worklist",
+        headers={"Authorization": "Bearer ok", "X-User-Oid": "header-oid-should-be-ignored"},
+    )
+    assert resp.status_code == 200

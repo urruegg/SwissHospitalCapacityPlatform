@@ -472,11 +472,22 @@ def create_app() -> FastAPI:
         return {"ok": True, "interactionId": interaction_id}
 
     @app.get("/agents/{name}/worklist")
-    def worklist(name: str, hospital: str = "USZ", x_user_oid: str = Header(default="")) -> dict[str, Any]:
+    def worklist(
+        name: str,
+        hospital: str = "USZ",
+        x_user_oid: str = Header(default=""),
+        authorization: str = Header(default=""),
+    ) -> dict[str, Any]:
         # Sprint 39 P2 — the role's live observations + one grounded recommendation
         # on real seeded gold. Simulated-MVP: gold comes from the Plan 1 fixture via
         # load_gold_snapshot; the live golden-source read is the follow-on.
+        # OBO-derived oid (verified token) overrides the client-supplied header
+        # when present, mirroring the chat/golden endpoints.
         state = get_state()
+        try:
+            obo = build_obo_context(authorization)
+        except TokenValidationError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
         gold = state.load_gold_snapshot(hospital)
         sim = state.sim_registry.get_or_seed(hospital, gold)
         from loop.worklist import build_worklist
@@ -489,11 +500,24 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=400, detail=str(exc))
 
     @app.post("/agents/{name}/decisions")
-    def decisions(name: str, req: DecisionRequest, x_user_oid: str = Header(default="")) -> dict[str, Any]:
+    def decisions(
+        name: str,
+        req: DecisionRequest,
+        x_user_oid: str = Header(default=""),
+        authorization: str = Header(default=""),
+    ) -> dict[str, Any]:
         # Sprint 39 P2 — a human accept/deny drives the REAL HITL apply->outcome on
         # the in-host SimState. NFR-UXL-001: only a human oid may act; the bot/self
         # refusal is enforced by plan_runtime.approve_action (surfaced as 403).
-        if not x_user_oid:
+        # OBO-derived oid (verified token) overrides the client-supplied header
+        # when present -- the audit trail records a verified identity, not a
+        # client-claimed one.
+        try:
+            obo = build_obo_context(authorization)
+        except TokenValidationError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
+        approver = (obo.user_oid if obo else x_user_oid)
+        if not approver:
             raise HTTPException(status_code=401, detail="human approver (x-user-oid) required")
         state = get_state()
         gold = state.load_gold_snapshot(req.hospital)
@@ -502,7 +526,7 @@ def create_app() -> FastAPI:
 
         try:
             return decide(
-                name, req.decision, approver=x_user_oid, state=state, sim=sim,
+                name, req.decision, approver=approver, state=state, sim=sim,
                 params=req.params, provenance=gold.get("provenance", "simulated"),
             )
         except PermissionError as exc:
