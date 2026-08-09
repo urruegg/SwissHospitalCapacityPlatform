@@ -98,3 +98,43 @@ def test_ooa_decide_bot_approver_still_refused():
     sim = seed_sim_state_from_gold(_GOLD)
     with pytest.raises(PermissionError):
         decide("ooa", "accept", approver="dependabot[bot]", state=None, sim=sim, params={})
+
+
+def test_orsa_decide_accept_does_not_mutate_state_and_has_no_lever():
+    # Final holistic review CRITICAL fix: orsa has no ROLE_LEVERS entry at all,
+    # so it must never fall through to DCA's real barrier-clearing mutation.
+    sim = seed_sim_state_from_gold(_GOLD)
+    before = sim.snapshot()
+    out = decide("orsa", "accept", approver="clinician@usz.ch", state=None, sim=sim, params={})
+    assert out["contract"] == "DC-SIM-OUTCOME-v1"
+    assert out["lever_id"] is None
+    assert out["applied"] is False
+    assert out["applyReason"] == "no_lever_for_role"
+    assert out["decision"] == "accept"
+    assert out["approver"] == "clinician@usz.ch"
+    assert sim.snapshot() == before  # no beds freed, no patients discharged
+
+
+def test_sba_decide_deny_does_not_mutate_state_and_has_no_lever():
+    sim = seed_sim_state_from_gold(_GOLD)
+    before = sim.snapshot()
+    out = decide("sba", "deny", approver="clinician@usz.ch", state=None, sim=sim, params={})
+    assert out["lever_id"] is None
+    assert out["applied"] is False
+    assert out["applyReason"] == "no_lever_for_role"
+    assert out["decision"] == "deny"
+    assert sim.snapshot() == before
+
+
+def test_unknown_role_decide_accept_is_safe_and_non_mutating():
+    # A typo'd/unrecognised agent name must never raise, and must never reach
+    # DCA's mutation logic -- same safe behavior as orsa/sba.
+    sim = seed_sim_state_from_gold(_GOLD)
+    before = sim.snapshot()
+    out = decide(
+        "not-a-real-role", "accept", approver="clinician@usz.ch", state=None, sim=sim, params={}
+    )
+    assert out["lever_id"] is None
+    assert out["applied"] is False
+    assert out["applyReason"] == "no_lever_for_role"
+    assert sim.snapshot() == before

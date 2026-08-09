@@ -88,6 +88,17 @@ def _require_active_role_held(obo, active_role: str) -> None:
         )
 
 
+def _obo_or_401(authorization: str):
+    """Build the OBO context for an Authorization header, or raise 401 on an
+    invalid/expired bearer (deny-by-default). Shared by every endpoint that
+    accepts a bearer (golden, chat, invoke_tool, worklist, decisions) so the
+    same try/except isn't duplicated at each call site."""
+    try:
+        return build_obo_context(authorization)
+    except TokenValidationError as exc:
+        raise HTTPException(status_code=401, detail=str(exc))
+
+
 def _build_live_data_agent():
     """Return a live FabricDataAgentClient when env is fully configured, else None."""
     endpoint = os.environ.get("FABRIC_DATA_AGENT_ENDPOINT")
@@ -357,10 +368,7 @@ def create_app() -> FastAPI:
         # runs on-behalf-of the user; otherwise it stays on the simulated provider
         # (SIT default). Deny-by-default: an invalid bearer under OBO is a 401.
         state = get_state()
-        try:
-            obo = build_obo_context(authorization)
-        except TokenValidationError as exc:
-            raise HTTPException(status_code=401, detail=str(exc))
+        obo = _obo_or_401(authorization)
         _require_active_role_held(obo, x_active_role)
         try:
             provider = state.rls_provider_for(obo.obo_token if obo else None)
@@ -423,10 +431,7 @@ def create_app() -> FastAPI:
         # identity hits); otherwise unchanged (OBO off is the SIT default).
         # Deny-by-default: an invalid bearer under OBO is a 401, mirrored
         # from the /golden read path.
-        try:
-            obo = build_obo_context(authorization)
-        except TokenValidationError as exc:
-            raise HTTPException(status_code=401, detail=str(exc))
+        obo = _obo_or_401(authorization)
         _require_active_role_held(obo, x_active_role)
         caller_oid = (obo.user_oid if obo else x_user_oid) or req.callerObjectId
         fabric_override = state.fabric_for(obo.obo_token) if obo else None
@@ -452,10 +457,7 @@ def create_app() -> FastAPI:
     ) -> dict[str, Any]:
         state = get_state()
         manifest = state.require(name)
-        try:
-            obo = build_obo_context(authorization)
-        except TokenValidationError as exc:
-            raise HTTPException(status_code=401, detail=str(exc))
+        obo = _obo_or_401(authorization)
         if obo is not None:
             # Deny-by-default: when a verified OBO identity is present, every
             # gate's claimed approverObjectId must match it -- the evidence
@@ -474,6 +476,18 @@ def create_app() -> FastAPI:
                             "decision": "deny",
                             "gateId": gate_id,
                             "reason": "approver_identity_not_verified",
+                        },
+                    )
+                # Same deny-by-default posture as _require_active_role_held: a
+                # verified identity may still claim a role in the evidence it
+                # doesn't actually hold (final holistic review follow-up).
+                if evidence.get("approverRole") not in obo.roles:
+                    raise HTTPException(
+                        status_code=403,
+                        detail={
+                            "decision": "deny",
+                            "gateId": gate_id,
+                            "reason": "approver_role_not_verified",
                         },
                     )
         # Deny-by-default HITL gate check before any side effect (ADR-0007 §7).
@@ -505,19 +519,16 @@ def create_app() -> FastAPI:
     def worklist(
         name: str,
         hospital: str = "USZ",
-        x_user_oid: str = Header(default=""),
         authorization: str = Header(default=""),
     ) -> dict[str, Any]:
         # Sprint 39 P2 — the role's live observations + one grounded recommendation
         # on real seeded gold. Simulated-MVP: gold comes from the Plan 1 fixture via
         # load_gold_snapshot; the live golden-source read is the follow-on.
-        # OBO-derived oid (verified token) overrides the client-supplied header
-        # when present, mirroring the chat/golden endpoints.
+        # OBO context is validated here to gate a live Fabric grounding read when
+        # a bearer is present (fabric_override below); worklist content itself has
+        # no per-caller variation yet (final holistic review follow-up).
         state = get_state()
-        try:
-            obo = build_obo_context(authorization)
-        except TokenValidationError as exc:
-            raise HTTPException(status_code=401, detail=str(exc))
+        obo = _obo_or_401(authorization)
         gold = state.load_gold_snapshot(hospital)
         sim = state.sim_registry.get_or_seed(hospital, gold)
         from loop.worklist import build_worklist
@@ -545,10 +556,7 @@ def create_app() -> FastAPI:
         # OBO-derived oid (verified token) overrides the client-supplied header
         # when present -- the audit trail records a verified identity, not a
         # client-claimed one.
-        try:
-            obo = build_obo_context(authorization)
-        except TokenValidationError as exc:
-            raise HTTPException(status_code=401, detail=str(exc))
+        obo = _obo_or_401(authorization)
         approver = (obo.user_oid if obo else x_user_oid)
         if not approver:
             raise HTTPException(status_code=401, detail="human approver (x-user-oid) required")

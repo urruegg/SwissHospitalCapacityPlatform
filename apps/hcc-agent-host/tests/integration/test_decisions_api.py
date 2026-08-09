@@ -123,6 +123,49 @@ def test_decision_outcome_is_persisted_to_approval_events():
     assert records[0]["decision"] == "deny"
 
 
+def test_ooa_decision_outcome_is_persisted_to_approval_events():
+    # Task 6/Task 7 composition (final holistic review follow-up): the same
+    # generic approval-events write must also cover a role whose lever is
+    # tracked-but-not-applied (ooa), not just dca's real-mutation path.
+    client = _client()
+    resp = client.post(
+        "/agents/ooa/decisions",
+        json={"decision": "accept", "hospital": "USZ", "params": {}},
+        headers=_OID,
+    )
+    assert resp.status_code == 200
+    out = resp.json()
+    assert out["applied"] is False
+    assert out["lever_id"] == "OOA-EXPEDITE-DISCHARGE"
+    state = get_state()
+    records = state.persistence.query_by_correlation("approval-events", out["golden_thread"])
+    assert len(records) == 1
+    assert records[0]["decision"] == "accept"
+    assert records[0]["applied"] is False
+
+
+def test_orsa_decision_does_not_mutate_dca_worklist():
+    # CRITICAL fix regression at the HTTP boundary: an orsa accept must never
+    # execute DCA's barrier-clearing mutation on the shared in-host SimState.
+    client = _client()
+    r0 = client.get("/agents/dca/worklist")
+    assert len(r0.json()["observations"]) == 3  # baseline: 3 open transport barriers
+
+    resp = client.post(
+        "/agents/orsa/decisions",
+        json={"decision": "accept", "hospital": "USZ", "params": {}},
+        headers=_OID,
+    )
+    assert resp.status_code == 200
+    out = resp.json()
+    assert out["applied"] is False
+    assert out["lever_id"] is None
+    assert out["applyReason"] == "no_lever_for_role"
+
+    r1 = client.get("/agents/dca/worklist")
+    assert len(r1.json()["observations"]) == 3  # unchanged -- no barrier was cleared
+
+
 def test_decision_outcome_survives_persistence_write_failure(monkeypatch):
     # Best-effort audit durability: a Cosmos write hiccup must never mask an
     # already-applied decision as a client-visible error (Task 7 review follow-up).

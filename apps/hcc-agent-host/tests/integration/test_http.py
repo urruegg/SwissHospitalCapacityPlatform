@@ -207,6 +207,44 @@ def test_tool_invocation_obo_present_approver_matches_allowed(monkeypatch):
     assert resp.json()["decision"] == "allow"
 
 
+def test_tool_invocation_obo_present_approver_role_not_held_denied_403(monkeypatch):
+    # Final holistic review follow-up (Issue B): a verified oid must not be
+    # enough on its own -- the claimed approverRole must be one the caller
+    # actually holds on the OBO token, mirroring _require_active_role_held.
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "real-verified-oid"
+        obo_token = ""
+        roles = ("HCC.PlatformAdmin",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={
+            "params": {},
+            "hitlEvidence": {
+                "HITL-02": {
+                    "gateId": "HITL-02",
+                    "approverObjectId": "real-verified-oid",
+                    "approverRole": "HCC.RoleTheyDoNotHold",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                }
+            },
+        },
+        headers={"Authorization": "Bearer ok"},
+    )
+    assert resp.status_code == 403
+    detail = resp.json()["detail"]
+    assert detail["reason"] == "approver_role_not_verified"
+    assert detail["gateId"] == "HITL-02"
+
+
 def test_tool_invocation_without_obo_is_unchanged():
     # OBO absent (default) -> unchanged prior behavior, no identity cross-check.
     resp = _client().post(

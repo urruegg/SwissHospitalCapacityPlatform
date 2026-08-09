@@ -117,6 +117,25 @@ def decide(
             "branch": decision, "decision": decision, "approver": approver,
         }
 
+    if role != "dca":
+        # orsa/sba/any unmapped role: unlike ooa/bmca (a REAL catalog-grounded
+        # lever, just not yet actuatable), no lever mapping exists here at all.
+        # Mirror build_worklist()'s own honest "role effect pending" placeholder
+        # -- must NEVER fall through to DCA's barrier-clearing mutation below.
+        if provenance is None:
+            provenance = _provenance_of(state, sim)
+        plan_id = f"plan-decide-{sim.hospital_id}-{role}"
+        return {
+            "contract": "DC-SIM-OUTCOME-v1", "cosmos_id": None, "plan_id": plan_id,
+            "golden_thread": f"gt-{plan_id}", "lever_id": None, "applied_ts": _NOW,
+            "predicted_impact": {"metric": "beds", "value": 0},
+            "realised_impact": {"metric": "beds", "value": 0},
+            "state_delta": {"beds_freed": [], "patients_discharged": [], "patients_promoted": []},
+            "divergence": 0.0, "provenance": provenance, "applied": False,
+            "applyReason": "no_lever_for_role",
+            "branch": decision, "decision": decision, "approver": approver,
+        }
+
     barrier_type = params.get("barrier_type", _BARRIER_TYPE)
     ward = params.get("ward") or ward_of(sim)
     if ward not in sim.wards:

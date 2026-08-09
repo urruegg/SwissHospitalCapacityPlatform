@@ -30,7 +30,11 @@ def test_dca_worklist_endpoint_returns_observations_and_reco():
     assert all(o["provenance"] == "simulated" for o in body["observations"])
 
 
-def test_worklist_obo_oid_overrides_x_user_oid(monkeypatch):
+def test_worklist_with_authorization_header_still_returns_valid_worklist(monkeypatch):
+    # worklist() has no per-caller content variation (unlike chat/golden): the
+    # OBO context is built only to gate a live Fabric grounding read. This test
+    # proves that path doesn't break the response shape, and that a stray
+    # X-User-Oid header (no longer a worklist() parameter) has no effect.
     import api.app as app_module
 
     class _Ctx:
@@ -45,3 +49,6 @@ def test_worklist_obo_oid_overrides_x_user_oid(monkeypatch):
         headers={"Authorization": "Bearer ok", "X-User-Oid": "header-oid-should-be-ignored"},
     )
     assert resp.status_code == 200
+    body = resp.json()
+    assert body["role"] == "dca"
+    assert len(body["observations"]) == 3  # unchanged: same seeded fixture
