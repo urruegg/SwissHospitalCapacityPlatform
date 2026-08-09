@@ -1,9 +1,9 @@
 ---
-Version: 1.7.0
+Version: 1.8.0
 Date: 2026-08-09
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.6.0 (recorded WS-4 live Playwright verification, 4/4 passing)
+Previous Version: 1.7.0 (recorded WS-5 full-agent IQ verification, citations honesty fix, and the initial OBO root-cause investigation)
 ---
 
 # Sprint 43 — Real Foundry IQ + Fabric IQ Grounding — Design
@@ -484,27 +484,45 @@ is **Global Reader** only (confirmed via Graph: 403 on the Fabric admin API
 and on PIM eligibility). No one holds Fabric Administrator or Power BI
 Administrator. The only Global Administrator is a sealed break-glass account.
 
-Two real paths forward, both requiring the same missing ingredient (a real
-tenant admin), presented to @urruegg for a decision (not started without
-approval — creating new Entra identity surface is exactly the kind of action
-this repo's own governance gates on):
+Two real paths forward, presented to @urruegg for a decision (not started
+without approval — creating new Entra identity surface is exactly the kind
+of action this repo's own governance gates on):
 
-1. **Path 1 (recommended): flip the tenant setting.** WS-2's code is already
-   deployed; a single Fabric Admin Portal toggle ("Service principals can
-   call Fabric public APIs") unblocks it with zero further code changes.
-2. **Path 2 (heavier): enable the existing OBO seam.** Found a fully-designed
-   but deliberately-unprovisioned On-Behalf-Of path (`#424 M5`,
+1. **Path 1: flip the tenant setting.** WS-2's code is already deployed; a
+   single Fabric Admin Portal toggle ("Service principals can call Fabric
+   public APIs") unblocks it with zero further code changes. Still blocked on
+   the missing admin role (see above).
+2. **Path 2: enable the existing OBO seam.** Found a fully-designed but
+   deliberately-unprovisioned On-Behalf-Of path (`#424 M5`,
    [ADR-0057](../../adr/0057-obo-seam-completion-defer-live-provisioning.md)) —
    code-complete for the RLS/thread-provider paths, but the chat-grounding
-   path (`Orchestrator.fabric`) does not yet consume an OBO token at all, and
-   go-live needs a new Entra app registration + secret, admin-consented
-   delegated Fabric permissions (needing the same missing admin role), a
-   Redis grounding-cache key fix (currently keyed by table only — would leak
-   across users once grounding becomes per-user), and landing #510 (dynamic-
-   RLS TMDL) for the board-data path specifically. ADR-0057 already scopes
-   this as a future, separately-gated expansion requiring its own ADR +
-   `approved-to-apply` — this investigation confirms that scoping is still
-   correct and adds the concrete go-live checklist above.
+   path (`Orchestrator.fabric`) does not yet consume an OBO token at all.
+
+**Correction (2026-08-09, follow-up brainstorm):** Path 2 was initially
+assumed to need the same missing admin role for "admin-consented delegated
+Fabric permissions." A dedicated follow-up investigation (requested
+directly: "brainstorm how we can solve it without having Fabric Admin
+access") checked this tenant's actual Entra policies via Microsoft Graph and
+found that is **not the case**: `OneLake.Read.All` (and the other delegated
+permissions this needs) are classified `type: User` by Microsoft (self-
+consentable), this tenant's `allowedToCreateApps` is `true`, and its
+user-consent policy is enabled — meaning any signed-in user can create the
+app registration and self-consent, with zero Fabric/Power BI/Global
+Administrator involvement. Full evidence, architecture, and a task-by-task
+implementation plan are in a dedicated design + plan (kept separate from this
+document since it's a distinct, self-contained deliverable):
+
+- Design: [2026-08-09-obo-self-service-fabric-grounding-design.md](2026-08-09-obo-self-service-fabric-grounding-design.md)
+- Plan: [../plans/2026-08-09-obo-self-service-fabric-grounding-plan.md](../plans/2026-08-09-obo-self-service-fabric-grounding-plan.md)
+
+This re-opens Path 2 as the **recommended** path (not Path 1) — it doesn't
+depend on ever getting Fabric Administrator access to this tenant, which
+matches the showcase's actual constraint. It still needs a Redis
+grounding-cache key fix (covered in the plan's Task 2) and stays out of
+scope for the board-data RLS path (`#510` remains a separate follow-up, per
+WS-3's own re-scoping). Per AGENTS.md §4, creating the new app registration +
+delegated permission still requires an explicit `approved-to-apply` comment
+before execution, even though no special Entra role is needed to create it.
 
 ## 5. Sequencing recommendation
 
