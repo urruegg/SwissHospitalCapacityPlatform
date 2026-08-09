@@ -173,13 +173,22 @@ step:
    honestly-labeled `liveGroundingCitations` alongside the existing
    simulated-engine `citations` — not a replacement for the deterministic
    math (see §3 non-goals), just real evidence sitting next to it.
-6. **Wire real, config-gated Cosmos persistence** for `/agents/{name}/decisions`
-   outcomes into the already-defined `approval-events` container (schema
-   exists, ADR-0007 §6). Reuse the existing `cosmos-csa-ihzhhpf-sit` account
-   (already has the `cosmos-mcp` RBAC pattern proven) with a new,
-   separately-partitioned container rather than standing up a new account.
+6. **Implement a live `CosmosPersistence`** and wire `/agents/{name}/decisions`
+   to write its outcome into the `approval-events` container. **Re-verified
+   live during this brainstorm: the infra for this already exists and is
+   already deployed** — `infra/modules/agent-host/cosmos.bicep` provisions a
+   **dedicated** `cosmos-ihzhhpf-sit` account (confirmed live via `az
+   cosmosdb list`), its `agenthost` database already has the
+   `approval-events` container (confirmed live via `az cosmosdb sql container
+   list`), `COSMOS_ENDPOINT` is already injected into the running container
+   (`container-app.bicep`), and `Cosmos DB Built-in Data Contributor` is
+   already granted to the agent-host's managed identity
+   (`main.bicep`'s `agentHostCosmosDataContributor`). **This is a pure
+   application-code gap, not an infra gap** — `persistence/cosmos_client.py`'s
+   `CosmosPersistence` simply never got a live-`azure-cosmos` implementation.
    Config-gated exactly like `_build_chat_model`/`_build_live_data_agent`:
-   absent config → today's in-memory behavior, unchanged.
+   absent `COSMOS_ENDPOINT` → today's in-memory behavior, unchanged; no new
+   Bicep required.
 7. **Re-enable `agentHostOboEnabled=true`** in `sit.bicepparam` once (1)-(6)
    are live-verified — this time safe, because Demo mode's no-bearer traffic
    is no longer refused by construction.
@@ -251,20 +260,14 @@ sequenceDiagram
 | Server-side role/hospital validation | `apps/hcc-agent-host/src/api/app.py` | `golden()` and `chat()`: when `obo` is present, reject (`403`) an `X-Active-Role` not in `obo.roles`; when absent, unchanged. |
 | Worklist/decisions accept a bearer | `apps/hcc-agent-host/src/api/app.py` | `/agents/{name}/worklist` and `/agents/{name}/decisions` gain an `authorization` header param; `caller_oid`/`approver` prefer `obo.user_oid` over `x_user_oid` when present. **No frontend change needed** — `iqWorklist`/`iqDecision` in `apps/hcc-app-fluent/src/data/iq-client.ts` already attach `bearerHeader()` (confirmed by inspection); the backend just isn't reading it on these two routes yet. |
 | Live grounding citation in worklist | `apps/hcc-agent-host/src/loop/worklist.py`, `api/app.py` | `build_worklist` gains an optional `fabric` param (type `FabricAdapter \| None`); when present, attempts a real read for the role's table and attaches `liveGroundingCitations` (empty/absent on any failure — honest graceful-miss, mirrors `FabricDeltaClient.query()`'s existing behavior). |
-| Real, config-gated Cosmos persistence | `apps/hcc-agent-host/src/persistence/cosmos_client.py` | New `LiveCosmosPersistence` built only when `COSMOS_ENDPOINT`/`COSMOS_KEY`-or-managed-identity config is present (mirrors `_build_chat_model`/`_build_live_data_agent`'s guarded-optional pattern); `decide()`'s outcome is written to `approval-events` keyed by `correlationId`. |
+| Real, config-gated Cosmos persistence | `apps/hcc-agent-host/src/persistence/cosmos_client.py`, `api/app.py` | New `LiveCosmosPersistence` built only when `COSMOS_ENDPOINT` env is non-empty (already injected live, see §1.1/§4), using `azure-cosmos` + `DefaultAzureCredential` (mirrors `_build_chat_model`/`_build_live_data_agent`'s guarded-optional pattern; RBAC already granted, no new IAM). The `/decisions` endpoint writes `decide()`'s outcome to `approval-events` keyed by `correlationId`. **No Bicep change needed** — infra is already deployed. |
 | Entra: mirror App Roles + assignments | (Entra config, no code) | 17 `HCC.*` App Roles added to `hcc-agent-host`; `admin@` assigned the same set already held on `ihzhhpf-app`. `approved-to-apply` gated. |
-| Bicep: Cosmos config | `infra/modules/agent-host/*.bicep`, `infra/environments/sit.bicepparam` | New `COSMOS_ENDPOINT` (+ managed-identity RBAC role assignment on the existing CSA Cosmos account, new `approval-events` container) env wiring, config-gated like the existing Redis/OBO patterns. |
 
 ## 6. Risks / open items
 
 - **Role-mirroring is a new IAM surface** — even though owner-level and
   self-service, AGENTS.md §4 requires its own `approved-to-apply` comment
   before any Entra write. Not yet executed; this doc is the plan for it.
-- **Reusing the CSA Cosmos account** for a new `approval-events` container
-  needs a quick check that its throughput/RU provisioning has headroom, and
-  that the `cosmos-mcp` RBAC role assignment already scoped to that account
-  extends cleanly to a new container (expected: yes, RBAC is account-scoped,
-  not container-scoped, but verify before wiring).
 - **`liveGroundingCitations` on `worklist` could 401/403** if the caller's
   active role doesn't intersect with a table the role needs — must fail
   gracefully to "no live citation" (matching `FabricDeltaClient`'s existing
@@ -300,12 +303,13 @@ sequenceDiagram
    `caller_oid`/`approver` from `obo.user_oid` when present; unit tests.
 5. Live grounding citation in `build_worklist` (optional `fabric` param);
    unit tests with a fake `FabricAdapter`.
-6. Cosmos: provision the `approval-events` container on the existing CSA
-   account (or confirm capacity/RBAC first); wire `LiveCosmosPersistence`,
-   config-gated; unit tests with the existing in-memory fake plus a new
-   "live-when-configured" test mirroring `_build_chat_model`'s pattern.
-7. Bicep: wire `COSMOS_ENDPOINT` + RBAC; flip `agentHostOboEnabled=true` in
-   `sit.bicepparam`.
+6. Implement `LiveCosmosPersistence` (config-gated on `COSMOS_ENDPOINT`,
+   already deployed and injected — no new Bicep) and wire `/decisions` to
+   write outcomes to `approval-events`; unit tests with the existing
+   in-memory fake plus a new "live-when-configured" test mirroring
+   `_build_chat_model`'s pattern.
+7. Flip `agentHostOboEnabled=true` in `sit.bicepparam` (the only remaining
+   Bicep change).
 8. Live verification: sign in as `admin@`, narrow to `HCC.DischargeCoordinator`,
    confirm the worklist shows a real corroborating citation, Accept a
    recommendation, confirm the outcome is queryable from Cosmos with the
