@@ -69,14 +69,26 @@ class Orchestrator:
     persistence: CosmosPersistence = field(default_factory=CosmosPersistence)
     tracer: TraceRecorder = field(default_factory=tracing.get_recorder)
 
-    def _grounding(self, manifest: AgentManifest) -> tuple[list[dict[str, Any]], list[str]]:
+    def _grounding(
+        self,
+        manifest: AgentManifest,
+        *,
+        fabric: FabricAdapter | None = None,
+        cache_key_prefix: str = "",
+    ) -> tuple[list[dict[str, Any]], list[str]]:
+        fabric = fabric or self.fabric
         rows: list[dict[str, Any]] = []
         citations: list[str] = []
         for table in manifest.grounding_tables:
-            cached = self.cache.get_grounding(table)
+            # Sprint 43 WS-6 -- namespaced per-user when an OBO-scoped fabric
+            # override is in play, so one user's delegated read is never
+            # served from another user's cached rows. Empty prefix (OBO off)
+            # keeps today's cache key byte-identical.
+            cache_key = f"{cache_key_prefix}{table}" if cache_key_prefix else table
+            cached = self.cache.get_grounding(cache_key)
             if cached is None:
-                cached = self.fabric.query(table)
-                self.cache.cache_grounding(table, cached)
+                cached = fabric.query(table)
+                self.cache.cache_grounding(cache_key, cached)
             rows.extend(cached)
             # Sprint 43 WS-5 -- a citation asserts "this answer used this
             # source". A table that returned zero rows (e.g. WS-2's Fabric
@@ -88,7 +100,12 @@ class Orchestrator:
         return rows, citations
 
     def _primary_grounding(
-        self, manifest: AgentManifest, user_prompt: str
+        self,
+        manifest: AgentManifest,
+        user_prompt: str,
+        *,
+        fabric: FabricAdapter | None = None,
+        cache_key_prefix: str = "",
     ) -> tuple[list[dict[str, Any]], list[str], str | None, bool, str]:
         """Return (grounding_rows, citations, refusal_answer, degraded, mode).
 
@@ -99,7 +116,7 @@ class Orchestrator:
         """
         binding = manifest.grounding_agent
         if binding is None or self.data_agent is None or binding.precedence != "primary":
-            rows, citations = self._grounding(manifest)
+            rows, citations = self._grounding(manifest, fabric=fabric, cache_key_prefix=cache_key_prefix)
             return rows, citations, None, False, "table"
         try:
             result = self.data_agent.ask(user_prompt)
@@ -107,7 +124,7 @@ class Orchestrator:
             logger.exception(
                 "Fabric Data Agent grounding failed; degrading to table grounding"
             )
-            rows, citations = self._grounding(manifest)
+            rows, citations = self._grounding(manifest, fabric=fabric, cache_key_prefix=cache_key_prefix)
             return rows, citations, None, True, "table"
         if result.get("refused"):
             return [], list(result.get("citations", [])), result["answer"], False, "agent"
@@ -122,16 +139,21 @@ class Orchestrator:
         *,
         conversation_id: str,
         caller_oid: str,
+        fabric_override: FabricAdapter | None = None,
     ) -> GroundedReply:
         started = time.perf_counter()
         correlation_id = hashlib.sha256(
             f"{manifest.agent}:{conversation_id}:{time.time_ns()}".encode()
         ).hexdigest()[:16]
+        # Sprint 43 WS-6 -- an OBO-scoped fabric_override means this turn's
+        # grounding is per-user; namespace the cache so it never mixes rows
+        # across users. No override (OBO off) keeps today's plain table key.
+        cache_key_prefix = f"{caller_oid}:" if fabric_override is not None else ""
 
         with self.tracer.span("agent.turn", agent=manifest.agent) as root:
             with self.tracer.span("agent.retrieve", agent=manifest.agent) as rspan:
                 grounding, citations, refusal_answer, degraded, mode = self._primary_grounding(
-                    manifest, user_prompt
+                    manifest, user_prompt, fabric=fabric_override, cache_key_prefix=cache_key_prefix
                 )
                 rspan.set_attribute("grounding.mode", mode)
                 rspan.set_attribute("grounding.degraded", degraded)
