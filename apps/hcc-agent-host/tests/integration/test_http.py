@@ -139,3 +139,79 @@ def test_tool_invocation_denied_without_hitl_evidence():
     detail = resp.json()["detail"]
     assert detail["decision"] == "deny"
     assert detail["gateId"] == "HITL-02"
+
+
+def test_tool_invocation_obo_present_approver_mismatch_denied_403(monkeypatch):
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "real-verified-oid"
+        obo_token = ""
+        roles = ("HCC.PlatformAdmin",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={
+            "params": {},
+            "hitlEvidence": {
+                "HITL-02": {
+                    "gateId": "HITL-02",
+                    "approverObjectId": "claimed-but-not-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                }
+            },
+        },
+        headers={"Authorization": "Bearer ok"},
+    )
+    assert resp.status_code == 403
+    assert resp.json()["detail"]["reason"] == "approver_identity_not_verified"
+
+
+def test_tool_invocation_obo_present_approver_matches_allowed(monkeypatch):
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "real-verified-oid"
+        obo_token = ""
+        roles = ("HCC.PlatformAdmin",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={
+            "params": {},
+            "hitlEvidence": {
+                "HITL-02": {
+                    "gateId": "HITL-02",
+                    "approverObjectId": "real-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                }
+            },
+        },
+        headers={"Authorization": "Bearer ok"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["decision"] == "allow"
+
+
+def test_tool_invocation_without_obo_is_unchanged():
+    # OBO absent (default) -> unchanged prior behavior, no identity cross-check.
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={"params": {}, "hitlEvidence": {}},
+    )
+    assert resp.status_code == 403
+    assert resp.json()["detail"]["reason"] == "hitl_no_evidence"

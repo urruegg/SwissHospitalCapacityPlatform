@@ -443,9 +443,30 @@ def create_app() -> FastAPI:
         }
 
     @app.post("/agents/{name}/tools/{tool}")
-    def invoke_tool(name: str, tool: str, req: ToolRequest) -> dict[str, Any]:
+    def invoke_tool(
+        name: str, tool: str, req: ToolRequest, authorization: str = Header(default="")
+    ) -> dict[str, Any]:
         state = get_state()
         manifest = state.require(name)
+        try:
+            obo = build_obo_context(authorization)
+        except TokenValidationError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
+        if obo is not None:
+            # Deny-by-default: when a verified OBO identity is present, every
+            # gate's claimed approverObjectId must match it -- the evidence
+            # schema already requires this field, but nothing verified it was
+            # real until now.
+            for gate_id, evidence in req.hitlEvidence.items():
+                if evidence.get("approverObjectId") != obo.user_oid:
+                    raise HTTPException(
+                        status_code=403,
+                        detail={
+                            "decision": "deny",
+                            "gateId": gate_id,
+                            "reason": "approver_identity_not_verified",
+                        },
+                    )
         # Deny-by-default HITL gate check before any side effect (ADR-0007 §7).
         gate = enforce_gates(manifest.hitl_gates, req.hitlEvidence)
         if not gate.allowed:
