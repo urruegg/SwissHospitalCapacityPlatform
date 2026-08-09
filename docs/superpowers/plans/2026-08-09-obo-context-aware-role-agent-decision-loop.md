@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make OBO the standard, always-preferred auth pattern end to end: fix the bearer-presence bug that broke Demo mode, mirror real Entra App Roles onto the backend so role/hospital context is server-verified (not just client-claimed), let a role agent's worklist recommendation carry a real Fabric citation when OBO is present, and make an Accept/Deny decision produce a durably persisted, identity-verified audit record.
+**Goal:** Make OBO the standard, always-preferred auth pattern end to end: fix the bearer-presence bug that broke Demo mode, mirror real Entra App Roles onto the backend so role/hospital context is server-verified (not just client-claimed), verify CSA's HITL tool-gate approver identity the same way, give `ooa` and `bmca` real catalog-grounded recommendations (not placeholders) alongside `dca`, and make every Accept/Deny decision produce a durably persisted, identity-verified audit record that also serves as this app's durable agent memory.
 
-**Architecture:** Small, independent, dependency-injection-testable changes to `apps/hcc-agent-host/src/auth/obo_context.py`, `api/app.py`, `loop/worklist.py`, and `persistence/cosmos_client.py`, plus one Entra IAM change (mirror App Roles, gated by `approved-to-apply`) and one one-line Bicep flip. No new infrastructure is required — the Cosmos account, database, `approval-events` container, and managed-identity RBAC already exist live in SIT (confirmed via `az cosmosdb` during the design brainstorm).
+**Architecture:** Small, independent, dependency-injection-testable changes to `apps/hcc-agent-host/src/auth/obo_context.py`, `api/app.py`, `loop/worklist.py`, `loop/decisions.py`, a new `loop/role_levers.py`, and `persistence/cosmos_client.py`, plus one Entra IAM change (mirror App Roles, gated by `approved-to-apply`) and one one-line Bicep flip. No new infrastructure is required — the Cosmos account, database, all four containers, and managed-identity RBAC already exist live in SIT (confirmed via `az cosmosdb` during the design brainstorm); the `ooa`/`bmca` predicted-impact math already exists too (Sprint 26 WS-B's lever catalog + formula registry) — this plan wires it in, it doesn't invent it. The `product-owner-agent` runtime is explicitly out of scope (deferred to issue #570 per user decision).
 
 **Tech Stack:** Python 3.11, FastAPI, pytest, `azure-cosmos`, `azure-identity`, PyJWT. No frontend changes (the SPA already forwards a bearer to every relevant endpoint).
 
@@ -457,7 +457,164 @@ git commit -m "feat(agent-host): worklist/decisions derive identity from a verif
 
 ---
 
-### Task 4: Live grounding citation in `build_worklist`
+### Task 4: CSA tool-gate endpoint — verified OBO approver identity
+
+**Files:**
+- Modify: `apps/hcc-agent-host/src/api/app.py`
+- Modify: `apps/hcc-agent-host/tests/integration/test_http.py`
+
+The HITL evidence schema (`hitl/gate_enforcer.py`'s `REQUIRED_EVIDENCE_FIELDS`) already requires `approverObjectId` per gate — but nothing verifies it's real. This closes that gap for `csa-agent`'s HITL-01/HITL-04 gates (and every other agent's `/tools/{tool}` calls), mirroring the pattern Task 3 used for `/worklist`/`/decisions`.
+
+- [ ] **Step 1: Write the failing tests**
+
+In `apps/hcc-agent-host/tests/integration/test_http.py`, add:
+
+```python
+def test_tool_invocation_obo_present_approver_mismatch_denied_403(monkeypatch):
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "real-verified-oid"
+        obo_token = ""
+        roles = ("HCC.PlatformAdmin",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={
+            "params": {},
+            "hitlEvidence": {
+                "HITL-02": {
+                    "gateId": "HITL-02",
+                    "approverObjectId": "claimed-but-not-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                }
+            },
+        },
+        headers={"Authorization": "Bearer ok"},
+    )
+    assert resp.status_code == 403
+    assert resp.json()["detail"]["reason"] == "approver_identity_not_verified"
+
+
+def test_tool_invocation_obo_present_approver_matches_allowed(monkeypatch):
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "real-verified-oid"
+        obo_token = ""
+        roles = ("HCC.PlatformAdmin",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={
+            "params": {},
+            "hitlEvidence": {
+                "HITL-02": {
+                    "gateId": "HITL-02",
+                    "approverObjectId": "real-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                }
+            },
+        },
+        headers={"Authorization": "Bearer ok"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["decision"] == "allow"
+
+
+def test_tool_invocation_without_obo_is_unchanged():
+    # OBO absent (default) -> unchanged prior behavior, no identity cross-check.
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={"params": {}, "hitlEvidence": {}},
+    )
+    assert resp.status_code == 403
+    assert resp.json()["detail"]["reason"] == "hitl_no_evidence"
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/integration/test_http.py -v`
+Expected: FAIL — `invoke_tool()` doesn't read `Authorization` or cross-check `approverObjectId` yet, so the mismatch test gets a `200`/wrong-reason response instead of the expected `403`.
+
+- [ ] **Step 3: Wire the identity check into `invoke_tool`**
+
+In `apps/hcc-agent-host/src/api/app.py`, update the `invoke_tool` handler:
+
+```python
+    @app.post("/agents/{name}/tools/{tool}")
+    def invoke_tool(
+        name: str, tool: str, req: ToolRequest, authorization: str = Header(default="")
+    ) -> dict[str, Any]:
+        state = get_state()
+        manifest = state.require(name)
+        try:
+            obo = build_obo_context(authorization)
+        except TokenValidationError as exc:
+            raise HTTPException(status_code=401, detail=str(exc))
+        if obo is not None:
+            # Deny-by-default: when a verified OBO identity is present, every
+            # gate's claimed approverObjectId must match it -- the evidence
+            # schema already requires this field, but nothing verified it was
+            # real until now.
+            for gate_id, evidence in req.hitlEvidence.items():
+                if evidence.get("approverObjectId") != obo.user_oid:
+                    raise HTTPException(
+                        status_code=403,
+                        detail={
+                            "decision": "deny",
+                            "gateId": gate_id,
+                            "reason": "approver_identity_not_verified",
+                        },
+                    )
+        gate = enforce_gates(manifest.hitl_gates, req.hitlEvidence)
+        if not gate.allowed:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "decision": "deny",
+                    "gateId": gate.gate_id,
+                    "reason": gate.reason.value if gate.reason else None,
+                },
+            )
+        # Positive-path tool execution wiring lands per agent in follow-up sprints.
+        return {"decision": "allow", "gateId": gate.gate_id, "tool": tool}
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/integration/test_http.py -v`
+Expected: PASS.
+
+- [ ] **Step 5: Run the full test suite**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/ -v`
+Expected: PASS.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add apps/hcc-agent-host/src/api/app.py apps/hcc-agent-host/tests/integration/test_http.py
+git commit -m "feat(agent-host): verify HITL gate approverObjectId against the OBO token when present (csa-agent alignment)"
+```
+
+---
+
+### Task 5: Live grounding citation in `build_worklist`
 
 **Files:**
 - Modify: `apps/hcc-agent-host/src/loop/worklist.py`
@@ -622,7 +779,310 @@ git commit -m "feat(agent-host): worklist attaches a live OBO-grounded citation 
 
 ---
 
-### Task 5: Live, config-gated Cosmos persistence for the decisions audit trail
+### Task 6: Wire `ooa` and `bmca` into the Sprint 26 WS-B lever/formula registry
+
+**Files:**
+- Create: `apps/hcc-agent-host/src/loop/role_levers.py`
+- Modify: `apps/hcc-agent-host/src/loop/worklist.py`
+- Modify: `apps/hcc-agent-host/src/loop/decisions.py`
+- Modify: `apps/hcc-agent-host/tests/unit/test_worklist.py`
+- Modify: `apps/hcc-agent-host/tests/unit/test_decisions.py`
+
+`data-platform/decision/levers/{ooa,bmca,orsa,sba}.yaml` and `data-platform/decision/impact/compute_expected_impact.py`'s formula registry already exist (Sprint 26 WS-B) — real, deterministic, gold-grounded predicted-impact math for every role. Only `dca.yaml` has an `effect:` block (real `SimState` actuation); `ooa`/`bmca` get real recommendations here with an honestly-unactuated Accept. `orsa`/`sba` need a domain concept (OR-case, staffing) `SimState` doesn't have — left unchanged.
+
+- [ ] **Step 1: Create the shared role -> lever registry**
+
+Create `apps/hcc-agent-host/src/loop/role_levers.py`:
+
+```python
+"""Sprint 43 WS-7 -- shared role -> lever registry, wiring the Sprint 26 WS-B
+lever catalog + formula registry (data-platform/decision/impact/
+compute_expected_impact.py) into the Sprint 39 P2 worklist/decisions loop.
+
+Only roles listed here get a REAL, catalog-grounded recommendation; roles not
+listed keep the existing honest "role effect pending" placeholder
+(build_worklist) or today's non-dca decide() behavior -- no regression.
+
+``has_effect`` distinguishes real SimState actuation (only dca today, via
+apps/sim-capacity/src/closedloop/effect.py's DischargeBarrier/set_status
+branch) from predicted-impact-only roles (ooa, bmca): their Accept is still a
+real, tracked HITL decision on a real number, but never mutates SimState (no
+`effect:` block exists yet for these two levers in
+data-platform/decision/levers/{ooa,bmca}.yaml).
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class RoleLever:
+    lever_id: str
+    has_effect: bool
+
+
+ROLE_LEVERS: dict[str, RoleLever] = {
+    "dca": RoleLever(lever_id="DCA-UNBLOCK-BARRIER", has_effect=True),
+    "ooa": RoleLever(lever_id="OOA-EXPEDITE-DISCHARGE", has_effect=False),
+    "bmca": RoleLever(lever_id="BMCA-REBALANCE-CENSUS", has_effect=False),
+}
+
+# BMCA-REBALANCE-CENSUS needs a `to_ward` label; SimState is single-ward MVP
+# (see loop/ward_scope), so this is a fixed, documented assumption -- the same
+# shape as DCA's own fixed `_BARRIER_TYPE = "transport"` constant.
+ASSUMED_SISTER_WARD = "Medicine B"
+
+# OOA-EXPEDITE-DISCHARGE needs a `before` label; no time-of-day concept exists
+# in SimState, so this is a fixed, documented assumption.
+ASSUMED_EXPEDITE_DEADLINE = "end-of-shift"
+```
+
+- [ ] **Step 2: Write the failing worklist tests**
+
+In `apps/hcc-agent-host/tests/unit/test_worklist.py`, add:
+
+```python
+def test_ooa_worklist_uses_real_formula_registry():
+    state = _seeded_state()
+    wl = build_worklist("ooa", state, provenance="simulated")
+    assert wl["recommendation"]["lever_id"] == "OOA-EXPEDITE-DISCHARGE"
+    assert wl["recommendation"]["predicted_impact"]["value"] >= 0
+    assert wl["recommendation"]["params"]["before"] == "end-of-shift"
+
+
+def test_bmca_worklist_uses_real_formula_registry():
+    state = _seeded_state()
+    wl = build_worklist("bmca", state, provenance="simulated")
+    assert wl["recommendation"]["lever_id"] == "BMCA-REBALANCE-CENSUS"
+    assert wl["recommendation"]["params"]["to_ward"] == "Medicine B"
+
+
+def test_orsa_and_sba_worklist_are_unchanged_placeholder():
+    state = _seeded_state()
+    for role in ("orsa", "sba"):
+        wl = build_worklist(role, state, provenance="simulated")
+        assert wl["recommendation"]["lever_id"] is None
+        assert "pending" in wl["recommendation"]["insight_text"]
+```
+
+- [ ] **Step 3: Run tests to verify they fail**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/unit/test_worklist.py -v`
+Expected: FAIL — `build_worklist` has no `ooa`/`bmca` branch yet, so both fall through to the generic placeholder (`lever_id` is `None`, not the expected value).
+
+- [ ] **Step 4: Add the `ooa`/`bmca` branches to `build_worklist`**
+
+In `apps/hcc-agent-host/src/loop/worklist.py`, add the import and insert two new branches between the `dca` branch and the final placeholder fallback (the function ends up with four branches: `dca`, `ooa`, `bmca`, then the placeholder for everything else):
+
+```python
+from impact.compute_expected_impact import compute_expected_impact
+
+from .role_levers import ASSUMED_EXPEDITE_DEADLINE, ASSUMED_SISTER_WARD, ROLE_LEVERS
+```
+
+(add these alongside the existing imports at the top of the file)
+
+```python
+    if role == "ooa":
+        ready = sorted(p.patient_id for p in state.patients_in_stage(Stage.DISCHARGE_READY))
+        observations = [
+            {"patient": p, "ward": ward, "readiness": "READY", "provenance": provenance}
+            for p in ready
+        ]
+        n = len(ready)
+        lever_id = ROLE_LEVERS["ooa"].lever_id
+        live_citations = _live_citations(fabric, _CITATIONS[0])
+        if n == 0:
+            recommendation = {
+                "lever_id": lever_id,
+                "params": {"n": 0, "before": ASSUMED_EXPEDITE_DEADLINE, "ward": ward},
+                "predicted_impact": {"metric": "beds", "value": 0},
+                "insight_text": f"No discharge-ready patients on {ward} to expedite",
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
+        else:
+            gold_impact = {"forecast": [{"wardId": ward, "horizonH": 72,
+                                         "bedCapacity": state.ward(ward).staffed_capacity,
+                                         "forecastOccupiedBeds": state.occupancy(ward)}]}
+            params = {"n": n, "before": ASSUMED_EXPEDITE_DEADLINE, "ward": ward}
+            impact = compute_expected_impact(lever_id, params, gold_impact)
+            recommendation = {
+                "lever_id": lever_id, "params": params,
+                "predicted_impact": {"metric": impact["metric"], "value": impact["delta"]},
+                "insight_text": (
+                    f"Expedite {n} discharge-ready patients on {ward} before "
+                    f"{ASSUMED_EXPEDITE_DEADLINE} to free {impact['delta']} beds"
+                ),
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
+        return {"role": role, "ward": ward, "observations": observations,
+                "recommendation": recommendation, "provenance": provenance}
+    if role == "bmca":
+        capacity = state.ward(ward).staffed_capacity
+        occupied = state.occupancy(ward)
+        threshold_beds = round(capacity * 0.90)
+        n = max(0, occupied - threshold_beds)
+        observations = [{
+            "ward": ward, "occupied": occupied, "capacity": capacity,
+            "occupancy_pct": round(100 * occupied / capacity) if capacity else 0,
+            "provenance": provenance,
+        }]
+        lever_id = ROLE_LEVERS["bmca"].lever_id
+        live_citations = _live_citations(fabric, _CITATIONS[0])
+        if n == 0:
+            recommendation = {
+                "lever_id": lever_id,
+                "params": {"n": 0, "to_ward": ASSUMED_SISTER_WARD, "ward": ward},
+                "predicted_impact": {"metric": "beds", "value": 0},
+                "insight_text": f"{ward} is within its 90% target; no census rebalance needed",
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
+        else:
+            gold_impact = {"forecast": [{"wardId": ward, "horizonH": 72,
+                                         "bedCapacity": capacity,
+                                         "forecastOccupiedBeds": occupied}]}
+            params = {"n": n, "to_ward": ASSUMED_SISTER_WARD, "ward": ward}
+            impact = compute_expected_impact(lever_id, params, gold_impact)
+            recommendation = {
+                "lever_id": lever_id, "params": params,
+                "predicted_impact": {"metric": impact["metric"], "value": impact["delta"]},
+                "insight_text": (
+                    f"Transfer {n} patients from {ward} to {ASSUMED_SISTER_WARD} "
+                    f"to rebalance census (target 90%)"
+                ),
+                "citations": _CITATIONS, "liveGroundingCitations": live_citations,
+            }
+        return {"role": role, "ward": ward, "observations": observations,
+                "recommendation": recommendation, "provenance": provenance}
+```
+
+Insert both branches immediately after the `dca` branch's `return` statement and before the comment `# Non-DCA roles: observations + advisory placeholder...` — `orsa`/`sba` (and any future unmapped role) fall through to that unchanged placeholder exactly as today.
+
+- [ ] **Step 5: Run tests to verify they pass**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/unit/test_worklist.py -v`
+Expected: PASS.
+
+- [ ] **Step 6: Write the failing decisions tests**
+
+In `apps/hcc-agent-host/tests/unit/test_decisions.py`, add:
+
+```python
+def test_ooa_decide_accept_is_tracked_but_not_applied():
+    sim = seed_sim_state_from_gold(_GOLD)
+    out = decide("ooa", "accept", approver="clinician@usz.ch", state=None, sim=sim, params={})
+    assert out["lever_id"] == "OOA-EXPEDITE-DISCHARGE"
+    assert out["applied"] is False
+    assert out["decision"] == "accept"
+    assert out["approver"] == "clinician@usz.ch"
+    assert out["applyReason"] == "actuation_not_modeled_for_lever"
+
+
+def test_bmca_decide_deny_is_tracked_but_not_applied():
+    sim = seed_sim_state_from_gold(_GOLD)
+    out = decide("bmca", "deny", approver="clinician@usz.ch", state=None, sim=sim, params={})
+    assert out["lever_id"] == "BMCA-REBALANCE-CENSUS"
+    assert out["applied"] is False
+    assert out["decision"] == "deny"
+
+
+def test_ooa_decide_bot_approver_still_refused():
+    sim = seed_sim_state_from_gold(_GOLD)
+    with pytest.raises(PermissionError):
+        decide("ooa", "accept", approver="dependabot[bot]", state=None, sim=sim, params={})
+```
+
+- [ ] **Step 7: Run tests to verify they fail**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/unit/test_decisions.py -v`
+Expected: FAIL — `decide()` has no `ROLE_LEVERS`-aware branch yet, so `ooa`/`bmca` fall through to the existing DCA-only logic (which raises or mis-behaves for a role it doesn't recognize).
+
+- [ ] **Step 8: Add the predicted-only branch to `decide()`**
+
+In `apps/hcc-agent-host/src/loop/decisions.py`, add the import and insert a new branch right after the `require_single_ward(sim)` call, before the existing DCA-specific logic:
+
+```python
+from .role_levers import ROLE_LEVERS
+```
+
+(add alongside the existing `.ward_scope` import)
+
+```python
+def decide(
+    role: str,
+    decision: str,
+    approver: str,
+    state: Any,
+    sim: SimState,
+    params: Dict[str, Any],
+    provenance: str | None = None,
+) -> Dict[str, Any]:
+    if decision not in ("accept", "deny"):
+        raise ValueError(f"decision must be 'accept' or 'deny', got {decision!r}")
+
+    require_single_ward(sim)
+
+    lever = ROLE_LEVERS.get(role)
+    if lever is not None and not lever.has_effect:
+        # ooa/bmca: real, catalog-grounded math (Sprint 26 WS-B), but no
+        # `effect:` mapping exists yet -- a real, tracked decision on a real
+        # number, honestly never applied to SimState.
+        if plan_runtime._is_bot_approver(approver):
+            raise PermissionError(f"bot approver refused: {approver!r}")
+        ward = params.get("ward") or ward_of(sim)
+        if ward not in sim.wards:
+            raise ValueError(f"unknown ward {ward!r}")
+        if provenance is None:
+            provenance = _provenance_of(state, sim)
+        from .worklist import build_worklist  # reuse the same grounded math
+
+        reco = build_worklist(role, sim, provenance=provenance)["recommendation"]
+        plan_id = f"plan-decide-{sim.hospital_id}-{role}"
+        return {
+            "contract": "DC-SIM-OUTCOME-v1", "cosmos_id": None, "plan_id": plan_id,
+            "golden_thread": f"gt-{plan_id}", "lever_id": lever.lever_id, "applied_ts": _NOW,
+            "predicted_impact": reco["predicted_impact"],
+            "realised_impact": {"metric": reco["predicted_impact"]["metric"], "value": 0},
+            "state_delta": {"beds_freed": [], "patients_discharged": [], "patients_promoted": []},
+            "divergence": 0.0, "provenance": provenance, "applied": False,
+            "applyReason": "actuation_not_modeled_for_lever",
+            "branch": decision, "decision": decision, "approver": approver,
+        }
+
+    # Single-ward MVP (see loop/ward_scope) + validate any caller-supplied ward so
+    # an unknown ward is a 400, never an unhandled KeyError 500 at the mutation.
+    barrier_type = params.get("barrier_type", _BARRIER_TYPE)
+    ward = params.get("ward") or ward_of(sim)
+    if ward not in sim.wards:
+        raise ValueError(f"unknown ward {ward!r}")
+    if provenance is None:
+        provenance = _provenance_of(state, sim)
+    plan_id = f"plan-decide-{sim.hospital_id}"
+    ... (rest of the existing dca-only body is unchanged)
+```
+
+Note: this removes the now-duplicated `require_single_ward(sim)` call from the top of the function body (it moved earlier, before the new branch) — make sure there is exactly one call to it, not two.
+
+- [ ] **Step 9: Run tests to verify they pass**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/unit/test_decisions.py -v`
+Expected: PASS.
+
+- [ ] **Step 10: Run the full test suite**
+
+Run: `cd apps/hcc-agent-host && python -m pytest tests/ -v`
+Expected: PASS.
+
+- [ ] **Step 11: Commit**
+
+```bash
+git add apps/hcc-agent-host/src/loop/role_levers.py apps/hcc-agent-host/src/loop/worklist.py apps/hcc-agent-host/src/loop/decisions.py apps/hcc-agent-host/tests/unit/test_worklist.py apps/hcc-agent-host/tests/unit/test_decisions.py
+git commit -m "feat(agent-host): wire ooa+bmca into the Sprint 26 WS-B lever/formula registry (real, honestly-unactuated recommendations)"
+```
+
+---
+
+### Task 7: Live, config-gated Cosmos persistence for agent memory (conversations, interactions, audit, decisions)
 
 **Files:**
 - Modify: `apps/hcc-agent-host/src/persistence/cosmos_client.py`
@@ -886,7 +1346,7 @@ git commit -m "feat(agent-host): live Cosmos persistence for the decisions audit
 
 ---
 
-### Task 6: Entra — mirror App Roles + `admin@`'s assignments onto `hcc-agent-host`
+### Task 8: Entra — mirror App Roles + `admin@`'s assignments onto `hcc-agent-host`
 
 **This is an IAM change, not code. Per AGENTS.md §4 it requires an explicit `approved-to-apply` comment before execution — do not run these commands until that approval is given.**
 
@@ -959,12 +1419,12 @@ Expected: one row per assigned role (matching the 16-ish held on `ihzhhpf-app`, 
 
 ---
 
-### Task 7: Bicep — re-enable `agentHostOboEnabled`
+### Task 9: Bicep — re-enable `agentHostOboEnabled`
 
 **Files:**
 - Modify: `infra/environments/sit.bicepparam`
 
-**Prerequisite:** Tasks 1-6 merged and deployed (the image must contain the Task 1-5 code fixes before this flag is safe to flip — re-enabling it before Task 1's fix is what caused the earlier incident).
+**Prerequisite:** Tasks 1-8 merged and deployed (the image must contain the Task 1-7 code fixes before this flag is safe to flip — re-enabling it before Task 1's fix is what caused the earlier incident).
 
 - [ ] **Step 1: Flip the flag**
 
@@ -992,7 +1452,7 @@ git add infra/environments/sit.bicepparam
 git commit -m "feat(infra): re-enable agentHostOboEnabled - safe now the bearer-presence bug is fixed"
 ```
 
-- [ ] **Step 4: Push, wait for image build (if a new image is needed for Tasks 1-5), approve the SIT deploy, and confirm**
+- [ ] **Step 4: Push, wait for image build (if a new image is needed for Tasks 1-7), approve the SIT deploy, and confirm**
 
 ```bash
 git push origin main
@@ -1008,7 +1468,7 @@ Expected: `OBO_ENABLED: true`.
 
 ---
 
-### Task 8: Live verification
+### Task 10: Live verification
 
 **No code changes — manual/browser verification.**
 
@@ -1022,30 +1482,38 @@ Confirm the Role dropdown lists (a subset of) the 16 roles now assigned on both 
 
 - [ ] **Step 3: Narrow to `HCC.DischargeCoordinator` and open the discharge board**
 
-Confirm the worklist loads; inspect the network response for `/agents/dca/worklist` and confirm `recommendation.liveGroundingCitations` is present (either real rows or `[]` if the table doesn't exist yet in the SIT lakehouse — both are honest, expected outcomes per Task 4's graceful-miss design).
+Confirm the worklist loads; inspect the network response for `/agents/dca/worklist` and confirm `recommendation.liveGroundingCitations` is present (either real rows or `[]` if the table doesn't exist yet in the SIT lakehouse — both are honest, expected outcomes per Task 5's graceful-miss design).
 
-- [ ] **Step 4: Accept a recommendation**
+- [ ] **Step 4: Accept a recommendation on `dca`**
 
-Click Accept on the discharge board's recommendation. Confirm the worklist observations shrink on refresh (existing behavior, unchanged).
+Click Accept on the discharge board's recommendation. Confirm the worklist observations shrink on refresh (existing behavior, unchanged) and `applied: true` in the response.
 
-- [ ] **Step 5: Confirm the durable audit record**
+- [ ] **Step 5: Narrow to a role that maps to `ooa`, then to `HCC.BedManager` (maps to `bmca`)**
+
+Confirm each worklist shows a real, non-placeholder recommendation (`lever_id` is `OOA-EXPEDITE-DISCHARGE` / `BMCA-REBALANCE-CENSUS`, not `null`) with a real `predicted_impact.value`. Accept one of each. Confirm the response shows `applied: false` and `applyReason: "actuation_not_modeled_for_lever"` — this is the expected, honest outcome (see Task 6), not a bug.
+
+- [ ] **Step 6: Confirm the durable audit records for all three**
 
 ```bash
-az cosmosdb sql container query --account-name cosmos-ihzhhpf-sit -g rg-ihzhhpf-sit -d agenthost -c approval-events --query-text "SELECT TOP 1 * FROM c ORDER BY c._ts DESC"
+az cosmosdb sql container query --account-name cosmos-ihzhhpf-sit -g rg-ihzhhpf-sit -d agenthost -c approval-events --query-text "SELECT TOP 5 * FROM c ORDER BY c._ts DESC"
 ```
 
-Expected: the most recent record shows `decision: "accept"`, `approver` equal to `admin@`'s real object id (not a header-supplied placeholder), and `applied: true`.
+Expected: the most recent records show `dca`'s (`applied: true`), `ooa`'s and `bmca`'s (`applied: false`, `applyReason` set) decisions, each with `approver` equal to `admin@`'s real object id (not a header-supplied placeholder).
 
-- [ ] **Step 6: Attempt to spoof a role (negative test)**
+- [ ] **Step 7: Confirm CSA's tool-gate identity check (if a CSA tool call is reachable in this environment)**
+
+Using a raw HTTP client with a valid `admin@` bearer, call `/agents/csa-agent/tools/{a-real-tool}` with `hitlEvidence` whose `approverObjectId` does **not** match `admin@`'s real oid. Confirm `403` with `reason: "approver_identity_not_verified"`. Repeat with the real oid and confirm the existing gate-evaluation behavior (allow/deny per evidence) is otherwise unchanged.
+
+- [ ] **Step 8: Attempt to spoof a role (negative test)**
 
 Using a raw HTTP client with a valid `admin@` bearer but `X-Active-Role: HCC.SomeRoleNotHeld` (or, more realistically, any role string not among the 16 assigned), confirm the request is refused with `403`.
 
-- [ ] **Step 7: Update tracking issues**
+- [ ] **Step 9: Update tracking issues**
 
-Post the live evidence (screenshots/JSON from Steps 1-6) to issue #567. Close issue #569 with a comment linking to this plan's Task 1 as the superseding fix.
+Post the live evidence (screenshots/JSON from Steps 1-8) to issue #567. Close issue #569 with a comment linking to this plan's Task 1 as the superseding fix.
 
 ```bash
-gh issue comment 567 --body "Live-verified: Demo mode unaffected, admin@ context-sensitive worklist + real citation + accept/deny + durable Cosmos audit record with a verified approver oid. See [design doc] and [this plan]."
+gh issue comment 567 --body "Live-verified: Demo mode unaffected, admin@ context-sensitive worklist + real citation + accept/deny (dca applied, ooa/bmca honestly tracked-not-applied) + durable Cosmos audit records with a verified approver oid + CSA tool-gate identity check. See [design doc] and [this plan]."
 gh issue close 569 --comment "Superseded by docs/superpowers/plans/2026-08-09-obo-context-aware-role-agent-decision-loop.md Task 1 (bearer-presence fix) -- a smaller, more correct fix than the flag-split proposed here."
 ```
 
@@ -1053,6 +1521,8 @@ gh issue close 569 --comment "Superseded by docs/superpowers/plans/2026-08-09-ob
 
 ## Plan Self-Review Notes
 
-- **Spec coverage:** Task 1 covers design §4 item 1+3 (bearer-presence fix, roles/hospital propagation). Task 2 covers item 3's validation half. Task 3 covers item 4 (worklist/decisions bearer + verified approver). Task 4 covers item 5 (live citation). Task 5 covers item 6 (Cosmos persistence — corrected to reflect already-deployed infra). Task 6 covers item 2 (Entra role mirroring). Task 7 covers item 7 (flag re-enable). Task 8 covers design §7 step 8-9 (live verification + issue updates).
-- **Type consistency:** `OboContext.roles`/`.hospital` (Task 1) are consumed identically in Tasks 2-4 (`obo.roles`, `_require_active_role_held(obo, ...)`) — no signature drift across tasks.
-- **No new infra:** confirmed live (design doc §1.1) that the Cosmos account, database, `approval-events` container, and RBAC already exist — Task 5 has zero Bicep changes, only Task 7 touches Bicep (one boolean flip).
+- **Spec coverage:** Task 1 covers design §4 item 1+3 (bearer-presence fix, roles/hospital propagation). Task 2 covers item 3's validation half. Task 3 covers §7 item 3 (worklist/decisions bearer + verified approver). Task 4 covers §8.1's CSA tool-gate approver-identity gap. Task 5 covers §7 item 5 (live citation). Task 6 covers §7 item 6 (`ooa`/`bmca` wired into the Sprint 26 WS-B catalog). Task 7 covers §7 item 7 / §2's Cosmos-as-agent-memory framing (corrected to reflect already-deployed infra). Task 8 covers §7 item 8 (Entra role mirroring). Task 9 covers §7 item 9 (flag re-enable). Task 10 covers §7 items 10-11 (live verification across `dca`/`ooa`/`bmca`/CSA + issue updates). `product-owner-agent` (§8.2) is explicitly out of scope, tracked as issue #570.
+- **Type consistency:** `OboContext.roles`/`.hospital` (Task 1) are consumed identically in Tasks 2-4 (`obo.roles`, `_require_active_role_held(obo, ...)`) — no signature drift across tasks. `ROLE_LEVERS` (Task 6) is consumed identically by `build_worklist` (`loop/worklist.py`) and `decide()` (`loop/decisions.py`) — same `RoleLever.lever_id`/`.has_effect` fields, no drift.
+- **No new infra:** confirmed live (design doc §1.1) that the Cosmos account, database, all four containers, and RBAC already exist — Task 7 has zero Bicep changes, only Task 9 touches Bicep (one boolean flip). The `ooa`/`bmca` predicted-impact formulas (Task 6) are also pre-existing (Sprint 26 WS-B) — no new lever YAML, no new formula code, only the wiring in `loop/`.
+- **Honesty preserved:** Task 6's `ooa`/`bmca` Accept path never claims a state mutation that didn't happen — `applied: false` + `applyReason: "actuation_not_modeled_for_lever"` is explicit in both the code and every relevant test, matching this repo's provenance discipline.
+
