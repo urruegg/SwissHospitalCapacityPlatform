@@ -125,7 +125,9 @@ def build_worklist(
             recommendation = {
                 "lever_id": lever_id,
                 "params": {"n": 0, "to_ward": ASSUMED_SISTER_WARD, "ward": ward},
-                "predicted_impact": {"metric": "beds", "value": 0},
+                # matches rebalance_census_beds's metric label so the field is
+                # consistent regardless of which branch executes (see review fix).
+                "predicted_impact": {"metric": "rebalanced_beds", "value": 0},
                 "insight_text": f"{ward} is within its 90% target; no census rebalance needed",
                 "citations": _CITATIONS, "liveGroundingCitations": live_citations,
             }

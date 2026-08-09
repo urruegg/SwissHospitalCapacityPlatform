@@ -100,18 +100,41 @@ def test_dca_worklist_no_fabric_means_no_live_citations_key_change():
 
 
 def test_ooa_worklist_uses_real_formula_registry():
+    # Fixture C3: bedCapacity=8, 3 discharge-ready patients (PT-0001..0003,
+    # scores >=0.8) out of 6 occupied beds. expedite_discharge_beds's
+    # _bounded_bed_impact: delta = min(n=3, occupied=6) = 3, metric defaults to
+    # "beds" (expedite_discharge_beds does not override it) -- see
+    # compute_expected_impact.py.
     state = _seeded_state()
     wl = build_worklist("ooa", state, provenance="simulated")
     assert wl["recommendation"]["lever_id"] == "OOA-EXPEDITE-DISCHARGE"
-    assert wl["recommendation"]["predicted_impact"]["value"] >= 0
+    assert wl["recommendation"]["params"]["n"] == 3
     assert wl["recommendation"]["params"]["before"] == "end-of-shift"
+    assert wl["recommendation"]["predicted_impact"]["metric"] == "beds"
+    assert wl["recommendation"]["predicted_impact"]["value"] == 3
 
 
 def test_bmca_worklist_uses_real_formula_registry():
+    # Fixture C3: bedCapacity=8, seeded occupied=6 (< threshold_beds=round(8*.9)=7)
+    # would hit the n==0 short-circuit and never call compute_expected_impact.
+    # Flip both available beds to occupied so occupied=8 > 7, forcing n=1 and
+    # the real rebalance_census_beds formula path.
     state = _seeded_state()
+    ward = "C3"
+    for bed in state.beds_in_ward(ward):
+        if bed.state == "available":
+            bed.state = "occupied"
+    assert state.occupancy(ward) == 8
+
     wl = build_worklist("bmca", state, provenance="simulated")
-    assert wl["recommendation"]["lever_id"] == "BMCA-REBALANCE-CENSUS"
-    assert wl["recommendation"]["params"]["to_ward"] == "Medicine B"
+    rec = wl["recommendation"]
+    assert rec["lever_id"] == "BMCA-REBALANCE-CENSUS"
+    assert rec["params"]["to_ward"] == "Medicine B"
+    assert rec["params"]["n"] == 1
+    # rebalance_census_beds's _bounded_bed_impact: delta = min(n=1, occupied=8) = 1,
+    # metric="rebalanced_beds" (explicit override) -- see compute_expected_impact.py.
+    assert rec["predicted_impact"]["metric"] == "rebalanced_beds"
+    assert rec["predicted_impact"]["value"] == 1
 
 
 def test_orsa_and_sba_worklist_are_unchanged_placeholder():
