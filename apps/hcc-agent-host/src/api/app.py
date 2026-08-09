@@ -181,10 +181,14 @@ class HostState:
         # keeps the deterministic MockChatModel; both set (SIT/PROD) invokes
         # the real registered agents via FoundryResponsesChatModel.
         live_chat_model = _build_chat_model()
+        from persistence.cosmos_client import build_cosmos_persistence
+
+        self.persistence = build_cosmos_persistence()
         self.orchestrator = Orchestrator(
             chat_model=live_chat_model if live_chat_model is not None else MockChatModel(),
             fabric=self.fabric,
             data_agent=adapter,
+            persistence=self.persistence,
         )
         # #424 M3 — server-side (userOid x agent) -> threadId map. Shares the
         # orchestrator's persistence so a minted thread and its turns co-locate in
@@ -554,7 +558,7 @@ def create_app() -> FastAPI:
         from loop.decisions import decide
 
         try:
-            return decide(
+            outcome = decide(
                 name, req.decision, approver=approver, state=state, sim=sim,
                 params=req.params, provenance=gold.get("provenance", "simulated"),
             )
@@ -564,6 +568,10 @@ def create_app() -> FastAPI:
         except (ValueError, KeyError) as exc:
             # Unvalidated params (e.g. unknown ward) or a multi-ward snapshot -> 400.
             raise HTTPException(status_code=400, detail=str(exc))
+        state.persistence.write(
+            "approval-events", {**outcome, "correlationId": outcome["golden_thread"]}
+        )
+        return outcome
 
     @app.get("/agents/{name}/evidence")
     def evidence(name: str, branch: str = "accept", hospital: str = "USZ") -> dict[str, Any]:

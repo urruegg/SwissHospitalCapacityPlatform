@@ -107,3 +107,17 @@ def test_decision_approver_comes_from_obo_oid_not_header(monkeypatch):
     )
     assert resp.status_code == 200
     assert resp.json()["approver"] == "obo-approver-oid"
+
+
+def test_decision_outcome_is_persisted_to_approval_events():
+    client = _client()
+    resp = client.post(
+        "/agents/dca/decisions",
+        json={"decision": "deny", "hospital": "USZ", "params": {}},
+        headers=_OID,
+    )
+    assert resp.status_code == 200
+    state = get_state()
+    records = state.persistence.query_by_correlation("approval-events", resp.json()["golden_thread"])
+    assert len(records) == 1
+    assert records[0]["decision"] == "deny"
