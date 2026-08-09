@@ -49,3 +49,22 @@ def test_chat_obo_enabled_no_bearer_falls_back_to_unchanged(monkeypatch):
         json={"prompt": "Station B ist fast voll", "conversationId": "c1"},
     )
     assert resp.status_code == 200
+
+
+def test_chat_obo_active_role_not_held_is_refused_403(monkeypatch):
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "77777777-7777-7777-7777-777777777777"
+        obo_token = ""
+        roles = ("HCC.Viewer",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    client = TestClient(create_app())
+    resp = client.post(
+        "/agents/bmca-agent/chat",
+        json={"prompt": "hi", "conversationId": "c1"},
+        headers={"Authorization": "Bearer ok", "X-Active-Role": "HCC.SuperAdmin"},
+    )
+    assert resp.status_code == 403

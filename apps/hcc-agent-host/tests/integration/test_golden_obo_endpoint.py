@@ -82,3 +82,43 @@ def test_obo_context_routes_user_oid(monkeypatch):
     assert resp.status_code == 200
     assert resp.json()["_rls"]["provider"] == "simulated"
     assert ctx is not None
+
+
+def test_obo_active_role_not_held_is_refused_403(monkeypatch):
+    # A valid OBO context that holds only HCC.Viewer, but the caller asks for
+    # HCC.SuperAdmin via the header -- deny-by-default, never silently widen.
+    class _Ctx:
+        user_oid = "55555555-5555-5555-5555-555555555555"
+        obo_token = ""
+        roles = ("HCC.Viewer",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().get(
+        "/golden/network",
+        headers={
+            "X-Hospital-Scope": "aggregated",
+            "X-Active-Role": "HCC.SuperAdmin",
+            "Authorization": "Bearer ok",
+        },
+    )
+    assert resp.status_code == 403
+
+
+def test_obo_active_role_held_is_allowed(monkeypatch):
+    class _Ctx:
+        user_oid = "66666666-6666-6666-6666-666666666666"
+        obo_token = ""
+        roles = ("HCC.SuperAdmin", "HCC.Viewer")
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().get(
+        "/golden/network",
+        headers={
+            "X-Hospital-Scope": "aggregated",
+            "X-Active-Role": "HCC.SuperAdmin",
+            "Authorization": "Bearer ok",
+        },
+    )
+    assert resp.status_code == 200

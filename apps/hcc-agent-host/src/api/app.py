@@ -75,6 +75,19 @@ def _allowed_origins() -> list[str]:
     return list(_DEFAULT_ALLOWED_ORIGINS)
 
 
+def _require_active_role_held(obo, active_role: str) -> None:
+    """Deny-by-default: when an OBO context is present, the caller's requested
+    active role must be one they actually hold on the token. Absent OBO
+    (Demo mode), this check does not run -- unchanged legacy behavior."""
+    if obo is None or not active_role:
+        return
+    if active_role not in obo.roles:
+        raise HTTPException(
+            status_code=403,
+            detail=f"active role '{active_role}' is not held by the signed-in user",
+        )
+
+
 def _build_live_data_agent():
     """Return a live FabricDataAgentClient when env is fully configured, else None."""
     endpoint = os.environ.get("FABRIC_DATA_AGENT_ENDPOINT")
@@ -344,6 +357,7 @@ def create_app() -> FastAPI:
             obo = build_obo_context(authorization)
         except TokenValidationError as exc:
             raise HTTPException(status_code=401, detail=str(exc))
+        _require_active_role_held(obo, x_active_role)
         try:
             provider = state.rls_provider_for(obo.obo_token if obo else None)
             payload = load_golden(
@@ -391,6 +405,7 @@ def create_app() -> FastAPI:
         req: ChatRequest,
         authorization: str = Header(default=""),
         x_user_oid: str = Header(default=""),
+        x_active_role: str = Header(default=""),
     ) -> dict[str, Any]:
         state = get_state()
         manifest = state.require(name)
@@ -408,6 +423,7 @@ def create_app() -> FastAPI:
             obo = build_obo_context(authorization)
         except TokenValidationError as exc:
             raise HTTPException(status_code=401, detail=str(exc))
+        _require_active_role_held(obo, x_active_role)
         caller_oid = (obo.user_oid if obo else x_user_oid) or req.callerObjectId
         fabric_override = state.fabric_for(obo.obo_token) if obo else None
         reply = state.orchestrator.dispatch(
