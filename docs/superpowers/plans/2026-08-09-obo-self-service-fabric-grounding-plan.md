@@ -613,72 +613,80 @@ git commit -m "feat(agent-host): wire OBO context into the chat endpoint for rea
 
 ---
 
-## Task 4: Provision the Entra resources (self-service — still needs `approved-to-apply`)
+## Task 4: Provision the Entra resources (self-service — validated live, 2026-08-09)
 
 **Files:** none (Entra/Azure resources, not repo files — the *config* that
 references them lands in Task 5)
 
-> **Gate:** per AGENTS.md §4, creating a new Entra app registration + a
-> delegated permission is a new IAM grant. Even though this design confirms
-> no Fabric/Power BI/Global Administrator is required (§1.2 of the design
-> doc), do not run these steps until a human posts `approved-to-apply` on the
-> tracking issue.
+> **Status: Steps 1–3 and 5 already done and validated live** — see
+> `docs/superpowers/specs/2026-08-09-obo-self-service-fabric-grounding-design.md`
+> §4.1 for the full evidence (a real device-code sign-in, OBO exchange, and
+> a real OneLake read of `gold.bed_assignment`, 173 rows, all as a Global
+> Reader with zero admin action). Only Step 4 (client secret → Key Vault)
+> remains, gated on reaching the Key Vault's private network (see its own
+> note below). No further `approved-to-apply` gate applies to Steps 1–3/5 —
+> the resources already exist; Step 4 is a routine secret rotation.
 
-- [ ] **Step 1: Create the agent-host app registration**
+- [x] **Step 1: Create the agent-host app registration** — done.
+  `appId: b7608e39-e23a-4576-8489-e092ba5f726b`,
+  tenant `1337187a-4c41-4da9-8fca-731bba7a4329`. Reuse this app; do not
+  create a second one.
 
-```powershell
-$app = az ad app create --display-name "hcc-agent-host" --sign-in-audience AzureADMyOrg | ConvertFrom-Json
-$app.appId
-```
-
-- [ ] **Step 2: Expose the `access_as_user` API scope**
-
-```powershell
-$scopeId = [guid]::NewGuid().ToString()
-az ad app update --id $app.appId --identifier-uris "api://$($app.appId)"
-az rest --method PATCH --uri "https://graph.microsoft.com/v1.0/applications/$($app.id)" --body (@{
-  api = @{
-    oauth2PermissionScopes = @(@{
-      id = $scopeId
-      adminConsentDescription = "Allow the app to access hcc-agent-host on behalf of the signed-in user"
-      adminConsentDisplayName = "Access hcc-agent-host"
-      userConsentDescription = "Allow this app to access hcc-agent-host on your behalf"
-      userConsentDisplayName = "Access hcc-agent-host"
-      value = "access_as_user"
-      type = "User"
-      isEnabled = $true
-    })
-  }
-} | ConvertTo-Json -Depth 5)
-```
-
-- [ ] **Step 3: Add the delegated `OneLake.Read.All` permission**
+- [x] **Step 2: Expose the `access_as_user` API scope** — done. Verify with:
 
 ```powershell
-$powerBiServiceAppId = "00000009-0000-0000-c000-000000000000"
-$oneLakeScopeId = (az ad sp show --id $powerBiServiceAppId --query "oauth2PermissionScopes[?value=='OneLake.Read.All'].id" -o tsv)
-az ad app permission add --id $app.appId --api $powerBiServiceAppId --api-permissions "$($oneLakeScopeId)=Scope"
+az ad app show --id b7608e39-e23a-4576-8489-e092ba5f726b --query "{identifierUris: identifierUris, scopes: api.oauth2PermissionScopes}" -o json
 ```
+
+- [x] **Step 3: Add the delegated Azure Storage `user_impersonation`
+  permission** — done. **Correction from the original plan**: the required
+  permission is Azure Storage's `user_impersonation` (resource
+  `e406a681-f3d4-42a8-90b6-c2b029497af1`), not `OneLake.Read.All` on Power BI
+  Service — validated live that `FabricDeltaClient` needs a
+  `storage.azure.com`-scoped token (its `_STORAGE_SCOPE` constant), and a
+  Power BI Service / `api.fabric.microsoft.com`-scoped token does not work
+  for the OneLake blob-compatible read (401). Verify with:
+
+```powershell
+az ad app show --id b7608e39-e23a-4576-8489-e092ba5f726b --query "requiredResourceAccess" -o json
+```
+
+Expected: one entry, `resourceAppId: e406a681-f3d4-42a8-90b6-c2b029497af1`,
+`resourceAccess: [{"id": "03e0da56-190b-40ad-a80c-ea378c433f7f", "type": "Scope"}]`.
 
 - [ ] **Step 4: Create a client secret and store it in Key Vault**
 
+The client secret used during live validation was deleted after the test
+(no long-lived credential left dangling). Generate a fresh one and store it
+— **this must run from a network path that can reach the SIT Key Vault**
+(`kv-ihzhhpf-sit-y26y`), which has public network access disabled; a local
+developer session gets `(Forbidden) Public network access is disabled`. Run
+this from the deployment pipeline (or another already-approved
+private-endpoint-connected path), not an ad hoc session:
+
 ```powershell
-$secret = az ad app credential reset --id $app.appId --display-name "obo-exchange" --years 1 | ConvertFrom-Json
-az keyvault secret set --vault-name <existing-sit-keyvault-name> --name "agent-host-obo-client-secret" --value $secret.password
+$secret = az ad app credential reset --id b7608e39-e23a-4576-8489-e092ba5f726b --display-name "obo-production-secret" --years 1 | ConvertFrom-Json
+az keyvault secret set --vault-name kv-ihzhhpf-sit-y26y --name "agent-host-obo-client-secret" --value $secret.password
 ```
 
-- [ ] **Step 5: Add the exposed scope to the SPA's API permissions**
+- [x] **Step 5: Add the exposed scope to the SPA's API permissions** — done.
+  Verified: `ihzhhpf-app` (`appId: 52681a08-c792-44b1-b6b5-01cb560d450f`)
+  now lists `resourceAppId: b7608e39-e23a-4576-8489-e092ba5f726b`
+  (`hcc-agent-host`) with the `access_as_user` scope
+  (`cafa3d7d-adfe-4883-b2bd-946c13432cd9`) in its `requiredResourceAccess`.
 
 ```powershell
-$spaAppId = "52681a08-c792-44b1-b6b5-01cb560d450f"  # ihzhhpf-app (sit)
-az ad app permission add --id $spaAppId --api $app.appId --api-permissions "$($scopeId)=Scope"
+az ad app permission add --id 52681a08-c792-44b1-b6b5-01cb560d450f --api b7608e39-e23a-4576-8489-e092ba5f726b --api-permissions "cafa3d7d-adfe-4883-b2bd-946c13432cd9=Scope"
 ```
 
-- [ ] **Step 6: Record the new identifiers for Task 5**
+- [x] **Step 6: Record the new identifiers for Task 5** — done, recorded here:
 
-Note `$app.appId` (→ `OBO_CLIENT_ID`), the tenant ID (→ `OBO_TENANT_ID`,
-already known: `1337187a-4c41-4da9-8fca-731bba7a4329`), and
-`api://$($app.appId)/access_as_user` (→ `VITE_AGENT_HOST_SCOPE`) for the next task.
+| Value | Setting |
+| ----- | ------- |
+| `b7608e39-e23a-4576-8489-e092ba5f726b` | `OBO_CLIENT_ID` |
+| `1337187a-4c41-4da9-8fca-731bba7a4329` | `OBO_TENANT_ID` |
+| `api://b7608e39-e23a-4576-8489-e092ba5f726b/access_as_user` | `VITE_AGENT_HOST_SCOPE` |
+| `https://storage.azure.com/.default` | the OBO exchange scope (not `https://api.fabric.microsoft.com/.default` — corrected per §4.1 of the design doc) |
 
 ---
 
@@ -718,6 +726,9 @@ param oboAudience string = ''
 
 @description('Sprint 43 WS-6 — expected issuer on the caller bearer token.')
 param oboIssuer string = ''
+
+@description('Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead.')
+param oboFabricScope string = 'https://storage.azure.com/.default'
 ```
 
 Then find where `OBO_ENABLED` is set as a container env var and add the new
@@ -761,6 +772,10 @@ becomes:
     name: 'OBO_ISSUER'
     value: oboIssuer
   }
+  {
+    name: 'OBO_FABRIC_SCOPE'
+    value: oboFabricScope
+  }
 ```
 
 Add the matching `secrets` entry (find the container app's `secrets` array
@@ -789,24 +804,26 @@ through to the `agent-host` module invocation the same way
 - [ ] **Step 3: Set the new params in `sit.bicepparam`**
 
 In `infra/environments/sit.bicepparam`, find `param agentHostOboEnabled = false`
-and change it, adding the new params directly below with values from Task 4's
-output (the client secret must be a Key Vault reference, not a literal —
-follow whatever existing pattern this file uses for other secrets, e.g.
-check how `FOUNDRY_PROJECT_ENDPOINT` or similar secrets are referenced):
+and change it, adding the new params directly below (values already known
+from the live-validated Entra resources, §5.2 of the design doc — the client
+secret must be a Key Vault reference generated in Task 4 Step 4, not a
+literal — follow whatever existing pattern this file uses for other secrets,
+e.g. check how `FOUNDRY_PROJECT_ENDPOINT` or similar secrets are referenced):
 
 ```bicep
 // Sprint 43 WS-6 (approved-to-apply by @urruegg, <date>): flips on the OBO
 // seam for chat-grounding only (board-data RLS stays simulated per WS-3's
-// re-scoping). Self-service Entra provisioning per
-// docs/superpowers/specs/2026-08-09-obo-self-service-fabric-grounding-design.md
-// — no Fabric/Power BI/Global Administrator involved.
+// re-scoping). Self-service Entra provisioning, validated live 2026-08-09 —
+// no Fabric/Power BI/Global Administrator involved. See
+// docs/superpowers/specs/2026-08-09-obo-self-service-fabric-grounding-design.md §4.1.
 param agentHostOboEnabled = true
 param agentHostOboTenantId = '1337187a-4c41-4da9-8fca-731bba7a4329'
-param agentHostOboClientId = '<app.appId from Task 4>'
-param agentHostOboClientSecret = '<Key Vault reference — match this file's existing secret-reference pattern>'
+param agentHostOboClientId = 'b7608e39-e23a-4576-8489-e092ba5f726b'
+param agentHostOboClientSecret = '<Key Vault reference to agent-host-obo-client-secret, generated in Task 4 Step 4 — match this file's existing secret-reference pattern>'
 param agentHostOboJwksUrl = 'https://login.microsoftonline.com/1337187a-4c41-4da9-8fca-731bba7a4329/discovery/v2.0/keys'
-param agentHostOboAudience = 'api://<app.appId from Task 4>'
+param agentHostOboAudience = 'api://b7608e39-e23a-4576-8489-e092ba5f726b'
 param agentHostOboIssuer = 'https://login.microsoftonline.com/1337187a-4c41-4da9-8fca-731bba7a4329/v2.0'
+param agentHostOboFabricScope = 'https://storage.azure.com/.default'
 ```
 
 - [ ] **Step 4: Add `VITE_AGENT_HOST_SCOPE` to the SPA's Container App**
@@ -828,7 +845,7 @@ Thread `agentHostScope` through `infra/main.bicep` → this module the same
 way other per-app params already do, and set it in `sit.bicepparam`:
 
 ```bicep
-param appFluentAgentHostScope = 'api://<app.appId from Task 4>/access_as_user'
+param appFluentAgentHostScope = 'api://b7608e39-e23a-4576-8489-e092ba5f726b/access_as_user'
 ```
 
 - [ ] **Step 5: Validate the Bicep builds cleanly**

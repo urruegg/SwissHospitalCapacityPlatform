@@ -1,9 +1,9 @@
 ---
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-09
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: N/A (new document)
+Previous Version: 1.0.0 (initial brainstormed design, not yet live-validated)
 ---
 
 # Self-Service OBO for Real Fabric Grounding (No Fabric Admin Required) — Design
@@ -167,13 +167,13 @@ sequenceDiagram
 
     User->>SPA: Sign in
     SPA->>Entra: acquireToken(scopes=[api://<agent-host>/access_as_user])
-    Entra-->>User: One-time consent screen (agent-host access + OneLake.Read.All)
+    Entra-->>User: One-time consent screen (agent-host access + Azure Storage)
     User->>Entra: Accept
     Entra-->>SPA: access token (aud=agent-host)
     SPA->>Host: POST /agents/{name}/chat  Authorization: Bearer <token>
     Host->>Host: build_obo_context(authorization)  [existing, #424 M5]
-    Host->>Entra: OnBehalfOfCredential.get_token("https://api.fabric.microsoft.com/.default")
-    Entra-->>Host: OBO'd Fabric token (delegated, user's own OneLake.Read.All grant)
+    Host->>Entra: OnBehalfOfCredential.get_token("https://storage.azure.com/.default")
+    Entra-->>Host: OBO'd token (delegated, user's own Azure Storage grant)
     Host->>OneLake: FabricDeltaClient.query(table) using the OBO token
     OneLake-->>Host: real Gold rows (per-user delegated read -- not an SPN call)
     Host-->>SPA: grounded reply + real citations
@@ -190,20 +190,25 @@ sequenceDiagram
 | Frontend forwards the token | `apps/hcc-app-fluent/src/copilot-drawer/agent-manifest.ts` (or wherever `invokeAgent`/`fetch` builds the chat request) | Attach `Authorization: Bearer <token>` when `VITE_AGENT_HOST_SCOPE` is configured (ADR-0057 already anticipated this exact env var name). |
 | MSAL requests the new scope | `apps/hcc-app-fluent/src/auth/msal-provider.ts` / `auth-session.tsx` | Add `VITE_AGENT_HOST_SCOPE` to the acquired-token scopes list, config-gated (absent = unchanged OIDC-only behavior). |
 
-### 5.2 New Entra resources (self-service, no admin — the core finding)
+### 5.2 New Entra resources (self-service, no admin — validated live, §4.1)
 
-1. App registration `hcc-agent-host` (confidential client), created by any
-   signed-in user (`allowedToCreateApps: true`).
-2. "Expose an API" → scope `access_as_user` on that app.
-3. "API permissions" → add **delegated** `OneLake.Read.All` (resource: Power
-   BI Service, `9d64a6a4-...` — the same first-party resource used above).
-   `type: User` → no admin consent grant needed; the combined consent screen
-   at first sign-in satisfies it.
-4. A client secret (or certificate) on the new app registration, stored in
-   the existing Key Vault used by `infra/` — a normal app secret the
-   registration's own creator can generate, not a tenant-wide grant.
-5. SPA (`ihzhhpf-app`) — add `api://<agent-host-app-id>/access_as_user` to
-   its "API permissions" so MSAL can request it.
+1. App registration `hcc-agent-host` -- **already created**:
+   `appId: b7608e39-e23a-4576-8489-e092ba5f726b` (tenant
+   `1337187a-4c41-4da9-8fca-731bba7a4329`). Reuse this registration in Task 4
+   of the implementation plan instead of creating a new one.
+2. "Expose an API" → scope `access_as_user` -- **already configured** on the
+   registration above.
+3. "API permissions" → delegated **Azure Storage `user_impersonation`**
+   (resource `e406a681-f3d4-42a8-90b6-c2b029497af1`) -- **already configured**.
+   `type: User` → no admin consent grant needed; validated live (§4.1).
+4. A client secret -- generate a fresh one at actual deploy time (the one
+   used for validation was deleted after the test) and store it in the SIT
+   Key Vault. **Note:** the SIT Key Vault has public network access
+   disabled; this step must run from a network path that can reach it (the
+   deployment pipeline, not an ad hoc local session).
+5. SPA (`ihzhhpf-app`) -- add
+   `api://b7608e39-e23a-4576-8489-e092ba5f726b/access_as_user` to its "API
+   permissions" so MSAL can request it.
 
 ### 5.3 Config (Bicep — already has the placeholders from ADR-0057)
 
@@ -223,6 +228,11 @@ the SPA's Container App.
 - **Client secret rotation** — a normal Key Vault secret; add to whatever
   rotation cadence other agent-host secrets already follow (check
   `docs/SECURITY.md` for the existing pattern before implementing).
+- **Key Vault has no public network access** (confirmed live, §4.1) — writing
+  the client secret must happen from a network path that can reach
+  `kv-ihzhhpf-sit-y26y` (the deployment pipeline, a private-endpoint-connected
+  session, or a temporary, approved public-access exception); a local
+  developer session cannot do this directly.
 - **Consent policy could change** — this design depends on this tenant's
   *current* `microsoft-user-default-allow-consent-apps` policy staying
   enabled. If a future tenant hardening effort disables user consent, this
