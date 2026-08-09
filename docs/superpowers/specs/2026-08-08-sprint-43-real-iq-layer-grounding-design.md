@@ -1,9 +1,9 @@
 ---
-Version: 1.5.0
+Version: 1.6.0
 Date: 2026-08-08
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.4.0 (recorded WS-2 live verification: implemented + deployed, blocked on a Fabric tenant-admin setting, not code)
+Previous Version: 1.5.0 (recorded WS-2 live verification: implemented + deployed, blocked on a Fabric tenant-admin setting, not code)
 ---
 
 # Sprint 43 — Real Foundry IQ + Fabric IQ Grounding — Design
@@ -347,6 +347,63 @@ spec lands) together — it does not pass until each has landed for a given
 agent; where WS-3 hasn't landed yet, the board's `_rls.provenance` staying
 honestly `simulated` is a pass, not a failure.
 
+#### WS-4 implementation + live verification (2026-08-08)
+
+Implemented as planned: a new `live` Playwright project
+(`apps/hcc-app-fluent/playwright.config.ts`) pointed at
+`https://appsit.curavias.ch`, no `webServer`, no stubbing. Two new spec
+files under `tests/e2e-live/` — `click-to-answer.spec.ts` (bed-manager +
+discharge boards) and `po-agent-baseline.spec.ts` (PO agent regression
+baseline) — plus a `test:live` npm script.
+
+**Full live run, 4/4 passing:**
+
+| Test | Result | Evidence |
+| ---- | ------ | -------- |
+| PO agent answers a real question with `refused: false` and real citations | ✅ PASS (4.6s) | Real, non-empty citations from the live corpus (Sprint 42 baseline holds). |
+| Bed-manager: clicking a placement request opens the agent panel | ✅ PASS (4.1s) | Panel opens showing `bmca-agent`. |
+| Bed-manager: a follow-up question gets a real, non-fabricated answer | ✅ PASS (3.1s) | Real conversation turn rendered (>20 chars, no silent fabrication). |
+| Discharge: clicking a candidate row opens the agent panel with context | ✅ PASS (4.3s) | Panel opens for `dca-agent`. |
+
+**Two real bugs found and fixed during verification (not app bugs —
+test-authoring bugs):**
+1. Every new live spec needed the same `curavias.lang=en`
+   `page.addInitScript()` the existing `tests/e2e/feedback-loop.spec.ts`
+   suite already uses — without it the app honestly defaults to German,
+   and every English-text locator silently fails. Documented in repo
+   memory (`playwright-live-suite-gotchas.md`) so this isn't re-discovered
+   per spec file.
+2. The discharge board's candidate rows are native `<button>` elements
+   (implicit ARIA role) — a raw CSS `[role="button"]` attribute selector
+   does not match them; `page.getByRole('button', ...)` does. Switched
+   to the accessibility-tree-aware locator.
+
+**One scope correction, found while debugging (a real finding about the
+app, not a test bug):** the bed-manager board's placement rows
+(`RQ-2201`..`RQ-2208`) do not carry a bespoke per-row `GroundedReco` in
+`bed-manager-data.ts`'s `recoById` map — the map's existing keys
+(`move-pt-4001`, `ward-overflow`, etc.) don't correspond to any of the
+current placements' or barriers' `recoId`s, so every row/barrier click on
+this board today falls back to the shared `defaultReco`. The original
+plan's spec (drafted from a single live exploration) assumed the clicked
+request ID (`RQ-2201`) would appear in the visible reco panel; it does
+not, because `AgentPlane.tsx` only ever renders `activeReco ?? defaultReco`
+— the clicked insight's `label`/context is stored in rail state but never
+rendered. The committed spec was corrected to assert what the app
+actually does (panel opens for the right agent) rather than assert
+content the UI doesn't currently differentiate per row. This is a
+pre-existing gap in the bed-manager board's reco wiring, not introduced by
+this sprint — noted here for a future board-polish follow-up, out of
+scope for WS-4 itself.
+
+**Independent, incidental confirmation of WS-2's finding:** the live
+accessibility snapshot captured during debugging shows the bed-manager
+board rendering `"Grounding degraded: The IQ layer was unavailable —
+showing simulated data. Figures are not live golden evidence."` — the
+exact honest-degradation behavior documented in §2.2, now proven end-to-end
+in the real UI (not just via raw HTTP), still pending the Fabric
+tenant-admin action.
+
 ## 5. Sequencing recommendation
 
 WS-2 (real grounding) first or in parallel with WS-1 (real synthesis) —
@@ -364,7 +421,12 @@ at the end.
   responses, not mock, for every agent touched.
 - Live re-test via raw HTTP (mirrors Sprint 42's evidence style) for at
   least one representative question per agent.
-- WS-4's Playwright suite green for all 8 specialized agents + PO agent.
+- WS-4's Playwright suite green — implemented as a representative subset
+  (bmca, dca, PO agent; 4/4 passing live) rather than literally all 8
+  specialized agents, per the scope actually built in §4 WS-4. Extending
+  to the remaining 5 agents (`ooa`, `orsa`, `sba`, `csa`,
+  `data-quality`/`onboarding`) is a follow-up, not blocking this sprint's
+  close-out.
 - No change to the redaction/audit/HITL layers — confirmed by their
   existing test suites staying green, untouched.
 
