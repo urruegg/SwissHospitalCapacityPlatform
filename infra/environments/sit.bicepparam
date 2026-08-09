@@ -287,7 +287,22 @@ param fabricLakehouseId = '30594c20-46ba-40ea-91fa-4701b105e0b9'
 // is left empty so infra/main.bicep falls back to the shared platform Key
 // Vault (platformFoundation.outputs.keyVaultName), which IS kv-ihzhhpf-sit-y26y.
 // approved-to-apply by @urruegg (2026-08-09).
-param agentHostOboEnabled = true
+//
+// *** REVERTED to false (2026-08-09, same-day): OBO_ENABLED is a SHARED,
+// GLOBAL flag also read by the pre-existing /golden board-data endpoint
+// (golden()'s own build_obo_context(authorization) call) -- enabling it
+// broke every board's live data fetch with a hard 401 (confirmed live:
+// GET /golden/bed-manager 401'd even with the legacy X-User-Oid headers
+// present, no bearer at all), because /golden's OBO consumer was NOT
+// scoped to WS-3 (explicitly out of scope, board data stays simulated
+// per the WS-3 re-scoping decision) the way this design intended. The
+// chat-grounding code (Tasks 1-3) is unaffected and stays deployed/dormant.
+// Follow-up needed before re-enabling: either split OBO_ENABLED into two
+// independently-gated flags (one for /golden, one for /agents/*/chat), or
+// confirm/patch /golden to gracefully degrade instead of hard-401 when
+// OBO is on but a specific caller has no bearer. Tracked as a new
+// follow-up, not yet filed as an issue. ***
+param agentHostOboEnabled = false
 param agentHostOboTenantId = '1337187a-4c41-4da9-8fca-731bba7a4329'
 param agentHostOboClientId = 'b7608e39-e23a-4576-8489-e092ba5f726b'
 param agentHostOboClientSecretName = 'agent-host-obo-client-secret'
