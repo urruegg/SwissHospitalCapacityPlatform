@@ -1,9 +1,9 @@
 ---
-Version: 1.6.0
-Date: 2026-08-08
+Version: 1.7.0
+Date: 2026-08-09
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.5.0 (recorded WS-2 live verification: implemented + deployed, blocked on a Fabric tenant-admin setting, not code)
+Previous Version: 1.6.0 (recorded WS-4 live Playwright verification, 4/4 passing)
 ---
 
 # Sprint 43 — Real Foundry IQ + Fabric IQ Grounding — Design
@@ -403,6 +403,108 @@ showing simulated data. Figures are not live golden evidence."` — the
 exact honest-degradation behavior documented in §2.2, now proven end-to-end
 in the real UI (not just via raw HTTP), still pending the Fabric
 tenant-admin action.
+
+### WS-5 — Full-agent IQ verification framework + closed-loop quality fixes (2026-08-09)
+
+Extends WS-4's representative subset (bmca/dca/PO) to all 6 board-bound
+agents (`ooa`, `orsa`, `sba`, `csa` added) via a shared, reusable helper
+(`apps/hcc-app-fluent/tests/e2e-live/helpers/live-agent.ts`) rather than
+per-board copy-paste specs: `forceEnglish`, `ensureAgentPanelOpen`,
+`askFirstSuggestedQuestion` (clicks the board's own locale-safe `askAbout`
+chip instead of typing English text), and `captureAnswerEvidence` (polls the
+conversation until the real reply arrives, then records citations presence,
+a `refused` badge check, and an evidence-driven "honestly degraded" text
+heuristic). Every run attaches full question/answer evidence to the
+Playwright report via `testInfo.attach`, so a failure is always triageable
+from the artefact, not just a pass/fail bit.
+
+**Full live run, 8/8 passing** (bmca, dca, ooa, orsa, sba, csa, PO agent — 2
+tests each for bmca/PO, 1 each for the rest):
+
+| Agent | Result | Note |
+| ----- | ------ | ---- |
+| PO agent | ✅ PASS | Real, non-empty citations (Sprint 42 baseline holds). |
+| bmca-agent | ✅ PASS (x2) | Panel opens correctly; follow-up gets a real answer. |
+| dca-agent | ✅ PASS | Panel opens for the right agent. |
+| ooa-agent | ✅ PASS | Honest disclosure ("I don't have access to the forecast data in this session"); ontology citations (`hcp:Ward`, `hcp:Bed`) via its `groundingAgent: primary` binding. |
+| orsa-agent | ✅ PASS | Honest disclosure after the WS-5 citations fix (see below). |
+| sba-agent | ✅ PASS | Honest disclosure, explicitly naming the tables it could not retrieve. |
+| csa-agent | ✅ PASS (intermittent — see finding below) | Sometimes hedges honestly ("synthetic simulation"), sometimes presents specific percentages as empirical fact with no citation. |
+
+#### Finding 1 (fixed + deployed): citations listed tables that returned zero rows
+
+Live evidence surfaced a real bug, independent of the Fabric-tenant blocker:
+`Orchestrator._grounding()` (`apps/hcc-agent-host/src/orchestrator/dispatch.py`)
+appended every configured `manifest.grounding_tables` entry to `citations`
+unconditionally — even when the table's query returned `[]` (which is every
+table today, per WS-2's blocker). A user could see "Quellen: gold.or_schedule,
+gold.anaesthesia_status, gold.staff_availability" and reasonably believe the
+answer was grounded on that data, when zero rows were actually retrieved —
+a real, if subtle, honesty gap in the citations footer (the model's own prose
+was already honest; the citations UI signal was not).
+
+**Fix** (TDD: red → green, 2 new unit tests + 185/185 full suite green):
+`_grounding()` now only appends a table to `citations` when its query
+returned a non-empty result. Deployed to SIT (`hcc-agent-host:0cfac41`) and
+live-verified: orsa-agent's citations footer no longer appears at all (since
+every configured table is currently empty), and its prose is unaffected
+(still honestly discloses no access to live OR-schedule data).
+
+#### Finding 2 (documented, not fixed — needs its own follow-up): csa-agent intermittent fabrication risk
+
+`FoundryResponsesChatModel` hardcodes `tool_choice: "none"` for every
+registered agent (WS-1's fix for an unrelated `decision_tier_coordination_*`
+tool hijacking replies with a `function_call`). Side effect: this also blocks
+csa-agent's own **legitimate** Cosmos `scenarios` vector-search tool (its
+designed Prepare-phase grounding source, `AGENT.md` §4). Observed live: the
+same question ("What is the heatwave capacity impact?") sometimes gets an
+honestly-hedged answer ("our own synthetic simulations", "order-of-magnitude")
+and other times a confidently-worded answer citing specific percentages as
+coming from "our seeded 'Summer Heatwave' scenario" and "historical 2018-2025
+UK heatwave analyses" — with zero citations, because no tool call actually
+ran. The model knows the scenario *name* (baked into its instructions) but
+cannot verify or retrieve it live, and does not consistently disclose that.
+Recorded in repo memory (`csa-agent-tool-choice-fabrication-risk.md`) with a
+recommended follow-up: investigate a scoped `tool_choice` (allow the
+scenario-search tool, still block the unrelated one) or tighten every
+registered agent's own baked-in instructions to require explicit disclosure
+whenever no tool call was made this turn. Not attempted in this pass — it
+affects all 8 agents' call shape and needs its own careful, isolated change.
+
+#### Root-cause investigation: how to get real Fabric grounding flowing (requested by @urruegg)
+
+Re-confirmed WS-2's blocker with new proof: reading the same OneLake Delta
+table with a **delegated user token** (not the managed identity) succeeded —
+173 real rows from `gold.bed_assignment`. This isolates the problem entirely
+to the service-principal-vs-tenant-setting gate; the query/data model is
+correct.
+
+Checked this tenant's actual admin capability: the routine `admin@` account
+is **Global Reader** only (confirmed via Graph: 403 on the Fabric admin API
+and on PIM eligibility). No one holds Fabric Administrator or Power BI
+Administrator. The only Global Administrator is a sealed break-glass account.
+
+Two real paths forward, both requiring the same missing ingredient (a real
+tenant admin), presented to @urruegg for a decision (not started without
+approval — creating new Entra identity surface is exactly the kind of action
+this repo's own governance gates on):
+
+1. **Path 1 (recommended): flip the tenant setting.** WS-2's code is already
+   deployed; a single Fabric Admin Portal toggle ("Service principals can
+   call Fabric public APIs") unblocks it with zero further code changes.
+2. **Path 2 (heavier): enable the existing OBO seam.** Found a fully-designed
+   but deliberately-unprovisioned On-Behalf-Of path (`#424 M5`,
+   [ADR-0057](../../adr/0057-obo-seam-completion-defer-live-provisioning.md)) —
+   code-complete for the RLS/thread-provider paths, but the chat-grounding
+   path (`Orchestrator.fabric`) does not yet consume an OBO token at all, and
+   go-live needs a new Entra app registration + secret, admin-consented
+   delegated Fabric permissions (needing the same missing admin role), a
+   Redis grounding-cache key fix (currently keyed by table only — would leak
+   across users once grounding becomes per-user), and landing #510 (dynamic-
+   RLS TMDL) for the board-data path specifically. ADR-0057 already scopes
+   this as a future, separately-gated expansion requiring its own ADR +
+   `approved-to-apply` — this investigation confirms that scoping is still
+   correct and adds the concrete go-live checklist above.
 
 ## 5. Sequencing recommendation
 
