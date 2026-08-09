@@ -46,9 +46,11 @@ param oboTenantId string = ''
 @description('Sprint 43 WS-6 — client ID of the hcc-agent-host app registration used for the OBO exchange.')
 param oboClientId string = ''
 
-@description('Sprint 43 WS-6 — Key Vault secret URI for the agent-host app registration client secret.')
-@secure()
-param oboClientSecret string = ''
+@description('Sprint 43 WS-6 — resource ID of the Key Vault storing the agent-host OBO client secret. Required when oboEnabled = true.')
+param oboKeyVaultId string = ''
+
+@description('Sprint 43 WS-6 — name of the Key Vault secret holding the agent-host OBO client secret. Required when oboEnabled = true.')
+param oboClientSecretName string = ''
 
 @description('Sprint 43 WS-6 — JWKS URL used to validate the caller bearer (tenant discovery keys endpoint).')
 param oboJwksUrl string = ''
@@ -123,6 +125,18 @@ module redis 'redis.bicep' = if (enableRedisModule) {
   }
 }
 
+// Sprint 43 WS-6 -- resolved via ARM's own getSecret() at deploy time (same
+// mechanism infra/modules/data-platform/main.bicep already uses for
+// sourceSqlAdminPasswordSecretName), not a runtime network call from the
+// running container -- works even when the Key Vault has public network
+// access disabled (validated live, 2026-08-09).
+var oboKvIdParts = split(oboKeyVaultId, '/')
+
+resource oboKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (oboEnabled && !empty(oboKeyVaultId) && !empty(oboClientSecretName)) {
+  name: last(oboKvIdParts)
+  scope: resourceGroup(oboKvIdParts[2], oboKvIdParts[4])
+}
+
 module containerApp 'container-app.bicep' = {
   name: 'agent-host-container-app'
   params: {
@@ -143,7 +157,7 @@ module containerApp 'container-app.bicep' = {
     oboEnabled: oboEnabled
     oboTenantId: oboTenantId
     oboClientId: oboClientId
-    oboClientSecret: oboClientSecret
+    oboClientSecret: (oboEnabled && !empty(oboKeyVaultId) && !empty(oboClientSecretName)) ? oboKeyVault.getSecret(oboClientSecretName) : ''
     oboJwksUrl: oboJwksUrl
     oboAudience: oboAudience
     oboIssuer: oboIssuer

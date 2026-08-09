@@ -318,9 +318,11 @@ param agentHostOboTenantId string = ''
 @description('Sprint 43 WS-6 — client ID of the hcc-agent-host app registration used for the OBO exchange.')
 param agentHostOboClientId string = ''
 
-@description('Sprint 43 WS-6 — Key Vault secret URI for the agent-host app registration client secret.')
-@secure()
-param agentHostOboClientSecret string = ''
+@description('Sprint 43 WS-6 — resource ID of the Key Vault storing the agent-host OBO client secret. Empty (default) falls back to the shared platform Key Vault (platformFoundation.outputs.keyVaultName), mirroring sourceSqlKeyVaultId\'s own fallback pattern.')
+param agentHostOboKeyVaultId string = ''
+
+@description('Sprint 43 WS-6 — name of the Key Vault secret holding the agent-host OBO client secret. Required when agentHostOboEnabled = true.')
+param agentHostOboClientSecretName string = ''
 
 @description('Sprint 43 WS-6 — JWKS URL used to validate the caller bearer (tenant discovery keys endpoint).')
 param agentHostOboJwksUrl string = ''
@@ -749,7 +751,8 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     oboEnabled: agentHostOboEnabled
     oboTenantId: agentHostOboTenantId
     oboClientId: agentHostOboClientId
-    oboClientSecret: agentHostOboClientSecret
+    oboKeyVaultId: !empty(agentHostOboKeyVaultId) ? agentHostOboKeyVaultId : resourceId('Microsoft.KeyVault/vaults', platformFoundation.outputs.keyVaultName)
+    oboClientSecretName: agentHostOboClientSecretName
     oboJwksUrl: agentHostOboJwksUrl
     oboAudience: agentHostOboAudience
     oboIssuer: agentHostOboIssuer
