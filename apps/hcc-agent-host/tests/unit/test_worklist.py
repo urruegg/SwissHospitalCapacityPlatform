@@ -29,8 +29,23 @@ _GOLD = json.loads(
 )
 
 
+class _FakeFabric:
+    def __init__(self, rows=None, raise_on_query=False):
+        self._rows = rows or []
+        self._raise = raise_on_query
+
+    def query(self, table: str):
+        if self._raise:
+            raise RuntimeError("simulated fabric outage")
+        return self._rows
+
+
+def _seeded_state():
+    return seed_sim_state_from_gold(_GOLD)
+
+
 def test_dca_worklist_lists_open_barrier_candidates_and_a_recommendation():
-    state = seed_sim_state_from_gold(_GOLD)
+    state = _seeded_state()
     wl = build_worklist("dca", state, provenance="live")
     assert wl["role"] == "dca"
     assert len(wl["observations"]) == 3  # 3 open transport barriers
@@ -61,3 +76,24 @@ def test_dca_worklist_no_open_barriers_is_a_safe_noop():
     assert rec["predicted_impact"]["value"] == 0
     assert "no open transport barriers" in rec["insight_text"].lower()
     assert rec["citations"]
+
+
+def test_dca_worklist_attaches_live_citation_when_fabric_present():
+    state = _seeded_state()
+    fake_rows = [{"patient": "p1", "ward": "B"}]
+    fabric = _FakeFabric(rows=fake_rows)
+    wl = build_worklist("dca", state, provenance="simulated", fabric=fabric)
+    assert wl["recommendation"]["liveGroundingCitations"] == fake_rows
+
+
+def test_dca_worklist_omits_live_citation_on_fabric_failure():
+    state = _seeded_state()
+    fabric = _FakeFabric(raise_on_query=True)
+    wl = build_worklist("dca", state, provenance="simulated", fabric=fabric)
+    assert wl["recommendation"]["liveGroundingCitations"] == []
+
+
+def test_dca_worklist_no_fabric_means_no_live_citations_key_change():
+    state = _seeded_state()
+    wl = build_worklist("dca", state, provenance="simulated")
+    assert wl["recommendation"]["liveGroundingCitations"] == []

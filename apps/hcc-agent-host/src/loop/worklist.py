@@ -17,7 +17,21 @@ _BARRIER_TYPE = "transport"
 _CITATIONS = ["gold.discharge_candidates", "gold.fact_capacity_baseline"]
 
 
-def build_worklist(role: str, state: SimState, provenance: str = "simulated") -> Dict[str, Any]:
+def _live_citations(fabric: Any, table: str) -> list[dict[str, Any]]:
+    if fabric is None:
+        return []
+    try:
+        return fabric.query(table)
+    except Exception:
+        # Honest graceful-miss -- mirrors FabricDeltaClient.query()'s existing
+        # behavior. A live-grounding hiccup must never break an otherwise
+        # successful worklist read.
+        return []
+
+
+def build_worklist(
+    role: str, state: SimState, provenance: str = "simulated", fabric: Any = None
+) -> Dict[str, Any]:
     # Single-ward MVP: the dca grounding + the hospital-wide barrier effect only
     # stay consistent on one ward (see loop/ward_scope). Fail loudly on multi-ward.
     require_single_ward(state)
@@ -32,6 +46,7 @@ def build_worklist(role: str, state: SimState, provenance: str = "simulated") ->
             for b in barriers
         ]
         n = len(barriers)
+        live_citations = _live_citations(fabric, _CITATIONS[0])
         if n == 0:
             # n==0 guard: compute_expected_impact raises on n<=0, so short-circuit
             # with an honest zero-impact recommendation rather than 500-ing.
@@ -41,6 +56,7 @@ def build_worklist(role: str, state: SimState, provenance: str = "simulated") ->
                 "predicted_impact": {"metric": "beds", "value": 0},
                 "insight_text": f"No open {_BARRIER_TYPE} barriers on {ward}; nothing to unblock",
                 "citations": _CITATIONS,
+                "liveGroundingCitations": live_citations,
             }
             return {"role": role, "ward": ward, "observations": observations,
                     "recommendation": recommendation, "provenance": provenance}
@@ -54,6 +70,7 @@ def build_worklist(role: str, state: SimState, provenance: str = "simulated") ->
             "predicted_impact": {"metric": "beds", "value": int(impact["delta"])},
             "insight_text": f"Resolve {n} {_BARRIER_TYPE} barriers to free {impact['delta']} beds on {ward}",
             "citations": _CITATIONS,
+            "liveGroundingCitations": live_citations,
         }
         return {"role": role, "ward": ward, "observations": observations,
                 "recommendation": recommendation, "provenance": provenance}
@@ -69,6 +86,7 @@ def build_worklist(role: str, state: SimState, provenance: str = "simulated") ->
             "lever_id": None,
             "insight_text": "role effect pending (S38 multi-agent enrichment)",
             "citations": _CITATIONS,
+            "liveGroundingCitations": _live_citations(fabric, _CITATIONS[0]),
         },
         "provenance": provenance,
     }

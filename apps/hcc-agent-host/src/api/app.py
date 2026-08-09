@@ -519,7 +519,10 @@ def create_app() -> FastAPI:
         from loop.worklist import build_worklist
 
         try:
-            return build_worklist(name, sim, provenance=gold.get("provenance", "simulated"))
+            fabric_override = state.fabric_for(obo.obo_token) if obo else None
+            return build_worklist(
+                name, sim, provenance=gold.get("provenance", "simulated"), fabric=fabric_override
+            )
         except ValueError as exc:
             # e.g. a multi-ward snapshot is out of the single-ward MVP scope: a
             # loud 400, not a silent mis-grounding.
