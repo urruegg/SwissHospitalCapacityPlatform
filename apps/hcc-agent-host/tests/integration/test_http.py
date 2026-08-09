@@ -215,3 +215,103 @@ def test_tool_invocation_without_obo_is_unchanged():
     )
     assert resp.status_code == 403
     assert resp.json()["detail"]["reason"] == "hitl_no_evidence"
+
+
+def test_tool_invocation_csa_multi_gate_mismatch_denied_403(monkeypatch):
+    # The actual motivating case (Task 4 review follow-up): csa-agent declares
+    # TWO gates (HITL-01 sim-run trigger, HITL-04 recommendation draft PR, per
+    # agents/csa-agent/manifest.yaml). One gate's approverObjectId matches the
+    # OBO identity, the other does not -- proves the loop denies on whichever
+    # entry actually mismatches, not just the first one it checks.
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "real-verified-oid"
+        obo_token = ""
+        roles = ("HCC.PlatformAdmin",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().post(
+        "/agents/csa-agent/tools/create-pull-request",
+        json={
+            "params": {},
+            "hitlEvidence": {
+                "HITL-01": {
+                    "gateId": "HITL-01",
+                    "approverObjectId": "real-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                },
+                "HITL-04": {
+                    "gateId": "HITL-04",
+                    "approverObjectId": "claimed-but-not-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                },
+            },
+        },
+        headers={"Authorization": "Bearer ok"},
+    )
+    assert resp.status_code == 403
+    detail = resp.json()["detail"]
+    assert detail["reason"] == "approver_identity_not_verified"
+    assert detail["gateId"] == "HITL-04"
+
+
+def test_tool_invocation_mismatch_on_gate_outside_manifest_still_denied_403(monkeypatch):
+    # Issue 2 (Task 4 review follow-up): the OBO approver check intentionally
+    # validates ALL supplied hitlEvidence entries, not just the gates
+    # bmca-agent's manifest requires (["HITL-02"]). HITL-05 is a valid gate id
+    # bmca-agent does NOT declare; a mismatched claim on it must still deny --
+    # proving the check isn't scoped down to only the manifest's required gates.
+    import api.app as app_module
+
+    class _Ctx:
+        user_oid = "real-verified-oid"
+        obo_token = ""
+        roles = ("HCC.PlatformAdmin",)
+        hospital = "aggregated"
+
+    monkeypatch.setattr(app_module, "build_obo_context", lambda _a: _Ctx())
+    resp = _client().post(
+        "/agents/bmca-agent/tools/create-branch",
+        json={
+            "params": {},
+            "hitlEvidence": {
+                "HITL-02": {
+                    "gateId": "HITL-02",
+                    "approverObjectId": "real-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                },
+                "HITL-05": {
+                    "gateId": "HITL-05",
+                    "approverObjectId": "claimed-but-not-verified-oid",
+                    "approverRole": "HCC.PlatformAdmin",
+                    "decisionTimestampUtc": "2026-08-09T00:00:00Z",
+                    "correlationId": "c1",
+                    "decisionContextHash": "hash",
+                    "decisionOutcome": "approved",
+                    "sourceWorkflow": "test",
+                },
+            },
+        },
+        headers={"Authorization": "Bearer ok"},
+    )
+    assert resp.status_code == 403
+    detail = resp.json()["detail"]
+    assert detail["reason"] == "approver_identity_not_verified"
+    assert detail["gateId"] == "HITL-05"

@@ -457,6 +457,11 @@ def create_app() -> FastAPI:
             # gate's claimed approverObjectId must match it -- the evidence
             # schema already requires this field, but nothing verified it was
             # real until now.
+            # Intentionally checks ALL supplied hitlEvidence entries, not just
+            # manifest.hitl_gates: an unverified/spoofed approver claim must
+            # never be silently ignored, even for a gate this agent doesn't
+            # require (deny-by-default on any untrusted identity claim, not
+            # just the required ones).
             for gate_id, evidence in req.hitlEvidence.items():
                 if evidence.get("approverObjectId") != obo.user_oid:
                     raise HTTPException(
