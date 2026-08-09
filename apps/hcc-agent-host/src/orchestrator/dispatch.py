@@ -78,7 +78,13 @@ class Orchestrator:
                 cached = self.fabric.query(table)
                 self.cache.cache_grounding(table, cached)
             rows.extend(cached)
-            citations.append(table)
+            # Sprint 43 WS-5 -- a citation asserts "this answer used this
+            # source". A table that returned zero rows (e.g. WS-2's Fabric
+            # read blocked upstream) contributed nothing, so citing it would
+            # mislead the reader into believing the answer is grounded when
+            # it is not (found via live UI verification, 2026-08-09).
+            if cached:
+                citations.append(table)
         return rows, citations
 
     def _primary_grounding(
