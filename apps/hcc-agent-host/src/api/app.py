@@ -213,6 +213,32 @@ class HostState:
             data_agent_client=self._live_data_agent, obo_token=obo_token
         )
 
+    def fabric_for(self, obo_token: str | None) -> FabricAdapter:
+        """Sprint 43 WS-6 -- the per-request chat-grounding Fabric adapter.
+
+        Mirrors ``rls_provider_for``: an OBO token builds a fresh
+        ``FabricDeltaClient`` scoped to the signed-in user's own delegated
+        Fabric permissions, bypassing the service-principal restriction the
+        startup ``self.fabric`` (managed identity) hits (see
+        docs/superpowers/specs/2026-08-09-obo-self-service-fabric-grounding-design.md).
+        No token, or the Fabric env unconfigured, reuses the startup instance
+        unchanged (byte-parity with today when OBO is off).
+        """
+        if not obo_token:
+            return self.fabric
+        workspace = os.environ.get("FABRIC_WORKSPACE_ID")
+        lakehouse = os.environ.get("FABRIC_LAKEHOUSE_ID")
+        if not (workspace and lakehouse):
+            return self.fabric
+        from tools.fabric_delta_client import FabricDeltaClient
+
+        client = FabricDeltaClient(
+            workspace_id=workspace,
+            lakehouse_id=lakehouse,
+            token_provider=lambda: obo_token,
+        )
+        return FabricAdapter(query_fn=client.query)
+
     def require(self, name: str) -> AgentManifest:
         manifest = self.manifests.get(name)
         if manifest is None:
