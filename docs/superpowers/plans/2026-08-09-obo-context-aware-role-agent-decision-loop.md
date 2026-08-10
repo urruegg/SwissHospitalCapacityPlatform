@@ -1393,6 +1393,32 @@ Expected: all 17 `HCC.*` values listed.
 
 - [ ] **Step 5: Assign `admin@` the same roles already held on `ihzhhpf-app` (requires `approved-to-apply`)**
 
+**STATUS (2026-08-10): BLOCKED, not a syntax issue.** Steps 1-4 completed
+successfully live (`hcc-agent-host` now has all 17 `HCC.*` App Roles defined
+— confirmed via `az ad app show`). This step's write
+(`POST /servicePrincipals/{id}/appRoleAssignedTo`) returns a real,
+reproducible `403 Authorization_RequestDenied`: this specific Graph API
+requires the caller to hold a qualifying Microsoft Entra directory role
+(Application Administrator, Cloud Application Administrator, User
+Administrator, Privileged Role Administrator, Identity Governance
+Administrator, Hybrid Identity Administrator, Directory Writer, or Directory
+Synchronization Accounts — see
+[Microsoft's docs](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto)).
+There is **no owner-of-the-resource exception** for this write, unlike
+defining the app's own `appRoles` property. `admin@`'s actual directory
+roles (`GET /me/memberOf`) confirm **Global Reader only** — no qualifying
+role. This applies identically whether the principal is a user or a
+security group (also discovered: `ihzhhpf-app`'s existing 17 assignments are
+mostly security-group assignments, not direct user assignments — the
+original bootstrap needed the same elevated access this account doesn't
+currently have).
+
+**Resolution options** (see design doc §1.3/§6 for full detail):
+1. Temporarily elevate `admin@` (or another available identity) to a
+   qualifying directory role for the duration of this one write, then revert.
+2. Use the sealed break-glass Global Administrator account once.
+3. Find another identity in the tenant that already holds a qualifying role.
+
 ```bash
 $spId = az ad sp show --id b7608e39-e23a-4576-8489-e092ba5f726b --query id -o tsv
 $userId = az ad user show --id admin@mngenvmcap164444.onmicrosoft.com --query id -o tsv
@@ -1400,9 +1426,17 @@ $roleIds = az ad app show --id b7608e39-e23a-4576-8489-e092ba5f726b --query "app
 foreach ($roleId in $roleIds) {
   az rest --method POST `
     --uri "https://graph.microsoft.com/v1.0/servicePrincipals/$spId/appRoleAssignedTo" `
-    --body "{`"principalId`":`"$userId`",`"resourceId`":`"$spId`",`"appRoleId`":`"$roleId`"}"
+    --headers "Content-Type=application/json" `
+    --body "@<path-to-a-temp-json-file-containing-{principalId,resourceId,appRoleId}>"
 }
 ```
+
+(Note: pass the JSON body via a temp file, not an inline string — inline
+strings get mangled by PowerShell's quoting. Also cast any `Get-Content`-
+sourced value to `[string]` before using it in a hashtable destined for
+`ConvertTo-Json` — otherwise PowerShell serializes `Get-Content`'s extra
+note properties instead of the plain string. See repo memory
+`terminal-git-commit-gotchas.md` for the full gotcha writeup.)
 
 - [ ] **Step 6: Verify the assignments landed**
 
@@ -1424,7 +1458,7 @@ Expected: one row per assigned role (matching the 16-ish held on `ihzhhpf-app`, 
 **Files:**
 - Modify: `infra/environments/sit.bicepparam`
 
-**Prerequisite:** Tasks 1-8 merged and deployed (the image must contain the Task 1-7 code fixes before this flag is safe to flip — re-enabling it before Task 1's fix is what caused the earlier incident).
+**Prerequisite:** Tasks 1-8 merged and deployed (the image must contain the Task 1-7 code fixes before this flag is safe to flip — re-enabling it before Task 1's fix is what caused the earlier incident). **Additionally blocked as of 2026-08-10: Task 8 Step 5 (role assignment) is not complete** — see that step's status note. Do not flip this flag until at least `admin@` has a real role assignment on `hcc-agent-host`, or every non-empty `X-Active-Role` request will 403 once OBO is on.
 
 - [ ] **Step 1: Flip the flag**
 

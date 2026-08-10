@@ -1,9 +1,9 @@
 ---
-Version: 1.2.0
-Date: 2026-08-09
+Version: 1.3.0
+Date: 2026-08-10
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.1.0 (added bmca real lever, Cosmos-as-agent-memory framing, CSA/PO alignment section; this bump corrects the ooa/bmca/orsa/sba lever assessment after finding the already-built Sprint 26 WS-B formula registry, wires ooa+bmca in instead of just bmca, and defers the PO agent explicitly to its own follow-up sprint (issue #570) per user decision)
+Previous Version: 1.2.0 (wired ooa+bmca via Sprint 26 WS-B catalog, deferred PO agent to issue #570; this bump corrects §1.3 -- role-assignment, not role-definition, genuinely requires a directory role admin@ does not hold, found live during Task 8 execution and blocking Task 9)
 ---
 
 # OBO as the Preferred End-to-End Pattern: Context-Sensitive Boards + Role-Agent Decisions with a Tracked Audit Trail — Design
@@ -60,27 +60,60 @@ cross-endpoint-flag-scoping problem.** §4 Approach A fixes this directly and
 (the design notes this explicitly; #569 should be closed in favour of this
 design once approved).
 
-### 1.3 The tenant limitation, reconfirmed for this new surface
+### 1.3 The tenant limitation, reconfirmed for this new surface — CORRECTED 2026-08-10
 
 The same finding validated for Fabric OneLake access (2026-08-09, see the
-sibling design doc) applies here too: **owner-only, self-service operations
-need no Fabric/Power BI/Global Administrator.** Confirmed live for the new
-surface this design needs:
+sibling design doc) applies to **defining** App Roles: **owner-only,
+self-service, no Fabric/Power BI/Global Administrator needed.** Confirmed
+live: `az ad app update --app-roles ...` succeeded against `hcc-agent-host`
+using only `admin@`'s Global Reader access — all 17 roles landed.
+
+**Correction, found live during Task 8 execution (2026-08-10): assigning a
+role to a principal is a *different* operation with a *different*
+requirement.** `POST /servicePrincipals/{id}/appRoleAssignedTo` — confirmed
+via [Microsoft's own docs](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto)
+and a real, reproducible `403 Authorization_RequestDenied` — requires the
+signed-in user to hold one of: Directory Synchronization Accounts, Directory
+Writer, Hybrid Identity Administrator, Identity Governance Administrator,
+Privileged Role Administrator (least-privileged supported), User
+Administrator, Application Administrator, or Cloud Application Administrator.
+**There is no "owner of the resource" exception for this specific write** —
+unlike defining the app's own `appRoles` property. This holds regardless of
+whether the assigned principal is a user or a security group (same
+API, same required-roles list).
+
+`admin@`'s actual directory role membership (`GET /me/memberOf`) is
+confirmed to be **Global Reader only** — no qualifying role. Also discovered:
+`ihzhhpf-app`'s existing 17 "role assignments" are mostly **security-group**
+assignments (one `HCC.*` group per role; `admin@` is a *member*, inheriting
+the role via group membership) — meaning that original bootstrap was done by
+some identity that *did* hold a qualifying directory role at the time (most
+likely the sealed break-glass Global Administrator, used once), not
+routine self-service by the current `admin@` identity as this design
+originally assumed.
 
 - `admin@` is the sole **owner** of both `hcc-agent-host` and (implicitly,
-  having registered it) `ihzhhpf-app`.
-- Defining App Roles on an app registration and assigning them to users via
-  the corresponding Enterprise Application's "Users and groups" pane is an
-  **owner-level** capability — no directory role (Application Administrator,
-  Cloud Application Administrator, Global Administrator) is required. This is
-  not a guess: it is the exact mechanism that put `ihzhhpf-app`'s 17 roles and
-  `admin@`'s 16 assignments in place already, live, in this tenant.
+  having registered it) `ihzhhpf-app` — sufficient for defining App Roles,
+  **not** sufficient for assigning them to a principal.
 - `hcc-agent-host`'s service principal has `appRoleAssignmentRequired: false`
   (any org member can sign in) — orthogonal to explicit role assignment,
   which is what actually populates the `roles` claim.
-- No new consent screen is triggered by adding/assigning app roles — this is
-  an application-configuration action by the owner, not a permission grant
-  requiring user or admin consent.
+- No new consent screen is triggered by adding app roles — that part of the
+  claim holds. Assigning a principal to a role is a directory-role-gated
+  write, not a consent-gated one, so this point doesn't change the outcome
+  either way.
+
+**Practical consequence:** Task 8 Step 5 (assign `admin@` to `hcc-agent-host`'s
+new roles) is **blocked** pending one of: (a) temporary elevation of `admin@`
+(or another available identity) to a qualifying directory role for one write,
+then revert; (b) the sealed break-glass Global Administrator, used once; (c)
+finding another already-privileged identity in the tenant. Task 9 (flipping
+`agentHostOboEnabled=true`) must **not** proceed until this is resolved —
+without any role assignment, every signed-in user's OBO token would carry an
+empty `roles` claim, and Task 2's `_require_active_role_held` check would
+403 every non-empty `X-Active-Role` request, breaking the live demo the
+moment OBO is enabled (a foreseeable, avoidable repeat of the earlier
+shared-flag incident, this time caught before deployment).
 
 ## 2. Goals
 
@@ -162,11 +195,13 @@ step:
    is unaffected; User mode (always sends a bearer once `VITE_AGENT_HOST_SCOPE`
    is configured) gets real enforcement. Supersedes #569.
 2. **Mirror the 17 `HCC.*` App Roles + `admin@`'s assignments from
-   `ihzhhpf-app` onto `hcc-agent-host`** (owner-level, self-service, gated by
-   `approved-to-apply` per AGENTS.md §4 — a new IAM surface even though no
-   admin is needed). This makes the **access token** used for the OBO bearer
-   (audience = `hcc-agent-host`) carry the same `roles` claim the **ID
-   token** already carries, so server-side code can see it.
+   `ihzhhpf-app` onto `hcc-agent-host`.** Defining the roles is owner-level,
+   self-service (confirmed live). **Assigning `admin@` to them is not** — see
+   §1.3's correction; this step needs a qualifying directory role, gated by
+   `approved-to-apply` per AGENTS.md §4 regardless. This makes the **access
+   token** used for the OBO bearer (audience = `hcc-agent-host`) carry the
+   same `roles` claim the **ID token** already carries, so server-side code
+   can see it.
 3. **Propagate `roles`/`hospital` through `OboContext`** (add the two fields;
    `build_obo_context` already has `ValidatedCaller.roles`/`.hospital` in
    hand, just needs to forward them) and **validate, don't just trust,**
@@ -291,9 +326,27 @@ sequenceDiagram
 
 ## 6. Risks / open items
 
-- **Role-mirroring is a new IAM surface** — even though owner-level and
-  self-service, AGENTS.md §4 requires its own `approved-to-apply` comment
-  before any Entra write. Not yet executed; this doc is the plan for it.
+- **BLOCKED (found live, 2026-08-10): role assignment needs a directory role
+  `admin@` doesn't have.** Defining `hcc-agent-host`'s 17 App Roles
+  succeeded (owner-level, self-service, confirmed live). Assigning `admin@`
+  to any of them (`POST .../appRoleAssignedTo`) returns a real, reproducible
+  `403 Authorization_RequestDenied` — this Graph API requires the caller to
+  hold Application Administrator, Cloud Application Administrator, User
+  Administrator, Privileged Role Administrator, Identity Governance
+  Administrator, Hybrid Identity Administrator, Directory Writer, or
+  Directory Synchronization Accounts (per
+  [Microsoft's docs](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto)),
+  none of which `admin@` holds (`GET /me/memberOf` confirms Global Reader
+  only). See §1.3's correction. **Task 9 (`agentHostOboEnabled=true`) must
+  not proceed until this is resolved** — flipping it with zero role
+  assignments in place would make every signed-in user's OBO token carry an
+  empty `roles` claim, and the Task 2 `_require_active_role_held` check
+  would then 403 any non-empty `X-Active-Role` request, breaking the demo
+  the moment OBO is enabled.
+- **Role-mirroring is a new IAM surface** — even though role *definition* is
+  owner-level and self-service, AGENTS.md §4 requires its own
+  `approved-to-apply` comment before any Entra write, and role *assignment*
+  additionally needs the elevated-access resolution above.
 - **`liveGroundingCitations` on `worklist` could 401/403** if the caller's
   active role doesn't intersect with a table the role needs — must fail
   gracefully to "no live citation" (matching `FabricDeltaClient`'s existing
