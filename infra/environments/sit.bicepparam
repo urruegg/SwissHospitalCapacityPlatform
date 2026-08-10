@@ -225,7 +225,11 @@ param enableCsaCosmosModule = true
 // + per-user cache key, /agents/{name}/chat OBO context). See
 // docs/superpowers/plans/2026-08-09-obo-self-service-fabric-grounding-plan.md.
 // approved-to-apply by @urruegg (2026-08-09).
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:d97fa11'
+// Sprint 43 WS-6 follow-up (2026-08-10): prepared d97fa11 -> 9daaa64 to ship
+// the bearer-presence fix, verified OBO role enforcement, live citations,
+// Cosmos audit persistence, and groupMembershipClaims role mapping. Preflight
+// only until a fresh approved-to-apply comment authorizes the SIT deployment.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:9daaa64'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
@@ -302,7 +306,10 @@ param fabricLakehouseId = '30594c20-46ba-40ea-91fa-4701b105e0b9'
 // confirm/patch /golden to gracefully degrade instead of hard-401 when
 // OBO is on but a specific caller has no bearer. Tracked as a new
 // follow-up, not yet filed as an issue. ***
-param agentHostOboEnabled = false
+// PREPARED (2026-08-10): Task 1 now makes no-bearer Demo traffic fall back
+// unchanged, while malformed/invalid bearers remain deny-by-default. Enable
+// only with the 9daaa64 image above; apply still requires fresh approval.
+param agentHostOboEnabled = true
 param agentHostOboTenantId = '1337187a-4c41-4da9-8fca-731bba7a4329'
 param agentHostOboClientId = 'b7608e39-e23a-4576-8489-e092ba5f726b'
 param agentHostOboClientSecretName = 'agent-host-obo-client-secret'

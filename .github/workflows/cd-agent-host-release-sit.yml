@@ -1,0 +1,171 @@
+name: cd-agent-host-release-sit
+
+# Sprint 43 WS-6 follow-up (2026-08-10) — scoped SIT agent-host release.
+#
+# The full `cd-infra-deploy-sit.yml` root deployment carries a much larger
+# blast radius than a routine agentHostImage/OBO-flag bump (a live `what-if`
+# against the current SIT state shows dozens of unrelated resource deltas,
+# including several `publicNetworkAccess: Disabled -> Enabled` transitions on
+# storage/Key Vault). This workflow instead deploys ONLY
+# infra/modules/agent-host/release-sit.bicep — a thin wrapper around the
+# already-reviewed agent-host Container App module that references every
+# other platform dependency (Cosmos, Key Vault, Log Analytics, VNet, ACR) as
+# `existing`, so it cannot create, delete, or reconfigure them.
+#
+# Manual + explicitly gated (AGENTS.md §4): no auto-cascade from any push.
+# Trigger with the magic phrase, e.g.
+# `gh workflow run cd-agent-host-release-sit.yml -f confirm=approved-to-apply`
+# (or the Actions UI).
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type 'approved-to-apply' to confirm the SIT agent-host release.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  policy-gate:
+    name: Policy gate (SIT, blocking)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: github.event.inputs.confirm == 'approved-to-apply'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run policy gate (SIT scope)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p policy-evidence
+          python3 policy/policy_gate.py \
+            --scope sit \
+            --repo-root . \
+            --pipeline-run-id "${GITHUB_RUN_ID}" \
+            --output "policy-evidence/policy-gate-sit.json"
+
+      - name: Upload SIT policy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-gate-evidence-agent-host-release-sit
+          path: policy-evidence/
+          if-no-files-found: error
+
+  release-agent-host:
+    name: Release agent-host (SIT, scoped)
+    runs-on: ubuntu-latest
+    needs: policy-gate
+    environment:
+      name: sit
+    permissions:
+      contents: read
+      id-token: write
+    if: github.event.inputs.confirm == 'approved-to-apply'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Validate required environment configuration (SIT)
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          BICEP_PARAM_FILE: ${{ vars.BICEP_PARAM_FILE }}
+        run: |
+          set -euo pipefail
+          test -n "$AZURE_CLIENT_ID"
+          test -n "$AZURE_TENANT_ID"
+          test -n "$AZURE_SUBSCRIPTION_ID"
+          test -n "$AZURE_RESOURCE_GROUP"
+          test -n "$BICEP_PARAM_FILE"
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build scoped release parameters (secret-free)
+        shell: bash
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          BICEP_PARAM_FILE: ${{ vars.BICEP_PARAM_FILE }}
+        run: |
+          set -euo pipefail
+          compiled_root="${RUNNER_TEMP}/sit-parameters.json"
+          az bicep build-params \
+            --file "${BICEP_PARAM_FILE}" \
+            --outfile "${compiled_root}"
+          # Resolve the platform Key Vault name from the most recent successful
+          # root deployment's own output -- avoids hard-coding a deployment
+          # name or the environment-specific Key Vault name suffix here.
+          key_vault_name=$(az deployment group list \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --query "sort_by([?properties.provisioningState=='Succeeded' && properties.outputs.keyVaultName], &properties.timestamp)[-1].properties.outputs.keyVaultName.value" \
+            --output tsv)
+          test -n "${key_vault_name}"
+          python3 infra/scripts/build_agent_host_release_parameters.py \
+            --compiled-root "${compiled_root}" \
+            --key-vault-name "${key_vault_name}" \
+            --output "${RUNNER_TEMP}/agent-host-release-sit.parameters.json"
+
+      - name: What-if before release (SIT, agent-host only)
+        shell: bash
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          az deployment group what-if \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --template-file infra/modules/agent-host/release-sit.bicep \
+            --parameters "${RUNNER_TEMP}/agent-host-release-sit.parameters.json"
+
+      - name: Release (SIT, agent-host only)
+        shell: bash
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+        run: |
+          set -euo pipefail
+          az deployment group create \
+            --name "release-agent-host-sit-${{ github.run_id }}" \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --template-file infra/modules/agent-host/release-sit.bicep \
+            --parameters "${RUNNER_TEMP}/agent-host-release-sit.parameters.json"
+
+      - name: Verify released SIT agent-host and dependencies
+        shell: bash
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          BICEP_PARAM_FILE: ${{ vars.BICEP_PARAM_FILE }}
+        run: |
+          set -euo pipefail
+          mkdir -p sit-deployment-evidence
+          compiled_root="${RUNNER_TEMP}/sit-parameters.json"
+          az bicep build-params \
+            --file "${BICEP_PARAM_FILE}" \
+            --outfile "${compiled_root}"
+          python3 infra/scripts/verify_sit_deployment.py \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --deployment-name "release-agent-host-sit-${GITHUB_RUN_ID}" \
+            --parameters-json "${compiled_root}" \
+            --output sit-deployment-evidence/verification.json
+
+      - name: Upload SIT deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-host-release-evidence-sit-${{ github.run_id }}
+          path: sit-deployment-evidence/
+          if-no-files-found: error

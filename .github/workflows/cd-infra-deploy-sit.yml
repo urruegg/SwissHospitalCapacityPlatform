@@ -173,3 +173,29 @@ jobs:
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
             --template-file infra/main.bicep \
             --parameters "${{ vars.BICEP_PARAM_FILE }}"
+
+      - name: Verify deployed SIT release and dependencies
+        shell: bash
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          BICEP_PARAM_FILE: ${{ vars.BICEP_PARAM_FILE }}
+        run: |
+          set -euo pipefail
+          mkdir -p sit-deployment-evidence
+          parameters_json="${RUNNER_TEMP}/sit-parameters.json"
+          az bicep build-params \
+            --file "${BICEP_PARAM_FILE}" \
+            --outfile "${parameters_json}"
+          python3 infra/scripts/verify_sit_deployment.py \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --deployment-name "deploy-sit-${GITHUB_RUN_ID}" \
+            --parameters-json "${parameters_json}" \
+            --output sit-deployment-evidence/verification.json
+
+      - name: Upload SIT deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sit-deployment-evidence-${{ github.run_id }}
+          path: sit-deployment-evidence/
+          if-no-files-found: error

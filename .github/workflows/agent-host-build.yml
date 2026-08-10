@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install (test deps only)
+      - name: Install test dependencies
         run: pip install ".[dev]"
 
       - name: Run tests
