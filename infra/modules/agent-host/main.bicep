@@ -64,6 +64,9 @@ param oboIssuer string = ''
 @description('Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead.')
 param oboFabricScope string = 'https://storage.azure.com/.default'
 
+@description('Sprint 43 WS-6 follow-up — JSON object mapping Entra security-group object IDs (hcc-agent-host `groupMembershipClaims` = SecurityGroup `groups` claim) to HCC.* role names. App Role ASSIGNMENT requires a directory role admin@ does not hold (ADR-0057 §1.3); `groupMembershipClaims` is owner-level/self-service and reflects group memberships that already exist. Empty string (default) disables group-derived roles. Config, not code.')
+param oboGroupRoleMap string = ''
+
 @description('Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId to enable Entra-MI-based pull once real images land in ACR.')
 param containerRegistryLoginServer string = ''
 
@@ -162,6 +165,7 @@ module containerApp 'container-app.bicep' = {
     oboAudience: oboAudience
     oboIssuer: oboIssuer
     oboFabricScope: oboFabricScope
+    oboGroupRoleMap: oboGroupRoleMap
     redisHostName: enableRedisModule ? redis!.outputs.redisHostName : ''
     redisPort: enableRedisModule ? redis!.outputs.redisPort : 0
     containerRegistryLoginServer: containerRegistryLoginServer

@@ -78,6 +78,75 @@ def test_validate_claims_rejects_expired():
         )
 
 
+# ---- groupMembershipClaims -> roles mapping (Sprint 43 WS-6 follow-up) ---
+# App Role ASSIGNMENT (POST .../appRoleAssignedTo) requires a directory role
+# (Application Administrator etc.); `groupMembershipClaims` is owner-level and
+# self-service, and reflects group memberships that already exist. These
+# tests verify `validate_claims` unions group-derived roles (via
+# OBO_GROUP_ROLE_MAP) onto the direct `roles` claim.
+
+
+def test_validate_claims_maps_groups_to_roles_via_group_role_map(monkeypatch):
+    monkeypatch.setenv(
+        "OBO_GROUP_ROLE_MAP",
+        '{"grp-auditor-id": "HCC.Auditor"}',
+    )
+    caller = validate_claims(
+        _claims(roles=[], groups=["grp-auditor-id"]),
+        expected_audience="api://ihzhhpf-app",
+        expected_issuer="https://login.microsoftonline.com/tenant/v2.0",
+    )
+    assert caller.roles == ("HCC.Auditor",)
+
+
+def test_validate_claims_unions_direct_roles_and_group_derived_roles(monkeypatch):
+    monkeypatch.setenv("OBO_GROUP_ROLE_MAP", '{"grp-auditor-id": "HCC.Auditor"}')
+    caller = validate_claims(
+        _claims(roles=["HCC.PlatformAdmin"], groups=["grp-auditor-id"]),
+        expected_audience="api://ihzhhpf-app",
+        expected_issuer="https://login.microsoftonline.com/tenant/v2.0",
+    )
+    assert caller.roles == ("HCC.PlatformAdmin", "HCC.Auditor")
+
+
+def test_validate_claims_dedupes_role_present_in_both_claims(monkeypatch):
+    monkeypatch.setenv("OBO_GROUP_ROLE_MAP", '{"grp-auditor-id": "HCC.Auditor"}')
+    caller = validate_claims(
+        _claims(roles=["HCC.Auditor"], groups=["grp-auditor-id"]),
+        expected_audience="api://ihzhhpf-app",
+        expected_issuer="https://login.microsoftonline.com/tenant/v2.0",
+    )
+    assert caller.roles == ("HCC.Auditor",)
+
+
+def test_validate_claims_ignores_unmapped_group_ids(monkeypatch):
+    monkeypatch.setenv("OBO_GROUP_ROLE_MAP", '{"grp-auditor-id": "HCC.Auditor"}')
+    caller = validate_claims(
+        _claims(roles=[], groups=["grp-unknown-id"]),
+        expected_audience="api://ihzhhpf-app",
+        expected_issuer="https://login.microsoftonline.com/tenant/v2.0",
+    )
+    assert caller.roles == ()
+
+
+def test_validate_claims_tolerates_missing_or_malformed_group_role_map(monkeypatch):
+    monkeypatch.delenv("OBO_GROUP_ROLE_MAP", raising=False)
+    caller = validate_claims(
+        _claims(roles=["HCC.PlatformAdmin"], groups=["grp-auditor-id"]),
+        expected_audience="api://ihzhhpf-app",
+        expected_issuer="https://login.microsoftonline.com/tenant/v2.0",
+    )
+    assert caller.roles == ("HCC.PlatformAdmin",)
+
+    monkeypatch.setenv("OBO_GROUP_ROLE_MAP", "not-json")
+    caller = validate_claims(
+        _claims(roles=["HCC.PlatformAdmin"], groups=["grp-auditor-id"]),
+        expected_audience="api://ihzhhpf-app",
+        expected_issuer="https://login.microsoftonline.com/tenant/v2.0",
+    )
+    assert caller.roles == ("HCC.PlatformAdmin",)
+
+
 # ---- cache ---------------------------------------------------------------
 
 def test_cache_grounding_roundtrip_and_ttl():

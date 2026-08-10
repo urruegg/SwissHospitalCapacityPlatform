@@ -66,6 +66,9 @@ param oboIssuer string = ''
 @description('Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead.')
 param oboFabricScope string = 'https://storage.azure.com/.default'
 
+@description('Sprint 43 WS-6 follow-up — JSON object mapping Entra security-group object IDs (from the hcc-agent-host `groupMembershipClaims` = SecurityGroup `groups` claim) to HCC.* role names. App Role ASSIGNMENT requires a directory role admin@ does not hold (ADR-0057 §1.3); `groupMembershipClaims` is owner-level/self-service and reflects group memberships that already exist. Empty string (default) disables group-derived roles -- only a direct `roles` claim (if ever populated) is honoured. Config, not code; non-secret directory metadata (like oboTenantId/oboClientId above).')
+param oboGroupRoleMap string = ''
+
 @description('Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope).')
 param redisHostName string = ''
 
@@ -172,6 +175,10 @@ var baseEnv = [
   {
     name: 'OBO_FABRIC_SCOPE'
     value: oboFabricScope
+  }
+  {
+    name: 'OBO_GROUP_ROLE_MAP'
+    value: oboGroupRoleMap
   }
 ]
 

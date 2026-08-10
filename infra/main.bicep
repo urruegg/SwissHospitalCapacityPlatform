@@ -336,6 +336,9 @@ param agentHostOboIssuer string = ''
 @description('Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead.')
 param agentHostOboFabricScope string = 'https://storage.azure.com/.default'
 
+@description('Sprint 43 WS-6 follow-up — JSON object mapping Entra security-group object IDs (from hcc-agent-host `groupMembershipClaims` = SecurityGroup) to HCC.* role names. App Role ASSIGNMENT requires a directory role admin@ does not hold (ADR-0057 §1.3); `groupMembershipClaims` is owner-level/self-service and reflects group memberships that already exist. Empty string (default) disables group-derived roles. Config, not code; non-secret directory metadata.')
+param agentHostOboGroupRoleMap string = ''
+
 // Sprint 13 T1 — Fluent baseline Container App (React/Vite bundle served via nginx on 8080).
 @description('Enable the Sprint 13 hcc-app-fluent Container App module.')
 param enableAppFluentModule bool = false
@@ -757,6 +760,7 @@ module agentHost './modules/agent-host/main.bicep' = if (enableAgentHostModule) 
     oboAudience: agentHostOboAudience
     oboIssuer: agentHostOboIssuer
     oboFabricScope: agentHostOboFabricScope
+    oboGroupRoleMap: agentHostOboGroupRoleMap
     // Reuse the sim-capacity ACR params — same registry serves all three CAs.
     containerRegistryLoginServer: simCapacityContainerRegistryLoginServer
     containerRegistryResourceId: simCapacityContainerRegistryResourceId

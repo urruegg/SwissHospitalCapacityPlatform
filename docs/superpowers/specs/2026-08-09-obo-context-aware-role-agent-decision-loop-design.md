@@ -1,9 +1,9 @@
 ---
-Version: 1.3.0
+Version: 1.4.0
 Date: 2026-08-10
 Author: Copilot coding agent (autopilot, delegated)
 Status: Draft
-Previous Version: 1.2.0 (wired ooa+bmca via Sprint 26 WS-B catalog, deferred PO agent to issue #570; this bump corrects §1.3 -- role-assignment, not role-definition, genuinely requires a directory role admin@ does not hold, found live during Task 8 execution and blocking Task 9)
+Previous Version: 1.3.0 (corrected §1.3 -- role-assignment, not role-definition, genuinely requires a directory role admin@ does not hold, found live during Task 8 execution and blocking Task 9; this bump adds §1.4 documenting the groupMembershipClaims pivot that resolves Task 8 Step 5 without any directory-role elevation)
 ---
 
 # OBO as the Preferred End-to-End Pattern: Context-Sensitive Boards + Role-Agent Decisions with a Tracked Audit Trail — Design
@@ -114,6 +114,58 @@ empty `roles` claim, and Task 2's `_require_active_role_held` check would
 403 every non-empty `X-Active-Role` request, breaking the live demo the
 moment OBO is enabled (a foreseeable, avoidable repeat of the earlier
 shared-flag incident, this time caught before deployment).
+
+### 1.4 Resolution: `groupMembershipClaims` pivot (2026-08-10)
+
+User pushed back on "blocked" at face value, asking for evidence that
+`admin@` — the sole account that will ever use this demo tenant — genuinely
+lacks what's needed. That question surfaced a materially better fix than any
+of §1.3's three options (all of which need a directory admin who isn't
+available):
+
+**`groupMembershipClaims` is a *different* Entra mechanism from App Role
+assignment, in the same permission class as App Role *definition*.** Setting
+it on an app registration (`az ad app update --id <id> --set
+groupMembershipClaims=SecurityGroup`) is an owner-level, self-service
+app-registration property write — no directory role needed, confirmed live
+(no error, verified via `az ad app show`). It causes tokens issued for that
+app to carry a `groups` claim listing the security-group object IDs the
+signed-in user is **already a member of** — driven by existing directory
+relationships, not a new assignment write. Zero new IAM surface.
+
+Evidence gathered before committing to this design:
+- `admin@`'s total tenant-wide directory membership count (`GET
+  /me/memberOf`) is **19** — well under Azure AD's ~150-group JWT overage
+  threshold, so the `groups` claim will be fully populated (no
+  `_claim_names`/`hasgroups` overage indicator).
+- Of those 19, **all 17 are the `HCC.*` security groups** (the same groups
+  already backing `ihzhhpf-app`'s role assignments per §1.3), plus `All
+  Company` and the `Global Reader` directory role. `admin@` is confirmed a
+  real member of every one of the 17 groups this design needs.
+- `hcc-agent-host` and `ihzhhpf-app` both had `groupMembershipClaims` unset
+  (`null`) before this change — confirmed live.
+
+**Implementation** (code, not just config — `auth/token_validator.py`'s
+`validate_claims()` now unions roles derived from the `groups` claim, via a
+tenant-specific `OBO_GROUP_ROLE_MAP` env-config JSON map in a new
+`auth/group_roles.py`, onto whatever the direct `roles` claim already
+contains — deduped, order-preserving). This is a **surgical, additive**
+change: `OboContext`, `_require_active_role_held`, `worklist.py`,
+`decisions.py` and every other Task 1-7 consumer of `.roles` needed **zero**
+changes, since they already just check `active_role in obo.roles` regardless
+of which mechanism populated that tuple. `OBO_GROUP_ROLE_MAP` is wired
+through `infra/modules/agent-host/container-app.bicep` →
+`infra/modules/agent-host/main.bicep` → `infra/main.bicep` →
+`infra/environments/sit.bicepparam` (non-secret directory metadata, same
+class as `agentHostOboTenantId`/`agentHostOboClientId` already committed
+there in plaintext).
+
+**This resolves Task 8 Step 5 without any App Role assignment at all** — the
+three elevation-dependent options in §1.3 are no longer needed for this demo
+tenant. If a future tenant's users are members of fewer of the relevant
+groups (or none), App Role assignment via a genuinely privileged identity
+remains the fallback; this pivot does not remove that path, it just avoids
+needing it here. approved-to-apply by @urruegg (2026-08-10).
 
 ## 2. Goals
 
@@ -326,10 +378,11 @@ sequenceDiagram
 
 ## 6. Risks / open items
 
-- **BLOCKED (found live, 2026-08-10): role assignment needs a directory role
-  `admin@` doesn't have.** Defining `hcc-agent-host`'s 17 App Roles
-  succeeded (owner-level, self-service, confirmed live). Assigning `admin@`
-  to any of them (`POST .../appRoleAssignedTo`) returns a real, reproducible
+- **RESOLVED (2026-08-10) via the `groupMembershipClaims` pivot, see §1.4.**
+  App Role assignment (`POST .../appRoleAssignedTo`) remains genuinely
+  blocked for the reason described below (kept for the record — this is
+  still true and would bite a future tenant/identity that lacks the group
+  memberships this pivot relies on): it returns a real, reproducible
   `403 Authorization_RequestDenied` — this Graph API requires the caller to
   hold Application Administrator, Cloud Application Administrator, User
   Administrator, Privileged Role Administrator, Identity Governance
@@ -337,12 +390,18 @@ sequenceDiagram
   Directory Synchronization Accounts (per
   [Microsoft's docs](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto)),
   none of which `admin@` holds (`GET /me/memberOf` confirms Global Reader
-  only). See §1.3's correction. **Task 9 (`agentHostOboEnabled=true`) must
-  not proceed until this is resolved** — flipping it with zero role
-  assignments in place would make every signed-in user's OBO token carry an
-  empty `roles` claim, and the Task 2 `_require_active_role_held` check
-  would then 403 any non-empty `X-Active-Role` request, breaking the demo
-  the moment OBO is enabled.
+  only). **This is no longer a blocker for this tenant/demo**: `admin@` is
+  already a real member of all 17 `HCC.*` security groups, so
+  `groupMembershipClaims=SecurityGroup` on `hcc-agent-host` (self-service,
+  owner-level, applied live 2026-08-10) plus a group-ID→role map
+  (`auth/group_roles.py`, `OBO_GROUP_ROLE_MAP`) gives `validate_claims()`
+  the same effective `roles` outcome that App Role assignment would have,
+  with zero new IAM writes. Task 9 (`agentHostOboEnabled=true`) is
+  therefore no longer blocked *by role validation* — but flipping it is a
+  separate, still-gated action (see Task 9's own prerequisite note in the
+  plan; a distinct, pre-existing `/golden` bearer-presence concern noted in
+  `sit.bicepparam`'s history should be re-verified live before the flip,
+  not assumed resolved).
 - **Role-mirroring is a new IAM surface** — even though role *definition* is
   owner-level and self-service, AGENTS.md §4 requires its own
   `approved-to-apply` comment before any Entra write, and role *assignment*

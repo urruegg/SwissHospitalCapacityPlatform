@@ -311,6 +311,35 @@ param agentHostOboAudience = 'api://b7608e39-e23a-4576-8489-e092ba5f726b'
 param agentHostOboIssuer = 'https://login.microsoftonline.com/1337187a-4c41-4da9-8fca-731bba7a4329/v2.0'
 param agentHostOboFabricScope = 'https://storage.azure.com/.default'
 
+// Sprint 43 WS-6 follow-up (2026-08-10) -- App Role ASSIGNMENT
+// (POST servicePrincipals/{id}/appRoleAssignedTo) requires a Microsoft Entra
+// directory role (Application Administrator, Cloud Application Administrator,
+// User Administrator, Privileged Role Administrator, Identity Governance
+// Administrator, Hybrid Identity Administrator, Directory Writer, or Directory
+// Synchronization Accounts) per Microsoft's official docs
+// (https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto)
+// -- confirmed live as a 403 Authorization_RequestDenied, admin@ only holds
+// Global Reader, and there is NO owner-of-resource exception for this specific
+// Graph call (unlike defining the 17 HCC.* App Roles themselves, which
+// succeeded -- App Role DEFINITION is a self-service app-registration-owner
+// operation, App Role ASSIGNMENT is not).
+//
+// `groupMembershipClaims` is, by contrast, an owner-level/self-service
+// app-registration property (same class as `appRoles`) and puts a `groups`
+// claim on the OBO token driven by memberships that already exist -- zero new
+// IAM writes. Set live on hcc-agent-host (`az ad app update --id
+// b7608e39-e23a-4576-8489-e092ba5f726b --set groupMembershipClaims=SecurityGroup`,
+// applied 2026-08-10). admin@'s total directory membership count is 19 (17
+// HCC.* groups + All Company + Global Reader), comfortably under Azure AD's
+// ~150-group JWT overage threshold, so the `groups` claim will be fully
+// populated (no overage indicator). The 17 group object IDs below were read
+// live via GET https://graph.microsoft.com/v1.0/me/memberOf -- confirmed
+// admin@ is a member of all 17. auth/token_validator.py's validate_claims()
+// unions the roles this map derives from the `groups` claim onto any direct
+// `roles` claim, so `_require_active_role_held` et al. keep working
+// unchanged. approved-to-apply by @urruegg (2026-08-10).
+param agentHostOboGroupRoleMap = '{"11a548f1-4fdf-40e4-86c3-062523a2d78f":"HCC.OntologySteward","ee5cd7e2-672b-4763-85fe-790444697471":"HCC.ORCoordinator","55256e5d-5978-41dc-907c-160a47aaff07":"HCC.EDLead","f2eebf5c-6756-472b-8b47-e3bc22e38615":"HCC.AIGovernance","0ac82ad3-d2fa-435c-ad7b-ef5f99461c31":"HCC.Auditor","ec32cf1a-8adc-4ec5-90b1-ec8ec99efced":"HCC.CantonalViewer","8f07ab14-097f-4f12-bcab-457496eca1ce":"HCC.OperationsLead","9dbd173c-aebc-4a06-a9ab-4d8b89cc1fa2":"HCC.BedManager","cfc8c21a-89bf-48b6-8c12-d19fe5b6268d":"HCC.DemoOperator","a11b9a43-90c4-4ede-926f-9e132bf3e0d3":"HCC.FlowManager","f7ce2f35-45d3-45b0-a285-0a2341b72041":"HCC.StaffingCoordinator","fe89f78f-e78d-4144-bf1c-e9c8cd6aebd5":"HCC.Executive","30c6439b-a72e-4152-bb89-69609a1d94d9":"HCC.CrisisManager","c2f4f5d3-fe9b-480d-8afc-d7e4bd10b65c":"HCC.SuperAdmin","72a7a57b-d046-4add-abd5-1c393093ad36":"HCC.PlatformAdmin","584b0f91-e30e-4174-b3ef-58f6c04b27f1":"HCC.GuestReadOnly","b816e0cc-1c8a-4212-bd08-58b00743c00b":"HCC.DischargeCoordinator"}'
+
 // Sprint 13 T1 — hcc-app-fluent Container App (React/Vite bundle behind nginx:8080).
 // Enabled here to close Sprint 13 DoD S13.2 (see the 2026-07-10 sprint-review
 // checklist). Image tag is bumped as a deliberate manual review step after

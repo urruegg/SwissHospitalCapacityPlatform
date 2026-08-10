@@ -1391,65 +1391,45 @@ az ad app show --id b7608e39-e23a-4576-8489-e092ba5f726b --query "appRoles[].val
 
 Expected: all 17 `HCC.*` values listed.
 
-- [ ] **Step 5: Assign `admin@` the same roles already held on `ihzhhpf-app` (requires `approved-to-apply`)**
+- [x] **Step 5 (REVISED — resolved via `groupMembershipClaims`, 2026-08-10): assign `admin@` the roles held on `ihzhhpf-app`**
 
-**STATUS (2026-08-10): BLOCKED, not a syntax issue.** Steps 1-4 completed
-successfully live (`hcc-agent-host` now has all 17 `HCC.*` App Roles defined
-— confirmed via `az ad app show`). This step's write
-(`POST /servicePrincipals/{id}/appRoleAssignedTo`) returns a real,
-reproducible `403 Authorization_RequestDenied`: this specific Graph API
-requires the caller to hold a qualifying Microsoft Entra directory role
-(Application Administrator, Cloud Application Administrator, User
-Administrator, Privileged Role Administrator, Identity Governance
-Administrator, Hybrid Identity Administrator, Directory Writer, or Directory
-Synchronization Accounts — see
-[Microsoft's docs](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto)).
-There is **no owner-of-the-resource exception** for this write, unlike
-defining the app's own `appRoles` property. `admin@`'s actual directory
-roles (`GET /me/memberOf`) confirm **Global Reader only** — no qualifying
-role. This applies identically whether the principal is a user or a
-security group (also discovered: `ihzhhpf-app`'s existing 17 assignments are
-mostly security-group assignments, not direct user assignments — the
-original bootstrap needed the same elevated access this account doesn't
-currently have).
+**STATUS: Resolved via a different mechanism, not by completing the original step as written.** The App Role ASSIGNMENT write (`POST /servicePrincipals/{id}/appRoleAssignedTo`) remains genuinely blocked for the reason below (kept for the record — still true, and would matter for a future tenant/identity without the group memberships this pivot relies on):
 
-**Resolution options** (see design doc §1.3/§6 for full detail):
-1. Temporarily elevate `admin@` (or another available identity) to a
-   qualifying directory role for the duration of this one write, then revert.
-2. Use the sealed break-glass Global Administrator account once.
-3. Find another identity in the tenant that already holds a qualifying role.
+This specific Graph API requires the caller to hold a qualifying Microsoft Entra directory role (Application Administrator, Cloud Application Administrator, User Administrator, Privileged Role Administrator, Identity Governance Administrator, Hybrid Identity Administrator, Directory Writer, or Directory Synchronization Accounts — see [Microsoft's docs](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto)), with no owner-of-the-resource exception. `admin@`'s actual directory roles (`GET /me/memberOf`) confirm Global Reader only.
+
+**The fix:** `groupMembershipClaims` is a *different* Entra mechanism, in the same permission class as App Role *definition* — an owner-level, self-service app-registration property. `admin@` is a real, confirmed member of all 17 `HCC.*` security groups already (`GET /me/memberOf`, 19 total directory memberships, comfortably under the ~150-group JWT overage threshold). Setting `groupMembershipClaims=SecurityGroup` on `hcc-agent-host` puts a `groups` claim on the OBO token driven by those already-existing memberships — zero new IAM writes.
+
+Applied and verified live:
 
 ```bash
-$spId = az ad sp show --id b7608e39-e23a-4576-8489-e092ba5f726b --query id -o tsv
-$userId = az ad user show --id admin@mngenvmcap164444.onmicrosoft.com --query id -o tsv
-$roleIds = az ad app show --id b7608e39-e23a-4576-8489-e092ba5f726b --query "appRoles[].id" -o tsv
-foreach ($roleId in $roleIds) {
-  az rest --method POST `
-    --uri "https://graph.microsoft.com/v1.0/servicePrincipals/$spId/appRoleAssignedTo" `
-    --headers "Content-Type=application/json" `
-    --body "@<path-to-a-temp-json-file-containing-{principalId,resourceId,appRoleId}>"
-}
+az ad app update --id b7608e39-e23a-4576-8489-e092ba5f726b --set groupMembershipClaims=SecurityGroup
+az ad app show --id b7608e39-e23a-4576-8489-e092ba5f726b --query groupMembershipClaims -o tsv
+# -> SecurityGroup
 ```
 
-(Note: pass the JSON body via a temp file, not an inline string — inline
-strings get mangled by PowerShell's quoting. Also cast any `Get-Content`-
-sourced value to `[string]` before using it in a hashtable destined for
-`ConvertTo-Json` — otherwise PowerShell serializes `Get-Content`'s extra
-note properties instead of the plain string. See repo memory
-`terminal-git-commit-gotchas.md` for the full gotcha writeup.)
+Code changes to consume the `groups` claim (see Task 8a below) union group-derived roles onto `ValidatedCaller.roles`, so `OboContext`, `_require_active_role_held`, `worklist.py`, `decisions.py` and every other Task 1-7 consumer needed **zero** changes — they already just check `active_role in obo.roles`.
 
-- [ ] **Step 6: Verify the assignments landed**
+approved-to-apply by @urruegg (2026-08-10).
 
-```bash
-az rest --method GET --uri "https://graph.microsoft.com/v1.0/users/admin@mngenvmcap164444.onmicrosoft.com/appRoleAssignments" -o json |
-  ConvertFrom-Json | Select-Object -ExpandProperty value |
-  Where-Object { $_.resourceDisplayName -eq "hcc-agent-host" } |
-  Select-Object principalDisplayName, appRoleId
-```
+- [ ] **Step 6 (superseded): live App Role assignment verification is no longer required** — group-derived roles are verified instead by a live OBO smoke test once Task 9 is attempted (not part of this task; see Task 9's prerequisite note).
 
-Expected: one row per assigned role (matching the 16-ish held on `ihzhhpf-app`, excluding whichever single role was never assigned there).
+- [x] **Step 7: No commit needed for Steps 1-5** (Entra-only changes; no repo files changed by the App Role definition or `groupMembershipClaims` config). Note both changes in the PR description under "Security impact" per the repo's PR Output Contract. (Task 8a below **does** touch repo files — the code + Bicep wiring for the `groups` claim.)
 
-- [ ] **Step 7: No commit needed** (Entra-only change; no repo files changed). Note the change in the PR description under "Security impact" per the repo's PR Output Contract.
+---
+
+### Task 8a: Code + Bicep — consume the `groups` claim (group-derived roles)
+
+**Files:**
+- New: `apps/hcc-agent-host/src/auth/group_roles.py` — `group_role_map()` parses `OBO_GROUP_ROLE_MAP` (JSON, group-object-id → HCC.\* role name) from env config. Deny-by-default: unset/malformed → empty map, never raises.
+- Modify: `apps/hcc-agent-host/src/auth/token_validator.py` — `validate_claims()` now also parses `claims.get("groups", [])`, maps entries through `group_role_map()`, and unions the result onto the direct `roles` claim (deduped, order-preserving) before constructing `ValidatedCaller`.
+- Modify: `apps/hcc-agent-host/tests/unit/test_support_modules.py` — 5 new tests: group→role mapping, union with direct roles, dedup, unmapped group IDs ignored, missing/malformed `OBO_GROUP_ROLE_MAP` tolerated (regression safety).
+- Modify: `infra/modules/agent-host/container-app.bicep`, `infra/modules/agent-host/main.bicep`, `infra/main.bicep` — new `oboGroupRoleMap` param threaded through to a new `OBO_GROUP_ROLE_MAP` container env var (same pattern as `oboFabricScope`/`OBO_FABRIC_SCOPE`).
+- Modify: `infra/environments/sit.bicepparam` — `agentHostOboGroupRoleMap` set to the live JSON mapping of all 17 `HCC.*` group object IDs (read via `GET /me/memberOf`) to their role names. Non-secret directory metadata, same class as `agentHostOboTenantId`/`agentHostOboClientId` already committed there in plaintext. `agentHostOboEnabled` is left `false` — this task only makes the code/config *ready*, it does not flip the flag (that remains Task 9, separately gated).
+
+**Verification performed:**
+- `python -m pytest tests/ -q` — full suite green (293 tests, no regressions).
+- `az bicep build --file infra/main.bicep --outfile infra/main.json` — clean compile (verified, then the regenerated `main.json`/`sit.json` were reverted to avoid committing large, unrelated pre-existing drift between those compiled artefacts and their `.bicep`/`.bicepparam` sources — a gap that predates this task).
+- `az bicep build-params --file infra/environments/sit.bicepparam` — clean compile against the updated `main.bicep`.
 
 ---
 
@@ -1458,7 +1438,7 @@ Expected: one row per assigned role (matching the 16-ish held on `ihzhhpf-app`, 
 **Files:**
 - Modify: `infra/environments/sit.bicepparam`
 
-**Prerequisite:** Tasks 1-8 merged and deployed (the image must contain the Task 1-7 code fixes before this flag is safe to flip — re-enabling it before Task 1's fix is what caused the earlier incident). **Additionally blocked as of 2026-08-10: Task 8 Step 5 (role assignment) is not complete** — see that step's status note. Do not flip this flag until at least `admin@` has a real role assignment on `hcc-agent-host`, or every non-empty `X-Active-Role` request will 403 once OBO is on.
+**Prerequisite:** Tasks 1-8/8a merged and deployed (the image must contain the Task 1-7 code fixes, plus Task 8a's group-claim role mapping, before this flag is safe to flip). **Task 8 Step 5's original blocker (role assignment) is resolved via Task 8a's `groupMembershipClaims` pivot** — no directory-role elevation needed. **Still open, not addressed by this fix:** `sit.bicepparam`'s own history records that `agentHostOboEnabled=true` was reverted same-day (2026-08-09) because `OBO_ENABLED` is a shared, global flag also read by the pre-existing `/golden` board-data endpoint, and a caller with no bearer at all hard-401'd. Task 1's fix (distinguishing "no bearer presented" from "bearer presented but invalid") looks like it should resolve this too, but that has **not been re-verified live** since the revert — do so before flipping this flag again, don't assume it's fixed.
 
 - [ ] **Step 1: Flip the flag**
 

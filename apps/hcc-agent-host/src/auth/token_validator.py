@@ -17,6 +17,8 @@ import time
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from .group_roles import group_role_map
+
 
 class TokenValidationError(Exception):
     """Raised when a token fails validation. Callers must treat as 401."""
@@ -61,9 +63,23 @@ def validate_claims(
     if isinstance(roles, str):
         roles = [r for r in roles.replace(",", " ").split() if r]
 
+    # Sprint 43 WS-6 follow-up: assigning a principal to an App Role requires
+    # a directory role admin@ does not hold (see group_roles.py docstring),
+    # but `groupMembershipClaims` is owner-level/self-service and reflects
+    # memberships that already exist. Union any group-derived roles onto the
+    # direct `roles` claim (deduped, order-preserving) so downstream role
+    # checks (`_require_active_role_held` et al.) keep working unchanged
+    # regardless of which mechanism populated them.
+    groups = claims.get("groups", [])
+    if isinstance(groups, str):
+        groups = [g for g in groups.replace(",", " ").split() if g]
+    gmap = group_role_map()
+    group_derived_roles = [gmap[g] for g in groups if g in gmap]
+    all_roles = tuple(dict.fromkeys([*roles, *group_derived_roles]))
+
     return ValidatedCaller(
         oid=str(oid),
-        roles=tuple(roles),
+        roles=all_roles,
         hospital=str(claims.get("hospital", "aggregated")),
         env=str(claims.get("env", "dev")),
     )
