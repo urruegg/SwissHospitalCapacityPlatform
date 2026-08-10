@@ -6,6 +6,17 @@ on:
       - main
     paths:
       - 'infra/**'
+      # Excluded: the scoped agent-host release lane (cd-agent-host-release-sit.yml,
+      # workflow_dispatch-only) deploys these on its own. A full-root deploy here
+      # carries a much larger blast radius than a routine image/OBO-flag bump (a
+      # live `what-if` showed dozens of unrelated resource deltas, including
+      # `publicNetworkAccess: Disabled -> Enabled` regressions from pre-existing
+      # drift between deployed SIT state and infra/main.bicep's defaults) --
+      # confirmed live twice (runs 31423344659, 31424146616) when this trigger
+      # fired on pushes that only touched the scoped-release files below.
+      - '!infra/scripts/**'
+      - '!infra/tests/**'
+      - '!infra/modules/agent-host/release-sit.bicep'
       - '.github/workflows/cd-infra-deploy-sit.yml'
   workflow_dispatch:
 
