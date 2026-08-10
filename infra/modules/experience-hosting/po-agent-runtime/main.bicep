@@ -244,6 +244,10 @@ resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   properties: {
     databaseAccountOfferType: 'Standard'
     disableLocalAuth: true
+    // Tenant-wide MCAPSGov CosmosDB_PublicNetworkModify policy forces this
+    // Disabled unconditionally; declare it to match and stop the perpetual
+    // what-if drift (mirrors infra/modules/agent-host/cosmos.bicep).
+    publicNetworkAccess: 'Disabled'
     enableAutomaticFailover: false
     consistencyPolicy: {
       defaultConsistencyLevel: 'Session'
@@ -308,7 +312,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enableRbacAuthorization: true
     enableSoftDelete: true
     softDeleteRetentionInDays: 7
-    publicNetworkAccess: 'Enabled'
+    // Tenant-wide MCAPSGov KeyVault_PublicNetwork_Modify policy forces this
+    // Disabled unconditionally; declare it to match and stop the perpetual
+    // what-if drift (mirrors infra/modules/platform-foundation/main.bicep).
+    publicNetworkAccess: 'Disabled'
   }
 }
 

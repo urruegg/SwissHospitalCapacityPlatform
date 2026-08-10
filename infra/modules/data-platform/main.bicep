@@ -66,7 +66,10 @@ accessTier: 'Hot'
 allowBlobPublicAccess: false
 minimumTlsVersion: 'TLS1_2'
 supportsHttpsTrafficOnly: true
-publicNetworkAccess: 'Enabled'
+// Tenant-wide MCAPSGov StorageAccount_PublicNetwork_Modify policy forces
+// this Disabled unconditionally; declare it to match and stop the
+// perpetual what-if drift (mirrors infra/modules/agent-host/cosmos.bicep).
+publicNetworkAccess: 'Disabled'
 }
 }
 

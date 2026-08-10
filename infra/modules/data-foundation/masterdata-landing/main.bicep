@@ -59,7 +59,10 @@ resource landingStorage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     allowBlobPublicAccess: false
     supportsHttpsTrafficOnly: true
     minimumTlsVersion: 'TLS1_2'
-    publicNetworkAccess: 'Enabled'
+    // Tenant-wide MCAPSGov StorageAccount_PublicNetwork_Modify policy forces
+    // this Disabled unconditionally; declare it to match and stop the
+    // perpetual what-if drift (mirrors infra/modules/agent-host/cosmos.bicep).
+    publicNetworkAccess: 'Disabled'
     allowSharedKeyAccess: false
     networkAcls: {
       defaultAction: 'Allow'

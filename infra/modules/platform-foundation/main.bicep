@@ -57,12 +57,20 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enablePurgeProtection: true
     // Required so ARM can resolve keyVault.getSecret() parameter references at deploy time (Sprint 00 source-SQL enable).
     enabledForTemplateDeployment: true
-    // Pin publicNetworkAccess explicitly. Disabled when a private endpoint is
-    // provisioned (PROD swn — also what the MCAPSGov Modify-effect policy
-    // enforces subscription-wide); Enabled for the public/PE-off scope. Without
-    // this the API + policy interplay shows a perpetual what-if drift on this
-    // property (Bicep wants Enabled, policy re-disables). See ADR-0039.
-    publicNetworkAccess: enableKeyVaultPrivateEndpoint ? 'Disabled' : 'Enabled'
+    // Pin publicNetworkAccess explicitly. The tenant-wide MCAPSGov
+    // KeyVault_PublicNetwork_Modify policy (Modify effect, enforced at the
+    // Tenant Root Management Group) forces this to Disabled unconditionally,
+    // with or without a private endpoint -- confirmed live: SIT has no PE for
+    // this vault yet is Disabled, and stays reachable for Bicep's own
+    // getSecret()/getKeyVaultSecret() references because ARM resolves those
+    // via a policy-exempt, trusted first-party channel, not the public data
+    // plane. Hardcoding here (instead of tying it to enableKeyVaultPrivateEndpoint)
+    // removes the perpetual what-if drift the previous conditional caused
+    // (Bicep requested Enabled, policy silently re-disabled it every deploy).
+    // enableKeyVaultPrivateEndpoint still controls whether the PE + private DNS
+    // zone below are provisioned -- that is a genuine SIT/PROD topology
+    // difference, unlike this property. See ADR-0039.
+    publicNetworkAccess: 'Disabled'
     softDeleteRetentionInDays: 90
   }
 }
