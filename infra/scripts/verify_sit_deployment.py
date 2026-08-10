@@ -7,9 +7,10 @@ import json
 import shutil
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
@@ -284,6 +285,34 @@ def _image_parts(image: str) -> tuple[str, str, str]:
     return registry.removesuffix(".azurecr.io"), repository, tag
 
 
+def wait_for_ready_revision(
+    *,
+    resource_group: str,
+    agent_host_name: str,
+    show: Callable[[str, str], dict[str, Any]],
+    sleep: Callable[[float], None] = time.sleep,
+    max_attempts: int = 10,
+    delay_seconds: float = 5.0,
+) -> dict[str, Any]:
+    """Poll until the just-deployed revision finishes activating.
+
+    A deployment can return success before Container Apps finishes routing
+    traffic to the new revision; checking immediately races that propagation
+    (observed live: latestRevisionName ahead of latestReadyRevisionName for a
+    few seconds after `az deployment group create` returns). Returns the last
+    observed result even if it never converges within max_attempts.
+    """
+    result: dict[str, Any] = {}
+    for attempt in range(max_attempts):
+        result = show(resource_group, agent_host_name)
+        properties = result.get("properties", {})
+        if properties.get("latestRevisionName") == properties.get("latestReadyRevisionName"):
+            return result
+        if attempt < max_attempts - 1:
+            sleep(delay_seconds)
+    return result
+
+
 def collect_evidence(
     *,
     resource_group: str,
@@ -308,8 +337,13 @@ def collect_evidence(
         if str(resource.get("provisioningState", "")).lower() == "failed"
     ]
 
-    agent = _run_az(
-        "containerapp", "show", "--resource-group", resource_group, "--name", expected["agentHostName"]
+    def _show_agent_host(rg: str, name: str) -> dict[str, Any]:
+        return _run_az("containerapp", "show", "--resource-group", rg, "--name", name)
+
+    agent = wait_for_ready_revision(
+        resource_group=resource_group,
+        agent_host_name=expected["agentHostName"],
+        show=_show_agent_host,
     )
     agent_properties = agent.get("properties", {})
     agent_env = _env_map(agent)

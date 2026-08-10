@@ -188,3 +188,59 @@ def test_http_collector_accepts_html_success(monkeypatch) -> None:
     result = verifier._http_json("https://appsit.curavias.ch")
 
     assert result == {"status": 200, "body": None}
+
+
+def test_wait_for_ready_revision_polls_until_revisions_match() -> None:
+    verifier = _load_verifier()
+    calls = []
+
+    def fake_show(resource_group: str, name: str) -> dict:
+        calls.append(name)
+        if len(calls) < 3:
+            return {
+                "properties": {
+                    "latestRevisionName": "rev-2",
+                    "latestReadyRevisionName": "rev-1",
+                }
+            }
+        return {
+            "properties": {
+                "latestRevisionName": "rev-2",
+                "latestReadyRevisionName": "rev-2",
+            }
+        }
+
+    result = verifier.wait_for_ready_revision(
+        resource_group="rg",
+        agent_host_name="ca-agent-host",
+        show=fake_show,
+        sleep=lambda _seconds: None,
+        max_attempts=5,
+    )
+
+    assert len(calls) == 3
+    assert result["properties"]["latestRevisionName"] == "rev-2"
+    assert result["properties"]["latestReadyRevisionName"] == "rev-2"
+
+
+def test_wait_for_ready_revision_gives_up_after_max_attempts() -> None:
+    verifier = _load_verifier()
+
+    def fake_show(resource_group: str, name: str) -> dict:
+        return {
+            "properties": {
+                "latestRevisionName": "rev-2",
+                "latestReadyRevisionName": "rev-1",
+            }
+        }
+
+    result = verifier.wait_for_ready_revision(
+        resource_group="rg",
+        agent_host_name="ca-agent-host",
+        show=fake_show,
+        sleep=lambda _seconds: None,
+        max_attempts=3,
+    )
+
+    assert result["properties"]["latestRevisionName"] == "rev-2"
+    assert result["properties"]["latestReadyRevisionName"] == "rev-1"
