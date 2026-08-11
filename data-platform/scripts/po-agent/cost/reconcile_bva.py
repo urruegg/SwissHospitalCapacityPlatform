@@ -44,14 +44,27 @@ def _bva_text(repo_root: Path) -> str:
 
 
 def bva_annual_run_cost(repo_root: Path) -> float:
-    m = re.search(r"Total Annual Run Cost\*\*\s*\|\s*\*\*(\d+)", _bva_text(repo_root))
+    # Case-insensitive and comma-tolerant: docs/BVA.md is human-edited prose
+    # (Sprint 40 re-baseline lower-cased "annual run cost" and switched to
+    # comma-grouped numbers, e.g. "1,250,000" -- both changes are a legitimate
+    # authoring choice, so the parser tolerates them rather than constraining
+    # the document's wording to a brittle exact match).
+    m = re.search(
+        r"total annual run cost\*\*\s*\|\s*\*\*([\d,]+)",
+        _bva_text(repo_root),
+        re.IGNORECASE,
+    )
     if not m:
         raise ValueError("Total Annual Run Cost not found in docs/BVA.md")
-    return float(m.group(1))
+    return float(m.group(1).replace(",", ""))
 
 
 def bva_rom_band(repo_root: Path) -> float:
-    m = re.search(r"ROM confidence band: plus/minus (\d+) percent", _bva_text(repo_root))
+    m = re.search(
+        r"ROM confidence band[:\s]*(?:is\s*)?(?:plus/minus|\u00b1)\s*(\d+)\s*percent",
+        _bva_text(repo_root),
+        re.IGNORECASE,
+    )
     return (float(m.group(1)) / 100.0) if m else 0.30
 
 
