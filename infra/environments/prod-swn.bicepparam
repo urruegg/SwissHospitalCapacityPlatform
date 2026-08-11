@@ -218,7 +218,7 @@ param enablePoAgentSearchModule = true
 param enablePoAgentKnowledgeBaseModule = true
 param enablePoAgentCorpusLandingModule = true
 param enablePoAgentRuntimeModule = true
-param poAgentContainerImage = 'crihzhhpfprod.azurecr.io/po-agent-service:49b9068'
+param poAgentContainerImage = 'crihzhhpfprod.azurecr.io/po-agent-service:bed0da5'
 param poAgentLogAnalyticsWorkspaceId = ''
 // sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
 param enableSimCapacityModule = true
