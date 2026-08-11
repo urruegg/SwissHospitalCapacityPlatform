@@ -130,7 +130,7 @@ param enableAppFluentModule = true
 // config, role lens, My Account, live-degrade) + 3 sign-in fixes (OIDC-only scopes,
 // no Graph, await MSAL redirect before the router mounts). Env-agnostic image
 // imported into crihzhhpfprod via az acr import from the SIT ACR. approved-to-apply.
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:8c03420'
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:f6cf7e0'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the PROD app calls the PROD (switzerlandnorth) agent-host
 // instead of inheriting the SIT URL from the build-once + import image.
