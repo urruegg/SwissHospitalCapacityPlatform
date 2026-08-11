@@ -1,9 +1,9 @@
 ---
-Version: 1.1.0
+Version: 1.2.0
 Date: 2026-08-11
 Author: Copilot coding agent (autopilot, delegated)
-Status: Code-complete, deployed to SIT and PROD, live-verified
-Previous Version: 1.0.0 (added §10 documenting both §8 follow-ups completed same-day)
+Status: Code-complete, deployed to SIT and PROD, live-verified; session closed pending §11 follow-ups
+Previous Version: 1.1.0 (added §10 documenting both §8 follow-ups completed same-day)
 ---
 
 # BVA Evidence Sprint — Master Data, PO Agent Competency, Backstage Card — Design
@@ -300,3 +300,58 @@ image `bed0da5` -- `po-agent-service`'s first-ever PROD image bump since
 its `49b9068` rollout earlier the same day). All deploys used the same
 what-if-first, `approved-to-apply`-gated discipline used throughout this
 sprint.
+
+## 11. GitHub issue audit and session close (2026-08-11)
+
+User asked to close related GitHub issues for a "safe state," then to close
+the session and document it for a next-day restart. Audited all open
+issues; **none were safe to close outright** -- closing something that
+doesn't fully meet its own acceptance criteria would create a false safe
+state, not a real one.
+
+- **#427** ("Publish real PO Agent container image") -- the runtime app
+  (`ca-po-*`) was already real in both SIT and PROD from §10.2's work.
+  Closed out its last checklist item too: bumped
+  `poAgentCorpusRefreshContainerImage` off the placeholder in PROD
+  (`crihzhhpfprod.azurecr.io/po-agent-corpus-refresh:7984e64`, mirroring
+  SIT). Manually triggering the PROD job to verify then surfaced a
+  **new, separate, pre-existing bug**: PROD's Azure AI Search *service*
+  exists but the *index* `idx-curavias-corpus-ihzhhpf-prod` does not, so
+  the job 404s uploading chunks. Split into new issue
+  [#571](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/571).
+  **#427 reopened and left open** pending #571 -- a commit message of mine
+  containing the literal text `closes #427` auto-closed it on push before
+  verification was complete (GitHub's closing-keyword behavior fires on
+  direct pushes to the default branch, not only merged PRs); caught this,
+  reopened, and posted an explanatory comment. Lesson recorded in
+  `/memories/operation-safety.md`: never put closing keywords in a commit
+  message before an issue's acceptance criteria are fully, personally
+  verified.
+- **#556** (parked live-Cosmos Opportunity SoR) -- posted a confirming
+  comment; correctly stays open/parked, since §10.2's `bva_fanout` wiring
+  deliberately did not touch Cosmos (no new infra, per §5's decision).
+- Also found and cleaned up 3 stale, unapproved `po-agent-corpus-build.yml`
+  runs that had been silently queued by this session's earlier pushes (that
+  workflow also watches `data-platform/scripts/po-agent/**`, easy to miss
+  when only monitoring `po-agent-runtime-build.yml`).
+
+### What is genuinely still open for the next session
+
+1. **[#571](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/571)**
+   -- create the PROD Azure AI Search index so
+   `caj-po-refresh-ihzhhpf-prod` can actually complete a run. Most
+   immediately actionable item if continuing PO Agent work.
+2. **PROD `sm_bva` / notebook** (§10.1) -- the 10 evidence Gold tables and
+   the extended semantic-model TMDL were only published to SIT; PROD's
+   `sm_bva` still has the original 5 cost-basis tables only.
+3. **`bva_fanout` full completion** (§10.2) -- Cosmos-backed `Opportunity`
+   write-back/lookup and/or an LLM-based verdict producer, both
+   deliberately out of scope this session.
+4. **#427 / #571** -- once the index exists, re-verify
+   `caj-po-refresh-ihzhhpf-prod` end-to-end, then #427 can close for real.
+5. **#556** -- no action expected unless a live, writable Opportunity SoR
+   becomes an actual product need (see its own revisit triggers).
+
+Nothing else from this sprint or its follow-ups is outstanding: SIT and
+PROD are both green for `hcc-app-fluent`, `po-agent-service`, and (with the
+caveat above) `po-agent-corpus-refresh`.
