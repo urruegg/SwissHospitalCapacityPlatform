@@ -1,0 +1,66 @@
+azure_cost_id,week_start,service,amount_usd,amount_chf,currency,settlement_status,source
+AZ-2026-06-29-MicrosoftFa,2026-06-29,Microsoft Fabric,5.83,5.13,USD,settled,ActualCost
+AZ-2026-07-06-MicrosoftFa,2026-07-06,Microsoft Fabric,53.01,46.65,USD,settled,ActualCost
+AZ-2026-07-13-MicrosoftFa,2026-07-13,Microsoft Fabric,42.59,37.48,USD,settled,ActualCost
+AZ-2026-07-20-MicrosoftFa,2026-07-20,Microsoft Fabric,100.87,88.77,USD,settled,ActualCost
+AZ-2026-07-27-MicrosoftFa,2026-07-27,Microsoft Fabric,16.55,14.56,USD,provisional,ActualCost
+AZ-2026-06-29-LogAnalytic,2026-06-29,Log Analytics,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-LogAnalytic,2026-07-06,Log Analytics,8.19,7.21,USD,settled,ActualCost
+AZ-2026-07-13-LogAnalytic,2026-07-13,Log Analytics,15.62,13.75,USD,settled,ActualCost
+AZ-2026-07-20-LogAnalytic,2026-07-20,Log Analytics,36.73,32.32,USD,settled,ActualCost
+AZ-2026-07-27-LogAnalytic,2026-07-27,Log Analytics,9.39,8.26,USD,provisional,ActualCost
+AZ-2026-06-29-AzureContai,2026-06-29,Azure Container Apps,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-AzureContai,2026-07-06,Azure Container Apps,2.1,1.85,USD,settled,ActualCost
+AZ-2026-07-13-AzureContai,2026-07-13,Azure Container Apps,11.75,10.34,USD,settled,ActualCost
+AZ-2026-07-20-AzureContai,2026-07-20,Azure Container Apps,26.89,23.66,USD,settled,ActualCost
+AZ-2026-07-27-AzureContai,2026-07-27,Azure Container Apps,6.33,5.57,USD,provisional,ActualCost
+AZ-2026-06-29-AzureCosmos,2026-06-29,Azure Cosmos DB,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-AzureCosmos,2026-07-06,Azure Cosmos DB,3.94,3.47,USD,settled,ActualCost
+AZ-2026-07-13-AzureCosmos,2026-07-13,Azure Cosmos DB,8.83,7.77,USD,settled,ActualCost
+AZ-2026-07-20-AzureCosmos,2026-07-20,Azure Cosmos DB,18.06,15.89,USD,settled,ActualCost
+AZ-2026-07-27-AzureCosmos,2026-07-27,Azure Cosmos DB,4.22,3.71,USD,provisional,ActualCost
+AZ-2026-06-29-EventHubs,2026-06-29,Event Hubs,1.83,1.61,USD,settled,ActualCost
+AZ-2026-07-06-EventHubs,2026-07-06,Event Hubs,9.15,8.05,USD,settled,ActualCost
+AZ-2026-07-13-EventHubs,2026-07-13,Event Hubs,9.81,8.63,USD,settled,ActualCost
+AZ-2026-07-20-EventHubs,2026-07-20,Event Hubs,10.09,8.88,USD,settled,ActualCost
+AZ-2026-07-27-EventHubs,2026-07-27,Event Hubs,1.44,1.27,USD,provisional,ActualCost
+AZ-2026-06-29-ContainerRe,2026-06-29,Container Registry,4.58,4.03,USD,settled,ActualCost
+AZ-2026-07-06-ContainerRe,2026-07-06,Container Registry,9.35,8.23,USD,settled,ActualCost
+AZ-2026-07-13-ContainerRe,2026-07-13,Container Registry,8.75,7.7,USD,settled,ActualCost
+AZ-2026-07-20-ContainerRe,2026-07-20,Container Registry,5.83,5.13,USD,settled,ActualCost
+AZ-2026-07-27-ContainerRe,2026-07-27,Container Registry,0.85,0.75,USD,provisional,ActualCost
+AZ-2026-06-29-AzureCognit,2026-06-29,Azure Cognitive Search,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-AzureCognit,2026-07-06,Azure Cognitive Search,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-13-AzureCognit,2026-07-13,Azure Cognitive Search,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-20-AzureCognit,2026-07-20,Azure Cognitive Search,12.43,10.94,USD,settled,ActualCost
+AZ-2026-07-27-AzureCognit,2026-07-27,Azure Cognitive Search,16.13,14.19,USD,provisional,ActualCost
+AZ-2026-06-29-VirtualNetw,2026-06-29,Virtual Network,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-VirtualNetw,2026-07-06,Virtual Network,0.73,0.64,USD,settled,ActualCost
+AZ-2026-07-13-VirtualNetw,2026-07-13,Virtual Network,3.76,3.31,USD,settled,ActualCost
+AZ-2026-07-20-VirtualNetw,2026-07-20,Virtual Network,7.02,6.18,USD,settled,ActualCost
+AZ-2026-07-27-VirtualNetw,2026-07-27,Virtual Network,1.44,1.27,USD,provisional,ActualCost
+AZ-2026-06-29-LoadBalance,2026-06-29,Load Balancer,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-LoadBalance,2026-07-06,Load Balancer,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-13-LoadBalance,2026-07-13,Load Balancer,3.42,3.01,USD,settled,ActualCost
+AZ-2026-07-20-LoadBalance,2026-07-20,Load Balancer,6.23,5.48,USD,settled,ActualCost
+AZ-2026-07-27-LoadBalance,2026-07-27,Load Balancer,1.2,1.06,USD,provisional,ActualCost
+AZ-2026-06-29-AzureAppSe,2026-06-29,Azure App Service,0.58,0.51,USD,settled,ActualCost
+AZ-2026-07-06-AzureAppSe,2026-07-06,Azure App Service,2.04,1.8,USD,settled,ActualCost
+AZ-2026-07-13-AzureAppSe,2026-07-13,Azure App Service,1.06,0.93,USD,settled,ActualCost
+AZ-2026-07-20-AzureAppSe,2026-07-20,Azure App Service,1.65,1.45,USD,settled,ActualCost
+AZ-2026-07-27-AzureAppSe,2026-07-27,Azure App Service,0.52,0.46,USD,provisional,ActualCost
+AZ-2026-06-29-FoundryMode,2026-06-29,Foundry Models,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-FoundryMode,2026-07-06,Foundry Models,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-13-FoundryMode,2026-07-13,Foundry Models,0.14,0.12,USD,settled,ActualCost
+AZ-2026-07-20-FoundryMode,2026-07-20,Foundry Models,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-27-FoundryMode,2026-07-27,Foundry Models,0.0,0.0,USD,provisional,ActualCost
+AZ-2026-06-29-AzureDNS,2026-06-29,Azure DNS,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-AzureDNS,2026-07-06,Azure DNS,0.01,0.01,USD,settled,ActualCost
+AZ-2026-07-13-AzureDNS,2026-07-13,Azure DNS,0.04,0.04,USD,settled,ActualCost
+AZ-2026-07-20-AzureDNS,2026-07-20,Azure DNS,0.07,0.06,USD,settled,ActualCost
+AZ-2026-07-27-AzureDNS,2026-07-27,Azure DNS,0.01,0.01,USD,provisional,ActualCost
+AZ-2026-06-29-Storage,2026-06-29,Storage,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-06-Storage,2026-07-06,Storage,0.0,0.0,USD,settled,ActualCost
+AZ-2026-07-13-Storage,2026-07-13,Storage,0.01,0.01,USD,settled,ActualCost
+AZ-2026-07-20-Storage,2026-07-20,Storage,0.02,0.02,USD,settled,ActualCost
+AZ-2026-07-27-Storage,2026-07-27,Storage,0.0,0.0,USD,provisional,ActualCost

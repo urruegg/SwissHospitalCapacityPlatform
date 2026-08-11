@@ -1,0 +1,4 @@
+effort_id,effort_type,person,quantity,unit,hours,hourly_rate_chf,cost_chf,period,evidence_status
+EF-001,Daily engagement,Urs Rueegg,90,calendar_days,90.0,108.23,9740,90-day build window,measured
+EF-002,Full sprint (2-day),Urs Rueegg,5,sprints,84.0,108.23,9091,90-day build window,measured
+EF-999,TOTAL,Urs Rueegg,1,person,174.0,108.23,18831,90-day build window,measured

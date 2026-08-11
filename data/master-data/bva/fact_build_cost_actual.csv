@@ -1,0 +1,6 @@
+build_cost_id,cost_element,category,amount_chf,amount_usd,share_pct,evidence_status,source_system,period_start,period_end,caveat
+BC-001,"Human effort (1 person, 174 h)",human,18831,,88.5,measured,Tracked engagement,2026-05-01,2026-07-31,
+BC-002,Copilot agent tokens,agent_tokens,1240,1409.46,5.8,estimated,Copilot CLI session store,2026-07-17,2026-07-27,Derived rate; no billed AIU rate available
+BC-003,Azure cloud services,cloud,1111,1262.85,5.2,measured_extrapolated,Azure Cost Management ActualCost,2026-06-29,2026-07-27,"5 weeks billed, extrapolated to 90 d; PoT scope westus2"
+BC-004,Copilot subscription (3 months),subscription,103,117.0,0.5,estimated,List price,2026-05-01,2026-07-31,
+BC-999,TOTAL 90-day build cost,total,21286,,100.0,mixed,Composite,2026-05-01,2026-07-31,See BVA v2.0.0 §3.5

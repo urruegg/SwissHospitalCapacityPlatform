@@ -1,0 +1,13 @@
+assumption_id,assumption,value,unit,basis,confidence
+AS-001,USD to CHF conversion rate,0.88,CHF/USD,Stated modelling assumption,medium
+AS-002,Fully loaded annual person cost,200000,CHF/year,Given,high
+AS-003,Swiss working days per year,220,days,Standard,high
+AS-004,Hours per working day,8.4,hours,42-hour week,high
+AS-005,Annual productive hours,1848,hours,220 x 8.4,high
+AS-006,Fresh input token price,3.0,USD/1M tokens,Frontier-class list pricing,low
+AS-007,Output token price,15.0,USD/1M tokens,Frontier-class list pricing,low
+AS-008,Cache-read token price,0.3,USD/1M tokens,Frontier-class list pricing,low
+AS-009,Implied cost per AI Unit,0.00573,USD/AIU,Derived from token pricing — NOT a billed rate,low
+AS-010,ROM confidence band,30,percent,BVA method,high
+AS-011,Planning horizon,3,years,BVA scope,high
+AS-012,Copilot subscription,39,USD/user/month,List price,medium

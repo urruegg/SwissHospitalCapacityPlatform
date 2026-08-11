@@ -293,6 +293,119 @@ BVA_LEDGER_TARGETS = {
 }
 
 
+# --------------------------------------------------------------------------- #
+# BVA evidence & narrative master-data domain (additive to BVA cost/BOM above) #
+# --------------------------------------------------------------------------- #
+# Reuses the canonical file list / id columns / numeric columns / evidence-
+# status vocabulary from data-platform/bva/evidence_grounding.py so the CI gate
+# and the Gold-table transform can never silently drift apart.
+
+sys.path.insert(0, str(REPO_ROOT / "data-platform"))
+from bva.evidence_grounding import (  # noqa: E402  (path must be set first)
+    VALID_EVIDENCE_STATUS as BVA_EVIDENCE_VALID_STATUS,
+)
+from bva.evidence_grounding import _ID_COLUMNS as BVA_EVIDENCE_ID_COLUMNS  # noqa: E402
+from bva.evidence_grounding import _MASTER_FILES as BVA_EVIDENCE_FILES  # noqa: E402
+from bva.evidence_grounding import _NUMERIC_COLUMNS as BVA_EVIDENCE_NUMERIC_COLUMNS  # noqa: E402
+
+
+def validate_bva_evidence(bva_dir: Path) -> list[str]:
+    errors: list[str] = []
+    tables: dict[str, list[dict[str, str]]] = {}
+
+    for filename in BVA_EVIDENCE_FILES:
+        path = bva_dir / filename
+        if not path.exists():
+            errors.append(f"missing file: {filename}")
+            continue
+        tables[filename.removesuffix(".csv")] = _read(path)
+
+    # Primary-key uniqueness. dim_cost_element.csv is grained by
+    # (cost_element_id, model_version) -- each cost element appears once per
+    # BVA model version (v1.0.1 and v2.0.0) with a different amount_chf -- so
+    # its composite key is checked separately below rather than by the
+    # single-column id-only check every other table uses.
+    for stem, id_column in BVA_EVIDENCE_ID_COLUMNS.items():
+        if stem == "dim_cost_element":
+            continue
+        rows = tables.get(stem)
+        if rows is None:
+            continue
+        seen: set[str] = set()
+        for row in rows:
+            key = row.get(id_column, "")
+            if key in seen:
+                errors.append(f"{stem}.csv: duplicate primary key {id_column}={key!r}")
+            seen.add(key)
+
+    cost_element_rows = tables.get("dim_cost_element")
+    if cost_element_rows is not None:
+        seen_composite: set[tuple[str, str]] = set()
+        for row in cost_element_rows:
+            key = (row.get("cost_element_id", ""), row.get("model_version", ""))
+            if key in seen_composite:
+                errors.append(
+                    "dim_cost_element.csv: duplicate primary key "
+                    f"(cost_element_id, model_version)={key!r}"
+                )
+            seen_composite.add(key)
+
+    # Numeric columns must parse as numbers when populated; an empty cell is
+    # allowed here (means "not tracked for this row", e.g. a cloud-store
+    # Copilot week with no token breakdown) -- unlike the cost/BOM domain
+    # above, this domain does not require every numeric cell to be populated.
+    for stem, columns in BVA_EVIDENCE_NUMERIC_COLUMNS.items():
+        rows = tables.get(stem)
+        if rows is None:
+            continue
+        for column in columns:
+            for row in rows:
+                val = row.get(column, "")
+                if val == "":
+                    continue
+                try:
+                    float(val)
+                except ValueError:
+                    errors.append(f"{stem}.csv: {column}={val!r} must be numeric")
+
+    # evidence_status / confidence enum-domain membership, where the column exists.
+    for stem, rows in tables.items():
+        for row in rows:
+            status = row.get("evidence_status")
+            if status and status not in BVA_EVIDENCE_VALID_STATUS:
+                errors.append(
+                    f"{stem}.csv: evidence_status={status!r} not in domain "
+                    f"{sorted(BVA_EVIDENCE_VALID_STATUS)}"
+                )
+
+    # BC-999 in fact_build_cost_actual.csv is the authoritative measured total;
+    # its component rows (category != "total") must sum to it within a CHF 1
+    # tolerance -- the components and the total are each independently rounded
+    # from more precise USD/CHF conversions, so an exact match is not
+    # realistic for currency data (matches docs/BVA.md's own ±10% confidence
+    # band on this figure, which is far looser than this sanity check).
+    build_cost_rows = tables.get("fact_build_cost_actual", [])
+    total_row = next((r for r in build_cost_rows if r.get("category") == "total"), None)
+    if total_row is not None:
+        try:
+            expected_total = float(total_row.get("amount_chf", ""))
+            component_total = sum(
+                float(r.get("amount_chf", "0"))
+                for r in build_cost_rows
+                if r.get("category") != "total"
+            )
+            if abs(component_total - expected_total) > 1.0:
+                errors.append(
+                    "fact_build_cost_actual.csv: component rows sum to "
+                    f"{component_total:g}, total row (BC-999) says {expected_total:g} "
+                    "(exceeds CHF 1 rounding tolerance)"
+                )
+        except ValueError:
+            pass  # already reported by the numeric-column check above
+
+    return errors
+
+
 def gln_is_valid(gln: str) -> bool:
     """GS1 mod-10 check for a 13-digit GLN (weights 1/3 from the right)."""
     if len(gln) != 13 or not gln.isdigit():
@@ -463,6 +576,7 @@ def main() -> int:
     errors = validate_capacity(CAPACITY_DIR)
     errors += validate_org_skills(ORG_SKILLS_DIR)
     errors += validate_bva(BVA_DIR)
+    errors += validate_bva_evidence(BVA_DIR)
     if errors:
         print("MASTER-DATA VALIDATION FAILED:")
         for e in errors:

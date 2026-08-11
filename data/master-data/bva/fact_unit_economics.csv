@@ -1,0 +1,6 @@
+unit_id,metric,value_chf,denominator,denominator_count,evidence_status
+UE-001,Build cost per sprint,710,sprints,30,measured
+UE-002,Build cost per agent,2661,agents (7 runtime + PO),8,measured
+UE-003,Build cost per deployed Azure resource,148,Azure resources,144,measured
+UE-004,All-in cost per human hour,122,human hours,174,measured
+UE-005,Blended human hourly rate,108.23,productive hours/yr,1848,derived

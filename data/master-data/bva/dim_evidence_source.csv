@@ -1,0 +1,10 @@
+source_id,source,source_type,authority,period,used_for,caveat
+EV-001,Azure Cost Management ActualCost,billing,authoritative,2026-06-29..2026-07-27,Azure build cost,Latest 1-2 weeks provisional; PoT scope westus2
+EV-002,GitHub Copilot CLI session store,telemetry,indicative,2026-07-17..2026-07-27,Token and AIU consumption,Not billing; no $/AIU rate; incomplete history
+EV-003,Deployed BOM (144 resources),configuration,authoritative,2026-07-28,Resource inventory,
+EV-004,Tracked engagement record,effort,authoritative,90-day window,Human effort,
+EV-005,COO review,review_session,named participant,2026-07-24,Adoption and data-quality findings,"Rebekka Hatzung, LUKS"
+EV-006,CIO review,review_session,named participant,2026-07-17,"Foresight horizon, data-layer precondition","Emanuel Furler, Spital Zollikerberg"
+EV-007,Cantonal IT review,review_session,named participant,2026-06-08,Cantonal legal mapping,"Petrus Jallo, Canton Aargau"
+EV-008,CTO mentor review,review_session,named participant,2026-06-09,"Sovereignty, landing zone","Rene Raeber, Microsoft Switzerland"
+EV-009,Security review,review_session,named participant,2026-06-10,"No-PHI doctrine, re-identification","Daniel von Bueren, Microsoft Switzerland"

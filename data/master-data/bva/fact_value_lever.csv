@@ -1,0 +1,6 @@
+value_lever_id,value_lever,annual_benefit_chf,value_logic,evidence_status,validation_required
+VL-001,Reduced avoidable bed-day blocking and discharge delay,1650000,Faster coordination and discharge-readiness decisions increase effective bed turnover,ROM,Provider finance validation
+VL-002,Improved command-center productivity,980000,120 peak users with reduced manual triage and faster decisions,ROM,Provider finance validation
+VL-003,Reduced overtime and agency premium,620000,Forecast-informed planning reduces expensive reactive staffing,ROM,Provider finance validation
+VL-004,Lower integration and coordination failure cost,350000,"Improved workflow reliability, fewer manual recoveries",ROM,Provider finance validation
+VL-005,Compliance and audit preparation efficiency,220000,Evidence-ready controls reduce recurring audit effort,ROM,Provider finance validation

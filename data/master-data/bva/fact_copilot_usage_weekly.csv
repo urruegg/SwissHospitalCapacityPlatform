@@ -1,0 +1,7 @@
+copilot_usage_id,week_start,sessions,input_tokens,output_tokens,cache_read_tokens,reasoning_tokens,aiu_consumed,store,evidence_status
+CP-2026-07-17,2026-07-17,3,468390537,2616277,442175660,906779,44191.973,local,telemetry
+CP-2026-07-20,2026-07-20,30,1798630898,13247695,1665029257,4664105,190943.247,local,telemetry
+CP-2026-07-27,2026-07-27,9,98635372,591353,90699896,186987,10966.464,local,telemetry
+CP-2026-05-04,2026-05-04,1,476875,3320,,,,cloud,telemetry
+CP-2026-07-06,2026-07-06,1,1216228,7941,,,,cloud,telemetry
+CP-2026-07-13,2026-07-13,5,282990208,1884932,,,,cloud,telemetry

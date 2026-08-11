@@ -1,0 +1,16 @@
+cost_element_id,cost_element,category,cost_type,model_version,amount_chf,confidence,evidence_status,source_ref
+CE-001,"Platform build (design, engineering)",one_time,build,v1.0.1,640000,ROM_30,modelled,BVA v1.0.1
+CE-001,"Platform build (design, engineering)",one_time,build,v2.0.0,60000,ROM_30,modelled_on_measured,BVA v2.0.0 §4.2
+CE-002,Hospital-specific integration (Epic/KIS),one_time,integration,v2.0.0,180000,ROM_30,modelled,COO review 24.07.2026
+CE-003,Security and compliance hardening,one_time,compliance,v1.0.1,180000,ROM_30,modelled,BVA v1.0.1
+CE-003,Security and compliance hardening,one_time,compliance,v2.0.0,140000,ROM_30,modelled,Cantonal IT review 08.06.2026
+CE-004,Data onboarding and contract implementation,one_time,data,v1.0.1,220000,ROM_30,modelled,BVA v1.0.1
+CE-004,Data onboarding and contract implementation,one_time,data,v2.0.0,180000,ROM_30,modelled,CIO review 17.07.2026
+CE-005,"Training, change adoption and hypercare",one_time,adoption,v1.0.1,120000,ROM_30,modelled,BVA v1.0.1
+CE-005,"Training, change adoption and hypercare",one_time,adoption,v2.0.0,120000,ROM_30,modelled,Held flat by design — COO review
+CE-006,Program contingency reserve,one_time,contingency,v1.0.1,140000,ROM_30,modelled,BVA v1.0.1
+CE-006,Program contingency reserve,one_time,contingency,v2.0.0,100000,ROM_30,modelled,BVA v2.0.0 §4.2
+CE-101,Azure and platform service consumption,recurring_annual,cloud,v2.0.0,760000,ROM_30,modelled,BVA v2.0.0 §5
+CE-102,"Operations, support and reliability engineering",recurring_annual,operations,v2.0.0,260000,ROM_30,modelled,BVA v2.0.0 §5
+CE-103,"Security operations, audit evidence, compliance cadence",recurring_annual,compliance,v2.0.0,140000,ROM_30,modelled,BVA v2.0.0 §5
+CE-104,Model monitoring and continuous evaluation,recurring_annual,mlops,v2.0.0,90000,ROM_30,modelled,BVA v2.0.0 §5
