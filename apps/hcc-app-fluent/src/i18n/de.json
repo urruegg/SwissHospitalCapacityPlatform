@@ -84,7 +84,8 @@
             "ops": { "name": "Spital-Betrieb Feldinterview", "persp": "Zeit f\u00fcr die Patientenversorgung" },
             "cto": { "name": "CTO-Mentor-Review", "persp": "Souver\u00e4nit\u00e4t & Regulierung" },
             "ciso": { "name": "CISO- / Security-Review", "persp": "Datenschutz & Schl\u00fcssel" },
-            "it": { "name": "Kantonales IT-Review", "persp": "Cloud-Betriebsmodell" }
+            "it": { "name": "Kantonales IT-Review", "persp": "Cloud-Betriebsmodell" },
+            "marco2": { "name": "Marco-Rossi-Follow-up-Review", "persp": "Qualitätszeit & Intake-Triage" }
           }
         },
         "poClasses": { "accent": "hard questions" }

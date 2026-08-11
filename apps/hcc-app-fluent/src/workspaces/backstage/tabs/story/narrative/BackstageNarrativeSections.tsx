@@ -464,6 +464,7 @@ const REVIEW_SESSIONS = [
   { id: 'cto', date: '2026-06-09' },
   { id: 'ciso', date: '2026-06-10' },
   { id: 'it', date: '2026-06-08' },
+  { id: 'marco2', date: '2026-08-10' },
 ] as const;
 
 const PRACTITIONERS: {

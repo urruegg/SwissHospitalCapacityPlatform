@@ -85,7 +85,8 @@
             "ops": { "name": "Hospital operations field interview", "persp": "Time for patient care" },
             "cto": { "name": "CTO-mentor review", "persp": "Sovereignty & regulation" },
             "ciso": { "name": "CISO / security review", "persp": "Data protection & keys" },
-            "it": { "name": "Cantonal IT review", "persp": "Cloud operating model" }
+            "it": { "name": "Cantonal IT review", "persp": "Cloud operating model" },
+            "marco2": { "name": "Marco Rossi follow-up review", "persp": "Quality time & intake triage" }
           }
         },
         "poClasses": { "accent": "hard questions" }
@@ -795,14 +796,18 @@
             "quote": "How do we get a system that supports us — that gives us back time for patient care and sees what is coming early enough for us to be prepared?",
             "addressed": [
               "The real pain point they named was not forecasting in isolation but the coupling of OR utilisation, bed occupancy and staffing — decisions taken in three places that only work when taken together. That is precisely the chain Curavias runs: OOA → BMCA → ORSA → SBA, one coordinated plan across roles, demonstrated live as 102% → 94%.",
-              "A second insight reshaped staffing: clinical teams are so specialised that an absence cannot simply be compensated — which makes foresight worth far more than it first appears, and skill-aware staffing mandatory rather than optional. Time for patient care is the promise, and the mechanism is delegation: routine work moves to agents so clinical staff move back to patients — with the human keeping the decision."
+              "A second insight reshaped staffing: clinical teams are so specialised that an absence cannot simply be compensated — which makes foresight worth far more than it first appears, and skill-aware staffing mandatory rather than optional. Time for patient care is the promise, and the mechanism is delegation: routine work moves to agents so clinical staff move back to patients — with the human keeping the decision.",
+              "Dr. med. Marco Rossi's follow-up review (10 Aug 2026) sharpened what \"time back\" actually means: not every screen-facing minute is waste — reviewing data with AI to reach a diagnosis, or documenting a clean discipline-to-discipline handoff, is patient work too. The precise target, refined together in that session, is quality time across three phases: prepare for the encounter, perform it, and recap it — each with a clean handoff to the next clinician.",
+              "That same follow-up named the single highest-leverage moment in the whole patient journey: intake triage. Today it is often the least experienced staff who make the first call; his proposal reverses that — a senior clinician and shift lead triage first, aided by an AI assistant that pattern-matches new cases against comparable historical ones to flag early whether a stay will be short or complex, and start discharge planning from the emergency-department gate rather than a day later."
             ],
             "value": [
               "Time returned to patient care — routine coordination moves to agents, clinical judgement stays with people",
               "One coordinated move instead of three arguments — OR, beds and staffing resolved together: 102% → 94%",
               "Discharge blockers ranked, not listed — 8 candidates reduced to the 5 that are systemic",
               "Specialised absences seen early, when they can still be covered — with \"no agency staff\" as the goal",
-              "Crises rehearsed before they happen — 6 shocks pressure-tested against trusted Swiss signal sources"
+              "Crises rehearsed before they happen — 6 shocks pressure-tested against trusted Swiss signal sources",
+              "A precise definition of quality time — prepare, perform, recap — replacing a blanket \"less admin\" goal with one clinicians actually recognise",
+              "The highest-leverage moment named precisely: senior-led intake triage, opening a clear, evidence-based path for a future triage-support capability"
             ],
             "adapted": [
               "Decision Ontology (Sprint 26) — triggered directly by this session: Signal → Understanding → Recommendation → Action → Coordination",

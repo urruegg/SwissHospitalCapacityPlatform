@@ -34,15 +34,19 @@ describe('ReviewSessionsSection', () => {
     expect(headers[2]).toHaveTextContent(/perspective challenged/i);
   });
 
-  it('harmonises the sessions with the start-plane "What we heard" seats (COO/CIO/CTO/CISO/Ops/IT)', () => {
+  it('harmonises the sessions with the start-plane "What we heard" seats (COO/CIO/CTO/CISO/Ops/IT) plus Marco Rossi\'s follow-up', () => {
     renderReviews();
     const section = screen.getByTestId('review-sessions-section');
-    // One body row per harmonised seat (6), plus the header row.
+    // One body row per harmonised seat (6) plus Marco Rossi's follow-up session (1), plus the header row.
     const rows = within(section).getAllByRole('row');
-    expect(rows).toHaveLength(7);
+    expect(rows).toHaveLength(8);
     // Perspectives echo the start-plane persona sub-labels.
     expect(within(section).getByText(/Business case & adoption/i)).toBeInTheDocument();
     expect(within(section).getByText(/Cloud operating model/i)).toBeInTheDocument();
+    // The follow-up session with Marco Rossi (10 Aug 2026) is on record.
+    expect(within(section).getByText(/Marco Rossi follow-up review/i)).toBeInTheDocument();
+    expect(within(section).getByText(/Quality time & intake triage/i)).toBeInTheDocument();
+    expect(within(section).getByText('2026-08-10')).toBeInTheDocument();
   });
 
   it('uses the shortened venue text (Microsoft Innovation Hub, not Technology Center)', () => {
