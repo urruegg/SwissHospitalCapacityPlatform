@@ -15,7 +15,7 @@ import datetime as _dt
 import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -73,10 +73,36 @@ class Caller(BaseModel):
     tier: str = "internal"
 
 
+class HospitalDelta(BaseModel):
+    """New-hospital what-if inputs for `bva.simulate` (Sprint 44 follow-up)."""
+
+    hospitalName: str
+    archetype: str
+    beds: int
+    occupancyTarget: float
+    onboardingScope: str
+
+
+class PoVerdictInput(BaseModel):
+    """A PO Agent verdict supplied by the caller -- never invented here.
+
+    Per docs/data-platform/bva-po-fanout.md: "Verdict is an input, never
+    invented." No caller (control-plane agent, human reviewer, or a future
+    Opportunity lookup) means the composer degrades to an honest partial.
+    """
+
+    verdict: str
+    rationale: str = ""
+    citations: list[str] = []
+    chunks: list[dict[str, Any]] = []
+
+
 class AnswerRequest(BaseModel):
     question: str
     caller: Caller
     language: str = "en"
+    hospitalDelta: Optional[HospitalDelta] = None
+    poVerdict: Optional[PoVerdictInput] = None
 
 
 def get_tools() -> dict[str, Any]:
@@ -171,6 +197,99 @@ def get_tools() -> dict[str, Any]:
     return tools
 
 
+def _bva_simulate_module():
+    """Import `bva.simulate`/`bva.models` relative to `_resolve_repo_root()`.
+
+    Unlike `evidence_grounding.py` (stdlib-only, loaded by file path in
+    `reconcile_bva.py`), `simulate.py` relies on sibling-relative imports
+    (`.archetypes`, `.models`) -- it needs its package context, so this adds
+    `data-platform` to sys.path rather than loading by bare file path. Works
+    in both dev tree and container because runtime/Dockerfile copies the
+    *whole* `data-platform/bva/` package into `/app/repo/data-platform/bva/`.
+    """
+    import sys
+
+    data_platform_dir = str(_resolve_repo_root() / "data-platform")
+    if data_platform_dir not in sys.path:
+        sys.path.insert(0, data_platform_dir)
+    from bva.models import BvaBaseline, HospitalDelta as BvaHospitalDelta  # noqa: PLC0415
+    from bva.simulate import simulate  # noqa: PLC0415
+
+    return simulate, BvaBaseline, BvaHospitalDelta
+
+
+def _bva_what_if_answer(req: AnswerRequest, caller: CallerContext) -> dict[str, Any]:
+    """Hospital-delta what-if path (Sprint 44 bva_fanout follow-up).
+
+    Only engaged when the caller supplies `hospitalDelta` - existing callers
+    (no hospitalDelta) are entirely unaffected, still routed through
+    `orchestrator.answer()`'s Class A-D grounding below. `financial` and
+    `strategic` questions cite the live `bva.simulate()` numbers through the
+    standard grounded-answer contract (citation gate, threshold, DE/EN,
+    audit); `onboarding` questions compose verdict-first via `bva_fanout`,
+    which degrades to an honest partial when no `poVerdict` is supplied
+    (never fabricates one - see `PoVerdictInput`'s docstring).
+    """
+    import bva_fanout  # noqa: PLC0415
+
+    delta = req.hospitalDelta
+    assert delta is not None  # only called when hospitalDelta is present
+
+    try:
+        simulate, BvaBaseline, BvaHospitalDelta = _bva_simulate_module()
+        bva_result = simulate(
+            BvaBaseline.rom_default(),
+            BvaHospitalDelta(
+                hospital_name=delta.hospitalName,
+                archetype=delta.archetype,
+                beds=delta.beds,
+                occupancy_target=delta.occupancyTarget,
+                onboarding_scope=delta.onboardingScope,
+            ),
+            language=req.language,
+        )
+    except Exception:  # invalid delta or missing module degrades, never crashes
+        bva_result = {"chunks": []}
+
+    intent = bva_fanout.classify_intent(req.question)
+
+    if intent == "onboarding":
+        po_verdict = req.poVerdict.model_dump() if req.poVerdict is not None else None
+        composed = bva_fanout.compose_onboarding_answer(
+            req.question, bva_result, po_verdict, caller, audit_store=None
+        )
+        return {
+            "agentLabel": "product-owner-agent",
+            "contextChip": {"subject": req.caller.persona, "tone": "signal"},
+            "read": composed["answer"],
+            "levers": [],
+            "citations": composed.get("citations", []),
+            "provenance": "live",
+            "refused": not composed.get("chunks"),
+        }
+
+    # financial / strategic: cite the BVA chunks as Class C through the
+    # standard grounded-answer contract, alongside whatever A/B/D tools are
+    # otherwise available.
+    tools = get_tools()
+    tools["C"] = lambda q: bva_fanout.bva_chunks_from_result(bva_result)
+    result = orchestrator.answer(req.question, caller, tools=tools)
+    citations = [
+        c["citation"]["sourceRef"]
+        for c in result.get("chunks", [])
+        if c.get("citation", {}).get("sourceRef")
+    ]
+    return {
+        "agentLabel": "product-owner-agent",
+        "contextChip": {"subject": req.caller.persona, "tone": "signal"},
+        "read": result["answer"],
+        "levers": [],
+        "citations": citations,
+        "provenance": "live",
+        "refused": not result.get("chunks"),
+    }
+
+
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
     return {"status": "ok"}
@@ -183,6 +302,10 @@ def answer(req: AnswerRequest) -> dict[str, Any]:
     caller = CallerContext(
         identity=req.caller.persona, tier=req.caller.tier, language=req.language
     )
+
+    if req.hospitalDelta is not None:
+        return _bva_what_if_answer(req, caller)
+
     result = orchestrator.answer(req.question, caller, tools=get_tools())
     citations = [
         c["citation"]["sourceRef"]
