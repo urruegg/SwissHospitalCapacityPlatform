@@ -1,0 +1,85 @@
+/// BVA evidence weekly Azure cost by service (USD/CHF). Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_azure_cost_weekly_fact
+	lineageTag: a40cf1b1-5c10-4974-a8e2-997dd3b19c99
+	sourceLineageTag: [gold].[bva_evidence_azure_cost_weekly_fact]
+
+	column azure_cost_id
+		dataType: string
+		lineageTag: 59154267-5ee8-490c-a87b-87904d01b2dd
+		sourceLineageTag: azure_cost_id
+		summarizeBy: none
+		sourceColumn: azure_cost_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column week_start
+		dataType: string
+		lineageTag: 6c3de343-f710-42d0-98cc-affc8554950b
+		sourceLineageTag: week_start
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation SummarizationSetBy = Automatic
+
+	column service
+		dataType: string
+		lineageTag: fd8ad243-de0a-49c0-bf5a-62d0d6ec5294
+		sourceLineageTag: service
+		summarizeBy: none
+		sourceColumn: service
+
+		annotation SummarizationSetBy = Automatic
+
+	column amount_usd
+		dataType: double
+		formatString: #,0.00
+		lineageTag: a79324c9-1ba2-45bc-9787-36c3d6174de6
+		sourceLineageTag: amount_usd
+		summarizeBy: none
+		sourceColumn: amount_usd
+
+		annotation SummarizationSetBy = Automatic
+
+	column amount_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: ce7a0e3c-ce39-4416-b2c5-d472b40b0542
+		sourceLineageTag: amount_chf
+		summarizeBy: none
+		sourceColumn: amount_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column currency
+		dataType: string
+		lineageTag: 48a28a0b-a79e-43dd-bb6e-bc6f7fb3a042
+		sourceLineageTag: currency
+		summarizeBy: none
+		sourceColumn: currency
+
+		annotation SummarizationSetBy = Automatic
+
+	column settlement_status
+		dataType: string
+		lineageTag: 46d84866-f22d-4597-bc92-75a4a3191ca2
+		sourceLineageTag: settlement_status
+		summarizeBy: none
+		sourceColumn: settlement_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column source
+		dataType: string
+		lineageTag: d50c26d0-c10e-43e8-9d86-4aadc72ca48c
+		sourceLineageTag: source
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_azure_cost_weekly_fact = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_azure_cost_weekly_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

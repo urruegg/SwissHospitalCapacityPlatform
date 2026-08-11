@@ -1,0 +1,118 @@
+/// BVA evidence ROI/TCO scenarios (conservative/base/upside). Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_roi_scenario_fact
+	lineageTag: c04c4d4f-e589-40e7-9207-cd1270dff5c2
+	sourceLineageTag: [gold].[bva_evidence_roi_scenario_fact]
+
+	column scenario_id
+		dataType: string
+		lineageTag: ce750dd7-7f7a-42ac-869d-ad790fd7104d
+		sourceLineageTag: scenario_id
+		summarizeBy: none
+		sourceColumn: scenario_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column model_version
+		dataType: string
+		lineageTag: b21ae9cf-8d70-44f7-80d5-8d43f173a47c
+		sourceLineageTag: model_version
+		summarizeBy: none
+		sourceColumn: model_version
+
+		annotation SummarizationSetBy = Automatic
+
+	column scenario
+		dataType: string
+		lineageTag: 8188ae73-4117-43fb-aab8-00939c9ea868
+		sourceLineageTag: scenario
+		summarizeBy: none
+		sourceColumn: scenario
+
+		annotation SummarizationSetBy = Automatic
+
+	column annual_benefit_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: ad33773b-b371-47ae-a6fe-451eaa25b7f5
+		sourceLineageTag: annual_benefit_chf
+		summarizeBy: none
+		sourceColumn: annual_benefit_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column annual_run_cost_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b41e49e4-0bc1-4df8-af5b-4fcb48f21c06
+		sourceLineageTag: annual_run_cost_chf
+		summarizeBy: none
+		sourceColumn: annual_run_cost_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column one_time_cost_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: a7b8d48f-d3b6-4c93-a6ea-70c7887bba68
+		sourceLineageTag: one_time_cost_chf
+		summarizeBy: none
+		sourceColumn: one_time_cost_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column tco_3yr_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e688384d-d142-4a04-9f67-0b18e2107c79
+		sourceLineageTag: tco_3yr_chf
+		summarizeBy: none
+		sourceColumn: tco_3yr_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column gross_benefit_3yr_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: da68ded5-a92b-4c52-bbdc-09638a1c701a
+		sourceLineageTag: gross_benefit_3yr_chf
+		summarizeBy: none
+		sourceColumn: gross_benefit_3yr_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column net_value_3yr_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 43a8a04b-d318-496e-9634-c13d582938a9
+		sourceLineageTag: net_value_3yr_chf
+		summarizeBy: none
+		sourceColumn: net_value_3yr_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column roi_3yr_pct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 0eedbdaf-418c-46e2-8069-49b4f1ccf1b6
+		sourceLineageTag: roi_3yr_pct
+		summarizeBy: none
+		sourceColumn: roi_3yr_pct
+
+		annotation SummarizationSetBy = Automatic
+
+	column payback_months
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 9989b285-898b-458a-baf7-4426264fb25d
+		sourceLineageTag: payback_months
+		summarizeBy: none
+		sourceColumn: payback_months
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_roi_scenario_fact = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_roi_scenario_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

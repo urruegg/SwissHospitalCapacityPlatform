@@ -1,0 +1,66 @@
+/// BVA evidence assumptions (rates, factors) with confidence. Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_assumption_dim
+	lineageTag: 68fa7956-096d-4ebe-971f-44ea4e2f0d55
+	sourceLineageTag: [gold].[bva_evidence_assumption_dim]
+
+	column assumption_id
+		dataType: string
+		lineageTag: 5f38d110-1e6a-46d2-b69b-40debf8d2a01
+		sourceLineageTag: assumption_id
+		summarizeBy: none
+		sourceColumn: assumption_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column assumption
+		dataType: string
+		lineageTag: bc92631e-b6e8-49fd-864f-a19f6a3ba748
+		sourceLineageTag: assumption
+		summarizeBy: none
+		sourceColumn: assumption
+
+		annotation SummarizationSetBy = Automatic
+
+	column value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e37d75d8-807a-426b-8dfe-4f9dab268997
+		sourceLineageTag: value
+		summarizeBy: none
+		sourceColumn: value
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit
+		dataType: string
+		lineageTag: 480a7ec7-5bf1-4b27-8a19-df3d83323776
+		sourceLineageTag: unit
+		summarizeBy: none
+		sourceColumn: unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column basis
+		dataType: string
+		lineageTag: 8a354c92-419b-4e39-84ad-6ebd4ac84572
+		sourceLineageTag: basis
+		summarizeBy: none
+		sourceColumn: basis
+
+		annotation SummarizationSetBy = Automatic
+
+	column confidence
+		dataType: string
+		lineageTag: a86ab3ad-427e-45ae-8005-361a9340c834
+		sourceLineageTag: confidence
+		summarizeBy: none
+		sourceColumn: confidence
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_assumption_dim = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_assumption_dim
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

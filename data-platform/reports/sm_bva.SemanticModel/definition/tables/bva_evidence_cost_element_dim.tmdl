@@ -1,0 +1,93 @@
+/// BVA evidence cost-element catalogue (per model version). Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_cost_element_dim
+	lineageTag: b8325842-c9a1-43b0-92b1-a161c91e732f
+	sourceLineageTag: [gold].[bva_evidence_cost_element_dim]
+
+	column cost_element_id
+		dataType: string
+		lineageTag: 6f47d256-d8c3-497d-a4ea-95d6f8ee150d
+		sourceLineageTag: cost_element_id
+		summarizeBy: none
+		sourceColumn: cost_element_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_element
+		dataType: string
+		lineageTag: 06808ff4-3515-4f91-962a-520dde0d1407
+		sourceLineageTag: cost_element
+		summarizeBy: none
+		sourceColumn: cost_element
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 187c69b8-a902-4f89-a13e-f6415a3a0240
+		sourceLineageTag: category
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_type
+		dataType: string
+		lineageTag: 3ce0c6b6-510a-4a95-814d-81bf02e5ff06
+		sourceLineageTag: cost_type
+		summarizeBy: none
+		sourceColumn: cost_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column model_version
+		dataType: string
+		lineageTag: 122c34d5-c699-4db5-98b2-ed69218bcd76
+		sourceLineageTag: model_version
+		summarizeBy: none
+		sourceColumn: model_version
+
+		annotation SummarizationSetBy = Automatic
+
+	column amount_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 6e01374a-a9f0-4c86-908a-7980b19a3728
+		sourceLineageTag: amount_chf
+		summarizeBy: none
+		sourceColumn: amount_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column confidence
+		dataType: string
+		lineageTag: 1d7748a9-120b-48a4-ac3b-35c60e26545f
+		sourceLineageTag: confidence
+		summarizeBy: none
+		sourceColumn: confidence
+
+		annotation SummarizationSetBy = Automatic
+
+	column evidence_status
+		dataType: string
+		lineageTag: 20107a82-a97d-49b6-b293-d150319f29d2
+		sourceLineageTag: evidence_status
+		summarizeBy: none
+		sourceColumn: evidence_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_ref
+		dataType: string
+		lineageTag: 64851eae-2262-4780-b650-ca5c1356e138
+		sourceLineageTag: source_ref
+		summarizeBy: none
+		sourceColumn: source_ref
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_cost_element_dim = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_cost_element_dim
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

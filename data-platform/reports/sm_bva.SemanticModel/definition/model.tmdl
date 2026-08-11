@@ -15,5 +15,15 @@ ref table bva_cost_fact
 ref table bva_effort_fact
 ref table bva_hospital_profile_dim
 ref table bva_baseline_kpi
+ref table bva_evidence_assumption_dim
+ref table bva_evidence_cost_element_dim
+ref table bva_evidence_source_dim
+ref table bva_evidence_azure_cost_weekly_fact
+ref table bva_evidence_build_cost_actual_fact
+ref table bva_evidence_copilot_usage_weekly_fact
+ref table bva_evidence_effort_fact
+ref table bva_evidence_roi_scenario_fact
+ref table bva_evidence_unit_economics_fact
+ref table bva_evidence_value_lever_fact
 
 ref role BvaReadOnly

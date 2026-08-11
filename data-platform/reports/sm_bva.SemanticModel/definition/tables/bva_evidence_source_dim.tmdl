@@ -1,0 +1,74 @@
+/// BVA evidence source register (authority, period, caveats). Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_source_dim
+	lineageTag: b8bcc79a-3568-4a18-b0e8-110689bbb141
+	sourceLineageTag: [gold].[bva_evidence_source_dim]
+
+	column source_id
+		dataType: string
+		lineageTag: ce02f97e-1b76-4302-ae99-40ea25ac287d
+		sourceLineageTag: source_id
+		summarizeBy: none
+		sourceColumn: source_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column source
+		dataType: string
+		lineageTag: 2640490c-4ef0-4417-925c-2df233628884
+		sourceLineageTag: source
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_type
+		dataType: string
+		lineageTag: 523c8368-cbe8-4bbe-bc45-9585f71085df
+		sourceLineageTag: source_type
+		summarizeBy: none
+		sourceColumn: source_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column authority
+		dataType: string
+		lineageTag: 6f7ace81-5ab1-487c-9982-470b67805fc9
+		sourceLineageTag: authority
+		summarizeBy: none
+		sourceColumn: authority
+
+		annotation SummarizationSetBy = Automatic
+
+	column period
+		dataType: string
+		lineageTag: b8a94a42-a866-44a5-9aaf-ebdeb03dd194
+		sourceLineageTag: period
+		summarizeBy: none
+		sourceColumn: period
+
+		annotation SummarizationSetBy = Automatic
+
+	column used_for
+		dataType: string
+		lineageTag: 8b60e274-3c95-451e-8549-5d1ce01f6d0b
+		sourceLineageTag: used_for
+		summarizeBy: none
+		sourceColumn: used_for
+
+		annotation SummarizationSetBy = Automatic
+
+	column caveat
+		dataType: string
+		lineageTag: d8bfc35d-39a1-4e88-bc4f-e5e92ffc98b5
+		sourceLineageTag: caveat
+		summarizeBy: none
+		sourceColumn: caveat
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_source_dim = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_source_dim
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

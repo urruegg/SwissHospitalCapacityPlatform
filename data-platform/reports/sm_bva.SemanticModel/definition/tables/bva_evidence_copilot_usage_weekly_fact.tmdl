@@ -1,0 +1,107 @@
+/// BVA evidence weekly GitHub Copilot usage/token telemetry. Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_copilot_usage_weekly_fact
+	lineageTag: 06862e85-79cf-41f9-b46d-bff5885144af
+	sourceLineageTag: [gold].[bva_evidence_copilot_usage_weekly_fact]
+
+	column copilot_usage_id
+		dataType: string
+		lineageTag: 60d79e17-1144-45cb-9fa8-a20d698adf06
+		sourceLineageTag: copilot_usage_id
+		summarizeBy: none
+		sourceColumn: copilot_usage_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column week_start
+		dataType: string
+		lineageTag: 05491f48-3624-4e17-a743-d3ba179e0a13
+		sourceLineageTag: week_start
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation SummarizationSetBy = Automatic
+
+	column sessions
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2ca507db-d154-454b-a477-1bc52636f1e0
+		sourceLineageTag: sessions
+		summarizeBy: none
+		sourceColumn: sessions
+
+		annotation SummarizationSetBy = Automatic
+
+	column input_tokens
+		dataType: double
+		formatString: #,0.00
+		lineageTag: a81b21f3-1ee1-4198-a70c-078d6bd79c42
+		sourceLineageTag: input_tokens
+		summarizeBy: none
+		sourceColumn: input_tokens
+
+		annotation SummarizationSetBy = Automatic
+
+	column output_tokens
+		dataType: double
+		formatString: #,0.00
+		lineageTag: a27cecca-b47a-4ab3-9b5f-26eb77956a5e
+		sourceLineageTag: output_tokens
+		summarizeBy: none
+		sourceColumn: output_tokens
+
+		annotation SummarizationSetBy = Automatic
+
+	column cache_read_tokens
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 693e49c7-08ac-4c55-a69d-a86231ca4a06
+		sourceLineageTag: cache_read_tokens
+		summarizeBy: none
+		sourceColumn: cache_read_tokens
+
+		annotation SummarizationSetBy = Automatic
+
+	column reasoning_tokens
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 99b941a2-85e7-42bc-94e0-10180447b7dc
+		sourceLineageTag: reasoning_tokens
+		summarizeBy: none
+		sourceColumn: reasoning_tokens
+
+		annotation SummarizationSetBy = Automatic
+
+	column aiu_consumed
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 8f942011-3f78-412a-a9e2-f25fcf5ec380
+		sourceLineageTag: aiu_consumed
+		summarizeBy: none
+		sourceColumn: aiu_consumed
+
+		annotation SummarizationSetBy = Automatic
+
+	column store
+		dataType: string
+		lineageTag: 81446c71-af08-4284-972a-4df1ffef6808
+		sourceLineageTag: store
+		summarizeBy: none
+		sourceColumn: store
+
+		annotation SummarizationSetBy = Automatic
+
+	column evidence_status
+		dataType: string
+		lineageTag: f6823072-ea4c-45a4-9919-37528a28af44
+		sourceLineageTag: evidence_status
+		summarizeBy: none
+		sourceColumn: evidence_status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_copilot_usage_weekly_fact = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_copilot_usage_weekly_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

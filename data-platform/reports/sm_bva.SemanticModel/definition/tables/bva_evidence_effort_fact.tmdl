@@ -1,0 +1,105 @@
+/// BVA evidence human effort cost by person/period. Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_effort_fact
+	lineageTag: 16d90ae6-bb52-4471-bbbf-cc3926c2112d
+	sourceLineageTag: [gold].[bva_evidence_effort_fact]
+
+	column effort_id
+		dataType: string
+		lineageTag: b3733a81-c613-469f-8fd9-b1844587df2a
+		sourceLineageTag: effort_id
+		summarizeBy: none
+		sourceColumn: effort_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column effort_type
+		dataType: string
+		lineageTag: 6d202989-fc1d-49e4-938e-dca1cb960a60
+		sourceLineageTag: effort_type
+		summarizeBy: none
+		sourceColumn: effort_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column person
+		dataType: string
+		lineageTag: 0dae33a0-d4e4-4993-a828-381fa9c37c11
+		sourceLineageTag: person
+		summarizeBy: none
+		sourceColumn: person
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b8db04b4-2d0f-4c29-bea6-246b508f8d51
+		sourceLineageTag: quantity
+		summarizeBy: none
+		sourceColumn: quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit
+		dataType: string
+		lineageTag: a88533d1-d9f2-4f98-ba72-e16cf42454b8
+		sourceLineageTag: unit
+		summarizeBy: none
+		sourceColumn: unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column hours
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 3915f54d-2b40-4af4-b718-30aa9c9b74aa
+		sourceLineageTag: hours
+		summarizeBy: none
+		sourceColumn: hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column hourly_rate_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 271f87ef-66f3-4ea8-942c-471bb5e63321
+		sourceLineageTag: hourly_rate_chf
+		summarizeBy: none
+		sourceColumn: hourly_rate_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 23fca0d3-b5a0-4ae7-8f24-8c41ed033986
+		sourceLineageTag: cost_chf
+		summarizeBy: none
+		sourceColumn: cost_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column period
+		dataType: string
+		lineageTag: 741ac71f-cdbd-4f18-a09a-23016cd33298
+		sourceLineageTag: period
+		summarizeBy: none
+		sourceColumn: period
+
+		annotation SummarizationSetBy = Automatic
+
+	column evidence_status
+		dataType: string
+		lineageTag: a40e8947-cc12-4f05-b0f9-94bbe9bfa6ab
+		sourceLineageTag: evidence_status
+		summarizeBy: none
+		sourceColumn: evidence_status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_effort_fact = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_effort_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

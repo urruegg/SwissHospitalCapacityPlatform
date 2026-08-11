@@ -1,0 +1,67 @@
+/// BVA evidence unit-economics computed rates. Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_unit_economics_fact
+	lineageTag: f7d0080d-afca-4135-a7cc-0ce4676c4e5f
+	sourceLineageTag: [gold].[bva_evidence_unit_economics_fact]
+
+	column unit_id
+		dataType: string
+		lineageTag: 6e4612b0-06c9-47b4-b8b2-5e1c1f8e7c23
+		sourceLineageTag: unit_id
+		summarizeBy: none
+		sourceColumn: unit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column metric
+		dataType: string
+		lineageTag: 7f62535f-56ba-4e5b-a033-b3e3b653dcf3
+		sourceLineageTag: metric
+		summarizeBy: none
+		sourceColumn: metric
+
+		annotation SummarizationSetBy = Automatic
+
+	column value_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 49186595-4965-4af1-ab04-a26e36265cd0
+		sourceLineageTag: value_chf
+		summarizeBy: none
+		sourceColumn: value_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column denominator
+		dataType: string
+		lineageTag: 6bcbf7fc-3e84-4f59-ae25-aee236a9df04
+		sourceLineageTag: denominator
+		summarizeBy: none
+		sourceColumn: denominator
+
+		annotation SummarizationSetBy = Automatic
+
+	column denominator_count
+		dataType: double
+		formatString: #,0.00
+		lineageTag: d8558288-5a32-4346-9219-fc1592a93cbf
+		sourceLineageTag: denominator_count
+		summarizeBy: none
+		sourceColumn: denominator_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column evidence_status
+		dataType: string
+		lineageTag: f51fc020-c55f-43cb-bfc0-3a18d73c4e5e
+		sourceLineageTag: evidence_status
+		summarizeBy: none
+		sourceColumn: evidence_status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_unit_economics_fact = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_unit_economics_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

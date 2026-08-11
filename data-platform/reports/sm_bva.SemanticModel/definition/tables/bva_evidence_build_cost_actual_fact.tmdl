@@ -1,0 +1,113 @@
+/// BVA evidence measured MVP build-cost breakdown. Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_build_cost_actual_fact
+	lineageTag: 24f6372c-488d-42d5-8702-71aa065d4681
+	sourceLineageTag: [gold].[bva_evidence_build_cost_actual_fact]
+
+	column build_cost_id
+		dataType: string
+		lineageTag: 167e7136-7ece-43cb-ab72-dd4ad5f45cfb
+		sourceLineageTag: build_cost_id
+		summarizeBy: none
+		sourceColumn: build_cost_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_element
+		dataType: string
+		lineageTag: 91bd51b8-1cf6-4460-a3e7-6566078903a2
+		sourceLineageTag: cost_element
+		summarizeBy: none
+		sourceColumn: cost_element
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 15085a4e-a1ba-4b7b-932f-5bb39c385766
+		sourceLineageTag: category
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column amount_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2ffef6fe-d4fb-4903-9f16-6d6ad2822092
+		sourceLineageTag: amount_chf
+		summarizeBy: none
+		sourceColumn: amount_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column amount_usd
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 63979766-be2a-44ec-b5e5-929d77cb8f4f
+		sourceLineageTag: amount_usd
+		summarizeBy: none
+		sourceColumn: amount_usd
+
+		annotation SummarizationSetBy = Automatic
+
+	column share_pct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: d2567cac-ab12-4a08-8698-5c3bcac85fac
+		sourceLineageTag: share_pct
+		summarizeBy: none
+		sourceColumn: share_pct
+
+		annotation SummarizationSetBy = Automatic
+
+	column evidence_status
+		dataType: string
+		lineageTag: 10784a6e-0d2b-4e09-89ef-12eabce924bb
+		sourceLineageTag: evidence_status
+		summarizeBy: none
+		sourceColumn: evidence_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_system
+		dataType: string
+		lineageTag: 0029f301-510d-411e-afdc-27d58b35882a
+		sourceLineageTag: source_system
+		summarizeBy: none
+		sourceColumn: source_system
+
+		annotation SummarizationSetBy = Automatic
+
+	column period_start
+		dataType: string
+		lineageTag: 0cf45f13-68d8-4650-a91a-0f65d41a1d37
+		sourceLineageTag: period_start
+		summarizeBy: none
+		sourceColumn: period_start
+
+		annotation SummarizationSetBy = Automatic
+
+	column period_end
+		dataType: string
+		lineageTag: 0fd83ce5-e986-42dc-bd9c-662a83de95d6
+		sourceLineageTag: period_end
+		summarizeBy: none
+		sourceColumn: period_end
+
+		annotation SummarizationSetBy = Automatic
+
+	column caveat
+		dataType: string
+		lineageTag: 197d02c2-b3c7-4883-a21f-ad99583e081d
+		sourceLineageTag: caveat
+		summarizeBy: none
+		sourceColumn: caveat
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_build_cost_actual_fact = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_build_cost_actual_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'

@@ -1,0 +1,66 @@
+/// BVA evidence value levers (annual benefit, validation status). Direct Lake over lh_ihzhhpf_sit.
+table bva_evidence_value_lever_fact
+	lineageTag: 5f6ef384-9e0a-46cc-9ae6-a657adb9316e
+	sourceLineageTag: [gold].[bva_evidence_value_lever_fact]
+
+	column value_lever_id
+		dataType: string
+		lineageTag: ae31e462-5cbe-4df5-8971-177f67c2337b
+		sourceLineageTag: value_lever_id
+		summarizeBy: none
+		sourceColumn: value_lever_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column value_lever
+		dataType: string
+		lineageTag: b345a20c-eed3-4b9b-ae2b-e8ee66e2a98c
+		sourceLineageTag: value_lever
+		summarizeBy: none
+		sourceColumn: value_lever
+
+		annotation SummarizationSetBy = Automatic
+
+	column annual_benefit_chf
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 54bdbb67-4a5b-4c55-ae5a-0f498e20704f
+		sourceLineageTag: annual_benefit_chf
+		summarizeBy: none
+		sourceColumn: annual_benefit_chf
+
+		annotation SummarizationSetBy = Automatic
+
+	column value_logic
+		dataType: string
+		lineageTag: 1d75f2cb-01a6-4562-a81b-f7ce8ffeebed
+		sourceLineageTag: value_logic
+		summarizeBy: none
+		sourceColumn: value_logic
+
+		annotation SummarizationSetBy = Automatic
+
+	column evidence_status
+		dataType: string
+		lineageTag: cbb27e84-87a4-439b-99f3-5719a3470ce9
+		sourceLineageTag: evidence_status
+		summarizeBy: none
+		sourceColumn: evidence_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column validation_required
+		dataType: string
+		lineageTag: c54e77f4-d343-4572-8c61-b0e2fd0e5069
+		sourceLineageTag: validation_required
+		summarizeBy: none
+		sourceColumn: validation_required
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bva_evidence_value_lever_fact = entity
+		mode: directLake
+		source
+			entityName: bva_evidence_value_lever_fact
+			schemaName: gold
+			expressionSource: 'DirectLake - lh_ihzhhpf_sit'
