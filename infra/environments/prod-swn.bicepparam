@@ -211,14 +211,16 @@ param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 // shared declarations below). BVA sprint (2026-08-11): bumped off the placeholder
 // to the real image, verified live in SIT first (build+push CI green, full deploy
 // green, live /answer smoke test confirmed the new measured build-cost evidence
-// citation). corpusRefreshContainerImage is a separate, still-placeholder concern
-// (main.bicep default; not touched by this sprint).
+// citation). Issue #427 close-out (2026-08-11): corpusRefreshContainerImage also
+// bumped off the placeholder -- verified in SIT's ACR first, imported and applied
+// here to complete #427's SIT+PROD parity criterion.
 param poAgentLocation = 'switzerlandnorth'
 param enablePoAgentSearchModule = true
 param enablePoAgentKnowledgeBaseModule = true
 param enablePoAgentCorpusLandingModule = true
 param enablePoAgentRuntimeModule = true
 param poAgentContainerImage = 'crihzhhpfprod.azurecr.io/po-agent-service:bed0da5'
+param poAgentCorpusRefreshContainerImage = 'crihzhhpfprod.azurecr.io/po-agent-corpus-refresh:7984e64'
 param poAgentLogAnalyticsWorkspaceId = ''
 // sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
 param enableSimCapacityModule = true
