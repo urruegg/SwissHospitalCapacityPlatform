@@ -130,7 +130,9 @@ param enableAppFluentModule = true
 // config, role lens, My Account, live-degrade) + 3 sign-in fixes (OIDC-only scopes,
 // no Graph, await MSAL redirect before the router mounts). Env-agnostic image
 // imported into crihzhhpfprod via az acr import from the SIT ACR. approved-to-apply.
-param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:f6cf7e0'
+// BVA sprint (2026-08-11): bumped f6cf7e0 -> bb288be - MVP build-cost card in the
+// Backstage BVA section. Verified live in SIT first.
+param appFluentImage = 'crihzhhpfprod.azurecr.io/hcc-app-fluent:bb288be'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the PROD app calls the PROD (switzerlandnorth) agent-host
 // instead of inheriting the SIT URL from the build-once + import image.
@@ -206,14 +208,17 @@ param skillsSimJobsImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
 // Sprint 28 WS-INF (#377) — Curavias Product Owner Agent (Foundry IQ domain #1).
 // PROD swn variant: enabled at switzerlandnorth (ADR-0037 / NFR-POA-003) for the
 // SIT-parity demo scope. poAgentLocation is declared here (see the NOTE block on
-// shared declarations below). Runtime + refresh-job image mirrors SIT until the
-// PO Agent CI workflow publishes a real image.
+// shared declarations below). BVA sprint (2026-08-11): bumped off the placeholder
+// to the real image, verified live in SIT first (build+push CI green, full deploy
+// green, live /answer smoke test confirmed the new measured build-cost evidence
+// citation). corpusRefreshContainerImage is a separate, still-placeholder concern
+// (main.bicep default; not touched by this sprint).
 param poAgentLocation = 'switzerlandnorth'
 param enablePoAgentSearchModule = true
 param enablePoAgentKnowledgeBaseModule = true
 param enablePoAgentCorpusLandingModule = true
 param enablePoAgentRuntimeModule = true
-param poAgentContainerImage = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+param poAgentContainerImage = 'crihzhhpfprod.azurecr.io/po-agent-service:49b9068'
 param poAgentLogAnalyticsWorkspaceId = ''
 // sim-capacity resolves the PROD Event Hub namespace from dataFoundation output.
 param enableSimCapacityModule = true
