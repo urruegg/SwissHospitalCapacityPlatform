@@ -5,6 +5,7 @@ import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import { MemoryRouter } from 'react-router-dom';
 import i18n from '../../../i18n';
 import {
+  bvaBuildCost,
   bvaHeadlineKpis,
   bvaPlanVsActual,
   bvaSensitivityScenarios,
@@ -96,6 +97,24 @@ describe('BvaDecisionSection', () => {
     expect(within(tcoTable).getByText(formatCurrency(bvaPlanVsActual.plan, bvaPlanVsActual.currency))).toBeInTheDocument();
     expect(within(tcoTable).getByText(formatCurrency(bvaPlanVsActual.actual, bvaPlanVsActual.currency))).toBeInTheDocument();
     expect(within(tcoTable).getByText(formatVariance(bvaPlanVsActual.variancePct))).toBeInTheDocument();
+  });
+
+  it('binds the build-cost panel to bvaBuildCost, labelled measured (not ROM)', () => {
+    renderSection(<BvaDecisionSection />);
+    const section = screen.getByTestId('bva-decision-section');
+
+    const total = within(section).getByTestId('bva-build-cost-total');
+    expect(total.textContent).toBe(formatCurrency(bvaBuildCost.totalChf, 'CHF'));
+
+    const table = within(section).getByTestId('bva-build-cost-table');
+    bvaBuildCost.components.forEach((component) => {
+      expect(within(table).getByText(component.label)).toBeInTheDocument();
+    });
+
+    const caption = within(section).getByTestId('bva-build-cost-caption');
+    // Regression guard: a measured figure must never be captioned "ROM".
+    expect(caption.textContent).not.toMatch(/^ROM estimate/);
+    expect(caption.textContent).toMatch(/Mixed/i);
   });
 
   it('binds the value-levers table to bvaValueLevers only (not bvaHeadlineKpis)', () => {

@@ -28,6 +28,23 @@ export const BVA_ONE_TIME_ROM = 1_300_000;
 // --- Annual run cost (identical in both models, docs/BVA.md §7.1) ---
 export const BVA_ANNUAL_RUN_COST = 1_250_000;
 
+// --- Measured 90-day showcase build cost (docs/BVA.md §3, evidence_status
+// "measured"/"measured_extrapolated"/"estimated" per component;
+// data/master-data/bva/fact_build_cost_actual.csv rows BC-001..BC-999). This
+// is a DIFFERENT figure from BVA_ONE_TIME_FRONTIER/BVA_ONE_TIME_ROM above --
+// those model what a HOSPITAL implementation would cost; this is what the
+// 90-day Curavias showcase itself actually cost to build. Never conflate the
+// two in a UI caption. ---
+export const BVA_BUILD_COST_TOTAL_CHF = 21_286;
+export const BVA_BUILD_COST_HUMAN_CHF = 18_831;
+export const BVA_BUILD_COST_HUMAN_SHARE_PCT = 88.5;
+export const BVA_BUILD_COST_COPILOT_TOKENS_CHF = 1_240;
+export const BVA_BUILD_COST_COPILOT_TOKENS_SHARE_PCT = 5.8;
+export const BVA_BUILD_COST_AZURE_CHF = 1_111;
+export const BVA_BUILD_COST_AZURE_SHARE_PCT = 5.2;
+export const BVA_BUILD_COST_SUBSCRIPTION_CHF = 103;
+export const BVA_BUILD_COST_SUBSCRIPTION_SHARE_PCT = 0.5;
+
 // --- Operational Copilot demand (docs/BVA.md §2 Demand Baseline) ---
 export const BVA_COPILOT_TURNS_PER_DAY = 8_000;
 

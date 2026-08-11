@@ -11,6 +11,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  bvaBuildCost,
   bvaHeadlineKpis,
   bvaPlanVsActual,
   bvaSensitivityScenarios,
@@ -19,6 +20,7 @@ import {
   type BvaProvenance,
   type BvaSensitivityScenarioPayload,
 } from '../../../data/bva/bva-evidence';
+import { BVA_CURRENCY } from '../../../data/bva/bva-figures';
 import { useShowcaseStyles } from '../../shared/narrative/showcase-styles';
 
 const useStyles = makeStyles({
@@ -110,6 +112,23 @@ function romCaption(
   })}`;
 }
 
+/**
+ * Like {@link romCaption}, but for evidence that is not ROM — the measured
+ * 90-day build cost carries `measured`/`estimated`/`mixed` labels instead.
+ * Never reuse `romCaption` for this data: it would misrepresent a measured
+ * figure as a ±30% planning estimate.
+ */
+function evidenceCaption(
+  t: ReturnType<typeof useTranslation>['t'],
+  evidenceStatus: string,
+  provenance: BvaProvenance,
+) {
+  const label = t(`start.frontier.bva.evidenceStatus.${evidenceStatus}`, evidenceStatus);
+  return `${label} · ${provenance.source} · ${t('start.capacityTeaser.asOf', {
+    time: provenance.asOf.slice(0, 10),
+  })}`;
+}
+
 function selectedScenarioSummary(
   t: ReturnType<typeof useTranslation>['t'],
   scenario: BvaSensitivityScenarioPayload,
@@ -182,6 +201,36 @@ export function BvaDecisionSection() {
           </table>
           <Caption1 className={styles.muted} data-testid="bva-rom-caption">
             {romCaption(t, bvaPlanVsActual)}
+          </Caption1>
+        </section>
+
+        <section className={styles.panel} data-testid="bva-build-cost-panel">
+          <Title3 as="h3" className={styles.panelTitle}>
+            {t('start.frontier.bva.buildCostTitle', 'Cost to build this MVP')}
+          </Title3>
+          <Title3 as="span" className={styles.metricValue} data-testid="bva-build-cost-total">
+            {formatCurrency(bvaBuildCost.totalChf, BVA_CURRENCY)}
+          </Title3>
+          <table className={mergeClasses(sc.table, styles.table)} data-testid="bva-build-cost-table">
+            <thead>
+              <tr>
+                <th className={sc.th}>{t('start.frontier.bva.columns.figure')}</th>
+                <th className={sc.th}>{t('start.frontier.bva.columns.value')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bvaBuildCost.components.map((component) => (
+                <tr key={component.label}>
+                  <td className={sc.td}>{component.label}</td>
+                  <td className={sc.td}>
+                    {formatCurrency(component.amountChf, BVA_CURRENCY)} ({component.sharePct}%)
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Caption1 className={styles.muted} data-testid="bva-build-cost-caption">
+            {evidenceCaption(t, bvaBuildCost.totalEvidenceStatus, bvaBuildCost)}
           </Caption1>
         </section>
 

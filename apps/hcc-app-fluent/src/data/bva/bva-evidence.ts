@@ -26,6 +26,15 @@
  */
 
 import {
+  BVA_BUILD_COST_AZURE_CHF,
+  BVA_BUILD_COST_AZURE_SHARE_PCT,
+  BVA_BUILD_COST_COPILOT_TOKENS_CHF,
+  BVA_BUILD_COST_COPILOT_TOKENS_SHARE_PCT,
+  BVA_BUILD_COST_HUMAN_CHF,
+  BVA_BUILD_COST_HUMAN_SHARE_PCT,
+  BVA_BUILD_COST_SUBSCRIPTION_CHF,
+  BVA_BUILD_COST_SUBSCRIPTION_SHARE_PCT,
+  BVA_BUILD_COST_TOTAL_CHF,
   BVA_COST_PER_COPILOT_TURN_CHF,
   BVA_CURRENCY,
   BVA_MODEL_VERSION,
@@ -129,6 +138,33 @@ export interface BvaProofPointPayload extends BvaProvenance {
   cadence: string;
 }
 
+/**
+ * One component of the measured 90-day showcase build cost (docs/BVA.md §3 /
+ * `fact_build_cost_actual.csv`). Each component carries its own
+ * `evidenceStatus` — components are not uniformly "measured": Copilot token
+ * cost and the Copilot subscription line are `estimated` (no billed AIU rate
+ * exists yet), Azure cloud is `measured_extrapolated` (5 weeks billed,
+ * extrapolated to 90 days), only human effort is fully `measured`.
+ */
+export interface BvaBuildCostComponentPayload {
+  label: string;
+  amountChf: number;
+  sharePct: number;
+  evidenceStatus: string;
+}
+
+/**
+ * The measured cost to build the Curavias showcase itself over 90 days — a
+ * DIFFERENT figure from the headline KPIs above, which model what a hospital
+ * implementation would cost. Never conflate the two: this is "what did the
+ * MVP cost to build", not "what would production cost".
+ */
+export interface BvaBuildCostPayload extends BvaProvenance {
+  totalChf: number;
+  totalEvidenceStatus: string;
+  components: BvaBuildCostComponentPayload[];
+}
+
 /** `docs/BVA.md` is the governance-reviewed ROM document (no live gold table
  * backs value levers, sensitivity scenarios, or governance targets yet), so
  * these are cited straight from the doc. */
@@ -186,6 +222,44 @@ export const bvaTrend: BvaTrendPayload = {
   desiredDirection: 'down',
   points: [{ label: 'Current', value: BVA_COST_PER_COPILOT_TURN_CHF }],
   ...docStamp('§2 Demand Baseline · §5 Recurring Annual Cost'),
+};
+
+/**
+ * The measured cost to build the Curavias showcase (docs/BVA.md §3 /
+ * `fact_build_cost_actual.csv` rows BC-001..BC-999). `totalEvidenceStatus` is
+ * `mixed` because its four components carry different evidence statuses —
+ * see {@link BvaBuildCostComponentPayload}.
+ */
+export const bvaBuildCost: BvaBuildCostPayload = {
+  totalChf: BVA_BUILD_COST_TOTAL_CHF,
+  totalEvidenceStatus: 'mixed',
+  components: [
+    {
+      label: 'Human effort (1 person, 174 h)',
+      amountChf: BVA_BUILD_COST_HUMAN_CHF,
+      sharePct: BVA_BUILD_COST_HUMAN_SHARE_PCT,
+      evidenceStatus: 'measured',
+    },
+    {
+      label: 'Copilot agent tokens',
+      amountChf: BVA_BUILD_COST_COPILOT_TOKENS_CHF,
+      sharePct: BVA_BUILD_COST_COPILOT_TOKENS_SHARE_PCT,
+      evidenceStatus: 'estimated',
+    },
+    {
+      label: 'Azure cloud services',
+      amountChf: BVA_BUILD_COST_AZURE_CHF,
+      sharePct: BVA_BUILD_COST_AZURE_SHARE_PCT,
+      evidenceStatus: 'measured_extrapolated',
+    },
+    {
+      label: 'Copilot subscription (3 months)',
+      amountChf: BVA_BUILD_COST_SUBSCRIPTION_CHF,
+      sharePct: BVA_BUILD_COST_SUBSCRIPTION_SHARE_PCT,
+      evidenceStatus: 'estimated',
+    },
+  ],
+  ...docStamp('§3 Measured Build Cost'),
 };
 
 /**

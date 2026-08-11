@@ -1118,6 +1118,7 @@
         "body": "ROM-bound Business Value Assessment decision surface with KPI, TCO, sensitivity, and Product Owner handoff.",
         "eyebrow": "The decision · Business Value Assessment",
         "tcoTitle": "3-year TCO",
+        "buildCostTitle": "Cost to build this MVP",
         "valueLeversTitle": "Value levers",
         "sensitivityTitle": "Sensitivity",
         "proofTitle": "Proof & evidence",
@@ -1131,6 +1132,12 @@
         "railRead": "Review this BVA decision: {{netValue}} net value realised, {{roi}} ROI, {{tcoMeasure}}, and {{trend}}.",
         "cta": "Ask Product Owner Agent",
         "launchCta": "Launch the 90-day frontier",
+        "evidenceStatus": {
+          "measured": "Measured",
+          "measured_extrapolated": "Measured (extrapolated)",
+          "estimated": "Estimated",
+          "mixed": "Mixed"
+        },
         "columns": {
           "figure": "Figure",
           "value": "Value",

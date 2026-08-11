@@ -948,6 +948,7 @@
         "body": "ROM-gebundene BVA-Entscheidungsfläche mit KPI, TCO, Sensitivität und Handoff an den Product Owner Agent.",
         "eyebrow": "Der Entscheid · Business Value Assessment",
         "tcoTitle": "3-Jahres-TCO",
+        "buildCostTitle": "Kosten für den Bau dieses MVP",
         "valueLeversTitle": "Werthebel",
         "sensitivityTitle": "Sensitivität",
         "proofTitle": "Nachweis & Evidenz",
@@ -961,6 +962,12 @@
         "railRead": "Prüfe diesen BVA-Entscheid: {{netValue}} realisierter Nettowert, {{roi}} ROI, {{tcoMeasure}} und {{trend}}.",
         "cta": "Product Owner Agent fragen",
         "launchCta": "Die 90-Tage-Frontier starten",
+        "evidenceStatus": {
+          "measured": "Gemessen",
+          "measured_extrapolated": "Gemessen (extrapoliert)",
+          "estimated": "Geschätzt",
+          "mixed": "Gemischt"
+        },
         "columns": {
           "figure": "Kennzahl",
           "value": "Wert",
