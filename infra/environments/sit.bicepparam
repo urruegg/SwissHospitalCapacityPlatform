@@ -157,7 +157,7 @@ param enablePoAgentCorpusLandingModule = true
 // cleanly in PROD (live oai-poihzhhpfprod runs gpt-5 GlobalStandard). eastus2 quota
 // OpenAI.GlobalStandard.gpt-5 is 110/1000 used, so the cap-10 SIT deployment fits.
 param enablePoAgentRuntimeModule = true
-param poAgentContainerImage = 'cri75lbu5sj4hza.azurecr.io/po-agent-service:5a80ab1'
+param poAgentContainerImage = 'cri75lbu5sj4hza.azurecr.io/po-agent-service:49b9068'
 param poAgentCorpusRefreshContainerImage = 'cri75lbu5sj4hza.azurecr.io/po-agent-corpus-refresh:c7029d6'
 param poAgentLogAnalyticsWorkspaceId = ''
 // Enabled here to close Sprint 13 DoD S13.3 + S13.7 + S13.8 (see the
@@ -383,7 +383,7 @@ param enableAppFluentModule = true
 // START fidelity (2026-08-08): bumped 8c03420 -> 914d470 - CIO challenger seat,
 // single-language vision/mission/pills, real hospital cantons (Zurich/Luzern/Zurich).
 // Image built by ci-build-app-fluent.yml run 31196403887. approval-gated per AGENTS.md.
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:f6cf7e0'
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:bb288be'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
