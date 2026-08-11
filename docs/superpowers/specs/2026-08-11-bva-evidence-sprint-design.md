@@ -1,9 +1,9 @@
 ---
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-11
 Author: Copilot coding agent (autopilot, delegated)
-Status: Code-complete, deploy-pending
-Previous Version: none (new document)
+Status: Code-complete, deployed to SIT and PROD, live-verified
+Previous Version: 1.0.0 (added §10 documenting both §8 follow-ups completed same-day)
 ---
 
 # BVA Evidence Sprint — Master Data, PO Agent Competency, Backstage Card — Design
@@ -175,16 +175,12 @@ convention). Test counts at each step are in the PR/commit trail; full
       bva/master-data tests, 11 hcc-app-fluent BvaDecisionSection/i18n tests)
 - [x] Mojibake/encoding lint clean on every touched file
 - [x] `docs/BVA.md`'s live regex consumer test re-verified after the merge
-- [ ] **`po-agent-runtime-build` CI run for commit `49b90686`** — must go
-      green before anyone bumps `poAgentContainerImage` in any bicepparam.
-      This is the first real validation that the new Docker build context
-      actually builds (no local Docker engine was available to pre-validate).
-- [ ] Live Fabric execution of `build_gold_bva_evidence.py` against the SIT
-      lakehouse — deferred, needs a monitored Fabric session, not attempted.
-- [ ] SIT/PROD redeploy of `hcc-app-fluent` (task c's UI) and
-      `po-agent-service` (task b's competency) — deliberately batched into
-      one combined deploy cycle at the end rather than per-commit, to
-      minimise approval-gate friction; not yet started.
+- [x] **`po-agent-runtime-build` CI run for commit `49b90686`** — went green,
+      confirming the new Docker build context actually builds.
+- [x] Live Fabric execution of `build_gold_bva_evidence.py` against the SIT
+      lakehouse — done same day; see §10.1.
+- [x] SIT/PROD redeploy of `hcc-app-fluent` (task c's UI) and
+      `po-agent-service` (task b's competency) — done same day.
 
 ## 8. Follow-up recommendations (not done, flagged for a future sprint)
 
@@ -224,3 +220,83 @@ convention). Test counts at each step are in the PR/commit trail; full
   task (b)'s deliverable would not actually function once deployed.
 - That the combined SIT/PROD redeploy should wait until this document is
   reviewed, rather than deploying task (b)'s code immediately after commit.
+
+## 10. Follow-up completion (same day, user said "can we follow up on this part to finish it as well")
+
+Both §8 items were completed later the same day, after the user reviewed the
+sprint summary and asked to finish the deferred work. User was unavailable
+for a second scoping question (about how far to take the `bva_fanout` wiring
+given the newly-discovered Cosmos/verdict-producer gap); proceeded
+autonomously per the same delegation.
+
+### 10.1 Fabric notebook run + Direct Lake extension (§8 item 3) -- done
+
+- Uploaded all 17 `data/master-data/bva/*.csv` (7 cost-basis + 10 evidence --
+  neither had ever been uploaded to OneLake before this) via the existing
+  `upload_to_onelake.py`.
+- New `data-platform/scripts/fabric/publish_bva_evidence_notebook.py`
+  published `build_gold_bva_evidence` as a live Fabric notebook, mirroring
+  the already-live `build_gold_bva_costbasis` notebook's exact
+  "notebook-content.py" shape (fetched and decoded live via `getDefinition`
+  to confirm the template precisely, rather than guessing).
+- Ran it live (SIT): completed in ~6 minutes. Verified via a direct SQL
+  analytics-endpoint query (pyodbc + AAD token): all 10 tables populated,
+  BC-999 spot-check exact (amount_chf=21286.0, evidence_status=mixed).
+- New `generate_bva_evidence_tmdl.py` + `publish_sm_bva.py` extended
+  `sm_bva.SemanticModel` with the 10 new `bva_evidence_*` Direct Lake table
+  definitions (mirroring `bva_hospital_profile_dim.tmdl`'s shape) and
+  published the updated definition (confirmed the exact part-path shape via
+  a live `getDefinition` fetch first, rather than guessing).
+- Verified via a live DAX query (Power BI REST `executeQueries`):
+  `bva_evidence_build_cost_actual_fact` returns rows=5, total=21286.0 --
+  Direct Lake pickup confirmed, closing the ADR-0056 loop (git CSV ->
+  notebook -> Direct Lake) for this data product.
+- 12 new tests for the three new scripts' pure/offline logic. Commit
+  `52f2ebc1`.
+- Not done: PROD notebook run / semantic model publish (SIT-only; PROD's
+  `sm_bva` mirror can be republished the same way once reviewed).
+
+### 10.2 `bva_fanout` wiring (§8 item 1) -- done, deliberately narrower than "complete"
+
+Re-confirmed the finding from §5's decision table with a full trace of
+`docs/data-platform/bva-po-fanout.md`: "Verdict is an input, never invented"
+is an explicit design invariant, not an oversight. `po-agent-service` has
+zero Cosmos DB wiring (no env vars, no RBAC, not in the Bicep module) --
+building a real Cosmos-backed verdict lookup would mean new infra (Managed
+Identity role assignment + Bicep + redeploy), and an LLM-based verdict
+producer was ruled out as separately-scoped, safety-sensitive work this
+session did not have room to do justice to. Asked the user how far to take
+it (full build / financial-only / re-document only); user unavailable,
+proceeded with the safe, no-new-infra middle path:
+
+- `AnswerRequest` gains two **optional**, additive fields: `hospitalDelta`
+  (the `bva.simulate` what-if inputs) and `poVerdict` (caller-supplied,
+  never computed here). Existing callers are completely unaffected.
+- `financial`/`strategic` questions with a `hospitalDelta` -> live
+  `bva.simulate()` numbers cited through the standard grounded-answer
+  contract (citation gate, threshold, DE/EN, audit).
+- `onboarding` questions -> `bva_fanout.compose_onboarding_answer()`,
+  verdict-first; no `poVerdict` supplied degrades to an honest transparent
+  partial (never fabricates); a supplied `poVerdict` composes correctly.
+- Invalid delta inputs degrade to a refusal, never a 500.
+- Fixed a latent bug found while adding these Pydantic models: `app.py`
+  only imported `Any` from `typing`; `Optional` was missing, which broke
+  Pydantic v2's model rebuild under `from __future__ import annotations`.
+- 5 new tests; full po-agent suite 91 passed (was 86). Commit `bed0da51`.
+- Live-verified in **both SIT and PROD** (financial-only and
+  onboarding+verdict paths both confirmed via direct HTTP smoke tests
+  against the deployed services).
+- Still not done, and now the accurate remaining scope for a genuinely
+  "complete" fan-out: Cosmos-backed `Opportunity` write-back/lookup (new
+  infra) and/or an LLM-based verdict producer (needs its own careful,
+  separately-reviewed prompt-injection-safe design) -- both explicitly
+  flagged, not silently dropped.
+
+### 10.3 Deployment record
+
+Both follow-ups deployed to SIT (`cd-infra-deploy-sit` runs, images
+`52f2ebc1`-era and `bed0da5`) and PROD (`cd-infra-deploy-prod` run,
+image `bed0da5` -- `po-agent-service`'s first-ever PROD image bump since
+its `49b9068` rollout earlier the same day). All deploys used the same
+what-if-first, `approved-to-apply`-gated discipline used throughout this
+sprint.
