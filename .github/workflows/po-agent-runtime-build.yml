@@ -16,6 +16,12 @@ on:
     paths:
       - 'data-platform/scripts/po-agent/**'
       - '.github/workflows/po-agent-runtime-build.yml'
+      # Class C (cost) reads these directly at runtime (Sprint 44 task b) --
+      # the image must rebuild when any of them change, or the deployed
+      # service silently answers from a stale copy baked into an old image.
+      - 'docs/BVA.md'
+      - 'data/master-data/bva/**'
+      - 'data-platform/bva/**'
   workflow_dispatch:
 
 permissions:
@@ -95,7 +101,7 @@ jobs:
             -f data-platform/scripts/po-agent/runtime/Dockerfile \
             -t "${{ steps.tags.outputs.full_sha }}" \
             -t "${{ steps.tags.outputs.full_latest }}" \
-            data-platform/scripts/po-agent
+            .
 
       - name: Docker push
         shell: bash

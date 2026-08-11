@@ -1,7 +1,8 @@
 # Repo-root .dockerignore
 # Applies to any docker build with context = repo root.
-# Currently: apps/sim-capacity/Dockerfile, apps/hcc-agent-host/Dockerfile, AND
-# data-platform/scripts/po-agent/corpus/Dockerfile.
+# Currently: apps/sim-capacity/Dockerfile, apps/hcc-agent-host/Dockerfile,
+# data-platform/scripts/po-agent/corpus/Dockerfile, AND
+# data-platform/scripts/po-agent/runtime/Dockerfile.
 # apps/hcc-app-fluent/Dockerfile builds from apps/hcc-app-fluent/ context, so
 # this file does not apply to that build.
 #
@@ -44,6 +45,25 @@ data-platform/scripts/po-agent/corpus/**/__pycache__
 data-platform/scripts/po-agent/corpus/**/*.pyc
 data-platform/scripts/po-agent/corpus/.pytest_cache
 data-platform/scripts/po-agent/corpus/tests
+
+# po-agent-service runtime image build (data-platform/scripts/po-agent/runtime/Dockerfile,
+# built by .github/workflows/po-agent-runtime-build.yml). corpus/ is already
+# allowlisted above (reused as-is, it's one of the Class A-D sibling modules).
+!data-platform/scripts/po-agent/runtime/
+!data-platform/scripts/po-agent/liveproof/
+!data-platform/scripts/po-agent/cost/
+!data-platform/scripts/po-agent/ontology/
+data-platform/scripts/po-agent/**/__pycache__
+data-platform/scripts/po-agent/**/*.pyc
+data-platform/scripts/po-agent/**/.pytest_cache
+data-platform/scripts/po-agent/**/tests
+# BVA evidence & narrative master data + the pure-Python grounding module
+# Class C reads directly (Sprint 44 task b) -- see runtime/Dockerfile.
+!data/master-data/bva/
+!data-platform/bva/
+data-platform/bva/**/__pycache__
+data-platform/bva/**/*.pyc
+data-platform/bva/tests
 
 # docs/ corpus source tree baked into the po-agent corpus-refresh image.
 # snapshot.py's snapshot_tree() only globs docs/**/*.md, so keep every .md

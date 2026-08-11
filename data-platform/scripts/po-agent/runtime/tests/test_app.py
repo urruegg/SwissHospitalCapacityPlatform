@@ -62,3 +62,25 @@ def test_answer_refuses_without_grounded_chunks(monkeypatch):
     )
     assert resp.status_code == 200
     assert resp.json()["refused"] is True
+
+
+def test_resolve_repo_root_falls_back_to_dev_tree_layout():
+    import app as app_module
+
+    # No /app/repo/docs/BVA.md mirror in the dev checkout -> falls back to
+    # the dev-tree formula (three parents above po-agent/), which must
+    # resolve to a real repo root that actually has docs/BVA.md.
+    repo_root = app_module._resolve_repo_root()
+    assert (repo_root / "docs" / "BVA.md").is_file()
+
+
+def test_resolve_repo_root_prefers_the_container_mirror_when_present(monkeypatch, tmp_path):
+    import app as app_module
+
+    fake_app_dir = tmp_path / "app"
+    (fake_app_dir / "repo" / "docs").mkdir(parents=True)
+    (fake_app_dir / "repo" / "docs" / "BVA.md").write_text("stub", encoding="utf-8")
+    monkeypatch.setattr(app_module, "_APP_DIR", fake_app_dir)
+
+    repo_root = app_module._resolve_repo_root()
+    assert repo_root == fake_app_dir / "repo"

@@ -48,6 +48,26 @@ def _ensure_class_module_paths() -> None:
                     sys.path.insert(0, path_str)
 
 
+def _resolve_repo_root() -> Path:
+    """Resolve the repo root Class C needs for docs/BVA.md + master data.
+
+    Dev tree: data-platform/scripts/po-agent/runtime/app.py -> repo root is
+    three parents above po-agent/ (``_PO_AGENT_ROOT.parents[2]``).
+
+    Container: docs/ and data/ are NOT part of the runtime image's normal
+    Python source layout, so runtime/Dockerfile copies just the subset Class
+    C needs (docs/BVA.md, data/master-data/bva/, data-platform/bva/) into
+    ``/app/repo/`` -- detect and prefer that if present. Without this, the
+    dev-tree formula resolves to ``Path("/").parents[2]`` in the container,
+    which raises IndexError and silently disables Class C entirely (caught
+    by the outer ``except Exception: pass`` in ``get_tools()``).
+    """
+    container_repo_root = _APP_DIR / "repo"
+    if (container_repo_root / "docs" / "BVA.md").is_file():
+        return container_repo_root
+    return _PO_AGENT_ROOT.parents[2]
+
+
 class Caller(BaseModel):
     persona: str
     tier: str = "internal"
@@ -98,12 +118,17 @@ def get_tools() -> dict[str, Any]:
     try:
         from azure_cost import build_production_client as build_cost_client, get_effective_prod_cost
         from copilot_cost import build_production_client as build_copilot_client, get_copilot_cost
-        from reconcile_bva import CostObservation, combined_run_rate, reconcile_bva
+        from reconcile_bva import (
+            CostObservation,
+            build_cost_evidence_chunk,
+            combined_run_rate,
+            reconcile_bva,
+        )
 
         subscription_id = os.environ["AZURE_SUBSCRIPTION_ID"]
         cost_client = build_cost_client(subscription_id=subscription_id)
         copilot_client = build_copilot_client()
-        repo_root = _PO_AGENT_ROOT.parents[2]
+        repo_root = _resolve_repo_root()
 
         def _class_c(q: str) -> list[dict[str, Any]]:
             window_end = _dt.date.today()
@@ -128,7 +153,16 @@ def get_tools() -> dict[str, Any]:
                     as_of=end,
                     ok=False,
                 )
-            return [reconcile_bva(observation, repo_root=repo_root)]
+            chunks = [reconcile_bva(observation, repo_root=repo_root)]
+            try:
+                # BVA evidence & narrative master data (Sprint 44 task b): the
+                # measured showcase build-cost total, additive to the live
+                # run-rate reconciliation above. Its own try/except so a
+                # missing/stale evidence file degrades this one chunk only.
+                chunks.append(build_cost_evidence_chunk(repo_root))
+            except Exception:
+                pass
+            return chunks
 
         tools["C"] = _class_c
     except Exception:

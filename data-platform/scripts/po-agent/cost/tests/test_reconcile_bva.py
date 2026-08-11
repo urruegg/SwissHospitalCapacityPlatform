@@ -55,3 +55,24 @@ def test_extrapolation_beyond_feed_window_is_refused():
     assert chunk["status"] == "partial"
     assert "extrapolat" in chunk["text"].lower()
     assert "feed window" in chunk["text"].lower()
+
+
+def test_build_cost_evidence_chunk_cites_the_measured_master_data():
+    chunk = reconcile_bva.build_cost_evidence_chunk(REPO_ROOT)
+
+    assert chunk["classId"] == "C"
+    assert chunk["liveness"] == "snapshot"
+    # BC-999's evidence_status is "mixed" -> chunk status "partial", not
+    # "verified" (would overclaim) or "requires-validation" (would underclaim
+    # the 88.5% that IS measured).
+    assert chunk["status"] == "partial"
+    assert "21,286 CHF" in chunk["text"]
+    assert "Human effort" in chunk["text"]
+    assert "measured" in chunk["text"]
+    assert chunk["citation"]["sourceRef"] == "data/master-data/bva/fact_build_cost_actual.csv (BC-999)"
+
+
+def test_build_cost_evidence_chunk_never_claims_hospital_implementation_cost():
+    chunk = reconcile_bva.build_cost_evidence_chunk(REPO_ROOT)
+    assert "showcase" in chunk["text"].lower()
+    assert "not a projected hospital" in chunk["text"].lower()

@@ -208,6 +208,99 @@ def reconcile_bva(
     )
 
 
+# --------------------------------------------------------------------------
+# Measured build-cost evidence (BVA evidence & narrative master data)
+# --------------------------------------------------------------------------
+
+_EVIDENCE_STATUS_TO_CHUNK_STATUS = {
+    "measured": "verified",
+    "measured_extrapolated": "verified",
+    "telemetry": "verified",
+    "mixed": "partial",
+    "modelled_on_measured": "partial",
+    "estimated": "requires-validation",
+    "modelled": "requires-validation",
+    "ROM": "requires-validation",
+    "derived": "requires-validation",
+}
+
+_EVIDENCE_STATUS_CONFIDENCE = {
+    "measured": 0.9,
+    "measured_extrapolated": 0.75,
+    "telemetry": 0.7,
+    "mixed": 0.7,
+    "modelled_on_measured": 0.6,
+    "estimated": 0.5,
+    "modelled": 0.4,
+    "ROM": 0.4,
+    "derived": 0.6,
+}
+
+
+def _evidence_grounding_module(repo_root: Path):
+    """Load `bva.evidence_grounding.build_evidence_gold_tables` by file path.
+
+    Loaded relative to the caller-supplied ``repo_root`` (never `__file__`):
+    this file is copied flat into the container image (``/app/cost/...``),
+    where `__file__`-relative ``.parents[N]`` climbing cannot reach
+    ``data-platform/bva/`` at all (that tree is not part of the runtime
+    image's normal Python source layout). ``repo_root`` is resolved once by
+    ``app.py``'s ``_resolve_repo_root()``, which already knows how to find
+    the subset of docs/data/data-platform that runtime/Dockerfile copies
+    into ``/app/repo/`` for exactly this purpose -- reuse it instead of
+    duplicating the dev-tree-vs-container detection here.
+    """
+    import importlib.util
+
+    module_path = repo_root / "data-platform" / "bva" / "evidence_grounding.py"
+    spec = importlib.util.spec_from_file_location("bva_evidence_grounding", module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"cannot load evidence_grounding module from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.build_evidence_gold_tables
+
+
+def build_cost_evidence_chunk(repo_root: Path, *, as_of: str = "2026-08-11T00:00:00Z") -> dict[str, Any]:
+    """The measured 90-day showcase build-cost total as a Class-C `GroundedChunk`.
+
+    Distinct from `reconcile_bva()` above, which reconciles the *live, ongoing
+    Azure/Copilot run-rate* to the BVA annual budget baseline. This answers a
+    different question -- "what did the Curavias showcase cost to build" --
+    sourced from the committed, `evidence_status`-labelled master data rather
+    than a live cost-management probe, so it is always available even when
+    the live Azure/Copilot feeds are unreachable (unlike `reconcile_bva`,
+    there is no snapshot-degradation path to design for here).
+    """
+    build_evidence_gold_tables = _evidence_grounding_module(repo_root)
+    bva_dir = repo_root / "data" / "master-data" / "bva"
+    tables = build_evidence_gold_tables(bva_dir)
+    rows = {row["build_cost_id"]: row for row in tables["bva_evidence_build_cost_actual_fact"]}
+    total = rows["BC-999"]
+    components = [row for row in rows.values() if row["build_cost_id"] != "BC-999"]
+    components.sort(key=lambda r: -float(r["amount_chf"] or 0))
+
+    breakdown = ", ".join(
+        f"{c['cost_element']} {c['amount_chf']:,.0f} CHF ({c['share_pct']}%, {c['evidence_status']})"
+        for c in components
+    )
+    text = (
+        f"The Curavias showcase cost {total['amount_chf']:,.0f} CHF to build over "
+        f"90 days ({total['period_start']}..{total['period_end']}). Breakdown: "
+        f"{breakdown}. This is the measured cost of the art-of-the-possible "
+        f"showcase itself, not a projected hospital-implementation cost."
+    )
+    evidence_status = str(total["evidence_status"])
+    return _grounded_chunk(
+        text=text,
+        source_ref="data/master-data/bva/fact_build_cost_actual.csv (BC-999)",
+        as_of=as_of,
+        liveness="snapshot",
+        status=_EVIDENCE_STATUS_TO_CHUNK_STATUS.get(evidence_status, "requires-validation"),
+        confidence=_EVIDENCE_STATUS_CONFIDENCE.get(evidence_status, 0.5),
+    )
+
+
 def combined_run_rate(
     azure_amount: float,
     copilot_amount: float,
