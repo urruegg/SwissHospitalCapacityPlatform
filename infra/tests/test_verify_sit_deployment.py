@@ -244,3 +244,66 @@ def test_wait_for_ready_revision_gives_up_after_max_attempts() -> None:
 
     assert result["properties"]["latestRevisionName"] == "rev-2"
     assert result["properties"]["latestReadyRevisionName"] == "rev-1"
+
+
+def test_http_json_with_retry_recovers_from_transient_5xx() -> None:
+    verifier = _load_verifier()
+    responses = [{"status": 500}, {"status": 200, "body": {"answer": "ok"}}]
+    calls: list[float] = []
+
+    def fake_call(*_args, **_kwargs) -> dict:
+        return responses[len(calls)]
+
+    def fake_sleep(seconds: float) -> None:
+        calls.append(seconds)
+
+    result = verifier._http_json_with_retry(
+        "https://example.test/chat",
+        call=fake_call,
+        sleep=fake_sleep,
+        max_attempts=3,
+        retry_delay_seconds=1.0,
+    )
+
+    assert calls == [1.0]
+    assert result == {"status": 200, "body": {"answer": "ok"}}
+
+
+def test_http_json_with_retry_does_not_retry_a_definitive_response() -> None:
+    verifier = _load_verifier()
+    attempts = 0
+
+    def fake_call(*_args, **_kwargs) -> dict:
+        nonlocal attempts
+        attempts += 1
+        return {"status": 404}
+
+    result = verifier._http_json_with_retry(
+        "https://example.test/chat",
+        call=fake_call,
+        sleep=lambda _seconds: None,
+        max_attempts=3,
+    )
+
+    assert attempts == 1
+    assert result == {"status": 404}
+
+
+def test_http_json_with_retry_gives_up_after_max_attempts() -> None:
+    verifier = _load_verifier()
+    attempts = 0
+
+    def fake_call(*_args, **_kwargs) -> dict:
+        nonlocal attempts
+        attempts += 1
+        return {"status": 0, "error": "timed out"}
+
+    result = verifier._http_json_with_retry(
+        "https://example.test/chat",
+        call=fake_call,
+        sleep=lambda _seconds: None,
+        max_attempts=3,
+    )
+
+    assert attempts == 3
+    assert result == {"status": 0, "error": "timed out"}

@@ -273,6 +273,38 @@ def _http_json(
         return {"status": 0, "error": str(exc)}
 
 
+def _http_json_with_retry(
+    url: str,
+    *,
+    method: str = "GET",
+    headers: dict[str, str] | None = None,
+    payload: dict[str, Any] | None = None,
+    timeout: int = 60,
+    call: Callable[..., dict[str, Any]] = _http_json,
+    sleep: Callable[[float], None] = time.sleep,
+    max_attempts: int = 3,
+    retry_delay_seconds: float = 5.0,
+) -> dict[str, Any]:
+    """Retry a live smoke-test call on a transient network error or 5xx.
+
+    The Foundry-backed chat smoke test can occasionally 500 when the agent-host's
+    own internal call to the Foundry completions endpoint exceeds its timeout
+    under cold-start or transient load (observed live: a `ReadTimeout` calling
+    `ai-ihzhhpf-sit-eastus2.services.ai.azure.com`, gone on retry seconds later).
+    A definitive 2xx/4xx response returns immediately; retrying would not change
+    a real failure.
+    """
+    result: dict[str, Any] = {}
+    for attempt in range(max_attempts):
+        result = call(url, method=method, headers=headers, payload=payload, timeout=timeout)
+        status = result.get("status", 0)
+        if status != 0 and status < 500:
+            return result
+        if attempt < max_attempts - 1:
+            sleep(retry_delay_seconds)
+    return result
+
+
 def _env_map(container_app: dict[str, Any]) -> dict[str, dict[str, Any]]:
     containers = container_app.get("properties", {}).get("template", {}).get("containers", [])
     entries = containers[0].get("env", []) if containers else []
@@ -373,7 +405,7 @@ def collect_evidence(
             f"{agent_host_url}/golden/bed-manager?hospital=usz&window=72",
             headers={**smoke_headers, "Authorization": "Bearer not-a-real-jwt"},
         )
-    chat = _http_json(
+    chat = _http_json_with_retry(
         f"{agent_host_url}/agents/bmca-agent/chat",
         method="POST",
         headers={"X-User-Oid": smoke_headers["X-User-Oid"]},
