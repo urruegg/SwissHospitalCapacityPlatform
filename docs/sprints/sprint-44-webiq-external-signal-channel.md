@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-08-12 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | In progress (design + plan authored; implementation executing on `main`) |
-| **Previous Version** | n/a (new document) |
+| **Status** | Complete (all milestones + follow-ups A–D shipped and pushed to `main`) |
+| **Previous Version** | 1.0.0 (initial sprint page, implementation in progress); this bump records completion incl. Q1 hospital-service hazard scoping, corroboration + promote-to-watch wiring, i18n, golden task, and channel-readiness scorecard |
 | **Design spec** | [`docs/superpowers/specs/2026-08-12-sprint-44-webiq-external-signal-channel-design.md`](../superpowers/specs/2026-08-12-sprint-44-webiq-external-signal-channel-design.md) |
 | **Implementation plan** | [`docs/superpowers/plans/2026-08-12-sprint-44-webiq-external-signal-channel-plan.md`](../superpowers/plans/2026-08-12-sprint-44-webiq-external-signal-channel-plan.md) |
 | **Governance ADR** | [`docs/adr/0060-webiq-external-signal-channel.md`](../adr/0060-webiq-external-signal-channel.md) |
