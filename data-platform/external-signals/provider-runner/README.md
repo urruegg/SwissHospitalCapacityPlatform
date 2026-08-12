@@ -132,33 +132,47 @@ az deployment group create \
 
 ## Live Web IQ activation (SIT / PROD)
 
-The runner ships **simulator-only** by default. To activate the Microsoft Web IQ
-Trust-B live binding for an environment, an operator performs three steps. The
-API key never lives in source control or IaC.
+The runner ships **simulator-only** by default. Two auth paths exist; **keyless
+Entra ID (managed identity) is preferred** on this platform — it matches the
+RBAC-only / keyless posture and sidesteps the private Key Vaults (the SIT vault
+`kv-ihzhhpf-sit-y26y` has no private endpoint, so a Container App Key Vault
+secret reference can't resolve it there).
 
-1. **Provision the key** in the platform Key Vault (`kv-ihzhhpf-sit` /
-   `kv-ihzhhpf-prod`; confirm the exact name via the platform-foundation
-   deployment output `keyVaultName`):
+### Preferred: keyless Entra ID
+
+1. **Deploy the runner** (real `signal-runner` image from
+   `ci-build-signal-runner.yml`) so its identity `id-signal-runner-ihzhhpf-<env>`
+   exists, then read its client id:
 
    ```bash
-   az keyvault secret set --vault-name kv-ihzhhpf-sit --name webiq-api-key --value <YOUR_WEBIQ_KEY>
+   az identity show -g rg-ihzhhpf-sit --name id-signal-runner-ihzhhpf-sit --query clientId -o tsv
    ```
 
-2. **Build + publish the runner image** by running `ci-build-signal-runner.yml`
-   (auto-triggers on `data-platform/scripts/external-signals/**` changes, or via
-   `workflow_dispatch`). Note the `<acr>/signal-runner:<sha>` tag.
+2. **Bind that client id** in the Web IQ portal → Profile Management →
+   *Application (Client) IDs* → *Bind Application (Client) ID*. If the tab is
+   absent, request a dedicated AppID via your Microsoft contact (Entra auth can
+   be unavailable in trial scenarios).
 
-3. **Deploy** with these params, through the standard `what-if` →
-   `approved-to-apply` gate:
+3. **Enable + deploy** through the `what-if` → `approved-to-apply` gate:
 
    | Param | SIT | PROD |
    |-------|-----|------|
    | `providerRunnerImage` | `cri75lbu5sj4hza.azurecr.io/signal-runner:<sha>` | `crihzhhpfprod.azurecr.io/signal-runner:<sha>` (import from SIT ACR first) |
-   | `webiqSecretUri` | `https://kv-ihzhhpf-sit.vault.azure.net/secrets/webiq-api-key` | `https://kv-ihzhhpf-prod.vault.azure.net/secrets/webiq-api-key` |
-   | `keyVaultName` | `kv-ihzhhpf-sit` | `kv-ihzhhpf-prod` |
+   | `webiqEntraEnabled` | `true` | `true` |
+   | `managedEnvironmentId` | `cae-ihzhhpf-sit` (VNet-integrated) | `cae-ihzhhpf-prod` (VNet-integrated) |
    | `signalResidency` | `demo-westus2` | `CH` |
 
-Leaving `webiqSecretUri` empty keeps the environment simulator-only (the live
-binding falls back automatically). CI always runs simulator-only
-(`NFR-EXT-PLG-001`). Entra ID (keyless) is the later hardening step per
+No Key Vault, no secret, no private-network path required.
+
+### Fallback: x-apikey (local / eval)
+
+Set `webiqSecretUri` (Key Vault secret `webiq-api-key`) + `keyVaultName`. This
+needs the Container App to reach the vault's private endpoint — viable on PROD
+(`kv-ihzhhpf-prod-swn1` has a PE) but **not SIT** (`kv-ihzhhpf-sit-y26y` has
+none). The operator provisions the secret out-of-band
+(`az keyvault secret set --vault-name kv-ihzhhpf-prod-swn1 --name webiq-api-key
+--value <KEY>`), never in IaC.
+
+Leaving both unset keeps the environment simulator-only (the live binding falls
+back automatically). CI always runs simulator-only (`NFR-EXT-PLG-001`). See
 [ADR-0060](../../../docs/adr/0060-webiq-external-signal-channel.md).
