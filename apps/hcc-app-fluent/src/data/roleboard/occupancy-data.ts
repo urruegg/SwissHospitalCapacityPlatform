@@ -38,6 +38,9 @@ export interface BoardSignal {
   statusLabel: string;
   statusTone: ChipTone;
   webCitations?: { title: string; uri: string; publishedAt?: string; snippet?: string }[];
+  /** Hazard family + cantons — used to cross-link a Trust-B web signal to an overlapping Trust-A signal (display-only corroboration). */
+  hazardType?: string;
+  cantons?: string[];
 }
 
 export interface SpecStream {
@@ -280,10 +283,10 @@ export const OCCUPANCY_PINNED: OccupancyPayload = {
  */
 export const OCCUPANCY_SIGNALS: BoardSignal[] = [
   { id: 'meteoswiss-heat', label: 'MeteoSwiss', detail: 'heat L3/5', iconKey: 'weather', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ACTIVE', statusTone: 'watch' },
-  { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', iconKey: 'pulse', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ELEVATED', statusTone: 'watch' },
+  { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', iconKey: 'pulse', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ELEVATED', statusTone: 'watch', hazardType: 'epidemic', cantons: ['ZH'] },
   { id: 'alertswiss-heat-test', label: 'Alertswiss/BABS', detail: 'quiet', iconKey: 'alert', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'Test quar.', statusTone: 'signal' },
   { id: 'sed-seismic', label: 'SED-ETH', detail: 'seismic nominal', iconKey: 'seismic', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'OK', statusTone: 'ok' },
-  { id: 'webiq', label: 'Microsoft Web IQ', detail: 'web/news early-warning — advisory', iconKey: 'globe', scope: 'external', provenance: 'simulated', trustClass: 'Trust-B', statusLabel: 'Watch', statusTone: 'watch', webCitations: [{ title: 'Regional respiratory-illness uptick reported', uri: 'https://example.invalid/webiq/news/respiratory-uptick', publishedAt: '2026-08-12T06:00:00Z', snippet: 'Local outlets report a rise in respiratory presentations ahead of official surveillance.' }] },
+  { id: 'webiq', label: 'Microsoft Web IQ', detail: 'web/news early-warning — advisory', iconKey: 'globe', scope: 'external', provenance: 'simulated', trustClass: 'Trust-B', statusLabel: 'Watch', statusTone: 'watch', hazardType: 'epidemic', cantons: ['ZH'], webCitations: [{ title: 'Regional respiratory-illness uptick reported', uri: 'https://example.invalid/webiq/news/respiratory-uptick', publishedAt: '2026-08-12T06:00:00Z', snippet: 'Local outlets report a rise in respiratory presentations ahead of official surveillance.' }] },
   { id: 'onco-rn-roster', label: 'Oncology RN roster', detail: '1 free', iconKey: 'people', scope: 'internal', provenance: 'simulated', statusLabel: 'THIN', statusTone: 'over' },
   { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', iconKey: 'heartpulse', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
   { id: 'transfer-in-queue', label: 'Transfer-in queue', detail: '3 pending', iconKey: 'swap', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },

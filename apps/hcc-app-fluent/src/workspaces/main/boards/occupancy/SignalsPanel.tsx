@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Body1, Button, Caption1, makeStyles, tokens } from '@fluentui/react-components';
 import {
@@ -15,6 +16,7 @@ import {
   type FluentIcon,
 } from '@fluentui/react-icons';
 import { RagBadge } from './RagBadge';
+import { corroborates } from './corroboration';
 import type { BoardSignal } from '../../../../data/roleboard/occupancy-data';
 import { space, radii, motion } from '../../../../theme/design-system';
 import { ragColors } from '../../../../theme/curavias-theme';
@@ -89,6 +91,24 @@ const useStyles = makeStyles({
     gap: '2px',
   },
   webCiteLink: { fontSize: '12px', color: tokens.colorBrandForegroundLink },
+  corroboratedChip: {
+    fontSize: '11px',
+    fontWeight: tokens.fontWeightSemibold,
+    paddingLeft: space.xs,
+    paddingRight: space.xs,
+    borderRadius: radii.control,
+    color: tokens.colorPaletteGreenForeground2,
+    backgroundColor: tokens.colorPaletteGreenBackground2,
+  },
+  onWatchChip: {
+    fontSize: '11px',
+    fontWeight: tokens.fontWeightSemibold,
+    paddingLeft: space.xs,
+    paddingRight: space.xs,
+    borderRadius: radii.control,
+    color: tokens.colorBrandForeground2,
+    backgroundColor: tokens.colorBrandBackground2,
+  },
 });
 
 interface SignalsPanelProps {
@@ -107,8 +127,26 @@ interface SignalsPanelProps {
 export function SignalsPanel({ signals, onPromoteToWatch = () => {} }: SignalsPanelProps) {
   const s = useStyles();
   const { t } = useTranslation();
+  const [promoted, setPromoted] = useState<ReadonlySet<string>>(new Set());
   const external = signals.filter((x) => x.scope === 'external');
   const internal = signals.filter((x) => x.scope === 'internal');
+
+  // Display-only: a Trust-A row is "corroborated" when a Trust-B web signal in
+  // the same panel shares its hazard + canton (ADR-0060). Never arms a lever.
+  const webSignals = external.filter((x) => x.trustClass === 'Trust-B' && x.hazardType && x.cantons);
+  const corroboratedIds = new Set(
+    external
+      .filter((a) => a.trustClass === 'Trust-A' && a.hazardType && a.cantons)
+      .filter((a) =>
+        webSignals.some((w) =>
+          corroborates(
+            { hazardType: a.hazardType!, cantons: a.cantons!, trustClass: 'Trust-A' },
+            { hazardType: w.hazardType!, cantons: w.cantons!, trustClass: 'Trust-B' },
+          ),
+        ),
+      )
+      .map((a) => a.id),
+  );
 
   const renderRow = (sig: BoardSignal) => {
     const LeadIcon = SIGNAL_ICONS[sig.iconKey] ?? CircleRegular;
@@ -139,14 +177,26 @@ export function SignalsPanel({ signals, onPromoteToWatch = () => {} }: SignalsPa
               {sig.trustClass}
             </span>
           ) : null}
+          {corroboratedIds.has(sig.id) ? (
+            <span className={s.corroboratedChip}>
+              {t('ooa.signals.corroborated', 'Corroborated')}
+            </span>
+          ) : null}
           {sig.trustClass === 'Trust-B' ? (
-            <Button
-              size="small"
-              appearance="subtle"
-              onClick={() => onPromoteToWatch(sig.id)}
-            >
-              {t('ooa.signals.promoteToWatch', 'Promote to watch')}
-            </Button>
+            promoted.has(sig.id) ? (
+              <span className={s.onWatchChip}>{t('ooa.signals.onWatch', 'On CSA watch')}</span>
+            ) : (
+              <Button
+                size="small"
+                appearance="subtle"
+                onClick={() => {
+                  setPromoted((prev) => new Set(prev).add(sig.id));
+                  onPromoteToWatch(sig.id);
+                }}
+              >
+                {t('ooa.signals.promoteToWatch', 'Promote to watch')}
+              </Button>
+            )
           ) : null}
           <RagBadge tone={sig.statusTone}>{sig.statusLabel}</RagBadge>
           <span
