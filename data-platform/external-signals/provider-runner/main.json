@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.46.1.21595",
-      "templateHash": "9066815024517090068"
+      "templateHash": "12829747248588042430"
     }
   },
   "parameters": {
@@ -75,6 +75,13 @@
       "metadata": {
         "description": "DC-EXT-SIGNAL-v1 envelope residency. SIT demo = demo-westus2 (ADR-0013); PROD = CH."
       }
+    },
+    "webiqEntraEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable keyless Web IQ auth via the runner managed identity (Entra ID app-only token). Requires binding this UAMI's client id in the Web IQ portal. Preferred over webiqSecretUri on this platform (RBAC-only / keyless posture; private-only vaults). false = simulator-only unless webiqSecretUri is set."
+      }
     }
   },
   "variables": {
@@ -120,7 +127,7 @@
             {
               "name": "provider-runner",
               "image": "[parameters('providerRunnerImage')]",
-              "env": "[if(variables('wireWebIq'), concat(createArray(createObject('name', 'EVENT_HUB_NAMESPACE', 'value', parameters('eventHubNamespace')), createObject('name', 'EVENT_HUB_NAME', 'value', parameters('eventHubName')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').clientId), createObject('name', 'WEBIQ_REGION_CANTONS', 'value', parameters('webiqRegionCantons')), createObject('name', 'SIGNAL_RESIDENCY', 'value', parameters('signalResidency'))), createArray(createObject('name', 'WEBIQ_API_KEY', 'secretRef', 'webiq-api-key'))), createArray(createObject('name', 'EVENT_HUB_NAMESPACE', 'value', parameters('eventHubNamespace')), createObject('name', 'EVENT_HUB_NAME', 'value', parameters('eventHubName')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').clientId), createObject('name', 'WEBIQ_REGION_CANTONS', 'value', parameters('webiqRegionCantons')), createObject('name', 'SIGNAL_RESIDENCY', 'value', parameters('signalResidency'))))]"
+              "env": "[if(variables('wireWebIq'), concat(createArray(createObject('name', 'EVENT_HUB_NAMESPACE', 'value', parameters('eventHubNamespace')), createObject('name', 'EVENT_HUB_NAME', 'value', parameters('eventHubName')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').clientId), createObject('name', 'WEBIQ_REGION_CANTONS', 'value', parameters('webiqRegionCantons')), createObject('name', 'SIGNAL_RESIDENCY', 'value', parameters('signalResidency')), createObject('name', 'WEBIQ_ENTRA_ENABLED', 'value', if(parameters('webiqEntraEnabled'), 'true', 'false'))), createArray(createObject('name', 'WEBIQ_API_KEY', 'secretRef', 'webiq-api-key'))), createArray(createObject('name', 'EVENT_HUB_NAMESPACE', 'value', parameters('eventHubNamespace')), createObject('name', 'EVENT_HUB_NAME', 'value', parameters('eventHubName')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').clientId), createObject('name', 'WEBIQ_REGION_CANTONS', 'value', parameters('webiqRegionCantons')), createObject('name', 'SIGNAL_RESIDENCY', 'value', parameters('signalResidency')), createObject('name', 'WEBIQ_ENTRA_ENABLED', 'value', if(parameters('webiqEntraEnabled'), 'true', 'false'))))]"
             }
           ],
           "scale": {

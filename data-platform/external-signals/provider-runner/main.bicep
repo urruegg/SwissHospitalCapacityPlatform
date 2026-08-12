@@ -24,6 +24,9 @@ param webiqRegionCantons string = 'ZH,LU,SZ'
 @allowed([ 'CH', 'demo-westus2' ])
 param signalResidency string = 'CH'
 
+@description('Enable keyless Web IQ auth via the runner managed identity (Entra ID app-only token). Requires binding this UAMI\'s client id in the Web IQ portal. Preferred over webiqSecretUri on this platform (RBAC-only / keyless posture; private-only vaults). false = simulator-only unless webiqSecretUri is set.')
+param webiqEntraEnabled bool = false
+
 var appName = 'ca-signal-runner-ihzhhpf-${envSuffix}'
 var identityName = 'id-signal-runner-ihzhhpf-${envSuffix}'
 
@@ -44,6 +47,7 @@ var baseEnv = [
   { name: 'AZURE_CLIENT_ID', value: runnerIdentity.properties.clientId }
   { name: 'WEBIQ_REGION_CANTONS', value: webiqRegionCantons }
   { name: 'SIGNAL_RESIDENCY', value: signalResidency }
+  { name: 'WEBIQ_ENTRA_ENABLED', value: webiqEntraEnabled ? 'true' : 'false' }
 ]
 var runnerEnv = wireWebIq ? concat(baseEnv, [ { name: 'WEBIQ_API_KEY', secretRef: 'webiq-api-key' } ]) : baseEnv
 
