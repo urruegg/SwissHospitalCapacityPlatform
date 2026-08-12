@@ -34,9 +34,10 @@ export interface BoardSignal {
   iconKey: string;
   scope: 'external' | 'internal';
   provenance: Provenance;
-  trustClass?: 'Trust-A';
+  trustClass?: 'Trust-A' | 'Trust-B';
   statusLabel: string;
   statusTone: ChipTone;
+  webCitations?: { title: string; uri: string; publishedAt?: string; snippet?: string }[];
 }
 
 export interface SpecStream {
@@ -282,6 +283,7 @@ export const OCCUPANCY_SIGNALS: BoardSignal[] = [
   { id: 'bag-resp', label: 'BAG/FOPH', detail: 'RSV rising', iconKey: 'pulse', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'ELEVATED', statusTone: 'watch' },
   { id: 'alertswiss-heat-test', label: 'Alertswiss/BABS', detail: 'quiet', iconKey: 'alert', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'Test quar.', statusTone: 'signal' },
   { id: 'sed-seismic', label: 'SED-ETH', detail: 'seismic nominal', iconKey: 'seismic', scope: 'external', provenance: 'simulated', trustClass: 'Trust-A', statusLabel: 'OK', statusTone: 'ok' },
+  { id: 'webiq', label: 'Microsoft Web IQ', detail: 'web/news early-warning — advisory', iconKey: 'globe', scope: 'external', provenance: 'simulated', trustClass: 'Trust-B', statusLabel: 'Watch', statusTone: 'watch', webCitations: [{ title: 'Regional respiratory-illness uptick reported', uri: 'https://example.invalid/webiq/news/respiratory-uptick', publishedAt: '2026-08-12T06:00:00Z', snippet: 'Local outlets report a rise in respiratory presentations ahead of official surveillance.' }] },
   { id: 'onco-rn-roster', label: 'Oncology RN roster', detail: '1 free', iconKey: 'people', scope: 'internal', provenance: 'simulated', statusLabel: 'THIN', statusTone: 'over' },
   { id: 'ed-arrivals', label: 'ED arrivals', detail: '+2 vs baseline', iconKey: 'heartpulse', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },
   { id: 'transfer-in-queue', label: 'Transfer-in queue', detail: '3 pending', iconKey: 'swap', scope: 'internal', provenance: 'simulated', statusLabel: 'WATCH', statusTone: 'watch' },

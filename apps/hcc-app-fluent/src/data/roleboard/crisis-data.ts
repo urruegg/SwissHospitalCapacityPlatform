@@ -23,10 +23,10 @@ export function certaintyToProbability(c: Certainty): number {
 
 export interface ExternalSignal {
   id: string;
-  source: 'MeteoSwiss' | 'BAG/FOPH' | 'Alertswiss/BABS' | 'SED-ETH';
+  source: 'MeteoSwiss' | 'BAG/FOPH' | 'Alertswiss/BABS' | 'SED-ETH' | 'Microsoft Web IQ';
   feed: string;
   status: string;
-  trustClass: 'Trust-A';
+  trustClass: 'Trust-A' | 'Trust-B';
   lageLevel?: string;
   certainty: Certainty;
   probability: number;    // derived via CERTAINTY_TO_PROBABILITY
@@ -34,6 +34,7 @@ export interface ExternalSignal {
   licence: string;
   provenance: string;
   filtered?: boolean;     // Test/quarantined signals RENDER but do NOT arm a lever
+  webCitations?: { title: string; uri: string; publishedAt?: string; snippet?: string }[];
 }
 
 export interface Scenario {
@@ -354,6 +355,25 @@ export const CRISIS_PINNED: CrisisPayload = {
       licence: 'Alertswiss/BABS Public Alerts — CC BY 4.0',
       provenance: 'simulated',
       filtered: true,   // DC-EXT-SIGNAL-v1: quarantined — renders but does NOT arm a lever
+    },
+    {
+      id: 'webiq-outbreak',
+      source: 'Microsoft Web IQ',
+      feed: 'Web/news early-warning (Trust-B, advisory)',
+      status: 'WATCH',
+      trustClass: 'Trust-B',
+      certainty: 'Possible',
+      probability: certaintyToProbability('Possible'),
+      licence: 'microsoft-web-iq-preview-terms',
+      provenance: 'simulated',
+      filtered: true,   // Trust-B: renders but does NOT arm a lever (ADR-0036, ADR-0060)
+      webCitations: [
+        {
+          title: 'Regional respiratory-illness uptick reported',
+          uri: 'https://example.invalid/webiq/news/respiratory-uptick',
+          publishedAt: '2026-08-12T06:00:00Z',
+        },
+      ],
     },
   ],
   scenarios: [

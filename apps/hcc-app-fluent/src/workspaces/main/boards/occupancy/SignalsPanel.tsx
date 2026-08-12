@@ -24,6 +24,7 @@ const SIGNAL_ICONS: Record<string, FluentIcon> = {
   pulse: PulseRegular,
   alert: AlertRegular,
   seismic: GlobeRegular,
+  globe: GlobeRegular,
   people: PeopleRegular,
   heartpulse: HeartPulseRegular,
   swap: ArrowSwapRegular,
@@ -64,6 +65,30 @@ const useStyles = makeStyles({
   detail: { color: tokens.colorNeutralForeground3 },
   badges: { display: 'flex', alignItems: 'center', gap: space.s, flexShrink: 0 },
   provIcon: { display: 'inline-flex', alignItems: 'center', fontSize: '18px' },
+  trustChip: {
+    fontSize: '11px',
+    fontWeight: tokens.fontWeightSemibold,
+    letterSpacing: '0.02em',
+    paddingLeft: space.xs,
+    paddingRight: space.xs,
+    borderRadius: radii.control,
+    color: tokens.colorNeutralForeground3,
+    backgroundColor: tokens.colorNeutralBackground3,
+  },
+  trustChipB: {
+    color: tokens.colorBrandForeground2,
+    backgroundColor: tokens.colorBrandBackground2,
+  },
+  webCitations: {
+    listStyleType: 'none',
+    margin: 0,
+    paddingLeft: 0,
+    marginTop: space.xs,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+  },
+  webCiteLink: { fontSize: '12px', color: tokens.colorBrandForegroundLink },
 });
 
 interface SignalsPanelProps {
@@ -91,11 +116,27 @@ export function SignalsPanel({ signals }: SignalsPanelProps) {
     return (
       <div key={sig.id} className={s.row}>
         <span className={s.leadIcon} aria-hidden="true"><LeadIcon /></span>
-        <Body1 className={s.main}>
-          {sig.label}
-          {sig.detail ? <span className={s.detail}>{` \u00b7 ${sig.detail}`}</span> : null}
-        </Body1>
+        <div className={s.main}>
+          <Body1>
+            {sig.label}
+            {sig.detail ? <span className={s.detail}>{` \u00b7 ${sig.detail}`}</span> : null}
+          </Body1>
+          {sig.webCitations?.length ? (
+            <ul className={s.webCitations}>
+              {sig.webCitations.map((c) => (
+                <li key={c.uri}>
+                  <a className={s.webCiteLink} href={c.uri} target="_blank" rel="noreferrer">{c.title}</a>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
         <div className={s.badges}>
+          {sig.trustClass ? (
+            <span className={`${s.trustChip} ${sig.trustClass === 'Trust-B' ? s.trustChipB : ''}`}>
+              {sig.trustClass}
+            </span>
+          ) : null}
           <RagBadge tone={sig.statusTone}>{sig.statusLabel}</RagBadge>
           <span
             className={s.provIcon}
@@ -115,7 +156,7 @@ export function SignalsPanel({ signals }: SignalsPanelProps) {
     <div className={s.wrap} data-testid="ooa-signals-panel">
       <div className={s.section}>
         <Caption1 className={s.sectionHead}>
-          {`${t('ooa.signals.external', 'External signals')} \u00b7 Trust-A`}
+          {t('ooa.signals.external', 'External signals')}
         </Caption1>
         {external.map(renderRow)}
       </div>

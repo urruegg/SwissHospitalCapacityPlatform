@@ -39,9 +39,13 @@ describe('CRISIS_PINNED payload', () => {
     expect(filtered!.probability).toBe(certaintyToProbability(filtered!.certainty));
   });
 
-  it('all signals have trustClass Trust-A', () => {
+  it('signals are Trust-A or Trust-B; Trust-B is filtered and never feeds a lever (ADR-0036/0060)', () => {
     for (const signal of CRISIS_PINNED.signals) {
-      expect(signal.trustClass).toBe('Trust-A');
+      expect(['Trust-A', 'Trust-B']).toContain(signal.trustClass);
+      if (signal.trustClass === 'Trust-B') {
+        expect(signal.filtered).toBe(true);
+        expect(signal.feedsLever).toBeUndefined();
+      }
     }
   });
 
