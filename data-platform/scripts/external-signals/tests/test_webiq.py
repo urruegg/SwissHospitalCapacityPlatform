@@ -11,6 +11,7 @@ import unittest
 from unittest import mock
 
 import trigger_rules
+import normalize
 from providers.registry import discover
 from providers.webiq import parse, simulator, live_adapter
 
@@ -72,6 +73,40 @@ class TestWebIqTrustBGuard(unittest.TestCase):
         result = trigger_rules.evaluate(rec, trigger_rules.load_rules())
         self.assertFalse(result.fired)
         self.assertEqual(result.outcome, "trust-tier-not-a")
+
+
+class TestWebIqChannelReadiness(unittest.TestCase):
+    """Sprint 44 M5 (FR-SIG-007): sandbox Channel Readiness Scorecard over the
+    curated Web IQ simulator feed - schema conformance, provenance completeness,
+    and dedup, as the pre-activation gate the signal-agent runs before any HITL
+    activation request. No network I/O."""
+
+    _REQUIRED = ["signalId", "sourceId", "sourceAuthority", "trustTier", "hazardType",
+                 "severity", "certainty", "urgency", "region", "onset", "status", "provenance"]
+    _PROV_REQUIRED = ["ingestedAt", "connectorVersion", "licence", "rawHash"]
+
+    def _scorecard(self, recs):
+        schema_ok = bool(recs) and all(
+            all(f in r and r[f] not in (None, "", []) for f in self._REQUIRED) for r in recs
+        )
+        prov_ok = bool(recs) and all(
+            all(r["provenance"].get(f) for f in self._PROV_REQUIRED) for r in recs
+        )
+        keys = [normalize.dedup_key(r) for r in recs]
+        dedup_ok = len(keys) == len(set(keys))
+        return {
+            "schemaConformant": schema_ok, "provenanceComplete": prov_ok,
+            "dedupOk": dedup_ok, "ready": schema_ok and prov_ok and dedup_ok,
+            "sampleSize": len(recs),
+        }
+
+    def test_webiq_simulator_feed_is_channel_ready(self):
+        recs = parse.parse(simulator.generate(seed=3), active_binding="simulated")
+        card = self._scorecard(recs)
+        self.assertTrue(card["ready"], card)
+        self.assertTrue(card["schemaConformant"])
+        self.assertTrue(card["provenanceComplete"])
+        self.assertTrue(card["dedupOk"])
 
 
 if __name__ == "__main__":
