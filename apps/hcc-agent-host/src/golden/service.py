@@ -28,6 +28,12 @@ from pathlib import Path
 from typing import Any
 
 from golden.rls import RlsProvider, RlsProviderError, SimulatedRlsProvider
+from golden.signals_source import SnapshotSource
+
+# Module singleton: env-gated internally (SIGNALS_SNAPSHOT_URL). When live signals
+# are available they replace the occupancy external-signals; otherwise the payload
+# is unchanged and the app falls back to its built-in signals.
+_SNAPSHOT_SOURCE = SnapshotSource()
 
 GOLDEN_RESOURCES: tuple[str, ...] = (
     "occupancy",
@@ -98,6 +104,7 @@ def load_golden(
     hospital_scope: str,
     user_oid: str,
     provider: RlsProvider | None = None,
+    signals_source: SnapshotSource | None = None,
 ) -> dict[str, Any]:
     """Return the RLS-scoped golden payload for ``resource`` with ``_rls`` metadata.
 
@@ -120,4 +127,10 @@ def load_golden(
         "provider": decision.provider,
         "provenance": decision.provenance,
     }
+    # Sprint 44 (B'): live external signals from the runner Blob snapshot, when
+    # configured. External feeds are site-agnostic, so no RLS filtering applies.
+    if resource == "occupancy":
+        live_signals = (signals_source or _SNAPSHOT_SOURCE).external_signals()
+        if live_signals is not None:
+            scoped["signals"] = live_signals
     return scoped
