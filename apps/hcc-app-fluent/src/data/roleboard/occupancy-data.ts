@@ -149,6 +149,8 @@ export interface OccupancyPayload {
   capacity: CapacitySummary;
   recoById: Record<string, GroundedReco>;
   defaultReco: GroundedReco;
+  /** Sprint 44 (B'): live external signals from the golden source (Event-Hub-fed snapshot). Absent => the board uses its built-in OCCUPANCY_SIGNALS. */
+  signals?: BoardSignal[];
 }
 
 const AGENT_LABEL = 'Occupancy Copilot';

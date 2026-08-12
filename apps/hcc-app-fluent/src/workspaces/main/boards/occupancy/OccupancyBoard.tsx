@@ -63,6 +63,12 @@ export function OccupancyBoard() {
 
   const banner = bannerFor(mode, occupancyBoard.agent, prev);
   const payload = data.payload;
+  // Sprint 44 (B'): prefer live external signals from the golden payload (the
+  // Event-Hub-fed snapshot), keeping the built-in internal operational signals;
+  // absent => the built-in OCCUPANCY_SIGNALS (demo / simulated).
+  const signals = payload.signals
+    ? [...payload.signals, ...OCCUPANCY_SIGNALS.filter((sig) => sig.scope !== 'external')]
+    : OCCUPANCY_SIGNALS;
 
   const route = (insight: ContextInsight) => {
     const reco = occupancyBoard.recoFor(insight, data);
@@ -82,7 +88,7 @@ export function OccupancyBoard() {
       </div>
       <div className={s.panel}>
         <CapacityFlowDiagram
-          signals={OCCUPANCY_SIGNALS}
+          signals={signals}
           channels={payload.channels}
           streams={payload.streams}
           capacity={payload.capacity}
