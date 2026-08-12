@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.46.1.21595",
-      "templateHash": "12829747248588042430"
+      "templateHash": "1711264432081821530"
     }
   },
   "parameters": {
@@ -82,6 +82,13 @@
       "metadata": {
         "description": "Enable keyless Web IQ auth via the runner managed identity (Entra ID app-only token). Requires binding this UAMI's client id in the Web IQ portal. Preferred over webiqSecretUri on this platform (RBAC-only / keyless posture; private-only vaults). false = simulator-only unless webiqSecretUri is set."
       }
+    },
+    "containerRegistryLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "ACR login server for the runner image pull (e.g. cri75lbu5sj4hza.azurecr.io). Empty = public image, no pull identity wired."
+      }
     }
   },
   "variables": {
@@ -90,6 +97,9 @@
     "wireWebIq": "[not(empty(parameters('webiqSecretUri')))]",
     "keyVaultSecretsUserRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
     "runnerSecrets": "[if(variables('wireWebIq'), createArray(createObject('name', 'webiq-api-key', 'keyVaultUrl', parameters('webiqSecretUri'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')))), createArray())]",
+    "useAcr": "[not(empty(parameters('containerRegistryLoginServer')))]",
+    "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+    "registriesConfig": "[if(variables('useAcr'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')))), createArray())]",
     "eventHubsDataSenderRoleId": "2b629674-e913-4c01-ae53-ef4638d8f975"
   },
   "resources": [
@@ -120,7 +130,8 @@
         "managedEnvironmentId": "[parameters('managedEnvironmentId')]",
         "configuration": {
           "activeRevisionsMode": "Single",
-          "secrets": "[variables('runnerSecrets')]"
+          "secrets": "[variables('runnerSecrets')]",
+          "registries": "[variables('registriesConfig')]"
         },
         "template": {
           "containers": [
@@ -170,6 +181,21 @@
         "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').principalId]",
         "principalType": "ServicePrincipal",
         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('keyVaultSecretsUserRoleId'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"
+      ]
+    },
+    {
+      "condition": "[variables('useAcr')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[resourceId('Microsoft.ContainerRegistry/registries', split(parameters('containerRegistryLoginServer'), '.')[0])]",
+      "name": "[guid(resourceGroup().id, parameters('containerRegistryLoginServer'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('acrPullRoleId'))]",
+      "properties": {
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal",
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"

@@ -27,6 +27,9 @@ param signalResidency string = 'CH'
 @description('Enable keyless Web IQ auth via the runner managed identity (Entra ID app-only token). Requires binding this UAMI\'s client id in the Web IQ portal. Preferred over webiqSecretUri on this platform (RBAC-only / keyless posture; private-only vaults). false = simulator-only unless webiqSecretUri is set.')
 param webiqEntraEnabled bool = false
 
+@description('ACR login server for the runner image pull (e.g. cri75lbu5sj4hza.azurecr.io). Empty = public image, no pull identity wired.')
+param containerRegistryLoginServer string = ''
+
 var appName = 'ca-signal-runner-ihzhhpf-${envSuffix}'
 var identityName = 'id-signal-runner-ihzhhpf-${envSuffix}'
 
@@ -50,6 +53,16 @@ var baseEnv = [
   { name: 'WEBIQ_ENTRA_ENABLED', value: webiqEntraEnabled ? 'true' : 'false' }
 ]
 var runnerEnv = wireWebIq ? concat(baseEnv, [ { name: 'WEBIQ_API_KEY', secretRef: 'webiq-api-key' } ]) : baseEnv
+
+// MI-based ACR pull for the private runner image (no admin creds / secrets).
+var useAcr = !empty(containerRegistryLoginServer)
+var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+var registriesConfig = useAcr ? [
+  {
+    server: containerRegistryLoginServer
+    identity: runnerIdentity.id
+  }
+] : []
 
 // User-Assigned Managed Identity: unlike a SystemAssigned identity (whose
 // principalId is minted fresh on every container-app / CAE recreate), a UAMI
@@ -82,6 +95,7 @@ resource runner 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       activeRevisionsMode: 'Single'
       secrets: runnerSecrets
+      registries: registriesConfig
     }
     template: {
       containers: [
@@ -136,6 +150,22 @@ resource kvSecretsUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if
     principalId: runnerIdentity.properties.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
+  }
+}
+
+// AcrPull for the runner identity so the Container App can pull the private
+// signal-runner image keylessly. ACR assumed same-RG (name from login server).
+resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = if (useAcr) {
+  name: split(containerRegistryLoginServer, '.')[0]
+}
+
+resource acrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (useAcr) {
+  name: guid(resourceGroup().id, containerRegistryLoginServer, runnerIdentity.id, acrPullRoleId)
+  scope: acr
+  properties: {
+    principalId: runnerIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
   }
 }
 
