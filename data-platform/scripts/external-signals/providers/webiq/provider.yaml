@@ -1,0 +1,15 @@
+sourceId: webiq
+authority: Microsoft Web IQ
+trustTier: B
+channelKind: external
+hazardTypes: [epidemic, outbreak, public-health, mass-casualty, heat, flood]
+defaultMode: simulated
+fallbackMode: simulated
+cadenceSeconds: 900
+endpoint: https://api.webiq.microsoft.ai
+licence: microsoft-web-iq-preview-terms
+providerVersion: microsoft-webiq-1.0.0
+scenarioMap:
+  epidemic: {template: F5, lageTier: 2}
+  outbreak: {template: F5, lageTier: 2}
+  mass-casualty: {template: F3, lageTier: 3}
