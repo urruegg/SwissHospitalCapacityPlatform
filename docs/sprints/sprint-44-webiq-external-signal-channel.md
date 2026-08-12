@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Date** | 2026-08-12 |
 | **Author** | Urs Rüegg (with Copilot) |
-| **Status** | Complete (all milestones + follow-ups A–D shipped and pushed to `main`) |
-| **Previous Version** | 1.0.0 (initial sprint page, implementation in progress); this bump records completion incl. Q1 hospital-service hazard scoping, corroboration + promote-to-watch wiring, i18n, golden task, and channel-readiness scorecard |
+| **Status** | Build complete · provider-runner deployed to SIT + PROD (keyless MI, Event Hub ingress proven) · live Web IQ content + downstream Fabric/app wiring pending (see §6) |
+| **Previous Version** | 1.1.0 (recorded build completion incl. Q1 hospital-service hazard scoping, corroboration + promote-to-watch wiring, i18n, golden task, channel-readiness scorecard); this bump adds §6 recording the 2026-08-12 SIT + PROD provider-runner deployment, keyless-MI + Event Hub ingress evidence, and the downstream-wiring open finding |
 | **Design spec** | [`docs/superpowers/specs/2026-08-12-sprint-44-webiq-external-signal-channel-design.md`](../superpowers/specs/2026-08-12-sprint-44-webiq-external-signal-channel-design.md) |
 | **Implementation plan** | [`docs/superpowers/plans/2026-08-12-sprint-44-webiq-external-signal-channel-plan.md`](../superpowers/plans/2026-08-12-sprint-44-webiq-external-signal-channel-plan.md) |
 | **Governance ADR** | [`docs/adr/0060-webiq-external-signal-channel.md`](../adr/0060-webiq-external-signal-channel.md) |
@@ -73,3 +73,56 @@ change.
 - Trust-B guard proven: a Web IQ signal never fires a trigger.
 - Live binding remains disabled by default; no external network calls in CI.
 - Docs versioned per §9; PRD §7 traceability consistent.
+
+## 6. Deployment & live-activation status (2026-08-12)
+
+The provider-runner was deployed to both environments this session (each gated by
+`approved-to-apply`), moving Web IQ from a build artefact to a running channel.
+
+### Live and proven
+
+- **SIT** — `ca-signal-runner-ihzhhpf-sit` (in `cae-sim-ihzhhpf-sit`) on the real
+  `signal-runner:f821621` image, `webiqEntraEnabled=true`,
+  `signalResidency=demo-westus2`. Keyless managed-identity token acquisition + Event
+  Hub publish proven; `IncomingMessages` on `evh-ihzhhpf-sit-y26y/events` = **21
+  messages** across two 900 s cycles.
+- **PROD** — `ca-signal-runner-ihzhhpf-prod` (in the VNet-integrated
+  `cae-ihzhhpf-prod`) on the same image imported to `crihzhhpfprod`,
+  `signalResidency=CH` (the PROD Event Hub is genuinely `switzerlandnorth`). Logs
+  show **11 records/cycle** to `evh-ihzhhpf-prod-i62t/events` via keyless MI.
+- Two deploy blockers were fixed en route: the root `.dockerignore` allowlist
+  (`fix(ci)` `f821621b`) and MI-based ACR pull in the provider-runner Bicep
+  (`feat(infra)` `6a020afb`).
+
+### Pending (tomorrow's restart)
+
+1. **Web IQ content is still `simulated`** in both environments — the live binding
+   falls back because the runner UAMI client id is not yet bound in the Web IQ portal.
+   Bind (Profile Management → Application (Client) IDs): **SIT
+   `cfc3f90d-6536-4a91-b070-0af1e7daee97`**, **PROD
+   `5800b7e0-ad87-4f32-b414-56ce139d2213`**. Data-owner/portal action; flips to live on
+   the next cycle with no redeploy.
+2. **Downstream is not wired to the live stream (open finding).** Events land in the
+   Event Hub, but there is no `es-ihzhhpf-events` Eventstream / Eventhouse
+   `ExternalSignal` route deployed (gated by
+   [ADR-0060](../adr/0060-webiq-external-signal-channel.md) live gate +
+   [ADR-0014](../adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md)); the
+   `external-signals` medallion notebooks read the synthetic `signals_synth` seed, not
+   the Event Hub; and the app `SignalsPanel` renders the Web IQ tile from static demo
+   data (`occupancy-data.ts`). So live envelopes are provably in the Event Hub but do
+   **not** yet reach a Fabric table or the app.
+3. **Observability gap:** `providers/runner.py` `run_provider` swallows the
+   live-binding exception on fallback, so a live 401 (identity-not-bound) is invisible.
+   A one-line `logger.warning` with the reason is the recommended first step tomorrow.
+
+### Decision needed before further work
+
+To make live events visible in Fabric + the app, pick the depth: (a) build/ungate the
+`es-ihzhhpf-events` Eventstream → Eventhouse route, or (b) repoint the bronze medallion
+notebook at the Event Hub (or its Capture); (c) wire `SignalsPanel` to the live
+Gold/semantic model; plus (d) the portal binding above. Paths (a)/(b) touch the ADR-0014
+GA gate and PROD data, so they were deliberately not done autonomously.
+
+> Note: the shipped provider directory is `providers/webiq/` (hyphen-free
+> `sourceId: webiq`, required by `import_module`), not the `microsoft_webiq/` name used
+> in the planning specs.

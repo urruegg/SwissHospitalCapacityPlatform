@@ -2,7 +2,7 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-08-12 |
 | **Author** | Urs Rueegg |
 | **Decision-makers** | @urruegg |
@@ -76,6 +76,33 @@ human-in-the-loop and trust-tier controls.
 * Live Web IQ stays compatible with [ADR-0016](0016-no-phi-in-mvp-demo-scope.md):
   Web IQ returns public web content (no PHI), and the outbound query guard
   (`parse.build_query`) rejects any PHI-shaped term.
+
+### Deployment status (2026-08-12)
+
+* **SIT + PROD provider-runners deployed** on the real `signal-runner` image with
+  `webiqEntraEnabled=true`, each gated by `approved-to-apply`:
+  `ca-signal-runner-ihzhhpf-sit` (in `cae-sim-ihzhhpf-sit`) and
+  `ca-signal-runner-ihzhhpf-prod` (in the VNet-integrated `cae-ihzhhpf-prod`).
+  Keyless managed-identity token acquisition and Event Hub publish are proven:
+  SIT `IncomingMessages` on `evh-ihzhhpf-sit-y26y/events` = 21 messages across two
+  900 s cycles; PROD logs show 11 records/cycle to `evh-ihzhhpf-prod-i62t/events`
+  (`signalResidency=CH` — the PROD Event Hub is genuinely `switzerlandnorth`). The
+  shipped provider directory is `providers/webiq/` (hyphen-free `sourceId: webiq`,
+  required by `import_module`), not the `microsoft_webiq/` name in the planning specs.
+* **Web IQ content is still `simulated`** in both environments: the live binding
+  falls back because the runner UAMI client id is not yet bound in the Web IQ portal
+  (SIT `cfc3f90d-...`, PROD `5800b7e0-...`). Binding is a portal-side data-owner
+  action; the channel flips to live on the next cycle with no redeploy.
+* **Downstream is not yet wired to the live stream (open finding):** live envelopes
+  land in the Event Hub, but no `es-ihzhhpf-events` Eventstream / Eventhouse
+  `ExternalSignal` route is deployed (that route stays gated by this ADR's live gate
+  and [ADR-0014](0014-fabric-iq-ontology-target-backbone-ga-gated.md)), the
+  `external-signals` medallion notebooks are fed by the synthetic `signals_synth`
+  seed rather than the Event Hub, and the Curavias app `SignalsPanel` renders the Web
+  IQ tile from static demo data. So live Web IQ envelopes are provably in the Event
+  Hub but do not yet reach a Fabric table or the app. Closing that is a separate,
+  scoped follow-up (build the Eventstream to Eventhouse route or repoint the bronze
+  notebook at Event Hub Capture; wire the app panel to the live Gold/semantic model).
 
 ### Negative / risks
 

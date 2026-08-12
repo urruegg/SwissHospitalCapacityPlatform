@@ -21,6 +21,15 @@ Deployment of the provider-runner is **gated by human approval**:
 
 This gate ensures that any changes to provider connectivity, Event Hub bindings, or workload identity configuration are reviewed before live deployment.
 
+### Current deployment (2026-08-12)
+
+Both environments run the real `signal-runner:f821621` image with keyless managed-identity auth (`webiqEntraEnabled=true`), publishing `DC-EXT-SIGNAL-v1` every 900 s:
+
+- **SIT** — `ca-signal-runner-ihzhhpf-sit` in `cae-sim-ihzhhpf-sit` → `evh-ihzhhpf-sit-y26y/events` (`signalResidency=demo-westus2`).
+- **PROD** — `ca-signal-runner-ihzhhpf-prod` in `cae-ihzhhpf-prod` → `evh-ihzhhpf-prod-i62t/events` (`signalResidency=CH`).
+
+Web IQ falls back to the simulator until its runner UAMI client id is bound in the Web IQ portal (SIT `cfc3f90d-...`, PROD `5800b7e0-...`). See [Sprint 44 §6](../../../docs/sprints/sprint-44-webiq-external-signal-channel.md) for the downstream-wiring open finding (events land in the Event Hub but are not yet wired into Fabric or the app).
+
 ## CI and Live Bindings
 
 ### CI (Continuous Integration)
