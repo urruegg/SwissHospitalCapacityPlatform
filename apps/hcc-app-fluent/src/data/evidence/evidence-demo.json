@@ -637,6 +637,17 @@
       },
       "status": "Accepted",
       "title": "Evidence-trace contract and per-role evidence surface"
+    },
+    {
+      "decisionSummary": "* Web IQ is classified **Trust-B**: advisory, human-curated, and never auto-evaluated against trigger rules, never auto-arms a lever, never auto-triggers a CSA handoff, and never enters the forecast-uplift overlay (consistent with [ADR-0036](0036-external-trigger-governance.md): only Trust-A auto-evaluates). * The [ADR-0054](0054-signal-channel-lifecycle.md) \"web-discovery deferred\" boundary is lifted **only** for this governed case: onboarding runs the full `signal-agent` lifecycle with a sandbox Channel Readiness Scorecard and a HITL data-owner + compliance/DPO activation gate; no autonomous activation. * The live Web IQ binding is **GA- and credential-gated** (parallel to [ADR-0014](0014-fabric-iq-ontology-target-backbone-ga-gated.md)); demo and SIT run simulator-only, and CI always mocks the live binding (`NFR-EXT-PLG-001`). * Outbound Web IQ queries contain **no PHI** ([ADR-0016](0016-no-phi-in-mvp-demo-scope.md)); returned web content is untrusted and re-validated at every boundary (`NFR-SIG-001`), with only typed fields extracted and no free text forwarded into a tool or query.",
+      "id": "ADR-0060",
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/adr/0060-webiq-external-signal-channel.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/adr/0060-webiq-external-signal-channel.md"
+      },
+      "status": "Proposed",
+      "title": "Microsoft Web IQ as a Governed Trust-B External Signal Channel"
     }
   ],
   "boms": [
