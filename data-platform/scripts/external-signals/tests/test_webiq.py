@@ -67,7 +67,6 @@ class TestWebIqLiveBinding(unittest.TestCase):
     def test_live_post_maps_webresults_and_marks_live(self):
         def fake_post(url, body, headers):
             self.assertEqual(url, "https://api.microsoft.ai/v3/search/web")
-            self.assertEqual(headers["x-apikey"], "test-key")
             self.assertIn("query", body)
             return {"webResults": [
                 {"title": "Respiratory surge in ZH hospitals", "url": "https://example.invalid/a",
@@ -83,18 +82,35 @@ class TestWebIqLiveBinding(unittest.TestCase):
         self.assertIn(recs[0]["hazardType"], {"epidemic", "heat", "mass-casualty", "air-quality"})
         self.assertTrue(recs[0]["webCitations"][0]["uri"].startswith("https://"))
 
-    def test_missing_key_falls_back_to_simulated(self):
+    def test_missing_config_falls_back_to_simulated(self):
         with mock.patch.dict(os.environ, {}, clear=False):
             os.environ.pop("WEBIQ_API_KEY", None)
-            recs = run_provider(self._spec())  # no transport, no key -> live raises -> fallback
+            os.environ.pop("WEBIQ_ENTRA_ENABLED", None)
+            recs = run_provider(self._spec())  # no transport, no auth config -> fallback
         self.assertEqual(recs[0]["provenance"]["activeBinding"], "simulated")
         self.assertEqual(recs[0]["provenance"]["fellBackFrom"], "live")
 
-    def test_poll_refuses_without_key(self):
+    def test_auth_header_prefers_apikey(self):
+        with mock.patch.dict(os.environ, {"WEBIQ_API_KEY": "k"}, clear=False):
+            hdr = live.LiveBinding("https://x")._auth_header()
+        self.assertEqual(hdr["x-apikey"], "k")
+        self.assertNotIn("Authorization", hdr)
+
+    def test_auth_header_uses_entra_bearer_when_enabled(self):
+        with mock.patch.dict(os.environ, {"WEBIQ_ENTRA_ENABLED": "true"}, clear=False), \
+                mock.patch("azure.identity.DefaultAzureCredential") as cred:
+            os.environ.pop("WEBIQ_API_KEY", None)
+            cred.return_value.get_token.return_value.token = "jwt123"
+            hdr = live.LiveBinding("https://x")._auth_header()
+        self.assertEqual(hdr["Authorization"], "Bearer jwt123")
+        cred.return_value.get_token.assert_called_once_with("https://api.microsoft.ai/.default")
+
+    def test_auth_header_refuses_when_unconfigured(self):
         with mock.patch.dict(os.environ, {}, clear=False):
             os.environ.pop("WEBIQ_API_KEY", None)
+            os.environ.pop("WEBIQ_ENTRA_ENABLED", None)
             with self.assertRaises(RuntimeError):
-                live.LiveBinding("https://api.microsoft.ai/v3/search/web").poll(transport=lambda *a: {})
+                live.LiveBinding("https://x")._auth_header()
 
 
 class TestWebIqTrustBGuard(unittest.TestCase):
