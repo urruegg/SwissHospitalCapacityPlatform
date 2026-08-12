@@ -1025,7 +1025,10 @@
     "signals": {
       "title": "Signaux de confiance — externes & internes, mappés au scénario & à la probabilité",
       "hint": "cliquez sur un scénario → lecture de signal Copilot",
-      "external": "Signaux externes · Trust-A",
+      "external": "Signaux externes",
+      "promoteToWatch": "Mettre en veille",
+      "onWatch": "En veille CSA",
+      "corroborated": "Corroboré",
       "internal": "Signaux internes",
       "scenarios": "Scénarios potentiels",
       "probability": "Probabilité",

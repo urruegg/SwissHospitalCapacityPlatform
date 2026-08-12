@@ -1226,7 +1226,10 @@
     "signals": {
       "title": "Vertrauenswürdige Signale — extern & intern, auf Szenario & Wahrscheinlichkeit gemappt",
       "hint": "Szenario anklicken → Copilot Signal-Read",
-      "external": "Externe Signale · Trust-A",
+      "external": "Externe Signale",
+      "promoteToWatch": "Auf Beobachtung",
+      "onWatch": "In CSA-Beobachtung",
+      "corroborated": "Bestätigt",
       "internal": "Interne Signale",
       "scenarios": "Mögliche Szenarien",
       "probability": "Wahrscheinlichkeit",

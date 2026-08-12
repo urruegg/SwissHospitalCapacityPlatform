@@ -1025,7 +1025,10 @@
     "signals": {
       "title": "Segnali attendibili — esterni & interni, mappati a scenario & probabilità",
       "hint": "fai clic su uno scenario → lettura segnale Copilot",
-      "external": "Segnali esterni · Trust-A",
+      "external": "Segnali esterni",
+      "promoteToWatch": "Metti in osservazione",
+      "onWatch": "In osservazione CSA",
+      "corroborated": "Confermato",
       "internal": "Segnali interni",
       "scenarios": "Scenari potenziali",
       "probability": "Probabilità",

@@ -1411,7 +1411,10 @@
     "signals": {
       "title": "Trusted signals — external & internal, mapped to scenario & probability",
       "hint": "click a scenario → Copilot signal read",
-      "external": "External signals · Trust-A",
+      "external": "External signals",
+      "promoteToWatch": "Promote to watch",
+      "onWatch": "On CSA watch",
+      "corroborated": "Corroborated",
       "internal": "Internal signals",
       "scenarios": "Potential scenarios",
       "probability": "Probability",
