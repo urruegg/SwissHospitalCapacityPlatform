@@ -8,8 +8,44 @@ param eventHubNamespace string
 param eventHubName string
 param location string = resourceGroup().location
 
+@description('Provider-runner container image. Defaults to the azure-cli placeholder; bump to <acr>/signal-runner:<tag> (built by ci-build-signal-runner.yml) to deploy the live ingestion runner.')
+param providerRunnerImage string = 'mcr.microsoft.com/azure-cli:latest'
+
+@description('Full Key Vault secret URI for the Web IQ API key, e.g. https://<kv>.vault.azure.net/secrets/webiq-api-key. Empty = live Web IQ disabled; the runner falls back to the simulator (key presence is the enablement gate).')
+param webiqSecretUri string = ''
+
+@description('Key Vault name holding the Web IQ secret. Set together with webiqSecretUri to grant the runner identity Key Vault Secrets User. Empty = no grant.')
+param keyVaultName string = ''
+
+@description('Comma-separated cantons the Web IQ live queries tag (in-scope hospital cantons: USZ/LUKS/SZB).')
+param webiqRegionCantons string = 'ZH,LU,SZ'
+
+@description('DC-EXT-SIGNAL-v1 envelope residency. SIT demo = demo-westus2 (ADR-0013); PROD = CH.')
+@allowed([ 'CH', 'demo-westus2' ])
+param signalResidency string = 'CH'
+
 var appName = 'ca-signal-runner-ihzhhpf-${envSuffix}'
 var identityName = 'id-signal-runner-ihzhhpf-${envSuffix}'
+
+// Key presence is the live-binding gate: when webiqSecretUri is empty the runner
+// gets no WEBIQ_API_KEY and every live provider falls back to the simulator.
+var wireWebIq = !empty(webiqSecretUri)
+var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
+var runnerSecrets = wireWebIq ? [
+  {
+    name: 'webiq-api-key'
+    keyVaultUrl: webiqSecretUri
+    identity: runnerIdentity.id
+  }
+] : []
+var baseEnv = [
+  { name: 'EVENT_HUB_NAMESPACE', value: eventHubNamespace }
+  { name: 'EVENT_HUB_NAME', value: eventHubName }
+  { name: 'AZURE_CLIENT_ID', value: runnerIdentity.properties.clientId }
+  { name: 'WEBIQ_REGION_CANTONS', value: webiqRegionCantons }
+  { name: 'SIGNAL_RESIDENCY', value: signalResidency }
+]
+var runnerEnv = wireWebIq ? concat(baseEnv, [ { name: 'WEBIQ_API_KEY', secretRef: 'webiq-api-key' } ]) : baseEnv
 
 // User-Assigned Managed Identity: unlike a SystemAssigned identity (whose
 // principalId is minted fresh on every container-app / CAE recreate), a UAMI
@@ -41,17 +77,14 @@ resource runner 'Microsoft.App/containerApps@2024-03-01' = {
     managedEnvironmentId: managedEnvironmentId
     configuration: {
       activeRevisionsMode: 'Single'
+      secrets: runnerSecrets
     }
     template: {
       containers: [
         {
           name: 'provider-runner'
-          image: 'mcr.microsoft.com/azure-cli:latest'
-          env: [
-            { name: 'EVENT_HUB_NAMESPACE', value: eventHubNamespace }
-            { name: 'EVENT_HUB_NAME', value: eventHubName }
-            { name: 'AZURE_CLIENT_ID', value: runnerIdentity.properties.clientId }
-          ]
+          image: providerRunnerImage
+          env: runnerEnv
         }
       ]
       scale: { minReplicas: 0, maxReplicas: 1 }
@@ -82,6 +115,23 @@ resource senderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =
     principalId: runnerIdentity.properties.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', eventHubsDataSenderRoleId)
+  }
+}
+
+// Grant the runner identity read access to the Web IQ secret only when a Key
+// Vault is wired. The secret itself is provisioned out-of-band by an operator
+// (never in IaC): `az keyvault secret set --vault-name <kv> --name webiq-api-key`.
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (!empty(keyVaultName)) {
+  name: keyVaultName
+}
+
+resource kvSecretsUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!empty(keyVaultName)) {
+  name: guid(resourceGroup().id, keyVaultName, runnerIdentity.id, keyVaultSecretsUserRoleId)
+  scope: keyVault
+  properties: {
+    principalId: runnerIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
   }
 }
 
