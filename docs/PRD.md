@@ -8,11 +8,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 2.12.0 |
-| **Date** | 2026-08-02 |
+| **Version** | 2.13.0 |
+| **Date** | 2026-08-12 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 2.11.0 (added the Sprint 39 P1 FR-EVD-001/002 + NFR-EVD-001/002 families + §7 traceability row, real-gold per-role evidence backbone); this bump adds the Sprint A FR-AUTH-001/002/003 + NFR-AUTH-001/002 families + §7 traceability row (MSAL member sign-in + role lens) |
+| **Previous Version** | 2.12.0 (added the Sprint A FR-AUTH-001/002/003 + NFR-AUTH-001/002 families + §7 traceability row, MSAL member sign-in + role lens); this bump adds the Sprint 44 FR-EXT-021/022/023 + NFR-EXT-WEBIQ-001/002 (Microsoft Web IQ Trust-B web-grounding signal channel) + §7 traceability row |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -254,6 +254,9 @@ preparation.
 | `FR-EXT-020` | Host ingestion + simulation as Azure Container Apps services publishing to Event Hub/Eventstream (not GitHub Actions). |
 | `NFR-EXT-PLG-001` | Live bindings are always mocked in CI; no external network calls in Actions. |
 | `NFR-EXT-PLG-002` | A schema-invalid manifest fails CI and is excluded from the runtime catalogue (fail-closed). |
+| `FR-EXT-021` | Ingest Microsoft Web IQ web/news grounding as a Trust-B external signal channel via a manifest-driven provider plugin emitting `DC-EXT-SIGNAL-v1`. |
+| `FR-EXT-022` | Carry grounded web citations (`webCitations[]`) on Web IQ signals and surface them as clickable evidence on the OOA/CSA boards. |
+| `FR-EXT-023` | Provide a HITL "promote-to-watch" action for Web IQ signals; Trust-B signals never auto-arm a lever, auto-trigger CSA, or enter the forecast overlay. |
 
 ### L) Curavias Organisation Spine And Skills Evidence (Sprint 23)
 
@@ -592,6 +595,8 @@ Sprint 09 T5 deltas formalised per [ADR-0018](adr/0018-add-fr-viz-and-nfr-gov-id
 | `NFR-EXT-GOV-001` | Record source licence/attribution for every ingested signal. |
 | `NFR-EXT-GOV-002` | No PHI/personal data; public authority feeds + synthetic fixtures only. |
 | `NFR-EXT-EVID-001` | External signals shall be demonstrably queryable on SIT via the `external-signals` Direct-Lake semantic model (trust-badge measures) and the `da_hospital_capacity` data agent, with the PHI refusal gate preserved; captured as a versioned evidence artefact. |
+| `NFR-EXT-WEBIQ-001` | Outbound Web IQ queries contain no PHI; returned web content is untrusted and re-validated at every boundary (ADR-0016, `NFR-SIG-001`). |
+| `NFR-EXT-WEBIQ-002` | The live Web IQ binding is GA- and credential-gated and always mocked in CI; demo/SIT run simulator-only. |
 
 ### K) Curavias Org Spine And Skills Evidence Governance (Sprint 23)
 
@@ -750,6 +755,7 @@ The MVP is a provider-internal release that demonstrates end-to-end operational 
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21: trusted external signals contract, triggers, ontology, and governance)* | `FR-EXT-001` to `FR-EXT-006`, `FR-EXT-ONT-001` to `FR-EXT-ONT-002`, `FR-EXT-GOV-001`, `NFR-EXT-ONT-001`, `NFR-EXT-GOV-001` to `NFR-EXT-GOV-002` |
 | [`docs/superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md`](superpowers/specs/2026-07-17-sprint-21-trusted-external-signals-fabric-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 forecast overlay and SIT IQ-layer proof extension)* | `FR-EXT-010` to `FR-EXT-014` |
 | [`docs/superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md`](superpowers/specs/2026-07-23-sprint-21-signal-provider-plugin-architecture-design.md) + [`docs/adr/0036-external-trigger-governance.md`](adr/0036-external-trigger-governance.md) *(Sprint 21 provider-plugin architecture refactor)* | `FR-EXT-015` to `FR-EXT-020`, `NFR-EXT-PLG-001`, `NFR-EXT-PLG-002` |
+| [`docs/superpowers/specs/2026-08-12-sprint-44-webiq-external-signal-channel-design.md`](superpowers/specs/2026-08-12-sprint-44-webiq-external-signal-channel-design.md) + [`docs/adr/0060-webiq-external-signal-channel.md`](adr/0060-webiq-external-signal-channel.md) *(Sprint 44: Microsoft Web IQ Trust-B web-grounding signal channel)* | `FR-EXT-021` to `FR-EXT-023`, `NFR-EXT-WEBIQ-001` to `NFR-EXT-WEBIQ-002` |
 | [`docs/superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md`](superpowers/specs/2026-07-23-sprint-23-org-skills-refactor-design.md) + [`docs/adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md`](adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md) *(Sprint 23: Curavias org spine, skills-evidence plugins, landing zone + hybrid transport)* | `FR-ORG-001`, `FR-SKILL-001` to `FR-SKILL-008`, `FR-SKILL-ONT-001`, `NFR-SKILL-001` to `NFR-SKILL-002` |
 | [`docs/architecture/signals-fabric-evidence.md`](architecture/signals-fabric-evidence.md) *(Sprint 21 M3: live SIT signal Fabric evidence — data + semantic + ontology/data-agent)* | `FR-EXT-013`, `NFR-EXT-EVID-001` |
 | [`docs/CURAVIAS-PRODUCT-STATUS.md`](CURAVIAS-PRODUCT-STATUS.md) + [`docs/sprints/sprint-19/sit-prod-parity-matrix.md`](sprints/sprint-19/sit-prod-parity-matrix.md) + [`docs/sprints/sprint-19/prod-evidence-switzerlandnorth.md`](sprints/sprint-19/prod-evidence-switzerlandnorth.md) *(Sprint 19: as-deployed PROD Switzerland North status + SIT↔PROD parity; per [ADR-0037](adr/0037-prod-region-switzerland-north-greenfield.md), [ADR-0039](adr/0039-prod-network-parity-vnet-private-endpoints.md), [ADR-0042](adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md))* | Deployment coverage for `FR-DATA-*`, `FR-FC-*`, `FR-DC-*`, `FR-CX-*`, `FR-VIZ-*`, `FR-EXT-*`, `FR-ORG-001`, `FR-SKILL-*`, `NFR-SEC-*`, `NFR-COMP-*`, `NFR-REL-*` (Covered); `FR-ONT-002`, `NFR-ONT-001` (N/A-per-ADR, #270); `FR-WEB-001` to `FR-WEB-005` (Retired, [ADR-0044](adr/0044-retire-public-website.md)) |

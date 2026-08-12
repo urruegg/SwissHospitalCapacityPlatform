@@ -3161,6 +3161,42 @@
     },
     {
       "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-021",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Ingest Microsoft Web IQ web/news grounding as a Trust-B external signal channel via a manifest-driven provider plugin emitting `DC-EXT-SIGNAL-v1`."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-022",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Carry grounded web citations (`webCitations[]`) on Web IQ signals and surface them as clickable evidence on the OOA/CSA boards."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
+      "id": "FR-EXT-023",
+      "kind": "FR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Provide a HITL \"promote-to-watch\" action for Web IQ signals; Trust-B signals never auto-arm a lever, auto-trigger CSA, or enter the forecast overlay."
+    },
+    {
+      "family": "Trusted External Signals (Sprint 21)",
       "id": "FR-EXT-GOV-001",
       "kind": "FR",
       "mvp": false,
@@ -4802,6 +4838,30 @@
         "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
       },
       "title": "A schema-invalid manifest fails CI and is excluded from the runtime catalogue (fail-closed)."
+    },
+    {
+      "family": "Trusted External Signals Governance (Sprint 21)",
+      "id": "NFR-EXT-WEBIQ-001",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "Outbound Web IQ queries contain no PHI; returned web content is untrusted and re-validated at every boundary (ADR-0016, `NFR-SIG-001`)."
+    },
+    {
+      "family": "Trusted External Signals Governance (Sprint 21)",
+      "id": "NFR-EXT-WEBIQ-002",
+      "kind": "NFR",
+      "mvp": false,
+      "provenance": {
+        "asOf": "2026-07-10",
+        "sourcePath": "docs/PRD.md",
+        "sourceUrl": "https://github.com/urruegg/SwissHospitalCapacityPlatform/blob/main/docs/PRD.md"
+      },
+      "title": "The live Web IQ binding is GA- and credential-gated and always mocked in CI; demo/SIT run simulator-only."
     },
     {
       "family": "Governance And Audit (Sprint 09 T5)",
