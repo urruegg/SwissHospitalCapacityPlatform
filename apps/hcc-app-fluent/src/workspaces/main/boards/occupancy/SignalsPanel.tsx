@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Body1, Caption1, makeStyles, tokens } from '@fluentui/react-components';
+import { Body1, Button, Caption1, makeStyles, tokens } from '@fluentui/react-components';
 import {
   WeatherSunnyRegular,
   PulseRegular,
@@ -93,6 +93,8 @@ const useStyles = makeStyles({
 
 interface SignalsPanelProps {
   signals: BoardSignal[];
+  /** HITL: promote an advisory (Trust-B) signal to the CSA watch queue. Advisory only. */
+  onPromoteToWatch?: (signalId: string) => void;
 }
 
 /**
@@ -102,7 +104,7 @@ interface SignalsPanelProps {
  * accessible label. All demo rows are `simulated` (ADR-0016); a row flips to
  * `live` when a real adapter binds.
  */
-export function SignalsPanel({ signals }: SignalsPanelProps) {
+export function SignalsPanel({ signals, onPromoteToWatch = () => {} }: SignalsPanelProps) {
   const s = useStyles();
   const { t } = useTranslation();
   const external = signals.filter((x) => x.scope === 'external');
@@ -136,6 +138,15 @@ export function SignalsPanel({ signals }: SignalsPanelProps) {
             <span className={`${s.trustChip} ${sig.trustClass === 'Trust-B' ? s.trustChipB : ''}`}>
               {sig.trustClass}
             </span>
+          ) : null}
+          {sig.trustClass === 'Trust-B' ? (
+            <Button
+              size="small"
+              appearance="subtle"
+              onClick={() => onPromoteToWatch(sig.id)}
+            >
+              {t('ooa.signals.promoteToWatch', 'Promote to watch')}
+            </Button>
           ) : null}
           <RagBadge tone={sig.statusTone}>{sig.statusLabel}</RagBadge>
           <span
