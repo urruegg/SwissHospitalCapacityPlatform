@@ -8,12 +8,14 @@ guard, the gated live binding, and the "never fires a trigger" guarantee.
 """
 import os
 import unittest
+from pathlib import Path
 from unittest import mock
 
 import trigger_rules
 import normalize
-from providers.registry import discover
-from providers.webiq import parse, simulator, live_adapter
+from providers.registry import discover, load_manifest
+from providers.runner import run_provider
+from providers.webiq import parse, simulator, live
 
 
 class TestWebIqManifest(unittest.TestCase):
@@ -23,7 +25,7 @@ class TestWebIqManifest(unittest.TestCase):
         spec = specs["webiq"]
         self.assertEqual(spec.trust_tier, "B")
         self.assertEqual(spec.channel_kind, "external")
-        self.assertEqual(spec.default_mode, "simulated")
+        self.assertEqual(spec.default_mode, "live")
 
 
 class TestWebIqParse(unittest.TestCase):
@@ -54,17 +56,45 @@ class TestWebIqParse(unittest.TestCase):
         self.assertEqual(parse.build_query(["heat", "Zurich"]), "heat Zurich")
 
 
-class TestWebIqLiveAdapter(unittest.TestCase):
-    def test_disabled_by_default(self):
-        with mock.patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("WEBIQ_LIVE_ENABLED", None)
-            self.assertFalse(live_adapter.is_enabled())
+class TestWebIqLiveBinding(unittest.TestCase):
+    """Live binding fits the runner: real POST when a key is set, else fall back
+    to the simulator (the key's presence is the enablement gate)."""
 
-    def test_fetch_refuses_when_disabled(self):
+    def _spec(self):
+        p = Path(__file__).resolve().parents[1] / "providers" / "webiq" / "provider.yaml"
+        return load_manifest(p)
+
+    def test_live_post_maps_webresults_and_marks_live(self):
+        def fake_post(url, body, headers):
+            self.assertEqual(url, "https://api.microsoft.ai/v3/search/web")
+            self.assertEqual(headers["x-apikey"], "test-key")
+            self.assertIn("query", body)
+            return {"webResults": [
+                {"title": "Respiratory surge in ZH hospitals", "url": "https://example.invalid/a",
+                 "content": "EDs report rising respiratory presentations.", "crawledAt": "2026-08-12T06:00:00Z"},
+                {"title": "b", "url": "https://example.invalid/b", "content": "c", "crawledAt": "2026-08-12T05:00:00Z"},
+                {"title": "c", "url": "https://example.invalid/c", "content": "d", "crawledAt": "2026-08-12T04:00:00Z"},
+            ], "traceId": "0"}
+        with mock.patch.dict(os.environ, {"WEBIQ_API_KEY": "test-key"}, clear=False):
+            recs = run_provider(self._spec(), transport=fake_post)
+        self.assertTrue(recs)
+        self.assertEqual(recs[0]["provenance"]["activeBinding"], "live")
+        self.assertEqual(recs[0]["trustTier"], "B")
+        self.assertIn(recs[0]["hazardType"], {"epidemic", "heat", "mass-casualty", "air-quality"})
+        self.assertTrue(recs[0]["webCitations"][0]["uri"].startswith("https://"))
+
+    def test_missing_key_falls_back_to_simulated(self):
         with mock.patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("WEBIQ_LIVE_ENABLED", None)
+            os.environ.pop("WEBIQ_API_KEY", None)
+            recs = run_provider(self._spec())  # no transport, no key -> live raises -> fallback
+        self.assertEqual(recs[0]["provenance"]["activeBinding"], "simulated")
+        self.assertEqual(recs[0]["provenance"]["fellBackFrom"], "live")
+
+    def test_poll_refuses_without_key(self):
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("WEBIQ_API_KEY", None)
             with self.assertRaises(RuntimeError):
-                live_adapter.fetch(["heat", "Zurich"])
+                live.LiveBinding("https://api.microsoft.ai/v3/search/web").poll(transport=lambda *a: {})
 
 
 class TestWebIqTrustBGuard(unittest.TestCase):

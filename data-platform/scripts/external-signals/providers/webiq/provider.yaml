@@ -3,10 +3,10 @@ authority: Microsoft Web IQ
 trustTier: B
 channelKind: external
 hazardTypes: [epidemic, heat, mass-casualty, air-quality]
-defaultMode: simulated
+defaultMode: live
 fallbackMode: simulated
 cadenceSeconds: 900
-endpoint: https://api.webiq.microsoft.ai
+endpoint: https://api.microsoft.ai/v3/search/web
 licence: microsoft-web-iq-preview-terms
 providerVersion: microsoft-webiq-1.0.0
 scenarioMap:
