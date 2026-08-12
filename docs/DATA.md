@@ -2,11 +2,11 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Version** | 0.20.0 |
-| **Date** | 2026-08-01 |
+| **Version** | 0.21.0 |
+| **Date** | 2026-08-12 |
 | **Author** | Urs Rueegg |
 | **Status** | Reviewed |
-| **Previous Version** | 0.19.0 (registered the DC-SIM-OUTCOME-v1 closed-loop operational-outcome contract, Sprint 38); this bump registers the DC-EVIDENCE-TRACE-v1 per-role end-to-end evidence-trace contract (Sprint 39 P1) |
+| **Previous Version** | 0.20.0 (registered the DC-EVIDENCE-TRACE-v1 per-role end-to-end evidence-trace contract, Sprint 39 P1); this bump extends DC-EXT-SIGNAL-v1 to v1.1.0 with the optional `webCitations` field for Trust-B web-grounding sources (Sprint 44) |
 
 > **Curavias** is the Swiss AI-powered patient-flow and hospital-capacity
 > platform — a Microsoft Frontier-Firm reference implementation grounded on
@@ -278,6 +278,7 @@ Required record fields and governed optional fields:
 | `provenance.activeBinding` | `live`, `simulated`, `internal` | Binding mode that produced this record; drives the trust badge. |
 | `provenance.fellBackFrom` | `live` or null | Set when the runner fell back from a live binding; null otherwise. |
 | `provenance.channelKind` | `external`, `internal` | `internal` for InternalBinding channels derived from gold tables; `external` for all others. |
+| `webCitations` | array of `{title, uri, publishedAt?, snippet?}` (optional) | Grounded web evidence for web-grounding sources (Trust-B, Sprint 44, contract **v1.1.0**). Omitted by Trust-A records; additive and backward-compatible. |
 
 The derived deduplication key is `sourceId + capIdentifier + hazardType +
 region + onset`, bucketed to a time window so overlapping re-publishes collapse
