@@ -8,6 +8,7 @@ offline-testable; the caller supplies rows from ``FabricDeltaClient.query``.
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 # ext_source_id (or a substring) -> app SIGNAL_ICONS key. External sources default
@@ -47,6 +48,20 @@ def _detail_for(fact: dict[str, Any]) -> str:
     return " \u00b7 ".join(p for p in parts if p)
 
 
+def _web_citations(value: Any) -> list[dict[str, Any]]:
+    """Normalise ext_web_citations to a list of dicts (accepts a JSON string)."""
+    if not value:
+        return []
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except (ValueError, TypeError):
+            return []
+    if not isinstance(value, list):
+        return []
+    return [c for c in value if isinstance(c, dict)]
+
+
 def gold_rows_to_board_signals(
     fact_rows: list[dict[str, Any]],
     source_rows: list[dict[str, Any]],
@@ -80,5 +95,8 @@ def gold_rows_to_board_signals(
         cantons = list(fact.get("ext_cantons") or [])
         if cantons:
             signal["cantons"] = cantons
+        citations = _web_citations(fact.get("ext_web_citations"))
+        if citations:
+            signal["webCitations"] = citations
         signals.append(signal)
     return signals

@@ -74,3 +74,23 @@ def test_severity_tone_mapping():
     assert tone("Moderate") == "watch"
     assert tone("Minor") == "ok"
     assert tone("Unspecified") == "signal"
+
+
+def test_web_citations_passed_through_as_list():
+    cite = {"title": "Respiratory uptick", "uri": "https://example.invalid/a", "publishedAt": "2026-08-12T06:00:00Z", "snippet": "..."}
+    fact = {**_webiq_fact(), "ext_web_citations": [cite]}
+    [sig] = gold_rows_to_board_signals([fact], [_webiq_source()])
+    assert sig["webCitations"] == [cite]
+
+
+def test_web_citations_accepts_json_string():
+    cite = {"title": "t", "uri": "https://example.invalid/b"}
+    import json
+    fact = {**_webiq_fact(), "ext_web_citations": json.dumps([cite])}
+    [sig] = gold_rows_to_board_signals([fact], [_webiq_source()])
+    assert sig["webCitations"] == [cite]
+
+
+def test_no_web_citations_key_omits_field():
+    [sig] = gold_rows_to_board_signals([_webiq_fact()], [_webiq_source()])
+    assert "webCitations" not in sig
