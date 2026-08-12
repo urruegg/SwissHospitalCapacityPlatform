@@ -65,6 +65,15 @@ data-platform/bva/**/__pycache__
 data-platform/bva/**/*.pyc
 data-platform/bva/tests
 
+# signal-runner image build (data-platform/scripts/external-signals/Dockerfile,
+# built by .github/workflows/ci-build-signal-runner.yml). run.py discovers the
+# provider plugins and publishes DC-EXT-SIGNAL-v1 to Event Hub.
+!data-platform/scripts/external-signals/
+data-platform/scripts/external-signals/**/__pycache__
+data-platform/scripts/external-signals/**/*.pyc
+data-platform/scripts/external-signals/**/.pytest_cache
+data-platform/scripts/external-signals/tests
+
 # docs/ corpus source tree baked into the po-agent corpus-refresh image.
 # snapshot.py's snapshot_tree() only globs docs/**/*.md, so keep every .md
 # file but drop the non-.md binary bulk it never reads: screenshots,
