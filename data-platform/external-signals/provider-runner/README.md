@@ -129,3 +129,36 @@ az deployment group create \
 - **Signal-triage-agent** - `agents/signal-triage-agent/AGENT.md` (consumes, deduplicates, and triages signals)
 - **Data-quality-agent** - `agents/data-quality-agent/AGENT.md` (validates schema, handles quarantine)
 - **Eventstream topology** - Signal records are loaded into an Eventstream for real-time downstream consumption
+
+## Live Web IQ activation (SIT / PROD)
+
+The runner ships **simulator-only** by default. To activate the Microsoft Web IQ
+Trust-B live binding for an environment, an operator performs three steps. The
+API key never lives in source control or IaC.
+
+1. **Provision the key** in the platform Key Vault (`kv-ihzhhpf-sit` /
+   `kv-ihzhhpf-prod`; confirm the exact name via the platform-foundation
+   deployment output `keyVaultName`):
+
+   ```bash
+   az keyvault secret set --vault-name kv-ihzhhpf-sit --name webiq-api-key --value <YOUR_WEBIQ_KEY>
+   ```
+
+2. **Build + publish the runner image** by running `ci-build-signal-runner.yml`
+   (auto-triggers on `data-platform/scripts/external-signals/**` changes, or via
+   `workflow_dispatch`). Note the `<acr>/signal-runner:<sha>` tag.
+
+3. **Deploy** with these params, through the standard `what-if` →
+   `approved-to-apply` gate:
+
+   | Param | SIT | PROD |
+   |-------|-----|------|
+   | `providerRunnerImage` | `cri75lbu5sj4hza.azurecr.io/signal-runner:<sha>` | `crihzhhpfprod.azurecr.io/signal-runner:<sha>` (import from SIT ACR first) |
+   | `webiqSecretUri` | `https://kv-ihzhhpf-sit.vault.azure.net/secrets/webiq-api-key` | `https://kv-ihzhhpf-prod.vault.azure.net/secrets/webiq-api-key` |
+   | `keyVaultName` | `kv-ihzhhpf-sit` | `kv-ihzhhpf-prod` |
+   | `signalResidency` | `demo-westus2` | `CH` |
+
+Leaving `webiqSecretUri` empty keeps the environment simulator-only (the live
+binding falls back automatically). CI always runs simulator-only
+(`NFR-EXT-PLG-001`). Entra ID (keyless) is the later hardening step per
+[ADR-0060](../../../docs/adr/0060-webiq-external-signal-channel.md).

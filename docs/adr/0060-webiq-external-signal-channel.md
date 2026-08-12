@@ -47,8 +47,29 @@ human-in-the-loop and trust-tier controls.
 * Adds an earliest-warning, web-grounded situational-awareness channel without
   weakening HITL or trust-tier governance.
 * Establishes a reusable pattern for future non-authority grounding sources.
-* Reuses the entire Sprint 21 provider-plugin pipeline; no new agent, no MCP
-  allow-list change, no `provider-runner` infrastructure change.
+* Reuses the entire Sprint 21 provider-plugin pipeline; no new agent and no MCP
+  allow-list change.
+
+### Live activation (Sprint 44 follow-up)
+
+* The Web IQ live binding calls `POST https://api.microsoft.ai/v3/search/web`
+  with an `x-apikey` header. The key is held in the platform Key Vault
+  (`kv-ihzhhpf-<env>`, secret `webiq-api-key`), surfaced to the provider-runner
+  Container App as a Key Vault-sourced secret, and read as `WEBIQ_API_KEY`.
+  **Key presence is the enablement gate**: with no key the live binding raises
+  and the runner falls back to the simulator, so CI (`NFR-EXT-PLG-001`) and any
+  un-provisioned environment stay simulator-only with no code change.
+* Enabling live is a **provider-runner infrastructure change** (real
+  `signal-runner` image + a gated Key Vault secret reference + `Key Vault
+  Secrets User` for the runner identity). The secret is provisioned out-of-band
+  by an operator (`az keyvault secret set`), never in IaC, and the SIT/PROD
+  deploy remains gated by `approved-to-apply`.
+* API-key auth is the evaluation path; **Microsoft Entra ID (keyless, managed
+  identity)** is the documented later hardening step, at which point the Key
+  Vault secret is retired.
+* Live Web IQ stays compatible with [ADR-0016](0016-no-phi-in-mvp-demo-scope.md):
+  Web IQ returns public web content (no PHI), and the outbound query guard
+  (`parse.build_query`) rejects any PHI-shaped term.
 
 ### Negative / risks
 
