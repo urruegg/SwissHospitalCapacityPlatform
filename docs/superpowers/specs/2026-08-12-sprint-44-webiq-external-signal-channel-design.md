@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-08-12 |
 | **Author** | GitHub Copilot (Superpowers brainstorming; user delegated design authority — async review) |
-| **Status** | Draft (awaiting user review — see §14) |
-| **Previous Version** | n/a (new document) |
+| **Status** | Approved (implemented) |
+| **Previous Version** | 1.0.0 (initial design); this bump resolves §13 Q1 (hazardTypes scoped to hospital-service-relevant set) + Q2 (corroboration kept) and records that the sprint was implemented |
 
 > Produced with the Superpowers `brainstorming` skill. The user was unavailable
 > for live clarifying questions and delegated: *"work autonomously and make good
@@ -207,18 +207,27 @@ Trust-B cannot drive the automated forecast overlay or arm a lever. Its value is
 - Enrichment of Trust-A signals beyond a display-only corroboration badge (rejected broader Option B/C scope, YAGNI).
 - Any new agent or MCP-allow-list change.
 
-## 13. Risks & open questions
+## 13. Risks & resolved questions
 
 - **R1 — No live entitlement.** Web IQ is preview/waitlist; we build simulator-first and stub the live path. If/when an entitlement lands, only `live_adapter.py` + credential wiring change. *(Accepted; matches every existing provider.)*
 - **R2 — Web-content trust.** Mitigated by Trust-B classification, typed-field-only extraction, and the untrusted-at-every-boundary rule.
-- **Q1 (for user):** Confirm the hazardType set for Web IQ (`epidemic/outbreak/public-health/mass-casualty/heat/flood`) matches the demo narrative you want to showcase.
-- **Q2 (for user):** Confirm the corroboration badge (display-only) is desired, or whether you want Web IQ kept strictly as its own card with no cross-link to Trust-A signals in this sprint.
+- **Q1 — RESOLVED: hazardTypes scoped to hospital-service-relevant events only.** Web IQ ingests the emerging-event classes that materially drive hospital service demand and where a web/news signal adds earliest-warning value, each mapped to the CSA `ScenarioTemplate` its matching Trust-A authority feed already uses (so Web IQ corroborates rather than contradicts):
+
+  | hazardType | Hospital service / specialty stressed | CSA template (Trust-A analog) |
+  |------------|---------------------------------------|-------------------------------|
+  | `epidemic` | ED, pulmonology, paediatrics, ICU — infectious/respiratory surge | `F6` (BAG/FOPH Sentinella) |
+  | `heat` | geriatrics, cardiology, ED — heat illness, dehydration | `F8` (MeteoSwiss heat) |
+  | `mass-casualty` | ED, trauma, surgery, ICU — acute trauma surge | `F3` (traffic/incident family) |
+  | `air-quality` | pulmonology, ED — COPD/asthma exacerbation | `F8` (NABEL air quality) |
+
+  Dropped from the initial broad set: `outbreak` (folded into `epidemic`), `public-health` (too generic to drive a specific service), `flood` (MeteoSwiss/BAFU Trust-A already own it; no distinctive Web IQ early-warning value for hospital services).
+- **Q2 — RESOLVED: the display-only corroboration badge is kept.** A Web IQ (Trust-B) signal that shares hazardType + canton with an active Trust-A signal shows a "corroborated" chip on the Trust-A row, raising reviewer confidence without changing any lever, forecast number, or recommendation.
 
 ## 14. Approval note
 
-User unavailable this turn; standing delegation ("work autonomously, make good
-decisions") applies. Per the brainstorming skill, this design is presented and
-committed for asynchronous review **before any implementation**. No code,
-schema, or app change has been made yet. On approval, the next step is the
-Superpowers `writing-plans` skill to produce the milestone-by-milestone
-implementation plan (also committed for review before any code lands).
+Implemented under the user's standing delegation ("work autonomously, make good
+decisions"). The design + plan were committed for asynchronous review first; on
+the user's "proceed", the 11-task plan plus the follow-up completion items (A–D)
+were executed with TDD and committed. Q1/Q2 above are resolved per the user's
+instruction to scope hazards to hospital services and keep the corroboration
+badge.

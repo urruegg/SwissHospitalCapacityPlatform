@@ -30,7 +30,7 @@ class TestWebIqParse(unittest.TestCase):
         rec = parse.parse(simulator.generate(seed=1))[0]
         self.assertEqual(rec["sourceId"], "webiq")
         self.assertEqual(rec["trustTier"], "B")
-        self.assertEqual(rec["hazardType"], "outbreak")
+        self.assertEqual(rec["hazardType"], "epidemic")
         self.assertEqual(rec["status"], "Actual")  # confidence 0.72 >= 0.6
         self.assertTrue(rec["webCitations"])
         self.assertTrue(rec["webCitations"][0]["uri"].startswith("https://"))

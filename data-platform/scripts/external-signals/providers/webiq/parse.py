@@ -17,7 +17,12 @@ AUTHORITY = "Microsoft Web IQ"
 LICENCE = "microsoft-web-iq-preview-terms"
 VERSION = "microsoft-webiq-1.0.0"
 _TRIGGER_CONFIDENCE = 0.6
-_SCENARIO = {"epidemic": ("F5", 2), "outbreak": ("F5", 2), "mass-casualty": ("F3", 3)}
+# Hospital-service-relevant hazards only (Sprint 44 Q1): each maps to the CSA
+# ScenarioTemplate the matching Trust-A authority feed uses, so a Web IQ signal
+# corroborates rather than contradicts (epidemic->BAG F6, heat->MeteoSwiss F8,
+# air-quality->NABEL F8, mass-casualty->trauma F3).
+_SCENARIO = {"epidemic": ("F6", 2), "heat": ("F8", 2),
+             "mass-casualty": ("F3", 3), "air-quality": ("F8", 1)}
 # ADR-0016: outbound Web IQ queries must never carry PHI-shaped terms.
 _PHI_PATTERNS = [
     re.compile(p, re.I) for p in (r"\bpatient\b", r"\bahv\b", r"\d{3}\.\d{4}", r"\bname\b")

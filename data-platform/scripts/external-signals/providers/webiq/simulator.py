@@ -15,7 +15,7 @@ def generate(seed: int = 0) -> dict:
                 "title": f"Regional respiratory-illness uptick reported (sim {seed:04d})",
                 "uri": "https://example.invalid/webiq/news/respiratory-uptick",
                 "publishedAt": "2026-08-12T06:00:00Z",
-                "hazard": "outbreak",
+                "hazard": "epidemic",
                 "cantons": ["ZH"],
                 "confidence": 0.72,
                 "snippet": "Local outlets report a rise in respiratory presentations "
