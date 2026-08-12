@@ -2,11 +2,12 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Date** | 2026-08-12 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | In progress |
-| **Previous Version** | n/a (new plan) |
+| **Previous Version** | 1.0.0 (initial OneLake-read plan); this bump pivots the app read to the no-Fabric-Admin **Option B′** (runner-written gold-shaped Blob snapshot) per [the without-admin design](../specs/2026-08-12-webiq-live-signals-without-fabric-admin-design.md) |
+| **Design (no-admin)** | [`docs/superpowers/specs/2026-08-12-webiq-live-signals-without-fabric-admin-design.md`](../specs/2026-08-12-webiq-live-signals-without-fabric-admin-design.md) |
 | **Sprint doc** | [`docs/sprints/sprint-44-webiq-external-signal-channel.md`](../../sprints/sprint-44-webiq-external-signal-channel.md) |
 | **Governance ADR** | [`docs/adr/0060-webiq-external-signal-channel.md`](../../adr/0060-webiq-external-signal-channel.md) |
 
@@ -36,57 +37,61 @@ preferred path (over the batch-only or app-only alternatives).
 
 | # | Decision | Rationale |
 |---|----------|-----------|
-| P1 | **Fabric leg = Eventstream → Lakehouse Delta table** (not Eventhouse KQL). | The medallion + golden service already read the Lakehouse `lh_ihzhhpf_sit`; a Lakehouse destination reuses the existing gold path with no new store. |
-| P2 | **Gold projection reuses the existing silver/gold notebooks**, repointed from the synthetic seed to the Eventstream-landed bronze table. | Minimal new code; keeps the `gold.ext_fact_signal` contract stable. |
-| P3 | **Golden service reads external signals from `gold.ext_fact_signal` via the existing `FabricDeltaClient` seam, env-gated, fixture fallback.** | Additive, fully unit-testable offline; lights up automatically once gold is fed; no app change. |
-| P4 | **Build Fabric → app (Slice 1) first**, since it is entirely in-repo + TDD-able and independent of Fabric-side provisioning. | De-risks the leg I control; the ingestion leg has external dependencies. |
+| P1 | **App read uses Option B′ (no Fabric Admin):** the provider-runner writes a gold-shaped signals snapshot to Blob; the agent-host reads that Blob. | The agent-host OneLake external read is tenant-admin-gated; B′ sidesteps it with Storage RBAC we control. See the without-admin design. |
+| P2 | **Reuse the medallion `to_gold_signal`/`ext_dim_source_row` pure functions** in the runner to shape the snapshot; extend them with `webCitations`. | Keeps the gold shape/logic in the loop; fixes the gold web-citations gap; the shipped `gold_rows_to_board_signals` mapping consumes it unchanged. |
+| P3 | **Env-gated everywhere, fixture fallback.** Snapshot write + read are gated on `SIGNALS_SNAPSHOT_URL`; unset ⇒ current behaviour (CI + un-provisioned envs unchanged). | Safe rollout; no CI network calls; matches the existing `degraded` golden-source contract. |
+| P4 | **Forward-compatible:** when a Fabric Admin later enables OneLake external access, swap the Blob reader for `FabricDeltaClient.query('gold.ext_fact_signal')`; identical mapping, no app change. | Preserves the option value of the true OneLake path without blocking now. |
+| P5 | **Fabric analytics path (Eventstream → gold → Power BI Direct Lake) is a separate, independent track** — it reads gold inside Fabric and needs no admin setting. | Keeps the reporting story alive without coupling it to the app read. |
 
-## External blocker (needs the user / a Fabric admin)
+## Fabric Admin dependency — resolved by B′
 
-- Live Fabric Delta reads from the agent-host were **"blocked pending a Fabric
-  Administrator tenant-setting change"** (Sprint 43 WS-2 test notes: *Service
-  principals / MI can use Fabric APIs*). Slice 1 is built + unit-tested regardless;
-  the live SIT cut-over of the golden surface depends on that tenant setting being
-  enabled. Flag to the user.
+The original OneLake read needed a Fabric **tenant-admin** setting we do not have.
+**Option B′ removes that dependency** for the app read (Storage RBAC only, which we
+control). The true OneLake read is retained as a forward-compatible swap (P4) for
+when an admin enables it. No user/admin action is required to ship the live app
+signals.
 
 ## Slices
 
-### Slice 1 — Golden service reads `gold.ext_fact_signal` (in-repo, TDD)
+### Slice 1 — Golden service mapping (in-repo, TDD) — DONE (1a)
 
-- Extend `golden/service.py` (or a small `golden/signals.py` helper) to, when
-  `FABRIC_WORKSPACE_ID`/`FABRIC_LAKEHOUSE_ID` are set, read `gold.ext_fact_signal`
-  (+ `ext_dim_source`/`ext_dim_hazard_type`/`ext_dim_region`) via `FabricDeltaClient`
-  and map rows → `BoardSignal[]`, merged into the `occupancy` + `crisis` payloads'
-  `signals`. Unset env ⇒ current fixtures (no behaviour change).
-- TDD: unit tests for the row→`BoardSignal` mapping (trustClass, provenance from
-  `activeBinding`, webCitations, canton/hazard) and the env-gated fixture fallback.
-- Keep the app-side parity guard green (fixtures remain the default).
+- **1a (done, `4af549bb`):** pure `golden/signals.gold_rows_to_board_signals`
+  (`gold.ext_fact_signal` + `ext_dim_source` rows → `BoardSignal[]`), 5 tests green.
+- **1b:** extend `to_gold_signal` (+`ext_web_citations`) and the mapping to carry
+  `webCitations`; keep the app parity guard green.
 
-### Slice 2 — EH → Fabric (Eventstream → Lakehouse) + gold projection
+### Slice 2 — Runner writes gold-shaped snapshot to Blob (TDD)
 
-- Create a Fabric **Eventstream** (`es-ihzhhpf-events`) sourcing
-  `evh-ihzhhpf-sit-y26y/events`, filtered to external-signal envelopes, landing into
-  a Lakehouse bronze Delta table in `lh_ihzhhpf_sit` (use the `eventstream-authoring`
-  skill; needs a Fabric Event Hub connection). Gate the apply with `approved-to-apply`.
-- Repoint `ingest_bronze_signals.py` (or add a thin reader) from `signals_synth` to
-  the Eventstream-landed bronze table; run silver + gold to populate
-  `gold.ext_fact_signal`.
+- Pure `snapshot.build_snapshot(records) -> {ext_fact_signal[], ext_dim_source[]}`
+  reusing `to_gold_signal`/`ext_dim_source_row`; unit-tested offline.
+- Env-gated lazy Blob writer in `run.py` (mirrors `_eventhub_emit`), gated on
+  `SIGNALS_SNAPSHOT_URL`; failure logged, never blocks the Event Hub publish.
+- Grant the runner MI `Storage Blob Data Contributor` on the container scope.
 
-### Slice 3 — Verify end-to-end
+### Slice 3 — Agent-host reads snapshot + golden merge (TDD)
 
-- With the tenant setting enabled + golden surface pointed at gold, switch the app to
-  Live mode and confirm the Web IQ (+ other) signals render with `provenance: live`
-  and their web citations, sourced from the Event-Hub-fed gold — captured as evidence.
+- `golden/signals_source.py`: env-gated (`SIGNALS_SNAPSHOT_URL`) Blob reader with an
+  injected fetcher + short TTL; returns `(fact_rows, source_rows)`; unset ⇒ fixtures.
+- Golden service merges the mapped signals into the `occupancy` + `crisis` payloads.
+- Grant the agent-host MI `Storage Blob Data Reader` on the container scope.
+
+### Slice 4 — Deploy + verify end-to-end
+
+- Deploy runner (snapshot env) + agent-host (snapshot env), gated by
+  `approved-to-apply`; confirm the Blob updates each cycle; app Live mode shows the
+  Web IQ (+ other) signals with `provenance: live` + web citations. Evidence captured.
 
 ## Verification
 
-- Slice 1: `apps/hcc-agent-host` unit + integration golden tests green; app vitest
-  parity guard green.
-- Slice 2: Eventstream shows flowing events; `gold.ext_fact_signal` row count > 0 from
-  live envelopes; `az`/Fabric evidence captured.
-- Slice 3: app Live-mode screenshot + `provenance: live` on the signal panel.
+- Slices 1b/2/3: `apps/hcc-agent-host` + `data-platform/scripts/external-signals`
+  unit suites green; app vitest parity guard green.
+- Slice 4: the Blob snapshot updates each runner cycle; app Live-mode screenshot with
+  `provenance: live` + web citations on the OOA/CSA signal panel. Evidence captured.
 
 ## Out of scope / follow-up
 
-- PROD cut-over of the live golden surface (SIT demo first).
-- Real-time (Eventhouse KQL) path — deferred in favour of the Lakehouse path (P1).
+- PROD cut-over (SIT demo first).
+- The true OneLake read (`FabricDeltaClient`) — forward-compatible swap once a Fabric
+  Admin enables external OneLake access (P4).
+- The Fabric analytics path (Eventstream → gold → Power BI Direct Lake) — independent
+  track, no admin needed (P5).
