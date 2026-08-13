@@ -20,6 +20,7 @@ dependencies = [
 runtime = [
   "azure-identity>=1.19,<2",
   "azure-cosmos>=4.7,<5",
+  "azure-eventhub>=5.11,<6",
   "redis>=5.1,<6",
   "openai>=1.55,<2",
   "azure-monitor-opentelemetry>=1.6,<2",

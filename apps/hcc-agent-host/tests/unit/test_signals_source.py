@@ -63,3 +63,42 @@ def test_ttl_caches_then_refetches():
     clock["t"] = 20.0
     src.external_signals()
     assert calls["n"] == 2  # TTL expired -> refetched
+
+
+def test_records_from_envelopes_latest_wins():
+    from golden.signals_source import _records_from_envelopes
+
+    e1 = json.dumps({"records": [{"signalId": "a", "sourceId": "webiq", "severity": "Minor"}]}).encode()
+    e2 = json.dumps({"records": [
+        {"signalId": "a", "sourceId": "webiq", "severity": "Severe"},
+        {"signalId": "b", "sourceId": "sed"},
+    ]}).encode()
+    recs = _records_from_envelopes([e1, e2])
+    assert [r["signalId"] for r in recs] == ["a", "b"]
+    assert next(r for r in recs if r["signalId"] == "a")["severity"] == "Severe"
+
+
+def test_malformed_envelope_is_skipped():
+    from golden.signals_source import _records_from_envelopes
+
+    assert _records_from_envelopes([b"not json"]) == []
+
+
+def test_eventhub_source_maps_to_board_signals():
+    from golden.signals_source import eventhub_snapshot_fetcher
+
+    envelope = json.dumps({"records": [{
+        "signalId": "webiq-0", "sourceId": "webiq", "sourceAuthority": "Microsoft Web IQ",
+        "trustTier": "B", "hazardType": "epidemic", "severity": "Moderate",
+        "region": {"cantons": ["ZH"]}, "status": "Actual",
+        "provenance": {"activeBinding": "live"},
+        "webCitations": [{"title": "t", "uri": "https://x"}],
+    }]}).encode()
+    fetcher = eventhub_snapshot_fetcher(events_reader=lambda: [envelope])
+    sigs = SnapshotSource(fetcher=fetcher).external_signals()
+    assert sigs[0]["id"] == "webiq-0"
+    assert sigs[0]["scope"] == "external"
+    assert sigs[0]["provenance"] == "live"
+    assert sigs[0]["trustClass"] == "Trust-B"
+    assert sigs[0]["cantons"] == ["ZH"]
+    assert sigs[0]["webCitations"][0]["uri"] == "https://x"

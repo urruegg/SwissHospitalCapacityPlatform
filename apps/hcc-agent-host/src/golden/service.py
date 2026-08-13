@@ -28,12 +28,12 @@ from pathlib import Path
 from typing import Any
 
 from golden.rls import RlsProvider, RlsProviderError, SimulatedRlsProvider
-from golden.signals_source import SnapshotSource
+from golden.signals_source import SnapshotSource, default_signal_source
 
-# Module singleton: env-gated internally (SIGNALS_SNAPSHOT_URL). When live signals
-# are available they replace the occupancy external-signals; otherwise the payload
-# is unchanged and the app falls back to its built-in signals.
-_SNAPSHOT_SOURCE = SnapshotSource()
+# Module singleton: env-driven (Event Hub for Option C, else Blob, else disabled).
+# When live signals are available they replace the occupancy external-signals;
+# otherwise the payload is unchanged and the app falls back to its built-in signals.
+_SNAPSHOT_SOURCE = default_signal_source()
 
 GOLDEN_RESOURCES: tuple[str, ...] = (
     "occupancy",
