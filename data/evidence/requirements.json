@@ -1,0 +1,2532 @@
+[
+  {
+    "family": "Member Sign-In And Role Lens (Sprint A)",
+    "id": "FR-AUTH-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 488,
+    "sourcePath": "docs/PRD.md",
+    "title": "A tenant member shall be able to sign in and sign out of the Curavias app via Entra (the `ihzhhpf-app` registration); the signed-out state is the read-only Demo Guest."
+  },
+  {
+    "family": "Member Sign-In And Role Lens (Sprint A)",
+    "id": "FR-AUTH-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 489,
+    "sourcePath": "docs/PRD.md",
+    "title": "The app shall derive the role lens (navigation, hospital scope, agent side-effect ceiling) from the ID-token `roles` claim; in SIT a holder of `HCC.PlatformAdmin` / `HCC.DemoOperator` may narrow to any role they actually hold (never elevate)."
+  },
+  {
+    "family": "Member Sign-In And Role Lens (Sprint A)",
+    "id": "FR-AUTH-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 490,
+    "sourcePath": "docs/PRD.md",
+    "title": "A My Account view shall show the signed-in identity (display name, UPN, object id), the held `HCC.*` roles, and the active-role scope plus agent ceiling."
+  },
+  {
+    "family": "Business Value Assessment Agent (Sprint 33)",
+    "id": "FR-BVA-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 435,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall produce grounded ROI/TCO answers computed over the `bva_*` gold measures, standardized in CHF."
+  },
+  {
+    "family": "Business Value Assessment Agent (Sprint 33)",
+    "id": "FR-BVA-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 436,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support interactive new-hospital what-if analysis via the deterministic `bva.simulate` tool, parametric and benchmarked from the three existing hospitals."
+  },
+  {
+    "family": "Business Value Assessment Agent (Sprint 33)",
+    "id": "FR-BVA-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 437,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall compose a PO ↔ BVA fan-out into one cited answer: BVA numbers plus the Product Owner go/no-go verdict."
+  },
+  {
+    "family": "Business Value Assessment Agent (Sprint 33)",
+    "id": "FR-BVA-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 438,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall capture an Opportunity in the Cosmos system-of-record, project it into a `bva_opportunity` gold table, and expose it in the Backstage pipeline view."
+  },
+  {
+    "family": "Business Value Assessment Agent (Sprint 33)",
+    "id": "FR-BVA-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 439,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall surface BVA in the Curavias App Start (inline) and Backstage (pipeline) copilot rail."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-CLP-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 458,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall provide a **deterministic, CI-runnable end-to-end patient-journey harness** that drives one synthetic patient through the capacity agents with a scripted HITL approval per step and asserts trajectory change."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-CLP-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 459,
+    "sourcePath": "docs/PRD.md",
+    "title": "The harness shall cover the **happy path plus failure modes** (approval withheld, state drift/superseded, deliberate divergence), and shall share its journey definition with a **demo-able interactive run**."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-CLP-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 460,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall feed `DC-SIM-OUTCOME-v1` **divergence** into the existing Sprint 30 evaluator library and advisory backlog as an agent-optimisation signal, and run a **calibration gate** asserting simulator internal consistency — all human-gated, advisory-only."
+  },
+  {
+    "family": "Application Context Architecture (Sprint 29)",
+    "id": "FR-CTX-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 336,
+    "sourcePath": "docs/PRD.md",
+    "title": "The app shall derive a single `ContextEnvelope` from the signed-in user's claims and active role lens and attach it to every IQ read and agent turn."
+  },
+  {
+    "family": "Application Context Architecture (Sprint 29)",
+    "id": "FR-CTX-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 337,
+    "sourcePath": "docs/PRD.md",
+    "title": "The app shall keep a separate conversation thread per `(userOid x agent)` so switching board-agents never leaks turns across agents, with a clean reset on sign-out."
+  },
+  {
+    "family": "Application Context Architecture (Sprint 29)",
+    "id": "FR-CTX-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 338,
+    "sourcePath": "docs/PRD.md",
+    "title": "The app shall open the first patient-journey board the active role can see (role-first-eligible default) instead of a hard-coded default board."
+  },
+  {
+    "family": "Application Context Architecture (Sprint 29)",
+    "id": "FR-CTX-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 339,
+    "sourcePath": "docs/PRD.md",
+    "title": "The app shall enforce per-user data scope (RLS by `hospitalScope`) and the OBO contract, simulated app-side this sprint and liftable to live Fabric RLS / OBO via configuration without code change."
+  },
+  {
+    "family": "Bed Management Copilot And User Experience",
+    "id": "FR-CX-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 149,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall provide a copilot interface for operations teams to query bed and flow status."
+  },
+  {
+    "family": "Bed Management Copilot And User Experience",
+    "id": "FR-CX-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 150,
+    "sourcePath": "docs/PRD.md",
+    "title": "The copilot shall provide grounded answers based on live operational data, forecast outputs, and discharge signals."
+  },
+  {
+    "family": "Bed Management Copilot And User Experience",
+    "id": "FR-CX-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 151,
+    "sourcePath": "docs/PRD.md",
+    "title": "The copilot shall provide bottleneck explanations and recommended operational options."
+  },
+  {
+    "family": "Bed Management Copilot And User Experience",
+    "id": "FR-CX-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 152,
+    "sourcePath": "docs/PRD.md",
+    "title": "The copilot shall present current bed state, predicted pressure windows, and likely same-day discharges."
+  },
+  {
+    "family": "Bed Management Copilot And User Experience",
+    "id": "FR-CX-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 153,
+    "sourcePath": "docs/PRD.md",
+    "title": "Power BI-based operational visibility shall be available for non-conversational usage scenarios."
+  },
+  {
+    "family": "Bed Management Copilot And User Experience",
+    "id": "FR-CX-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 154,
+    "sourcePath": "docs/PRD.md",
+    "title": "Copilot responses shall preserve references to source context and response timestamp metadata."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 113,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall ingest provider-internal operational signals, including ED, ADT, bed-state, and discharge-related events."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 114,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support HL7 FHIR-oriented normalization where healthcare interoperability requires it."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 115,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall maintain curated datasets that unify operational, planning, and model input data."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 116,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall capture partner acknowledgements and status updates from integration flows."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 117,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall expose governed semantic models for dashboard and copilot consumption."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 118,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support data ingestion from KIS/EHR, ED systems, bed management systems, and staffing/planning systems."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-007",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 119,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support outbound and inbound orchestration with downstream partners via integration workflows."
+  },
+  {
+    "family": "Data And Interoperability",
+    "id": "FR-DATA-008",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 120,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall keep source-to-consumption traceability for operational and AI-serving datasets."
+  },
+  {
+    "family": "Discharge Coordination Intelligence",
+    "id": "FR-DC-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 138,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall identify inpatients approaching discharge readiness."
+  },
+  {
+    "family": "Discharge Coordination Intelligence",
+    "id": "FR-DC-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 139,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall produce ranked discharge candidates with explanatory factors."
+  },
+  {
+    "family": "Discharge Coordination Intelligence",
+    "id": "FR-DC-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 140,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall trigger integration-based downstream actions for discharge coordination."
+  },
+  {
+    "family": "Discharge Coordination Intelligence",
+    "id": "FR-DC-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 141,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall record outbound coordination events and returned partner statuses."
+  },
+  {
+    "family": "Discharge Coordination Intelligence",
+    "id": "FR-DC-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 142,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall surface discharge blockers to operations users."
+  },
+  {
+    "family": "Discharge Coordination Intelligence",
+    "id": "FR-DC-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 143,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall make discharge-readiness outputs available to dashboards and copilot interactions."
+  },
+  {
+    "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+    "id": "FR-DEC-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 300,
+    "sourcePath": "docs/PRD.md",
+    "title": "Prescriptive copilots shall assemble a RECOMMENDATION beat that ranks response levers from a governed lever catalog, where each lever's `expected_impact` is computed by a deterministic, forecast-grounded impact function (never an LLM estimate)."
+  },
+  {
+    "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+    "id": "FR-DEC-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 301,
+    "sourcePath": "docs/PRD.md",
+    "title": "Prescriptive copilots shall assemble an ACTION beat that is advisory and human-in-the-loop: an action may be PROPOSED autonomously but is only APPLIED after a human posts the `approved-to-apply` confirmation; the agent shall refuse to self-approve or accept a bot approver."
+  },
+  {
+    "family": "Prescriptive Decision & Coordination Intelligence (Sprint 26)",
+    "id": "FR-DEC-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 302,
+    "sourcePath": "docs/PRD.md",
+    "title": "Prescriptive copilots shall assemble a COORDINATION beat that carries a cross-role Plan / golden thread (including the OOA -> DCA handoff) and, on human approval, drives a deterministic live impact recompute for the affected ward (e.g. Medicine A forecast occupancy 102% -> 94%)."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 373,
+    "sourcePath": "docs/PRD.md",
+    "title": "Continuously assess gold/serving domains across completeness, timeliness, validity, uniqueness, consistency, and lineage-integrity."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 374,
+    "sourcePath": "docs/PRD.md",
+    "title": "Detect data gaps and quantify each gap's impact on the KPIs and agents that depend on the affected domain."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 375,
+    "sourcePath": "docs/PRD.md",
+    "title": "Publish a per-domain **Trust Score** that is deterministic, versioned, and explainable (never an LLM estimate), emitted as `DC-DQ-TRUSTSCORE-v1`."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 376,
+    "sourcePath": "docs/PRD.md",
+    "title": "Route each gap to the accountable data owner (advisory / HITL) as a `DC-DQ-GAP-v1` finding; the owner remediates."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 377,
+    "sourcePath": "docs/PRD.md",
+    "title": "Re-assess a domain after remediation and report the trust-score delta, closing the gap on the record."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 378,
+    "sourcePath": "docs/PRD.md",
+    "title": "Advise **degraded-mode** for a below-threshold domain rather than silently serving low-trust data."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-010",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 379,
+    "sourcePath": "docs/PRD.md",
+    "title": "Persist every assessment, gap, and remediation as an auditable GitHub-native artefact (HITL + audit)."
+  },
+  {
+    "family": "Data Quality Agent — Proactive Assessment And Trust (Sprint 31)",
+    "id": "FR-DQA-012",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 380,
+    "sourcePath": "docs/PRD.md",
+    "title": "Certify a domain **grounding-ready** only when its trust score and gating dimensions clear the ADR-ratified threshold; certification is GA-gated (Fabric IQ first, Foundry IQ behind the same gate)."
+  },
+  {
+    "family": "EPIC Closed-Loop SIT Evidence (Sprint 39)",
+    "id": "FR-EVD-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 474,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall produce a **`DC-EVIDENCE-TRACE-v1`** record per synthetic patient journey, capturing per role the EPIC-simulator input, agent read, recommendation, copilot accept/deny decision, and outcome, linked by `golden_thread`, PHI-free."
+  },
+  {
+    "family": "EPIC Closed-Loop SIT Evidence (Sprint 39)",
+    "id": "FR-EVD-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 475,
+    "sourcePath": "docs/PRD.md",
+    "title": "The evidence harness shall emit **both an accept and a deny branch**, where deny records no state change (the targeted breach persists), proving the `NFR-AI-001` human gate."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 235,
+    "sourcePath": "docs/PRD.md",
+    "title": "Ingest Trust-A Swiss authority hazard feeds into the data lake."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 236,
+    "sourcePath": "docs/PRD.md",
+    "title": "Normalize every source to `DC-EXT-SIGNAL-v1`."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 237,
+    "sourcePath": "docs/PRD.md",
+    "title": "Activate advisory CSA runs from qualifying signals (dual-path trigger)."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 238,
+    "sourcePath": "docs/PRD.md",
+    "title": "Persist provenance + trigger audit (`ext_fact_trigger_event`)."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 239,
+    "sourcePath": "docs/PRD.md",
+    "title": "Noise governance: quarantine Test/Exercise/System; threshold gating."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 240,
+    "sourcePath": "docs/PRD.md",
+    "title": "Align to CAP-Suisse standard; bridge with pollable feeds until federal GA."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-010",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 241,
+    "sourcePath": "docs/PRD.md",
+    "title": "Build `gold.ext_fact_forecast_adjustment` from base `gold.forecast_output` x governed hazard-uplift, joined on specialty + canton + onset..expires window."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-011",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 242,
+    "sourcePath": "docs/PRD.md",
+    "title": "Govern the hazard-uplift map (`forecast_uplift.yaml`) as versioned, offline-unit-tested data; uplift is incremental over baseline and clamped."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-012",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 243,
+    "sourcePath": "docs/PRD.md",
+    "title": "Expose `gold.vw_forecast_adjusted` carrying both base and adjusted values plus a per-row signal `attribution[]` list for explainability."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-013",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 244,
+    "sourcePath": "docs/PRD.md",
+    "title": "Prove the external-signals IQ loop end-to-end in SIT: live Fabric IQ ontology extension + SIT data-agent grounding + Foundry `ooa-agent` consumption, captured as evidence."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-014",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 245,
+    "sourcePath": "docs/PRD.md",
+    "title": "Record full provenance (`rawHash`, `connectorVersion`, `ingestedAt`, licence) on every forecast adjustment row; `Test`/`Exercise`/`System` signals excluded from the overlay."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-015",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 249,
+    "sourcePath": "docs/PRD.md",
+    "title": "Onboard new signal sources as manifest-driven provider plugins emitting `DC-EXT-SIGNAL-v1`."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-016",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 250,
+    "sourcePath": "docs/PRD.md",
+    "title": "Provide real API adapters (LiveBinding) for confirmed-ready channels (SED, Alertswiss)."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-017",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 251,
+    "sourcePath": "docs/PRD.md",
+    "title": "Provide simulator plugins (SimulatorBinding) for channels without a confirmed API."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-018",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 252,
+    "sourcePath": "docs/PRD.md",
+    "title": "Support internal signal channels (InternalBinding) derived from platform gold tables."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-019",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 253,
+    "sourcePath": "docs/PRD.md",
+    "title": "Surface a data-driven live/simulated/internal trust badge per channel on the CSA/OCA boards."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-020",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 254,
+    "sourcePath": "docs/PRD.md",
+    "title": "Host ingestion + simulation as Azure Container Apps services publishing to Event Hub/Eventstream (not GitHub Actions)."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-021",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 257,
+    "sourcePath": "docs/PRD.md",
+    "title": "Ingest Microsoft Web IQ web/news grounding as a Trust-B external signal channel via a manifest-driven provider plugin emitting `DC-EXT-SIGNAL-v1`."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-022",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 258,
+    "sourcePath": "docs/PRD.md",
+    "title": "Carry grounded web citations (`webCitations[]`) on Web IQ signals and surface them as clickable evidence on the OOA/CSA boards."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-023",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 259,
+    "sourcePath": "docs/PRD.md",
+    "title": "Provide a HITL \"promote-to-watch\" action for Web IQ signals; Trust-B signals never auto-arm a lever, auto-trigger CSA, or enter the forecast overlay."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-GOV-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 248,
+    "sourcePath": "docs/PRD.md",
+    "title": "Enforce trust-tier + HITL + advisory-only trigger policy."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-ONT-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 246,
+    "sourcePath": "docs/PRD.md",
+    "title": "Add ExternalSignal/TrustedSource/HazardType/HazardEvent/TriggerRule classes."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "FR-EXT-ONT-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 247,
+    "sourcePath": "docs/PRD.md",
+    "title": "Maintain reference<->operational<->contract crosswalk for the new classes."
+  },
+  {
+    "family": "Forecasting And Capacity Intelligence",
+    "id": "FR-FC-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 126,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall produce a 72-hour demand forecast for emergency demand and admission pressure."
+  },
+  {
+    "family": "Forecasting And Capacity Intelligence",
+    "id": "FR-FC-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 127,
+    "sourcePath": "docs/PRD.md",
+    "title": "Forecast outputs shall be segmented by specialty and time window."
+  },
+  {
+    "family": "Forecasting And Capacity Intelligence",
+    "id": "FR-FC-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 128,
+    "sourcePath": "docs/PRD.md",
+    "title": "Forecasting shall use provider-internal arrivals plus downstream capacity signals as model inputs."
+  },
+  {
+    "family": "Forecasting And Capacity Intelligence",
+    "id": "FR-FC-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 129,
+    "sourcePath": "docs/PRD.md",
+    "title": "Forecast outputs shall be published to operations-facing dashboards."
+  },
+  {
+    "family": "Forecasting And Capacity Intelligence",
+    "id": "FR-FC-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 130,
+    "sourcePath": "docs/PRD.md",
+    "title": "Forecast outputs shall be available as grounding context for the bed management copilot."
+  },
+  {
+    "family": "Forecasting And Capacity Intelligence",
+    "id": "FR-FC-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 131,
+    "sourcePath": "docs/PRD.md",
+    "title": "Forecast generation runs shall persist execution timestamps and model run identifiers for auditability."
+  },
+  {
+    "family": "Forecasting And Capacity Intelligence",
+    "id": "FR-FC-007",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 132,
+    "sourcePath": "docs/PRD.md",
+    "title": "The Fabric Data Agent shall emit the `DC-INSIGHT-v1` `signal`, `understanding`, and `provenance` beats as the governed grounding contract that prescriptive copilots consume (drivers, source-trust, and confidence for a forecast breach)."
+  },
+  {
+    "family": "Governance, Delivery, And Operations",
+    "id": "FR-GOV-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 160,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall provide auditable traceability between source data, model outputs, user-facing answers, and integration events."
+  },
+  {
+    "family": "Governance, Delivery, And Operations",
+    "id": "FR-GOV-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 161,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support access-control enforcement for clinical and operational data surfaces."
+  },
+  {
+    "family": "Governance, Delivery, And Operations",
+    "id": "FR-GOV-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 162,
+    "sourcePath": "docs/PRD.md",
+    "title": "The delivery model shall support structured promotion across DEV, SIT, and PROD stages."
+  },
+  {
+    "family": "Governance, Delivery, And Operations",
+    "id": "FR-GOV-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 163,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall produce governance evidence artifacts for compliance reviews."
+  },
+  {
+    "family": "Governance, Delivery, And Operations",
+    "id": "FR-GOV-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 164,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support policy-driven integration controls for outbound partner interactions."
+  },
+  {
+    "family": "Governance, Delivery, And Operations",
+    "id": "FR-GOV-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 165,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall maintain provider-local control over prompts, model configuration, and operational workflows."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-GOV-ONT-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 195,
+    "sourcePath": "docs/PRD.md",
+    "title": "The data-governance RACI shall include a nominated **semantic / ontology owner**. Documented in [OPERATIONS.md](OPERATIONS.md) as of v1.4.0."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-GOV-ONT-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 196,
+    "sourcePath": "docs/PRD.md",
+    "title": "Ontology changes shall follow an **OBO-inspired semantic change workflow** (proposal → domain-owner review → versioned release → downstream impact check), mirroring the data-contract breaking-change control in `NFR-MAINT-002`."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-GOV-ONT-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 197,
+    "sourcePath": "docs/PRD.md",
+    "title": "The delivery pipeline shall include a **CI conformance check** verifying that every operational-layer entity maps to a reference-layer class (or is explicitly annotated as reference-layer-exempt). Failure fails the build."
+  },
+  {
+    "family": "Closed-Loop Learning (Sprint 30)",
+    "id": "FR-LEARN-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 416,
+    "sourcePath": "docs/PRD.md",
+    "title": "Capture every agent turn + user interaction as a `DC-AGENT-INTERACTION-v1` record (PHI-free, redaction-gated)."
+  },
+  {
+    "family": "Closed-Loop Learning (Sprint 30)",
+    "id": "FR-LEARN-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 417,
+    "sourcePath": "docs/PRD.md",
+    "title": "Continuously evaluate captured interactions (citation coverage, groundedness, refusal correctness, actionability, safety) online + offline."
+  },
+  {
+    "family": "Closed-Loop Learning (Sprint 30)",
+    "id": "FR-LEARN-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 418,
+    "sourcePath": "docs/PRD.md",
+    "title": "Curate versioned golden datasets from real traces with full lineage back to the source `interactionId`."
+  },
+  {
+    "family": "Closed-Loop Learning (Sprint 30)",
+    "id": "FR-LEARN-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 419,
+    "sourcePath": "docs/PRD.md",
+    "title": "Surface an advisory improvement backlog from low-scoring / uncited / mis-refused interactions, grouped by agent + failing metric."
+  },
+  {
+    "family": "Closed-Loop Learning (Sprint 30)",
+    "id": "FR-LEARN-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 420,
+    "sourcePath": "docs/PRD.md",
+    "title": "Optimize prompts / knowledge / guardrails and fine-tune (SFT/DPO/RFT) from curated data for the lead agent, human-gated."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-MKT-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 216,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall provide a **product-marketing copilot agent** grounded in the Curavias brandkit, vision, and mission to keep product communication stringent and aligned across customer-facing, user-facing, and devops-team-facing channels."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-MKT-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 217,
+    "sourcePath": "docs/PRD.md",
+    "title": "The product-marketing agent shall preserve the **advisory-only voice** (the platform *previews/recommends*, never *decides/diagnoses*) and enforce the showcase disclaimer across all generated messaging."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-MKT-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 218,
+    "sourcePath": "docs/PRD.md",
+    "title": "The product-marketing agent shall operate in an explicit RACI with the `ux-design-agent` for all customer-facing experience surfaces."
+  },
+  {
+    "family": "Operating Model And Product Scope",
+    "id": "FR-OM-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 103,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall be deployed for one hospital provider instance at a time."
+  },
+  {
+    "family": "Operating Model And Product Scope",
+    "id": "FR-OM-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 104,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support provider-internal governance and data ownership boundaries."
+  },
+  {
+    "family": "Operating Model And Product Scope",
+    "id": "FR-OM-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 105,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support an implementation sequence for USZ-first or LUKS-first rollout patterns."
+  },
+  {
+    "family": "Operating Model And Product Scope",
+    "id": "FR-OM-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 106,
+    "sourcePath": "docs/PRD.md",
+    "title": "External care entities shall be integrated as endpoints and not as first-class platform operators."
+  },
+  {
+    "family": "Operating Model And Product Scope",
+    "id": "FR-OM-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 107,
+    "sourcePath": "docs/PRD.md",
+    "title": "The product shall support a phased implementation model where capabilities can be enabled incrementally."
+  },
+  {
+    "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+    "id": "FR-ONB-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 176,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall onboard new patients using a minimum required metadata set only."
+  },
+  {
+    "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+    "id": "FR-ONB-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 177,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall onboard hospital capacity using specialty-tagged metadata."
+  },
+  {
+    "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+    "id": "FR-ONB-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 178,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support provider-specific specialty profiles for capacity planning."
+  },
+  {
+    "family": "Onboarding (Minimum-Data And Specialty-Driven Capacity)",
+    "id": "FR-ONB-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 179,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall classify onboarding workflows as deterministic service vs agentic flow using a documented criterion."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 187,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall maintain a **reference ontology** authored in OWL/RDF, importing established published ontologies (BFO ISO/IEC 21838-2:2021, OMRSE, OGMS, OOSTT, Goyer et al. healthcare-system classes) and adding the platform-specific `CapacityUnit` abstraction with subtypes for bed, OR slot, room, staff shift and device."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 188,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall realise the **operational ontology** in Fabric IQ, auto-generated from the governed semantic model with static (lakehouse) and time-series (eventhouse) bindings. Use in `switzerlandnorth` PROD paths carrying PHI is gated on Fabric IQ Switzerland-region GA + DPA equivalence per ADR-0014 gate G-C; use in the `westus2` demo scope is permitted per ADR-0013."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 189,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall model all in-scope hospital resource dimensions (beds, OR slots, rooms, staff shifts, devices) as **capacity-unit subtypes** with shared states (available / occupied / blocked / planned) and shared relations, so one set of KPIs, forecasts and simulation logic applies across all dimensions."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 190,
+    "sourcePath": "docs/PRD.md",
+    "title": "The copilot and Fabric Data Agents shall **ground responses on ontology entities and relationships** to deliver concept-level traceability, extending `NFR-AI-002/003/004`."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 191,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall provide a **process-ontology overlay** on the reference layer to support what-if simulation (`FR-SIM-*` when introduced)."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 192,
+    "sourcePath": "docs/PRD.md",
+    "title": "The ontology shall carry a **crosswalk to FHIR resource types and SNOMED CT concepts** for clinical interoperability (extends `FR-DATA-002`)."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-007",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 193,
+    "sourcePath": "docs/PRD.md",
+    "title": "The ontology shall support **provider-specific extensions** (specialisations) without re-architecture, realising `NFR-MAINT-004` at the semantic layer."
+  },
+  {
+    "family": "Semantic Ontology",
+    "id": "FR-ONT-008",
+    "kind": "FR",
+    "mvp": true,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 194,
+    "sourcePath": "docs/PRD.md",
+    "title": "Foundry-hosted copilots shall consume the read-only **Fabric Data Agent as their primary grounding source** ahead of table grounding (the Fabric-to-Foundry consumption seam), propagate its RLS and [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) PHI-gate `REFUSE:` codes **verbatim** (no route-around), and surface at least one `hcp:*` ontology citation per grounded answer. Realised per [ADR-0033](adr/0033-fabric-data-agent-as-foundry-grounding-tool.md); extends `FR-ONT-004`, `NFR-AI-002/004`. **Realised live (demo scope)** for the Foundry `ooa` surface — live E2E in [ADR-0034](adr/0034-fabric-iq-demo-scope-artefacts.md) + [evidence doc](architecture/fabric-iq-ready-evidence.md) (issue #251); the gpt-5 layer surfaces the refusal in natural language rather than the verbatim `REFUSE:` token (safety outcome preserved). App/agent-host surface pending."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-ORG-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 273,
+    "sourcePath": "docs/PRD.md",
+    "title": "Fold `dim_hospital` into a **Curavias organisation spine** (`dim_tenant` / `dim_org_unit` / `dim_department`) and re-key the dependent facts (`fact_capacity_baseline`, `encounter`, `bed_assignment`, `or_case`, `or_schedule`) onto it."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 315,
+    "sourcePath": "docs/PRD.md",
+    "title": "The PO Agent shall answer product questions grounded only on the four knowledge classes (A corpus, B live-proof, C cost, D ontology), with mandatory citations."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 316,
+    "sourcePath": "docs/PRD.md",
+    "title": "The PO Agent shall be embedded as a Copilot rail on the Curavias App START and BACKSTAGE surfaces using the MAIN-board pattern."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 317,
+    "sourcePath": "docs/PRD.md",
+    "title": "The knowledge layer shall be a shared Foundry IQ Knowledge Layer registering the PO Agent as domain #1 and supporting additional domains."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 318,
+    "sourcePath": "docs/PRD.md",
+    "title": "The corpus shall refresh daily GitHub -> ADLS -> OneLake -> knowledge source, PHI-excluded, interviews first-order."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 319,
+    "sourcePath": "docs/PRD.md",
+    "title": "Class B live-proof shall answer the five reference questions read-only with reconcile-and-flag."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 320,
+    "sourcePath": "docs/PRD.md",
+    "title": "Class C shall reconcile effective PROD Azure cost + GitHub Copilot token cost to the BVA/TCO baseline."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-007",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 321,
+    "sourcePath": "docs/PRD.md",
+    "title": "Class D shall answer data questions via the ontology with concept + gold-binding citations."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-008",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 322,
+    "sourcePath": "docs/PRD.md",
+    "title": "The PO Agent shall answer in DE and EN with source-language transparency."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "FR-POA-009",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 323,
+    "sourcePath": "docs/PRD.md",
+    "title": "The PO Agent shall expose an entitlement-scoped partner tier that never sees internal cost/security detail."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 393,
+    "sourcePath": "docs/PRD.md",
+    "title": "Discover and rank referenced-vs-wired signal gaps into a Signal Gap Register, demand-driven by a `DC-DQ-GAP-v1` `newSourceNeeded` gap."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 394,
+    "sourcePath": "docs/PRD.md",
+    "title": "Classify a candidate channel by domain family, signal type, trust tier A/B/C, and data class PHI/staff-PII/non-PHI."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 395,
+    "sourcePath": "docs/PRD.md",
+    "title": "Select a connector adapter from the governed adapter catalogue."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 396,
+    "sourcePath": "docs/PRD.md",
+    "title": "Draft and register the channel data contract (`DC-REF-CERTIFICATION-v1` for the certification lane)."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 397,
+    "sourcePath": "docs/PRD.md",
+    "title": "Bind channel entities to the reference ontology (Credential/Competency/Qualification/IssuingAuthority) and maintain the crosswalk."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-007",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 398,
+    "sourcePath": "docs/PRD.md",
+    "title": "Run a sandbox Channel Readiness Scorecard (schema conformance, provenance, dedup) on a curated sample feed before activation."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-008",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 399,
+    "sourcePath": "docs/PRD.md",
+    "title": "Resolve credentials to competency codes and enrich the skills baseline by pseudonymised work-ID, feeding SBA skills-based assignment."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-009",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 400,
+    "sourcePath": "docs/PRD.md",
+    "title": "Manage the channel lifecycle (discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire) with provenance."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-010",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 401,
+    "sourcePath": "docs/PRD.md",
+    "title": "Gate channel activation and ontology change on a recorded human data-owner and compliance/DPO `approved-to-apply` approval; the agent remains advisory-only with no autonomous activation."
+  },
+  {
+    "family": "Signal Agent — Channel Intake Lifecycle (Sprint 32)",
+    "id": "FR-SIG-011",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 402,
+    "sourcePath": "docs/PRD.md",
+    "title": "Record provenance and audit evidence for every onboarding decision and activation."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-SIM-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 452,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall provide an **EPIC system-of-record simulator** holding durable, synthetic, no-PHI patient-flow state (patients, encounters, beds, wards, OR slots, staff shifts, discharge barriers)."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-SIM-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 453,
+    "sourcePath": "docs/PRD.md",
+    "title": "The simulator shall advance state on a **seeded, deterministic clock**, such that the same seed and the same approved-action sequence yield the same trajectory."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-SIM-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 454,
+    "sourcePath": "docs/PRD.md",
+    "title": "The simulator shall feed demand and capacity data to Curavias via the existing `DC-DEMAND-ENCOUNTER-v1` and capacity contracts, derived from persistent state."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-SIM-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 455,
+    "sourcePath": "docs/PRD.md",
+    "title": "The simulator shall **apply HITL-approved agent actions** to its state via declared lever **effect** blocks, mutating patient-flow state (discharge frees a bed, transfer moves a patient, reslot changes the OR schedule)."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-SIM-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 456,
+    "sourcePath": "docs/PRD.md",
+    "title": "The simulator shall emit a **`DC-SIM-OUTCOME-v1`** record per applied action capturing the pre/post state delta and the predicted-vs-realised **divergence**, PHI-free and linked by `plan_id` / `golden_thread` / `cosmos_id`."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine (Sprint 38)",
+    "id": "FR-SIM-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 457,
+    "sourcePath": "docs/PRD.md",
+    "title": "The simulator shall expose a **`SystemAdapter`** seam so additional systems of record (SuccessFactors, LMS) are additive without re-architecture (only EPIC ships this sprint)."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 274,
+    "sourcePath": "docs/PRD.md",
+    "title": "Gather skills evidence from external systems via a **plugin architecture** - real-API adapters where an API exists, simulators where none does - each record flagged **live-vs-simulated** (`sourceMode`) with a trust tier (`trustTier` A/B/C)."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 275,
+    "sourcePath": "docs/PRD.md",
+    "title": "Mimic **SuccessFactors** (HRIS), an **LMS** (learning/cert store), and **Skills-Manager with Work-ID** (worker-owned skills passport) as simulated sources, normalised to the `DC-SKILL-EVIDENCE-v1` contract."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 276,
+    "sourcePath": "docs/PRD.md",
+    "title": "Derive assurance from the evidence assertion (`self` -> L0, `employer_confirmed` -> L1); promote the `worker_gln` golden-thread key and set `consentScope` **only** when Work-ID consent was granted; Work-ID assertions are always `self`-declared."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 277,
+    "sourcePath": "docs/PRD.md",
+    "title": "Load the full synthetic Curavias master data (employees, assertions, org spine) **on demand** from a dedicated **ADLS Gen2 landing zone via a OneLake shortcut** and a Bronze->Silver->Gold pipeline, not from Microsoft Entra and not from git-committed extracts."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 278,
+    "sourcePath": "docs/PRD.md",
+    "title": "Use a **hybrid transport**: batch extract drops to the ADLS landing zone for HRIS/LMS master data; an Eventstream lane carries only near-real-time skills events (credential expiry, consent grant/revoke, newly-confirmed assertions)."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 279,
+    "sourcePath": "docs/PRD.md",
+    "title": "Validate landed data at the **pipeline silver gate** (PK/FK, GLN mod-10, enum domains, load order), quarantining bad rows in Silver rather than at PR time."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-007",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 280,
+    "sourcePath": "docs/PRD.md",
+    "title": "Preserve the live-vs-simulated badge and trust tier **end-to-end** through Bronze/Silver so they surface on `gold.fact_skill_assertion`; they are never invented downstream."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-008",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 281,
+    "sourcePath": "docs/PRD.md",
+    "title": "Express the **bed-vs-ops skill-demand split** on the semantic and ontology surface: bed side = Pflegepersonal / nursing, ops side = doctors and specialised teams."
+  },
+  {
+    "family": "Curavias Organisation Spine And Skills Evidence (Sprint 23)",
+    "id": "FR-SKILL-ONT-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 282,
+    "sourcePath": "docs/PRD.md",
+    "title": "Extend the existing staff/person ontology view with the org spine, skill classes, and bed-vs-ops demand axis; keep `fact_skill_assertion` as the atomic unit and the proficiency (1-5) / assurance (L0-L4) axes and GLN golden thread unchanged (extend, don't replace)."
+  },
+  {
+    "family": "App Experience Polish And Design System (Sprint 27)",
+    "id": "FR-UX-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 352,
+    "sourcePath": "docs/PRD.md",
+    "title": "The internal app shall provide a **codified design system** (semantic tokens + component recipes) derived from the Curavias brandkit and Fluent UI v9, used as the single source of visual truth by every polished screen."
+  },
+  {
+    "family": "App Experience Polish And Design System (Sprint 27)",
+    "id": "FR-UX-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 353,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall publish an **app style-guide** mapping each design-system token and recipe to its Fluent v9 primitive and the current M365 app pattern (Outlook / Teams / M365 Copilot) it mirrors, including the reusable per-screen heuristic checklist."
+  },
+  {
+    "family": "App Experience Polish And Design System (Sprint 27)",
+    "id": "FR-UX-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 354,
+    "sourcePath": "docs/PRD.md",
+    "title": "The internal app shall expose an **in-app brand gallery** route rendering every token and component-recipe state (light / dark) as a first-class accessibility-verified surface."
+  },
+  {
+    "family": "App Experience Polish And Design System (Sprint 27)",
+    "id": "FR-UX-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 355,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall provide a documented **SIT-connected local visual-verify loop** in which the app runs locally against SIT, is opened in a VS Code browser tab whose context is shared with GitHub Copilot via a read-only browser-automation server, and supports an edit → hot-reload → re-snapshot → accessibility-scan cycle."
+  },
+  {
+    "family": "App Experience Polish And Design System (Sprint 27)",
+    "id": "FR-UX-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 356,
+    "sourcePath": "docs/PRD.md",
+    "title": "The internal app shall deliver a **fully polished OOA reference vertical** (Start occupancy teaser, MAIN Occupancy board, OOA agent-plane context, and the shared five-plane chrome) meeting the acceptance bar, as the reference implementation for later role-board polish."
+  },
+  {
+    "family": "App Experience Polish And Design System (Sprint 27)",
+    "id": "FR-UX-006",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 357,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall maintain an **ordered polish backlog** applying the same design-system recipe to the remaining role boards and surfaces in later sprints."
+  },
+  {
+    "family": "Visualization And Dashboards (Sprint 09 T5)",
+    "id": "FR-VIZ-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 205,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall provide an operational **bed-capacity dashboard page** exposing current occupancy, forecast pressure windows, and data-quality signals, aligned with `FR-CX-005`."
+  },
+  {
+    "family": "Visualization And Dashboards (Sprint 09 T5)",
+    "id": "FR-VIZ-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 206,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall provide an operational **OR-steering dashboard page** exposing case-level utilisation, first-case on-time performance, cancellation, and idle-slot metrics, aligned with `FR-CX-005`."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-WEB-001",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 219,
+    "sourcePath": "docs/PRD.md",
+    "title": "**[Retired — ADR-0044]** The solution shall publish a **public multilingual product landing page** (DE primary; EN/FR/IT) built on the Curavias brandkit (white background) from the approved `curavias-site` content."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-WEB-002",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 220,
+    "sourcePath": "docs/PRD.md",
+    "title": "**[Retired — ADR-0044]** The public site shall display the **showcase disclaimer** (\"Kein reales Produkt…\", synthetic data, advisory-only, not a medical device) on every page."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-WEB-003",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 221,
+    "sourcePath": "docs/PRD.md",
+    "title": "**[Retired — ADR-0044]** The public site shall be hosted **PROD-only** on Azure Static Web Apps and served on `curavias.ch` and `www.curavias.ch` with managed TLS."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-WEB-004",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 222,
+    "sourcePath": "docs/PRD.md",
+    "title": "**[Retired — ADR-0044]** The public site shall meet **WCAG 2.1 AA** accessibility and expose SEO metadata including per-locale `hreflang` alternates and a sitemap."
+  },
+  {
+    "family": "Product Marketing And Public Web (Sprint 24)",
+    "id": "FR-WEB-005",
+    "kind": "FR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 223,
+    "sourcePath": "docs/PRD.md",
+    "title": "**[Retired — ADR-0044]** Public go-live shall proceed with the disclaimer and advisory framing while **trademark (CH/EU) and Swiss-cross legal clearance** remains a tracked open item (accepted residual risk, issue #268)."
+  },
+  {
+    "family": "Responsible AI And Auditability",
+    "id": "NFR-AI-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 554,
+    "sourcePath": "docs/PRD.md",
+    "title": "Copilot outputs shall remain advisory and shall not replace human operational authority."
+  },
+  {
+    "family": "Responsible AI And Auditability",
+    "id": "NFR-AI-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 555,
+    "sourcePath": "docs/PRD.md",
+    "title": "Copilot outputs shall be retrieval-grounded in provider operational context and model outputs."
+  },
+  {
+    "family": "Responsible AI And Auditability",
+    "id": "NFR-AI-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 556,
+    "sourcePath": "docs/PRD.md",
+    "title": "Forecast and discharge model outputs shall be traceable to model version and execution time."
+  },
+  {
+    "family": "Responsible AI And Auditability",
+    "id": "NFR-AI-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 557,
+    "sourcePath": "docs/PRD.md",
+    "title": "User-facing AI responses and coordination triggers shall be auditable to source context."
+  },
+  {
+    "family": "Responsible AI And Auditability",
+    "id": "NFR-AI-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 558,
+    "sourcePath": "docs/PRD.md",
+    "title": "AI-serving behavior shall support provider-local governance and change control."
+  },
+  {
+    "family": "Member Sign-In And Role Lens Governance (Sprint A)",
+    "id": "NFR-AUTH-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 723,
+    "sourcePath": "docs/PRD.md",
+    "title": "MSAL configuration shall be injected at runtime (`window.__ENV__` via the container entrypoint); one env-agnostic image serves every environment with no secrets or per-environment values baked at build time."
+  },
+  {
+    "family": "Member Sign-In And Role Lens Governance (Sprint A)",
+    "id": "NFR-AUTH-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 724,
+    "sourcePath": "docs/PRD.md",
+    "title": "Live data boards shall fail loud (degrade to the fixture with a grounding/degraded notice) and never hang when a golden read is refused or unavailable."
+  },
+  {
+    "family": "Business Value Assessment Agent Governance (Sprint 33)",
+    "id": "NFR-BVA-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 673,
+    "sourcePath": "docs/PRD.md",
+    "title": "BVA computation shall be **deterministic and reproducible**, with **no LLM arithmetic**: all ROI/TCO math is performed by the `bva.simulate` engine."
+  },
+  {
+    "family": "Business Value Assessment Agent Governance (Sprint 33)",
+    "id": "NFR-BVA-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 674,
+    "sourcePath": "docs/PRD.md",
+    "title": "Every figure shall be cited via a `GroundedChunk` (query / gold measure / input slot, snapshot date, currency)."
+  },
+  {
+    "family": "Business Value Assessment Agent Governance (Sprint 33)",
+    "id": "NFR-BVA-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 675,
+    "sourcePath": "docs/PRD.md",
+    "title": "Monetary output shall be **CHF-normalized with an explicit FX line**; settling weeks are marked provisional."
+  },
+  {
+    "family": "Business Value Assessment Agent Governance (Sprint 33)",
+    "id": "NFR-BVA-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 676,
+    "sourcePath": "docs/PRD.md",
+    "title": "BVA data shall preserve **SIT / PROD parity** and carry **no PHI** (ADR-0016); demo figures are labelled PoT (ADR-0013)."
+  },
+  {
+    "family": "Business Value Assessment Agent Governance (Sprint 33)",
+    "id": "NFR-BVA-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 677,
+    "sourcePath": "docs/PRD.md",
+    "title": "BVA agent output shall preserve **DE / EN parity**."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 498,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support Swiss DSG compliance for healthcare data handling."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 499,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support cantonal healthcare governance requirements in deployment and operations controls."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 500,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support KVG/LAMal-aligned operational governance where applicable to patient flow data usage."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 501,
+    "sourcePath": "docs/PRD.md",
+    "title": "Data residency controls shall support Switzerland or permitted jurisdiction constraints for each dataset class."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 502,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall maintain a data processing inventory with legal basis and purpose tags for PHI and operational datasets."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-006",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 503,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall provide a documented data-subject-rights operating process with accountable ownership and response SLAs."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-007",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 504,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall implement policy-enforced default-deny behavior for PHI cross-border transfer and failover activation unless explicitly approved."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-008",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 505,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall maintain auditable privacy incident handling and notification decision workflows."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-009",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 506,
+    "sourcePath": "docs/PRD.md",
+    "title": "If EPR integration is enabled, the solution shall enforce consent, identity, access, and logging controls aligned to EPDG/EPDV-EDI obligations."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-010",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 507,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall maintain compliance evidence artifacts and review cadence mapped to legal obligations and internal controls."
+  },
+  {
+    "family": "Compliance And Privacy",
+    "id": "NFR-COMP-011",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 508,
+    "sourcePath": "docs/PRD.md",
+    "title": "Onboarding data contracts shall enforce minimum-sensitive-data controls and purpose tags (Sprint 6)."
+  },
+  {
+    "family": "Application Context Architecture (Sprint 29)",
+    "id": "NFR-CTX-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 621,
+    "sourcePath": "docs/PRD.md",
+    "title": "The context architecture shall remain demo-safe: synthetic data only, no PHI (ADR-0013 / ADR-0016), westus2 demo scope."
+  },
+  {
+    "family": "Application Context Architecture (Sprint 29)",
+    "id": "NFR-CTX-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 622,
+    "sourcePath": "docs/PRD.md",
+    "title": "Provenance and citations shall be preserved on every result; an envelope-less IQ call is refused and degradation surfaces `simulated` provenance loudly (no silent \"live\")."
+  },
+  {
+    "family": "Responsible AI And Auditability",
+    "id": "NFR-DEC-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 559,
+    "sourcePath": "docs/PRD.md",
+    "title": "Prescriptive decision outputs shall remain advisory and human-in-the-loop: no proposed action is applied without an explicit human `approved-to-apply` confirmation, and the system shall refuse self-approval or a bot approver."
+  },
+  {
+    "family": "Documentation Quality (Sprint 34)",
+    "id": "NFR-DOC-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 688,
+    "sourcePath": "docs/PRD.md",
+    "title": "Main solution documentation shall be Curavias-anchored and terminology-consistent with `docs/GLOSSARY.md` (Fabric IQ / Foundry IQ / Work IQ / Frontier Firm used correctly)."
+  },
+  {
+    "family": "Documentation Quality (Sprint 34)",
+    "id": "NFR-DOC-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 689,
+    "sourcePath": "docs/PRD.md",
+    "title": "Each in-scope main doc shall be customer-ready: a Curavias-anchored title, the one-line product-anchor blockquote, an executive summary, and plain professional wording."
+  },
+  {
+    "family": "Documentation Quality (Sprint 34)",
+    "id": "NFR-DOC-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 690,
+    "sourcePath": "docs/PRD.md",
+    "title": "Canonical mermaid diagrams from `docs/architecture/diagram-library.md` shall be embedded in the documents the library assigns them to, and copies kept in sync from that source."
+  },
+  {
+    "family": "Documentation Quality (Sprint 34)",
+    "id": "NFR-DOC-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 691,
+    "sourcePath": "docs/PRD.md",
+    "title": "Every documentation edit shall pass the mojibake + markdownlint gates and carry a §9 SemVer version bump."
+  },
+  {
+    "family": "Data Quality And Integrity",
+    "id": "NFR-DQ-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 524,
+    "sourcePath": "docs/PRD.md",
+    "title": "Critical operational feeds shall include quality checks for completeness and schema validity."
+  },
+  {
+    "family": "Data Quality And Integrity",
+    "id": "NFR-DQ-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 525,
+    "sourcePath": "docs/PRD.md",
+    "title": "Curated operational datasets shall support lineage from source to serving views."
+  },
+  {
+    "family": "Data Quality And Integrity",
+    "id": "NFR-DQ-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 526,
+    "sourcePath": "docs/PRD.md",
+    "title": "Data model changes shall preserve backward compatibility or include controlled migration plans."
+  },
+  {
+    "family": "Data Quality And Integrity",
+    "id": "NFR-DQ-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 527,
+    "sourcePath": "docs/PRD.md",
+    "title": "Integration message failures shall be observable and recoverable without silent data loss."
+  },
+  {
+    "family": "Data Quality And Integrity",
+    "id": "NFR-DQ-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 528,
+    "sourcePath": "docs/PRD.md",
+    "title": "Specialty metadata shall include quality checks and controlled versioning (Sprint 6)."
+  },
+  {
+    "family": "Data Quality Agent Governance (Sprint 31)",
+    "id": "NFR-DQA-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 641,
+    "sourcePath": "docs/PRD.md",
+    "title": "The Trust Score shall be **reproducible**: the same dimension inputs always produce the same score, with the model version recorded on every record."
+  },
+  {
+    "family": "Data Quality Agent Governance (Sprint 31)",
+    "id": "NFR-DQA-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 642,
+    "sourcePath": "docs/PRD.md",
+    "title": "The agent shall operate **read-only under Zero-Trust**: it never edits source data, and treats every value returned by a tool or model as untrusted."
+  },
+  {
+    "family": "EPIC Closed-Loop SIT Evidence Governance (Sprint 39)",
+    "id": "NFR-EVD-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 713,
+    "sourcePath": "docs/PRD.md",
+    "title": "Evidence traces shall be **deterministic and PHI-free**; every part carries `provenance` (`simulated`/`live`) and citations; a `simulated` part is never rendered as `live`."
+  },
+  {
+    "family": "EPIC Closed-Loop SIT Evidence Governance (Sprint 39)",
+    "id": "NFR-EVD-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 714,
+    "sourcePath": "docs/PRD.md",
+    "title": "The evidence surface shall take **no `deploy`/`delete`** action; SIT interaction in this sprint is read-only."
+  },
+  {
+    "family": "Trusted External Signals Governance (Sprint 21)",
+    "id": "NFR-EXT-EVID-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 597,
+    "sourcePath": "docs/PRD.md",
+    "title": "External signals shall be demonstrably queryable on SIT via the `external-signals` Direct-Lake semantic model (trust-badge measures) and the `da_hospital_capacity` data agent, with the PHI refusal gate preserved; captured as a versioned evidence artefact."
+  },
+  {
+    "family": "Trusted External Signals Governance (Sprint 21)",
+    "id": "NFR-EXT-GOV-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 595,
+    "sourcePath": "docs/PRD.md",
+    "title": "Record source licence/attribution for every ingested signal."
+  },
+  {
+    "family": "Trusted External Signals Governance (Sprint 21)",
+    "id": "NFR-EXT-GOV-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 596,
+    "sourcePath": "docs/PRD.md",
+    "title": "No PHI/personal data; public authority feeds + synthetic fixtures only."
+  },
+  {
+    "family": "Trusted External Signals Governance (Sprint 21)",
+    "id": "NFR-EXT-ONT-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 594,
+    "sourcePath": "docs/PRD.md",
+    "title": "Operational (Fabric IQ) binding GA-gated per ADR-0014."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "NFR-EXT-PLG-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 255,
+    "sourcePath": "docs/PRD.md",
+    "title": "Live bindings are always mocked in CI; no external network calls in Actions."
+  },
+  {
+    "family": "Trusted External Signals (Sprint 21)",
+    "id": "NFR-EXT-PLG-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 256,
+    "sourcePath": "docs/PRD.md",
+    "title": "A schema-invalid manifest fails CI and is excluded from the runtime catalogue (fail-closed)."
+  },
+  {
+    "family": "Trusted External Signals Governance (Sprint 21)",
+    "id": "NFR-EXT-WEBIQ-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 598,
+    "sourcePath": "docs/PRD.md",
+    "title": "Outbound Web IQ queries contain no PHI; returned web content is untrusted and re-validated at every boundary (ADR-0016, `NFR-SIG-001`)."
+  },
+  {
+    "family": "Trusted External Signals Governance (Sprint 21)",
+    "id": "NFR-EXT-WEBIQ-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 599,
+    "sourcePath": "docs/PRD.md",
+    "title": "The live Web IQ binding is GA- and credential-gated and always mocked in CI; demo/SIT run simulator-only."
+  },
+  {
+    "family": "Governance And Audit (Sprint 09 T5)",
+    "id": "NFR-GOV-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 583,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall record change-management traceability for semantic-model, dashboard, and agent artefacts (aligns with `FR-GOV-001`)."
+  },
+  {
+    "family": "Governance And Audit (Sprint 09 T5)",
+    "id": "NFR-GOV-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 584,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support audit-review workflows for governance evidence artefacts (aligns with `FR-GOV-004`)."
+  },
+  {
+    "family": "Governance And Audit (Sprint 09 T5)",
+    "id": "NFR-GOV-003",
+    "kind": "NFR",
+    "mvp": true,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 585,
+    "sourcePath": "docs/PRD.md",
+    "title": "The dashboard consumption path shall enforce role-scoped filtering that prevents PHI-tagged column exposure to any non-owner role (extends [ADR-0016](adr/0016-no-phi-in-mvp-demo-scope.md) gate 4)."
+  },
+  {
+    "family": "Governance And Audit (Sprint 09 T5)",
+    "id": "NFR-GOV-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 586,
+    "sourcePath": "docs/PRD.md",
+    "title": "Semantic-model and dashboard artefacts shall be round-trippable to source-controlled TMDL/PBIP such that any deployed state can be replayed from repository content alone."
+  },
+  {
+    "family": "Governance And Audit (Sprint 09 T5)",
+    "id": "NFR-GOV-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 587,
+    "sourcePath": "docs/PRD.md",
+    "title": "Governance evidence artefacts shall be co-located with the sprint or ADR that produced them under `docs/sprints/*/evidence/` or `docs/adr/*.md`."
+  },
+  {
+    "family": "Governance And Audit (Sprint 09 T5)",
+    "id": "NFR-GOV-006",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 588,
+    "sourcePath": "docs/PRD.md",
+    "title": "Every dashboard visual shall carry per-visual traceability back to its underlying semantic-model measure and its ontology-grounded source (`hcp:*` entities), aligned with `FR-CX-006` and `FR-ONT-004`."
+  },
+  {
+    "family": "Closed-Loop Learning Governance (Sprint 30)",
+    "id": "NFR-LEARN-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 659,
+    "sourcePath": "docs/PRD.md",
+    "title": "No PHI in captured interactions: the deterministic redaction gate is the single persistence choke point; raw prompts are hashed, not stored (ADR-0016)."
+  },
+  {
+    "family": "Closed-Loop Learning Governance (Sprint 30)",
+    "id": "NFR-LEARN-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 660,
+    "sourcePath": "docs/PRD.md",
+    "title": "The interaction store honours Swiss residency at GA and a defined retention class (R3, AI trace and model evidence)."
+  },
+  {
+    "family": "Closed-Loop Learning Governance (Sprint 30)",
+    "id": "NFR-LEARN-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 661,
+    "sourcePath": "docs/PRD.md",
+    "title": "No prompt / knowledge / guardrail / model change is promoted without an offline regression pass **and** a recorded `approved-to-apply` (no bot self-approval)."
+  },
+  {
+    "family": "Closed-Loop Learning Governance (Sprint 30)",
+    "id": "NFR-LEARN-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 662,
+    "sourcePath": "docs/PRD.md",
+    "title": "Full lineage is preserved end to end: interaction -> dataset -> eval -> change."
+  },
+  {
+    "family": "Maintainability And Delivery",
+    "id": "NFR-MAINT-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 565,
+    "sourcePath": "docs/PRD.md",
+    "title": "The solution shall support modular architecture lanes for data, AI, app, integration, and governance assets."
+  },
+  {
+    "family": "Maintainability And Delivery",
+    "id": "NFR-MAINT-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 566,
+    "sourcePath": "docs/PRD.md",
+    "title": "Delivery workflows shall be Git-first and support auditable promotion across environments."
+  },
+  {
+    "family": "Maintainability And Delivery",
+    "id": "NFR-MAINT-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 567,
+    "sourcePath": "docs/PRD.md",
+    "title": "Requirement artifacts shall remain traceable to specification sources and implementation increments."
+  },
+  {
+    "family": "Maintainability And Delivery",
+    "id": "NFR-MAINT-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 568,
+    "sourcePath": "docs/PRD.md",
+    "title": "Platform configuration shall support provider-specific rollout without full re-architecture."
+  },
+  {
+    "family": "Maintainability And Delivery",
+    "id": "NFR-MAINT-005",
+    "kind": "NFR",
+    "mvp": true,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 569,
+    "sourcePath": "docs/PRD.md",
+    "title": "Sprint 6 onboarding and MVP agent services shall be deployable through IaC-first pipelines with reproducible environment bootstrap (Sprint 6)."
+  },
+  {
+    "family": "Semantic Ontology (Sprint 9)",
+    "id": "NFR-ONT-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 575,
+    "sourcePath": "docs/PRD.md",
+    "title": "The ontology (reference layer OWL/RDF + operational layer Fabric IQ + crosswalk) shall be **versioned, governed and promoted as a first-class asset** with DEV/SIT/PROD gates, an explicit reference↔operational crosswalk artefact (`docs/ontology/crosswalk.md`), and a **CI conformance check** enforcing `FR-GOV-ONT-003`. Extends `NFR-MAINT-002`."
+  },
+  {
+    "family": "Performance And Throughput",
+    "id": "NFR-PERF-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 534,
+    "sourcePath": "docs/PRD.md",
+    "title": "Ingestion shall support near-real-time updates for ED, ADT, bed-state, and discharge status signals."
+  },
+  {
+    "family": "Performance And Throughput",
+    "id": "NFR-PERF-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 535,
+    "sourcePath": "docs/PRD.md",
+    "title": "Forecast inference shall support at least hourly refresh cadence for the 72-hour horizon."
+  },
+  {
+    "family": "Performance And Throughput",
+    "id": "NFR-PERF-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 536,
+    "sourcePath": "docs/PRD.md",
+    "title": "Discharge-readiness scoring shall support multiple recalculations per day."
+  },
+  {
+    "family": "Performance And Throughput",
+    "id": "NFR-PERF-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 537,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support burst headroom above average event volume."
+  },
+  {
+    "family": "Performance And Throughput",
+    "id": "NFR-PERF-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 538,
+    "sourcePath": "docs/PRD.md",
+    "title": "End-user operational surfaces shall support interactive decision cycles without batch-only dependence."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "NFR-POA-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 612,
+    "sourcePath": "docs/PRD.md",
+    "title": "Citation coverage >= 95%; zero hallucination on CFO/CISO/CLO classes."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "NFR-POA-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 613,
+    "sourcePath": "docs/PRD.md",
+    "title": "100% audit coverage (question -> sources -> answer -> caller)."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "NFR-POA-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 614,
+    "sourcePath": "docs/PRD.md",
+    "title": "All runtime + data in Switzerland North; no PHI; Preview services accepted per design D3."
+  },
+  {
+    "family": "Curavias Product Owner Agent (Sprint 28)",
+    "id": "NFR-POA-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 615,
+    "sourcePath": "docs/PRD.md",
+    "title": "Advisory-only, human-in-the-loop; the agent never mutates a system."
+  },
+  {
+    "family": "Reliability And Operational Continuity",
+    "id": "NFR-REL-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 544,
+    "sourcePath": "docs/PRD.md",
+    "title": "The platform shall support continuous operations and shall not be designed as overnight batch-only service."
+  },
+  {
+    "family": "Reliability And Operational Continuity",
+    "id": "NFR-REL-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 545,
+    "sourcePath": "docs/PRD.md",
+    "title": "Critical data and inference pipelines shall provide failure visibility and restartability."
+  },
+  {
+    "family": "Reliability And Operational Continuity",
+    "id": "NFR-REL-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 546,
+    "sourcePath": "docs/PRD.md",
+    "title": "Operational dashboards and copilot services shall degrade gracefully when non-critical dependencies fail."
+  },
+  {
+    "family": "Reliability And Operational Continuity",
+    "id": "NFR-REL-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 547,
+    "sourcePath": "docs/PRD.md",
+    "title": "Integration workflows shall provide retry and exception-handling behavior for transient endpoint errors."
+  },
+  {
+    "family": "Reliability And Operational Continuity",
+    "id": "NFR-REL-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 548,
+    "sourcePath": "docs/PRD.md",
+    "title": "Onboarding services shall remain available under defined degraded-mode behavior (Sprint 6)."
+  },
+  {
+    "family": "Security And Access Control",
+    "id": "NFR-SEC-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 514,
+    "sourcePath": "docs/PRD.md",
+    "title": "Access shall be least-privilege and role-scoped by user and service identity."
+  },
+  {
+    "family": "Security And Access Control",
+    "id": "NFR-SEC-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 515,
+    "sourcePath": "docs/PRD.md",
+    "title": "Data access attempts and privilege changes shall be fully auditable."
+  },
+  {
+    "family": "Security And Access Control",
+    "id": "NFR-SEC-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 516,
+    "sourcePath": "docs/PRD.md",
+    "title": "Integration endpoints shall enforce authenticated and authorized communication patterns."
+  },
+  {
+    "family": "Security And Access Control",
+    "id": "NFR-SEC-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 517,
+    "sourcePath": "docs/PRD.md",
+    "title": "Secret material shall be managed outside source-controlled artifacts."
+  },
+  {
+    "family": "Security And Access Control",
+    "id": "NFR-SEC-005",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 518,
+    "sourcePath": "docs/PRD.md",
+    "title": "Onboarding identity and cross-tenant boundaries shall be explicit and auditable (Sprint 6)."
+  },
+  {
+    "family": "Signal Agent Governance (Sprint 32)",
+    "id": "NFR-SIG-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 648,
+    "sourcePath": "docs/PRD.md",
+    "title": "Signal-channel ingestion shall follow Zero-Trust, read-scoped ingestion: every external, MCP, or model value is treated as untrusted and re-validated at each boundary."
+  },
+  {
+    "family": "Signal Agent Governance (Sprint 32)",
+    "id": "NFR-SIG-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 649,
+    "sourcePath": "docs/PRD.md",
+    "title": "Staff-PII certification data shall be handled under nDSG with pseudonymised `WID-*` work-IDs only, Swiss-region residency, never names/AHV, and never treated as non-PHI-free operational data (ADR-0016)."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine Governance (Sprint 38)",
+    "id": "NFR-SIM-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 701,
+    "sourcePath": "docs/PRD.md",
+    "title": "Simulator state and outcomes shall be **synthetic and PHI-free** by construction; `provenance: simulated` is stamped on every outcome."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine Governance (Sprint 38)",
+    "id": "NFR-SIM-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 702,
+    "sourcePath": "docs/PRD.md",
+    "title": "The actuation consumer shall apply an action **only** when a human has moved it to `approved-to-apply`; it shall refuse bot/self approvals and shall be **idempotent** per `cosmos_id`; no applied action shall auto-approve another."
+  },
+  {
+    "family": "EPIC Closed-Loop Simulation Engine Governance (Sprint 38)",
+    "id": "NFR-SIM-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 703,
+    "sourcePath": "docs/PRD.md",
+    "title": "The closed loop shall preserve full **proposed -> approved -> applied -> realised -> curated** lineage, extending the Sprint 30 (`CH-C11`) lineage guarantee."
+  },
+  {
+    "family": "Curavias Org Spine And Skills Evidence Governance (Sprint 23)",
+    "id": "NFR-SKILL-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 605,
+    "sourcePath": "docs/PRD.md",
+    "title": "Skills-evidence ingestion and simulation run as **Azure Container Apps** services publishing to Event Hub/Eventstream, never as GitHub Actions workflows (Actions is CI-only)."
+  },
+  {
+    "family": "Curavias Org Spine And Skills Evidence Governance (Sprint 23)",
+    "id": "NFR-SKILL-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 606,
+    "sourcePath": "docs/PRD.md",
+    "title": "All Curavias org/skills data is **synthetic, no-PHI**; the master-data generator is deterministic and git-owned for reproducibility, while the generated extracts are uploaded to the landing zone and not committed to git."
+  },
+  {
+    "family": "App Experience Polish Governance (Sprint 27)",
+    "id": "NFR-UX-001",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 628,
+    "sourcePath": "docs/PRD.md",
+    "title": "Every polished screen shall pass **WCAG 2.1 AA** via automated `axe-core` scanning as a merge gate."
+  },
+  {
+    "family": "App Experience Polish Governance (Sprint 27)",
+    "id": "NFR-UX-002",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 629,
+    "sourcePath": "docs/PRD.md",
+    "title": "Every polished screen shall pass the **Fluent v9 + M365 heuristic checklist** (8 pt spacing grid, type ramp, elevation, motion, hover / pressed / focus states, explicit empty / loading / error states, dark-mode parity)."
+  },
+  {
+    "family": "App Experience Polish Governance (Sprint 27)",
+    "id": "NFR-UX-003",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 630,
+    "sourcePath": "docs/PRD.md",
+    "title": "Every polished screen shall carry **before / after visual evidence** (light / dark, desktop / narrow) attached to its pull request."
+  },
+  {
+    "family": "App Experience Polish Governance (Sprint 27)",
+    "id": "NFR-UX-004",
+    "kind": "NFR",
+    "mvp": false,
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourceLine": 631,
+    "sourcePath": "docs/PRD.md",
+    "title": "UX polish shall remain **experience-lane only**: no backend / data-contract / agent-prompt / infrastructure change, no PHI, and no public-site (Astro) patterns introduced into the internal app."
+  }
+]

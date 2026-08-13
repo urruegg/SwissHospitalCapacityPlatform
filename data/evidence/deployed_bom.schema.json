@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://swisshospitalcapacity/evidence/deployed_bom.schema.json",
+  "title": "Evidence — deployed BOM (infra snapshot)",
+  "description": "Lightweight map of infra resource identifiers to their Bicep module paths, produced by infra_parser. Full ARG-based deployed BOM is out of scope for Sprint 14 (design spec §2.2) — this is a stub snapshot.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["resourceId", "modulePath", "sourcePath", "sourceCommit"],
+    "properties": {
+      "resourceId": { "type": "string", "minLength": 1 },
+      "resourceType": { "type": ["string", "null"] },
+      "modulePath": { "type": "string", "minLength": 1 },
+      "sourcePath": { "type": "string", "minLength": 1 },
+      "sourceCommit": { "type": "string", "minLength": 1 }
+    }
+  }
+}

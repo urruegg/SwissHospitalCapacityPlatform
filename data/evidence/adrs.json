@@ -1,0 +1,486 @@
+[
+  {
+    "decisionSummary": "For MVP critical-path capabilities, only generally available Azure and Fabric services are permitted in production scope.",
+    "id": "ADR-0001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0001-ga-only-mvp-critical-path.md",
+    "status": "Accepted",
+    "title": "GA-Only Services for MVP Critical Path"
+  },
+  {
+    "decisionSummary": "Fabric IQ Ontology is excluded from MVP critical-path scope and moved to a post-MVP feature wave after GA and regional validation.",
+    "id": "ADR-0002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0002-defer-fabric-iq-ontology-from-mvp.md",
+    "status": "Superseded",
+    "supersededBy": [
+      "ADR-0014"
+    ],
+    "title": "Defer Fabric IQ Ontology from MVP"
+  },
+  {
+    "decisionSummary": "PHI-sensitive copilot inference must use Azure OpenAI Standard or Regional Provisioned deployment types in Switzerland regions only.",
+    "id": "ADR-0003",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0003-swiss-regional-inference-for-phi.md",
+    "status": "Accepted",
+    "title": "Swiss Regional Inference for PHI-Sensitive Copilot Traffic"
+  },
+  {
+    "decisionSummary": "Global, Data Zone, and Developer deployment types are prohibited for PHI-sensitive copilot traffic in MVP and production scope.",
+    "id": "ADR-0004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0004-block-global-and-data-zone-for-phi.md",
+    "status": "Accepted",
+    "title": "Block Global and Data Zone Inference Modes for PHI Flows"
+  },
+  {
+    "decisionSummary": "A dedicated React web app is mandatory as the MVP copilot experience channel, provided backend data and AI services follow Swiss residency and governance constraints.",
+    "id": "ADR-0005",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0005-approve-react-channel-as-ga-safe.md",
+    "status": "Accepted",
+    "title": "Approve Dedicated React Web App as GA-Safe Copilot Channel"
+  },
+  {
+    "decisionSummary": "Any preview-only feature is classified as non-production for regulated data unless an explicit exception is approved through governance review.",
+    "id": "ADR-0006",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0006-preview-features-non-production-rule.md",
+    "status": "Accepted",
+    "title": "Preview Features Are Non-Production for Regulated Data"
+  },
+  {
+    "decisionSummary": "",
+    "id": "ADR-0007",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-0011-hardening-delta-summary.md",
+    "status": "Accepted",
+    "title": "Hardening Delta Summary"
+  },
+  {
+    "decisionSummary": "For MVP and PROD baseline:",
+    "id": "ADR-0007",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md",
+    "status": "Accepted",
+    "title": "MVP Agent Runtime Choices and HITL Release Gates"
+  },
+  {
+    "decisionSummary": "For Sprint 5 and MVP execution:",
+    "id": "ADR-0008",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0008-agent-runtime-pattern-scope-and-selection.md",
+    "status": "Accepted",
+    "title": "Agent Runtime Pattern Scope and Selection"
+  },
+  {
+    "decisionSummary": "For Sprint 5 execution and MVP promotion controls:",
+    "id": "ADR-0009",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md",
+    "status": "Accepted",
+    "title": "Reliability and Disaster Recovery Baseline for SIT and PROD"
+  },
+  {
+    "decisionSummary": "For Sprint 5 and subsequent release cycles:",
+    "id": "ADR-0010",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md",
+    "status": "Accepted",
+    "title": "Policy-as-Code and Release Evidence Gates"
+  },
+  {
+    "decisionSummary": "For Sprint 5 and public-sector promotion governance:",
+    "id": "ADR-0011",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0011-cantonal-legal-applicability-gate.md",
+    "status": "Accepted",
+    "title": "Cantonal Legal Applicability Gate for Production Promotion"
+  },
+  {
+    "decisionSummary": "Rebuild SIT and PROD in the new tenant using a single shared subscription `66a9953a-df37-4c51-856c-9971b9bf3e03` (demo simplification per D9) in region `westus2` (per [ADR-0013](0013-temporary-us-region-demo-scope.md)). Solution short name renamed `chhealthpf` → `ihzhhpf` in live/authoritative files only; historical sprint/spec docs preserve the audit trail. Old tenant remains operational; teardown is deferred to a separate later decision.",
+    "id": "ADR-0012",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0012-tenant-migration-to-mcap164444.md",
+    "status": "Accepted",
+    "title": "Tenant migration to MCAP164444"
+  },
+  {
+    "decisionSummary": "For the **new-tenant demo scope only**, deploy Azure resources in **`westus2`** to unblock validation of services that are not yet GA in `switzerlandnorth`.",
+    "id": "ADR-0013",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0013-temporary-us-region-demo-scope.md",
+    "status": "Accepted",
+    "title": "Temporary US-region demo scope on new tenant"
+  },
+  {
+    "decisionSummary": "**Adopt Fabric IQ Ontology as the target operational semantic backbone for the integral HCC tier, gated on Switzerland-region GA. Author the reference layer (BFO / OBO in OWL/RDF) in parallel and portably, so that operational realisation is de-risked against Fabric IQ preview status and Switzerland-region GA timing.**",
+    "id": "ADR-0014",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md",
+    "status": "Proposed",
+    "supersedes": [
+      "ADR-0002"
+    ],
+    "title": "Fabric IQ Ontology as target semantic backbone (GA-gated)"
+  },
+  {
+    "decisionSummary": "For the MVP demo scope, the platform ingests data via **two Fabric-native paths only**:",
+    "id": "ADR-0015",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0015-skip-sql-for-mvp-demo.md",
+    "status": "Proposed",
+    "title": "Skip SQL for MVP demo"
+  },
+  {
+    "decisionSummary": "In the demo scope (as defined by ADR-0013):",
+    "id": "ADR-0016",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0016-no-phi-in-mvp-demo-scope.md",
+    "status": "Accepted",
+    "title": "No PHI in MVP demo scope"
+  },
+  {
+    "decisionSummary": "Bump [`docs/sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md`](../sprints/sprint-09-master-data-simulation-and-capacity-dashboard.md) from **1.3.0 → 2.0.0** (MAJOR per [`.github/copilot-instructions.md` §9 Document Versioning](../../.github/copilot-instructions.md#9-document-versioning)). Old track headings are removed; the migration path is: readers consult the design spec §7.2 deliverable table for the authoritative mapping from the v1.x scope to the v2 track structure.",
+    "id": "ADR-0017",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0017-sprint-09-v2-track-restructure.md",
+    "status": "Accepted",
+    "title": "Sprint 09 v2.0.0 Track Restructure"
+  },
+  {
+    "decisionSummary": "**Formalise the four IDs in PRD.md.** Add two new PRD sub-sections at the end of their respective (FR / NFR) top-level sections so no existing anchors break:",
+    "id": "ADR-0018",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0018-add-fr-viz-and-nfr-gov-ids.md",
+    "status": "Accepted",
+    "title": "Formalise `FR-VIZ-*` and `NFR-GOV-*` requirement IDs in PRD"
+  },
+  {
+    "decisionSummary": "For the SIT MCAPS-hosted demo scope only, pivot the Sprint 10 T1 ingest architecture:",
+    "id": "ADR-0019",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0019-fabric-eventstream-custom-endpoint-entra-id.md",
+    "status": "Accepted",
+    "title": "Fabric Eventstream ingest via Custom Endpoint + Entra ID (MCAPS baseline forced pivot)"
+  },
+  {
+    "decisionSummary": "1. All Sprint 11 agents share a **single frontier chat-completion deployment** in the `westus2` demo Foundry project per ADR-0013 (demo scope only). The deployment name is referenced by each agent manifest as `modelDeploymentRef: sprint11-chat` — the concrete Azure deployment name is resolved at Sprint 13 agent-host configuration time and is **not** hard-coded in any prompt, manifest, or workflow. 2. This deployment is **synthetic-data-only**. Per ADR-0006 and ADR-0016 it is **non-production for regulated data** and must never process real PHI. Enforcement is layered: agent refusal rules (per-agent `AGENT.md`), the synthetic-only Sprint 10 Gold tables, and the `data-quality-agent` PHI gate. 3. Every Sprint 11 agent `AGENT.md` **references this ADR** in its Identity or Grounding section so that the model-selection decision is traceable from the agent to the constraint set above. 4. When the platform sunsets ADR-0013 and returns to Switzerland North, this ADR is **superseded** by a new ADR that pins Swiss-resident deployments per agent and lifts the synthetic-only restriction for regulated data.",
+    "id": "ADR-0020",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0020-sprint11-agent-model-selection.md",
+    "status": "Accepted",
+    "title": "Sprint 11 agent model selection"
+  },
+  {
+    "decisionSummary": "Readiness is computed in the Silver → Gold transform and recomputed on every ingest. The canonical implementation is the pure module [`data-platform/notebooks/evidence/readiness_rules.py`](../../data-platform/notebooks/evidence/readiness_rules.py); the Fabric `score_readiness` notebook applies it to Silver Delta rows.",
+    "id": "ADR-0021",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0021-readiness-scoring-rules.md",
+    "status": "Accepted",
+    "title": "Showcase Evidence readiness scoring rules (T-SHOW / T-PROD)"
+  },
+  {
+    "decisionSummary": "Use **Python + FastAPI** for the agent-host.",
+    "id": "ADR-0022",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0022-agent-host-language-python-fastapi.md",
+    "status": "Accepted",
+    "title": "Agent-host implementation language (Python + FastAPI vs Node + Fastify)"
+  },
+  {
+    "decisionSummary": "**Adopt the Fluent UI v9 baseline (`apps/hcc-app-fluent/`) as the app stack for Sprint 14+.** The Rayfin track is closed as *not evaluable in scope*; it may be revisited if a runnable Rayfin toolchain becomes available.",
+    "id": "ADR-0023",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0023-app-stack-fluent-vs-rayfin-decision.md",
+    "status": "Accepted",
+    "title": "App stack decision: Fluent UI baseline vs Rayfin PoC"
+  },
+  {
+    "decisionSummary": "The tier classifier is implemented as a pure, deterministic rules layer in [`data-platform/scripts/csa/csa-tier-classifier.py`](../../data-platform/scripts/csa/csa-tier-classifier.py), `RULES_VERSION = \"1.0.0\"`. It consumes a projected capacity state and returns a tier with human-readable reasons.",
+    "id": "ADR-0024",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0024-csa-tier-classifier-rules.md",
+    "status": "Accepted",
+    "title": "CSA tier classifier rules (Swiss Lage doctrine)"
+  },
+  {
+    "decisionSummary": "1. **Single source of formula truth** — the reference module [`data-platform/notebooks/bva/bva_kpi.py`](../../data-platform/notebooks/bva/bva_kpi.py) defines every KPI as a pure function. The DAX measures in [`bva_measures.tmdl`](../../data-platform/reports/capacity-dashboard.SemanticModel/definition/tables/bva_measures.tmdl) mirror those formulas one-for-one (same name, same arithmetic, `DIVIDE` guards match `_safe_div`). Golden tests ([`test_bva_kpi_golden.py`](../../data-platform/reports/tests/test_bva_kpi_golden.py)) assert catalogue completeness, the internal identities, and ROM calibration.",
+    "id": "ADR-0025",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0025-bva-kpi-catalog.md",
+    "status": "Accepted",
+    "title": "BVA KPI catalogue (DAX ↔ reference formulas + synthetic constants)"
+  },
+  {
+    "decisionSummary": "**Adopt Option B — a separate `evidence.SemanticModel`.** The readiness measures own their own Direct Lake model over the `gold.fact_readiness_*` tables. The `capacity-dashboard.SemanticModel` is left untouched.",
+    "id": "ADR-0026",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0026-evidence-readiness-measure-ownership.md",
+    "status": "Accepted",
+    "title": "Evidence readiness measure ownership: separate `evidence.SemanticModel`"
+  },
+  {
+    "decisionSummary": "**Adopt Option B.**",
+    "id": "ADR-0027",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0027-mcaps-demo-users-full-group-membership.md",
+    "status": "Accepted",
+    "title": "MCAPS demo-user model: `admin@` + `urruegg@` hold all 17 HCC.\\* group memberships"
+  },
+  {
+    "decisionSummary": "**Adopt Option 2.**",
+    "id": "ADR-0028",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0028-defer-managed-redis-in-sit-demo-scope.md",
+    "status": "Accepted",
+    "title": "Defer Azure Managed Redis in SIT demo scope (agent-host uses in-memory cache)"
+  },
+  {
+    "decisionSummary": "",
+    "id": "ADR-0029",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0029-agent-host-cosmos-reachability.md",
+    "status": "Accepted",
+    "title": "Agent-host Cosmos reachability in SIT (choose PE + VNet integration or co-locate on CSA Cosmos)"
+  },
+  {
+    "decisionSummary": "**Adopt full Azure DNS delegation (\"Option C\" in the brainstorm) + Azure Container Apps managed certificates.**",
+    "id": "ADR-0030",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0030-curavias-dns-strategy.md",
+    "status": "Accepted",
+    "title": "curavias.ch DNS strategy: full Azure DNS delegation + Container Apps managed certs"
+  },
+  {
+    "decisionSummary": "**Adopt Option 3 (hybrid).**",
+    "id": "ADR-0031",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0031-tls-certificate-lifecycle-strategy.md",
+    "status": "Accepted",
+    "title": "TLS certificate lifecycle strategy for custom hostnames"
+  },
+  {
+    "decisionSummary": "Deploy the **Microsoft Foundry control plane** (AI Services account + Foundry project + model deployments + agent registrations) in **eastus2**.",
+    "id": "ADR-0032",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0032-foundry-control-plane-eastus2.md",
+    "status": "Superseded",
+    "supersededBy": [
+      "ADR-0037"
+    ],
+    "title": "Foundry Control Plane Deployed in eastus2"
+  },
+  {
+    "decisionSummary": "Adopt the **Fabric Data Agent as the primary grounding tool** for the operational copilots. Each consuming agent binds it via a `groundingAgent` manifest block; the orchestrator asks the Data Agent in natural language, uses its answer + `hcp:*` citations as primary grounding, propagates `REFUSE:` verbatim, and degrades loudly to table grounding if the Data Agent is unavailable. A Foundry IQ knowledge base is a *secondary* source; `fabric-mcp` remains for *actions* only. The binding is region-agnostic (endpoint + workspace from env), so it lifts westus2 -> eastus2 unchanged.",
+    "id": "ADR-0033",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0033-fabric-data-agent-as-foundry-grounding-tool.md",
+    "status": "Proposed",
+    "title": "Fabric Data Agent as the Foundry grounding tool"
+  },
+  {
+    "decisionSummary": "Adopt the Fabric IQ demo-scope artefacts in the existing `westus2` Fabric workspace `f3af9733-9503-4e92-98f9-a901d96f1c87`:",
+    "id": "ADR-0034",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0034-fabric-iq-demo-scope-artefacts.md",
+    "status": "Accepted",
+    "title": "Fabric IQ (Preview) demo-scope artefacts in westus2"
+  },
+  {
+    "decisionSummary": "The **PROD Fabric IQ layer (capacity, workspace, lakehouse, semantic model, ontology, Data Agent, OneLake Data Product + Domain) runs in westus2** for the demo / proof-of-technology scope. This **relaxes D2** of the readiness design: collocation in eastus2 is not achievable without an eastus2 Fabric quota-increase.",
+    "id": "ADR-0035",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0035-fabric-iq-layer-region-westus2.md",
+    "status": "Superseded",
+    "supersededBy": [
+      "ADR-0037"
+    ],
+    "title": "PROD Fabric IQ Layer Stays in westus2 (eastus2 Fabric Quota = 0)"
+  },
+  {
+    "decisionSummary": "Adopt the following governance policy for external hazard-trigger signals:",
+    "id": "ADR-0036",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0036-external-trigger-governance.md",
+    "status": "Accepted",
+    "title": "External Trigger Governance"
+  },
+  {
+    "decisionSummary": "**PROD moves to `switzerlandnorth` as a greenfield, decommission-and-rebuild** — treated operationally like a **disaster-recovery rebuild in a new region**, not a resource migration.",
+    "id": "ADR-0037",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0037-prod-region-switzerland-north-greenfield.md",
+    "status": "Accepted",
+    "title": "PROD Region Pivot to Switzerland North (Greenfield Decommission-and-Rebuild)"
+  },
+  {
+    "decisionSummary": "Adopt a trunk-based, worktree-per-sprint workflow. It is documented in full in [docs/DEV_WORKFLOW.md](../DEV_WORKFLOW.md); the binding decisions are:",
+    "id": "ADR-0038",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0038-trunk-based-parallel-sprint-workflow.md",
+    "status": "Accepted",
+    "title": "Trunk-based parallel-sprint development workflow"
+  },
+  {
+    "decisionSummary": "",
+    "id": "ADR-0039",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0039-curavias-landing-zone-and-skills-evidence-plugins.md",
+    "status": "Accepted",
+    "title": "Curavias Landing Zone And Skills Evidence Plugins"
+  },
+  {
+    "decisionSummary": "**Accepted: bring PROD switzerlandnorth to SIT network parity, plus add a Key Vault private endpoint.**",
+    "id": "ADR-0039",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0039-prod-network-parity-vnet-private-endpoints.md",
+    "status": "Accepted",
+    "title": "PROD Network Parity — VNet + Cosmos & Key Vault Private Endpoints (Switzerland North)"
+  },
+  {
+    "decisionSummary": "Adopt the following architecture for the descriptive -> prescriptive ontology extension and its runtime decision store.",
+    "id": "ADR-0040",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0040-prescriptive-decision-ontology-and-runtime-store.md",
+    "status": "Accepted",
+    "title": "Prescriptive Decision Ontology + Runtime Decision Store"
+  },
+  {
+    "decisionSummary": "Resolve only the ADR-0039 collision in this change:",
+    "id": "ADR-0041",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0041-adr-number-collision-resolution.md",
+    "status": "Accepted",
+    "title": "ADR Number Collision Resolution"
+  },
+  {
+    "decisionSummary": "1. **GA is the target maturity** for PROD Switzerland North. 2. A **standing, governance-approved Preview exception** permits named Preview features in PROD Switzerland North strictly for demonstrating the Curavias stack under synthetic/no-PHI scope. 3. The covered Preview features are: * `fabric-iq-ontology` * `fabric-data-agent` 4. Both covered features are region-listed Preview in Switzerland North per [docs/region-availability.yaml](../region-availability.yaml) and [ADR-0037](0037-prod-region-switzerland-north-greenfield.md)'s evidence matrix. The ontology is additionally subject to the per-capacity `FeatureNotAvailable` gate tracked in [issue #270](https://github.com/urruegg/SwissHospitalCapacityPlatform/issues/270). 5. All other BOM items deploy at their GA maturity.",
+    "id": "ADR-0042",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0042-prod-switzerland-north-ga-target-standing-preview-exception.md",
+    "status": "Accepted",
+    "title": "PROD Switzerland North GA Target + Standing Preview Exception for Curavias Demo"
+  },
+  {
+    "decisionSummary": "1. **Preview-tier Azure/Fabric services are permitted in PROD Switzerland North** strictly to demonstrate the Curavias stack under **synthetic / no-PHI** scope. This generalises ADR-0042 from two named features to a standing demo-scope posture, and satisfies ADR-0006's written-exception requirement for that scope. 2. The **GA-only gate applies solely to a real go-live (real-PHI) cut-over.** Proving value and the art of the possible in **Preview in Switzerland is sufficient** for the demo; work must not be re-parked behind a GA milestone unless it targets a real go-live cut-over. 3. **The skills-events `sourceMode=EventHub` flip is un-parked.** It is in fact **GA in Switzerland North** (Eventstream + Event Hubs), so it does not even consume this Preview exception; the \"parked until Swiss GA\" gate on it is lifted. Its only remaining prerequisite is the out-of-band Fabric-managed connection (`POST /v1/connections`). 4. **Environment isolation is preserved.** SIT (westus2 / eastus2, per enabled capacity) and PROD (Switzerland North) **do not share input services** — separate Event Hubs namespaces, resource groups, and regions (`evh-ihzhhpf-sit-y26y` vs `evh-ihzhhpf-prod-i62t`). New input services follow the per-environment, per-functional-domain pattern (a **dedicated skills-events Event Hub**, not shared with the capacity `events` rail).",
+    "id": "ADR-0043",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0043-preview-tier-permitted-in-prod-swn-for-demo.md",
+    "status": "Accepted",
+    "title": "Preview-tier services permitted in PROD Switzerland North for the Curavias demo (GA-only gate reserved for real go-live cut-over)"
+  },
+  {
+    "decisionSummary": "**The Curavias Product Owner Agent is registered as domain #1 on a shared Foundry IQ Knowledge Layer.**",
+    "id": "ADR-0043",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0043-product-owner-agent-foundry-iq-domain.md",
+    "status": "Accepted",
+    "title": "Curavias Product Owner Agent as Foundry IQ Knowledge-Layer Domain #1"
+  },
+  {
+    "decisionSummary": "Adopt a **single IQ-layer gateway** (`src/data/iq-client.ts`) as the only golden-data ingress for the app. Board loaders and the agent manifest are thin callers.",
+    "id": "ADR-0044",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0044-app-data-access-via-iq-layer.md",
+    "status": "Proposed",
+    "title": "App data access via the IQ layer"
+  },
+  {
+    "decisionSummary": "1. **Retire the public Curavias website in full.** Remove the app, its hosting infrastructure, its deploy workflow, and its runbooks: * `apps/curavias-web/**` * `.github/workflows/curavias-web-deploy.yml` * `infra/modules/experience-hosting/curavias-web.bicep` * `infra/main.bicep`: the `curaviasWeb` module block, the `enableCuraviasWebModule` / `curaviasWebMediaPublisherPrincipalId` / `curaviasWebEnableCustomDomains` params, and the three `curaviasWeb*` outputs + `curaviasWeb` module-status entry. * `infra/environments/prod.bicepparam`: the three `curaviasWeb*` params. * `infra/modules/dns/curavias.bicep`: the website-only, never-wired `aliasARecords` param + alias-A resource. * `docs/runbooks/curavias-web-custom-domain.md`, `docs/runbooks/curavias-web-media-library.md`. 2. **Withdraw `FR-WEB-001..005`** in [docs/PRD.md](../PRD.md), marking them Retired and linking this ADR (the IDs are kept for traceability, not reused). 3. **Retain the shared `curavias.ch` DNS zone** and its Fluent-app records — the zone serves `hcc-app-fluent` (`app.curavias.ch`), not the website. ADR-0030 remains in force for the zone. 4. **Keep the `product-marketing-agent`.** Its `FR-MKT-*` charter (stringent, brand-aligned messaging across channels) stands; only its retired website-copy deliverable is dropped.",
+    "id": "ADR-0044",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0044-retire-public-website.md",
+    "status": "Accepted",
+    "title": "Retire the public Curavias website (`apps/curavias-web` / curavias.ch)"
+  },
+  {
+    "decisionSummary": "Adopt the following architecture for the Curavias org/skills master-data domain. These are the locked decisions D1-D6 from the Sprint 23 design.",
+    "id": "ADR-0050",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0050-curavias-landing-zone-and-skills-evidence-plugins.md",
+    "status": "Accepted",
+    "title": "Curavias Landing Zone + Skills-Evidence Plugin Architecture + Hybrid Transport"
+  },
+  {
+    "decisionSummary": "Use a **custom lightweight canvas** for Sprint 13:",
+    "id": "ADR-0051",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0051-whiteboard-base-react-flow-vs-tldraw-vs-custom.md",
+    "status": "Accepted",
+    "title": "Whiteboard base for the operational whiteboard (React Flow vs tldraw vs custom)"
+  },
+  {
+    "decisionSummary": "Adopt **Approach A: app-side context architecture, endpoint-ready**, instead of Approach B full live provisioning for this sprint.",
+    "id": "ADR-0052",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0052-app-context-envelope-per-agent-threads.md",
+    "status": "Accepted",
+    "title": "App context envelope + per-agent threads + simulated per-user RLS"
+  },
+  {
+    "decisionSummary": "1. **Eight-dimension trust model.** A domain's Trust Score is a weighted aggregate of eight dimensions, each scored in `[0,1]`: `completeness`, `timeliness`, `validity`, `uniqueness`, `consistency`, `lineage_integrity`, `provenance`, `ontology_mapping`. These are frozen as the canonical `DIMENSIONS` tuple in `data-platform/quality/trust_score.py`.",
+    "id": "ADR-0053",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0053-dqa-trust-score-model.md",
+    "status": "Accepted",
+    "title": "DQA trust-score model, dimensions, and grounding-readiness thresholds"
+  },
+  {
+    "decisionSummary": "Adopt an explicit signal-channel lifecycle owned by the new `signal-agent`: **discover -> classify -> adapter -> contract -> ontology-bind -> sandbox-test -> HITL-activate -> monitor -> retire**. The runtime `signal-triage-agent` remains a consumer of activated signals; it does not own discovery, onboarding, contract registration, ontology binding, or lifecycle governance.",
+    "id": "ADR-0054",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0054-signal-channel-lifecycle.md",
+    "status": "Proposed",
+    "title": "Signal Channel Lifecycle Governance"
+  },
+  {
+    "decisionSummary": "1. **Capture contract — `DC-AGENT-INTERACTION-v1` (ratified).** One versioned record per agent turn, following the platform `DC-*` data-contract convention ([`docs/DATA.md`](../DATA.md)) and validated by `data/synthetic/schema/agent-interaction-v1.schema.json`. The record is **PHI-free by construction**: `promptRedacted` / `answerRedacted` pass through the deterministic redaction gate — the single persistence choke point — before storage, and `promptHash` (`sha256:…`) enables dedup / regression matching without retaining raw content. `userEvents` (thumbs / chip / insight-select / HITL) are appended in place; the `eval` block is filled asynchronously off the hot path. The record is model-agnostic (identical for the deterministic mock or a live Foundry model), so it is valid before and during hybrid testing.",
+    "id": "ADR-0055",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0055-closed-loop-learning-capture-and-eval.md",
+    "status": "Accepted",
+    "title": "Closed-loop learning — capture contract, retention class, and online-eval sampling"
+  },
+  {
+    "decisionSummary": "1. **Deterministic computation posture — no LLM arithmetic (D6).** All BVA arithmetic is performed by a **deterministic Python calc engine** exposed as a single typed tool, `bva.simulate(baseline, delta) -> BvaSimulationResult` (`data-platform/bva/`). The engine is a pure function of its inputs: it uses a fixed `asOf`, never `datetime.now()`, and never delegates math to the model. The LLM only slot-fills inputs, selects the tool, and renders the tool's output; it emits no computed figure of its own. This mirrors the deterministic-not-LLM precedent set for the DQA Trust Score ([ADR-0053](0053-dqa-trust-score-model.md)).",
+    "id": "ADR-0056",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0056-bva-agent-deterministic-computation.md",
+    "status": "Accepted",
+    "title": "BVA Agent — deterministic ROI/TCO computation as a typed tool, cost data product via the master-data pattern, peer to PO under the App orchestrator"
+  },
+  {
+    "decisionSummary": "Adopt **Path B: complete the OBO seam in code and configuration now; defer live provisioning to a future, separately-gated scope expansion.**",
+    "id": "ADR-0057",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0057-obo-seam-completion-defer-live-provisioning.md",
+    "status": "Accepted",
+    "title": "OBO seam completion, defer live provisioning (#424 M5)"
+  },
+  {
+    "decisionSummary": "1. **`DC-SIM-OUTCOME-v1` (ratified).** One PHI-free record per applied action, capturing pre/post state delta and predicted-vs-realised `divergence`, linked by `plan_id` / `golden_thread` / `cosmos_id`. Validated by `data/synthetic/schema/dc-sim-outcome-v1.schema.json`. Retained R3 alongside `DC-AGENT-INTERACTION-v1` (ADR-0055). 2. **Declarative lever `effect` schema.** Each lever may declare an `effect` block (state mutation) alongside its `impact_formula_ref` (metric prediction). The `apps/sim-capacity` effect interpreter executes it; adding a lever is a YAML change, not new Python. 3. **Sim-as-ground-truth, human-gated.** The simulator is the ground truth agents are graded against, but it applies **only** actions a human moved to `approved-to-apply` (ADR-0007, `NFR-AI-001`). Every outcome is stamped `provenance: simulated`; this is not clinical actuation.",
+    "id": "ADR-0058",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0058-sim-outcome-and-effect-schema.md",
+    "status": "Accepted",
+    "title": "Sim-outcome contract, lever effect schema, and sim-as-ground-truth"
+  },
+  {
+    "decisionSummary": "1. **`DC-EVIDENCE-TRACE-v1` (ratified).** One PHI-free record per synthetic patient journey; an ordered array of per-role steps (EPIC input, read, recommendation, copilot accept/deny, action, outcome), `golden_thread`-linked; accept + deny branches. Validated by `data/synthetic/schema/dc-evidence-trace-v1.schema.json`. 2. **Real-gold, seeded, human-gated.** Read/recommendation run on real SIT gold (a captured snapshot backs CI); apply/outcome run on an in-host `SimState` seeded from that gold. Only a human accept fires an apply (`NFR-AI-001`); deny changes nothing. No live write-back to the running sim this sprint. 3. **Provenance honesty.** Every part is badged `simulated` or `live`; a `simulated` part is never rendered as `live`. The evidence trace is a derived view of the same operational-loop records (validation == user experience).",
+    "id": "ADR-0059",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0059-evidence-trace-and-surface.md",
+    "status": "Accepted",
+    "title": "Evidence-trace contract and per-role evidence surface"
+  },
+  {
+    "decisionSummary": "* Web IQ is classified **Trust-B**: advisory, human-curated, and never auto-evaluated against trigger rules, never auto-arms a lever, never auto-triggers a CSA handoff, and never enters the forecast-uplift overlay (consistent with [ADR-0036](0036-external-trigger-governance.md): only Trust-A auto-evaluates). * The [ADR-0054](0054-signal-channel-lifecycle.md) \"web-discovery deferred\" boundary is lifted **only** for this governed case: onboarding runs the full `signal-agent` lifecycle with a sandbox Channel Readiness Scorecard and a HITL data-owner + compliance/DPO activation gate; no autonomous activation. * The live Web IQ binding is **GA- and credential-gated** (parallel to [ADR-0014](0014-fabric-iq-ontology-target-backbone-ga-gated.md)); demo and SIT run simulator-only, and CI always mocks the live binding (`NFR-EXT-PLG-001`). * Outbound Web IQ queries contain **no PHI** ([ADR-0016](0016-no-phi-in-mvp-demo-scope.md)); returned web content is untrusted and re-validated at every boundary (`NFR-SIG-001`), with only typed fields extracted and no free text forwarded into a tool or query.",
+    "id": "ADR-0060",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0060-webiq-external-signal-channel.md",
+    "status": "Accepted",
+    "title": "Microsoft Web IQ as a Governed Trust-B External Signal Channel"
+  }
+]

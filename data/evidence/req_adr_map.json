@@ -1,0 +1,420 @@
+[
+  {
+    "adrId": "ADR-0005",
+    "relationship": "governs",
+    "requirementId": "FR-CX-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0005-approve-react-channel-as-ga-safe.md"
+  },
+  {
+    "adrId": "ADR-0005",
+    "relationship": "governs",
+    "requirementId": "FR-CX-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0005-approve-react-channel-as-ga-safe.md"
+  },
+  {
+    "adrId": "ADR-0016",
+    "note": "No PHI in the MVP demo scope; synthetic FHIR only.",
+    "relationship": "governs",
+    "requirementId": "FR-DATA-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr-requirement-map.yaml"
+  },
+  {
+    "adrId": "ADR-0002",
+    "relationship": "governs",
+    "requirementId": "FR-DATA-005",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0002-defer-fabric-iq-ontology-from-mvp.md"
+  },
+  {
+    "adrId": "ADR-0015",
+    "note": "Skip SQL for the MVP demo; lakehouse Direct Lake path only.",
+    "relationship": "governs",
+    "requirementId": "FR-DATA-005",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr-requirement-map.yaml"
+  },
+  {
+    "adrId": "ADR-0007",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+  },
+  {
+    "adrId": "ADR-0008",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0008-agent-runtime-pattern-scope-and-selection.md"
+  },
+  {
+    "adrId": "ADR-0009",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md"
+  },
+  {
+    "adrId": "ADR-0010",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-003",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md"
+  },
+  {
+    "adrId": "ADR-0006",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0006-preview-features-non-production-rule.md"
+  },
+  {
+    "adrId": "ADR-0009",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md"
+  },
+  {
+    "adrId": "ADR-0010",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md"
+  },
+  {
+    "adrId": "ADR-0007",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-005",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+  },
+  {
+    "adrId": "ADR-0010",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-005",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md"
+  },
+  {
+    "adrId": "ADR-0005",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-006",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0005-approve-react-channel-as-ga-safe.md"
+  },
+  {
+    "adrId": "ADR-0007",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-006",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+  },
+  {
+    "adrId": "ADR-0008",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-006",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0008-agent-runtime-pattern-scope-and-selection.md"
+  },
+  {
+    "adrId": "ADR-0014",
+    "relationship": "governs",
+    "requirementId": "FR-GOV-ONT-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md"
+  },
+  {
+    "adrId": "ADR-0014",
+    "relationship": "governs",
+    "requirementId": "FR-ONT-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md"
+  },
+  {
+    "adrId": "ADR-0002",
+    "note": "Preview posture defers PROD use for regulated data until Swiss GA.",
+    "relationship": "blocks",
+    "requirementId": "FR-ONT-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr-requirement-map.yaml"
+  },
+  {
+    "adrId": "ADR-0006",
+    "note": "Preview features are non-production for regulated data.",
+    "relationship": "blocks",
+    "requirementId": "FR-ONT-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr-requirement-map.yaml"
+  },
+  {
+    "adrId": "ADR-0014",
+    "note": "Fabric IQ operational ontology is the GA-gated target backbone.",
+    "relationship": "governs",
+    "requirementId": "FR-ONT-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr-requirement-map.yaml"
+  },
+  {
+    "adrId": "ADR-0007",
+    "relationship": "governs",
+    "requirementId": "NFR-AI-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+  },
+  {
+    "adrId": "ADR-0008",
+    "relationship": "governs",
+    "requirementId": "NFR-AI-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0008-agent-runtime-pattern-scope-and-selection.md"
+  },
+  {
+    "adrId": "ADR-0002",
+    "relationship": "governs",
+    "requirementId": "NFR-AI-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0002-defer-fabric-iq-ontology-from-mvp.md"
+  },
+  {
+    "adrId": "ADR-0014",
+    "relationship": "governs",
+    "requirementId": "NFR-AI-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md"
+  },
+  {
+    "adrId": "ADR-0003",
+    "relationship": "governs",
+    "requirementId": "NFR-AI-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0003-swiss-regional-inference-for-phi.md"
+  },
+  {
+    "adrId": "ADR-0007",
+    "relationship": "governs",
+    "requirementId": "NFR-AI-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+  },
+  {
+    "adrId": "ADR-0008",
+    "relationship": "governs",
+    "requirementId": "NFR-AI-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0008-agent-runtime-pattern-scope-and-selection.md"
+  },
+  {
+    "adrId": "ADR-0001",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0001-ga-only-mvp-critical-path.md"
+  },
+  {
+    "adrId": "ADR-0003",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0003-swiss-regional-inference-for-phi.md"
+  },
+  {
+    "adrId": "ADR-0004",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0004-block-global-and-data-zone-for-phi.md"
+  },
+  {
+    "adrId": "ADR-0006",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0006-preview-features-non-production-rule.md"
+  },
+  {
+    "adrId": "ADR-0011",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0011-cantonal-legal-applicability-gate.md"
+  },
+  {
+    "adrId": "ADR-0011",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0011-cantonal-legal-applicability-gate.md"
+  },
+  {
+    "adrId": "ADR-0001",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0001-ga-only-mvp-critical-path.md"
+  },
+  {
+    "adrId": "ADR-0003",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0003-swiss-regional-inference-for-phi.md"
+  },
+  {
+    "adrId": "ADR-0004",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0004-block-global-and-data-zone-for-phi.md"
+  },
+  {
+    "adrId": "ADR-0008",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0008-agent-runtime-pattern-scope-and-selection.md"
+  },
+  {
+    "adrId": "ADR-0011",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-005",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0011-cantonal-legal-applicability-gate.md"
+  },
+  {
+    "adrId": "ADR-0009",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-007",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md"
+  },
+  {
+    "adrId": "ADR-0010",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-007",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md"
+  },
+  {
+    "adrId": "ADR-0011",
+    "relationship": "governs",
+    "requirementId": "NFR-COMP-010",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0011-cantonal-legal-applicability-gate.md"
+  },
+  {
+    "adrId": "ADR-0005",
+    "relationship": "governs",
+    "requirementId": "NFR-MAINT-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0005-approve-react-channel-as-ga-safe.md"
+  },
+  {
+    "adrId": "ADR-0006",
+    "relationship": "governs",
+    "requirementId": "NFR-MAINT-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0006-preview-features-non-production-rule.md"
+  },
+  {
+    "adrId": "ADR-0014",
+    "relationship": "governs",
+    "requirementId": "NFR-MAINT-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md"
+  },
+  {
+    "adrId": "ADR-0001",
+    "relationship": "governs",
+    "requirementId": "NFR-MAINT-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0001-ga-only-mvp-critical-path.md"
+  },
+  {
+    "adrId": "ADR-0002",
+    "relationship": "governs",
+    "requirementId": "NFR-MAINT-004",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0002-defer-fabric-iq-ontology-from-mvp.md"
+  },
+  {
+    "adrId": "ADR-0014",
+    "relationship": "governs",
+    "requirementId": "NFR-ONT-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0014-fabric-iq-ontology-target-backbone-ga-gated.md"
+  },
+  {
+    "adrId": "ADR-0007",
+    "relationship": "governs",
+    "requirementId": "NFR-PERF-005",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+  },
+  {
+    "adrId": "ADR-0009",
+    "relationship": "governs",
+    "requirementId": "NFR-REL-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md"
+  },
+  {
+    "adrId": "ADR-0007",
+    "relationship": "governs",
+    "requirementId": "NFR-REL-003",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0007-mvp-agent-runtime-and-hitl-release-gates.md"
+  },
+  {
+    "adrId": "ADR-0009",
+    "relationship": "governs",
+    "requirementId": "NFR-REL-003",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0009-reliability-and-dr-baseline-for-sit-prod.md"
+  },
+  {
+    "adrId": "ADR-0001",
+    "relationship": "governs",
+    "requirementId": "NFR-SEC-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0001-ga-only-mvp-critical-path.md"
+  },
+  {
+    "adrId": "ADR-0006",
+    "relationship": "governs",
+    "requirementId": "NFR-SEC-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0006-preview-features-non-production-rule.md"
+  },
+  {
+    "adrId": "ADR-0010",
+    "relationship": "governs",
+    "requirementId": "NFR-SEC-001",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md"
+  },
+  {
+    "adrId": "ADR-0004",
+    "relationship": "governs",
+    "requirementId": "NFR-SEC-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0004-block-global-and-data-zone-for-phi.md"
+  },
+  {
+    "adrId": "ADR-0010",
+    "relationship": "governs",
+    "requirementId": "NFR-SEC-002",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0010-policy-as-code-and-release-evidence-gates.md"
+  },
+  {
+    "adrId": "ADR-0003",
+    "relationship": "governs",
+    "requirementId": "NFR-SEC-003",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/adr/0003-swiss-regional-inference-for-phi.md"
+  }
+]

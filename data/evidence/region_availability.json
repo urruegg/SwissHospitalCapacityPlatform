@@ -1,0 +1,502 @@
+[
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-app-fluent",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-app-fluent",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-21",
+    "bomId": "bom-azure-openai",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
+    "verifiedBy": "Urs Rüegg (live az; gpt-5/o3 GlobalStandard, gpt-4.1/4o regional)"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-azure-openai",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-container-apps-agent-host",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-container-apps-agent-host",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-entra-id",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-entra-id",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-eventhouse",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-eventhouse",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-eventstream",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-eventstream",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-21",
+    "bomId": "bom-fabric-capacity",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/fabric/admin/region-availability",
+    "verifiedBy": "Urs Rüegg (live az)"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-fabric-capacity",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/fabric/enterprise/region-availability",
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-21",
+    "bomId": "bom-fabric-data-agent",
+    "maturity": "Preview",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/fabric/data-science/data-agent-foundry",
+    "verifiedBy": "Urs Rüegg (live az; F2+ capacity, residency caveat)"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-fabric-data-agent",
+    "maturity": "Preview",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-21",
+    "bomId": "bom-fabric-iq-ontology",
+    "maturity": "Preview",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/fabric/admin/region-availability",
+    "verifiedBy": "Urs Rüegg (live az; per-capacity gated,"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-fabric-iq-ontology",
+    "maturity": "Preview",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/fabric/fundamentals/fabric-iq",
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-fabric-workspace-data",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-fabric-workspace-data",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-fhir-service",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/azure/healthcare-apis/fhir/overview",
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-fhir-service",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-21",
+    "bomId": "bom-foundry-agent-service",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": "https://learn.microsoft.com/azure/foundry/agents/concepts/limits-quotas-regions",
+    "verifiedBy": "Urs Rüegg (live az; Agents=Yes, no Class-A private-IP)"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-foundry-agent-service",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-github-actions",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-github-actions",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-key-vault",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-key-vault",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-lakehouse",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-lakehouse",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-log-analytics",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-log-analytics",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-logic-apps",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-logic-apps",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-managed-identity",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-managed-identity",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-onelake",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-onelake",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-policy-as-code",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-policy-as-code",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-powerbi-report",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-powerbi-report",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-purview",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-purview",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-reference-ontology",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-reference-ontology",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-semantic-model",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-semantic-model",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-storage-account",
+    "maturity": "GA",
+    "region": "Switzerland North",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  },
+  {
+    "asOf": "2026-07-09",
+    "bomId": "bom-storage-account",
+    "maturity": "GA",
+    "region": "West Europe",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/region-availability.yaml",
+    "sourceUrl": null,
+    "verifiedBy": "Urs Rüegg"
+  }
+]

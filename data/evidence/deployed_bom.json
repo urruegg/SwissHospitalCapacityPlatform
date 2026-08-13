@@ -1,0 +1,898 @@
+[
+  {
+    "modulePath": "infra/modules/agent-host/container-app.bicep",
+    "resourceId": "infra/modules/agent-host/container-app.bicep#acrPullRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/container-app.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/container-app.bicep",
+    "resourceId": "infra/modules/agent-host/container-app.bicep#agentHost",
+    "resourceType": "Microsoft.App/containerApps",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/container-app.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/container-app.bicep",
+    "resourceId": "infra/modules/agent-host/container-app.bicep#agentHostIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/container-app.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/container-app.bicep",
+    "resourceId": "infra/modules/agent-host/container-app.bicep#managedEnvironment",
+    "resourceType": "Microsoft.App/managedEnvironments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/container-app.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/cosmos-pe.bicep",
+    "resourceId": "infra/modules/agent-host/cosmos-pe.bicep#privateDnsZoneGroup",
+    "resourceType": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/cosmos-pe.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/cosmos-pe.bicep",
+    "resourceId": "infra/modules/agent-host/cosmos-pe.bicep#privateEndpoint",
+    "resourceType": "Microsoft.Network/privateEndpoints",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/cosmos-pe.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/cosmos.bicep",
+    "resourceId": "infra/modules/agent-host/cosmos.bicep#containerResources",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/cosmos.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/cosmos.bicep",
+    "resourceId": "infra/modules/agent-host/cosmos.bicep#cosmosAccount",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/cosmos.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/cosmos.bicep",
+    "resourceId": "infra/modules/agent-host/cosmos.bicep#database",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/cosmos.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/main.bicep",
+    "resourceId": "infra/modules/agent-host/main.bicep#agentHostCosmosDataContributor",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/redis.bicep",
+    "resourceId": "infra/modules/agent-host/redis.bicep#redis",
+    "resourceType": "Microsoft.Cache/redisEnterprise",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/redis.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agent-host/redis.bicep",
+    "resourceId": "infra/modules/agent-host/redis.bicep#redisDatabase",
+    "resourceType": "Microsoft.Cache/redisEnterprise/databases",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agent-host/redis.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agents/foundry-hosted/main.bicep",
+    "resourceId": "infra/modules/agents/foundry-hosted/main.bicep#bmCopilotIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agents/foundry-hosted/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agents/foundry-hosted/main.bicep",
+    "resourceId": "infra/modules/agents/foundry-hosted/main.bicep#csaIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agents/foundry-hosted/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agents/foundry-hosted/rbac.bicep",
+    "resourceId": "infra/modules/agents/foundry-hosted/rbac.bicep#bmCopilotEventHubsReceiver",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agents/foundry-hosted/rbac.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agents/foundry-hosted/rbac.bicep",
+    "resourceId": "infra/modules/agents/foundry-hosted/rbac.bicep#bmCopilotStorageReader",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agents/foundry-hosted/rbac.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agents/foundry-hosted/rbac.bicep",
+    "resourceId": "infra/modules/agents/foundry-hosted/rbac.bicep#csaEventHubsReceiver",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agents/foundry-hosted/rbac.bicep"
+  },
+  {
+    "modulePath": "infra/modules/agents/foundry-hosted/rbac.bicep",
+    "resourceId": "infra/modules/agents/foundry-hosted/rbac.bicep#csaStorageReader",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/agents/foundry-hosted/rbac.bicep"
+  },
+  {
+    "modulePath": "infra/modules/ai-ml-foundation/main.bicep",
+    "resourceId": "infra/modules/ai-ml-foundation/main.bicep#mlWorkspace",
+    "resourceType": "Microsoft.MachineLearningServices/workspaces",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/ai-ml-foundation/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/ai-platform/main.bicep",
+    "resourceId": "infra/modules/ai-platform/main.bicep#aiServices",
+    "resourceType": "Microsoft.CognitiveServices/accounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/ai-platform/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/api-runtime/main.bicep",
+    "resourceId": "infra/modules/api-runtime/main.bicep#apiRuntimeIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/api-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/api-runtime/main.bicep",
+    "resourceId": "infra/modules/api-runtime/main.bicep#containerRegistry",
+    "resourceType": "Microsoft.ContainerRegistry/registries",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/api-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/hcc-app-fluent/main.bicep",
+    "resourceId": "infra/modules/apps/hcc-app-fluent/main.bicep#acrPullRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/hcc-app-fluent/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/hcc-app-fluent/main.bicep",
+    "resourceId": "infra/modules/apps/hcc-app-fluent/main.bicep#appFluent",
+    "resourceType": "Microsoft.App/containerApps",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/hcc-app-fluent/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/hcc-app-fluent/main.bicep",
+    "resourceId": "infra/modules/apps/hcc-app-fluent/main.bicep#appFluentIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/hcc-app-fluent/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/hcc-app-fluent/main.bicep",
+    "resourceId": "infra/modules/apps/hcc-app-fluent/main.bicep#managedCert",
+    "resourceType": "Microsoft.App/managedEnvironments/managedCertificates",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/hcc-app-fluent/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/hcc-app-fluent/main.bicep",
+    "resourceId": "infra/modules/apps/hcc-app-fluent/main.bicep#managedEnvironment",
+    "resourceType": "Microsoft.App/managedEnvironments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/hcc-app-fluent/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/sim-capacity/main.bicep",
+    "resourceId": "infra/modules/apps/sim-capacity/main.bicep#acrPullRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/sim-capacity/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/sim-capacity/main.bicep",
+    "resourceId": "infra/modules/apps/sim-capacity/main.bicep#containerApp",
+    "resourceType": "Microsoft.App/containerApps",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/sim-capacity/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/sim-capacity/main.bicep",
+    "resourceId": "infra/modules/apps/sim-capacity/main.bicep#managedEnvironment",
+    "resourceType": "Microsoft.App/managedEnvironments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/sim-capacity/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/apps/sim-capacity/main.bicep",
+    "resourceId": "infra/modules/apps/sim-capacity/main.bicep#simulatorIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/apps/sim-capacity/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#account",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#agentHostDataContributor",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#agentMemoryContainer",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#database",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#plansContainer",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#privateDnsZoneGroup",
+    "resourceType": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#privateEndpoint",
+    "resourceType": "Microsoft.Network/privateEndpoints",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#proposedActionsContainer",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#responseLeversContainer",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#scenariosContainer",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/cosmos/csa.bicep",
+    "resourceId": "infra/modules/cosmos/csa.bicep#simulationRunsContainer",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/cosmos/csa.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#bmCopilotReceiverRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#cgBmCopilotAgent",
+    "resourceType": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#cgCsaAgent",
+    "resourceType": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#cgFabricEventstream",
+    "resourceType": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#cgSkillsEventstream",
+    "resourceType": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#csaAgentReceiverRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#eventHub",
+    "resourceType": "Microsoft.EventHub/namespaces/eventhubs",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#eventHubNamespace",
+    "resourceType": "Microsoft.EventHub/namespaces",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#simulatorSenderRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#simulatorSkillsSenderRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/eventhubs/main.bicep",
+    "resourceId": "infra/modules/data-foundation/eventhubs/main.bicep#skillsEventHub",
+    "resourceType": "Microsoft.EventHub/namespaces/eventhubs",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/eventhubs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/masterdata-landing/main.bicep",
+    "resourceId": "infra/modules/data-foundation/masterdata-landing/main.bicep#blobDiagnostics",
+    "resourceType": "Microsoft.Insights/diagnosticSettings",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/masterdata-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/masterdata-landing/main.bicep",
+    "resourceId": "infra/modules/data-foundation/masterdata-landing/main.bicep#blobService",
+    "resourceType": "Microsoft.Storage/storageAccounts/blobServices",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/masterdata-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/masterdata-landing/main.bicep",
+    "resourceId": "infra/modules/data-foundation/masterdata-landing/main.bicep#landingFilesystem",
+    "resourceType": "Microsoft.Storage/storageAccounts/blobServices/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/masterdata-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/masterdata-landing/main.bicep",
+    "resourceId": "infra/modules/data-foundation/masterdata-landing/main.bicep#landingStorage",
+    "resourceType": "Microsoft.Storage/storageAccounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/masterdata-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-foundation/masterdata-landing/main.bicep",
+    "resourceId": "infra/modules/data-foundation/masterdata-landing/main.bicep#pipelineWriterRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-foundation/masterdata-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/fabric/main.bicep",
+    "resourceId": "infra/modules/data-platform/fabric/main.bicep#fabricCapacity",
+    "resourceType": "Microsoft.Fabric/capacities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/fabric/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/main.bicep",
+    "resourceId": "infra/modules/data-platform/main.bicep#blobService",
+    "resourceType": "Microsoft.Storage/storageAccounts/blobServices",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/main.bicep",
+    "resourceId": "infra/modules/data-platform/main.bicep#onboardingContainer",
+    "resourceType": "Microsoft.Storage/storageAccounts/blobServices/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/main.bicep",
+    "resourceId": "infra/modules/data-platform/main.bicep#storageAccount",
+    "resourceType": "Microsoft.Storage/storageAccounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/source-sql/main.bicep",
+    "resourceId": "infra/modules/data-platform/source-sql/main.bicep#kisDb",
+    "resourceType": "Microsoft.Sql/servers/databases",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/source-sql/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/source-sql/main.bicep",
+    "resourceId": "infra/modules/data-platform/source-sql/main.bicep#sqlPrivateDnsZoneGroup",
+    "resourceType": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/source-sql/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/source-sql/main.bicep",
+    "resourceId": "infra/modules/data-platform/source-sql/main.bicep#sqlPrivateEndpoint",
+    "resourceType": "Microsoft.Network/privateEndpoints",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/source-sql/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/data-platform/source-sql/main.bicep",
+    "resourceId": "infra/modules/data-platform/source-sql/main.bicep#sqlServer",
+    "resourceType": "Microsoft.Sql/servers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/data-platform/source-sql/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/decision-apply-job/main.bicep",
+    "resourceId": "infra/modules/decision-apply-job/main.bicep#applyJob",
+    "resourceType": "Microsoft.App/jobs",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/decision-apply-job/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/dns/curavias.bicep",
+    "resourceId": "infra/modules/dns/curavias.bicep#cnames",
+    "resourceType": "Microsoft.Network/dnsZones/CNAME",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/dns/curavias.bicep"
+  },
+  {
+    "modulePath": "infra/modules/dns/curavias.bicep",
+    "resourceId": "infra/modules/dns/curavias.bicep#txts",
+    "resourceType": "Microsoft.Network/dnsZones/TXT",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/dns/curavias.bicep"
+  },
+  {
+    "modulePath": "infra/modules/dns/curavias.bicep",
+    "resourceId": "infra/modules/dns/curavias.bicep#zone",
+    "resourceType": "Microsoft.Network/dnsZones",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/dns/curavias.bicep"
+  },
+  {
+    "modulePath": "infra/modules/entra/adoption-telemetry.bicep",
+    "resourceId": "infra/modules/entra/adoption-telemetry.bicep#aadDiagnostics",
+    "resourceType": "microsoft.aadiam/diagnosticSettings",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/entra/adoption-telemetry.bicep"
+  },
+  {
+    "modulePath": "infra/modules/entra/app-registration.bicep",
+    "resourceId": "infra/modules/entra/app-registration.bicep#app",
+    "resourceType": "Microsoft.Graph/applications",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/entra/app-registration.bicep"
+  },
+  {
+    "modulePath": "infra/modules/entra/app-registration.bicep",
+    "resourceId": "infra/modules/entra/app-registration.bicep#servicePrincipal",
+    "resourceType": "Microsoft.Graph/servicePrincipals",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/entra/app-registration.bicep"
+  },
+  {
+    "modulePath": "infra/modules/entra/assignments.bicep",
+    "resourceId": "infra/modules/entra/assignments.bicep#groupAppRoleAssignments",
+    "resourceType": "Microsoft.Graph/appRoleAssignedTo",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/entra/assignments.bicep"
+  },
+  {
+    "modulePath": "infra/modules/entra/security-groups.bicep",
+    "resourceId": "infra/modules/entra/security-groups.bicep#groups",
+    "resourceType": "Microsoft.Graph/groups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/entra/security-groups.bicep"
+  },
+  {
+    "modulePath": "infra/modules/entra/users.bicep",
+    "resourceId": "infra/modules/entra/users.bicep#users",
+    "resourceType": "Microsoft.Graph/users",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/entra/users.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/main.bicep#appServicePlan",
+    "resourceType": "Microsoft.Web/serverfarms",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/main.bicep#commandCenterWebApp",
+    "resourceType": "Microsoft.Web/sites",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#acrPullRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#answersContainer",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#auditDatabase",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#chatDeployment",
+    "resourceType": "Microsoft.CognitiveServices/accounts/deployments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#cosmos",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#cosmosDataRole",
+    "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#cosmosDiagnostics",
+    "resourceType": "Microsoft.Insights/diagnosticSettings",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#identity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#keyVault",
+    "resourceType": "Microsoft.KeyVault/vaults",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#keyVaultDiagnostics",
+    "resourceType": "Microsoft.Insights/diagnosticSettings",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#keyVaultSecretsUserRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#managedEnvironment",
+    "resourceType": "Microsoft.App/managedEnvironments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#openAiUserRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#openai",
+    "resourceType": "Microsoft.CognitiveServices/accounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#refreshJob",
+    "resourceType": "Microsoft.App/jobs",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#runtimeApp",
+    "resourceType": "Microsoft.App/containerApps",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#searchContributorRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/main.bicep#searchReaderRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/subscription-roles.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/subscription-roles.bicep#costManagementReaderRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/subscription-roles.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/po-agent-runtime/subscription-roles.bicep",
+    "resourceId": "infra/modules/experience-hosting/po-agent-runtime/subscription-roles.bicep#readerRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/po-agent-runtime/subscription-roles.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep#acrPullRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep#jobIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep#keyVaultSecretsUserRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep#managedEnvironment",
+    "resourceType": "Microsoft.App/managedEnvironments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep#simJob",
+    "resourceType": "Microsoft.App/jobs",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-event-sim-job/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep#acrPullRoleAssignment",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep#jobsIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep#managedEnvironment",
+    "resourceType": "Microsoft.App/managedEnvironments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep",
+    "resourceId": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep#simJobs",
+    "resourceType": "Microsoft.App/jobs",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/experience-hosting/skills-sim-jobs/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/identity/main.bicep",
+    "resourceId": "infra/modules/identity/main.bicep#platformIdentity",
+    "resourceType": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/identity/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/integration-orchestration/main.bicep",
+    "resourceId": "infra/modules/integration-orchestration/main.bicep#logicWorkflow",
+    "resourceType": "Microsoft.Logic/workflows",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/integration-orchestration/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/integration/main.bicep",
+    "resourceId": "infra/modules/integration/main.bicep#serviceBusNamespace",
+    "resourceType": "Microsoft.ServiceBus/namespaces",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/integration/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/ai-search/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/ai-search/main.bicep#search",
+    "resourceType": "Microsoft.Search/searchServices",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/ai-search/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/ai-search/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/ai-search/main.bicep#searchDiagnostics",
+    "resourceType": "Microsoft.Insights/diagnosticSettings",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/ai-search/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/corpus-landing/main.bicep#blobDiagnostics",
+    "resourceType": "Microsoft.Insights/diagnosticSettings",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/corpus-landing/main.bicep#blobService",
+    "resourceType": "Microsoft.Storage/storageAccounts/blobServices",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/corpus-landing/main.bicep#corpusStorage",
+    "resourceType": "Microsoft.Storage/storageAccounts",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/corpus-landing/main.bicep#landingFilesystem",
+    "resourceType": "Microsoft.Storage/storageAccounts/blobServices/containers",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/corpus-landing/main.bicep#refreshJobWriterRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep",
+    "resourceId": "infra/modules/knowledge-layer/corpus-landing/main.bicep#searchReaderRole",
+    "resourceType": "Microsoft.Authorization/roleAssignments",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/knowledge-layer/corpus-landing/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/network/main.bicep",
+    "resourceId": "infra/modules/network/main.bicep#cosmosPrivateDnsZone",
+    "resourceType": "Microsoft.Network/privateDnsZones",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/network/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/network/main.bicep",
+    "resourceId": "infra/modules/network/main.bicep#cosmosPrivateDnsZoneVnetLink",
+    "resourceType": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/network/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/network/main.bicep",
+    "resourceId": "infra/modules/network/main.bicep#platformVnet",
+    "resourceType": "Microsoft.Network/virtualNetworks",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/network/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/observability/main.bicep",
+    "resourceId": "infra/modules/observability/main.bicep#appInsights",
+    "resourceType": "Microsoft.Insights/components",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/observability/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/platform-foundation/main.bicep",
+    "resourceId": "infra/modules/platform-foundation/main.bicep#keyVault",
+    "resourceType": "Microsoft.KeyVault/vaults",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/platform-foundation/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/platform-foundation/main.bicep",
+    "resourceId": "infra/modules/platform-foundation/main.bicep#keyVaultPrivateDnsZone",
+    "resourceType": "Microsoft.Network/privateDnsZones",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/platform-foundation/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/platform-foundation/main.bicep",
+    "resourceId": "infra/modules/platform-foundation/main.bicep#keyVaultPrivateDnsZoneGroup",
+    "resourceType": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/platform-foundation/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/platform-foundation/main.bicep",
+    "resourceId": "infra/modules/platform-foundation/main.bicep#keyVaultPrivateDnsZoneVnetLink",
+    "resourceType": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/platform-foundation/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/platform-foundation/main.bicep",
+    "resourceId": "infra/modules/platform-foundation/main.bicep#keyVaultPrivateEndpoint",
+    "resourceType": "Microsoft.Network/privateEndpoints",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/platform-foundation/main.bicep"
+  },
+  {
+    "modulePath": "infra/modules/platform-foundation/main.bicep",
+    "resourceId": "infra/modules/platform-foundation/main.bicep#logAnalyticsWorkspace",
+    "resourceType": "Microsoft.OperationalInsights/workspaces",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "infra/modules/platform-foundation/main.bicep"
+  }
+]

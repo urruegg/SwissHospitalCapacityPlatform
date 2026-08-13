@@ -1,0 +1,399 @@
+[
+  {
+    "category": "app",
+    "governedByAdrs": [
+      "ADR-0008"
+    ],
+    "id": "bom-app-fluent",
+    "name": "HCC Operations App (hcc-app-fluent)",
+    "realisesRequirements": [
+      "FR-CX-001",
+      "FR-CX-004",
+      "FR-VIZ-001"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.App/staticApp"
+  },
+  {
+    "category": "ai",
+    "governedByAdrs": [
+      "ADR-0003",
+      "ADR-0005",
+      "ADR-0020"
+    ],
+    "id": "bom-azure-openai",
+    "name": "Azure OpenAI (grounded chat models)",
+    "realisesRequirements": [
+      "FR-CX-001",
+      "FR-CX-002",
+      "FR-CX-003"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.CognitiveServices/accounts"
+  },
+  {
+    "category": "app",
+    "governedByAdrs": [
+      "ADR-0008"
+    ],
+    "id": "bom-container-apps-agent-host",
+    "name": "Container Apps Agent-Host (Sprint 13)",
+    "realisesRequirements": [
+      "FR-CX-001",
+      "FR-CX-004"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.App/containerApps"
+  },
+  {
+    "category": "security",
+    "governedByAdrs": [
+      "ADR-0012"
+    ],
+    "id": "bom-entra-id",
+    "name": "Microsoft Entra ID",
+    "realisesRequirements": [
+      "NFR-SEC-001",
+      "FR-GOV-002"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.AAD/tenant"
+  },
+  {
+    "category": "data",
+    "governedByAdrs": [
+      "ADR-0014"
+    ],
+    "id": "bom-eventhouse",
+    "name": "Fabric Eventhouse (time-series bindings)",
+    "realisesRequirements": [
+      "FR-DATA-001",
+      "FR-FC-006"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/eventhouse"
+  },
+  {
+    "category": "integration",
+    "governedByAdrs": [
+      "ADR-0019"
+    ],
+    "id": "bom-eventstream",
+    "name": "Fabric Eventstream (custom endpoint, Entra ID)",
+    "realisesRequirements": [
+      "FR-DATA-001",
+      "FR-DATA-004"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/eventstream"
+  },
+  {
+    "category": "platform",
+    "governedByAdrs": [
+      "ADR-0012",
+      "ADR-0013",
+      "ADR-0015"
+    ],
+    "id": "bom-fabric-capacity",
+    "name": "Microsoft Fabric Capacity",
+    "realisesRequirements": [
+      "FR-DATA-003",
+      "FR-DATA-005"
+    ],
+    "sku": "F2",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/capacities"
+  },
+  {
+    "category": "ai",
+    "governedByAdrs": [
+      "ADR-0008",
+      "ADR-0014"
+    ],
+    "id": "bom-fabric-data-agent",
+    "name": "Fabric Data Agent (read-only query surface)",
+    "realisesRequirements": [
+      "FR-ONT-004",
+      "FR-CX-002"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/dataAgent"
+  },
+  {
+    "category": "ai",
+    "governedByAdrs": [
+      "ADR-0014",
+      "ADR-0002",
+      "ADR-0006"
+    ],
+    "id": "bom-fabric-iq-ontology",
+    "name": "Fabric IQ Operational Ontology",
+    "realisesRequirements": [
+      "FR-ONT-002",
+      "FR-ONT-003",
+      "FR-ONT-004"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/ontology"
+  },
+  {
+    "category": "platform",
+    "governedByAdrs": [
+      "ADR-0012"
+    ],
+    "id": "bom-fabric-workspace-data",
+    "name": "Fabric Data Workspace (ws-ihzhhpf-sit-data)",
+    "realisesRequirements": [
+      "FR-DATA-003"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/workspaces"
+  },
+  {
+    "category": "integration",
+    "governedByAdrs": [
+      "ADR-0016"
+    ],
+    "id": "bom-fhir-service",
+    "name": "Azure Health Data Services FHIR Service",
+    "realisesRequirements": [
+      "FR-DATA-002",
+      "FR-ONT-006"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.HealthcareApis/fhirServices"
+  },
+  {
+    "category": "ai",
+    "governedByAdrs": [
+      "ADR-0007",
+      "ADR-0008"
+    ],
+    "id": "bom-foundry-agent-service",
+    "name": "Azure AI Foundry Agent Service",
+    "realisesRequirements": [
+      "FR-CX-002",
+      "FR-CX-004"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.MachineLearningServices/agents"
+  },
+  {
+    "category": "platform",
+    "governedByAdrs": [
+      "ADR-0010"
+    ],
+    "id": "bom-github-actions",
+    "name": "GitHub Actions Delivery Pipeline",
+    "realisesRequirements": [
+      "FR-GOV-003",
+      "NFR-MAINT-001",
+      "NFR-GOV-006"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "GitHub/actions"
+  },
+  {
+    "category": "security",
+    "governedByAdrs": [
+      "ADR-0009"
+    ],
+    "id": "bom-key-vault",
+    "name": "Azure Key Vault",
+    "realisesRequirements": [
+      "NFR-SEC-001",
+      "NFR-SEC-002"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.KeyVault/vaults"
+  },
+  {
+    "category": "data",
+    "governedByAdrs": [
+      "ADR-0015"
+    ],
+    "id": "bom-lakehouse",
+    "name": "Fabric Lakehouse (lh_ihzhhpf_sit)",
+    "realisesRequirements": [
+      "FR-DATA-001",
+      "FR-DATA-003",
+      "FR-DATA-008"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/lakehouse"
+  },
+  {
+    "category": "platform",
+    "governedByAdrs": [
+      "ADR-0009"
+    ],
+    "id": "bom-log-analytics",
+    "name": "Log Analytics Workspace",
+    "realisesRequirements": [
+      "NFR-REL-001",
+      "FR-GOV-001",
+      "FR-GOV-004"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.OperationalInsights/workspaces"
+  },
+  {
+    "category": "integration",
+    "governedByAdrs": [
+      "ADR-0010"
+    ],
+    "id": "bom-logic-apps",
+    "name": "Logic Apps Integration Workflows",
+    "realisesRequirements": [
+      "FR-DATA-007",
+      "FR-DC-003",
+      "FR-DC-004",
+      "FR-GOV-005"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Logic/workflows"
+  },
+  {
+    "category": "security",
+    "governedByAdrs": [
+      "ADR-0007"
+    ],
+    "id": "bom-managed-identity",
+    "name": "Managed Identity / Workload Identity Federation",
+    "realisesRequirements": [
+      "NFR-SEC-001",
+      "NFR-SEC-003"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+  },
+  {
+    "category": "data",
+    "governedByAdrs": [
+      "ADR-0015"
+    ],
+    "id": "bom-onelake",
+    "name": "OneLake",
+    "realisesRequirements": [
+      "FR-DATA-003",
+      "FR-DATA-008"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/onelake"
+  },
+  {
+    "category": "governance",
+    "governedByAdrs": [
+      "ADR-0010"
+    ],
+    "id": "bom-policy-as-code",
+    "name": "Policy-as-Code Release Gate",
+    "realisesRequirements": [
+      "FR-GOV-003",
+      "FR-GOV-004",
+      "NFR-GOV-001"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Platform/policy-gate"
+  },
+  {
+    "category": "app",
+    "governedByAdrs": [
+      "ADR-0018"
+    ],
+    "id": "bom-powerbi-report",
+    "name": "Power BI Operational Dashboards",
+    "realisesRequirements": [
+      "FR-CX-005",
+      "FR-VIZ-001",
+      "FR-VIZ-002"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.PowerBI/reports"
+  },
+  {
+    "category": "governance",
+    "governedByAdrs": [
+      "ADR-0010"
+    ],
+    "id": "bom-purview",
+    "name": "Microsoft Purview (governance + lineage)",
+    "realisesRequirements": [
+      "FR-GOV-001",
+      "FR-GOV-004",
+      "NFR-COMP-005"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Purview/accounts"
+  },
+  {
+    "category": "governance",
+    "governedByAdrs": [
+      "ADR-0014"
+    ],
+    "id": "bom-reference-ontology",
+    "name": "Reference Ontology (OWL/RDF, BFO-aligned)",
+    "realisesRequirements": [
+      "FR-ONT-001",
+      "FR-ONT-005",
+      "FR-ONT-006"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Platform/ontology-owl"
+  },
+  {
+    "category": "data",
+    "governedByAdrs": [
+      "ADR-0015"
+    ],
+    "id": "bom-semantic-model",
+    "name": "Direct Lake Semantic Model (capacity-dashboard)",
+    "realisesRequirements": [
+      "FR-DATA-005",
+      "FR-VIZ-001",
+      "FR-VIZ-002"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Fabric/semanticModel"
+  },
+  {
+    "category": "data",
+    "governedByAdrs": [
+      "ADR-0004",
+      "ADR-0009"
+    ],
+    "id": "bom-storage-account",
+    "name": "Landing Storage Account (ADLS Gen2)",
+    "realisesRequirements": [
+      "FR-DATA-001",
+      "NFR-COMP-004"
+    ],
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "type": "Microsoft.Storage/storageAccounts"
+  }
+]

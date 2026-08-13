@@ -1,0 +1,142 @@
+[
+  {
+    "fromId": "bom-app-fluent",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-container-apps-agent-host",
+    "type": "requires"
+  },
+  {
+    "fromId": "bom-app-fluent",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-powerbi-report",
+    "type": "binds"
+  },
+  {
+    "fromId": "bom-container-apps-agent-host",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-fabric-data-agent",
+    "type": "grounds"
+  },
+  {
+    "fromId": "bom-container-apps-agent-host",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-managed-identity",
+    "type": "binds"
+  },
+  {
+    "fromId": "bom-eventhouse",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-eventstream",
+    "type": "requires"
+  },
+  {
+    "fromId": "bom-eventstream",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-fabric-workspace-data",
+    "type": "hosts"
+  },
+  {
+    "fromId": "bom-fabric-data-agent",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-fabric-iq-ontology",
+    "type": "grounds"
+  },
+  {
+    "fromId": "bom-fabric-data-agent",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-semantic-model",
+    "type": "grounds"
+  },
+  {
+    "fromId": "bom-fabric-iq-ontology",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-semantic-model",
+    "type": "grounds"
+  },
+  {
+    "fromId": "bom-fabric-workspace-data",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-fabric-capacity",
+    "type": "hosts"
+  },
+  {
+    "fromId": "bom-fhir-service",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-logic-apps",
+    "type": "binds"
+  },
+  {
+    "fromId": "bom-foundry-agent-service",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-azure-openai",
+    "type": "requires"
+  },
+  {
+    "fromId": "bom-github-actions",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-managed-identity",
+    "type": "binds"
+  },
+  {
+    "fromId": "bom-lakehouse",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-fabric-workspace-data",
+    "type": "hosts"
+  },
+  {
+    "fromId": "bom-lakehouse",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-onelake",
+    "type": "requires"
+  },
+  {
+    "fromId": "bom-managed-identity",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-entra-id",
+    "type": "binds"
+  },
+  {
+    "fromId": "bom-onelake",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-fabric-capacity",
+    "type": "requires"
+  },
+  {
+    "fromId": "bom-policy-as-code",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-github-actions",
+    "type": "hosts"
+  },
+  {
+    "fromId": "bom-powerbi-report",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-semantic-model",
+    "type": "binds"
+  },
+  {
+    "fromId": "bom-semantic-model",
+    "sourceCommit": "81ba62b8af0f684be3791a9105f2cf1d4d964726",
+    "sourcePath": "docs/bom.yaml",
+    "toId": "bom-lakehouse",
+    "type": "requires"
+  }
+]
