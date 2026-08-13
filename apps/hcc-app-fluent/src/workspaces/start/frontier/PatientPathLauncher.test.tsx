@@ -96,13 +96,18 @@ describe('PatientPathLauncher', () => {
     expect(screen.getByRole('heading', { name: /recovery destination/i })).toBeInTheDocument();
   });
 
-  it('gates the spanning CSA advisory card with the established role capability', () => {
+  it('always shows the CSA advisory but gates the privileged crisis role-board link', () => {
     const crisis = LAUNCHER_TILES.find((tile) => tile.requiresCsaNav);
     expect(crisis).toBeDefined();
 
     const viewer = renderLauncher(['HCC.Viewer']);
+    const viewerAdvisory = screen.getByTestId('patient-path-csa-advisory');
+    expect(viewerAdvisory).toBeInTheDocument();
+    // the privileged crisis role-board link stays gated by the CSA navigation capability
     expect(viewer.container.querySelector(`a[href="${crisis?.route}"]`)).not.toBeInTheDocument();
-    expect(screen.queryByTestId('patient-path-csa-advisory')).not.toBeInTheDocument();
+    expect(
+      within(viewerAdvisory).queryByRole('link', { name: /open scenario planning role board/i }),
+    ).not.toBeInTheDocument();
     viewer.unmount();
 
     const admin = renderLauncher(['HCC.PlatformAdmin']);
@@ -209,10 +214,22 @@ describe('PatientPathLauncher', () => {
     expect(within(banners).getByText(/data quality gates/i)).toBeInTheDocument();
     admin.unmount();
 
-    // the crisis banner stays gated by the CSA navigation capability
+    // the CSA advisory now shows for every role; only the privileged role-board link stays gated
     renderLauncher(['HCC.Viewer']);
     const viewerBanners = screen.getByTestId('patient-path-banners');
-    expect(within(viewerBanners).queryByText(/crisis & scenarios/i)).not.toBeInTheDocument();
+    expect(within(viewerBanners).getByText(/crisis & scenarios/i)).toBeInTheDocument();
     expect(within(viewerBanners).getByText(/data quality gates/i)).toBeInTheDocument();
+  });
+
+  it('anchors the Product Owner foundation and External Signals beneath the flow chart', () => {
+    renderLauncher(['HCC.PlatformAdmin']);
+
+    const foundation = screen.getByTestId('patient-path-foundation');
+    expect(within(foundation).getByText(/product owner agent/i)).toBeInTheDocument();
+    expect(within(foundation).getByText(/external signals/i)).toBeInTheDocument();
+
+    // the External Signals banner moved out of the top cross-path banners
+    const banners = screen.getByTestId('patient-path-banners');
+    expect(within(banners).queryByText(/external signals/i)).not.toBeInTheDocument();
   });
 });

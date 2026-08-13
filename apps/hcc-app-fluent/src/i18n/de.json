@@ -492,6 +492,7 @@
       "recoveryCaption": "Kontinuität über das Spital hinaus",
       "advisoryBadge": "Beratend",
       "bannersAriaLabel": "Pfadübergreifende Copilots",
+      "foundationAriaLabel": "Fundament-Agenten unter dem Pfad",
       "evidenceLabel": "Vertrauenssignale des Patientenpfads",
       "evidenceChip": "Evidenzgestützt",
       "goldenThreadChip": "Golden Thread",
@@ -541,6 +542,24 @@
         "bannerDot": "spannt den ganzen Pfad",
         "evidence": "Schocks stresstesten",
         "badge": "CSA"
+      },
+      "signals": {
+        "ariaLabel": "Externe Signale – Beratung",
+        "title": "Externe Signale entlang des Pfads",
+        "body": "Der Signal-Agent triagiert vertrauenswürdige externe Frühwarn-Feeds — Wetter, Epidemien und Microsoft Web IQ — zu beratenden Watch-Karten für den Pfad. Vertrauensstufen-basiert und menschlich kuratiert; er aktiviert nie automatisch einen Hebel.",
+        "bannerLabel": "Externe Signale",
+        "bannerDot": "Frühwarnung entlang des Pfads",
+        "evidence": "Vertrauensstufen",
+        "badge": "SIG"
+      },
+      "productOwner": {
+        "ariaLabel": "Product-Owner-Agent – Beratung",
+        "title": "Product-Owner-Agent — das fundierte Fundament",
+        "body": "Der Product-Owner-Agent ist die quellenbasierte, ausschließlich beratende Stimme der Plattform. Jede Antwort ist über Wissenskorpus, Live-Nachweis, Kosten und Ontologie belegt — er rät nie und entscheidet nie für Sie.",
+        "bannerLabel": "Product-Owner-Agent",
+        "bannerDot": "das fundierte Fundament",
+        "evidence": "Quellenbasiert",
+        "badge": "PO"
       },
       "dcInsight": {
         "title": "Wie ein Agent antwortet — das DC-INSIGHT-Muster",

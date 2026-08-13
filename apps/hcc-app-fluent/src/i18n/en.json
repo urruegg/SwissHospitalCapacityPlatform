@@ -502,6 +502,7 @@
       "recoveryCaption": "Continuity beyond the hospital",
       "advisoryBadge": "Advisory",
       "bannersAriaLabel": "Cross-path copilots",
+      "foundationAriaLabel": "Foundational agents beneath the path",
       "evidenceLabel": "Patient-path trust signals",
       "evidenceChip": "Evidence-backed",
       "goldenThreadChip": "Golden thread",
@@ -551,6 +552,24 @@
         "bannerDot": "spans the whole path",
         "evidence": "Stress-test shocks",
         "badge": "CSA"
+      },
+      "signals": {
+        "ariaLabel": "External signals advisory",
+        "title": "External signals across the path",
+        "body": "The Signals agent triages trusted external early-warning feeds — weather, epidemics, and Microsoft Web IQ — into advisory watch-cards for the path. Trust-tiered and human-curated; it never auto-arms a lever.",
+        "bannerLabel": "External Signals",
+        "bannerDot": "early-warning across the path",
+        "evidence": "Trust-tiered",
+        "badge": "SIG"
+      },
+      "productOwner": {
+        "ariaLabel": "Product Owner agent advisory",
+        "title": "Product Owner agent — the grounded foundation",
+        "body": "The Product Owner agent is the source-grounded, advisory-only voice of the platform. Every answer is cited across the knowledge corpus, live proof, cost, and ontology — it never guesses and never decides for you.",
+        "bannerLabel": "Product Owner Agent",
+        "bannerDot": "the grounded foundation",
+        "evidence": "Source-grounded",
+        "badge": "PO"
       },
       "dcInsight": {
         "title": "How an agent answers — the DC-INSIGHT pattern",

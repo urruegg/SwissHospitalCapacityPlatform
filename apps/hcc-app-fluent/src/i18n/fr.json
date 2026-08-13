@@ -337,6 +337,7 @@
       "recoveryCaption": "Continuité au-delà de l'hôpital",
       "advisoryBadge": "Consultatif",
       "bannersAriaLabel": "Copilotes transversaux du parcours",
+      "foundationAriaLabel": "Agents fondateurs sous le parcours",
       "evidenceLabel": "Signaux de confiance du parcours patient",
       "evidenceChip": "Étayé par des preuves",
       "goldenThreadChip": "Fil rouge",
@@ -386,6 +387,24 @@
         "bannerDot": "couvre tout le parcours",
         "evidence": "Tester les chocs",
         "badge": "CSA"
+      },
+      "signals": {
+        "ariaLabel": "Signaux externes – conseil",
+        "title": "Signaux externes le long du parcours",
+        "body": "L'agent Signaux trie les flux d'alerte précoce externes de confiance — météo, épidémies et Microsoft Web IQ — en cartes de veille consultatives pour le parcours. Hiérarchisé par confiance et curé par des humains ; il n'arme jamais un levier automatiquement.",
+        "bannerLabel": "Signaux externes",
+        "bannerDot": "alerte précoce sur le parcours",
+        "evidence": "Niveaux de confiance",
+        "badge": "SIG"
+      },
+      "productOwner": {
+        "ariaLabel": "Agent Product Owner – conseil",
+        "title": "Agent Product Owner — le socle étayé",
+        "body": "L'agent Product Owner est la voix consultative de la plateforme, ancrée dans les sources. Chaque réponse est citée à travers le corpus de connaissances, la preuve en direct, les coûts et l'ontologie — il ne devine jamais et ne décide jamais à votre place.",
+        "bannerLabel": "Agent Product Owner",
+        "bannerDot": "le socle étayé",
+        "evidence": "Ancré aux sources",
+        "badge": "PO"
       },
       "dcInsight": {
         "title": "Comment un agent répond — le schéma DC-INSIGHT",

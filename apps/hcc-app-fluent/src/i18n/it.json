@@ -337,6 +337,7 @@
       "recoveryCaption": "Continuità oltre l'ospedale",
       "advisoryBadge": "Consultivo",
       "bannersAriaLabel": "Copiloti trasversali del percorso",
+      "foundationAriaLabel": "Agenti fondativi sotto il percorso",
       "evidenceLabel": "Segnali di fiducia del percorso paziente",
       "evidenceChip": "Basato su evidenze",
       "goldenThreadChip": "Filo conduttore",
@@ -386,6 +387,24 @@
         "bannerDot": "copre l'intero percorso",
         "evidence": "Testare gli shock",
         "badge": "CSA"
+      },
+      "signals": {
+        "ariaLabel": "Segnali esterni – consulenza",
+        "title": "Segnali esterni lungo il percorso",
+        "body": "L'agente Segnali tria i feed di allerta precoce esterni affidabili — meteo, epidemie e Microsoft Web IQ — in schede di monitoraggio consultive per il percorso. Basato su livelli di affidabilità e curato dall'uomo; non attiva mai automaticamente una leva.",
+        "bannerLabel": "Segnali esterni",
+        "bannerDot": "allerta precoce lungo il percorso",
+        "evidence": "Livelli di affidabilità",
+        "badge": "SIG"
+      },
+      "productOwner": {
+        "ariaLabel": "Agente Product Owner – consulenza",
+        "title": "Agente Product Owner — la base fondata",
+        "body": "L'agente Product Owner è la voce consultiva della piattaforma, ancorata alle fonti. Ogni risposta è citata attraverso il corpus di conoscenza, la prova dal vivo, i costi e l'ontologia — non indovina mai e non decide mai al posto tuo.",
+        "bannerLabel": "Agente Product Owner",
+        "bannerDot": "la base fondata",
+        "evidence": "Ancorato alle fonti",
+        "badge": "PO"
       },
       "dcInsight": {
         "title": "Come risponde un agente — lo schema DC-INSIGHT",
