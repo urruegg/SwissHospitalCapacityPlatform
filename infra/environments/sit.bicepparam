@@ -385,8 +385,9 @@ param enableAppFluentModule = true
 // dropped; the app now persists the signed-in account. approval-gated per AGENTS.md.
 // START fidelity (2026-08-08): bumped 8c03420 -> 914d470 - CIO challenger seat,
 // single-language vision/mission/pills, real hospital cantons (Zurich/Luzern/Zurich).
-// Image built by ci-build-app-fluent.yml run 31196403887. approval-gated per AGENTS.md.
-param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:bb288be'
+// Image built by ci-build-app-fluent.yml (run 31627008284, S44 Option C slice 3b:
+// OccupancyBoard renders live payload.signals from the golden source). approval-gated per AGENTS.md.
+param appFluentImage = 'cri75lbu5sj4hza.azurecr.io/hcc-app-fluent:9ffec86'
 // #447 — runtime agent-host URL (per-env), injected into window.__ENV__ at
 // container start so the SIT app calls the SIT agent-host (no build-time bake).
 param appFluentAgentHostUrl = 'https://ca-agent-host-ihzhhpf-sit.salmonsand-fb86922a.westus2.azurecontainerapps.io'
