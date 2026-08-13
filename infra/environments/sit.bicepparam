@@ -227,9 +227,12 @@ param enableCsaCosmosModule = true
 // approved-to-apply by @urruegg (2026-08-09).
 // Sprint 43 WS-6 follow-up (2026-08-10): prepared d97fa11 -> 9daaa64 to ship
 // the bearer-presence fix, verified OBO role enforcement, live citations,
-// Cosmos audit persistence, and groupMembershipClaims role mapping. Preflight
-// only until a fresh approved-to-apply comment authorizes the SIT deployment.
-param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:9daaa64'
+// Cosmos audit persistence, and groupMembershipClaims role mapping.
+// Sprint 44 (Option C, 2026-08-13): bumped 9daaa64 -> b7bf4da to ship the Event
+// Hub live-signals reader; the golden service now serves live occupancy signals
+// (agent-host reads evh-ihzhhpf-sit-y26y directly; all platform storage is private).
+// Preflight only until a fresh approved-to-apply comment authorizes the SIT deployment.
+param agentHostImage = 'cri75lbu5sj4hza.azurecr.io/hcc-agent-host:b7bf4da'
 
 // Sprint 26 WS-C (#335) — enable the decision-tier live-apply Container Apps
 // Job (caj-decision-apply) in SIT. Manual-trigger, plan-first by default
