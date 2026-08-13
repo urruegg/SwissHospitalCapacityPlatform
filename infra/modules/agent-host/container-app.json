@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.45.6.27763",
-      "templateHash": "9509183128391990162"
+      "version": "0.46.1.21595",
+      "templateHash": "12805708617198904022"
     }
   },
   "parameters": {
@@ -72,6 +72,27 @@
         "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
       }
     },
+    "foundryProjectEndpoint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-1 -- Foundry Agent Service project account root (e.g. https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com). Empty string keeps the agent-host on the deterministic MockChatModel."
+      }
+    },
+    "foundryProjectName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-1 -- Foundry Agent Service project name (e.g. ai-ihzhhpf-sit-eastus2-project). Empty string keeps the agent-host on the deterministic MockChatModel."
+      }
+    },
+    "fabricLakehouseId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-2 -- Fabric lakehouse ID for direct OneLake Gold table reads (reuses fabricWorkspaceId for the workspace half). Empty string keeps FabricAdapter on its synthetic 3-row fallback."
+      }
+    },
     "rlsProvider": {
       "type": "string",
       "defaultValue": "simulated",
@@ -84,6 +105,62 @@
       "defaultValue": false,
       "metadata": {
         "description": "#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity with M4). `true` requires a valid caller bearer on the golden read and exchanges it downstream. See ADR-0057. Config, not code."
+      }
+    },
+    "oboTenantId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-6 — tenant ID for the OBO On-Behalf-Of exchange (agent-host confidential client)."
+      }
+    },
+    "oboClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-6 — client ID of the hcc-agent-host app registration used for the OBO exchange."
+      }
+    },
+    "oboClientSecret": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-6 — Key Vault secret URI for the agent-host app registration client secret."
+      }
+    },
+    "oboJwksUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-6 — JWKS URL used to validate the caller bearer (tenant discovery keys endpoint)."
+      }
+    },
+    "oboAudience": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-6 — expected audience on the caller bearer token (api://<agent-host-app-id>)."
+      }
+    },
+    "oboIssuer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-6 — expected issuer on the caller bearer token."
+      }
+    },
+    "oboFabricScope": {
+      "type": "string",
+      "defaultValue": "https://storage.azure.com/.default",
+      "metadata": {
+        "description": "Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead."
+      }
+    },
+    "oboGroupRoleMap": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 43 WS-6 follow-up — JSON object mapping Entra security-group object IDs (from the hcc-agent-host `groupMembershipClaims` = SecurityGroup `groups` claim) to HCC.* role names. App Role ASSIGNMENT requires a directory role admin@ does not hold (ADR-0057 §1.3); `groupMembershipClaims` is owner-level/self-service and reflects group memberships that already exist. Empty string (default) disables group-derived roles -- only a direct `roles` claim (if ever populated) is honoured. Config, not code; non-secret directory metadata (like oboTenantId/oboClientId above)."
       }
     },
     "redisHostName": {
@@ -127,12 +204,28 @@
       "metadata": {
         "description": "Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that subnet — Container Apps traffic then reaches Cosmos DB via its private endpoint. Empty string keeps the CAE public (default). Setting this on an EXISTING CAE forces a destructive recreate; the child Container Apps get a new FQDN."
       }
+    },
+    "signalsEventHubNamespace": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sprint 44 (Option C) — Event Hub namespace the agent-host reads live external signals from (e.g. evh-ihzhhpf-sit-y26y). Empty (default) disables the live-signals source; the golden service then serves fixtures. The agent-host UAMI needs Azure Event Hubs Data Receiver on the hub."
+      }
+    },
+    "signalsEventHubName": {
+      "type": "string",
+      "defaultValue": "events",
+      "metadata": {
+        "description": "Sprint 44 (Option C) — Event Hub name for external signals. Ignored when signalsEventHubNamespace is empty."
+      }
     }
   },
   "variables": {
     "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
     "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
-    "redisEnv": "[if(empty(parameters('redisHostName')), createArray(), createArray(createObject('name', 'REDIS_HOST', 'value', parameters('redisHostName')), createObject('name', 'REDIS_PORT', 'value', string(parameters('redisPort')))))]"
+    "redisEnv": "[if(empty(parameters('redisHostName')), createArray(), createArray(createObject('name', 'REDIS_HOST', 'value', parameters('redisHostName')), createObject('name', 'REDIS_PORT', 'value', string(parameters('redisPort')))))]",
+    "oboSecretEnv": "[if(not(empty(parameters('oboClientSecret'))), createArray(createObject('name', 'OBO_CLIENT_SECRET', 'secretRef', 'obo-client-secret')), createArray())]",
+    "signalsEnv": "[if(empty(parameters('signalsEventHubNamespace')), createArray(), createArray(createObject('name', 'SIGNALS_EVENTHUB_NAMESPACE', 'value', parameters('signalsEventHubNamespace')), createObject('name', 'SIGNALS_EVENTHUB_NAME', 'value', parameters('signalsEventHubName'))))]"
   },
   "resources": [
     {
@@ -190,6 +283,7 @@
       "properties": {
         "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]",
         "configuration": {
+          "secrets": "[if(not(empty(parameters('oboClientSecret'))), createArray(createObject('name', 'obo-client-secret', 'value', parameters('oboClientSecret'))), createArray())]",
           "ingress": {
             "external": true,
             "targetPort": "[parameters('targetPort')]",
@@ -207,7 +301,7 @@
                 "cpu": "[json('0.5')]",
                 "memory": "1Gi"
               },
-              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider')), createObject('name', 'OBO_ENABLED', 'value', if(parameters('oboEnabled'), 'true', 'false'))), variables('redisEnv'))]"
+              "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'FOUNDRY_PROJECT_ENDPOINT', 'value', parameters('foundryProjectEndpoint')), createObject('name', 'FOUNDRY_PROJECT_NAME', 'value', parameters('foundryProjectName')), createObject('name', 'FABRIC_LAKEHOUSE_ID', 'value', parameters('fabricLakehouseId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider')), createObject('name', 'OBO_ENABLED', 'value', if(parameters('oboEnabled'), 'true', 'false')), createObject('name', 'OBO_TENANT_ID', 'value', parameters('oboTenantId')), createObject('name', 'OBO_CLIENT_ID', 'value', parameters('oboClientId')), createObject('name', 'OBO_JWKS_URL', 'value', parameters('oboJwksUrl')), createObject('name', 'OBO_AUDIENCE', 'value', parameters('oboAudience')), createObject('name', 'OBO_ISSUER', 'value', parameters('oboIssuer')), createObject('name', 'OBO_FABRIC_SCOPE', 'value', parameters('oboFabricScope')), createObject('name', 'OBO_GROUP_ROLE_MAP', 'value', parameters('oboGroupRoleMap'))), variables('redisEnv'), variables('oboSecretEnv'), variables('signalsEnv'))]"
             }
           ],
           "scale": {

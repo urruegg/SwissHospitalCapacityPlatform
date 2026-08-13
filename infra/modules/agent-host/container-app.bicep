@@ -87,6 +87,12 @@ param containerRegistryResourceId string = ''
 @description('Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that subnet — Container Apps traffic then reaches Cosmos DB via its private endpoint. Empty string keeps the CAE public (default). Setting this on an EXISTING CAE forces a destructive recreate; the child Container Apps get a new FQDN.')
 param caeInfrastructureSubnetResourceId string = ''
 
+@description('Sprint 44 (Option C) — Event Hub namespace the agent-host reads live external signals from (e.g. evh-ihzhhpf-sit-y26y). Empty (default) disables the live-signals source; the golden service then serves fixtures. The agent-host UAMI needs Azure Event Hubs Data Receiver on the hub.')
+param signalsEventHubNamespace string = ''
+
+@description('Sprint 44 (Option C) — Event Hub name for external signals. Ignored when signalsEventHubNamespace is empty.')
+param signalsEventHubName string = 'events'
+
 // Sprint 13 T5 — Container Apps environment + agent-host app. Uses a
 // **user-assigned managed identity** (`id-ca-agent-host-<suffix>`) so the
 // AcrPull role assignment can be provisioned BEFORE the CA references the
@@ -205,6 +211,21 @@ var oboSecretEnv = !empty(oboClientSecret) ? [
   }
 ] : []
 
+// Sprint 44 (Option C) — env-gated live-signals source: the agent-host (VNet-joined)
+// reads the public Event Hub directly, because all platform storage is private-only
+// and the runner is non-VNet. Empty namespace => no env => the golden service serves
+// fixtures (see docs/superpowers/specs/2026-08-12-webiq-live-signals-without-fabric-admin-design.md).
+var signalsEnv = empty(signalsEventHubNamespace) ? [] : [
+  {
+    name: 'SIGNALS_EVENTHUB_NAMESPACE'
+    value: signalsEventHubNamespace
+  }
+  {
+    name: 'SIGNALS_EVENTHUB_NAME'
+    value: signalsEventHubName
+  }
+]
+
 resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: 'cae-${nameSuffix}'
   location: location
@@ -300,7 +321,7 @@ resource agentHost 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: concat(baseEnv, redisEnv, oboSecretEnv)
+          env: concat(baseEnv, redisEnv, oboSecretEnv, signalsEnv)
         }
       ]
       scale: {

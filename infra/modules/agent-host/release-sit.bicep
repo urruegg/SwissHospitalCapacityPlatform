@@ -99,6 +99,10 @@ module agentHost 'container-app.bicep' = {
     containerRegistryLoginServer: containerRegistryLoginServer
     containerRegistryResourceId: registry.id
     caeInfrastructureSubnetResourceId: caeSubnet.id
+    // Sprint 44 (Option C) — this SIT-scoped wrapper wires the SIT Event Hub the
+    // agent-host reads live external signals from (all platform storage is private).
+    signalsEventHubNamespace: 'evh-ihzhhpf-sit-y26y'
+    signalsEventHubName: 'events'
   }
 }
 

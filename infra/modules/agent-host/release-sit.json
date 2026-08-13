@@ -1,0 +1,559 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.46.1.21595",
+      "templateHash": "8461610710453130230"
+    }
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "allowedValues": [
+        "sit"
+      ]
+    },
+    "solutionShortName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "costCenter": {
+      "type": "string"
+    },
+    "workload": {
+      "type": "string"
+    },
+    "agentHostImage": {
+      "type": "string"
+    },
+    "fabricDataAgentEndpoint": {
+      "type": "string"
+    },
+    "fabricWorkspaceId": {
+      "type": "string"
+    },
+    "fabricDataAgentId": {
+      "type": "string"
+    },
+    "foundryProjectEndpoint": {
+      "type": "string"
+    },
+    "foundryProjectName": {
+      "type": "string"
+    },
+    "fabricLakehouseId": {
+      "type": "string"
+    },
+    "rlsProvider": {
+      "type": "string"
+    },
+    "oboEnabled": {
+      "type": "bool"
+    },
+    "oboTenantId": {
+      "type": "string"
+    },
+    "oboClientId": {
+      "type": "string"
+    },
+    "oboClientSecretName": {
+      "type": "string"
+    },
+    "oboJwksUrl": {
+      "type": "string"
+    },
+    "oboAudience": {
+      "type": "string"
+    },
+    "oboIssuer": {
+      "type": "string"
+    },
+    "oboFabricScope": {
+      "type": "string"
+    },
+    "oboGroupRoleMap": {
+      "type": "string"
+    },
+    "containerRegistryLoginServer": {
+      "type": "string"
+    },
+    "keyVaultName": {
+      "type": "string"
+    },
+    "enableRedis": {
+      "type": "bool",
+      "allowedValues": [
+        false
+      ]
+    }
+  },
+  "variables": {
+    "nameSuffix": "[format('{0}-{1}', parameters('solutionShortName'), parameters('environmentName'))]",
+    "tags": {
+      "env": "[parameters('environmentName')]",
+      "owner": "[parameters('owner')]",
+      "costCenter": "[parameters('costCenter')]",
+      "workload": "[parameters('workload')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "agent-host-container-app-release-sit",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nameSuffix": {
+            "value": "[variables('nameSuffix')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "agentHostImage": {
+            "value": "[parameters('agentHostImage')]"
+          },
+          "logAnalyticsCustomerId": {
+            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', format('log-{0}', variables('nameSuffix'))), '2023-09-01').customerId]"
+          },
+          "logAnalyticsSharedKey": {
+            "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', format('log-{0}', variables('nameSuffix'))), '2023-09-01').primarySharedKey]"
+          },
+          "cosmosEndpoint": {
+            "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', format('cosmos-{0}', variables('nameSuffix'))), '2024-05-15').documentEndpoint]"
+          },
+          "fabricDataAgentEndpoint": {
+            "value": "[parameters('fabricDataAgentEndpoint')]"
+          },
+          "fabricWorkspaceId": {
+            "value": "[parameters('fabricWorkspaceId')]"
+          },
+          "fabricDataAgentId": {
+            "value": "[parameters('fabricDataAgentId')]"
+          },
+          "foundryProjectEndpoint": {
+            "value": "[parameters('foundryProjectEndpoint')]"
+          },
+          "foundryProjectName": {
+            "value": "[parameters('foundryProjectName')]"
+          },
+          "fabricLakehouseId": {
+            "value": "[parameters('fabricLakehouseId')]"
+          },
+          "rlsProvider": {
+            "value": "[parameters('rlsProvider')]"
+          },
+          "oboEnabled": {
+            "value": "[parameters('oboEnabled')]"
+          },
+          "oboTenantId": {
+            "value": "[parameters('oboTenantId')]"
+          },
+          "oboClientId": {
+            "value": "[parameters('oboClientId')]"
+          },
+          "oboClientSecret": "[if(and(parameters('oboEnabled'), not(empty(parameters('oboClientSecretName')))), createObject('reference', createObject('keyVault', createObject('id', resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))), 'secretName', parameters('oboClientSecretName'))), createObject('value', ''))]",
+          "oboJwksUrl": {
+            "value": "[parameters('oboJwksUrl')]"
+          },
+          "oboAudience": {
+            "value": "[parameters('oboAudience')]"
+          },
+          "oboIssuer": {
+            "value": "[parameters('oboIssuer')]"
+          },
+          "oboFabricScope": {
+            "value": "[parameters('oboFabricScope')]"
+          },
+          "oboGroupRoleMap": {
+            "value": "[parameters('oboGroupRoleMap')]"
+          },
+          "redisHostName": "[if(parameters('enableRedis'), createObject('value', 'unsupported-in-sit'), createObject('value', ''))]",
+          "redisPort": {
+            "value": 0
+          },
+          "containerRegistryLoginServer": {
+            "value": "[parameters('containerRegistryLoginServer')]"
+          },
+          "containerRegistryResourceId": {
+            "value": "[resourceId('Microsoft.ContainerRegistry/registries', first(split(parameters('containerRegistryLoginServer'), '.')))]"
+          },
+          "caeInfrastructureSubnetResourceId": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-platform-{0}', variables('nameSuffix')), 'snet-cae')]"
+          },
+          "signalsEventHubNamespace": {
+            "value": "evh-ihzhhpf-sit-y26y"
+          },
+          "signalsEventHubName": {
+            "value": "events"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.46.1.21595",
+              "templateHash": "12805708617198904022"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "nameSuffix": {
+              "type": "string",
+              "metadata": {
+                "description": "Resource name suffix, e.g. ihzhhpf-sit or ihzhhpf-prod."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags applied to all resources."
+              }
+            },
+            "agentHostImage": {
+              "type": "string",
+              "metadata": {
+                "description": "Container image reference for the agent-host (registry/repository:tag)."
+              }
+            },
+            "logAnalyticsCustomerId": {
+              "type": "string",
+              "metadata": {
+                "description": "Log Analytics workspace customer ID (GUID) for the Container Apps environment."
+              }
+            },
+            "logAnalyticsSharedKey": {
+              "type": "securestring",
+              "metadata": {
+                "description": "Log Analytics shared key for the Container Apps environment."
+              }
+            },
+            "cosmosEndpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Cosmos DB endpoint the agent-host reads/writes (ADR-0007 §2)."
+              }
+            },
+            "fabricDataAgentEndpoint": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional live Fabric Data Agent consumption endpoint. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "fabricWorkspaceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Fabric workspace ID that hosts the live Fabric Data Agent. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "fabricDataAgentId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional Fabric Data Agent ID. Empty string keeps the agent-host synthetic fallback."
+              }
+            },
+            "foundryProjectEndpoint": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-1 -- Foundry Agent Service project account root (e.g. https://ai-ihzhhpf-sit-eastus2.services.ai.azure.com). Empty string keeps the agent-host on the deterministic MockChatModel."
+              }
+            },
+            "foundryProjectName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-1 -- Foundry Agent Service project name (e.g. ai-ihzhhpf-sit-eastus2-project). Empty string keeps the agent-host on the deterministic MockChatModel."
+              }
+            },
+            "fabricLakehouseId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-2 -- Fabric lakehouse ID for direct OneLake Gold table reads (reuses fabricWorkspaceId for the workspace half). Empty string keeps FabricAdapter on its synthetic 3-row fallback."
+              }
+            },
+            "rlsProvider": {
+              "type": "string",
+              "defaultValue": "simulated",
+              "metadata": {
+                "description": "#424 M4 — RLS provider for the structured golden read. `simulated` (default) filters synthetic rows in-process (provenance simulated). `fabric-data-agent` reuses the proven live Fabric Data Agent client but still refuses per-user structured scope until OBO + the dynamic-RLS TMDL predicate land (#424 M5, #510). Config, not code."
+              }
+            },
+            "oboEnabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "#424 M5 — enable the OBO ingress seam (`false` default = simulated/native parity with M4). `true` requires a valid caller bearer on the golden read and exchanges it downstream. See ADR-0057. Config, not code."
+              }
+            },
+            "oboTenantId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-6 — tenant ID for the OBO On-Behalf-Of exchange (agent-host confidential client)."
+              }
+            },
+            "oboClientId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-6 — client ID of the hcc-agent-host app registration used for the OBO exchange."
+              }
+            },
+            "oboClientSecret": {
+              "type": "securestring",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-6 — Key Vault secret URI for the agent-host app registration client secret."
+              }
+            },
+            "oboJwksUrl": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-6 — JWKS URL used to validate the caller bearer (tenant discovery keys endpoint)."
+              }
+            },
+            "oboAudience": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-6 — expected audience on the caller bearer token (api://<agent-host-app-id>)."
+              }
+            },
+            "oboIssuer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-6 — expected issuer on the caller bearer token."
+              }
+            },
+            "oboFabricScope": {
+              "type": "string",
+              "defaultValue": "https://storage.azure.com/.default",
+              "metadata": {
+                "description": "Sprint 43 WS-6 — downstream scope for the OBO exchange. auth/obo_context.py defaults this to https://api.fabric.microsoft.com/.default, which does NOT work for OneLake reads (validated live, 401) -- FabricDeltaClient needs a storage.azure.com-scoped token instead."
+              }
+            },
+            "oboGroupRoleMap": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 43 WS-6 follow-up — JSON object mapping Entra security-group object IDs (from the hcc-agent-host `groupMembershipClaims` = SecurityGroup `groups` claim) to HCC.* role names. App Role ASSIGNMENT requires a directory role admin@ does not hold (ADR-0057 §1.3); `groupMembershipClaims` is owner-level/self-service and reflects group memberships that already exist. Empty string (default) disables group-derived roles -- only a direct `roles` claim (if ever populated) is honoured. Config, not code; non-secret directory metadata (like oboTenantId/oboClientId above)."
+              }
+            },
+            "redisHostName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Redis host name for the grounding cache (ADR-0007 §1). Empty string skips the Redis env vars entirely — used when the parent module is deployed with enableRedisModule=false (ADR-0028, SIT demo scope)."
+              }
+            },
+            "redisPort": {
+              "type": "int",
+              "defaultValue": 10000,
+              "metadata": {
+                "description": "Redis port. Azure Managed Redis uses 10000 for the Enterprise cluster (vs 6380 on the retired classic SKU). Ignored when redisHostName is empty."
+              }
+            },
+            "targetPort": {
+              "type": "int",
+              "defaultValue": 8080,
+              "metadata": {
+                "description": "Target port the agent-host container listens on."
+              }
+            },
+            "containerRegistryLoginServer": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR login server (e.g. cri75lbu5sj4hza.azurecr.io) for MI-based image pull. Required together with containerRegistryResourceId. When empty, the CA uses no `registries` block and relies on public/anonymous pull."
+              }
+            },
+            "containerRegistryResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional ACR resource ID. Required together with containerRegistryLoginServer."
+              }
+            },
+            "caeInfrastructureSubnetResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional CAE infrastructure subnet resource ID (ADR-0029 Option A). When set, the CAE joins that subnet — Container Apps traffic then reaches Cosmos DB via its private endpoint. Empty string keeps the CAE public (default). Setting this on an EXISTING CAE forces a destructive recreate; the child Container Apps get a new FQDN."
+              }
+            },
+            "signalsEventHubNamespace": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Sprint 44 (Option C) — Event Hub namespace the agent-host reads live external signals from (e.g. evh-ihzhhpf-sit-y26y). Empty (default) disables the live-signals source; the golden service then serves fixtures. The agent-host UAMI needs Azure Event Hubs Data Receiver on the hub."
+              }
+            },
+            "signalsEventHubName": {
+              "type": "string",
+              "defaultValue": "events",
+              "metadata": {
+                "description": "Sprint 44 (Option C) — Event Hub name for external signals. Ignored when signalsEventHubNamespace is empty."
+              }
+            }
+          },
+          "variables": {
+            "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+            "useAcrMiPull": "[and(not(empty(parameters('containerRegistryLoginServer'))), not(empty(parameters('containerRegistryResourceId'))))]",
+            "redisEnv": "[if(empty(parameters('redisHostName')), createArray(), createArray(createObject('name', 'REDIS_HOST', 'value', parameters('redisHostName')), createObject('name', 'REDIS_PORT', 'value', string(parameters('redisPort')))))]",
+            "oboSecretEnv": "[if(not(empty(parameters('oboClientSecret'))), createArray(createObject('name', 'OBO_CLIENT_SECRET', 'secretRef', 'obo-client-secret')), createArray())]",
+            "signalsEnv": "[if(empty(parameters('signalsEventHubNamespace')), createArray(), createArray(createObject('name', 'SIGNALS_EVENTHUB_NAMESPACE', 'value', parameters('signalsEventHubNamespace')), createObject('name', 'SIGNALS_EVENTHUB_NAME', 'value', parameters('signalsEventHubName'))))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2024-03-01",
+              "name": "[format('cae-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[parameters('logAnalyticsCustomerId')]",
+                    "sharedKey": "[parameters('logAnalyticsSharedKey')]"
+                  }
+                },
+                "vnetConfiguration": "[if(empty(parameters('caeInfrastructureSubnetResourceId')), null(), createObject('infrastructureSubnetId', parameters('caeInfrastructureSubnetResourceId'), 'internal', false()))]"
+              }
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('id-ca-agent-host-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[variables('useAcrMiPull')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/')))]",
+              "name": "[guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal",
+                "description": "Sprint 13 T5 — agent-host CA pulls image from ACR via user-assigned MI."
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.App/containerApps",
+              "apiVersion": "2024-03-01",
+              "name": "[format('ca-agent-host-{0}', parameters('nameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))]": {}
+                }
+              },
+              "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]",
+                "configuration": {
+                  "secrets": "[if(not(empty(parameters('oboClientSecret'))), createArray(createObject('name', 'obo-client-secret', 'value', parameters('oboClientSecret'))), createArray())]",
+                  "ingress": {
+                    "external": true,
+                    "targetPort": "[parameters('targetPort')]",
+                    "transport": "auto",
+                    "allowInsecure": false
+                  },
+                  "registries": "[if(variables('useAcrMiPull'), createArray(createObject('server', parameters('containerRegistryLoginServer'), 'identity', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))))), createArray())]"
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "agent-host",
+                      "image": "[parameters('agentHostImage')]",
+                      "resources": {
+                        "cpu": "[json('0.5')]",
+                        "memory": "1Gi"
+                      },
+                      "env": "[concat(createArray(createObject('name', 'COSMOS_ENDPOINT', 'value', parameters('cosmosEndpoint')), createObject('name', 'AZURE_CLIENT_ID', 'value', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId), createObject('name', 'AGENTS_ROOT', 'value', '/app/agents'), createObject('name', 'FABRIC_DATA_AGENT_ENDPOINT', 'value', parameters('fabricDataAgentEndpoint')), createObject('name', 'FABRIC_WORKSPACE_ID', 'value', parameters('fabricWorkspaceId')), createObject('name', 'FABRIC_DATA_AGENT_ID', 'value', parameters('fabricDataAgentId')), createObject('name', 'FOUNDRY_PROJECT_ENDPOINT', 'value', parameters('foundryProjectEndpoint')), createObject('name', 'FOUNDRY_PROJECT_NAME', 'value', parameters('foundryProjectName')), createObject('name', 'FABRIC_LAKEHOUSE_ID', 'value', parameters('fabricLakehouseId')), createObject('name', 'RLS_PROVIDER', 'value', parameters('rlsProvider')), createObject('name', 'OBO_ENABLED', 'value', if(parameters('oboEnabled'), 'true', 'false')), createObject('name', 'OBO_TENANT_ID', 'value', parameters('oboTenantId')), createObject('name', 'OBO_CLIENT_ID', 'value', parameters('oboClientId')), createObject('name', 'OBO_JWKS_URL', 'value', parameters('oboJwksUrl')), createObject('name', 'OBO_AUDIENCE', 'value', parameters('oboAudience')), createObject('name', 'OBO_ISSUER', 'value', parameters('oboIssuer')), createObject('name', 'OBO_FABRIC_SCOPE', 'value', parameters('oboFabricScope')), createObject('name', 'OBO_GROUP_ROLE_MAP', 'value', parameters('oboGroupRoleMap'))), variables('redisEnv'), variables('oboSecretEnv'), variables('signalsEnv'))]"
+                    }
+                  ],
+                  "scale": {
+                    "minReplicas": 1,
+                    "maxReplicas": 3
+                  }
+                }
+              },
+              "dependsOn": [
+                "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', last(split(parameters('containerRegistryResourceId'), '/'))), 'Microsoft.Authorization/roleAssignments', guid(parameters('containerRegistryResourceId'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), variables('acrPullRoleId')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]",
+                "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "managedEnvironmentId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('nameSuffix')))]"
+            },
+            "fqdn": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.App/containerApps', format('ca-agent-host-{0}', parameters('nameSuffix'))), '2024-03-01').configuration.ingress.fqdn]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').principalId]"
+            },
+            "identityResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix')))]"
+            },
+            "identityClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-ca-agent-host-{0}', parameters('nameSuffix'))), '2023-01-31').clientId]"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "agentHostFqdn": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'agent-host-container-app-release-sit'), '2025-04-01').outputs.fqdn.value]"
+    },
+    "keyVaultName": {
+      "type": "string",
+      "value": "[parameters('keyVaultName')]"
+    }
+  }
+}
