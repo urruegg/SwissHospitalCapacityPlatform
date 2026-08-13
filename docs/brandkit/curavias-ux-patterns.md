@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.2.0 |
-| **Date** | 2026-07-31 |
+| **Version** | 1.3.0 |
+| **Date** | 2026-08-13 |
 | **Author** | Urs Rüegg (with Copilot) |
 | **Status** | Draft |
-| **Previous Version** | 1.1.0 (added narrative/showcase patterns P13-P17 from the Backstage build); this bump records Start as a live adopter of P13-P17 and adds the Start narrative-surface conformance note |
+| **Previous Version** | 1.2.0 (recorded Start as a live adopter of P13-P17 + the Start narrative-surface conformance note); this bump refreshes the Patient-path row to the Fluent Card/Badge flow chart (replaced the SVG wave-band) and records the CSA/PO/SIG advisory-banner arrangement |
 | **Sprint** | 27 — Curavias App UX Polish (tracker #365) |
 | **Applies to** | `apps/hcc-app-fluent` (internal app, app.curavias.ch) |
 
@@ -307,7 +307,7 @@ present throughout `/start`.
 | Operating model (org → work) | ✓ | Humans / Agents / On-demand work modes + Frontier-Firm principle |
 | CIO challenge (why now) | ✓ | the seven operational-decisions "Today vs Curavias" table |
 | Three hospitals | ✓ | CuraNova / Curalp / Vialta cards + seven-agent roster |
-| Patient path (launcher) | ✓ | RBAC-gated wave-band journey → `/main/<role>` (P11 handoff) |
+| Patient path (flow chart) | ✓ | Fluent `Card` + `Badge` journey (OOA→BMCA→ORSA→SBA→DCA→Recovery) with `ChevronRight` connectors → `/main/<role>` (P11 handoff); CSA + Data Quality advisories above the flow, Product Owner + External Signals foundation banners below |
 | 90-day frontier | ✓ | Frame & Ground / Build & Prove / Operate & Scale phases |
 | BVA (the decision) | ✓ | KPI tiles + TCO + value levers + sensitivity + proof (rail CTA) |
 
